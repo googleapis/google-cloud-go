@@ -27,6 +27,9 @@ type config struct {
 	// Modules are all the modules roots the post processor should generate
 	// template files for.
 	Modules []string `yaml:"modules"`
+	// ClientRelPaths are the relative paths to the client root directories in
+	// google-cloud-go.
+	ClientRelPaths []string
 	// GoogleapisToImportPath is a map of a googleapis dir to the corresponding
 	// gapic import path.
 	GoogleapisToImportPath map[string]*libraryInfo
@@ -42,6 +45,8 @@ type libraryInfo struct {
 	// ServiceConfig is the relative directory to the service config from the
 	// services directory in googleapis.
 	ServiceConfig string
+	// RelPath is the relative path to the client from the repo root.
+	RelPath string
 }
 
 func (p *postProcessor) loadConfig() error {
@@ -77,6 +82,7 @@ func (p *postProcessor) loadConfig() error {
 
 	c := &config{
 		Modules:                postProcessorConfig.Modules,
+		ClientRelPaths:         make([]string, 0),
 		GoogleapisToImportPath: make(map[string]*libraryInfo),
 		ManualClientInfo:       postProcessorConfig.ManualClients,
 	}
@@ -87,12 +93,14 @@ func (p *postProcessor) loadConfig() error {
 		}
 	}
 	for _, v := range owlBotConfig.DeepCopyRegex {
+		c.ClientRelPaths = append(c.ClientRelPaths, v.Dest)
 		i := strings.Index(v.Source, "/cloud.google.com/go")
 		li, ok := c.GoogleapisToImportPath[v.Source[1:i]]
 		if !ok {
 			return fmt.Errorf("unable to find value for %q, it may be missing a service config entry", v.Source[1:i])
 		}
 		li.ImportPath = v.Source[i+1:]
+		li.RelPath = v.Dest
 	}
 	p.config = c
 	return nil

@@ -34,7 +34,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "languagepb.AnalyzeEntitiesResponse",
+        "resultType": "*languagepb.AnalyzeEntitiesResponse",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.language.v1.Client"
@@ -60,7 +60,7 @@
     {
       "regionTag": "language_v1_generated_LanguageService_AnalyzeEntitySentiment_sync",
       "title": "language AnalyzeEntitySentiment Sample",
-      "description": "AnalyzeEntitySentiment finds entities, similar to AnalyzeEntities in the text and analyzes\nsentiment associated with each entity and its mentions.",
+      "description": "AnalyzeEntitySentiment finds entities, similar to\n[AnalyzeEntities][google.cloud.language.v1.LanguageService.AnalyzeEntities]\nin the text and analyzes sentiment associated with each entity and its\nmentions.",
       "file": "Client/AnalyzeEntitySentiment/main.go",
       "language": "GO",
       "clientMethod": {
@@ -80,7 +80,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "languagepb.AnalyzeEntitySentimentResponse",
+        "resultType": "*languagepb.AnalyzeEntitySentimentResponse",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.language.v1.Client"
@@ -126,7 +126,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "languagepb.AnalyzeSentimentResponse",
+        "resultType": "*languagepb.AnalyzeSentimentResponse",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.language.v1.Client"
@@ -172,7 +172,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "languagepb.AnalyzeSyntaxResponse",
+        "resultType": "*languagepb.AnalyzeSyntaxResponse",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.language.v1.Client"
@@ -218,7 +218,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "languagepb.AnnotateTextResponse",
+        "resultType": "*languagepb.AnnotateTextResponse",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.language.v1.Client"
@@ -264,7 +264,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "languagepb.ClassifyTextResponse",
+        "resultType": "*languagepb.ClassifyTextResponse",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.language.v1.Client"

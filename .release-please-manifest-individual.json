@@ -1,5 +1,5 @@
 {
-  "bigquery": "1.50.0",
+  "bigquery": "1.51.0",
   "bigtable": "1.18.1",
   "datastore": "1.11.0",
   "errorreporting": "0.3.0",
@@ -8,6 +8,6 @@
   "profiler": "0.3.1",
   "pubsub": "1.30.0",
   "pubsublite": "1.7.0",
-  "spanner": "1.45.0",
+  "spanner": "1.45.1",
   "storage": "1.30.1"
 }

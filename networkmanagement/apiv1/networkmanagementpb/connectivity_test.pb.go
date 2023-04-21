@@ -45,11 +45,11 @@ type Endpoint_NetworkType int32
 const (
 	// Default type if unspecified.
 	Endpoint_NETWORK_TYPE_UNSPECIFIED Endpoint_NetworkType = 0
-	// A network hosted within Google Cloud Platform.
+	// A network hosted within Google Cloud.
 	// To receive more detailed output, specify the URI for the source or
 	// destination network.
 	Endpoint_GCP_NETWORK Endpoint_NetworkType = 1
-	// A network hosted outside of Google Cloud Platform.
+	// A network hosted outside of Google Cloud.
 	// This can be an on-premises network, or a network hosted by another cloud
 	// provider.
 	Endpoint_NON_GCP_NETWORK Endpoint_NetworkType = 2
@@ -385,8 +385,8 @@ type Endpoint struct {
 	// The Project ID can be derived from the URI if you provide a VM instance or
 	// network URI.
 	// The following are two cases where you must provide the project ID:
-	// 1. Only the IP address is specified, and the IP address is within a GCP
-	// project.
+	// 1. Only the IP address is specified, and the IP address is within a Google
+	// Cloud project.
 	// 2. When you are using Shared VPC and the IP address that you provide is
 	// from the service project. In this case, the network that the IP address
 	// resides in is defined in the host project.

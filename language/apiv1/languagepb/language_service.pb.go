@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -1723,8 +1723,8 @@ type Sentence struct {
 	// The sentence text.
 	Text *TextSpan `protobuf:"bytes,1,opt,name=text,proto3" json:"text,omitempty"`
 	// For calls to [AnalyzeSentiment][] or if
-	// [AnnotateTextRequest.Features.extract_document_sentiment][google.cloud.language.v1.AnnotateTextRequest.Features.extract_document_sentiment] is set to
-	// true, this field will contain the sentiment for the sentence.
+	// [AnnotateTextRequest.Features.extract_document_sentiment][google.cloud.language.v1.AnnotateTextRequest.Features.extract_document_sentiment]
+	// is set to true, this field will contain the sentiment for the sentence.
 	Sentiment *Sentiment `protobuf:"bytes,2,opt,name=sentiment,proto3" json:"sentiment,omitempty"`
 }
 
@@ -1803,9 +1803,9 @@ type Entity struct {
 	// supports proper noun mentions.
 	Mentions []*EntityMention `protobuf:"bytes,5,rep,name=mentions,proto3" json:"mentions,omitempty"`
 	// For calls to [AnalyzeEntitySentiment][] or if
-	// [AnnotateTextRequest.Features.extract_entity_sentiment][google.cloud.language.v1.AnnotateTextRequest.Features.extract_entity_sentiment] is set to
-	// true, this field will contain the aggregate sentiment expressed for this
-	// entity in the provided document.
+	// [AnnotateTextRequest.Features.extract_entity_sentiment][google.cloud.language.v1.AnnotateTextRequest.Features.extract_entity_sentiment]
+	// is set to true, this field will contain the aggregate sentiment expressed
+	// for this entity in the provided document.
 	Sentiment *Sentiment `protobuf:"bytes,6,opt,name=sentiment,proto3" json:"sentiment,omitempty"`
 }
 
@@ -2247,9 +2247,9 @@ type EntityMention struct {
 	// The type of the entity mention.
 	Type EntityMention_Type `protobuf:"varint,2,opt,name=type,proto3,enum=google.cloud.language.v1.EntityMention_Type" json:"type,omitempty"`
 	// For calls to [AnalyzeEntitySentiment][] or if
-	// [AnnotateTextRequest.Features.extract_entity_sentiment][google.cloud.language.v1.AnnotateTextRequest.Features.extract_entity_sentiment] is set to
-	// true, this field will contain the sentiment expressed for this mention of
-	// the entity in the provided document.
+	// [AnnotateTextRequest.Features.extract_entity_sentiment][google.cloud.language.v1.AnnotateTextRequest.Features.extract_entity_sentiment]
+	// is set to true, this field will contain the sentiment expressed for this
+	// mention of the entity in the provided document.
 	Sentiment *Sentiment `protobuf:"bytes,3,opt,name=sentiment,proto3" json:"sentiment,omitempty"`
 }
 
@@ -2315,7 +2315,9 @@ type TextSpan struct {
 	// The content of the output text.
 	Content string `protobuf:"bytes,1,opt,name=content,proto3" json:"content,omitempty"`
 	// The API calculates the beginning offset of the content in the original
-	// document according to the [EncodingType][google.cloud.language.v1.EncodingType] specified in the API request.
+	// document according to the
+	// [EncodingType][google.cloud.language.v1.EncodingType] specified in the API
+	// request.
 	BeginOffset int32 `protobuf:"varint,2,opt,name=begin_offset,json=beginOffset,proto3" json:"begin_offset,omitempty"`
 }
 
@@ -2581,7 +2583,8 @@ type AnalyzeSentimentResponse struct {
 	DocumentSentiment *Sentiment `protobuf:"bytes,1,opt,name=document_sentiment,json=documentSentiment,proto3" json:"document_sentiment,omitempty"`
 	// The language of the text, which will be the same as the language specified
 	// in the request or, if not specified, the automatically-detected language.
-	// See [Document.language][google.cloud.language.v1.Document.language] field for more details.
+	// See [Document.language][google.cloud.language.v1.Document.language] field
+	// for more details.
 	Language string `protobuf:"bytes,2,opt,name=language,proto3" json:"language,omitempty"`
 	// The sentiment for all the sentences in the document.
 	Sentences []*Sentence `protobuf:"bytes,3,rep,name=sentences,proto3" json:"sentences,omitempty"`
@@ -2708,7 +2711,8 @@ type AnalyzeEntitySentimentResponse struct {
 	Entities []*Entity `protobuf:"bytes,1,rep,name=entities,proto3" json:"entities,omitempty"`
 	// The language of the text, which will be the same as the language specified
 	// in the request or, if not specified, the automatically-detected language.
-	// See [Document.language][google.cloud.language.v1.Document.language] field for more details.
+	// See [Document.language][google.cloud.language.v1.Document.language] field
+	// for more details.
 	Language string `protobuf:"bytes,2,opt,name=language,proto3" json:"language,omitempty"`
 }
 
@@ -2826,7 +2830,8 @@ type AnalyzeEntitiesResponse struct {
 	Entities []*Entity `protobuf:"bytes,1,rep,name=entities,proto3" json:"entities,omitempty"`
 	// The language of the text, which will be the same as the language specified
 	// in the request or, if not specified, the automatically-detected language.
-	// See [Document.language][google.cloud.language.v1.Document.language] field for more details.
+	// See [Document.language][google.cloud.language.v1.Document.language] field
+	// for more details.
 	Language string `protobuf:"bytes,2,opt,name=language,proto3" json:"language,omitempty"`
 }
 
@@ -2946,7 +2951,8 @@ type AnalyzeSyntaxResponse struct {
 	Tokens []*Token `protobuf:"bytes,2,rep,name=tokens,proto3" json:"tokens,omitempty"`
 	// The language of the text, which will be the same as the language specified
 	// in the request or, if not specified, the automatically-detected language.
-	// See [Document.language][google.cloud.language.v1.Document.language] field for more details.
+	// See [Document.language][google.cloud.language.v1.Document.language] field
+	// for more details.
 	Language string `protobuf:"bytes,3,opt,name=language,proto3" json:"language,omitempty"`
 }
 
@@ -3201,7 +3207,8 @@ type AnnotateTextResponse struct {
 	DocumentSentiment *Sentiment `protobuf:"bytes,4,opt,name=document_sentiment,json=documentSentiment,proto3" json:"document_sentiment,omitempty"`
 	// The language of the text, which will be the same as the language specified
 	// in the request or, if not specified, the automatically-detected language.
-	// See [Document.language][google.cloud.language.v1.Document.language] field for more details.
+	// See [Document.language][google.cloud.language.v1.Document.language] field
+	// for more details.
 	Language string `protobuf:"bytes,5,opt,name=language,proto3" json:"language,omitempty"`
 	// Categories identified in the input document.
 	Categories []*ClassificationCategory `protobuf:"bytes,6,rep,name=categories,proto3" json:"categories,omitempty"`
@@ -4583,8 +4590,10 @@ type LanguageServiceClient interface {
 	// along with entity types, salience, mentions for each entity, and
 	// other properties.
 	AnalyzeEntities(ctx context.Context, in *AnalyzeEntitiesRequest, opts ...grpc.CallOption) (*AnalyzeEntitiesResponse, error)
-	// Finds entities, similar to [AnalyzeEntities][google.cloud.language.v1.LanguageService.AnalyzeEntities] in the text and analyzes
-	// sentiment associated with each entity and its mentions.
+	// Finds entities, similar to
+	// [AnalyzeEntities][google.cloud.language.v1.LanguageService.AnalyzeEntities]
+	// in the text and analyzes sentiment associated with each entity and its
+	// mentions.
 	AnalyzeEntitySentiment(ctx context.Context, in *AnalyzeEntitySentimentRequest, opts ...grpc.CallOption) (*AnalyzeEntitySentimentResponse, error)
 	// Analyzes the syntax of the text and provides sentence boundaries and
 	// tokenization along with part of speech tags, dependency trees, and other
@@ -4667,8 +4676,10 @@ type LanguageServiceServer interface {
 	// along with entity types, salience, mentions for each entity, and
 	// other properties.
 	AnalyzeEntities(context.Context, *AnalyzeEntitiesRequest) (*AnalyzeEntitiesResponse, error)
-	// Finds entities, similar to [AnalyzeEntities][google.cloud.language.v1.LanguageService.AnalyzeEntities] in the text and analyzes
-	// sentiment associated with each entity and its mentions.
+	// Finds entities, similar to
+	// [AnalyzeEntities][google.cloud.language.v1.LanguageService.AnalyzeEntities]
+	// in the text and analyzes sentiment associated with each entity and its
+	// mentions.
 	AnalyzeEntitySentiment(context.Context, *AnalyzeEntitySentimentRequest) (*AnalyzeEntitySentimentResponse, error)
 	// Analyzes the syntax of the text and provides sentence boundaries and
 	// tokenization along with part of speech tags, dependency trees, and other
