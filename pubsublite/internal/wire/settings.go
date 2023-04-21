@@ -29,9 +29,9 @@ const (
 	// than the gRPC limit of 4 MiB.
 	MaxPublishRequestBytes int = 3.5 * 1024 * 1024
 
-	// The minimum timeout value that can be set for publisher and subscriber
-	// settings.
-	minTimeout = 2 * time.Minute
+	// MinTimeout is the minimum timeout value that can be set for publisher and
+	// subscriber settings.
+	MinTimeout = 2 * time.Minute
 )
 
 // FrameworkType is the user-facing API for Cloud Pub/Sub Lite.
@@ -102,7 +102,7 @@ func validatePublishSettings(settings PublishSettings) error {
 	if settings.DelayThreshold <= 0 {
 		return errors.New("pubsublite: invalid publish settings. DelayThreshold duration must be > 0")
 	}
-	if settings.Timeout < minTimeout {
+	if settings.Timeout < MinTimeout {
 		return errors.New("pubsublite: invalid publish settings. Timeout duration must be >= 2 minutes")
 	}
 	if settings.CountThreshold <= 0 {
@@ -165,7 +165,7 @@ func validateReceiveSettings(settings ReceiveSettings) error {
 	if settings.MaxOutstandingBytes <= 0 {
 		return errors.New("pubsublite: invalid receive settings. MaxOutstandingBytes must be > 0")
 	}
-	if settings.Timeout < minTimeout {
+	if settings.Timeout < MinTimeout {
 		return errors.New("pubsublite: invalid receive settings. Timeout duration must be >= 2 minutes")
 	}
 	if len(settings.Partitions) > 0 {

@@ -14,6 +14,7 @@
 package pscompat
 
 import (
+	"log"
 	"time"
 
 	"cloud.google.com/go/internal/optional"
@@ -66,7 +67,7 @@ type PublishSettings struct {
 
 	// The maximum time that the client will attempt to open a publish stream
 	// to the server. If Timeout is 0, it will be treated as
-	// DefaultPublishSettings.Timeout. Otherwise must be greater than or equal to
+	// DefaultPublishSettings.Timeout, otherwise will be clamped to a minimum of
 	// 2 minutes.
 	//
 	// If your application has a low tolerance to backend unavailability, set
@@ -147,7 +148,12 @@ func (s *PublishSettings) toWireSettings() wire.PublishSettings {
 		wireSettings.ByteThreshold = s.ByteThreshold
 	}
 	if s.Timeout != 0 {
-		wireSettings.Timeout = s.Timeout
+		if s.Timeout >= wire.MinTimeout {
+			wireSettings.Timeout = s.Timeout
+		} else {
+			log.Println("WARNING: Using minimum PublishSettings.Timeout of 2 minutes. A lower value will cause an error in the future.")
+			wireSettings.Timeout = wire.MinTimeout
+		}
 	}
 	if s.BufferedByteLimit != 0 {
 		wireSettings.BufferedByteLimit = s.BufferedByteLimit
@@ -224,7 +230,7 @@ type ReceiveSettings struct {
 
 	// The maximum time that the client will attempt to open a subscribe stream
 	// to the server. If Timeout is 0, it will be treated as
-	// DefaultReceiveSettings.Timeout. Otherwise must be greater than or equal to
+	// DefaultReceiveSettings.Timeout, otherwise will be clamped to a minimum of
 	// 2 minutes.
 	//
 	// If your application has a low tolerance to backend unavailability, set
@@ -281,7 +287,12 @@ func (s *ReceiveSettings) toWireSettings() wire.ReceiveSettings {
 		wireSettings.MaxOutstandingBytes = s.MaxOutstandingBytes
 	}
 	if s.Timeout != 0 {
-		wireSettings.Timeout = s.Timeout
+		if s.Timeout >= wire.MinTimeout {
+			wireSettings.Timeout = s.Timeout
+		} else {
+			log.Println("WARNING: Using minimum ReceiveSettings.Timeout of 2 minutes. A lower value will cause an error in the future.")
+			wireSettings.Timeout = wire.MinTimeout
+		}
 	}
 	return wireSettings
 }
