@@ -24,6 +24,7 @@ import (
 	"math"
 	"net/http"
 	"net/url"
+	"time"
 
 	computepb "cloud.google.com/go/compute/apiv1/computepb"
 	gax "github.com/googleapis/gax-go/v2"
@@ -59,13 +60,43 @@ type ProjectsCallOptions struct {
 
 func defaultProjectsRESTCallOptions() *ProjectsCallOptions {
 	return &ProjectsCallOptions{
-		DisableXpnHost:            []gax.CallOption{},
-		DisableXpnResource:        []gax.CallOption{},
-		EnableXpnHost:             []gax.CallOption{},
-		EnableXpnResource:         []gax.CallOption{},
-		Get:                       []gax.CallOption{},
-		GetXpnHost:                []gax.CallOption{},
-		GetXpnResources:           []gax.CallOption{},
+		DisableXpnHost:     []gax.CallOption{},
+		DisableXpnResource: []gax.CallOption{},
+		EnableXpnHost:      []gax.CallOption{},
+		EnableXpnResource:  []gax.CallOption{},
+		Get: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
+		GetXpnHost: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
+		GetXpnResources: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
 		ListXpnHosts:              []gax.CallOption{},
 		MoveDisk:                  []gax.CallOption{},
 		MoveInstance:              []gax.CallOption{},

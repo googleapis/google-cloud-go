@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/spanner/admin/instance/apiv1",
-    "version": "1.44.0",
+    "version": "1.45.0",
     "language": "GO",
     "apis": [
       {
@@ -14,7 +14,7 @@
     {
       "regionTag": "spanner_v1_generated_InstanceAdmin_CreateInstance_sync",
       "title": "spanner CreateInstance Sample",
-      "description": "CreateInstance creates an instance and begins preparing it to begin serving. The\nreturned [long-running operation][google.longrunning.Operation]\ncan be used to track the progress of preparing the new\ninstance. The instance name is assigned by the caller. If the\nnamed instance already exists, CreateInstance returns\nALREADY_EXISTS.\n\nImmediately upon completion of this request: \n\n\tThe instance is readable via the API, with all requested attributes\n\tbut no allocated resources. Its state is CREATING.\n\nUntil completion of the returned operation: \n\n\tCancelling the operation renders the instance immediately unreadable\n\tvia the API.\n\n\tThe instance can be deleted.\n\n\tAll other attempts to modify the instance are rejected.\n\nUpon completion of the returned operation: \n\n\tBilling for all successfully-allocated resources begins (some types\n\tmay have lower than the requested levels).\n\n\tDatabases can be created in the instance.\n\n\tThe instance’s allocated resource levels are readable via the API.\n\n\tThe instance’s state becomes READY.\n\nThe returned [long-running operation][google.longrunning.Operation] will\nhave a name of the format <instance_name>/operations/<operation_id> and\ncan be used to track creation of the instance.  The\nmetadata field type is\nCreateInstanceMetadata.\nThe response field type is\nInstance, if successful.",
+      "description": "CreateInstance creates an instance and begins preparing it to begin serving. The\nreturned [long-running operation][google.longrunning.Operation]\ncan be used to track the progress of preparing the new\ninstance. The instance name is assigned by the caller. If the\nnamed instance already exists, `CreateInstance` returns\n`ALREADY_EXISTS`.\n\nImmediately upon completion of this request: \n\n* The instance is readable via the API, with all requested attributes\nbut no allocated resources. Its state is `CREATING`.\n\nUntil completion of the returned operation: \n\n* Cancelling the operation renders the instance immediately unreadable\nvia the API.\n* The instance can be deleted.\n* All other attempts to modify the instance are rejected.\n\nUpon completion of the returned operation: \n\n* Billing for all successfully-allocated resources begins (some types\nmay have lower than the requested levels).\n* Databases can be created in the instance.\n* The instance's allocated resource levels are readable via the API.\n* The instance's state becomes `READY`.\n\nThe returned [long-running operation][google.longrunning.Operation] will\nhave a name of the format `<instance_name>/operations/<operation_id>` and\ncan be used to track creation of the instance.  The\n[metadata][google.longrunning.Operation.metadata] field type is\n[CreateInstanceMetadata][google.spanner.admin.instance.v1.CreateInstanceMetadata].\nThe [response][google.longrunning.Operation.response] field type is\n[Instance][google.spanner.admin.instance.v1.Instance], if successful.",
       "file": "InstanceAdminClient/CreateInstance/main.go",
       "language": "GO",
       "clientMethod": {
@@ -52,7 +52,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 58,
           "type": "FULL"
         }
       ]
@@ -60,7 +60,7 @@
     {
       "regionTag": "spanner_v1_generated_InstanceAdmin_CreateInstanceConfig_sync",
       "title": "spanner CreateInstanceConfig Sample",
-      "description": "CreateInstanceConfig creates an instance config and begins preparing it to be used. The\nreturned [long-running operation][google.longrunning.Operation]\ncan be used to track the progress of preparing the new\ninstance config. The instance config name is assigned by the caller. If the\nnamed instance config already exists, CreateInstanceConfig returns\nALREADY_EXISTS.\n\nImmediately after the request returns: \n\n\tThe instance config is readable via the API, with all requested\n\tattributes. The instance config’s\n\treconciling\n\tfield is set to true. Its state is CREATING.\n\nWhile the operation is pending: \n\n\tCancelling the operation renders the instance config immediately\n\tunreadable via the API.\n\n\tExcept for deleting the creating resource, all other attempts to modify\n\tthe instance config are rejected.\n\nUpon completion of the returned operation: \n\n\tInstances can be created using the instance configuration.\n\n\tThe instance config’s\n\treconciling\n\tfield becomes false. Its state becomes READY.\n\nThe returned [long-running operation][google.longrunning.Operation] will\nhave a name of the format\n<instance_config_name>/operations/<operation_id> and can be used to track\ncreation of the instance config. The\nmetadata field type is\nCreateInstanceConfigMetadata.\nThe response field type is\nInstanceConfig, if\nsuccessful.\n\nAuthorization requires spanner.instanceConfigs.create permission on\nthe resource\nparent.",
+      "description": "CreateInstanceConfig creates an instance config and begins preparing it to be used. The\nreturned [long-running operation][google.longrunning.Operation]\ncan be used to track the progress of preparing the new\ninstance config. The instance config name is assigned by the caller. If the\nnamed instance config already exists, `CreateInstanceConfig` returns\n`ALREADY_EXISTS`.\n\nImmediately after the request returns: \n\n* The instance config is readable via the API, with all requested\nattributes. The instance config's\n[reconciling][google.spanner.admin.instance.v1.InstanceConfig.reconciling]\nfield is set to true. Its state is `CREATING`.\n\nWhile the operation is pending: \n\n* Cancelling the operation renders the instance config immediately\nunreadable via the API.\n* Except for deleting the creating resource, all other attempts to modify\nthe instance config are rejected.\n\nUpon completion of the returned operation: \n\n* Instances can be created using the instance configuration.\n* The instance config's\n[reconciling][google.spanner.admin.instance.v1.InstanceConfig.reconciling]\nfield becomes false. Its state becomes `READY`.\n\nThe returned [long-running operation][google.longrunning.Operation] will\nhave a name of the format\n`<instance_config_name>/operations/<operation_id>` and can be used to track\ncreation of the instance config. The\n[metadata][google.longrunning.Operation.metadata] field type is\n[CreateInstanceConfigMetadata][google.spanner.admin.instance.v1.CreateInstanceConfigMetadata].\nThe [response][google.longrunning.Operation.response] field type is\n[InstanceConfig][google.spanner.admin.instance.v1.InstanceConfig], if\nsuccessful.\n\nAuthorization requires `spanner.instanceConfigs.create` permission on\nthe resource\n[parent][google.spanner.admin.instance.v1.CreateInstanceConfigRequest.parent].",
       "file": "InstanceAdminClient/CreateInstanceConfig/main.go",
       "language": "GO",
       "clientMethod": {
@@ -98,7 +98,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 58,
           "type": "FULL"
         }
       ]
@@ -106,7 +106,7 @@
     {
       "regionTag": "spanner_v1_generated_InstanceAdmin_DeleteInstance_sync",
       "title": "spanner DeleteInstance Sample",
-      "description": "DeleteInstance deletes an instance.\n\nImmediately upon completion of the request: \n\n\tBilling ceases for all of the instance’s reserved resources.\n\nSoon afterward: \n\n\tThe instance and all of its databases immediately and\n\tirrevocably disappear from the API. All data in the databases\n\tis permanently deleted.",
+      "description": "DeleteInstance deletes an instance.\n\nImmediately upon completion of the request: \n\n* Billing ceases for all of the instance's reserved resources.\n\nSoon afterward: \n\n* The instance and *all of its databases* immediately and\nirrevocably disappear from the API. All data in the databases\nis permanently deleted.",
       "file": "InstanceAdminClient/DeleteInstance/main.go",
       "language": "GO",
       "clientMethod": {
@@ -143,7 +143,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -151,7 +151,7 @@
     {
       "regionTag": "spanner_v1_generated_InstanceAdmin_DeleteInstanceConfig_sync",
       "title": "spanner DeleteInstanceConfig Sample",
-      "description": "DeleteInstanceConfig deletes the instance config. Deletion is only allowed when no\ninstances are using the configuration. If any instances are using\nthe config, returns FAILED_PRECONDITION.\n\nOnly user managed configurations can be deleted.\n\nAuthorization requires spanner.instanceConfigs.delete permission on\nthe resource [name][google.spanner.admin.instance.v1.InstanceConfig.name (at http: //google.spanner.admin.instance.v1.InstanceConfig.name)].",
+      "description": "DeleteInstanceConfig deletes the instance config. Deletion is only allowed when no\ninstances are using the configuration. If any instances are using\nthe config, returns `FAILED_PRECONDITION`.\n\nOnly user managed configurations can be deleted.\n\nAuthorization requires `spanner.instanceConfigs.delete` permission on\nthe resource [name][google.spanner.admin.instance.v1.InstanceConfig.name].",
       "file": "InstanceAdminClient/DeleteInstanceConfig/main.go",
       "language": "GO",
       "clientMethod": {
@@ -188,7 +188,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -196,7 +196,7 @@
     {
       "regionTag": "spanner_v1_generated_InstanceAdmin_GetIamPolicy_sync",
       "title": "spanner GetIamPolicy Sample",
-      "description": "GetIamPolicy gets the access control policy for an instance resource. Returns an empty\npolicy if an instance exists but does not have a policy set.\n\nAuthorization requires spanner.instances.getIamPolicy on\nresource.",
+      "description": "GetIamPolicy gets the access control policy for an instance resource. Returns an empty\npolicy if an instance exists but does not have a policy set.\n\nAuthorization requires `spanner.instances.getIamPolicy` on\n[resource][google.iam.v1.GetIamPolicyRequest.resource].",
       "file": "InstanceAdminClient/GetIamPolicy/main.go",
       "language": "GO",
       "clientMethod": {
@@ -216,7 +216,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "iampb.Policy",
+        "resultType": "*iampb.Policy",
         "client": {
           "shortName": "InstanceAdminClient",
           "fullName": "google.spanner.admin.instance.v1.InstanceAdminClient"
@@ -262,7 +262,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "instancepb.Instance",
+        "resultType": "*instancepb.Instance",
         "client": {
           "shortName": "InstanceAdminClient",
           "fullName": "google.spanner.admin.instance.v1.InstanceAdminClient"
@@ -280,7 +280,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -308,7 +308,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "instancepb.InstanceConfig",
+        "resultType": "*instancepb.InstanceConfig",
         "client": {
           "shortName": "InstanceAdminClient",
           "fullName": "google.spanner.admin.instance.v1.InstanceAdminClient"
@@ -326,7 +326,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -334,7 +334,7 @@
     {
       "regionTag": "spanner_v1_generated_InstanceAdmin_ListInstanceConfigOperations_sync",
       "title": "spanner ListInstanceConfigOperations Sample",
-      "description": "ListInstanceConfigOperations lists the user-managed instance config [long-running\noperations][google.longrunning.Operation] in the given project. An instance\nconfig operation has a name of the form\nprojects/<project>/instanceConfigs/<instance_config>/operations/<operation>.\nThe long-running operation\nmetadata field type\nmetadata.type_url describes the type of the metadata. Operations returned\ninclude those that have completed/failed/canceled within the last 7 days,\nand pending operations. Operations returned are ordered by\noperation.metadata.value.start_time in descending order starting\nfrom the most recently started operation.",
+      "description": "ListInstanceConfigOperations lists the user-managed instance config [long-running\noperations][google.longrunning.Operation] in the given project. An instance\nconfig operation has a name of the form\n`projects/<project>/instanceConfigs/<instance_config>/operations/<operation>`.\nThe long-running operation\n[metadata][google.longrunning.Operation.metadata] field type\n`metadata.type_url` describes the type of the metadata. Operations returned\ninclude those that have completed/failed/canceled within the last 7 days,\nand pending operations. Operations returned are ordered by\n`operation.metadata.value.start_time` in descending order starting\nfrom the most recently started operation.",
       "file": "InstanceAdminClient/ListInstanceConfigOperations/main.go",
       "language": "GO",
       "clientMethod": {
@@ -372,7 +372,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 61,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -418,7 +418,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 61,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -464,7 +464,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 61,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -472,7 +472,7 @@
     {
       "regionTag": "spanner_v1_generated_InstanceAdmin_SetIamPolicy_sync",
       "title": "spanner SetIamPolicy Sample",
-      "description": "SetIamPolicy sets the access control policy on an instance resource. Replaces any\nexisting policy.\n\nAuthorization requires spanner.instances.setIamPolicy on\nresource.",
+      "description": "SetIamPolicy sets the access control policy on an instance resource. Replaces any\nexisting policy.\n\nAuthorization requires `spanner.instances.setIamPolicy` on\n[resource][google.iam.v1.SetIamPolicyRequest.resource].",
       "file": "InstanceAdminClient/SetIamPolicy/main.go",
       "language": "GO",
       "clientMethod": {
@@ -492,7 +492,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "iampb.Policy",
+        "resultType": "*iampb.Policy",
         "client": {
           "shortName": "InstanceAdminClient",
           "fullName": "google.spanner.admin.instance.v1.InstanceAdminClient"
@@ -518,7 +518,7 @@
     {
       "regionTag": "spanner_v1_generated_InstanceAdmin_TestIamPermissions_sync",
       "title": "spanner TestIamPermissions Sample",
-      "description": "TestIamPermissions returns permissions that the caller has on the specified instance resource.\n\nAttempting this RPC on a non-existent Cloud Spanner instance resource will\nresult in a NOT_FOUND error if the user has spanner.instances.list\npermission on the containing Google Cloud Project. Otherwise returns an\nempty set of permissions.",
+      "description": "TestIamPermissions returns permissions that the caller has on the specified instance resource.\n\nAttempting this RPC on a non-existent Cloud Spanner instance resource will\nresult in a NOT_FOUND error if the user has `spanner.instances.list`\npermission on the containing Google Cloud Project. Otherwise returns an\nempty set of permissions.",
       "file": "InstanceAdminClient/TestIamPermissions/main.go",
       "language": "GO",
       "clientMethod": {
@@ -538,7 +538,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "iampb.TestIamPermissionsResponse",
+        "resultType": "*iampb.TestIamPermissionsResponse",
         "client": {
           "shortName": "InstanceAdminClient",
           "fullName": "google.spanner.admin.instance.v1.InstanceAdminClient"
@@ -564,7 +564,7 @@
     {
       "regionTag": "spanner_v1_generated_InstanceAdmin_UpdateInstance_sync",
       "title": "spanner UpdateInstance Sample",
-      "description": "UpdateInstance updates an instance, and begins allocating or releasing resources\nas requested. The returned [long-running\noperation][google.longrunning.Operation] can be used to track the\nprogress of updating the instance. If the named instance does not\nexist, returns NOT_FOUND.\n\nImmediately upon completion of this request: \n\n\tFor resource types for which a decrease in the instance’s allocation\n\thas been requested, billing is based on the newly-requested level.\n\nUntil completion of the returned operation: \n\n\tCancelling the operation sets its metadata’s\n\tcancel_time,\n\tand begins restoring resources to their pre-request values. The\n\toperation is guaranteed to succeed at undoing all resource changes,\n\tafter which point it terminates with a CANCELLED status.\n\n\tAll other attempts to modify the instance are rejected.\n\n\tReading the instance via the API continues to give the pre-request\n\tresource levels.\n\nUpon completion of the returned operation: \n\n\tBilling begins for all successfully-allocated resources (some types\n\tmay have lower than the requested levels).\n\n\tAll newly-reserved resources are available for serving the instance’s\n\ttables.\n\n\tThe instance’s new resource levels are readable via the API.\n\nThe returned [long-running operation][google.longrunning.Operation] will\nhave a name of the format <instance_name>/operations/<operation_id> and\ncan be used to track the instance modification.  The\nmetadata field type is\nUpdateInstanceMetadata.\nThe response field type is\nInstance, if successful.\n\nAuthorization requires spanner.instances.update permission on\nthe resource [name][google.spanner.admin.instance.v1.Instance.name (at http: //google.spanner.admin.instance.v1.Instance.name)].",
+      "description": "UpdateInstance updates an instance, and begins allocating or releasing resources\nas requested. The returned [long-running\noperation][google.longrunning.Operation] can be used to track the\nprogress of updating the instance. If the named instance does not\nexist, returns `NOT_FOUND`.\n\nImmediately upon completion of this request: \n\n* For resource types for which a decrease in the instance's allocation\nhas been requested, billing is based on the newly-requested level.\n\nUntil completion of the returned operation: \n\n* Cancelling the operation sets its metadata's\n[cancel_time][google.spanner.admin.instance.v1.UpdateInstanceMetadata.cancel_time],\nand begins restoring resources to their pre-request values. The\noperation is guaranteed to succeed at undoing all resource changes,\nafter which point it terminates with a `CANCELLED` status.\n* All other attempts to modify the instance are rejected.\n* Reading the instance via the API continues to give the pre-request\nresource levels.\n\nUpon completion of the returned operation: \n\n* Billing begins for all successfully-allocated resources (some types\nmay have lower than the requested levels).\n* All newly-reserved resources are available for serving the instance's\ntables.\n* The instance's new resource levels are readable via the API.\n\nThe returned [long-running operation][google.longrunning.Operation] will\nhave a name of the format `<instance_name>/operations/<operation_id>` and\ncan be used to track the instance modification.  The\n[metadata][google.longrunning.Operation.metadata] field type is\n[UpdateInstanceMetadata][google.spanner.admin.instance.v1.UpdateInstanceMetadata].\nThe [response][google.longrunning.Operation.response] field type is\n[Instance][google.spanner.admin.instance.v1.Instance], if successful.\n\nAuthorization requires `spanner.instances.update` permission on\nthe resource [name][google.spanner.admin.instance.v1.Instance.name].",
       "file": "InstanceAdminClient/UpdateInstance/main.go",
       "language": "GO",
       "clientMethod": {
@@ -602,7 +602,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 58,
           "type": "FULL"
         }
       ]
@@ -610,7 +610,7 @@
     {
       "regionTag": "spanner_v1_generated_InstanceAdmin_UpdateInstanceConfig_sync",
       "title": "spanner UpdateInstanceConfig Sample",
-      "description": "UpdateInstanceConfig updates an instance config. The returned\n[long-running operation][google.longrunning.Operation] can be used to track\nthe progress of updating the instance. If the named instance config does\nnot exist, returns NOT_FOUND.\n\nOnly user managed configurations can be updated.\n\nImmediately after the request returns: \n\n\tThe instance config’s\n\treconciling\n\tfield is set to true.\n\nWhile the operation is pending: \n\n\tCancelling the operation sets its metadata’s\n\tcancel_time.\n\tThe operation is guaranteed to succeed at undoing all changes, after\n\twhich point it terminates with a CANCELLED status.\n\n\tAll other attempts to modify the instance config are rejected.\n\n\tReading the instance config via the API continues to give the\n\tpre-request values.\n\nUpon completion of the returned operation: \n\n\tCreating instances using the instance configuration uses the new\n\tvalues.\n\n\tThe instance config’s new values are readable via the API.\n\n\tThe instance config’s\n\treconciling\n\tfield becomes false.\n\nThe returned [long-running operation][google.longrunning.Operation] will\nhave a name of the format\n<instance_config_name>/operations/<operation_id> and can be used to track\nthe instance config modification.  The\nmetadata field type is\nUpdateInstanceConfigMetadata.\nThe response field type is\nInstanceConfig, if\nsuccessful.\n\nAuthorization requires spanner.instanceConfigs.update permission on\nthe resource [name][google.spanner.admin.instance.v1.InstanceConfig.name (at http: //google.spanner.admin.instance.v1.InstanceConfig.name)].",
+      "description": "UpdateInstanceConfig updates an instance config. The returned\n[long-running operation][google.longrunning.Operation] can be used to track\nthe progress of updating the instance. If the named instance config does\nnot exist, returns `NOT_FOUND`.\n\nOnly user managed configurations can be updated.\n\nImmediately after the request returns: \n\n* The instance config's\n[reconciling][google.spanner.admin.instance.v1.InstanceConfig.reconciling]\nfield is set to true.\n\nWhile the operation is pending: \n\n* Cancelling the operation sets its metadata's\n[cancel_time][google.spanner.admin.instance.v1.UpdateInstanceConfigMetadata.cancel_time].\nThe operation is guaranteed to succeed at undoing all changes, after\nwhich point it terminates with a `CANCELLED` status.\n* All other attempts to modify the instance config are rejected.\n* Reading the instance config via the API continues to give the\npre-request values.\n\nUpon completion of the returned operation: \n\n* Creating instances using the instance configuration uses the new\nvalues.\n* The instance config's new values are readable via the API.\n* The instance config's\n[reconciling][google.spanner.admin.instance.v1.InstanceConfig.reconciling]\nfield becomes false.\n\nThe returned [long-running operation][google.longrunning.Operation] will\nhave a name of the format\n`<instance_config_name>/operations/<operation_id>` and can be used to track\nthe instance config modification.  The\n[metadata][google.longrunning.Operation.metadata] field type is\n[UpdateInstanceConfigMetadata][google.spanner.admin.instance.v1.UpdateInstanceConfigMetadata].\nThe [response][google.longrunning.Operation.response] field type is\n[InstanceConfig][google.spanner.admin.instance.v1.InstanceConfig], if\nsuccessful.\n\nAuthorization requires `spanner.instanceConfigs.update` permission on\nthe resource [name][google.spanner.admin.instance.v1.InstanceConfig.name].",
       "file": "InstanceAdminClient/UpdateInstanceConfig/main.go",
       "language": "GO",
       "clientMethod": {
@@ -648,7 +648,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 58,
           "type": "FULL"
         }
       ]

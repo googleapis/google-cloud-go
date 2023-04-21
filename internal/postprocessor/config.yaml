@@ -2,6 +2,8 @@ modules:
   - accessapproval
   - accesscontextmanager
   - aiplatform
+  - advisorynotifications
+  - alloydb
   - analytics
   - apigateway
   - apigeeconnect
@@ -26,6 +28,7 @@ modules:
   - clouddms
   - cloudtasks
   - compute
+  - confidentialcomputing
   - contactcenterinsights
   - container
   - containeranalysis
@@ -103,6 +106,7 @@ modules:
   - securitycenter
   - servicecontrol
   - servicedirectory
+  - serviceusage
   - servicemanagement
   - serviceusage
   - shell
@@ -124,6 +128,7 @@ modules:
   - webrisk
   - websecurityscanner
   - workflows
+  - workstations
 
 manual-clients:
  - distribution-name: cloud.google.com/go/bigquery
@@ -251,10 +256,26 @@ service-configs:
    service-config: aiplatform_v1.yaml
  - input-directory: google/cloud/aiplatform/v1beta1
    service-config: aiplatform_v1beta1.yaml
+ - input-directory: google/cloud/advisorynotifications/v1
+   service-config: advisorynotifications_v1.yaml
+ - input-directory: google/cloud/alloydb/v1
+   service-config: alloydb_v1.yaml
+ - input-directory: google/cloud/alloydb/v1alpha
+   service-config: alloydb_v1alpha.yaml
+ - input-directory: google/cloud/alloydb/v1beta
+   service-config: alloydb_v1beta.yaml
  - input-directory: google/cloud/apigateway/v1
    service-config: apigateway_v1.yaml
  - input-directory: google/cloud/apigeeconnect/v1
    service-config: apigeeconnect_v1.yaml
+ - input-directory: google/cloud/apigeeregistry/v1
+   service-config: apigeeregistry_v1.yaml
+ - input-directory: google/cloud/asset/v1
+   service-config: cloudasset_v1.yaml
+ - input-directory: google/cloud/asset/v1p2beta1
+   service-config: cloudasset_v1p2beta1.yaml
+ - input-directory: google/cloud/asset/v1p5beta1
+   service-config: cloudasset_v1p5beta1.yaml
  - input-directory: google/cloud/assuredworkloads/v1
    service-config: assuredworkloads_v1.yaml
  - input-directory: google/cloud/assuredworkloads/v1beta1
@@ -277,6 +298,8 @@ service-configs:
    service-config: beyondcorp_v1.yaml
  - input-directory: google/cloud/beyondcorp/clientgateways/v1
    service-config: beyondcorp_v1.yaml
+ - input-directory: google/cloud/bigquery/analyticshub/v1
+   service-config: analyticshub_v1.yaml
  - input-directory: google/cloud/bigquery/connection/v1
    service-config: bigqueryconnection_v1.yaml
  - input-directory: google/cloud/bigquery/connection/v1beta1
@@ -317,6 +340,12 @@ service-configs:
    service-config: cloudchannel_v1.yaml
  - input-directory: google/cloud/clouddms/v1
    service-config: datamigration_v1.yaml
+ - input-directory: google/cloud/tasks/v2
+   service-config: cloudtasks_v2.yaml
+ - input-directory: google/cloud/tasks/v2beta2
+   service-config: cloudtasks_v2beta2.yaml
+ - input-directory: google/cloud/tasks/v2beta3
+   service-config: cloudtasks_v2beta3.yaml
  - input-directory: google/cloud/contactcenterinsights/v1
    service-config: contactcenterinsights_v1.yaml
  - input-directory: google/cloud/datacatalog/lineage/v1
@@ -351,6 +380,8 @@ service-configs:
    service-config: dialogflow_v3beta1.yaml
  - input-directory: google/cloud/dialogflow/v2
    service-config: dialogflow_v2.yaml
+ - input-directory: google/cloud/dialogflow/v2beta1
+   service-config: dialogflow_v2beta1.yaml
  - input-directory: google/cloud/discoveryengine/v1beta
    service-config: discoveryengine_v1beta.yaml
  - input-directory: google/cloud/documentai/v1
@@ -365,6 +396,8 @@ service-configs:
    service-config: essentialcontacts_v1.yaml
  - input-directory: google/cloud/eventarc/v1
    service-config: eventarc_v1.yaml
+ - input-directory: google/cloud/eventarc/publishing/v1
+   service-config: eventarcpublishing_v1.yaml
  - input-directory: google/cloud/filestore/v1
    service-config: file_v1.yaml
  - input-directory: google/cloud/functions/v1
@@ -395,6 +428,8 @@ service-configs:
    service-config: cloudiot_v1.yaml
  - input-directory: google/cloud/kms/v1
    service-config: cloudkms_v1.yaml
+ - input-directory: google/cloud/kms/inventory/v1
+   service-config: kmsinventory_v1.yaml
  - input-directory: google/cloud/language/v1
    service-config: language_v1.yaml
  - input-directory: google/cloud/language/v1beta2
@@ -415,6 +450,8 @@ service-configs:
    service-config: metastore_v1alpha.yaml
  - input-directory: google/cloud/metastore/v1beta
    service-config: metastore_v1beta.yaml
+ - input-directory: google/cloud/networkconnectivity/v1
+   service-config: networkconnectivity_v1.yaml
  - input-directory: google/cloud/networkconnectivity/v1alpha1
    service-config: networkconnectivity_v1alpha1.yaml
  - input-directory: google/cloud/networkmanagement/v1
@@ -443,6 +480,10 @@ service-configs:
    service-config: osconfig_v1alpha.yaml
  - input-directory: google/cloud/osconfig/v1beta
    service-config: osconfig_v1beta.yaml
+ - input-directory: google/cloud/oslogin/v1
+   service-config: oslogin_v1.yaml
+ - input-directory: google/cloud/oslogin/v1beta
+   service-config: oslogin_v1beta.yaml
  - input-directory: google/cloud/oslogin/common
    service-config:
  - input-directory: google/cloud/phishingprotection/v1beta1
@@ -463,6 +504,8 @@ service-configs:
    service-config: redis_v1.yaml
  - input-directory: google/cloud/redis/v1beta1
    service-config: redis_v1beta1.yaml
+ - input-directory: google/cloud/resourcemanager/v2
+   service-config: cloudresourcemanager_v2.yaml
  - input-directory: google/cloud/resourcemanager/v3
    service-config: cloudresourcemanager_v3.yaml
  - input-directory: google/cloud/resourcesettings/v1
@@ -497,6 +540,8 @@ service-configs:
    service-config: servicedirectory_v1.yaml
  - input-directory: google/cloud/servicedirectory/v1beta1
    service-config: servicedirectory_v1beta1.yaml
+ - input-directory: google/api/serviceusage/v1
+   service-config: serviceusage_v1.yaml
  - input-directory: google/cloud/shell/v1
    service-config: cloudshell_v1.yaml
  - input-directory: google/cloud/speech/v1
@@ -513,6 +558,10 @@ service-configs:
    service-config: texttospeech_v1.yaml
  - input-directory: google/cloud/tpu/v1
    service-config: tpu_v1.yaml
+ - input-directory: google/devtools/cloudtrace/v1
+   service-config: cloudtrace_v1.yaml
+ - input-directory: google/devtools/cloudtrace/v2
+   service-config: cloudtrace_v2.yaml
  - input-directory: google/cloud/video/livestream/v1
    service-config: livestream_v1.yaml
  - input-directory: google/cloud/video/transcoder/v1
@@ -559,6 +608,8 @@ service-configs:
    service-config: cloudbuild_v2.yaml
  - input-directory: google/cloud/compute/v1
    service-config: compute_v1.yaml
+ - input-directory: google/cloud/confidentialcomputing/v1alpha1
+   service-config: confidentialcomputing_v1alpha1.yaml
  - input-directory: google/devtools/containeranalysis/v1beta1
    service-config: containeranalysis_v1beta1.yaml
  - input-directory: google/firestore/admin/v1
@@ -599,95 +650,33 @@ service-configs:
    service-config: spanner.yaml
  - input-directory: google/storagetransfer/v1
    service-config: storagetransfer_v1.yaml
-   # All entries below are unmigrated clients. We need to store extra
+ - input-directory: google/cloud/workstations/v1beta
+   service-config: workstations_v1beta.yaml
+ - input-directory: google/cloud/workstations/v1
+   service-config: workstations_v1.yaml
+   # All entries below are unmigrated clients. We need to store the import-path
    # info for them since they don't have an entry in owlbot.yaml yet.
- - input-directory: google/cloud/advisorynotifications/v1
-   service-config: advisorynotifications_v1.yaml
-   import-path: cloud.google.com/go/advisorynotifications/apiv1
- - input-directory: google/cloud/alloydb/v1
-   service-config: alloydb_v1.yaml
-   import-path: cloud.google.com/go/alloydb/apiv1
- - input-directory: google/cloud/alloydb/v1alpha
-   service-config: alloydb_v1alpha.yaml
-   import-path: cloud.google.com/go/alloydb/apiv1alpha
- - input-directory: google/cloud/alloydb/v1beta
-   service-config: alloydb_v1beta.yaml
-   import-path: cloud.google.com/go/alloydb/apiv1beta
- - input-directory: google/cloud/apigeeregistry/v1
-   service-config: apigeeregistry_v1.yaml
-   import-path: cloud.google.com/go/apigeeregistry/apiv1
- - input-directory: google/cloud/asset/v1
-   service-config: cloudasset_v1.yaml
-   import-path: cloud.google.com/go/asset/apiv1
- - input-directory: google/cloud/asset/v1p2beta1
-   service-config: cloudasset_v1p2beta1.yaml
-   import-path: cloud.google.com/go/asset/apiv1p2beta1
- - input-directory: google/cloud/asset/v1p5beta1
-   service-config: cloudasset_v1p5beta1.yaml
-   import-path: cloud.google.com/go/asset/apiv1p5beta1
- - input-directory: google/cloud/bigquery/analyticshub/v1
-   service-config: analyticshub_v1.yaml
-   import-path: cloud.google.com/go/bigquery/analyticshub/apiv1
- - input-directory: google/cloud/tasks/v2
-   service-config: cloudtasks_v2.yaml
-   import-path: cloud.google.com/go/cloudtasks/apiv2
- - input-directory: google/cloud/tasks/v2beta2
-   service-config: cloudtasks_v2beta2.yaml
-   import-path: cloud.google.com/go/cloudtasks/apiv2beta2
- - input-directory: google/cloud/tasks/v2beta3
-   service-config: cloudtasks_v2beta3.yaml
-   import-path: cloud.google.com/go/cloudtasks/apiv2beta3
  - input-directory: google/devtools/containeranalysis/v1beta1/grafeas
    service-config: ../containeranalysis_v1beta1.yaml
    import-path: cloud.google.com/go/containeranalysis/apiv1beta1
  - input-directory: google/devtools/clouddebugger/v2
    service-config: clouddebugger_v2.yaml
    import-path: cloud.google.com/go/debugger/apiv2
- - input-directory: google/cloud/dialogflow/v2beta1
-   service-config: dialogflow_v2beta1.yaml
-   import-path: cloud.google.com/go/dialogflow/apiv2beta1
  - input-directory: google/devtools/clouderrorreporting/v1beta1
    service-config: clouderrorreporting_v1beta1.yaml
    import-path: cloud.google.com/go/errorreporting/apiv1beta1
- - input-directory: google/cloud/eventarc/publishing/v1
-   service-config: eventarcpublishing_v1.yaml
-   import-path: cloud.google.com/go/eventarc/publishing/apiv1
- - input-directory: google/cloud/kms/inventory/v1
-   service-config: kmsinventory_v1.yaml
-   import-path: cloud.google.com/go/kms/inventory/apiv1
  - input-directory: google/monitoring/v3
    service-config: monitoring.yaml
    import-path: cloud.google.com/go/monitoring/apiv3/v2
- - input-directory: google/cloud/networkconnectivity/v1
-   service-config: networkconnectivity_v1.yaml
-   import-path: cloud.google.com/go/networkconnectivity/apiv1
- - input-directory: google/cloud/oslogin/v1
-   service-config: oslogin_v1.yaml
-   import-path: cloud.google.com/go/oslogin/apiv1
- - input-directory: google/cloud/oslogin/v1beta
-   service-config: oslogin_v1beta.yaml
-   import-path: cloud.google.com/go/oslogin/apiv1beta
  - input-directory: google/cloud/recaptchaenterprise/v1
    service-config: recaptchaenterprise_v1.yaml
    import-path: cloud.google.com/go/recaptchaenterprise/v2/apiv1
  - input-directory: google/cloud/recaptchaenterprise/v1beta1
    service-config: recaptchaenterprise_v1beta1.yaml
    import-path: cloud.google.com/go/recaptchaenterprise/v2/apiv1beta1
- - input-directory: google/cloud/resourcemanager/v2
-   service-config: cloudresourcemanager_v2.yaml
-   import-path: cloud.google.com/go/resourcemanager/apiv2
- - input-directory: google/api/serviceusage/v1
-   service-config: serviceusage_v1.yaml
-   import-path: cloud.google.com/go/serviceusage/apiv1
  - input-directory: google/storage/v2
    service-config: storage_v2.yaml
    import-path: cloud.google.com/go/storage/internal/apiv2
- - input-directory: google/devtools/cloudtrace/v1
-   service-config: cloudtrace_v1.yaml
-   import-path: cloud.google.com/go/trace/apiv1
- - input-directory: google/devtools/cloudtrace/v2
-   service-config: cloudtrace_v2.yaml
-   import-path: cloud.google.com/go/trace/apiv2
  - input-directory: google/cloud/translate/v3
    service-config: translate_v3.yaml
    import-path: cloud.google.com/go/translate/apiv3
@@ -697,9 +686,6 @@ service-configs:
  - input-directory: google/cloud/vision/v1p1beta1
    service-config: vision_v1p1beta1.yaml
    import-path: cloud.google.com/go/vision/v2/apiv1p1beta1
- - input-directory: google/cloud/workstations/v1beta
-   service-config: workstations_v1beta.yaml
-   import-path: cloud.google.com/go/workstations/apiv1beta
  - input-directory: google/cloud/video/stitcher/v1
    service-config: videostitcher_v1.yaml
    import-path: cloud.google.com/go/video/stitcher/apiv1

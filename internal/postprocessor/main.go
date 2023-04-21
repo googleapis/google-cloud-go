@@ -20,8 +20,12 @@ import (
 	"errors"
 	"flag"
 	"fmt"
+	"go/ast"
+	"go/parser"
+	"go/token"
 	"html/template"
 	"io/fs"
+	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
@@ -73,7 +77,7 @@ func main() {
 
 	dirSlice := []string{}
 	if *directories != "" {
-		dirSlice := strings.Split(*directories, ",")
+		dirSlice = strings.Split(*directories, ",")
 		log.Println("Postprocessor running on", dirSlice)
 	} else {
 		log.Println("Postprocessor running on all modules.")
@@ -159,9 +163,6 @@ func (p *postProcessor) run(ctx context.Context) error {
 	if err := gocmd.Vet(p.googleCloudDir); err != nil {
 		return err
 	}
-	if err := p.RegenSnippets(); err != nil {
-		return err
-	}
 	if err := p.WritePRInfoToFile(prTitle, prBody); err != nil {
 		return err
 	}
@@ -197,7 +198,7 @@ func (p *postProcessor) InitializeNewModules(manifest map[string]ManifestEntry) 
 			}
 		}
 		// Check if version.go files exist for each client
-		filepath.WalkDir(modulePath, func(path string, d fs.DirEntry, err error) error {
+		err := filepath.WalkDir(modulePath, func(path string, d fs.DirEntry, err error) error {
 			if err != nil {
 				return err
 			}
@@ -218,6 +219,9 @@ func (p *postProcessor) InitializeNewModules(manifest map[string]ManifestEntry) 
 			}
 			return nil
 		})
+		if err != nil {
+			return err
+		}
 	}
 	return nil
 }
@@ -244,16 +248,17 @@ func (p *postProcessor) generateModule(modPath, importPath string) error {
 	return gocmd.ModInit(modPath, importPath)
 }
 
-func (p *postProcessor) generateVersionFile(moduleName, modulePath string) error {
+func (p *postProcessor) generateVersionFile(moduleName, path string) error {
 	// These directories are not modules on purpose, don't generate a version
 	// file for them.
-	if strings.Contains(modulePath, "debugger/apiv2") || strings.Contains(modulePath, "orgpolicy/apiv1") {
+	if strings.Contains(path, "debugger/apiv2") {
 		return nil
 	}
-	rootPackage := filepath.Dir(modulePath)
+	pathSegments := strings.Split(filepath.Dir(path), "/")
+
 	rootModInternal := fmt.Sprintf("cloud.google.com/go/%s/internal", moduleName)
 
-	f, err := os.Create(filepath.Join(modulePath, "version.go"))
+	f, err := os.Create(filepath.Join(path, "version.go"))
 	if err != nil {
 		return err
 	}
@@ -266,7 +271,7 @@ func (p *postProcessor) generateVersionFile(moduleName, modulePath string) error
 		ModuleRootInternal string
 	}{
 		Year:               time.Now().Year(),
-		Package:            rootPackage,
+		Package:            pathSegments[len(pathSegments)-1],
 		ModuleRootInternal: rootModInternal,
 	}
 	if err := t.Execute(f, versionData); err != nil {
@@ -307,24 +312,71 @@ func (p *postProcessor) getDirs() []string {
 
 func (p *postProcessor) MoveSnippets() error {
 	log.Println("moving snippets")
-	dirs := p.getDirs()
-	for _, dir := range dirs {
-
-		snpDirs, err := filepath.Glob(filepath.Join(dir, "apiv*", "internal"))
+	for _, clientRelPath := range p.config.ClientRelPaths {
+		// OwlBot dest relative paths in ClientRelPaths begin with /, so the
+		// first path segment is the second element.
+		moduleName := strings.Split(clientRelPath, "/")[1]
+		if len(p.modules) > 0 && !contains(p.modules, moduleName) {
+			continue
+		}
+		snpDir := filepath.Join(p.googleCloudDir, clientRelPath, "internal", "snippets")
+		srcInfo, err := os.Stat(snpDir)
 		if err != nil {
+			continue
+		}
+
+		toDir := filepath.Join(p.googleCloudDir, "internal", "generated", "snippets", clientRelPath)
+		log.Printf("deleting old snippets and metadata at %s", toDir)
+		if err := os.RemoveAll(toDir); err != nil {
 			return err
 		}
-		for _, snpDir := range snpDirs {
-			// TODO(chrisdsmith): Move to correct location in google-cloud-go/internal/generated/snippets
-			// instead of deleting.
-			log.Printf("deleting snippets dir: %s", snpDir)
-			err = os.RemoveAll(snpDir)
-			if err != nil {
+		log.Printf("moving new snippets and metadata from %s to %s", snpDir, toDir)
+		if err := os.Rename(snpDir, toDir); err != nil {
+			if errors.Is(err, os.ErrNotExist) {
+				// TODO(codyoss): remove this hack once it is better understood what the issue is here
+				if err := os.MkdirAll(toDir, srcInfo.Mode()); err != nil {
+					return err
+				}
+				if err := os.RemoveAll(toDir); err != nil {
+					return err
+				}
+				if err := os.Rename(snpDir, toDir); err != nil {
+					return err
+				}
+			} else {
 				return err
 			}
 		}
+		version, err := getModuleVersion(filepath.Join(p.googleCloudDir, moduleName))
+		if err != nil {
+			return err
+		}
+		metadataFiles, err := filepath.Glob(filepath.Join(toDir, "snippet_metadata.*.json"))
+		if err != nil {
+			return err
+		}
+		read, err := ioutil.ReadFile(metadataFiles[0])
+		if err != nil {
+			return err
+		}
+		log.Printf("setting $VERSION to %s in %s", version, metadataFiles[0])
+		s := strings.Replace(string(read), "$VERSION", version, 1)
+		err = ioutil.WriteFile(metadataFiles[0], []byte(s), 0)
+		if err != nil {
+			return err
+		}
 	}
 	return nil
+}
+
+func getModuleVersion(dir string) (string, error) {
+	node, err := parser.ParseFile(token.NewFileSet(), fmt.Sprintf("%s/internal/version.go", dir), nil, parser.ParseComments)
+	if err != nil {
+		return "", err
+	}
+	version := node.Scope.Objects["Version"].Decl.(*ast.ValueSpec).Values[0].(*ast.BasicLit).Value
+	version = strings.Trim(version, `"`)
+	return version, nil
 }
 
 func (p *postProcessor) TidyAffectedMods() error {
@@ -501,10 +553,10 @@ func (p *postProcessor) getScopesFromGoogleapisCommitHash(commitHash string) ([]
 		// Need import path
 		for inputDir, li := range p.config.GoogleapisToImportPath {
 			if inputDir == filepath.Dir(filePath) {
-				// trim prefix
-				scope := strings.TrimPrefix(li.ImportPath, "cloud.google.com/go/")
-				// trim version
-				scope = filepath.Dir(scope)
+				// trim service version
+				scope := filepath.Dir(li.RelPath)
+				// trim leading slash
+				scope = strings.TrimPrefix(scope, "/")
 				if _, value := scopesMap[scope]; !value {
 					scopesMap[scope] = true
 					scopes = append(scopes, scope)

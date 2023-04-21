@@ -132,10 +132,10 @@
         },
         "method": {
           "shortName": "DeleteOperation",
-          "fullName": "google.cloud.orchestration.airflow.service.v1.Environments.DeleteOperation",
+          "fullName": "google.longrunning.Operations.DeleteOperation",
           "service": {
-            "shortName": "Environments",
-            "fullName": "google.cloud.orchestration.airflow.service.v1.Environments"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -143,7 +143,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -171,7 +171,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "servicepb.Environment",
+        "resultType": "*servicepb.Environment",
         "client": {
           "shortName": "EnvironmentsClient",
           "fullName": "google.cloud.orchestration.airflow.service.v1.EnvironmentsClient"
@@ -217,17 +217,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "longrunningpb.Operation",
+        "resultType": "*longrunningpb.Operation",
         "client": {
           "shortName": "EnvironmentsClient",
           "fullName": "google.cloud.orchestration.airflow.service.v1.EnvironmentsClient"
         },
         "method": {
           "shortName": "GetOperation",
-          "fullName": "google.cloud.orchestration.airflow.service.v1.Environments.GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
           "service": {
-            "shortName": "Environments",
-            "fullName": "google.cloud.orchestration.airflow.service.v1.Environments"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -235,7 +235,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -316,10 +316,10 @@
         },
         "method": {
           "shortName": "ListOperations",
-          "fullName": "google.cloud.orchestration.airflow.service.v1.Environments.ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
           "service": {
-            "shortName": "Environments",
-            "fullName": "google.cloud.orchestration.airflow.service.v1.Environments"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -327,7 +327,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 61,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -335,7 +335,7 @@
     {
       "regionTag": "composer_v1_generated_Environments_LoadSnapshot_sync",
       "title": "composer LoadSnapshot Sample",
-      "description": "LoadSnapshot loads a snapshot of a Cloud Composer environment.\n\nAs a result of this operation, a snapshot of environment’s specified in\nLoadSnapshotRequest is loaded into the environment.",
+      "description": "LoadSnapshot loads a snapshot of a Cloud Composer environment.\n\nAs a result of this operation, a snapshot of environment's specified in\nLoadSnapshotRequest is loaded into the environment.",
       "file": "EnvironmentsClient/LoadSnapshot/main.go",
       "language": "GO",
       "clientMethod": {
@@ -381,7 +381,7 @@
     {
       "regionTag": "composer_v1_generated_Environments_SaveSnapshot_sync",
       "title": "composer SaveSnapshot Sample",
-      "description": "SaveSnapshot creates a snapshots of a Cloud Composer environment.\n\nAs a result of this operation, snapshot of environment’s state is stored\nin a location specified in the SaveSnapshotRequest.",
+      "description": "SaveSnapshot creates a snapshots of a Cloud Composer environment.\n\nAs a result of this operation, snapshot of environment's state is stored\nin a location specified in the SaveSnapshotRequest.",
       "file": "EnvironmentsClient/SaveSnapshot/main.go",
       "language": "GO",
       "clientMethod": {
@@ -499,10 +499,10 @@
         },
         "method": {
           "shortName": "DeleteOperation",
-          "fullName": "google.cloud.orchestration.airflow.service.v1.ImageVersions.DeleteOperation",
+          "fullName": "google.longrunning.Operations.DeleteOperation",
           "service": {
-            "shortName": "ImageVersions",
-            "fullName": "google.cloud.orchestration.airflow.service.v1.ImageVersions"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -510,7 +510,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -538,17 +538,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "longrunningpb.Operation",
+        "resultType": "*longrunningpb.Operation",
         "client": {
           "shortName": "ImageVersionsClient",
           "fullName": "google.cloud.orchestration.airflow.service.v1.ImageVersionsClient"
         },
         "method": {
           "shortName": "GetOperation",
-          "fullName": "google.cloud.orchestration.airflow.service.v1.ImageVersions.GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
           "service": {
-            "shortName": "ImageVersions",
-            "fullName": "google.cloud.orchestration.airflow.service.v1.ImageVersions"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -556,7 +556,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -637,10 +637,10 @@
         },
         "method": {
           "shortName": "ListOperations",
-          "fullName": "google.cloud.orchestration.airflow.service.v1.ImageVersions.ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
           "service": {
-            "shortName": "ImageVersions",
-            "fullName": "google.cloud.orchestration.airflow.service.v1.ImageVersions"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -648,7 +648,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 61,
+          "end": 60,
           "type": "FULL"
         }
       ]

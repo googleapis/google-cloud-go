@@ -574,9 +574,6 @@ func (c *ProductClient) ImportProductsOperation(name string) *ImportProductsOper
 // Operations associated with the stale
 // updates are not marked as done until
 // they are obsolete.
-//
-// This feature is only available for users who have Retail Search enabled.
-// Enable Retail Search on Cloud Console before using this feature.
 func (c *ProductClient) SetInventory(ctx context.Context, req *retailpb.SetInventoryRequest, opts ...gax.CallOption) (*SetInventoryOperation, error) {
 	return c.internalClient.SetInventory(ctx, req, opts...)
 }
@@ -587,7 +584,15 @@ func (c *ProductClient) SetInventoryOperation(name string) *SetInventoryOperatio
 	return c.internalClient.SetInventoryOperation(name)
 }
 
-// AddFulfillmentPlaces incrementally adds place IDs to
+// AddFulfillmentPlaces it is recommended to use the
+// ProductService.AddLocalInventories
+// method instead of
+// ProductService.AddFulfillmentPlaces.
+// ProductService.AddLocalInventories
+// achieves the same results but provides more fine-grained control over
+// ingesting local inventory data.
+//
+// Incrementally adds place IDs to
 // Product.fulfillment_info.place_ids.
 //
 // This process is asynchronous and does not require the
@@ -608,9 +613,6 @@ func (c *ProductClient) SetInventoryOperation(name string) *SetInventoryOperatio
 // Operations associated with the stale
 // updates will not be marked as done
 // until being obsolete.
-//
-// This feature is only available for users who have Retail Search enabled.
-// Enable Retail Search on Cloud Console before using this feature.
 func (c *ProductClient) AddFulfillmentPlaces(ctx context.Context, req *retailpb.AddFulfillmentPlacesRequest, opts ...gax.CallOption) (*AddFulfillmentPlacesOperation, error) {
 	return c.internalClient.AddFulfillmentPlaces(ctx, req, opts...)
 }
@@ -621,7 +623,15 @@ func (c *ProductClient) AddFulfillmentPlacesOperation(name string) *AddFulfillme
 	return c.internalClient.AddFulfillmentPlacesOperation(name)
 }
 
-// RemoveFulfillmentPlaces incrementally removes place IDs from a
+// RemoveFulfillmentPlaces it is recommended to use the
+// ProductService.RemoveLocalInventories
+// method instead of
+// ProductService.RemoveFulfillmentPlaces.
+// ProductService.RemoveLocalInventories
+// achieves the same results but provides more fine-grained control over
+// ingesting local inventory data.
+//
+// Incrementally removes place IDs from a
 // Product.fulfillment_info.place_ids.
 //
 // This process is asynchronous and does not require the
@@ -642,9 +652,6 @@ func (c *ProductClient) AddFulfillmentPlacesOperation(name string) *AddFulfillme
 // Operations associated with the stale
 // updates will not be marked as done
 // until being obsolete.
-//
-// This feature is only available for users who have Retail Search enabled.
-// Enable Retail Search on Cloud Console before using this feature.
 func (c *ProductClient) RemoveFulfillmentPlaces(ctx context.Context, req *retailpb.RemoveFulfillmentPlacesRequest, opts ...gax.CallOption) (*RemoveFulfillmentPlacesOperation, error) {
 	return c.internalClient.RemoveFulfillmentPlaces(ctx, req, opts...)
 }
@@ -683,9 +690,6 @@ func (c *ProductClient) RemoveFulfillmentPlacesOperation(name string) *RemoveFul
 // Operations associated with the stale
 // updates will not be marked as done
 // until being obsolete.
-//
-// This feature is only available for users who have Retail Search enabled.
-// Enable Retail Search on Cloud Console before using this feature.
 func (c *ProductClient) AddLocalInventories(ctx context.Context, req *retailpb.AddLocalInventoriesRequest, opts ...gax.CallOption) (*AddLocalInventoriesOperation, error) {
 	return c.internalClient.AddLocalInventories(ctx, req, opts...)
 }
@@ -722,9 +726,6 @@ func (c *ProductClient) AddLocalInventoriesOperation(name string) *AddLocalInven
 // Operations associated with the stale
 // updates will not be marked as done
 // until being obsolete.
-//
-// This feature is only available for users who have Retail Search enabled.
-// Enable Retail Search on Cloud Console before using this feature.
 func (c *ProductClient) RemoveLocalInventories(ctx context.Context, req *retailpb.RemoveLocalInventoriesRequest, opts ...gax.CallOption) (*RemoveLocalInventoriesOperation, error) {
 	return c.internalClient.RemoveLocalInventories(ctx, req, opts...)
 }
@@ -1599,6 +1600,9 @@ func (c *productRESTClient) DeleteProduct(ctx context.Context, req *retailpb.Del
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetForce() {
+		params.Add("force", fmt.Sprintf("%v", req.GetForce()))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 
@@ -1836,9 +1840,6 @@ func (c *productRESTClient) ImportProducts(ctx context.Context, req *retailpb.Im
 // Operations associated with the stale
 // updates are not marked as done until
 // they are obsolete.
-//
-// This feature is only available for users who have Retail Search enabled.
-// Enable Retail Search on Cloud Console before using this feature.
 func (c *productRESTClient) SetInventory(ctx context.Context, req *retailpb.SetInventoryRequest, opts ...gax.CallOption) (*SetInventoryOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -1906,7 +1907,15 @@ func (c *productRESTClient) SetInventory(ctx context.Context, req *retailpb.SetI
 	}, nil
 }
 
-// AddFulfillmentPlaces incrementally adds place IDs to
+// AddFulfillmentPlaces it is recommended to use the
+// ProductService.AddLocalInventories
+// method instead of
+// ProductService.AddFulfillmentPlaces.
+// ProductService.AddLocalInventories
+// achieves the same results but provides more fine-grained control over
+// ingesting local inventory data.
+//
+// Incrementally adds place IDs to
 // Product.fulfillment_info.place_ids.
 //
 // This process is asynchronous and does not require the
@@ -1927,9 +1936,6 @@ func (c *productRESTClient) SetInventory(ctx context.Context, req *retailpb.SetI
 // Operations associated with the stale
 // updates will not be marked as done
 // until being obsolete.
-//
-// This feature is only available for users who have Retail Search enabled.
-// Enable Retail Search on Cloud Console before using this feature.
 func (c *productRESTClient) AddFulfillmentPlaces(ctx context.Context, req *retailpb.AddFulfillmentPlacesRequest, opts ...gax.CallOption) (*AddFulfillmentPlacesOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -1997,7 +2003,15 @@ func (c *productRESTClient) AddFulfillmentPlaces(ctx context.Context, req *retai
 	}, nil
 }
 
-// RemoveFulfillmentPlaces incrementally removes place IDs from a
+// RemoveFulfillmentPlaces it is recommended to use the
+// ProductService.RemoveLocalInventories
+// method instead of
+// ProductService.RemoveFulfillmentPlaces.
+// ProductService.RemoveLocalInventories
+// achieves the same results but provides more fine-grained control over
+// ingesting local inventory data.
+//
+// Incrementally removes place IDs from a
 // Product.fulfillment_info.place_ids.
 //
 // This process is asynchronous and does not require the
@@ -2018,9 +2032,6 @@ func (c *productRESTClient) AddFulfillmentPlaces(ctx context.Context, req *retai
 // Operations associated with the stale
 // updates will not be marked as done
 // until being obsolete.
-//
-// This feature is only available for users who have Retail Search enabled.
-// Enable Retail Search on Cloud Console before using this feature.
 func (c *productRESTClient) RemoveFulfillmentPlaces(ctx context.Context, req *retailpb.RemoveFulfillmentPlacesRequest, opts ...gax.CallOption) (*RemoveFulfillmentPlacesOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -2116,9 +2127,6 @@ func (c *productRESTClient) RemoveFulfillmentPlaces(ctx context.Context, req *re
 // Operations associated with the stale
 // updates will not be marked as done
 // until being obsolete.
-//
-// This feature is only available for users who have Retail Search enabled.
-// Enable Retail Search on Cloud Console before using this feature.
 func (c *productRESTClient) AddLocalInventories(ctx context.Context, req *retailpb.AddLocalInventoriesRequest, opts ...gax.CallOption) (*AddLocalInventoriesOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -2212,9 +2220,6 @@ func (c *productRESTClient) AddLocalInventories(ctx context.Context, req *retail
 // Operations associated with the stale
 // updates will not be marked as done
 // until being obsolete.
-//
-// This feature is only available for users who have Retail Search enabled.
-// Enable Retail Search on Cloud Console before using this feature.
 func (c *productRESTClient) RemoveLocalInventories(ctx context.Context, req *retailpb.RemoveLocalInventoriesRequest, opts ...gax.CallOption) (*RemoveLocalInventoriesOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)

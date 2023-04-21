@@ -34,7 +34,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "texttospeechpb.ListVoicesResponse",
+        "resultType": "*texttospeechpb.ListVoicesResponse",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.texttospeech.v1.Client"
@@ -80,7 +80,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "texttospeechpb.SynthesizeSpeechResponse",
+        "resultType": "*texttospeechpb.SynthesizeSpeechResponse",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.texttospeech.v1.Client"

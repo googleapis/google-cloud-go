@@ -19,7 +19,6 @@ package main
 
 import (
 	"context"
-	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
@@ -43,7 +42,7 @@ type localConfig struct {
 
 func genLocal(ctx context.Context, c localConfig) error {
 	log.Println("creating temp dir")
-	tmpDir, err := ioutil.TempDir("", "update-genproto")
+	tmpDir, err := os.MkdirTemp("", "update-genproto")
 	if err != nil {
 		log.Fatal(err)
 	}

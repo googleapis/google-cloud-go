@@ -6,14 +6,22 @@ deep-remove-regex:
   - /accesscontextmanager/apiv1/
   - /aiplatform/apiv1/
   - /aiplatform/apiv1beta1/
+  - /advisorynotifications/apiv1/
+  - /alloydb/apiv1/
+  - /alloydb/apiv1alpha/
+  - /alloydb/apiv1beta/
   - /analytics/admin/apiv1alpha/
   - /apigateway/apiv1/
   - /apigeeconnect/apiv1/
+  - /apigeeregistry/apiv1/
   - /apikeys/apiv2/
   - /appengine/apiv1/
   - /area120/tables/apiv1alpha1/
   - /artifactregistry/apiv1/
   - /artifactregistry/apiv1beta2/
+  - /asset/apiv1/
+  - /asset/apiv1p2beta1/
+  - /asset/apiv1p5beta1/
   - /assuredworkloads/apiv1/
   - /assuredworkloads/apiv1beta1/
   - /automl/apiv1/
@@ -25,6 +33,7 @@ deep-remove-regex:
   - /beyondcorp/appgateways/apiv1/
   - /beyondcorp/clientconnectorservices/apiv1/
   - /beyondcorp/clientgateways/apiv1/
+  - /bigquery/analyticshub/apiv1/
   - /bigquery/connection/apiv1/
   - /bigquery/connection/apiv1beta1/
   - /bigquery/dataexchange/apiv1beta1/
@@ -47,7 +56,11 @@ deep-remove-regex:
   # - /cloudbuild/apiv1/v2/
   - /cloudbuild/apiv2/
   - /clouddms/apiv1/
+  - /cloudtasks/apiv2/
+  - /cloudtasks/apiv2beta2/
+  - /cloudtasks/apiv2beta3/
   - /compute/apiv1
+  - /confidentialcomputing/apiv1alpha1
   - /contactcenterinsights/apiv1/
   - /container/apiv1/
   - /containeranalysis/apiv1beta1/
@@ -67,6 +80,7 @@ deep-remove-regex:
   - /datastream/apiv1alpha1/
   - /deploy/apiv1/
   - /dialogflow/apiv2/
+  - /dialogflow/apiv2beta1/
   - /dialogflow/cx/apiv3/
   - /dialogflow/cx/apiv3beta1/
   - /discoveryengine/apiv1beta/
@@ -77,6 +91,7 @@ deep-remove-regex:
   - /edgecontainer/apiv1/
   - /essentialcontacts/apiv1/
   - /eventarc/apiv1/
+  - /eventarc/publishing/apiv1/
   - /filestore/apiv1/
   - /firestore/apiv1/
   # - /firestore/apiv1/admin/
@@ -97,6 +112,7 @@ deep-remove-regex:
   - /ids/apiv1/
   - /iot/apiv1/
   - /kms/apiv1/
+  - /kms/inventory/apiv1/
   - /language/apiv1/
   - /language/apiv1beta2/
   - /lifesciences/apiv2beta/
@@ -114,6 +130,7 @@ deep-remove-regex:
   - /metastore/apiv1beta/
   - /monitoring/dashboard/apiv1/
   - /monitoring/metricsscope/apiv1/
+  - /networkconnectivity/apiv1/
   - /networkconnectivity/apiv1alpha1/
   - /networkmanagement/apiv1/
   - /networksecurity/apiv1beta1/
@@ -128,6 +145,8 @@ deep-remove-regex:
   - /osconfig/apiv1/
   - /osconfig/apiv1alpha/
   - /osconfig/apiv1beta/
+  - /oslogin/apiv1/
+  - /oslogin/apiv1beta/
   - /oslogin/common/
   - /phishingprotection/apiv1beta1/
   - /policytroubleshooter/apiv1/
@@ -140,6 +159,7 @@ deep-remove-regex:
   - /recommender/apiv1beta1/
   - /redis/apiv1/
   - /redis/apiv1beta1/
+  - /resourcemanager/apiv2/
   - /resourcemanager/apiv3/
   - /resourcesettings/apiv1/
   - /retail/apiv2/
@@ -158,6 +178,7 @@ deep-remove-regex:
   - /servicecontrol/apiv1/
   - /servicedirectory/apiv1/
   - /servicedirectory/apiv1beta1/
+  - /serviceusage/apiv1/
   - /servicemanagement/apiv1/
   - /shell/apiv1/
   - /spanner/admin/database/apiv1/
@@ -171,6 +192,8 @@ deep-remove-regex:
   - /talent/apiv4beta1/
   - /texttospeech/apiv1/
   - /tpu/apiv1/
+  - /trace/apiv1/
+  - /trace/apiv2/
   - /video/livestream/apiv1/
   # - /video/stitcher/apiv1/
   - /video/transcoder/apiv1/
@@ -187,6 +210,8 @@ deep-remove-regex:
   - /workflows/apiv1beta/
   - /workflows/executions/apiv1/
   - /workflows/executions/apiv1beta/
+  - /workstations/apiv1/
+  - /workstations/apiv1beta/
 
 deep-preserve-regex:
   - /.*/info.go
@@ -196,6 +221,10 @@ deep-preserve-regex:
   - /kms/apiv1/iam.go
   - /kms/apiv1/iam_example_test.go
   - /logging/apiv2/WriteLogEntries_smoke_test.go
+  # TODO(#7336): Remove these networkconnectivity lines once breaking change is handled.
+  - /networkconnectivity/apiv1/policy_based_routing_client.go
+  - /networkconnectivity/apiv1/policy_based_routing_client_example_test.go
+  - /networkconnectivity/apiv1/networkconnectivitypb/policy_based_routing.pb.go
   - /pubsub/apiv1/iam.go
   - /pubsub/apiv1/ListTopics_smoke_test.go
   - /pubsub/apiv1/pubsub_pull_example_test.go
@@ -214,6 +243,13 @@ deep-preserve-regex:
   - /containeranalysis/apiv1beta1/grafeas/.*
   # Remove this once this is generated with owlbot
   - /firestore/apiv1/admin/.*
+  # Must preserve these even though they aren't generated anymore
+  - /vmmigration/apiv1/iam_policy_client.go
+  - /datastream/apiv1/iam_policy_client.go
+  - /batch/apiv1/iam_policy_client.go
+  - /datacatalog/apiv1/iam_policy_client.go
+  - /run/apiv2/locations_client.go
+  - /datacatalog/apiv1/iam_policy_client.go
 
 deep-copy-regex:
   - source: /google/cloud/accessapproval/v1/cloud.google.com/go/accessapproval/apiv1
@@ -224,12 +260,28 @@ deep-copy-regex:
     dest: /aiplatform/apiv1
   - source: /google/cloud/aiplatform/v1beta1/cloud.google.com/go/aiplatform/apiv1beta1
     dest: /aiplatform/apiv1beta1
+  - source: /google/cloud/advisorynotifications/v1/cloud.google.com/go/advisorynotifications/apiv1
+    dest: /advisorynotifications/apiv1
+  - source: /google/cloud/alloydb/v1/cloud.google.com/go/alloydb/apiv1
+    dest: /alloydb/apiv1
+  - source: /google/cloud/alloydb/v1alpha/cloud.google.com/go/alloydb/apiv1alpha
+    dest: /alloydb/apiv1alpha
+  - source: /google/cloud/alloydb/v1beta/cloud.google.com/go/alloydb/apiv1beta
+    dest: /alloydb/apiv1beta
   - source: /google/analytics/admin/v1alpha/cloud.google.com/go/analytics/admin/apiv1alpha
     dest: /analytics/admin/apiv1alpha
   - source: /google/cloud/apigateway/v1/cloud.google.com/go/apigateway/apiv1
     dest: /apigateway/apiv1
   - source: /google/cloud/apigeeconnect/v1/cloud.google.com/go/apigeeconnect/apiv1
     dest: /apigeeconnect/apiv1
+  - source: /google/cloud/apigeeregistry/v1/cloud.google.com/go/apigeeregistry/apiv1
+    dest: /apigeeregistry/apiv1
+  - source: /google/cloud/asset/v1/cloud.google.com/go/asset/apiv1
+    dest: /asset/apiv1
+  - source: /google/cloud/asset/v1p2beta1/cloud.google.com/go/asset/apiv1p2beta1
+    dest: /asset/apiv1p2beta1
+  - source: /google/cloud/asset/v1p5beta1/cloud.google.com/go/asset/apiv1p5beta1
+    dest: /asset/apiv1p5beta1
   - source: /google/api/apikeys/v2/cloud.google.com/go/apikeys/apiv2
     dest: /apikeys/apiv2
   - source: /google/appengine/v1/cloud.google.com/go/appengine/apiv1
@@ -262,6 +314,8 @@ deep-copy-regex:
     dest: /beyondcorp/clientconnectorservices/apiv1
   - source: /google/cloud/beyondcorp/clientgateways/v1/cloud.google.com/go/beyondcorp/clientgateways/apiv1
     dest: /beyondcorp/clientgateways/apiv1
+  - source: /google/cloud/bigquery/analyticshub/v1/cloud.google.com/go/bigquery/analyticshub/apiv1
+    dest: /bigquery/analyticshub/apiv1
   - source: /google/cloud/bigquery/connection/v1/cloud.google.com/go/bigquery/connection/apiv1
     dest: /bigquery/connection/apiv1
   - source: /google/cloud/bigquery/connection/v1beta1/cloud.google.com/go/bigquery/connection/apiv1beta1
@@ -306,8 +360,16 @@ deep-copy-regex:
     dest: /cloudbuild/apiv2
   - source: /google/cloud/clouddms/v1/cloud.google.com/go/clouddms/apiv1
     dest: /clouddms/apiv1
+  - source: /google/cloud/tasks/v2/cloud.google.com/go/cloudtasks/apiv2
+    dest: /cloudtasks/apiv2
+  - source: /google/cloud/tasks/v2beta2/cloud.google.com/go/cloudtasks/apiv2beta2
+    dest: /cloudtasks/apiv2beta2
+  - source: /google/cloud/tasks/v2beta3/cloud.google.com/go/cloudtasks/apiv2beta3
+    dest: /cloudtasks/apiv2beta3
   - source: /google/cloud/compute/v1/cloud.google.com/go/compute/apiv1
     dest: /compute/apiv1
+  - source: /google/cloud/confidentialcomputing/v1alpha1/cloud.google.com/go/confidentialcomputing/apiv1alpha1
+    dest: /confidentialcomputing/apiv1alpha1
   - source: /google/cloud/contactcenterinsights/v1/cloud.google.com/go/contactcenterinsights/apiv1
     dest: /contactcenterinsights/apiv1
   - source: /google/container/v1/cloud.google.com/go/container/apiv1
@@ -332,7 +394,7 @@ deep-copy-regex:
     dest: /datalabeling/apiv1beta1
   - source: /google/cloud/dataplex/v1/cloud.google.com/go/dataplex/apiv1
     dest: /dataplex/apiv1
-  - source: /google/cloud/dataproc/v1/cloud.google.com/go/dataproc/apiv1
+  - source: /google/cloud/dataproc/v1/cloud.google.com/go/dataproc/v2/apiv1
     dest: /dataproc/apiv1
   - source: /google/cloud/dataqna/v1alpha/cloud.google.com/go/dataqna/apiv1alpha
     dest: /dataqna/apiv1alpha
@@ -346,6 +408,8 @@ deep-copy-regex:
     dest: /deploy/apiv1
   - source: /google/cloud/dialogflow/v2/cloud.google.com/go/dialogflow/apiv2
     dest: /dialogflow/apiv2
+  - source: /google/cloud/dialogflow/v2beta1/cloud.google.com/go/dialogflow/apiv2beta1
+    dest: /dialogflow/apiv2beta1
   - source: /google/cloud/dialogflow/cx/v3/cloud.google.com/go/dialogflow/cx/apiv3
     dest: /dialogflow/cx/apiv3
   - source: /google/cloud/dialogflow/cx/v3beta1/cloud.google.com/go/dialogflow/cx/apiv3beta1
@@ -366,6 +430,8 @@ deep-copy-regex:
     dest: /essentialcontacts/apiv1
   - source: /google/cloud/eventarc/v1/cloud.google.com/go/eventarc/apiv1
     dest: /eventarc/apiv1
+  - source: /google/cloud/eventarc/publishing/v1/cloud.google.com/go/eventarc/publishing/apiv1
+    dest: /eventarc/publishing/apiv1
   - source: /google/cloud/filestore/v1/cloud.google.com/go/filestore/apiv1
     dest: /filestore/apiv1
   - source: /google/firestore/v1/cloud.google.com/go/firestore/apiv1
@@ -406,6 +472,8 @@ deep-copy-regex:
     dest: /iot/apiv1
   - source: /google/cloud/kms/v1/cloud.google.com/go/kms/apiv1
     dest: /kms/apiv1
+  - source: /google/cloud/kms/inventory/v1/cloud.google.com/go/kms/inventory/apiv1
+    dest: /kms/inventory/apiv1
   - source: /google/cloud/language/v1/cloud.google.com/go/language/apiv1
     dest: /language/apiv1
   - source: /google/cloud/language/v1beta2/cloud.google.com/go/language/apiv1beta2
@@ -418,12 +486,12 @@ deep-copy-regex:
     dest: /longrunning/autogen
   - source: /google/cloud/managedidentities/v1/cloud.google.com/go/managedidentities/apiv1
     dest: /managedidentities/apiv1
-  # - source: /google/maps/addressvalidation/v1/cloud.google.com/go/maps/addressvalidation/apiv1
-  #   dest: /maps/addressvalidation/apiv1
-  # - source: /google/maps/mapsplatformdatasets/v1alpha/cloud.google.com/go/maps/mapsplatformdatasets/apiv1alpha
-  #   dest: /maps/mapsplatformdatasets/apiv1alpha
-  # - source: /google/maps/routing/v2/cloud.google.com/go/maps/routing/apiv2
-  #   dest: /maps/routing/apiv2
+  - source: /google/maps/addressvalidation/v1/cloud.google.com/go/maps/addressvalidation/apiv1
+    dest: /maps/addressvalidation/apiv1
+  - source: /google/maps/mapsplatformdatasets/v1alpha/cloud.google.com/go/maps/mapsplatformdatasets/apiv1alpha
+    dest: /maps/mapsplatformdatasets/apiv1alpha
+  - source: /google/maps/routing/v2/cloud.google.com/go/maps/routing/apiv2
+    dest: /maps/routing/apiv2
   - source: /google/cloud/mediatranslation/v1beta1/cloud.google.com/go/mediatranslation/apiv1beta1
     dest: /mediatranslation/apiv1beta1
   - source: /google/cloud/memcache/v1/cloud.google.com/go/memcache/apiv1
@@ -440,6 +508,8 @@ deep-copy-regex:
     dest: /monitoring/dashboard/apiv1
   - source: /google/monitoring/metricsscope/v1/cloud.google.com/go/monitoring/metricsscope/apiv1
     dest: /monitoring/metricsscope/apiv1
+  - source: /google/cloud/networkconnectivity/v1/cloud.google.com/go/networkconnectivity/apiv1
+    dest: /networkconnectivity/apiv1
   - source: /google/cloud/networkconnectivity/v1alpha1/cloud.google.com/go/networkconnectivity/apiv1alpha1
     dest: /networkconnectivity/apiv1alpha1
   - source: /google/cloud/networkmanagement/v1/cloud.google.com/go/networkmanagement/apiv1
@@ -468,6 +538,10 @@ deep-copy-regex:
     dest: /osconfig/apiv1alpha
   - source: /google/cloud/osconfig/v1beta/cloud.google.com/go/osconfig/apiv1beta
     dest: /osconfig/apiv1beta
+  - source: /google/cloud/oslogin/v1/cloud.google.com/go/oslogin/apiv1
+    dest: /oslogin/apiv1
+  - source: /google/cloud/oslogin/v1beta/cloud.google.com/go/oslogin/apiv1beta
+    dest: /oslogin/apiv1beta
   - source: /google/cloud/oslogin/common/cloud.google.com/go/oslogin/common
     dest: /oslogin/common
   - source: /google/cloud/phishingprotection/v1beta1/cloud.google.com/go/phishingprotection/apiv1beta1
@@ -492,6 +566,8 @@ deep-copy-regex:
     dest: /redis/apiv1
   - source: /google/cloud/redis/v1beta1/cloud.google.com/go/redis/apiv1beta1
     dest: /redis/apiv1beta1
+  - source: /google/cloud/resourcemanager/v2/cloud.google.com/go/resourcemanager/apiv2
+    dest: /resourcemanager/apiv2
   - source: /google/cloud/resourcemanager/v3/cloud.google.com/go/resourcemanager/apiv3
     dest: /resourcemanager/apiv3
   - source: /google/cloud/resourcesettings/v1/cloud.google.com/go/resourcesettings/apiv1
@@ -528,6 +604,8 @@ deep-copy-regex:
     dest: /servicedirectory/apiv1
   - source: /google/cloud/servicedirectory/v1beta1/cloud.google.com/go/servicedirectory/apiv1beta1
     dest: /servicedirectory/apiv1beta1
+  - source: /google/api/serviceusage/v1/cloud.google.com/go/serviceusage/apiv1
+    dest: /serviceusage/apiv1
   - source: /google/api/servicemanagement/v1/cloud.google.com/go/servicemanagement/apiv1
     dest: /servicemanagement/apiv1
   - source: /google/cloud/shell/v1/cloud.google.com/go/shell/apiv1
@@ -554,6 +632,10 @@ deep-copy-regex:
     dest: /texttospeech/apiv1
   - source: /google/cloud/tpu/v1/cloud.google.com/go/tpu/apiv1
     dest: /tpu/apiv1
+  - source: /google/devtools/cloudtrace/v1/cloud.google.com/go/trace/apiv1
+    dest: /trace/apiv1
+  - source: /google/devtools/cloudtrace/v2/cloud.google.com/go/trace/apiv2
+    dest: /trace/apiv2
   - source: /google/cloud/video/livestream/v1/cloud.google.com/go/video/livestream/apiv1
     dest: /video/livestream/apiv1
   # - source: /google/cloud/video/stitcher/v1/cloud.google.com/go/video/stitcher/apiv1
@@ -586,3 +668,7 @@ deep-copy-regex:
     dest: /workflows/executions/apiv1
   - source: /google/cloud/workflows/executions/v1beta/cloud.google.com/go/workflows/executions/apiv1beta
     dest: /workflows/executions/apiv1beta
+  - source: /google/cloud/workstations/v1/cloud.google.com/go/workstations/apiv1
+    dest: /workstations/apiv1
+  - source: /google/cloud/workstations/v1beta/cloud.google.com/go/workstations/apiv1beta
+    dest: /workstations/apiv1beta
