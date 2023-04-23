@@ -708,13 +708,81 @@ func TestIntegration_ReadsAndQueries(t *testing.T) {
 		spanner.Insert("SomeStrings", []string{"i", "str"}, []interface{}{1, "abar"}),
 		spanner.Insert("SomeStrings", []string{"i", "str"}, []interface{}{2, nil}),
 		spanner.Insert("SomeStrings", []string{"i", "str"}, []interface{}{3, "bbar"}),
-
-		spanner.Insert("Updateable", []string{"id", "first", "last"}, []interface{}{0, "joe", nil}),
-		spanner.Insert("Updateable", []string{"id", "first", "last"}, []interface{}{1, "doe", "joan"}),
-		spanner.Insert("Updateable", []string{"id", "first", "last"}, []interface{}{2, "wong", "wong"}),
 	})
 	if err != nil {
 		t.Fatalf("Inserting sample data: %v", err)
+	}
+
+	// Perform INSERT DML; the results are checked later on.
+	n = 0
+	_, err = client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *spanner.ReadWriteTransaction) error {
+		for _, u := range []string{
+			`INSERT INTO Updateable (id, first, last) VALUES (0, "joe", nil)`,
+			`INSERT INTO Updateable (id, first, last) VALUES (1, "doe", "joan")`,
+			`INSERT INTO Updateable (id, first, last) VALUES (2, "wong", "wong")`,
+		} {
+			nr, err := tx.Update(ctx, spanner.NewStatement(u))
+			if err != nil {
+				return err
+			}
+			n += nr
+		}
+		return nil
+	})
+	if err != nil {
+		t.Fatalf("Inserting with DML: %v", err)
+	}
+	if n != 3 {
+		t.Errorf("Inserting with DML affected %d rows, want 3", n)
+	}
+
+	// Perform INSERT DML with statement.Params; the results are checked later on.
+	n = 0
+	_, err = client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *spanner.ReadWriteTransaction) error {
+		stmt := spanner.Statement{
+			SQL: "INSERT INTO Updateable (id, first, last) VALUES (@id, @first, @last)",
+			Params: map[string]interface{}{
+				"id":    3,
+				"first": "tom",
+				"last":  "jerry",
+			},
+		}
+		nr, err := tx.Update(ctx, stmt)
+		if err != nil {
+			return err
+		}
+		n += nr
+		return nil
+	})
+	if err != nil {
+		t.Fatalf("Inserting with DML: %v", err)
+	}
+	if n != 1 {
+		t.Errorf("Inserting with DML affected %d rows, want 1", n)
+	}
+
+	// Perform INSERT DML with statement.Params and inline parameter; the results are checked later on.
+	n = 0
+	_, err = client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *spanner.ReadWriteTransaction) error {
+		stmt := spanner.Statement{
+			SQL: `INSERT INTO Updateable (id, first, last) VALUES (@id, "jim", @last)`,
+			Params: map[string]interface{}{
+				"id":   4,
+				"last": nil,
+			},
+		}
+		nr, err := tx.Update(ctx, stmt)
+		if err != nil {
+			return err
+		}
+		n += nr
+		return nil
+	})
+	if err != nil {
+		t.Fatalf("Inserting with DML: %v", err)
+	}
+	if n != 1 {
+		t.Errorf("Inserting with DML affected %d rows, want 1", n)
 	}
 
 	// Perform UPDATE DML; the results are checked later on.
@@ -724,7 +792,7 @@ func TestIntegration_ReadsAndQueries(t *testing.T) {
 			`UPDATE Updateable SET last = "bloggs" WHERE id = 0`,
 			`UPDATE Updateable SET first = last, last = first WHERE id = 1`,
 			`UPDATE Updateable SET last = DEFAULT WHERE id = 2`,
-			`UPDATE Updateable SET first = "noname" WHERE id = 3`, // no id=3
+			`UPDATE Updateable SET first = "noname" WHERE id = 5`, // no id=5
 		} {
 			nr, err := tx.Update(ctx, spanner.NewStatement(u))
 			if err != nil {
@@ -1156,6 +1224,8 @@ func TestIntegration_ReadsAndQueries(t *testing.T) {
 				{int64(0), "joe", "bloggs"},
 				{int64(1), "joan", "doe"},
 				{int64(2), "wong", nil},
+				{int64(3), "tom", "jerry"},
+				{int64(4), "jim", nil},
 			},
 		},
 		// Regression test for aggregating no rows; it used to return an empty row.
