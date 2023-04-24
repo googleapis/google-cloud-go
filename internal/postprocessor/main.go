@@ -25,7 +25,6 @@ import (
 	"go/token"
 	"html/template"
 	"io/fs"
-	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
@@ -347,6 +346,9 @@ func (p *postProcessor) MoveSnippets() error {
 				return err
 			}
 		}
+		if strings.Contains(clientRelPath, "debugger/apiv2"){
+			continue
+		}
 		version, err := getModuleVersion(filepath.Join(p.googleCloudDir, moduleName))
 		if err != nil {
 			return err
@@ -355,13 +357,13 @@ func (p *postProcessor) MoveSnippets() error {
 		if err != nil {
 			return err
 		}
-		read, err := ioutil.ReadFile(metadataFiles[0])
+		read, err := os.ReadFile(metadataFiles[0])
 		if err != nil {
 			return err
 		}
 		log.Printf("setting $VERSION to %s in %s", version, metadataFiles[0])
 		s := strings.Replace(string(read), "$VERSION", version, 1)
-		err = ioutil.WriteFile(metadataFiles[0], []byte(s), 0)
+		err = os.WriteFile(metadataFiles[0], []byte(s), 0)
 		if err != nil {
 			return err
 		}
