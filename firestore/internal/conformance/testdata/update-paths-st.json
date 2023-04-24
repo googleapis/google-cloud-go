@@ -38,19 +38,14 @@
                   "a"
                 ]
               },
+              "updateTransforms": [
+                {
+                  "fieldPath": "b",
+                  "setToServerValue": "REQUEST_TIME"
+                }
+              ],
               "currentDocument": {
                 "exists": true
-              }
-            },
-            {
-              "transform": {
-                "document": "projects/projectID/databases/(default)/documents/C/d",
-                "fieldTransforms": [
-                  {
-                    "fieldPath": "b",
-                    "setToServerValue": "REQUEST_TIME"
-                  }
-                ]
               }
             }
           ]

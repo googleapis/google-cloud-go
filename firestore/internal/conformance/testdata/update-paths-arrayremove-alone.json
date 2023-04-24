@@ -19,27 +19,27 @@
           "database": "projects/projectID/databases/(default)",
           "writes": [
             {
-              "transform": {
-                "document": "projects/projectID/databases/(default)/documents/C/d",
-                "fieldTransforms": [
-                  {
-                    "fieldPath": "a",
-                    "removeAllFromArray": {
-                      "values": [
-                        {
-                          "integerValue": "1"
-                        },
-                        {
-                          "integerValue": "2"
-                        },
-                        {
-                          "integerValue": "3"
-                        }
-                      ]
-                    }
-                  }
-                ]
+              "update": {
+                "name": "projects/projectID/databases/(default)/documents/C/d"
               },
+              "updateTransforms": [
+                {
+                  "fieldPath": "a",
+                  "removeAllFromArray": {
+                    "values": [
+                      {
+                        "integerValue": "1"
+                      },
+                      {
+                        "integerValue": "2"
+                      },
+                      {
+                        "integerValue": "3"
+                      }
+                    ]
+                  }
+                }
+              ],
               "currentDocument": {
                 "exists": true
               }
