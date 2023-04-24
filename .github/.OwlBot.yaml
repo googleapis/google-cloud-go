@@ -53,7 +53,7 @@ deep-remove-regex:
   - /binaryauthorization/apiv1beta1/
   - /certificatemanager/apiv1/
   - /channel/apiv1/
-  - /cloudbuild/apiv1/v2/
+  # - /cloudbuild/apiv1/v2/
   - /cloudbuild/apiv2/
   - /clouddms/apiv1/
   - /cloudtasks/apiv2/
@@ -78,7 +78,7 @@ deep-remove-regex:
   - /datastore/admin/apiv1/
   - /datastream/apiv1/
   - /datastream/apiv1alpha1/
-  - /debugger/apiv2/
+  # - /debugger/apiv2/
   - /deploy/apiv1/
   - /dialogflow/apiv2/
   - /dialogflow/apiv2beta1/
@@ -90,7 +90,7 @@ deep-remove-regex:
   - /documentai/apiv1beta3/
   - /domains/apiv1beta1/
   - /edgecontainer/apiv1/
-  - /errorreporting/apiv1beta1/
+  # - /errorreporting/apiv1beta1/
   - /essentialcontacts/apiv1/
   - /eventarc/apiv1/
   - /eventarc/publishing/apiv1/
@@ -362,8 +362,8 @@ deep-copy-regex:
     dest: /certificatemanager/apiv1
   - source: /google/cloud/channel/v1/cloud.google.com/go/channel/apiv1
     dest: /channel/apiv1
-  - source: /google/devtools/cloudbuild/v1/cloud.google.com/go/cloudbuild/apiv1/v2
-    dest: /cloudbuild/apiv1/v2
+  # - source: /google/devtools/cloudbuild/v1/cloud.google.com/go/cloudbuild/apiv1/v2
+  #   dest: /cloudbuild/apiv1/v2
   - source: /google/devtools/cloudbuild/v2/cloud.google.com/go/cloudbuild/apiv2
     dest: /cloudbuild/apiv2
   - source: /google/cloud/clouddms/v1/cloud.google.com/go/clouddms/apiv1
@@ -412,8 +412,8 @@ deep-copy-regex:
     dest: /datastream/apiv1
   - source: /google/cloud/datastream/v1alpha1/cloud.google.com/go/datastream/apiv1alpha1
     dest: /datastream/apiv1alpha1
-  - source: /google/devtools/clouddebugger/v2/cloud.google.com/go/debugger/apiv2
-    dest: /debugger/apiv2
+  # - source: /google/devtools/clouddebugger/v2/cloud.google.com/go/debugger/apiv2
+  #   dest: /debugger/apiv2
   - source: /google/cloud/deploy/v1/cloud.google.com/go/deploy/apiv1
     dest: /deploy/apiv1
   - source: /google/cloud/dialogflow/v2/cloud.google.com/go/dialogflow/apiv2
@@ -436,8 +436,8 @@ deep-copy-regex:
     dest: /domains/apiv1beta1
   - source: /google/cloud/edgecontainer/v1/cloud.google.com/go/edgecontainer/apiv1
     dest: /edgecontainer/apiv1
-  - source: /google/devtools/clouderrorreporting/v1beta1/cloud.google.com/go/errorreporting/apiv1beta1
-    dest: /errorreporting/apiv1beta1
+  # - source: /google/devtools/clouderrorreporting/v1beta1/cloud.google.com/go/errorreporting/apiv1beta1
+  #   dest: /errorreporting/apiv1beta1
   - source: /google/cloud/essentialcontacts/v1/cloud.google.com/go/essentialcontacts/apiv1
     dest: /essentialcontacts/apiv1
   - source: /google/cloud/eventarc/v1/cloud.google.com/go/eventarc/apiv1

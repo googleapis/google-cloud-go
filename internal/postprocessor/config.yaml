@@ -569,8 +569,10 @@ service-configs:
     service-config: translate_v3.yaml
   - input-directory: google/devtools/clouddebugger/v2
     service-config: clouddebugger_v2.yaml
+    import-path: cloud.google.com/go/debugger/apiv2
   - input-directory: google/devtools/clouderrorreporting/v1beta1
     service-config: clouderrorreporting_v1beta1.yaml
+    import-path: cloud.google.com/go/errorreporting/apiv1beta1
   - input-directory: google/devtools/cloudtrace/v1
     service-config: cloudtrace_v1.yaml
   - input-directory: google/devtools/cloudtrace/v2
@@ -625,6 +627,7 @@ service-configs:
     service-config: artifactregistry_v1beta2.yaml
   - input-directory: google/devtools/cloudbuild/v1
     service-config: cloudbuild_v1.yaml
+    import-path: cloud.google.com/go/cloudbuild/apiv1/v2
   - input-directory: google/devtools/cloudbuild/v2
     service-config: cloudbuild_v2.yaml
   - input-directory: google/cloud/compute/v1
