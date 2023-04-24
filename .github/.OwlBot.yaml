@@ -246,6 +246,7 @@ deep-preserve-regex:
   - /spanner/admin/database/apiv1/mock_test.go
   - /spanner/admin/instance/apiv1/init.go
   - /spanner/apiv1/spanner_client_options.go
+  - /storage/internal/apiv2/metadata.go
   - /dataproc/apiv1/longrunning.go
   - /longrunning/autogen/from_conn.go
   - /containeranalysis/apiv1beta1/grafeas/.*
