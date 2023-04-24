@@ -60,7 +60,7 @@
     {
       "regionTag": "cloudresourcemanager_v3_generated_Folders_DeleteFolder_sync",
       "title": "cloudresourcemanager DeleteFolder Sample",
-      "description": "DeleteFolder requests deletion of a folder. The folder is moved into the\n[DELETE_REQUESTED][google.cloud.resourcemanager.v3.Folder.State.DELETE_REQUESTED] state\nimmediately, and is deleted approximately 30 days later. This method may\nonly be called on an empty folder, where a folder is empty if it doesn't\ncontain any folders or projects in the [ACTIVE][google.cloud.resourcemanager.v3.Folder.State.ACTIVE] state.\nIf called on a folder in [DELETE_REQUESTED][google.cloud.resourcemanager.v3.Folder.State.DELETE_REQUESTED]\nstate the operation will result in a no-op success.\nThe caller must have `resourcemanager.folders.delete` permission on the\nidentified folder.",
+      "description": "DeleteFolder requests deletion of a folder. The folder is moved into the\n[DELETE_REQUESTED][google.cloud.resourcemanager.v3.Folder.State.DELETE_REQUESTED]\nstate immediately, and is deleted approximately 30 days later. This method\nmay only be called on an empty folder, where a folder is empty if it\ndoesn't contain any folders or projects in the\n[ACTIVE][google.cloud.resourcemanager.v3.Folder.State.ACTIVE] state. If\ncalled on a folder in\n[DELETE_REQUESTED][google.cloud.resourcemanager.v3.Folder.State.DELETE_REQUESTED]\nstate the operation will result in a no-op success.\nThe caller must have `resourcemanager.folders.delete` permission on the\nidentified folder.",
       "file": "FoldersClient/DeleteFolder/main.go",
       "language": "GO",
       "clientMethod": {
@@ -196,6 +196,52 @@
       ]
     },
     {
+      "regionTag": "cloudresourcemanager_v3_generated_Folders_GetOperation_sync",
+      "title": "cloudresourcemanager GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "FoldersClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.resourcemanager.v3.FoldersClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "FoldersClient",
+          "fullName": "google.cloud.resourcemanager.v3.FoldersClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "cloudresourcemanager_v3_generated_Folders_ListFolders_sync",
       "title": "cloudresourcemanager ListFolders Sample",
       "description": "ListFolders lists the folders that are direct descendants of supplied parent resource.\n`list()` provides a strongly consistent view of the folders underneath\nthe specified parent resource.\n`list()` returns folders sorted based upon the (ascending) lexical ordering\nof their display_name.\nThe caller must have `resourcemanager.folders.list` permission on the\nidentified parent.",
@@ -244,7 +290,7 @@
     {
       "regionTag": "cloudresourcemanager_v3_generated_Folders_MoveFolder_sync",
       "title": "cloudresourcemanager MoveFolder Sample",
-      "description": "MoveFolder moves a folder under a new resource parent.\nReturns an `Operation` which can be used to track the progress of the\nfolder move workflow.\nUpon success, the `Operation.response` field will be populated with the\nmoved folder.\nUpon failure, a `FolderOperationError` categorizing the failure cause will\nbe returned - if the failure occurs synchronously then the\n`FolderOperationError` will be returned in the `Status.details` field.\nIf it occurs asynchronously, then the FolderOperation will be returned\nin the `Operation.error` field.\nIn addition, the `Operation.metadata` field will be populated with a\n`FolderOperation` message as an aid to stateless clients.\nFolder moves will be rejected if they violate either the naming, height,\nor fanout constraints described in the\n[CreateFolder][google.cloud.resourcemanager.v3.Folders.CreateFolder] documentation.\nThe caller must have `resourcemanager.folders.move` permission on the\nfolder's current and proposed new parent.",
+      "description": "MoveFolder moves a folder under a new resource parent.\nReturns an `Operation` which can be used to track the progress of the\nfolder move workflow.\nUpon success, the `Operation.response` field will be populated with the\nmoved folder.\nUpon failure, a `FolderOperationError` categorizing the failure cause will\nbe returned - if the failure occurs synchronously then the\n`FolderOperationError` will be returned in the `Status.details` field.\nIf it occurs asynchronously, then the FolderOperation will be returned\nin the `Operation.error` field.\nIn addition, the `Operation.metadata` field will be populated with a\n`FolderOperation` message as an aid to stateless clients.\nFolder moves will be rejected if they violate either the naming, height,\nor fanout constraints described in the\n[CreateFolder][google.cloud.resourcemanager.v3.Folders.CreateFolder]\ndocumentation. The caller must have `resourcemanager.folders.move`\npermission on the folder's current and proposed new parent.",
       "file": "FoldersClient/MoveFolder/main.go",
       "language": "GO",
       "clientMethod": {
@@ -428,7 +474,7 @@
     {
       "regionTag": "cloudresourcemanager_v3_generated_Folders_UndeleteFolder_sync",
       "title": "cloudresourcemanager UndeleteFolder Sample",
-      "description": "UndeleteFolder cancels the deletion request for a folder. This method may be called on a\nfolder in any state. If the folder is in the [ACTIVE][google.cloud.resourcemanager.v3.Folder.State.ACTIVE]\nstate the result will be a no-op success. In order to succeed, the folder's\nparent must be in the [ACTIVE][google.cloud.resourcemanager.v3.Folder.State.ACTIVE] state. In addition,\nreintroducing the folder into the tree must not violate folder naming,\nheight, and fanout constraints described in the\n[CreateFolder][google.cloud.resourcemanager.v3.Folders.CreateFolder] documentation.\nThe caller must have `resourcemanager.folders.undelete` permission on the\nidentified folder.",
+      "description": "UndeleteFolder cancels the deletion request for a folder. This method may be called on a\nfolder in any state. If the folder is in the\n[ACTIVE][google.cloud.resourcemanager.v3.Folder.State.ACTIVE] state the\nresult will be a no-op success. In order to succeed, the folder's parent\nmust be in the\n[ACTIVE][google.cloud.resourcemanager.v3.Folder.State.ACTIVE] state. In\naddition, reintroducing the folder into the tree must not violate folder\nnaming, height, and fanout constraints described in the\n[CreateFolder][google.cloud.resourcemanager.v3.Folders.CreateFolder]\ndocumentation. The caller must have `resourcemanager.folders.undelete`\npermission on the identified folder.",
       "file": "FoldersClient/UndeleteFolder/main.go",
       "language": "GO",
       "clientMethod": {
@@ -474,7 +520,7 @@
     {
       "regionTag": "cloudresourcemanager_v3_generated_Folders_UpdateFolder_sync",
       "title": "cloudresourcemanager UpdateFolder Sample",
-      "description": "UpdateFolder updates a folder, changing its `display_name`.\nChanges to the folder `display_name` will be rejected if they violate\neither the `display_name` formatting rules or the naming constraints\ndescribed in the [CreateFolder][google.cloud.resourcemanager.v3.Folders.CreateFolder] documentation.\n\nThe folder's `display_name` must start and end with a letter or digit,\nmay contain letters, digits, spaces, hyphens and underscores and can be\nbetween 3 and 30 characters. This is captured by the regular expression: \n`[\\p{L}\\p{N}][\\p{L}\\p{N}_- ]{1,28}[\\p{L}\\p{N}]`.\nThe caller must have `resourcemanager.folders.update` permission on the\nidentified folder.\n\nIf the update fails due to the unique name constraint then a\n`PreconditionFailure` explaining this violation will be returned\nin the Status.details field.",
+      "description": "UpdateFolder updates a folder, changing its `display_name`.\nChanges to the folder `display_name` will be rejected if they violate\neither the `display_name` formatting rules or the naming constraints\ndescribed in the\n[CreateFolder][google.cloud.resourcemanager.v3.Folders.CreateFolder]\ndocumentation.\n\nThe folder's `display_name` must start and end with a letter or digit,\nmay contain letters, digits, spaces, hyphens and underscores and can be\nbetween 3 and 30 characters. This is captured by the regular expression: \n`[\\p{L}\\p{N}][\\p{L}\\p{N}_- ]{1,28}[\\p{L}\\p{N}]`.\nThe caller must have `resourcemanager.folders.update` permission on the\nidentified folder.\n\nIf the update fails due to the unique name constraint then a\n`PreconditionFailure` explaining this violation will be returned\nin the Status.details field.",
       "file": "FoldersClient/UpdateFolder/main.go",
       "language": "GO",
       "clientMethod": {
@@ -551,6 +597,52 @@
           "service": {
             "shortName": "Organizations",
             "fullName": "google.cloud.resourcemanager.v3.Organizations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudresourcemanager_v3_generated_Organizations_GetOperation_sync",
+      "title": "cloudresourcemanager GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "OrganizationsClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.resourcemanager.v3.OrganizationsClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "OrganizationsClient",
+          "fullName": "google.cloud.resourcemanager.v3.OrganizationsClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -796,7 +888,7 @@
     {
       "regionTag": "cloudresourcemanager_v3_generated_Projects_DeleteProject_sync",
       "title": "cloudresourcemanager DeleteProject Sample",
-      "description": "DeleteProject marks the project identified by the specified\n`name` (for example, `projects/415104041262`) for deletion.\n\nThis method will only affect the project if it has a lifecycle state of\n[ACTIVE][google.cloud.resourcemanager.v3.Project.State.ACTIVE].\n\nThis method changes the Project's lifecycle state from\n[ACTIVE][google.cloud.resourcemanager.v3.Project.State.ACTIVE]\nto [DELETE_REQUESTED][google.cloud.resourcemanager.v3.Project.State.DELETE_REQUESTED].\nThe deletion starts at an unspecified time,\nat which point the Project is no longer accessible.\n\nUntil the deletion completes, you can check the lifecycle state\nchecked by retrieving the project with [GetProject]\n[google.cloud.resourcemanager.v3.Projects.GetProject],\nand the project remains visible to [ListProjects]\n[google.cloud.resourcemanager.v3.Projects.ListProjects].\nHowever, you cannot update the project.\n\nAfter the deletion completes, the project is not retrievable by\nthe  [GetProject]\n[google.cloud.resourcemanager.v3.Projects.GetProject],\n[ListProjects]\n[google.cloud.resourcemanager.v3.Projects.ListProjects], and\n[SearchProjects][google.cloud.resourcemanager.v3.Projects.SearchProjects]\nmethods.\n\nThis method behaves idempotently, such that deleting a `DELETE_REQUESTED`\nproject will not cause an error, but also won't do anything.\n\nThe caller must have `resourcemanager.projects.delete` permissions for this\nproject.",
+      "description": "DeleteProject marks the project identified by the specified\n`name` (for example, `projects/415104041262`) for deletion.\n\nThis method will only affect the project if it has a lifecycle state of\n[ACTIVE][google.cloud.resourcemanager.v3.Project.State.ACTIVE].\n\nThis method changes the Project's lifecycle state from\n[ACTIVE][google.cloud.resourcemanager.v3.Project.State.ACTIVE]\nto\n[DELETE_REQUESTED][google.cloud.resourcemanager.v3.Project.State.DELETE_REQUESTED].\nThe deletion starts at an unspecified time,\nat which point the Project is no longer accessible.\n\nUntil the deletion completes, you can check the lifecycle state\nchecked by retrieving the project with [GetProject]\n[google.cloud.resourcemanager.v3.Projects.GetProject],\nand the project remains visible to [ListProjects]\n[google.cloud.resourcemanager.v3.Projects.ListProjects].\nHowever, you cannot update the project.\n\nAfter the deletion completes, the project is not retrievable by\nthe  [GetProject]\n[google.cloud.resourcemanager.v3.Projects.GetProject],\n[ListProjects]\n[google.cloud.resourcemanager.v3.Projects.ListProjects], and\n[SearchProjects][google.cloud.resourcemanager.v3.Projects.SearchProjects]\nmethods.\n\nThis method behaves idempotently, such that deleting a `DELETE_REQUESTED`\nproject will not cause an error, but also won't do anything.\n\nThe caller must have `resourcemanager.projects.delete` permissions for this\nproject.",
       "file": "ProjectsClient/DeleteProject/main.go",
       "language": "GO",
       "clientMethod": {
@@ -842,7 +934,7 @@
     {
       "regionTag": "cloudresourcemanager_v3_generated_Projects_GetIamPolicy_sync",
       "title": "cloudresourcemanager GetIamPolicy Sample",
-      "description": "GetIamPolicy returns the IAM access control policy for the specified project.\nPermission is denied if the policy or the resource do not exist.",
+      "description": "GetIamPolicy returns the IAM access control policy for the specified project, in the\nformat `projects/{ProjectIdOrNumber}` e.g. projects/123.\nPermission is denied if the policy or the resource do not exist.",
       "file": "ProjectsClient/GetIamPolicy/main.go",
       "language": "GO",
       "clientMethod": {
@@ -873,6 +965,52 @@
           "service": {
             "shortName": "Projects",
             "fullName": "google.cloud.resourcemanager.v3.Projects"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudresourcemanager_v3_generated_Projects_GetOperation_sync",
+      "title": "cloudresourcemanager GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "ProjectsClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.resourcemanager.v3.ProjectsClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "ProjectsClient",
+          "fullName": "google.cloud.resourcemanager.v3.ProjectsClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -980,7 +1118,7 @@
     {
       "regionTag": "cloudresourcemanager_v3_generated_Projects_MoveProject_sync",
       "title": "cloudresourcemanager MoveProject Sample",
-      "description": "MoveProject move a project to another place in your resource hierarchy, under a new\nresource parent.\n\nReturns an operation which can be used to track the process of the project\nmove workflow.\nUpon success, the `Operation.response` field will be populated with the\nmoved project.\n\nThe caller must have `resourcemanager.projects.update` permission on the\nproject and have `resourcemanager.projects.move` permission on the\nproject's current and proposed new parent.",
+      "description": "MoveProject move a project to another place in your resource hierarchy, under a new\nresource parent.\n\nReturns an operation which can be used to track the process of the project\nmove workflow.\nUpon success, the `Operation.response` field will be populated with the\nmoved project.\n\nThe caller must have `resourcemanager.projects.move` permission on the\nproject, on the project's current and proposed new parent.\n\nIf project has no current parent, or it currently does not have an\nassociated organization resource, you will also need the\n`resourcemanager.projects.setIamPolicy` permission in the project.",
       "file": "ProjectsClient/MoveProject/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1072,7 +1210,7 @@
     {
       "regionTag": "cloudresourcemanager_v3_generated_Projects_SetIamPolicy_sync",
       "title": "cloudresourcemanager SetIamPolicy Sample",
-      "description": "SetIamPolicy sets the IAM access control policy for the specified project.\n\nCAUTION: This method will replace the existing policy, and cannot be used\nto append additional IAM settings.\n\nNote: Removing service accounts from policies or changing their roles can\nrender services completely inoperable. It is important to understand how\nthe service account is being used before removing or updating its roles.\n\nThe following constraints apply when using `setIamPolicy()`: \n\n+ Project does not support `allUsers` and `allAuthenticatedUsers` as\n`members` in a `Binding` of a `Policy`.\n\n+ The owner role can be granted to a `user`, `serviceAccount`, or a group\nthat is part of an organization. For example,\ngroup@myownpersonaldomain.com could be added as an owner to a project in\nthe myownpersonaldomain.com organization, but not the examplepetstore.com\norganization.\n\n+ Service accounts can be made owners of a project directly\nwithout any restrictions. However, to be added as an owner, a user must be\ninvited using the Cloud Platform console and must accept the invitation.\n\n+ A user cannot be granted the owner role using `setIamPolicy()`. The user\nmust be granted the owner role using the Cloud Platform Console and must\nexplicitly accept the invitation.\n\n+ Invitations to grant the owner role cannot be sent using\n`setIamPolicy()`;\nthey must be sent only using the Cloud Platform Console.\n\n+ Membership changes that leave the project without any owners that have\naccepted the Terms of Service (ToS) will be rejected.\n\n+ If the project is not part of an organization, there must be at least\none owner who has accepted the Terms of Service (ToS) agreement in the\npolicy. Calling `setIamPolicy()` to remove the last ToS-accepted owner\nfrom the policy will fail. This restriction also applies to legacy\nprojects that no longer have owners who have accepted the ToS. Edits to\nIAM policies will be rejected until the lack of a ToS-accepting owner is\nrectified.\n\n+ Calling this method requires enabling the App Engine Admin API.",
+      "description": "SetIamPolicy sets the IAM access control policy for the specified project, in the\nformat `projects/{ProjectIdOrNumber}` e.g. projects/123.\n\nCAUTION: This method will replace the existing policy, and cannot be used\nto append additional IAM settings.\n\nNote: Removing service accounts from policies or changing their roles can\nrender services completely inoperable. It is important to understand how\nthe service account is being used before removing or updating its roles.\n\nThe following constraints apply when using `setIamPolicy()`: \n\n+ Project does not support `allUsers` and `allAuthenticatedUsers` as\n`members` in a `Binding` of a `Policy`.\n\n+ The owner role can be granted to a `user`, `serviceAccount`, or a group\nthat is part of an organization. For example,\ngroup@myownpersonaldomain.com could be added as an owner to a project in\nthe myownpersonaldomain.com organization, but not the examplepetstore.com\norganization.\n\n+ Service accounts can be made owners of a project directly\nwithout any restrictions. However, to be added as an owner, a user must be\ninvited using the Cloud Platform console and must accept the invitation.\n\n+ A user cannot be granted the owner role using `setIamPolicy()`. The user\nmust be granted the owner role using the Cloud Platform Console and must\nexplicitly accept the invitation.\n\n+ Invitations to grant the owner role cannot be sent using\n`setIamPolicy()`;\nthey must be sent only using the Cloud Platform Console.\n\n+ If the project is not part of an organization, there must be at least\none owner who has accepted the Terms of Service (ToS) agreement in the\npolicy. Calling `setIamPolicy()` to remove the last ToS-accepted owner\nfrom the policy will fail. This restriction also applies to legacy\nprojects that no longer have owners who have accepted the ToS. Edits to\nIAM policies will be rejected until the lack of a ToS-accepting owner is\nrectified. If the project is part of an organization, you can remove all\nowners, potentially making the organization inaccessible.",
       "file": "ProjectsClient/SetIamPolicy/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1118,7 +1256,7 @@
     {
       "regionTag": "cloudresourcemanager_v3_generated_Projects_TestIamPermissions_sync",
       "title": "cloudresourcemanager TestIamPermissions Sample",
-      "description": "TestIamPermissions returns permissions that a caller has on the specified project.",
+      "description": "TestIamPermissions returns permissions that a caller has on the specified project, in the\nformat `projects/{ProjectIdOrNumber}` e.g. projects/123..",
       "file": "ProjectsClient/TestIamPermissions/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1256,7 +1394,7 @@
     {
       "regionTag": "cloudresourcemanager_v3_generated_TagBindings_CreateTagBinding_sync",
       "title": "cloudresourcemanager CreateTagBinding Sample",
-      "description": "CreateTagBinding creates a TagBinding between a TagValue and a cloud resource\n(currently project, folder, or organization).",
+      "description": "CreateTagBinding creates a TagBinding between a TagValue and a Google Cloud resource.",
       "file": "TagBindingsClient/CreateTagBinding/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1346,9 +1484,101 @@
       ]
     },
     {
+      "regionTag": "cloudresourcemanager_v3_generated_TagBindings_GetOperation_sync",
+      "title": "cloudresourcemanager GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "TagBindingsClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.resourcemanager.v3.TagBindingsClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "TagBindingsClient",
+          "fullName": "google.cloud.resourcemanager.v3.TagBindingsClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudresourcemanager_v3_generated_TagBindings_ListEffectiveTags_sync",
+      "title": "cloudresourcemanager ListEffectiveTags Sample",
+      "description": "ListEffectiveTags return a list of effective tags for the given Google Cloud resource, as\nspecified in `parent`.",
+      "file": "TagBindingsClient/ListEffectiveTags/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListEffectiveTags",
+        "fullName": "google.cloud.resourcemanager.v3.TagBindingsClient.ListEffectiveTags",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "resourcemanagerpb.ListEffectiveTagsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "EffectiveTagIterator",
+        "client": {
+          "shortName": "TagBindingsClient",
+          "fullName": "google.cloud.resourcemanager.v3.TagBindingsClient"
+        },
+        "method": {
+          "shortName": "ListEffectiveTags",
+          "fullName": "google.cloud.resourcemanager.v3.TagBindings.ListEffectiveTags",
+          "service": {
+            "shortName": "TagBindings",
+            "fullName": "google.cloud.resourcemanager.v3.TagBindings"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 60,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "cloudresourcemanager_v3_generated_TagBindings_ListTagBindings_sync",
       "title": "cloudresourcemanager ListTagBindings Sample",
-      "description": "ListTagBindings lists the TagBindings for the given cloud resource, as specified with\n`parent`.\n\nNOTE: The `parent` field is expected to be a full resource name: \nhttps: //cloud.google.com/apis/design/resource_names#full_resource_name",
+      "description": "ListTagBindings lists the TagBindings for the given Google Cloud resource, as specified\nwith `parent`.\n\nNOTE: The `parent` field is expected to be a full resource name: \nhttps: //cloud.google.com/apis/design/resource_names#full_resource_name",
       "file": "TagBindingsClient/ListTagBindings/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1392,9 +1622,193 @@
       ]
     },
     {
+      "regionTag": "cloudresourcemanager_v3_generated_TagHolds_CreateTagHold_sync",
+      "title": "cloudresourcemanager CreateTagHold Sample",
+      "description": "CreateTagHold creates a TagHold. Returns ALREADY_EXISTS if a TagHold with the same\nresource and origin exists under the same TagValue.",
+      "file": "TagHoldsClient/CreateTagHold/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateTagHold",
+        "fullName": "google.cloud.resourcemanager.v3.TagHoldsClient.CreateTagHold",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "resourcemanagerpb.CreateTagHoldRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateTagHoldOperation",
+        "client": {
+          "shortName": "TagHoldsClient",
+          "fullName": "google.cloud.resourcemanager.v3.TagHoldsClient"
+        },
+        "method": {
+          "shortName": "CreateTagHold",
+          "fullName": "google.cloud.resourcemanager.v3.TagHolds.CreateTagHold",
+          "service": {
+            "shortName": "TagHolds",
+            "fullName": "google.cloud.resourcemanager.v3.TagHolds"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudresourcemanager_v3_generated_TagHolds_DeleteTagHold_sync",
+      "title": "cloudresourcemanager DeleteTagHold Sample",
+      "description": "DeleteTagHold deletes a TagHold.",
+      "file": "TagHoldsClient/DeleteTagHold/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteTagHold",
+        "fullName": "google.cloud.resourcemanager.v3.TagHoldsClient.DeleteTagHold",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "resourcemanagerpb.DeleteTagHoldRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteTagHoldOperation",
+        "client": {
+          "shortName": "TagHoldsClient",
+          "fullName": "google.cloud.resourcemanager.v3.TagHoldsClient"
+        },
+        "method": {
+          "shortName": "DeleteTagHold",
+          "fullName": "google.cloud.resourcemanager.v3.TagHolds.DeleteTagHold",
+          "service": {
+            "shortName": "TagHolds",
+            "fullName": "google.cloud.resourcemanager.v3.TagHolds"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudresourcemanager_v3_generated_TagHolds_GetOperation_sync",
+      "title": "cloudresourcemanager GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "TagHoldsClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.resourcemanager.v3.TagHoldsClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "TagHoldsClient",
+          "fullName": "google.cloud.resourcemanager.v3.TagHoldsClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudresourcemanager_v3_generated_TagHolds_ListTagHolds_sync",
+      "title": "cloudresourcemanager ListTagHolds Sample",
+      "description": "ListTagHolds lists TagHolds under a TagValue.",
+      "file": "TagHoldsClient/ListTagHolds/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListTagHolds",
+        "fullName": "google.cloud.resourcemanager.v3.TagHoldsClient.ListTagHolds",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "resourcemanagerpb.ListTagHoldsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "TagHoldIterator",
+        "client": {
+          "shortName": "TagHoldsClient",
+          "fullName": "google.cloud.resourcemanager.v3.TagHoldsClient"
+        },
+        "method": {
+          "shortName": "ListTagHolds",
+          "fullName": "google.cloud.resourcemanager.v3.TagHolds.ListTagHolds",
+          "service": {
+            "shortName": "TagHolds",
+            "fullName": "google.cloud.resourcemanager.v3.TagHolds"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 60,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "cloudresourcemanager_v3_generated_TagKeys_CreateTagKey_sync",
       "title": "cloudresourcemanager CreateTagKey Sample",
-      "description": "CreateTagKey creates a new TagKey. If another request with the same parameters is\nsent while the original request is in process, the second request\nwill receive an error. A maximum of 300 TagKeys can exist under a parent at\nany given time.",
+      "description": "CreateTagKey creates a new TagKey. If another request with the same parameters is\nsent while the original request is in process, the second request\nwill receive an error. A maximum of 1000 TagKeys can exist under a parent\nat any given time.",
       "file": "TagKeysClient/CreateTagKey/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1517,6 +1931,98 @@
           "service": {
             "shortName": "TagKeys",
             "fullName": "google.cloud.resourcemanager.v3.TagKeys"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudresourcemanager_v3_generated_TagKeys_GetNamespacedTagKey_sync",
+      "title": "cloudresourcemanager GetNamespacedTagKey Sample",
+      "description": "GetNamespacedTagKey retrieves a TagKey by its namespaced name.\nThis method will return `PERMISSION_DENIED` if the key does not exist\nor the user does not have permission to view it.",
+      "file": "TagKeysClient/GetNamespacedTagKey/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetNamespacedTagKey",
+        "fullName": "google.cloud.resourcemanager.v3.TagKeysClient.GetNamespacedTagKey",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "resourcemanagerpb.GetNamespacedTagKeyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*resourcemanagerpb.TagKey",
+        "client": {
+          "shortName": "TagKeysClient",
+          "fullName": "google.cloud.resourcemanager.v3.TagKeysClient"
+        },
+        "method": {
+          "shortName": "GetNamespacedTagKey",
+          "fullName": "google.cloud.resourcemanager.v3.TagKeys.GetNamespacedTagKey",
+          "service": {
+            "shortName": "TagKeys",
+            "fullName": "google.cloud.resourcemanager.v3.TagKeys"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudresourcemanager_v3_generated_TagKeys_GetOperation_sync",
+      "title": "cloudresourcemanager GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "TagKeysClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.resourcemanager.v3.TagKeysClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "TagKeysClient",
+          "fullName": "google.cloud.resourcemanager.v3.TagKeysClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -1762,7 +2268,7 @@
     {
       "regionTag": "cloudresourcemanager_v3_generated_TagValues_CreateTagValue_sync",
       "title": "cloudresourcemanager CreateTagValue Sample",
-      "description": "CreateTagValue creates a TagValue as a child of the specified TagKey. If a another\nrequest with the same parameters is sent while the original request is in\nprocess the second request will receive an error. A maximum of 300\nTagValues can exist under a TagKey at any given time.",
+      "description": "CreateTagValue creates a TagValue as a child of the specified TagKey. If a another\nrequest with the same parameters is sent while the original request is in\nprocess the second request will receive an error. A maximum of 1000\nTagValues can exist under a TagKey at any given time.",
       "file": "TagValuesClient/CreateTagValue/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1898,9 +2404,101 @@
       ]
     },
     {
+      "regionTag": "cloudresourcemanager_v3_generated_TagValues_GetNamespacedTagValue_sync",
+      "title": "cloudresourcemanager GetNamespacedTagValue Sample",
+      "description": "GetNamespacedTagValue retrieves a TagValue by its namespaced name.\nThis method will return `PERMISSION_DENIED` if the value does not exist\nor the user does not have permission to view it.",
+      "file": "TagValuesClient/GetNamespacedTagValue/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetNamespacedTagValue",
+        "fullName": "google.cloud.resourcemanager.v3.TagValuesClient.GetNamespacedTagValue",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "resourcemanagerpb.GetNamespacedTagValueRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*resourcemanagerpb.TagValue",
+        "client": {
+          "shortName": "TagValuesClient",
+          "fullName": "google.cloud.resourcemanager.v3.TagValuesClient"
+        },
+        "method": {
+          "shortName": "GetNamespacedTagValue",
+          "fullName": "google.cloud.resourcemanager.v3.TagValues.GetNamespacedTagValue",
+          "service": {
+            "shortName": "TagValues",
+            "fullName": "google.cloud.resourcemanager.v3.TagValues"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudresourcemanager_v3_generated_TagValues_GetOperation_sync",
+      "title": "cloudresourcemanager GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "TagValuesClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.resourcemanager.v3.TagValuesClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "TagValuesClient",
+          "fullName": "google.cloud.resourcemanager.v3.TagValuesClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "cloudresourcemanager_v3_generated_TagValues_GetTagValue_sync",
       "title": "cloudresourcemanager GetTagValue Sample",
-      "description": "GetTagValue retrieves TagValue. If the TagValue or namespaced name does not exist, or\nif the user does not have permission to view it, this method will return\n`PERMISSION_DENIED`.",
+      "description": "GetTagValue retrieves a TagValue. This method will return `PERMISSION_DENIED` if the\nvalue does not exist or the user does not have permission to view it.",
       "file": "TagValuesClient/GetTagValue/main.go",
       "language": "GO",
       "clientMethod": {
