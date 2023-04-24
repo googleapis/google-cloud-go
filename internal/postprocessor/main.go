@@ -25,7 +25,6 @@ import (
 	"go/token"
 	"html/template"
 	"io/fs"
-	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
@@ -333,14 +332,14 @@ func (p *postProcessor) UpdateSnippetsMetadata() error {
 		if err != nil {
 			return err
 		}
-		read, err := ioutil.ReadFile(metadataFiles[0])
+		read, err := os.ReadFile(metadataFiles[0])
 		if err != nil {
 			return err
 		}
 		if strings.Contains(string(read), "$VERSION") {
 			log.Printf("setting $VERSION to %s in %s", version, metadataFiles[0])
 			s := strings.Replace(string(read), "$VERSION", version, 1)
-			err = ioutil.WriteFile(metadataFiles[0], []byte(s), 0)
+			err = os.WriteFile(metadataFiles[0], []byte(s), 0)
 			if err != nil {
 				return err
 			}
