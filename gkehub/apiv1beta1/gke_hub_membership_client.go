@@ -308,9 +308,11 @@ type internalGkeHubMembershipClient interface {
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // The GKE Hub MembershipService handles the registration of many Kubernetes
-// clusters to Google Cloud, represented with the Membership resource.
+// clusters to Google Cloud, represented with the
+// Membership resource.
 //
-// GKE Hub is currently only available in the global region.
+// GKE Hub is currently available in the global region and all regions in
+// https://cloud.google.com/compute/docs/regions-zones (at https://cloud.google.com/compute/docs/regions-zones).
 //
 // Membership management may be non-trivial: it is recommended to use one
 // of the Google-provided client libraries or tools where possible when working
@@ -523,9 +525,11 @@ type gkeHubMembershipGRPCClient struct {
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
 // The GKE Hub MembershipService handles the registration of many Kubernetes
-// clusters to Google Cloud, represented with the Membership resource.
+// clusters to Google Cloud, represented with the
+// Membership resource.
 //
-// GKE Hub is currently only available in the global region.
+// GKE Hub is currently available in the global region and all regions in
+// https://cloud.google.com/compute/docs/regions-zones (at https://cloud.google.com/compute/docs/regions-zones).
 //
 // Membership management may be non-trivial: it is recommended to use one
 // of the Google-provided client libraries or tools where possible when working
@@ -624,9 +628,11 @@ type gkeHubMembershipRESTClient struct {
 // NewGkeHubMembershipRESTClient creates a new gke hub membership service rest client.
 //
 // The GKE Hub MembershipService handles the registration of many Kubernetes
-// clusters to Google Cloud, represented with the Membership resource.
+// clusters to Google Cloud, represented with the
+// Membership resource.
 //
-// GKE Hub is currently only available in the global region.
+// GKE Hub is currently available in the global region and all regions in
+// https://cloud.google.com/compute/docs/regions-zones (at https://cloud.google.com/compute/docs/regions-zones).
 //
 // Membership management may be non-trivial: it is recommended to use one
 // of the Google-provided client libraries or tools where possible when working
@@ -1340,6 +1346,9 @@ func (c *gkeHubMembershipRESTClient) DeleteMembership(ctx context.Context, req *
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetForce() {
+		params.Add("force", fmt.Sprintf("%v", req.GetForce()))
+	}
 	if req.GetRequestId() != "" {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}

@@ -649,7 +649,7 @@ func (s *server) StreamingRead(req *spannerpb.ReadRequest, stream spannerpb.Span
 }
 
 func (s *server) resultSet(ri rowIter) (*spannerpb.ResultSet, error) {
-	rsm, err := s.buildResultSetMetadata(ri)
+	rsm, err := s.buildResultSetMetadata(ri, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -678,11 +678,10 @@ func (s *server) resultSet(ri rowIter) (*spannerpb.ResultSet, error) {
 }
 
 func (s *server) readStream(ctx context.Context, tx *transaction, send func(*spannerpb.PartialResultSet) error, ri rowIter) error {
-	rsm, err := s.buildResultSetMetadata(ri)
+	rsm, err := s.buildResultSetMetadata(ri, tx)
 	if err != nil {
 		return err
 	}
-
 	for {
 		row, err := ri.Next()
 		if err == io.EOF {
@@ -711,15 +710,23 @@ func (s *server) readStream(ctx context.Context, tx *transaction, send func(*spa
 		// ResultSetMetadata is only set for the first PartialResultSet.
 		rsm = nil
 	}
-
+	if rsm != nil {
+		// If we didn't send any partial results, send the metadata
+		// which may contain an implicitly-opened transaction id.
+		return send(&spannerpb.PartialResultSet{
+			Metadata: rsm,
+		})
+	}
 	return nil
 }
 
-func (s *server) buildResultSetMetadata(ri rowIter) (*spannerpb.ResultSetMetadata, error) {
+func (s *server) buildResultSetMetadata(ri rowIter, tx *transaction) (*spannerpb.ResultSetMetadata, error) {
 	// Build the result set metadata.
 	rsm := &spannerpb.ResultSetMetadata{
 		RowType: &spannerpb.StructType{},
-		// TODO: transaction info?
+	}
+	if tx != nil {
+		rsm.Transaction = &spannerpb.Transaction{Id: []byte(tx.id)}
 	}
 	for _, ci := range ri.Cols() {
 		st, err := spannerTypeFromType(ci.Type)
@@ -745,15 +752,14 @@ func (s *server) BeginTransaction(ctx context.Context, req *spannerpb.BeginTrans
 		return nil, status.Errorf(codes.NotFound, "unknown session %q", req.Session)
 	}
 
-	id := genRandomTransaction()
 	tx := s.db.NewTransaction()
 
 	sess.mu.Lock()
 	sess.lastUse = time.Now()
-	sess.transactions[id] = tx
+	sess.transactions[tx.id] = tx
 	sess.mu.Unlock()
 
-	tr := &spannerpb.Transaction{Id: []byte(id)}
+	tr := &spannerpb.Transaction{Id: []byte(tx.id)}
 
 	if req.GetOptions().GetReadOnly().GetReturnReadTimestamp() {
 		// Return the last commit timestamp.
