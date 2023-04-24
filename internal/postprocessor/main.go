@@ -346,7 +346,7 @@ func (p *postProcessor) MoveSnippets() error {
 				return err
 			}
 		}
-		if strings.Contains(clientRelPath, "debugger/apiv2"){
+		if strings.Contains(clientRelPath, "debugger/apiv2") {
 			continue
 		}
 		version, err := getModuleVersion(filepath.Join(p.googleCloudDir, moduleName))
