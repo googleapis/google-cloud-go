@@ -319,15 +319,15 @@ func (p *postProcessor) UpdateSnippetsMetadata() error {
 		if len(p.modules) > 0 && !contains(p.modules, moduleName) {
 			continue
 		}
-		snpDir := filepath.Join(p.googleCloudDir, "internal", "generated", "snippets", clientRelPath)
-		_, err := os.Stat(snpDir)
-		if err != nil {
+		// debugger/apiv2 is not in a module so it does not have version info to read.
+		if strings.Contains(clientRelPath, "debugger/apiv2") {
 			continue
 		}
 		version, err := getModuleVersion(filepath.Join(p.googleCloudDir, moduleName))
 		if err != nil {
 			return err
 		}
+		snpDir := filepath.Join(p.googleCloudDir, "internal", "generated", "snippets", clientRelPath)
 		metadataFiles, err := filepath.Glob(filepath.Join(snpDir, "snippet_metadata.*.json"))
 		if err != nil {
 			return err
