@@ -19,7 +19,7 @@
       "language": "GO",
       "clientMethod": {
         "shortName": "ListActiveBreakpoints",
-        "fullName": "google.devtools.clouddebugger.v2.Controller2Client.ListActiveBreakpoints",
+        "fullName": "google.devtools.debugger.v2.Controller2Client.ListActiveBreakpoints",
         "parameters": [
           {
             "type": "context.Context",
