@@ -87,6 +87,9 @@
         "compute/metadata": {
             "component": "compute/metadata"
         },
+        "confidentialcomputing": {
+            "component": "confidentialcomputing"
+        },
         "contactcenterinsights": {
             "component": "contactcenterinsights"
         },

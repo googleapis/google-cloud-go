@@ -27,6 +27,7 @@
   "cloudtasks": "1.10.0",
   "compute": "1.19.1",
   "compute/metadata": "0.2.3",
+  "confidentialcomputing": "0.0.0",
   "contactcenterinsights": "1.7.0",
   "container": "1.17.0",
   "containeranalysis": "0.9.1",
