@@ -1,5 +1,12 @@
 # Changes
 
+## [1.8.0](https://github.com/googleapis/google-cloud-go/compare/resourcemanager/v1.7.0...resourcemanager/v1.8.0) (2023-04-25)
+
+
+### Features
+
+* **resourcemanager:** Add TagHolds, GetNamespacedTagKey, and GetNamespacedTagValue APIs. Adds support for project parented tags ([#7796](https://github.com/googleapis/google-cloud-go/issues/7796)) ([52471c8](https://github.com/googleapis/google-cloud-go/commit/52471c84101ef5f6b528fdb206a5659a07014bfd))
+
 ## [1.7.0](https://github.com/googleapis/google-cloud-go/compare/resourcemanager/v1.6.0...resourcemanager/v1.7.0) (2023-04-04)
 
 
