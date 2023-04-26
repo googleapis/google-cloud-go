@@ -2251,41 +2251,53 @@ func TestIntegration_WriterContentType(t *testing.T) {
 }
 
 func TestIntegration_WriterChunksize(t *testing.T) {
-	ctx := skipJSONReads(skipGRPC("https://github.com/googleapis/google-cloud-go/issues/7798"), "no reads in test")
+	ctx := skipJSONReads(skipGRPC("https://github.com/googleapis/google-cloud-go/issues/7839"), "no reads in test")
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, bucket, _ string, client *Client) {
 		obj := client.Bucket(bucket).Object("writer-chunksize-test" + uidSpaceObjects.New())
-		objSize := 17 << 10 << 10 // 17 Mib
+		objSize := 1<<10<<10 + 1 // 1 Mib + 1 byte
 		contents := bytes.Repeat([]byte("a"), objSize)
 
 		for _, test := range []struct {
 			desc             string
 			chunksize        int
 			wantBytesPerCall int64
+			wantCallbacks    int
 		}{
 			{
 				desc:             "default chunksize",
 				chunksize:        16 << 10 << 10,
 				wantBytesPerCall: 16 << 10 << 10,
+				wantCallbacks:    0,
 			},
 			{
 				desc:             "small chunksize rounds up to 256kib",
 				chunksize:        1,
 				wantBytesPerCall: 256 << 10,
+				wantCallbacks:    int(math.Ceil(float64(objSize) / (256 << 10))),
+			},
+			{
+				desc:             "chunksize of 256kib",
+				chunksize:        256 << 10,
+				wantBytesPerCall: 256 << 10,
+				wantCallbacks:    int(math.Ceil(float64(objSize) / (256 << 10))),
 			},
 			{
 				desc:             "chunksize of just over 256kib rounds up",
 				chunksize:        256<<10 + 1,
 				wantBytesPerCall: 256 * 2 << 10,
+				wantCallbacks:    int(math.Ceil(float64(objSize) / (256 * 2 << 10))),
 			},
 			{
 				desc:             "multiple of 256kib",
-				chunksize:        256 * 5 << 10,
-				wantBytesPerCall: 256 * 5 << 10,
+				chunksize:        256 * 3 << 10,
+				wantBytesPerCall: 256 * 3 << 10,
+				wantCallbacks:    int(math.Ceil(float64(objSize) / (256 * 3 << 10))),
 			},
 			{
 				desc:             "chunksize 0 uploads everything",
 				chunksize:        0,
 				wantBytesPerCall: int64(objSize),
+				wantCallbacks:    0,
 			},
 		} {
 			t.Run(test.desc, func(t *testing.T) {
@@ -2295,6 +2307,7 @@ func TestIntegration_WriterChunksize(t *testing.T) {
 				w.ChunkSize = test.chunksize
 
 				bytesWrittenSoFar := int64(0)
+				callbacks := 0
 
 				w.ProgressFunc = func(i int64) {
 					bytesWrittenByCall := i - bytesWrittenSoFar
@@ -2305,6 +2318,7 @@ func TestIntegration_WriterChunksize(t *testing.T) {
 					}
 
 					bytesWrittenSoFar = i
+					callbacks++
 				}
 
 				if _, err := w.Write(contents); err != nil {
@@ -2313,6 +2327,10 @@ func TestIntegration_WriterChunksize(t *testing.T) {
 				}
 				if err := w.Close(); err != nil {
 					t.Fatalf("writer.Close: %v", err)
+				}
+
+				if callbacks != test.wantCallbacks {
+					t.Errorf("ProgressFunc was called %d times, expected %d", callbacks, test.wantCallbacks)
 				}
 			})
 		}
