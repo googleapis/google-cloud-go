@@ -1,5 +1,18 @@
 # Changes
 
+## [1.17.0](https://github.com/googleapis/google-cloud-go/compare/container/v1.16.0...container/v1.17.0) (2023-04-25)
+
+
+### Features
+
+* **container:** Add support for updating additional pod IPv4 ranges for Standard and Autopilot clusters ([87a67b4](https://github.com/googleapis/google-cloud-go/commit/87a67b44b2c7ffc3cea986b255614ea0d21aa6fc))
+
+
+### Documentation
+
+* **container:** Minor formatting in docstring ([#7814](https://github.com/googleapis/google-cloud-go/issues/7814)) ([4900851](https://github.com/googleapis/google-cloud-go/commit/49008518e168fe6f7891b907d6fc14eecdef758c))
+* **container:** Operation.Type is now documented in detail ([#7811](https://github.com/googleapis/google-cloud-go/issues/7811)) ([87eaf38](https://github.com/googleapis/google-cloud-go/commit/87eaf383fab91f5e1dcbaa037bff36d3044d06db))
+
 ## [1.16.0](https://github.com/googleapis/google-cloud-go/compare/container/v1.15.0...container/v1.16.0) (2023-04-11)
 
 
