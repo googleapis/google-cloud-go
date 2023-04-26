@@ -17,7 +17,6 @@ package main
 import (
 	"context"
 	"log"
-	"net"
 	"net/http"
 	"os"
 	"sync"
@@ -78,55 +77,61 @@ func (p *clientPool) Get() *storage.Client {
 	return client
 }
 
-var httpClients, gRPCClients, nonBenchmarkingClients *clientPool
+var xmlClients, jsonClients, gRPCClients, nonBenchmarkingClients *clientPool
 
-// initializeClientPools creates separate client pools for HTTP and gRPC, and only
-// creates those if required. For example, if the input parameter `api` is set to
-// `JSON`, the HTTP client pool is initialized but not the GRPC pool.
+// initializeClientPools creates separate client pools for XML, JSON, and gRPC,
+// and only creates those if required. For example, if the input parameter `api`
+// is set to `JSON`, the JSON pool is initialized but not the XML or GRPC pools.
 func initializeClientPools(ctx context.Context, opts *benchmarkOptions) func() {
-	var closeNonBenchmarking, closeHTTP, closeGRPC func()
+	var closeNonBenchmarking, closeXML, closeJSON, closeGRPC func()
 
 	nonBenchmarkingClients, closeNonBenchmarking = newClientPool(
 		func() (*storage.Client, error) {
-			return initializeHTTPClient(ctx, clientParams{customClient: false})
-
+			return initializeHTTPClient(ctx, useDefault, useDefault, false)
 		},
 		1,
 	)
 
-	if opts.api == mixedAPIs || opts.api == jsonAPI || opts.api == xmlAPI {
-		httpClients, closeHTTP = newClientPool(
+	// Init XML clients if necessary
+	if opts.api == mixedAPIs || opts.api == xmlAPI {
+		xmlClients, closeXML = newClientPool(
 			func() (*storage.Client, error) {
-				return initializeHTTPClient(ctx, clientParams{
-					customClient:    opts.allowCustomClient,
-					writeBufferSize: opts.writeBufferSize,
-					readBufferSize:  opts.readBufferSize,
-				})
-
+				return initializeHTTPClient(ctx, opts.writeBufferSize, opts.readBufferSize, false)
 			},
 			opts.numClients,
 		)
 	}
 
+	// Init JSON clients if necessary
+	// There is no XML implementation for uploads, so we also initialize JSON
+	// clients if given that value.
+	if opts.api == mixedAPIs || opts.api == jsonAPI || opts.api == xmlAPI {
+		jsonClients, closeJSON = newClientPool(
+			func() (*storage.Client, error) {
+				return initializeHTTPClient(ctx, opts.writeBufferSize, opts.readBufferSize, true)
+			},
+			opts.numClients,
+		)
+	}
+
+	// Init GRPC clients if necessary
 	if opts.api == mixedAPIs || opts.api == grpcAPI || opts.api == directPath {
 		gRPCClients, closeGRPC = newClientPool(
 			func() (*storage.Client, error) {
-				return initializeGRPCClient(context.Background(), clientParams{
-					customClient:       opts.allowCustomClient,
-					writeBufferSize:    opts.writeBufferSize,
-					readBufferSize:     opts.readBufferSize,
-					connectionPoolSize: opts.connPoolSize,
-				})
+				return initializeGRPCClient(context.Background(), opts.writeBufferSize, opts.readBufferSize, opts.connPoolSize)
 			},
 			opts.numClients,
 		)
-
 	}
+
 	return func() {
 		closeNonBenchmarking()
 
-		if closeHTTP != nil {
-			closeHTTP()
+		if closeXML != nil {
+			closeXML()
+		}
+		if closeJSON != nil {
+			closeJSON()
 		}
 		if closeGRPC != nil {
 			closeGRPC()
@@ -136,83 +141,71 @@ func initializeClientPools(ctx context.Context, opts *benchmarkOptions) func() {
 
 // Rotate through clients. This may mean certain clients get a larger workload
 // than others, if object sizes vary.
-func getClient(ctx context.Context, br benchmarkResult) *storage.Client {
-	if br.params.api == grpcAPI || br.params.api == directPath {
+func getClient(ctx context.Context, api benchmarkAPI) *storage.Client {
+	switch api {
+	case grpcAPI, directPath:
 		return gRPCClients.Get()
+	case jsonAPI:
+		return jsonClients.Get()
+	case xmlAPI:
+		return xmlClients.Get()
 	}
-	return httpClients.Get()
+	return nil
 }
 
 // mutex on starting a client so that we can set an env variable for GRPC clients
 var clientMu sync.Mutex
 
-type clientParams struct {
-	customClient                    bool // if false, all other params are ignored
-	writeBufferSize, readBufferSize int
-	connectionPoolSize              int
-}
+func initializeHTTPClient(ctx context.Context, writeBufferSize, readBufferSize int, json bool) (*storage.Client, error) {
+	opts := []option.ClientOption{}
 
-func initializeHTTPClient(ctx context.Context, p clientParams) (*storage.Client, error) {
-	if !p.customClient {
-		clientMu.Lock()
-		c, err := storage.NewClient(ctx)
-		clientMu.Unlock()
-		return c, err
+	if writeBufferSize != useDefault || readBufferSize != useDefault {
+		// We need to modify the underlying HTTP client
+
+		base := http.DefaultTransport.(*http.Transport).Clone()
+		base.MaxIdleConnsPerHost = 100 // this is set in Storage as well
+		base.WriteBufferSize = writeBufferSize
+		base.ReadBufferSize = readBufferSize
+
+		http2Trans, err := http2.ConfigureTransports(base)
+		if err == nil {
+			http2Trans.ReadIdleTimeout = time.Second * 31
+		}
+
+		trans, err := htransport.NewTransport(ctx, base,
+			option.WithScopes("https://www.googleapis.com/auth/devstorage.full_control"))
+		if err != nil {
+			return nil, err
+		}
+
+		opts = append(opts, option.WithHTTPClient(&http.Client{Transport: trans}))
 	}
 
-	dialer := &net.Dialer{
-		Timeout:   30 * time.Second,
-		KeepAlive: 30 * time.Second,
+	if json {
+		opts = append(opts, storage.WithJSONReads())
 	}
 
-	// These are the default parameters with write and read buffer sizes modified
-	base := &http.Transport{
-		Proxy:                 http.ProxyFromEnvironment,
-		DialContext:           dialer.DialContext,
-		ForceAttemptHTTP2:     true,
-		MaxIdleConns:          100,
-		MaxIdleConnsPerHost:   100,
-		IdleConnTimeout:       90 * time.Second,
-		TLSHandshakeTimeout:   10 * time.Second,
-		ExpectContinueTimeout: 1 * time.Second,
-		WriteBufferSize:       p.writeBufferSize,
-		ReadBufferSize:        p.readBufferSize,
-	}
-
-	http2Trans, err := http2.ConfigureTransports(base)
-	if err == nil {
-		http2Trans.ReadIdleTimeout = time.Second * 31
-	}
-
-	trans, err := htransport.NewTransport(ctx, base,
-		option.WithScopes("https://www.googleapis.com/auth/devstorage.full_control"))
-	if err != nil {
-		return nil, err
-	}
-
+	// Init client
 	clientMu.Lock()
-	client, err := storage.NewClient(ctx, option.WithHTTPClient(&http.Client{Transport: trans}))
+	client, err := storage.NewClient(ctx, opts...)
 	clientMu.Unlock()
 
 	return client, err
 }
 
-func initializeGRPCClient(ctx context.Context, p clientParams) (*storage.Client, error) {
-	if !p.customClient {
-		clientMu.Lock()
-		os.Setenv("STORAGE_USE_GRPC", "true")
-		c, err := storage.NewClient(ctx)
-		os.Unsetenv("STORAGE_USE_GRPC")
-		clientMu.Unlock()
-		return c, err
+func initializeGRPCClient(ctx context.Context, writeBufferSize, readBufferSize int, connectionPoolSize int) (*storage.Client, error) {
+	opts := []option.ClientOption{option.WithGRPCConnectionPool(connectionPoolSize)}
+
+	if writeBufferSize != useDefault {
+		opts = append(opts, option.WithGRPCDialOption(grpc.WithWriteBufferSize(writeBufferSize)))
+	}
+	if readBufferSize != useDefault {
+		opts = append(opts, option.WithGRPCDialOption(grpc.WithReadBufferSize(readBufferSize)))
 	}
 
 	clientMu.Lock()
 	os.Setenv("STORAGE_USE_GRPC", "true")
-	client, err := storage.NewClient(ctx,
-		option.WithGRPCDialOption(grpc.WithReadBufferSize(p.readBufferSize)),
-		option.WithGRPCDialOption(grpc.WithWriteBufferSize(p.writeBufferSize)),
-		option.WithGRPCConnectionPool(p.connectionPoolSize))
+	client, err := storage.NewClient(ctx, opts...)
 	os.Unsetenv("STORAGE_USE_GRPC")
 	clientMu.Unlock()
 

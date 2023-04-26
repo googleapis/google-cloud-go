@@ -34,7 +34,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "websecurityscannerpb.ScanConfig",
+        "resultType": "*websecurityscannerpb.ScanConfig",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.websecurityscanner.v1.Client"
@@ -125,7 +125,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "websecurityscannerpb.Finding",
+        "resultType": "*websecurityscannerpb.Finding",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.websecurityscanner.v1.Client"
@@ -171,7 +171,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "websecurityscannerpb.ScanConfig",
+        "resultType": "*websecurityscannerpb.ScanConfig",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.websecurityscanner.v1.Client"
@@ -217,7 +217,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "websecurityscannerpb.ScanRun",
+        "resultType": "*websecurityscannerpb.ScanRun",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.websecurityscanner.v1.Client"
@@ -309,7 +309,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "websecurityscannerpb.ListFindingTypeStatsResponse",
+        "resultType": "*websecurityscannerpb.ListFindingTypeStatsResponse",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.websecurityscanner.v1.Client"
@@ -493,7 +493,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "websecurityscannerpb.ScanRun",
+        "resultType": "*websecurityscannerpb.ScanRun",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.websecurityscanner.v1.Client"
@@ -539,7 +539,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "websecurityscannerpb.ScanRun",
+        "resultType": "*websecurityscannerpb.ScanRun",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.websecurityscanner.v1.Client"
@@ -585,7 +585,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "websecurityscannerpb.ScanConfig",
+        "resultType": "*websecurityscannerpb.ScanConfig",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.websecurityscanner.v1.Client"

@@ -19,8 +19,6 @@
 //
 // Lets you store and retrieve potentially-large, immutable data objects.
 //
-//	NOTE: This package is in alpha. It is not stable, and is likely to change.
-//
 // # General documentation
 //
 // For information about setting deadlines, reusing contexts, and more

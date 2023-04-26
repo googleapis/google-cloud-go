@@ -34,7 +34,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "adminpb.AcknowledgeUserDataCollectionResponse",
+        "resultType": "*adminpb.AcknowledgeUserDataCollectionResponse",
         "client": {
           "shortName": "AnalyticsAdminClient",
           "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
@@ -80,7 +80,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "adminpb.ApproveDisplayVideo360AdvertiserLinkProposalResponse",
+        "resultType": "*adminpb.ApproveDisplayVideo360AdvertiserLinkProposalResponse",
         "client": {
           "shortName": "AnalyticsAdminClient",
           "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
@@ -307,7 +307,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "adminpb.BatchCreateAccessBindingsResponse",
+        "resultType": "*adminpb.BatchCreateAccessBindingsResponse",
         "client": {
           "shortName": "AnalyticsAdminClient",
           "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
@@ -333,7 +333,7 @@
     {
       "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_BatchCreateUserLinks_sync",
       "title": "analyticsadmin BatchCreateUserLinks Sample",
-      "description": "BatchCreateUserLinks creates information about multiple users’ links to an account or property.\n\nThis method is transactional. If any UserLink cannot be created, none of\nthe UserLinks will be created.",
+      "description": "BatchCreateUserLinks creates information about multiple users' links to an account or property.\n\nThis method is transactional. If any UserLink cannot be created, none of\nthe UserLinks will be created.",
       "file": "AnalyticsAdminClient/BatchCreateUserLinks/main.go",
       "language": "GO",
       "clientMethod": {
@@ -353,7 +353,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "adminpb.BatchCreateUserLinksResponse",
+        "resultType": "*adminpb.BatchCreateUserLinksResponse",
         "client": {
           "shortName": "AnalyticsAdminClient",
           "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
@@ -379,7 +379,7 @@
     {
       "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_BatchDeleteAccessBindings_sync",
       "title": "analyticsadmin BatchDeleteAccessBindings Sample",
-      "description": "BatchDeleteAccessBindings deletes information about multiple users’ links to an account or property.",
+      "description": "BatchDeleteAccessBindings deletes information about multiple users' links to an account or property.",
       "file": "AnalyticsAdminClient/BatchDeleteAccessBindings/main.go",
       "language": "GO",
       "clientMethod": {
@@ -424,7 +424,7 @@
     {
       "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_BatchDeleteUserLinks_sync",
       "title": "analyticsadmin BatchDeleteUserLinks Sample",
-      "description": "BatchDeleteUserLinks deletes information about multiple users’ links to an account or property.",
+      "description": "BatchDeleteUserLinks deletes information about multiple users' links to an account or property.",
       "file": "AnalyticsAdminClient/BatchDeleteUserLinks/main.go",
       "language": "GO",
       "clientMethod": {
@@ -489,7 +489,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "adminpb.BatchGetAccessBindingsResponse",
+        "resultType": "*adminpb.BatchGetAccessBindingsResponse",
         "client": {
           "shortName": "AnalyticsAdminClient",
           "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
@@ -515,7 +515,7 @@
     {
       "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_BatchGetUserLinks_sync",
       "title": "analyticsadmin BatchGetUserLinks Sample",
-      "description": "BatchGetUserLinks gets information about multiple users’ links to an account or property.",
+      "description": "BatchGetUserLinks gets information about multiple users' links to an account or property.",
       "file": "AnalyticsAdminClient/BatchGetUserLinks/main.go",
       "language": "GO",
       "clientMethod": {
@@ -535,7 +535,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "adminpb.BatchGetUserLinksResponse",
+        "resultType": "*adminpb.BatchGetUserLinksResponse",
         "client": {
           "shortName": "AnalyticsAdminClient",
           "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
@@ -581,7 +581,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "adminpb.BatchUpdateAccessBindingsResponse",
+        "resultType": "*adminpb.BatchUpdateAccessBindingsResponse",
         "client": {
           "shortName": "AnalyticsAdminClient",
           "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
@@ -607,7 +607,7 @@
     {
       "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_BatchUpdateUserLinks_sync",
       "title": "analyticsadmin BatchUpdateUserLinks Sample",
-      "description": "BatchUpdateUserLinks updates information about multiple users’ links to an account or property.",
+      "description": "BatchUpdateUserLinks updates information about multiple users' links to an account or property.",
       "file": "AnalyticsAdminClient/BatchUpdateUserLinks/main.go",
       "language": "GO",
       "clientMethod": {
@@ -627,7 +627,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "adminpb.BatchUpdateUserLinksResponse",
+        "resultType": "*adminpb.BatchUpdateUserLinksResponse",
         "client": {
           "shortName": "AnalyticsAdminClient",
           "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
@@ -653,7 +653,7 @@
     {
       "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_CancelDisplayVideo360AdvertiserLinkProposal_sync",
       "title": "analyticsadmin CancelDisplayVideo360AdvertiserLinkProposal Sample",
-      "description": "CancelDisplayVideo360AdvertiserLinkProposal cancels a DisplayVideo360AdvertiserLinkProposal.\nCancelling can mean either: \n\n\tDeclining a proposal initiated from Display & Video 360\n\n\tWithdrawing a proposal initiated from Google Analytics\n\tAfter being cancelled, a proposal will eventually be deleted automatically.",
+      "description": "CancelDisplayVideo360AdvertiserLinkProposal cancels a DisplayVideo360AdvertiserLinkProposal.\nCancelling can mean either: \n- Declining a proposal initiated from Display & Video 360\n- Withdrawing a proposal initiated from Google Analytics\nAfter being cancelled, a proposal will eventually be deleted automatically.",
       "file": "AnalyticsAdminClient/CancelDisplayVideo360AdvertiserLinkProposal/main.go",
       "language": "GO",
       "clientMethod": {
@@ -673,7 +673,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "adminpb.DisplayVideo360AdvertiserLinkProposal",
+        "resultType": "*adminpb.DisplayVideo360AdvertiserLinkProposal",
         "client": {
           "shortName": "AnalyticsAdminClient",
           "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
@@ -719,7 +719,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "adminpb.AccessBinding",
+        "resultType": "*adminpb.AccessBinding",
         "client": {
           "shortName": "AnalyticsAdminClient",
           "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
@@ -765,7 +765,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "adminpb.Audience",
+        "resultType": "*adminpb.Audience",
         "client": {
           "shortName": "AnalyticsAdminClient",
           "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
@@ -811,7 +811,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "adminpb.CreateConnectedSiteTagResponse",
+        "resultType": "*adminpb.CreateConnectedSiteTagResponse",
         "client": {
           "shortName": "AnalyticsAdminClient",
           "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
@@ -857,7 +857,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "adminpb.ConversionEvent",
+        "resultType": "*adminpb.ConversionEvent",
         "client": {
           "shortName": "AnalyticsAdminClient",
           "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
@@ -903,7 +903,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "adminpb.CustomDimension",
+        "resultType": "*adminpb.CustomDimension",
         "client": {
           "shortName": "AnalyticsAdminClient",
           "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
@@ -949,7 +949,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "adminpb.CustomMetric",
+        "resultType": "*adminpb.CustomMetric",
         "client": {
           "shortName": "AnalyticsAdminClient",
           "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
@@ -995,7 +995,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "adminpb.DataStream",
+        "resultType": "*adminpb.DataStream",
         "client": {
           "shortName": "AnalyticsAdminClient",
           "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
@@ -1041,7 +1041,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "adminpb.DisplayVideo360AdvertiserLink",
+        "resultType": "*adminpb.DisplayVideo360AdvertiserLink",
         "client": {
           "shortName": "AnalyticsAdminClient",
           "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
@@ -1087,7 +1087,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "adminpb.DisplayVideo360AdvertiserLinkProposal",
+        "resultType": "*adminpb.DisplayVideo360AdvertiserLinkProposal",
         "client": {
           "shortName": "AnalyticsAdminClient",
           "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
@@ -1133,7 +1133,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "adminpb.ExpandedDataSet",
+        "resultType": "*adminpb.ExpandedDataSet",
         "client": {
           "shortName": "AnalyticsAdminClient",
           "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
@@ -1179,7 +1179,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "adminpb.FirebaseLink",
+        "resultType": "*adminpb.FirebaseLink",
         "client": {
           "shortName": "AnalyticsAdminClient",
           "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
@@ -1225,7 +1225,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "adminpb.GoogleAdsLink",
+        "resultType": "*adminpb.GoogleAdsLink",
         "client": {
           "shortName": "AnalyticsAdminClient",
           "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
@@ -1271,7 +1271,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "adminpb.MeasurementProtocolSecret",
+        "resultType": "*adminpb.MeasurementProtocolSecret",
         "client": {
           "shortName": "AnalyticsAdminClient",
           "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
@@ -1297,7 +1297,7 @@
     {
       "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_CreateProperty_sync",
       "title": "analyticsadmin CreateProperty Sample",
-      "description": "CreateProperty creates an “GA4” property with the specified location and attributes.",
+      "description": "CreateProperty creates an \"GA4\" property with the specified location and attributes.",
       "file": "AnalyticsAdminClient/CreateProperty/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1317,7 +1317,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "adminpb.Property",
+        "resultType": "*adminpb.Property",
         "client": {
           "shortName": "AnalyticsAdminClient",
           "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
@@ -1363,7 +1363,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "adminpb.SearchAds360Link",
+        "resultType": "*adminpb.SearchAds360Link",
         "client": {
           "shortName": "AnalyticsAdminClient",
           "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
@@ -1389,7 +1389,7 @@
     {
       "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_CreateUserLink_sync",
       "title": "analyticsadmin CreateUserLink Sample",
-      "description": "CreateUserLink creates a user link on an account or property.\n\nIf the user with the specified email already has permissions on the\naccount or property, then the user’s existing permissions will be unioned\nwith the permissions specified in the new UserLink.",
+      "description": "CreateUserLink creates a user link on an account or property.\n\nIf the user with the specified email already has permissions on the\naccount or property, then the user's existing permissions will be unioned\nwith the permissions specified in the new UserLink.",
       "file": "AnalyticsAdminClient/CreateUserLink/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1409,7 +1409,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "adminpb.UserLink",
+        "resultType": "*adminpb.UserLink",
         "client": {
           "shortName": "AnalyticsAdminClient",
           "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
@@ -1480,7 +1480,7 @@
     {
       "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_DeleteAccount_sync",
       "title": "analyticsadmin DeleteAccount Sample",
-      "description": "DeleteAccount marks target Account as soft-deleted (ie: “trashed”) and returns it.\n\nThis API does not have a method to restore soft-deleted accounts.\nHowever, they can be restored using the Trash Can UI.\n\nIf the accounts are not restored before the expiration time, the account\nand all child resources (eg: Properties, GoogleAdsLinks, Streams,\nUserLinks) will be permanently purged.\nhttps: //support.google.com/analytics/answer/6154772 (at https: //support.google.com/analytics/answer/6154772)\n\nReturns an error if the target is not found.",
+      "description": "DeleteAccount marks target Account as soft-deleted (ie: \"trashed\") and returns it.\n\nThis API does not have a method to restore soft-deleted accounts.\nHowever, they can be restored using the Trash Can UI.\n\nIf the accounts are not restored before the expiration time, the account\nand all child resources (eg: Properties, GoogleAdsLinks, Streams,\nUserLinks) will be permanently purged.\nhttps: //support.google.com/analytics/answer/6154772\n\nReturns an error if the target is not found.",
       "file": "AnalyticsAdminClient/DeleteAccount/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1930,7 +1930,7 @@
     {
       "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_DeleteProperty_sync",
       "title": "analyticsadmin DeleteProperty Sample",
-      "description": "DeleteProperty marks target Property as soft-deleted (ie: “trashed”) and returns it.\n\nThis API does not have a method to restore soft-deleted properties.\nHowever, they can be restored using the Trash Can UI.\n\nIf the properties are not restored before the expiration time, the Property\nand all child resources (eg: GoogleAdsLinks, Streams, UserLinks)\nwill be permanently purged.\nhttps: //support.google.com/analytics/answer/6154772 (at https: //support.google.com/analytics/answer/6154772)\n\nReturns an error if the target is not found, or is not a GA4 Property.",
+      "description": "DeleteProperty marks target Property as soft-deleted (ie: \"trashed\") and returns it.\n\nThis API does not have a method to restore soft-deleted properties.\nHowever, they can be restored using the Trash Can UI.\n\nIf the properties are not restored before the expiration time, the Property\nand all child resources (eg: GoogleAdsLinks, Streams, UserLinks)\nwill be permanently purged.\nhttps: //support.google.com/analytics/answer/6154772\n\nReturns an error if the target is not found, or is not a GA4 Property.",
       "file": "AnalyticsAdminClient/DeleteProperty/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1950,7 +1950,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "adminpb.Property",
+        "resultType": "*adminpb.Property",
         "client": {
           "shortName": "AnalyticsAdminClient",
           "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
@@ -2086,7 +2086,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "adminpb.FetchAutomatedGa4ConfigurationOptOutResponse",
+        "resultType": "*adminpb.FetchAutomatedGa4ConfigurationOptOutResponse",
         "client": {
           "shortName": "AnalyticsAdminClient",
           "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
@@ -2132,7 +2132,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "adminpb.AccessBinding",
+        "resultType": "*adminpb.AccessBinding",
         "client": {
           "shortName": "AnalyticsAdminClient",
           "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
@@ -2178,7 +2178,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "adminpb.Account",
+        "resultType": "*adminpb.Account",
         "client": {
           "shortName": "AnalyticsAdminClient",
           "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
@@ -2224,7 +2224,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "adminpb.AttributionSettings",
+        "resultType": "*adminpb.AttributionSettings",
         "client": {
           "shortName": "AnalyticsAdminClient",
           "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
@@ -2270,7 +2270,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "adminpb.Audience",
+        "resultType": "*adminpb.Audience",
         "client": {
           "shortName": "AnalyticsAdminClient",
           "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
@@ -2316,7 +2316,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "adminpb.BigQueryLink",
+        "resultType": "*adminpb.BigQueryLink",
         "client": {
           "shortName": "AnalyticsAdminClient",
           "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
@@ -2362,7 +2362,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "adminpb.ConversionEvent",
+        "resultType": "*adminpb.ConversionEvent",
         "client": {
           "shortName": "AnalyticsAdminClient",
           "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
@@ -2408,7 +2408,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "adminpb.CustomDimension",
+        "resultType": "*adminpb.CustomDimension",
         "client": {
           "shortName": "AnalyticsAdminClient",
           "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
@@ -2454,7 +2454,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "adminpb.CustomMetric",
+        "resultType": "*adminpb.CustomMetric",
         "client": {
           "shortName": "AnalyticsAdminClient",
           "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
@@ -2500,7 +2500,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "adminpb.DataRetentionSettings",
+        "resultType": "*adminpb.DataRetentionSettings",
         "client": {
           "shortName": "AnalyticsAdminClient",
           "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
@@ -2546,7 +2546,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "adminpb.DataSharingSettings",
+        "resultType": "*adminpb.DataSharingSettings",
         "client": {
           "shortName": "AnalyticsAdminClient",
           "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
@@ -2592,7 +2592,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "adminpb.DataStream",
+        "resultType": "*adminpb.DataStream",
         "client": {
           "shortName": "AnalyticsAdminClient",
           "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
@@ -2638,7 +2638,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "adminpb.DisplayVideo360AdvertiserLink",
+        "resultType": "*adminpb.DisplayVideo360AdvertiserLink",
         "client": {
           "shortName": "AnalyticsAdminClient",
           "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
@@ -2684,7 +2684,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "adminpb.DisplayVideo360AdvertiserLinkProposal",
+        "resultType": "*adminpb.DisplayVideo360AdvertiserLinkProposal",
         "client": {
           "shortName": "AnalyticsAdminClient",
           "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
@@ -2730,7 +2730,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "adminpb.EnhancedMeasurementSettings",
+        "resultType": "*adminpb.EnhancedMeasurementSettings",
         "client": {
           "shortName": "AnalyticsAdminClient",
           "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
@@ -2776,7 +2776,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "adminpb.ExpandedDataSet",
+        "resultType": "*adminpb.ExpandedDataSet",
         "client": {
           "shortName": "AnalyticsAdminClient",
           "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
@@ -2822,7 +2822,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "adminpb.GlobalSiteTag",
+        "resultType": "*adminpb.GlobalSiteTag",
         "client": {
           "shortName": "AnalyticsAdminClient",
           "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
@@ -2868,7 +2868,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "adminpb.GoogleSignalsSettings",
+        "resultType": "*adminpb.GoogleSignalsSettings",
         "client": {
           "shortName": "AnalyticsAdminClient",
           "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
@@ -2894,7 +2894,7 @@
     {
       "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_GetMeasurementProtocolSecret_sync",
       "title": "analyticsadmin GetMeasurementProtocolSecret Sample",
-      "description": "GetMeasurementProtocolSecret lookup for a single “GA4” MeasurementProtocolSecret.",
+      "description": "GetMeasurementProtocolSecret lookup for a single \"GA4\" MeasurementProtocolSecret.",
       "file": "AnalyticsAdminClient/GetMeasurementProtocolSecret/main.go",
       "language": "GO",
       "clientMethod": {
@@ -2914,7 +2914,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "adminpb.MeasurementProtocolSecret",
+        "resultType": "*adminpb.MeasurementProtocolSecret",
         "client": {
           "shortName": "AnalyticsAdminClient",
           "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
@@ -2940,7 +2940,7 @@
     {
       "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_GetProperty_sync",
       "title": "analyticsadmin GetProperty Sample",
-      "description": "GetProperty lookup for a single “GA4” Property.",
+      "description": "GetProperty lookup for a single \"GA4\" Property.",
       "file": "AnalyticsAdminClient/GetProperty/main.go",
       "language": "GO",
       "clientMethod": {
@@ -2960,7 +2960,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "adminpb.Property",
+        "resultType": "*adminpb.Property",
         "client": {
           "shortName": "AnalyticsAdminClient",
           "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
@@ -3006,7 +3006,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "adminpb.SearchAds360Link",
+        "resultType": "*adminpb.SearchAds360Link",
         "client": {
           "shortName": "AnalyticsAdminClient",
           "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
@@ -3032,7 +3032,7 @@
     {
       "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_GetUserLink_sync",
       "title": "analyticsadmin GetUserLink Sample",
-      "description": "GetUserLink gets information about a user’s link to an account or property.",
+      "description": "GetUserLink gets information about a user's link to an account or property.",
       "file": "AnalyticsAdminClient/GetUserLink/main.go",
       "language": "GO",
       "clientMethod": {
@@ -3052,7 +3052,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "adminpb.UserLink",
+        "resultType": "*adminpb.UserLink",
         "client": {
           "shortName": "AnalyticsAdminClient",
           "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
@@ -3170,7 +3170,7 @@
     {
       "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_ListAccounts_sync",
       "title": "analyticsadmin ListAccounts Sample",
-      "description": "ListAccounts returns all accounts accessible by the caller.\n\nNote that these accounts might not currently have GA4 properties.\nSoft-deleted (ie: “trashed”) accounts are excluded by default.\nReturns an empty list if no relevant accounts are found.",
+      "description": "ListAccounts returns all accounts accessible by the caller.\n\nNote that these accounts might not currently have GA4 properties.\nSoft-deleted (ie: \"trashed\") accounts are excluded by default.\nReturns an empty list if no relevant accounts are found.",
       "file": "AnalyticsAdminClient/ListAccounts/main.go",
       "language": "GO",
       "clientMethod": {
@@ -3328,7 +3328,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "adminpb.ListConnectedSiteTagsResponse",
+        "resultType": "*adminpb.ListConnectedSiteTagsResponse",
         "client": {
           "shortName": "AnalyticsAdminClient",
           "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
@@ -3814,7 +3814,7 @@
     {
       "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_ListProperties_sync",
       "title": "analyticsadmin ListProperties Sample",
-      "description": "ListProperties returns child Properties under the specified parent Account.\n\nOnly “GA4” properties will be returned.\nProperties will be excluded if the caller does not have access.\nSoft-deleted (ie: “trashed”) properties are excluded by default.\nReturns an empty list if no relevant properties are found.",
+      "description": "ListProperties returns child Properties under the specified parent Account.\n\nOnly \"GA4\" properties will be returned.\nProperties will be excluded if the caller does not have access.\nSoft-deleted (ie: \"trashed\") properties are excluded by default.\nReturns an empty list if no relevant properties are found.",
       "file": "AnalyticsAdminClient/ListProperties/main.go",
       "language": "GO",
       "clientMethod": {
@@ -3972,7 +3972,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "adminpb.ProvisionAccountTicketResponse",
+        "resultType": "*adminpb.ProvisionAccountTicketResponse",
         "client": {
           "shortName": "AnalyticsAdminClient",
           "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
@@ -3998,7 +3998,7 @@
     {
       "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_RunAccessReport_sync",
       "title": "analyticsadmin RunAccessReport Sample",
-      "description": "RunAccessReport returns a customized report of data access records. The report provides\nrecords of each time a user reads Google Analytics reporting data. Access\nrecords are retained for up to 2 years.\n\nData Access Reports can be requested for a property. The property must be\nin Google Analytics 360. This method is only available to Administrators.\n\nThese data access records include GA4 UI Reporting, GA4 UI Explorations,\nGA4 Data API, and other products like Firebase & Admob that can retrieve\ndata from Google Analytics through a linkage. These records don’t include\nproperty configuration changes like adding a stream or changing a\nproperty’s time zone. For configuration change history, see\nsearchChangeHistoryEvents (at https: //developers.google.com/analytics/devguides/config/admin/v1/rest/v1alpha/accounts/searchChangeHistoryEvents).",
+      "description": "RunAccessReport returns a customized report of data access records. The report provides\nrecords of each time a user reads Google Analytics reporting data. Access\nrecords are retained for up to 2 years.\n\nData Access Reports can be requested for a property. The property must be\nin Google Analytics 360. This method is only available to Administrators.\n\nThese data access records include GA4 UI Reporting, GA4 UI Explorations,\nGA4 Data API, and other products like Firebase & Admob that can retrieve\ndata from Google Analytics through a linkage. These records don't include\nproperty configuration changes like adding a stream or changing a\nproperty's time zone. For configuration change history, see\n[searchChangeHistoryEvents](https: //developers.google.com/analytics/devguides/config/admin/v1/rest/v1alpha/accounts/searchChangeHistoryEvents).",
       "file": "AnalyticsAdminClient/RunAccessReport/main.go",
       "language": "GO",
       "clientMethod": {
@@ -4018,7 +4018,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "adminpb.RunAccessReportResponse",
+        "resultType": "*adminpb.RunAccessReportResponse",
         "client": {
           "shortName": "AnalyticsAdminClient",
           "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
@@ -4110,7 +4110,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "adminpb.SetAutomatedGa4ConfigurationOptOutResponse",
+        "resultType": "*adminpb.SetAutomatedGa4ConfigurationOptOutResponse",
         "client": {
           "shortName": "AnalyticsAdminClient",
           "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
@@ -4156,7 +4156,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "adminpb.AccessBinding",
+        "resultType": "*adminpb.AccessBinding",
         "client": {
           "shortName": "AnalyticsAdminClient",
           "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
@@ -4202,7 +4202,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "adminpb.Account",
+        "resultType": "*adminpb.Account",
         "client": {
           "shortName": "AnalyticsAdminClient",
           "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
@@ -4248,7 +4248,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "adminpb.AttributionSettings",
+        "resultType": "*adminpb.AttributionSettings",
         "client": {
           "shortName": "AnalyticsAdminClient",
           "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
@@ -4294,7 +4294,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "adminpb.Audience",
+        "resultType": "*adminpb.Audience",
         "client": {
           "shortName": "AnalyticsAdminClient",
           "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
@@ -4340,7 +4340,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "adminpb.CustomDimension",
+        "resultType": "*adminpb.CustomDimension",
         "client": {
           "shortName": "AnalyticsAdminClient",
           "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
@@ -4386,7 +4386,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "adminpb.CustomMetric",
+        "resultType": "*adminpb.CustomMetric",
         "client": {
           "shortName": "AnalyticsAdminClient",
           "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
@@ -4432,7 +4432,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "adminpb.DataRetentionSettings",
+        "resultType": "*adminpb.DataRetentionSettings",
         "client": {
           "shortName": "AnalyticsAdminClient",
           "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
@@ -4478,7 +4478,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "adminpb.DataStream",
+        "resultType": "*adminpb.DataStream",
         "client": {
           "shortName": "AnalyticsAdminClient",
           "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
@@ -4524,7 +4524,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "adminpb.DisplayVideo360AdvertiserLink",
+        "resultType": "*adminpb.DisplayVideo360AdvertiserLink",
         "client": {
           "shortName": "AnalyticsAdminClient",
           "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
@@ -4570,7 +4570,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "adminpb.EnhancedMeasurementSettings",
+        "resultType": "*adminpb.EnhancedMeasurementSettings",
         "client": {
           "shortName": "AnalyticsAdminClient",
           "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
@@ -4616,7 +4616,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "adminpb.ExpandedDataSet",
+        "resultType": "*adminpb.ExpandedDataSet",
         "client": {
           "shortName": "AnalyticsAdminClient",
           "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
@@ -4662,7 +4662,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "adminpb.GoogleAdsLink",
+        "resultType": "*adminpb.GoogleAdsLink",
         "client": {
           "shortName": "AnalyticsAdminClient",
           "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
@@ -4708,7 +4708,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "adminpb.GoogleSignalsSettings",
+        "resultType": "*adminpb.GoogleSignalsSettings",
         "client": {
           "shortName": "AnalyticsAdminClient",
           "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
@@ -4754,7 +4754,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "adminpb.MeasurementProtocolSecret",
+        "resultType": "*adminpb.MeasurementProtocolSecret",
         "client": {
           "shortName": "AnalyticsAdminClient",
           "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
@@ -4800,7 +4800,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "adminpb.Property",
+        "resultType": "*adminpb.Property",
         "client": {
           "shortName": "AnalyticsAdminClient",
           "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
@@ -4846,7 +4846,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "adminpb.SearchAds360Link",
+        "resultType": "*adminpb.SearchAds360Link",
         "client": {
           "shortName": "AnalyticsAdminClient",
           "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
@@ -4892,7 +4892,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "adminpb.UserLink",
+        "resultType": "*adminpb.UserLink",
         "client": {
           "shortName": "AnalyticsAdminClient",
           "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
