@@ -95,6 +95,11 @@
                 "CreateAudience"
               ]
             },
+            "CreateChannelGroup": {
+              "methods": [
+                "CreateChannelGroup"
+              ]
+            },
             "CreateConnectedSiteTag": {
               "methods": [
                 "CreateConnectedSiteTag"
@@ -175,6 +180,11 @@
                 "DeleteAccount"
               ]
             },
+            "DeleteChannelGroup": {
+              "methods": [
+                "DeleteChannelGroup"
+              ]
+            },
             "DeleteConnectedSiteTag": {
               "methods": [
                 "DeleteConnectedSiteTag"
@@ -240,6 +250,11 @@
                 "FetchAutomatedGa4ConfigurationOptOut"
               ]
             },
+            "FetchConnectedGa4Property": {
+              "methods": [
+                "FetchConnectedGa4Property"
+              ]
+            },
             "GetAccessBinding": {
               "methods": [
                 "GetAccessBinding"
@@ -263,6 +278,11 @@
             "GetBigQueryLink": {
               "methods": [
                 "GetBigQueryLink"
+              ]
+            },
+            "GetChannelGroup": {
+              "methods": [
+                "GetChannelGroup"
               ]
             },
             "GetConversionEvent": {
@@ -368,6 +388,11 @@
             "ListBigQueryLinks": {
               "methods": [
                 "ListBigQueryLinks"
+              ]
+            },
+            "ListChannelGroups": {
+              "methods": [
+                "ListChannelGroups"
               ]
             },
             "ListConnectedSiteTags": {
@@ -478,6 +503,11 @@
             "UpdateAudience": {
               "methods": [
                 "UpdateAudience"
+              ]
+            },
+            "UpdateChannelGroup": {
+              "methods": [
+                "UpdateChannelGroup"
               ]
             },
             "UpdateCustomDimension": {
@@ -635,6 +665,11 @@
                 "CreateAudience"
               ]
             },
+            "CreateChannelGroup": {
+              "methods": [
+                "CreateChannelGroup"
+              ]
+            },
             "CreateConnectedSiteTag": {
               "methods": [
                 "CreateConnectedSiteTag"
@@ -715,6 +750,11 @@
                 "DeleteAccount"
               ]
             },
+            "DeleteChannelGroup": {
+              "methods": [
+                "DeleteChannelGroup"
+              ]
+            },
             "DeleteConnectedSiteTag": {
               "methods": [
                 "DeleteConnectedSiteTag"
@@ -780,6 +820,11 @@
                 "FetchAutomatedGa4ConfigurationOptOut"
               ]
             },
+            "FetchConnectedGa4Property": {
+              "methods": [
+                "FetchConnectedGa4Property"
+              ]
+            },
             "GetAccessBinding": {
               "methods": [
                 "GetAccessBinding"
@@ -803,6 +848,11 @@
             "GetBigQueryLink": {
               "methods": [
                 "GetBigQueryLink"
+              ]
+            },
+            "GetChannelGroup": {
+              "methods": [
+                "GetChannelGroup"
               ]
             },
             "GetConversionEvent": {
@@ -908,6 +958,11 @@
             "ListBigQueryLinks": {
               "methods": [
                 "ListBigQueryLinks"
+              ]
+            },
+            "ListChannelGroups": {
+              "methods": [
+                "ListChannelGroups"
               ]
             },
             "ListConnectedSiteTags": {
@@ -1018,6 +1073,11 @@
             "UpdateAudience": {
               "methods": [
                 "UpdateAudience"
+              ]
+            },
+            "UpdateChannelGroup": {
+              "methods": [
+                "UpdateChannelGroup"
               ]
             },
             "UpdateCustomDimension": {
