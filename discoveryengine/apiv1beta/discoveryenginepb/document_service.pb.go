@@ -56,10 +56,10 @@ type GetDocumentRequest struct {
 	//
 	// If the caller does not have permission to access the
 	// [Document][google.cloud.discoveryengine.v1beta.Document], regardless of
-	// whether or not it exists, a PERMISSION_DENIED error is returned.
+	// whether or not it exists, a `PERMISSION_DENIED` error is returned.
 	//
 	// If the requested [Document][google.cloud.discoveryengine.v1beta.Document]
-	// does not exist, a NOT_FOUND error is returned.
+	// does not exist, a `NOT_FOUND` error is returned.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 }
 
@@ -117,13 +117,13 @@ type ListDocumentsRequest struct {
 	//
 	// If the caller does not have permission to list [Documents][]s under this
 	// branch, regardless of whether or not this branch exists, a
-	// PERMISSION_DENIED error is returned.
+	// `PERMISSION_DENIED` error is returned.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Maximum number of [Document][google.cloud.discoveryengine.v1beta.Document]s
 	// to return. If unspecified, defaults to 100. The maximum allowed value is
 	// 1000. Values above 1000 will be coerced to 1000.
 	//
-	// If this field is negative, an INVALID_ARGUMENT error is returned.
+	// If this field is negative, an `INVALID_ARGUMENT` error is returned.
 	PageSize int32 `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
 	// A page token
 	// [ListDocumentsResponse.next_page_token][google.cloud.discoveryengine.v1beta.ListDocumentsResponse.next_page_token],
@@ -134,7 +134,7 @@ type ListDocumentsRequest struct {
 	// When paginating, all other parameters provided to
 	// [DocumentService.ListDocuments][google.cloud.discoveryengine.v1beta.DocumentService.ListDocuments]
 	// must match the call that provided the page token. Otherwise, an
-	// INVALID_ARGUMENT error is returned.
+	// `INVALID_ARGUMENT` error is returned.
 	PageToken string `protobuf:"bytes,3,opt,name=page_token,json=pageToken,proto3" json:"page_token,omitempty"`
 }
 
@@ -275,16 +275,16 @@ type CreateDocumentRequest struct {
 	//
 	// If the caller does not have permission to create the
 	// [Document][google.cloud.discoveryengine.v1beta.Document], regardless of
-	// whether or not it exists, a PERMISSION_DENIED error is returned.
+	// whether or not it exists, a `PERMISSION_DENIED` error is returned.
 	//
 	// This field must be unique among all
 	// [Document][google.cloud.discoveryengine.v1beta.Document]s with the same
 	// [parent][google.cloud.discoveryengine.v1beta.CreateDocumentRequest.parent].
-	// Otherwise, an ALREADY_EXISTS error is returned.
+	// Otherwise, an `ALREADY_EXISTS` error is returned.
 	//
 	// This field must conform to [RFC-1034](https://tools.ietf.org/html/rfc1034)
 	// standard with a length limit of 63 characters. Otherwise, an
-	// INVALID_ARGUMENT error is returned.
+	// `INVALID_ARGUMENT` error is returned.
 	DocumentId string `protobuf:"bytes,3,opt,name=document_id,json=documentId,proto3" json:"document_id,omitempty"`
 }
 
@@ -353,12 +353,12 @@ type UpdateDocumentRequest struct {
 	//
 	// If the caller does not have permission to update the
 	// [Document][google.cloud.discoveryengine.v1beta.Document], regardless of
-	// whether or not it exists, a PERMISSION_DENIED error is returned.
+	// whether or not it exists, a `PERMISSION_DENIED` error is returned.
 	//
 	// If the [Document][google.cloud.discoveryengine.v1beta.Document] to update
 	// does not exist and
 	// [allow_missing][google.cloud.discoveryengine.v1beta.UpdateDocumentRequest.allow_missing]
-	// is not set, a NOT_FOUND error is returned.
+	// is not set, a `NOT_FOUND` error is returned.
 	Document *Document `protobuf:"bytes,1,opt,name=document,proto3" json:"document,omitempty"`
 	// If set to true, and the
 	// [Document][google.cloud.discoveryengine.v1beta.Document] is not found, a
@@ -427,10 +427,10 @@ type DeleteDocumentRequest struct {
 	//
 	// If the caller does not have permission to delete the
 	// [Document][google.cloud.discoveryengine.v1beta.Document], regardless of
-	// whether or not it exists, a PERMISSION_DENIED error is returned.
+	// whether or not it exists, a `PERMISSION_DENIED` error is returned.
 	//
 	// If the [Document][google.cloud.discoveryengine.v1beta.Document] to delete
-	// does not exist, a NOT_FOUND error is returned.
+	// does not exist, a `NOT_FOUND` error is returned.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 }
 

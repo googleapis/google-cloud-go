@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -111,8 +111,8 @@ type Project struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Output only. The unique resource name of the project. It is an int64 generated number
-	// prefixed by "projects/".
+	// Output only. The unique resource name of the project. It is an int64
+	// generated number prefixed by "projects/".
 	//
 	// Example: `projects/415104041262`
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
@@ -141,9 +141,9 @@ type Project struct {
 	UpdateTime *timestamppb.Timestamp `protobuf:"bytes,7,opt,name=update_time,json=updateTime,proto3" json:"update_time,omitempty"`
 	// Output only. The time at which this resource was requested for deletion.
 	DeleteTime *timestamppb.Timestamp `protobuf:"bytes,8,opt,name=delete_time,json=deleteTime,proto3" json:"delete_time,omitempty"`
-	// Output only. A checksum computed by the server based on the current value of the Project
-	// resource. This may be sent on update and delete requests to ensure the
-	// client has an up-to-date value before proceeding.
+	// Output only. A checksum computed by the server based on the current value
+	// of the Project resource. This may be sent on update and delete requests to
+	// ensure the client has an up-to-date value before proceeding.
 	Etag string `protobuf:"bytes,9,opt,name=etag,proto3" json:"etag,omitempty"`
 	// Optional. The labels associated with this project.
 	//
@@ -153,7 +153,7 @@ type Project struct {
 	// Label values must be between 0 and 63 characters long and must conform
 	// to the regular expression (\[a-z\](\[-a-z0-9\]*\[a-z0-9\])?)?.
 	//
-	// No more than 256 labels can be associated with a given resource.
+	// No more than 64 labels can be associated with a given resource.
 	//
 	// Clients should store labels in a representation such as JSON that does not
 	// depend on specific characters being disallowed.
@@ -323,21 +323,23 @@ type ListProjectsRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. The name of the parent resource to list projects under.
+	// Required. The name of the parent resource whose projects are being listed.
+	// Only children of this parent resource are listed; descendants are not
+	// listed.
 	//
-	// For example, setting this field to 'folders/1234' would list all projects
-	// directly under that folder.
+	// If the parent is a folder, use the value `folders/{folder_id}`. If the
+	// parent is an organization, use the value `organizations/{org_id}`.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
-	// Optional. A pagination token returned from a previous call to [ListProjects]
-	// [google.cloud.resourcemanager.v3.Projects.ListProjects]
-	// that indicates from where listing should continue.
+	// Optional. A pagination token returned from a previous call to
+	// [ListProjects] [google.cloud.resourcemanager.v3.Projects.ListProjects] that
+	// indicates from where listing should continue.
 	PageToken string `protobuf:"bytes,2,opt,name=page_token,json=pageToken,proto3" json:"page_token,omitempty"`
 	// Optional. The maximum number of projects to return in the response.
 	// The server can return fewer projects than requested.
 	// If unspecified, server picks an appropriate default.
 	PageSize int32 `protobuf:"varint,3,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
-	// Optional. Indicate that projects in the `DELETE_REQUESTED` state should also be
-	// returned. Normally only `ACTIVE` projects are returned.
+	// Optional. Indicate that projects in the `DELETE_REQUESTED` state should
+	// also be returned. Normally only `ACTIVE` projects are returned.
 	ShowDeleted bool `protobuf:"varint,4,opt,name=show_deleted,json=showDeleted,proto3" json:"show_deleted,omitempty"`
 }
 
@@ -488,22 +490,22 @@ type SearchProjectsRequest struct {
 
 	// Optional. A query string for searching for projects that the caller has
 	// `resourcemanager.projects.get` permission to. If multiple fields are
-	// included in the query, the it will return results that match any of the
+	// included in the query, then it will return results that match any of the
 	// fields. Some eligible fields are:
 	//
 	// ```
 	// | Field                   | Description                                  |
 	// |-------------------------|----------------------------------------------|
 	// | displayName, name       | Filters by displayName.                      |
-	// | parent                  | Project's parent. (for example: folders/123,
-	// organizations/*) Prefer parent field over parent.type and parent.id. |
-	// | parent.type             | Parent's type: `folder` or `organization`.   |
-	// | parent.id               | Parent's id number (for example: 123)        |
-	// | id, projectId           | Filters by projectId.                        |
-	// | state, lifecycleState   | Filters by state.                            |
-	// | labels                  | Filters by label name or value.              |
-	// | labels.<key> (where *key* is the name of a label) | Filters by label
-	// name. |
+	// | parent                  | Project's parent (for example: folders/123,
+	// organizations/*). Prefer parent field over parent.type and parent.id.| |
+	// parent.type             | Parent's type: `folder` or `organization`.   | |
+	// parent.id               | Parent's id number (for example: 123)        | |
+	// id, projectId           | Filters by projectId.                        | |
+	// state, lifecycleState   | Filters by state.                            | |
+	// labels                  | Filters by label name or value.              | |
+	// labels.\<key\> (where *key* is the name of a label) | Filters by label
+	// name.|
 	// ```
 	//
 	// Search expressions are case insensitive.
@@ -519,16 +521,16 @@ type SearchProjectsRequest struct {
 	// | NAME:howl        | Equivalent to above.                                |
 	// | labels.color:*   | The project has the label `color`.                  |
 	// | labels.color:red | The project's label `color` has the value `red`.    |
-	// | labels.color:red&nbsp;labels.size:big | The project's label `color` has
-	// the value `red` and its label `size` has the value `big`.                |
+	// | labels.color:red labels.size:big | The project's label `color` has the
+	// value `red` or its label `size` has the value `big`.                     |
 	// ```
 	//
 	// If no query is specified, the call will return projects for which the user
 	// has the `resourcemanager.projects.get` permission.
 	Query string `protobuf:"bytes,1,opt,name=query,proto3" json:"query,omitempty"`
-	// Optional. A pagination token returned from a previous call to [ListProjects]
-	// [google.cloud.resourcemanager.v3.Projects.ListProjects]
-	// that indicates from where listing should continue.
+	// Optional. A pagination token returned from a previous call to
+	// [ListProjects] [google.cloud.resourcemanager.v3.Projects.ListProjects] that
+	// indicates from where listing should continue.
 	PageToken string `protobuf:"bytes,2,opt,name=page_token,json=pageToken,proto3" json:"page_token,omitempty"`
 	// Optional. The maximum number of projects to return in the response.
 	// The server can return fewer projects than requested.
@@ -679,7 +681,7 @@ type CreateProjectRequest struct {
 	//
 	// If the `parent` field is set, the `resourcemanager.projects.create`
 	// permission is checked on the parent resource. If no parent is set and
-	// the authorization credentials belong to an Organziation, the parent
+	// the authorization credentials belong to an Organization, the parent
 	// will be set to that Organization.
 	Project *Project `protobuf:"bytes,1,opt,name=project,proto3" json:"project,omitempty"`
 }
@@ -1853,9 +1855,12 @@ type ProjectsClient interface {
 	// Upon success, the `Operation.response` field will be populated with the
 	// moved project.
 	//
-	// The caller must have `resourcemanager.projects.update` permission on the
-	// project and have `resourcemanager.projects.move` permission on the
-	// project's current and proposed new parent.
+	// The caller must have `resourcemanager.projects.move` permission on the
+	// project, on the project's current and proposed new parent.
+	//
+	// If project has no current parent, or it currently does not have an
+	// associated organization resource, you will also need the
+	// `resourcemanager.projects.setIamPolicy` permission in the project.
 	//
 	//
 	MoveProject(ctx context.Context, in *MoveProjectRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
@@ -1867,7 +1872,8 @@ type ProjectsClient interface {
 	//
 	// This method changes the Project's lifecycle state from
 	// [ACTIVE][google.cloud.resourcemanager.v3.Project.State.ACTIVE]
-	// to [DELETE_REQUESTED][google.cloud.resourcemanager.v3.Project.State.DELETE_REQUESTED].
+	// to
+	// [DELETE_REQUESTED][google.cloud.resourcemanager.v3.Project.State.DELETE_REQUESTED].
 	// The deletion starts at an unspecified time,
 	// at which point the Project is no longer accessible.
 	//
@@ -1902,10 +1908,12 @@ type ProjectsClient interface {
 	// The caller must have `resourcemanager.projects.undelete` permission for
 	// this project.
 	UndeleteProject(ctx context.Context, in *UndeleteProjectRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
-	// Returns the IAM access control policy for the specified project.
+	// Returns the IAM access control policy for the specified project, in the
+	// format `projects/{ProjectIdOrNumber}` e.g. projects/123.
 	// Permission is denied if the policy or the resource do not exist.
 	GetIamPolicy(ctx context.Context, in *iampb.GetIamPolicyRequest, opts ...grpc.CallOption) (*iampb.Policy, error)
-	// Sets the IAM access control policy for the specified project.
+	// Sets the IAM access control policy for the specified project, in the
+	// format `projects/{ProjectIdOrNumber}` e.g. projects/123.
 	//
 	// CAUTION: This method will replace the existing policy, and cannot be used
 	// to append additional IAM settings.
@@ -1937,20 +1945,17 @@ type ProjectsClient interface {
 	// `setIamPolicy()`;
 	// they must be sent only using the Cloud Platform Console.
 	//
-	// + Membership changes that leave the project without any owners that have
-	// accepted the Terms of Service (ToS) will be rejected.
-	//
 	// + If the project is not part of an organization, there must be at least
 	// one owner who has accepted the Terms of Service (ToS) agreement in the
 	// policy. Calling `setIamPolicy()` to remove the last ToS-accepted owner
 	// from the policy will fail. This restriction also applies to legacy
 	// projects that no longer have owners who have accepted the ToS. Edits to
 	// IAM policies will be rejected until the lack of a ToS-accepting owner is
-	// rectified.
-	//
-	// + Calling this method requires enabling the App Engine Admin API.
+	// rectified. If the project is part of an organization, you can remove all
+	// owners, potentially making the organization inaccessible.
 	SetIamPolicy(ctx context.Context, in *iampb.SetIamPolicyRequest, opts ...grpc.CallOption) (*iampb.Policy, error)
-	// Returns permissions that a caller has on the specified project.
+	// Returns permissions that a caller has on the specified project, in the
+	// format `projects/{ProjectIdOrNumber}` e.g. projects/123..
 	TestIamPermissions(ctx context.Context, in *iampb.TestIamPermissionsRequest, opts ...grpc.CallOption) (*iampb.TestIamPermissionsResponse, error)
 }
 
@@ -2108,9 +2113,12 @@ type ProjectsServer interface {
 	// Upon success, the `Operation.response` field will be populated with the
 	// moved project.
 	//
-	// The caller must have `resourcemanager.projects.update` permission on the
-	// project and have `resourcemanager.projects.move` permission on the
-	// project's current and proposed new parent.
+	// The caller must have `resourcemanager.projects.move` permission on the
+	// project, on the project's current and proposed new parent.
+	//
+	// If project has no current parent, or it currently does not have an
+	// associated organization resource, you will also need the
+	// `resourcemanager.projects.setIamPolicy` permission in the project.
 	//
 	//
 	MoveProject(context.Context, *MoveProjectRequest) (*longrunningpb.Operation, error)
@@ -2122,7 +2130,8 @@ type ProjectsServer interface {
 	//
 	// This method changes the Project's lifecycle state from
 	// [ACTIVE][google.cloud.resourcemanager.v3.Project.State.ACTIVE]
-	// to [DELETE_REQUESTED][google.cloud.resourcemanager.v3.Project.State.DELETE_REQUESTED].
+	// to
+	// [DELETE_REQUESTED][google.cloud.resourcemanager.v3.Project.State.DELETE_REQUESTED].
 	// The deletion starts at an unspecified time,
 	// at which point the Project is no longer accessible.
 	//
@@ -2157,10 +2166,12 @@ type ProjectsServer interface {
 	// The caller must have `resourcemanager.projects.undelete` permission for
 	// this project.
 	UndeleteProject(context.Context, *UndeleteProjectRequest) (*longrunningpb.Operation, error)
-	// Returns the IAM access control policy for the specified project.
+	// Returns the IAM access control policy for the specified project, in the
+	// format `projects/{ProjectIdOrNumber}` e.g. projects/123.
 	// Permission is denied if the policy or the resource do not exist.
 	GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest) (*iampb.Policy, error)
-	// Sets the IAM access control policy for the specified project.
+	// Sets the IAM access control policy for the specified project, in the
+	// format `projects/{ProjectIdOrNumber}` e.g. projects/123.
 	//
 	// CAUTION: This method will replace the existing policy, and cannot be used
 	// to append additional IAM settings.
@@ -2192,20 +2203,17 @@ type ProjectsServer interface {
 	// `setIamPolicy()`;
 	// they must be sent only using the Cloud Platform Console.
 	//
-	// + Membership changes that leave the project without any owners that have
-	// accepted the Terms of Service (ToS) will be rejected.
-	//
 	// + If the project is not part of an organization, there must be at least
 	// one owner who has accepted the Terms of Service (ToS) agreement in the
 	// policy. Calling `setIamPolicy()` to remove the last ToS-accepted owner
 	// from the policy will fail. This restriction also applies to legacy
 	// projects that no longer have owners who have accepted the ToS. Edits to
 	// IAM policies will be rejected until the lack of a ToS-accepting owner is
-	// rectified.
-	//
-	// + Calling this method requires enabling the App Engine Admin API.
+	// rectified. If the project is part of an organization, you can remove all
+	// owners, potentially making the organization inaccessible.
 	SetIamPolicy(context.Context, *iampb.SetIamPolicyRequest) (*iampb.Policy, error)
-	// Returns permissions that a caller has on the specified project.
+	// Returns permissions that a caller has on the specified project, in the
+	// format `projects/{ProjectIdOrNumber}` e.g. projects/123..
 	TestIamPermissions(context.Context, *iampb.TestIamPermissionsRequest) (*iampb.TestIamPermissionsResponse, error)
 }
 
