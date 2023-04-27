@@ -633,6 +633,8 @@ service-configs:
     service-config: cloudbuild_v2.yaml
   - input-directory: google/cloud/compute/v1
     service-config: compute_v1.yaml
+  - input-directory: google/cloud/confidentialcomputing/v1
+    service-config: confidentialcomputing_v1.yaml
   - input-directory: google/cloud/confidentialcomputing/v1alpha1
     service-config: confidentialcomputing_v1alpha1.yaml
   - input-directory: google/devtools/containeranalysis/v1beta1
