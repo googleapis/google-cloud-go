@@ -357,15 +357,15 @@ func (c *FeaturestoreClient) DeleteFeatureOperation(name string) *DeleteFeatureO
 //
 // There are also scenarios where the caller can cause inconsistency.
 //
-//	Source data for import contains multiple distinct Feature values for
-//	the same entity ID and timestamp.
+//   Source data for import contains multiple distinct Feature values for
+//   the same entity ID and timestamp.
 //
-//	Source is modified during an import. This includes adding, updating, or
-//	removing source data and/or metadata. Examples of updating metadata
-//	include but are not limited to changing storage location, storage class,
-//	or retention policy.
+//   Source is modified during an import. This includes adding, updating, or
+//   removing source data and/or metadata. Examples of updating metadata
+//   include but are not limited to changing storage location, storage class,
+//   or retention policy.
 //
-//	Online serving cluster is under-provisioned.
+//   Online serving cluster is under-provisioned.
 func (c *FeaturestoreClient) ImportFeatureValues(ctx context.Context, req *aiplatformpb.ImportFeatureValuesRequest, opts ...gax.CallOption) (*ImportFeatureValuesOperation, error) {
 	return c.internalClient.ImportFeatureValues(ctx, req, opts...)
 }
@@ -479,8 +479,7 @@ func (c *FeaturestoreClient) GetOperation(ctx context.Context, req *longrunningp
 	return c.internalClient.GetOperation(ctx, req, opts...)
 }
 
-// ListOperations lists operations that match the specified filter in the request. If
-// the server doesn’t support this method, it returns UNIMPLEMENTED.
+// ListOperations is a utility method from google.longrunning.Operations.
 func (c *FeaturestoreClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	return c.internalClient.ListOperations(ctx, req, opts...)
 }

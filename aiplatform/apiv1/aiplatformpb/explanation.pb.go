@@ -21,13 +21,12 @@
 package aiplatformpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	structpb "google.golang.org/protobuf/types/known/structpb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -1151,8 +1150,8 @@ type ExplanationSpecOverride struct {
 	unknownFields protoimpl.UnknownFields
 
 	// The parameters to be overridden. Note that the
-	// [method][google.cloud.aiplatform.v1.ExplanationParameters.method] cannot be
-	// changed. If not specified, no parameter is overridden.
+	// attribution method cannot be changed. If not specified,
+	// no parameter is overridden.
 	Parameters *ExplanationParameters `protobuf:"bytes,1,opt,name=parameters,proto3" json:"parameters,omitempty"`
 	// The metadata to be overridden. If not specified, no metadata is overridden.
 	Metadata *ExplanationMetadataOverride `protobuf:"bytes,2,opt,name=metadata,proto3" json:"metadata,omitempty"`

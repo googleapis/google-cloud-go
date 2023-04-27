@@ -189,6 +189,11 @@
                 "ListOperations"
               ]
             },
+            "MutateDeployedModel": {
+              "methods": [
+                "MutateDeployedModel"
+              ]
+            },
             "SetIamPolicy": {
               "methods": [
                 "SetIamPolicy"

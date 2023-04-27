@@ -21,13 +21,12 @@
 package aiplatformpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -304,13 +303,13 @@ type DeployedIndex struct {
 	// n1-standard-16 and n1-standard-32 are still available, but we recommend
 	// e2-standard-16 and e2-highmem-16 for cost efficiency.
 	DedicatedResources *DedicatedResources `protobuf:"bytes,16,opt,name=dedicated_resources,json=dedicatedResources,proto3" json:"dedicated_resources,omitempty"`
-	// Optional. If true, private endpoint's access logs are sent to StackDriver
+	// Optional. If true, private endpoint's access logs are sent to Cloud
 	// Logging.
 	//
 	// These logs are like standard server access logs, containing
 	// information like timestamp and latency for each MatchRequest.
 	//
-	// Note that Stackdriver logs may incur a cost, especially if the deployed
+	// Note that logs may incur a cost, especially if the deployed
 	// index receives a high queries per second rate (QPS).
 	// Estimate your costs before enabling this option.
 	EnableAccessLogging bool `protobuf:"varint,8,opt,name=enable_access_logging,json=enableAccessLogging,proto3" json:"enable_access_logging,omitempty"`

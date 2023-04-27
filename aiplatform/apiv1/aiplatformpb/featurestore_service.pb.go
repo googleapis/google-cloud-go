@@ -21,11 +21,8 @@
 package aiplatformpb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	interval "google.golang.org/genproto/googleapis/type/interval"
 	grpc "google.golang.org/grpc"
@@ -36,6 +33,8 @@ import (
 	_ "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -387,7 +386,7 @@ type UpdateFeaturestoreRequest struct {
 	//   * `labels`
 	//   * `online_serving_config.fixed_node_count`
 	//   * `online_serving_config.scaling`
-	//   * `online_storage_ttl_days` (available in Preview)
+	//   * `online_storage_ttl_days`
 	UpdateMask *fieldmaskpb.FieldMask `protobuf:"bytes,2,opt,name=update_mask,json=updateMask,proto3" json:"update_mask,omitempty"`
 }
 
@@ -1687,7 +1686,7 @@ type UpdateEntityTypeRequest struct {
 	//   * `monitoring_config.import_features_analysis.anomaly_detection_baseline`
 	//   * `monitoring_config.numerical_threshold_config.value`
 	//   * `monitoring_config.categorical_threshold_config.value`
-	//   * `offline_storage_ttl_days` (available in Preview)
+	//   * `offline_storage_ttl_days`
 	UpdateMask *fieldmaskpb.FieldMask `protobuf:"bytes,2,opt,name=update_mask,json=updateMask,proto3" json:"update_mask,omitempty"`
 }
 

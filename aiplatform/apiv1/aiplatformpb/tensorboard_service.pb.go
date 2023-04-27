@@ -21,11 +21,8 @@
 package aiplatformpb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -34,6 +31,8 @@ import (
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	_ "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -2583,12 +2582,12 @@ type ExportTensorboardTimeSeriesDataRequest struct {
 	// Values above 10000 are coerced to 10000.
 	PageSize int32 `protobuf:"varint,3,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
 	// A page token, received from a previous
-	// [TensorboardService.ExportTensorboardTimeSeries][] call.
-	// Provide this to retrieve the subsequent page.
+	// [ExportTensorboardTimeSeriesData][google.cloud.aiplatform.v1.TensorboardService.ExportTensorboardTimeSeriesData]
+	// call. Provide this to retrieve the subsequent page.
 	//
 	// When paginating, all other parameters provided to
-	// [TensorboardService.ExportTensorboardTimeSeries][] must
-	// match the call that provided the page token.
+	// [ExportTensorboardTimeSeriesData][google.cloud.aiplatform.v1.TensorboardService.ExportTensorboardTimeSeriesData]
+	// must match the call that provided the page token.
 	PageToken string `protobuf:"bytes,4,opt,name=page_token,json=pageToken,proto3" json:"page_token,omitempty"`
 	// Field to use to sort the TensorboardTimeSeries' data.
 	// By default, TensorboardTimeSeries' data is returned in a pseudo random
@@ -2673,8 +2672,9 @@ type ExportTensorboardTimeSeriesDataResponse struct {
 	// The returned time series data points.
 	TimeSeriesDataPoints []*TimeSeriesDataPoint `protobuf:"bytes,1,rep,name=time_series_data_points,json=timeSeriesDataPoints,proto3" json:"time_series_data_points,omitempty"`
 	// A token, which can be sent as
-	// [ExportTensorboardTimeSeriesRequest.page_token][] to retrieve the next
-	// page. If this field is omitted, there are no subsequent pages.
+	// [page_token][google.cloud.aiplatform.v1.ExportTensorboardTimeSeriesDataRequest.page_token]
+	// to retrieve the next page. If this field is omitted, there are no
+	// subsequent pages.
 	NextPageToken string `protobuf:"bytes,2,opt,name=next_page_token,json=nextPageToken,proto3" json:"next_page_token,omitempty"`
 }
 

@@ -22,9 +22,6 @@ package aiplatformpb
 
 import (
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -32,6 +29,8 @@ import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -730,7 +729,7 @@ type ReadFeatureValuesResponse_Header struct {
 	// `projects/{project}/locations/{location}/featurestores/{featurestore}/entityTypes/{entityType}`.
 	EntityType string `protobuf:"bytes,1,opt,name=entity_type,json=entityType,proto3" json:"entity_type,omitempty"`
 	// List of Feature metadata corresponding to each piece of
-	// [ReadFeatureValuesResponse.data][].
+	// [ReadFeatureValuesResponse.EntityView.data][google.cloud.aiplatform.v1.ReadFeatureValuesResponse.EntityView.data].
 	FeatureDescriptors []*ReadFeatureValuesResponse_FeatureDescriptor `protobuf:"bytes,2,rep,name=feature_descriptors,json=featureDescriptors,proto3" json:"feature_descriptors,omitempty"`
 }
 

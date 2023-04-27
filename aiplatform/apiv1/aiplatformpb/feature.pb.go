@@ -21,13 +21,12 @@
 package aiplatformpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -322,10 +321,11 @@ func (x *Feature) GetMonitoringStatsAnomalies() []*Feature_MonitoringStatsAnomal
 	return nil
 }
 
-// A list of historical [Snapshot
-// Analysis][FeaturestoreMonitoringConfig.SnapshotAnalysis] or [Import Feature
-// Analysis] [FeaturestoreMonitoringConfig.ImportFeatureAnalysis] stats
-// requested by user, sorted by
+// A list of historical
+// [SnapshotAnalysis][google.cloud.aiplatform.v1.FeaturestoreMonitoringConfig.SnapshotAnalysis]
+// or
+// [ImportFeaturesAnalysis][google.cloud.aiplatform.v1.FeaturestoreMonitoringConfig.ImportFeaturesAnalysis]
+// stats requested by user, sorted by
 // [FeatureStatsAnomaly.start_time][google.cloud.aiplatform.v1.FeatureStatsAnomaly.start_time]
 // descending.
 type Feature_MonitoringStatsAnomaly struct {
