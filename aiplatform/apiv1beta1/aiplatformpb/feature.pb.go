@@ -21,13 +21,12 @@
 package aiplatformpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -237,8 +236,8 @@ type Feature struct {
 	// If set to true, all types of data monitoring are disabled despite the
 	// config on EntityType.
 	DisableMonitoring bool `protobuf:"varint,12,opt,name=disable_monitoring,json=disableMonitoring,proto3" json:"disable_monitoring,omitempty"`
-	// Output only. A list of historical [Snapshot
-	// Analysis][FeaturestoreMonitoringConfig.SnapshotAnalysis]
+	// Output only. A list of historical
+	// [SnapshotAnalysis][google.cloud.aiplatform.v1beta1.FeaturestoreMonitoringConfig.SnapshotAnalysis]
 	// stats requested by user, sorted by
 	// [FeatureStatsAnomaly.start_time][google.cloud.aiplatform.v1beta1.FeatureStatsAnomaly.start_time]
 	// descending.
@@ -358,10 +357,11 @@ func (x *Feature) GetMonitoringStatsAnomalies() []*Feature_MonitoringStatsAnomal
 	return nil
 }
 
-// A list of historical [Snapshot
-// Analysis][FeaturestoreMonitoringConfig.SnapshotAnalysis] or [Import Feature
-// Analysis] [FeaturestoreMonitoringConfig.ImportFeatureAnalysis] stats
-// requested by user, sorted by
+// A list of historical
+// [SnapshotAnalysis][google.cloud.aiplatform.v1beta1.FeaturestoreMonitoringConfig.SnapshotAnalysis]
+// or
+// [ImportFeaturesAnalysis][google.cloud.aiplatform.v1beta1.FeaturestoreMonitoringConfig.ImportFeaturesAnalysis]
+// stats requested by user, sorted by
 // [FeatureStatsAnomaly.start_time][google.cloud.aiplatform.v1beta1.FeatureStatsAnomaly.start_time]
 // descending.
 type Feature_MonitoringStatsAnomaly struct {

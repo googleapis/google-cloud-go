@@ -21,15 +21,14 @@
 package aiplatformpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	structpb "google.golang.org/protobuf/types/known/structpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -208,9 +207,9 @@ type BatchPredictionJob struct {
 	ModelMonitoringStatus *status.Status `protobuf:"bytes,32,opt,name=model_monitoring_status,json=modelMonitoringStatus,proto3" json:"model_monitoring_status,omitempty"`
 	// For custom-trained Models and AutoML Tabular Models, the container of the
 	// DeployedModel instances will send `stderr` and `stdout` streams to
-	// Stackdriver Logging by default. Please note that the logs incur cost,
+	// Cloud Logging by default. Please note that the logs incur cost,
 	// which are subject to [Cloud Logging
-	// pricing](https://cloud.google.com/stackdriver/pricing).
+	// pricing](https://cloud.google.com/logging/pricing).
 	//
 	// User can disable container logging by setting this flag to true.
 	DisableContainerLogging bool `protobuf:"varint,34,opt,name=disable_container_logging,json=disableContainerLogging,proto3" json:"disable_container_logging,omitempty"`

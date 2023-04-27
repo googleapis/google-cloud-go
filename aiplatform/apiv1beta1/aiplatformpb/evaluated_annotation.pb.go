@@ -21,13 +21,12 @@
 package aiplatformpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	structpb "google.golang.org/protobuf/types/known/structpb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -208,10 +207,6 @@ type EvaluatedAnnotation struct {
 	// ModelEvaluation. The EvaluatedDataItemView consists of all ground truths
 	// and predictions on
 	// [data_item_payload][google.cloud.aiplatform.v1beta1.EvaluatedAnnotation.data_item_payload].
-	//
-	// Can be passed in
-	// [GetEvaluatedDataItemView's][ModelService.GetEvaluatedDataItemView][]
-	// [id][GetEvaluatedDataItemViewRequest.id].
 	EvaluatedDataItemViewId string `protobuf:"bytes,6,opt,name=evaluated_data_item_view_id,json=evaluatedDataItemViewId,proto3" json:"evaluated_data_item_view_id,omitempty"`
 	// Explanations of
 	// [predictions][google.cloud.aiplatform.v1beta1.EvaluatedAnnotation.predictions].
