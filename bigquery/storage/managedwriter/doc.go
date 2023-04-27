@@ -240,8 +240,11 @@ To enable multiplexing for writes to default streams, simply instantiate the cli
 		// TODO: Handle error.
 	}
 
-Special Consideration:  Users who would like to utilize many connections associated with a single Client
-may benefit from setting the WithGRPCConnectionPool ClientOption, documented here:
+Special Consideration:  The gRPC architecture is capable of its own sharing of underlying HTTP/2 connections.
+For users who are sending significant traffic on multiple writers (independent of whether they're leveraging
+multiplexing or not) may also wish to consider further tuning of this behavior.  The managedwriter library
+sets a reasonable default, but this can be tuned further by leveraging the WithGRPCConnectionPool ClientOption,
+documented here:
 https://pkg.go.dev/google.golang.org/api/option#WithGRPCConnectionPool
 */
 package managedwriter
