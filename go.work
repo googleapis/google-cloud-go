@@ -129,6 +129,7 @@ use (
 	./speech
 	./storage
 	./storage/internal/benchmarks
+	./storageinsights
 	./storagetransfer
 	./talent
 	./texttospeech
