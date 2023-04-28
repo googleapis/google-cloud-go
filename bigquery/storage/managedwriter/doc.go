@@ -246,5 +246,8 @@ multiplexing or not) may also wish to consider further tuning of this behavior. 
 sets a reasonable default, but this can be tuned further by leveraging the WithGRPCConnectionPool ClientOption,
 documented here:
 https://pkg.go.dev/google.golang.org/api/option#WithGRPCConnectionPool
+
+A reasonable upper bound for the connection pool size is the number of concurrent writers for explicit stream
+plus the configured size of the multiplex pool.
 */
 package managedwriter
