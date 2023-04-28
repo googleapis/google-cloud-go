@@ -684,6 +684,7 @@ service-configs:
     service-config: storagetransfer_v1.yaml
   - input-directory: google/cloud/storageinsights/v1
     service-config: storageinsights_v1.yaml
+    import-path: cloud.google.com/go/storageinsights/apiv1
     # All entries below are clients that are not currently copied by owlbot. They
     # explicitly express thier import path for some code gen.
   - input-directory: google/devtools/containeranalysis/v1beta1/grafeas
