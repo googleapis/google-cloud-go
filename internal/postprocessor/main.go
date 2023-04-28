@@ -315,6 +315,10 @@ func (p *postProcessor) UpdateSnippetsMetadata() error {
 		// OwlBot dest relative paths in ClientRelPaths begin with /, so the
 		// first path segment is the second element.
 		moduleName := strings.Split(clientRelPath, "/")[1]
+		if moduleName == "" {
+			return errors.New("UpdateSnippetsMetadata: moduleName is empty")
+		}
+		log.Println("UpdateSnippetsMetadata: ", clientRelPath)
 		// Skip if dirs option set and this module is not included.
 		if len(p.modules) > 0 && !contains(p.modules, moduleName) {
 			continue
@@ -328,9 +332,14 @@ func (p *postProcessor) UpdateSnippetsMetadata() error {
 			return err
 		}
 		snpDir := filepath.Join(p.googleCloudDir, "internal", "generated", "snippets", clientRelPath)
-		metadataFiles, err := filepath.Glob(filepath.Join(snpDir, "snippet_metadata.*.json"))
+		p := filepath.Join(snpDir, "snippet_metadata.*.json")
+		metadataFiles, err := filepath.Glob(p)
 		if err != nil {
 			return err
+		}
+		if len(metadataFiles) == 0 {
+			log.Println("UpdateSnippetsMetadata: skipping, file not found with glob: ", p)
+			continue
 		}
 		read, err := os.ReadFile(metadataFiles[0])
 		if err != nil {

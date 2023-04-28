@@ -364,6 +364,8 @@ service-configs:
     service-config: dataplex_v1.yaml
   - input-directory: google/cloud/dataproc/v1
     service-config: dataproc_v1.yaml
+    import-path: cloud.google.com/go/dataproc/v2/apiv1
+    rel-path: /dataproc/apiv1
   - input-directory: google/cloud/dataqna/v1alpha
     service-config: dataqna_v1alpha.yaml
   - input-directory: google/cloud/datastream/v1
@@ -635,8 +637,10 @@ service-configs:
     service-config: compute_v1.yaml
   - input-directory: google/cloud/confidentialcomputing/v1
     service-config: confidentialcomputing_v1.yaml
+    import-path: cloud.google.com/go/confidentialcomputing/apiv1
   - input-directory: google/cloud/confidentialcomputing/v1alpha1
     service-config: confidentialcomputing_v1alpha1.yaml
+    import-path: cloud.google.com/go/confidentialcomputing/apiv1alpha1
   - input-directory: google/devtools/containeranalysis/v1beta1
     service-config: containeranalysis_v1beta1.yaml
   - input-directory: google/firestore/admin/v1
