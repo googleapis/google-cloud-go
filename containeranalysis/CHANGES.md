@@ -1,5 +1,12 @@
 # Changes
 
+## [0.9.1](https://github.com/googleapis/google-cloud-go/compare/containeranalysis/v0.9.0...containeranalysis/v0.9.1) (2023-04-25)
+
+
+### Bug Fixes
+
+* **containeranalysis:** Scope GeneratePackagesSummary method to v1beta1 http path ([#7805](https://github.com/googleapis/google-cloud-go/issues/7805)) ([97ebb21](https://github.com/googleapis/google-cloud-go/commit/97ebb214c800a366c068dc7cab97d71e7150226d))
+
 ## [0.9.0](https://github.com/googleapis/google-cloud-go/compare/containeranalysis/v0.8.0...containeranalysis/v0.9.0) (2023-03-22)
 
 

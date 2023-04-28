@@ -35,10 +35,6 @@ const (
 	objectPrefix = "benchmark-obj-"
 )
 
-func randomBool() bool {
-	return rand.Intn(2) == 0
-}
-
 // randomOf3 returns 2 negative and one positive bool, randomly assigning the
 // position of the positive return value.
 func randomOf3() (bool, bool, bool) {

@@ -90,6 +90,7 @@ var commitTimestampSentinel = &struct{}{}
 // transaction records information about a running transaction.
 // This is not safe for concurrent use.
 type transaction struct {
+	id string
 	// readOnly is whether this transaction was constructed
 	// for read-only use, and should yield errors if used
 	// to perform a mutation.
@@ -102,13 +103,15 @@ type transaction struct {
 
 func (d *database) NewReadOnlyTransaction() *transaction {
 	return &transaction{
+		id:       genRandomTransaction(),
 		readOnly: true,
 	}
 }
 
 func (d *database) NewTransaction() *transaction {
 	return &transaction{
-		d: d,
+		id: genRandomTransaction(),
+		d:  d,
 	}
 }
 

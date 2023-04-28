@@ -168,11 +168,8 @@ func (c *MerchantCenterAccountLinkClient) ListMerchantCenterAccountLinks(ctx con
 	return c.internalClient.ListMerchantCenterAccountLinks(ctx, req, opts...)
 }
 
-// CreateMerchantCenterAccountLink creates a MerchantCenterAccountLink.
-//
-// MerchantCenterAccountLink
-// cannot be set to a different oneof field, if so an INVALID_ARGUMENT is
-// returned.
+// CreateMerchantCenterAccountLink creates a
+// MerchantCenterAccountLink.
 func (c *MerchantCenterAccountLinkClient) CreateMerchantCenterAccountLink(ctx context.Context, req *retailpb.CreateMerchantCenterAccountLinkRequest, opts ...gax.CallOption) (*CreateMerchantCenterAccountLinkOperation, error) {
 	return c.internalClient.CreateMerchantCenterAccountLink(ctx, req, opts...)
 }
@@ -183,7 +180,8 @@ func (c *MerchantCenterAccountLinkClient) CreateMerchantCenterAccountLinkOperati
 	return c.internalClient.CreateMerchantCenterAccountLinkOperation(name)
 }
 
-// DeleteMerchantCenterAccountLink deletes a MerchantCenterAccountLink.
+// DeleteMerchantCenterAccountLink deletes a
+// MerchantCenterAccountLink.
 // If the
 // MerchantCenterAccountLink
 // to delete does not exist, a NOT_FOUND error is returned.
@@ -402,7 +400,7 @@ func (c *merchantCenterAccountLinkGRPCClient) ListMerchantCenterAccountLinks(ctx
 }
 
 func (c *merchantCenterAccountLinkGRPCClient) CreateMerchantCenterAccountLink(ctx context.Context, req *retailpb.CreateMerchantCenterAccountLinkRequest, opts ...gax.CallOption) (*CreateMerchantCenterAccountLinkOperation, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "merchant_center_account_link.name", url.QueryEscape(req.GetMerchantCenterAccountLink().GetName())))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateMerchantCenterAccountLink[0:len((*c.CallOptions).CreateMerchantCenterAccountLink):len((*c.CallOptions).CreateMerchantCenterAccountLink)], opts...)
@@ -555,11 +553,8 @@ func (c *merchantCenterAccountLinkRESTClient) ListMerchantCenterAccountLinks(ctx
 	return resp, nil
 }
 
-// CreateMerchantCenterAccountLink creates a MerchantCenterAccountLink.
-//
-// MerchantCenterAccountLink
-// cannot be set to a different oneof field, if so an INVALID_ARGUMENT is
-// returned.
+// CreateMerchantCenterAccountLink creates a
+// MerchantCenterAccountLink.
 func (c *merchantCenterAccountLinkRESTClient) CreateMerchantCenterAccountLink(ctx context.Context, req *retailpb.CreateMerchantCenterAccountLinkRequest, opts ...gax.CallOption) (*CreateMerchantCenterAccountLinkOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetMerchantCenterAccountLink()
@@ -572,16 +567,15 @@ func (c *merchantCenterAccountLinkRESTClient) CreateMerchantCenterAccountLink(ct
 	if err != nil {
 		return nil, err
 	}
-	baseUrl.Path += fmt.Sprintf("/v2alpha/%v", req.GetMerchantCenterAccountLink().GetName())
+	baseUrl.Path += fmt.Sprintf("/v2alpha/%v/merchantCenterAccountLinks", req.GetParent())
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
-	params.Add("parent", fmt.Sprintf("%v", req.GetParent()))
 
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "merchant_center_account_link.name", url.QueryEscape(req.GetMerchantCenterAccountLink().GetName())))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
@@ -629,7 +623,8 @@ func (c *merchantCenterAccountLinkRESTClient) CreateMerchantCenterAccountLink(ct
 	}, nil
 }
 
-// DeleteMerchantCenterAccountLink deletes a MerchantCenterAccountLink.
+// DeleteMerchantCenterAccountLink deletes a
+// MerchantCenterAccountLink.
 // If the
 // MerchantCenterAccountLink
 // to delete does not exist, a NOT_FOUND error is returned.

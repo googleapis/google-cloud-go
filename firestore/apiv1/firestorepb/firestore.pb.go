@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -1713,7 +1713,14 @@ type RunAggregationQueryResponse struct {
 	// Only present on the first response when the request requested to start
 	// a new transaction.
 	Transaction []byte `protobuf:"bytes,2,opt,name=transaction,proto3" json:"transaction,omitempty"`
-	// The time at which the aggregate value is valid for.
+	// The time at which the aggregate result was computed. This is always
+	// monotonically increasing; in this case, the previous AggregationResult in
+	// the result stream are guaranteed not to have changed between their
+	// `read_time` and this one.
+	//
+	// If the query returns no results, a response with `read_time` and no
+	// `result` will be sent, and this represents the time at which the query
+	// was run.
 	ReadTime *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=read_time,json=readTime,proto3" json:"read_time,omitempty"`
 }
 
@@ -4519,10 +4526,10 @@ type FirestoreClient interface {
 	// can be used by RunQuery as starting/end points for the query results.
 	PartitionQuery(ctx context.Context, in *PartitionQueryRequest, opts ...grpc.CallOption) (*PartitionQueryResponse, error)
 	// Streams batches of document updates and deletes, in order. This method is
-	// only available via the gRPC API (not REST).
+	// only available via gRPC or WebChannel (not REST).
 	Write(ctx context.Context, opts ...grpc.CallOption) (Firestore_WriteClient, error)
-	// Listens to changes. This method is only available via the gRPC API (not
-	// REST).
+	// Listens to changes. This method is only available via gRPC or WebChannel
+	// (not REST).
 	Listen(ctx context.Context, opts ...grpc.CallOption) (Firestore_ListenClient, error)
 	// Lists all the collection IDs underneath a document.
 	ListCollectionIds(ctx context.Context, in *ListCollectionIdsRequest, opts ...grpc.CallOption) (*ListCollectionIdsResponse, error)
@@ -4848,10 +4855,10 @@ type FirestoreServer interface {
 	// can be used by RunQuery as starting/end points for the query results.
 	PartitionQuery(context.Context, *PartitionQueryRequest) (*PartitionQueryResponse, error)
 	// Streams batches of document updates and deletes, in order. This method is
-	// only available via the gRPC API (not REST).
+	// only available via gRPC or WebChannel (not REST).
 	Write(Firestore_WriteServer) error
-	// Listens to changes. This method is only available via the gRPC API (not
-	// REST).
+	// Listens to changes. This method is only available via gRPC or WebChannel
+	// (not REST).
 	Listen(Firestore_ListenServer) error
 	// Lists all the collection IDs underneath a document.
 	ListCollectionIds(context.Context, *ListCollectionIdsRequest) (*ListCollectionIdsResponse, error)

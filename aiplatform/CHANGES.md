@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.39.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.38.0...aiplatform/v1.39.0) (2023-04-25)
+
+
+### Features
+
+* **aiplatform:** Add is_default to Tensorboard in aiplatform v1 tensorboard.proto and v1beta1 tensorboard.proto ([87a67b4](https://github.com/googleapis/google-cloud-go/commit/87a67b44b2c7ffc3cea986b255614ea0d21aa6fc))
+
 ## [1.38.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.37.0...aiplatform/v1.38.0) (2023-04-11)
 
 

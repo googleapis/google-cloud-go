@@ -43,6 +43,17 @@ func TestValidatePublishSettings(t *testing.T) {
 			wantErr: false,
 		},
 		{
+			desc: "valid: min",
+			mutateSettings: func(settings *PublishSettings) {
+				settings.CountThreshold = 1
+				settings.ByteThreshold = 1
+				settings.DelayThreshold = time.Nanosecond
+				settings.Timeout = 2 * time.Minute
+				settings.BufferedByteLimit = 1
+			},
+			wantErr: false,
+		},
+		{
 			desc: "invalid: zero CountThreshold",
 			mutateSettings: func(settings *PublishSettings) {
 				settings.CountThreshold = 0
@@ -78,9 +89,9 @@ func TestValidatePublishSettings(t *testing.T) {
 			wantErr: true,
 		},
 		{
-			desc: "invalid: zero Timeout",
+			desc: "invalid: low Timeout",
 			mutateSettings: func(settings *PublishSettings) {
-				settings.Timeout = time.Duration(0)
+				settings.Timeout = 2*time.Minute - time.Nanosecond
 			},
 			wantErr: true,
 		},
@@ -128,6 +139,15 @@ func TestValidateReceiveSettings(t *testing.T) {
 			wantErr: false,
 		},
 		{
+			desc: "valid: min",
+			mutateSettings: func(settings *ReceiveSettings) {
+				settings.MaxOutstandingMessages = 11
+				settings.MaxOutstandingBytes = 1
+				settings.Timeout = 2 * time.Minute
+			},
+			wantErr: false,
+		},
+		{
 			desc: "invalid: zero MaxOutstandingMessages",
 			mutateSettings: func(settings *ReceiveSettings) {
 				settings.MaxOutstandingMessages = 0
@@ -138,6 +158,13 @@ func TestValidateReceiveSettings(t *testing.T) {
 			desc: "invalid: zero MaxOutstandingBytes",
 			mutateSettings: func(settings *ReceiveSettings) {
 				settings.MaxOutstandingBytes = 0
+			},
+			wantErr: true,
+		},
+		{
+			desc: "invalid: low Timeout",
+			mutateSettings: func(settings *ReceiveSettings) {
+				settings.Timeout = 2*time.Minute - time.Nanosecond
 			},
 			wantErr: true,
 		},

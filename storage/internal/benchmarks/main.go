@@ -37,7 +37,10 @@ import (
 	_ "google.golang.org/grpc/balancer/rls"
 )
 
-const codeVersion = "0.6.1" // to keep track of which version of the code a benchmark ran on
+const (
+	codeVersion = "0.8.2" // to keep track of which version of the code a benchmark ran on
+	useDefault  = -1
+)
 
 var (
 	projectID, outputFile string
@@ -63,9 +66,8 @@ type benchmarkOptions struct {
 	minReadOffset int64
 	maxReadOffset int64
 
-	allowCustomClient bool
-	readBufferSize    int
-	writeBufferSize   int
+	readBufferSize  int
+	writeBufferSize int
 
 	minChunkSize int64
 	maxChunkSize int64
@@ -75,6 +77,8 @@ type benchmarkOptions struct {
 
 	timeout         time.Duration
 	appendToResults string
+
+	numClients int
 }
 
 func (b *benchmarkOptions) validate() error {
@@ -140,12 +144,11 @@ func parseFlags() {
 	flag.Int64Var(&opts.minReadOffset, "minimum_read_offset", 0, "minimum read offset in bytes")
 	flag.Int64Var(&opts.maxReadOffset, "maximum_read_offset", 0, "maximum read offset in bytes")
 
-	flag.BoolVar(&opts.allowCustomClient, "allow_custom_HTTP_client", false, "allow custom client configuration")
-	flag.IntVar(&opts.readBufferSize, "read_buffer_size", 4000, "read buffer size in bytes")
-	flag.IntVar(&opts.writeBufferSize, "write_buffer_size", 4000, "write buffer size in bytes")
+	flag.IntVar(&opts.readBufferSize, "read_buffer_size", useDefault, "read buffer size in bytes")
+	flag.IntVar(&opts.writeBufferSize, "write_buffer_size", useDefault, "write buffer size in bytes")
 
-	flag.Int64Var(&opts.minChunkSize, "min_chunksize", 16*1024*1024, "min chunksize in bytes")
-	flag.Int64Var(&opts.maxChunkSize, "max_chunksize", 16*1024*1024, "max chunksize in bytes")
+	flag.Int64Var(&opts.minChunkSize, "min_chunksize", useDefault, "min chunksize in bytes")
+	flag.Int64Var(&opts.maxChunkSize, "max_chunksize", useDefault, "max chunksize in bytes")
 
 	flag.IntVar(&opts.connPoolSize, "connection_pool_size", 4, "GRPC connection pool size")
 
@@ -154,6 +157,8 @@ func parseFlags() {
 	flag.DurationVar(&opts.timeout, "timeout", time.Hour, "timeout")
 	flag.StringVar(&outputFile, "o", "", "file to output results to - if empty, will output to stdout")
 	flag.StringVar(&opts.appendToResults, "append_labels", "", "labels added to cloud monitoring output")
+
+	flag.IntVar(&opts.numClients, "clients", 1, "number of storage clients to be used; if Mixed APIs, then twice the clients are created")
 
 	flag.Parse()
 
@@ -184,8 +189,6 @@ func main() {
 	log.SetOutput(os.Stderr)
 	parseFlags()
 	rand.Seed(time.Now().UnixNano())
-	closePools := initializeClientPools(opts)
-	defer closePools()
 
 	start := time.Now()
 	ctx, cancel := context.WithDeadline(context.Background(), start.Add(opts.timeout))
@@ -219,6 +222,9 @@ func main() {
 	if err := opts.validate(); err != nil {
 		log.Fatal(err)
 	}
+
+	closePools := initializeClientPools(ctx, opts)
+	defer closePools()
 
 	w := os.Stdout
 
@@ -290,41 +296,27 @@ type benchmarkResult struct {
 	endMem        runtime.MemStats
 }
 
-func (br *benchmarkResult) selectParams(opts benchmarkOptions) {
-	api := opts.api
-	if api == mixedAPIs {
-		if randomBool() {
-			api = xmlAPI
-		} else {
-			api = grpcAPI
-		}
+func (br *benchmarkResult) selectReadParams(opts benchmarkOptions, api benchmarkAPI) {
+	br.params = randomizedParams{
+		appBufferSize: opts.readBufferSize,
+		crc32cEnabled: true,  // crc32c is always verified in the Go GCS library
+		md5Enabled:    false, // we only need one integrity validation
+		api:           api,
+		rangeOffset:   randomInt64(opts.minReadOffset, opts.maxReadOffset),
 	}
 
-	if br.isRead {
-		if api == jsonAPI {
-			api = xmlAPI
+	if opts.readBufferSize == useDefault {
+		switch api {
+		case xmlAPI, jsonAPI:
+			br.params.appBufferSize = 4 << 10 // default for HTTP
+		case grpcAPI, directPath:
+			br.params.appBufferSize = 32 << 10 // default for GRPC
 		}
-
-		br.params = randomizedParams{
-			appBufferSize: opts.readBufferSize,
-			chunkSize:     -1,    // not used for reads
-			crc32cEnabled: true,  // crc32c is always verified in the Go GCS library
-			md5Enabled:    false, // we only need one integrity validation
-			api:           api,
-			rangeOffset:   randomInt64(opts.minReadOffset, opts.maxReadOffset),
-		}
-
-		if !opts.allowCustomClient {
-			br.params.appBufferSize = 4000 // default for HTTP
-
-			if api == grpcAPI {
-				br.params.appBufferSize = 32000 // default for GRPC
-			}
-		}
-
-		return
 	}
+}
 
+func (br *benchmarkResult) selectWriteParams(opts benchmarkOptions, api benchmarkAPI) {
+	// There is no XML implementation for writes
 	if api == xmlAPI {
 		api = jsonAPI
 	}
@@ -338,19 +330,21 @@ func (br *benchmarkResult) selectParams(opts benchmarkOptions) {
 		api:           api,
 	}
 
-	if !opts.allowCustomClient {
-		// get a writer on an object to check the default chunksize
-		// object does not need to exist
+	if opts.minChunkSize == useDefault || opts.maxChunkSize == useDefault {
+		// get a writer on a non-existing object to check the default chunksize
 		if c, err := storage.NewClient(context.Background()); err != nil {
 			log.Printf("storage.NewClient: %v", err)
 		} else {
 			w := c.Bucket("").Object("").NewWriter(context.Background())
 			br.params.chunkSize = int64(w.ChunkSize)
 		}
-
-		br.params.appBufferSize = 4000 // default for HTTP
-		if api == grpcAPI {
-			br.params.appBufferSize = 32000 // default for GRPC
+	}
+	if opts.writeBufferSize == useDefault {
+		switch api {
+		case xmlAPI, jsonAPI:
+			br.params.appBufferSize = 4 << 10 // default for HTTP
+		case grpcAPI, directPath:
+			br.params.appBufferSize = 32 << 10 // default for GRPC
 		}
 	}
 }
