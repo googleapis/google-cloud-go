@@ -43,7 +43,6 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-//
 // A purpose for each policy engine requiring such an integration. A single
 // policy engine may have multiple purposes defined, however a TagKey may only
 // specify a single purpose.

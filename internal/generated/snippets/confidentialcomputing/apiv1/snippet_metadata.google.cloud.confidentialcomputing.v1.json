@@ -1,25 +1,25 @@
 {
   "clientLibrary": {
-    "name": "cloud.google.com/go/confidentialcomputing/apiv1alpha1",
-    "version": "0.0.0",
+    "name": "cloud.google.com/go/confidentialcomputing/apiv1",
+    "version": "$VERSION",
     "language": "GO",
     "apis": [
       {
-        "id": "google.cloud.confidentialcomputing.v1alpha1",
-        "version": "v1alpha1"
+        "id": "google.cloud.confidentialcomputing.v1",
+        "version": "v1"
       }
     ]
   },
   "snippets": [
     {
-      "regionTag": "confidentialcomputing_v1alpha1_generated_ConfidentialComputing_CreateChallenge_sync",
+      "regionTag": "confidentialcomputing_v1_generated_ConfidentialComputing_CreateChallenge_sync",
       "title": "confidentialcomputing CreateChallenge Sample",
       "description": "CreateChallenge creates a new Challenge in a given project and location.",
       "file": "Client/CreateChallenge/main.go",
       "language": "GO",
       "clientMethod": {
         "shortName": "CreateChallenge",
-        "fullName": "google.cloud.confidentialcomputing.v1alpha1.Client.CreateChallenge",
+        "fullName": "google.cloud.confidentialcomputing.v1.Client.CreateChallenge",
         "parameters": [
           {
             "type": "context.Context",
@@ -37,14 +37,14 @@
         "resultType": "*confidentialcomputingpb.Challenge",
         "client": {
           "shortName": "Client",
-          "fullName": "google.cloud.confidentialcomputing.v1alpha1.Client"
+          "fullName": "google.cloud.confidentialcomputing.v1.Client"
         },
         "method": {
           "shortName": "CreateChallenge",
-          "fullName": "google.cloud.confidentialcomputing.v1alpha1.ConfidentialComputing.CreateChallenge",
+          "fullName": "google.cloud.confidentialcomputing.v1.ConfidentialComputing.CreateChallenge",
           "service": {
             "shortName": "ConfidentialComputing",
-            "fullName": "google.cloud.confidentialcomputing.v1alpha1.ConfidentialComputing"
+            "fullName": "google.cloud.confidentialcomputing.v1.ConfidentialComputing"
           }
         }
       },
@@ -58,14 +58,14 @@
       ]
     },
     {
-      "regionTag": "confidentialcomputing_v1alpha1_generated_ConfidentialComputing_GetLocation_sync",
+      "regionTag": "confidentialcomputing_v1_generated_ConfidentialComputing_GetLocation_sync",
       "title": "confidentialcomputing GetLocation Sample",
       "description": "GetLocation gets information about a location.",
       "file": "Client/GetLocation/main.go",
       "language": "GO",
       "clientMethod": {
         "shortName": "GetLocation",
-        "fullName": "google.cloud.confidentialcomputing.v1alpha1.Client.GetLocation",
+        "fullName": "google.cloud.confidentialcomputing.v1.Client.GetLocation",
         "parameters": [
           {
             "type": "context.Context",
@@ -83,7 +83,7 @@
         "resultType": "*locationpb.Location",
         "client": {
           "shortName": "Client",
-          "fullName": "google.cloud.confidentialcomputing.v1alpha1.Client"
+          "fullName": "google.cloud.confidentialcomputing.v1.Client"
         },
         "method": {
           "shortName": "GetLocation",
@@ -104,14 +104,14 @@
       ]
     },
     {
-      "regionTag": "confidentialcomputing_v1alpha1_generated_ConfidentialComputing_ListLocations_sync",
+      "regionTag": "confidentialcomputing_v1_generated_ConfidentialComputing_ListLocations_sync",
       "title": "confidentialcomputing ListLocations Sample",
       "description": "ListLocations lists information about the supported locations for this service.",
       "file": "Client/ListLocations/main.go",
       "language": "GO",
       "clientMethod": {
         "shortName": "ListLocations",
-        "fullName": "google.cloud.confidentialcomputing.v1alpha1.Client.ListLocations",
+        "fullName": "google.cloud.confidentialcomputing.v1.Client.ListLocations",
         "parameters": [
           {
             "type": "context.Context",
@@ -129,7 +129,7 @@
         "resultType": "LocationIterator",
         "client": {
           "shortName": "Client",
-          "fullName": "google.cloud.confidentialcomputing.v1alpha1.Client"
+          "fullName": "google.cloud.confidentialcomputing.v1.Client"
         },
         "method": {
           "shortName": "ListLocations",
@@ -150,14 +150,14 @@
       ]
     },
     {
-      "regionTag": "confidentialcomputing_v1alpha1_generated_ConfidentialComputing_VerifyAttestation_sync",
+      "regionTag": "confidentialcomputing_v1_generated_ConfidentialComputing_VerifyAttestation_sync",
       "title": "confidentialcomputing VerifyAttestation Sample",
       "description": "VerifyAttestation verifies the provided attestation info, returning a signed OIDC token.",
       "file": "Client/VerifyAttestation/main.go",
       "language": "GO",
       "clientMethod": {
         "shortName": "VerifyAttestation",
-        "fullName": "google.cloud.confidentialcomputing.v1alpha1.Client.VerifyAttestation",
+        "fullName": "google.cloud.confidentialcomputing.v1.Client.VerifyAttestation",
         "parameters": [
           {
             "type": "context.Context",
@@ -175,14 +175,14 @@
         "resultType": "*confidentialcomputingpb.VerifyAttestationResponse",
         "client": {
           "shortName": "Client",
-          "fullName": "google.cloud.confidentialcomputing.v1alpha1.Client"
+          "fullName": "google.cloud.confidentialcomputing.v1.Client"
         },
         "method": {
           "shortName": "VerifyAttestation",
-          "fullName": "google.cloud.confidentialcomputing.v1alpha1.ConfidentialComputing.VerifyAttestation",
+          "fullName": "google.cloud.confidentialcomputing.v1.ConfidentialComputing.VerifyAttestation",
           "service": {
             "shortName": "ConfidentialComputing",
-            "fullName": "google.cloud.confidentialcomputing.v1alpha1.ConfidentialComputing"
+            "fullName": "google.cloud.confidentialcomputing.v1.ConfidentialComputing"
           }
         }
       },
