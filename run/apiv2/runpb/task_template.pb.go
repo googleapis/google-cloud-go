@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -54,6 +54,7 @@ type TaskTemplate struct {
 	// Max allowed time duration the Task may be active before the system will
 	// actively try to mark it failed and kill associated containers. This applies
 	// per attempt of a task, meaning each retry can run for the full timeout.
+	// Defaults to 600 seconds.
 	Timeout *durationpb.Duration `protobuf:"bytes,4,opt,name=timeout,proto3" json:"timeout,omitempty"`
 	// Email address of the IAM service account associated with the Task of a
 	// Job. The service account represents the identity of the
@@ -172,6 +173,7 @@ type isTaskTemplate_Retries interface {
 
 type TaskTemplate_MaxRetries struct {
 	// Number of retries allowed per Task, before marking this Task failed.
+	// Defaults to 3.
 	MaxRetries int32 `protobuf:"varint,3,opt,name=max_retries,json=maxRetries,proto3,oneof"`
 }
 
