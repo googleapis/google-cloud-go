@@ -94,7 +94,12 @@ func (b *benchmarkOptions) validate() error {
 		return fmt.Errorf("read offset specified but no range size specified")
 	}
 
-	if b.maxReadOffset > b.minObjectSize-b.rangeSize {
+	minObjSize := b.objectSize
+	if minObjSize == 0 {
+		minObjSize = b.minObjectSize
+	}
+
+	if b.maxReadOffset > minObjSize-b.rangeSize {
 		return fmt.Errorf("read offset (%d) is too large for the selected range size (%d) - object might run out of bytes before reading complete rangeSize", b.maxReadOffset, b.rangeSize)
 	}
 	return nil

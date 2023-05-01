@@ -56,6 +56,7 @@ func (p *postProcessor) loadConfig() error {
 			InputDirectory string `yaml:"input-directory"`
 			ServiceConfig  string `yaml:"service-config"`
 			ImportPath     string `yaml:"import-path"`
+			RelPath        string `yaml:"rel-path"`
 		} `yaml:"service-configs"`
 		ManualClients []*ManifestEntry `yaml:"manual-clients"`
 	}
@@ -90,17 +91,22 @@ func (p *postProcessor) loadConfig() error {
 		c.GoogleapisToImportPath[v.InputDirectory] = &libraryInfo{
 			ServiceConfig: v.ServiceConfig,
 			ImportPath:    v.ImportPath,
+			RelPath:       v.RelPath,
 		}
 	}
 	for _, v := range owlBotConfig.DeepCopyRegex {
-		c.ClientRelPaths = append(c.ClientRelPaths, v.Dest)
 		i := strings.Index(v.Source, "/cloud.google.com/go")
 		li, ok := c.GoogleapisToImportPath[v.Source[1:i]]
 		if !ok {
 			return fmt.Errorf("unable to find value for %q, it may be missing a service config entry", v.Source[1:i])
 		}
-		li.ImportPath = v.Source[i+1:]
-		li.RelPath = v.Dest
+		if li.ImportPath == "" {
+			li.ImportPath = v.Source[i+1:]
+		}
+		if li.RelPath == "" {
+			li.RelPath = strings.TrimPrefix(li.ImportPath, "cloud.google.com/go")
+		}
+		c.ClientRelPaths = append(c.ClientRelPaths, li.RelPath)
 	}
 	p.config = c
 	return nil
