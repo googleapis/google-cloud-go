@@ -38,7 +38,7 @@ import (
 )
 
 const (
-	codeVersion = "0.8.2" // to keep track of which version of the code a benchmark ran on
+	codeVersion = "0.8.3" // to keep track of which version of the code a benchmark ran on
 	useDefault  = -1
 )
 
@@ -75,8 +75,9 @@ type benchmarkOptions struct {
 	forceGC      bool
 	connPoolSize int
 
-	timeout         time.Duration
-	appendToResults string
+	timeout time.Duration
+
+	continueOnFail bool
 
 	numClients int
 }
@@ -161,7 +162,8 @@ func parseFlags() {
 
 	flag.DurationVar(&opts.timeout, "timeout", time.Hour, "timeout")
 	flag.StringVar(&outputFile, "o", "", "file to output results to - if empty, will output to stdout")
-	flag.StringVar(&opts.appendToResults, "append_labels", "", "labels added to cloud monitoring output")
+
+	flag.BoolVar(&opts.continueOnFail, "continue_on_fail", false, "continue even if a run fails")
 
 	flag.IntVar(&opts.numClients, "clients", 1, "number of storage clients to be used; if Mixed APIs, then twice the clients are created")
 
@@ -251,30 +253,55 @@ func main() {
 	recordResultGroup, _ := errgroup.WithContext(ctx)
 	startRecordingResults(w, recordResultGroup, opts.outType)
 
-	benchGroup, _ := errgroup.WithContext(ctx)
+	benchGroup, ctx := errgroup.WithContext(ctx)
 	benchGroup.SetLimit(opts.numWorkers)
+
+	exitWithErrorCode := false
 
 	// Run benchmarks
 	for i := 0; i < opts.numSamples && time.Since(start) < opts.timeout; i++ {
 		benchGroup.Go(func() error {
 			benchmark := w1r3{opts: opts, bucketName: opts.bucket}
-			if err := benchmark.setup(); err != nil {
-				log.Fatalf("run setup failed: %v", err)
+			if err := benchmark.setup(ctx); err != nil {
+				// If setup failed once, it will probably continue failing.
+				// Returning the error here will cancel the context to stop the
+				// benchmarking.
+				return fmt.Errorf("run setup failed: %v", err)
 			}
 			if err := benchmark.run(ctx); err != nil {
-				log.Fatalf("run failed: %v", err)
+				// If a run fails, we continue, as it could be a temporary issue.
+				// We log the error and make sure the program exits with an error
+				// to indicate that we did see an error, even though we continue.
+				log.Printf("run failed: %v", err)
+				exitWithErrorCode = true
+			}
+			if err := benchmark.cleanup(); err != nil {
+				// If cleanup fails, we continue, as a single fail is not critical.
+				// We log the error and make sure the program exits with an error
+				// to indicate that we did see an error, even though we continue.
+				// Cleanup may be expected to fail if there is an issue with the run.
+				log.Printf("run cleanup failed: %v", err)
+				exitWithErrorCode = true
 			}
 			return nil
 		})
 	}
 
-	benchGroup.Wait()
+	err := benchGroup.Wait()
 	close(results)
 	recordResultGroup.Wait()
 
 	if outputFile != "" {
 		// if sending output to a file, we can use stdout for informational logs
 		fmt.Printf("\nTotal time running: %s\n", time.Since(start).Round(time.Second))
+	}
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	if exitWithErrorCode {
+		os.Exit(1)
 	}
 }
 
@@ -375,10 +402,9 @@ func (br *benchmarkResult) cloudMonitoring() []byte {
 	status := "OK"
 	if br.err != nil {
 		status = "FAIL"
-
-		if br.timedOut {
-			status = "TIMEOUT"
-		}
+	}
+	if br.timedOut {
+		status = "TIMEOUT"
 	}
 
 	throughput := float64(br.objectSize) / float64(br.elapsedTime.Seconds())
@@ -454,11 +480,6 @@ func (br *benchmarkResult) cloudMonitoring() []byte {
 		sb.WriteString(makeStringQuoted(sanitizeKey(dep), ver))
 	}
 
-	if opts.appendToResults != "" {
-		sb.WriteString(",")
-		sb.WriteString(opts.appendToResults)
-	}
-
 	sb.WriteString("} ")
 	sb.WriteString(strconv.FormatFloat(throughput, 'f', 2, 64))
 
@@ -471,9 +492,13 @@ func (br *benchmarkResult) csv() []string {
 	if br.isRead {
 		op = fmt.Sprintf("READ[%d]", br.readIteration)
 	}
+
 	status := "OK"
 	if br.err != nil {
 		status = "FAIL"
+	}
+	if br.timedOut {
+		status = "TIMEOUT"
 	}
 
 	record := make(map[string]string)

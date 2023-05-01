@@ -25,12 +25,13 @@ import (
 )
 
 type downloadOpts struct {
-	client      *storage.Client
-	objectSize  int64
-	bucket      string
-	object      string
-	rangeStart  int64
-	rangeLength int64
+	client              *storage.Client
+	objectSize          int64
+	bucket              string
+	object              string
+	rangeStart          int64
+	rangeLength         int64
+	downloadToDirectory string
 }
 
 func downloadBenchmark(ctx context.Context, dopts downloadOpts) (elapsedTime time.Duration, rerr error) {
@@ -47,21 +48,16 @@ func downloadBenchmark(ctx context.Context, dopts downloadOpts) (elapsedTime tim
 	defer cancel()
 
 	// Create file to download to
-	f, err := os.CreateTemp("", objectPrefix)
+	f, err := os.CreateTemp(dopts.downloadToDirectory, objectPrefix)
 	if err != nil {
 		rerr = fmt.Errorf("os.Create: %w", err)
 		return
 	}
 	defer func() {
 		closeErr := f.Close()
-		removeErr := os.Remove(f.Name())
 		// if we don't have another error to return, return error for closing file
-		// if that error is also nil, return removeErr
 		if rerr == nil {
-			rerr = removeErr
-			if closeErr != nil {
-				rerr = closeErr
-			}
+			rerr = closeErr
 		}
 	}()
 
