@@ -316,9 +316,9 @@ func (p *postProcessor) UpdateSnippetsMetadata() error {
 		// first path segment is the second element.
 		moduleName := strings.Split(clientRelPath, "/")[1]
 		if moduleName == "" {
-			return errors.New("UpdateSnippetsMetadata: moduleName is empty")
+			return fmt.Errorf("unable to parse module name for %v", clientRelPath)
 		}
-		log.Println("UpdateSnippetsMetadata: ", clientRelPath)
+		log.Println(clientRelPath)
 		// Skip if dirs option set and this module is not included.
 		if len(p.modules) > 0 && !contains(p.modules, moduleName) {
 			continue
@@ -338,7 +338,7 @@ func (p *postProcessor) UpdateSnippetsMetadata() error {
 			return err
 		}
 		if len(metadataFiles) == 0 {
-			log.Println("UpdateSnippetsMetadata: skipping, file not found with glob: ", p)
+			log.Println("skipping, file not found with glob: ", p)
 			continue
 		}
 		read, err := os.ReadFile(metadataFiles[0])

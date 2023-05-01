@@ -102,11 +102,9 @@ func (p *postProcessor) loadConfig() error {
 		}
 		if li.ImportPath == "" {
 			li.ImportPath = v.Source[i+1:]
-			fmt.Printf("set li.ImportPath from v.Source: %s", v.Source)
 		}
 		if li.RelPath == "" {
 			li.RelPath = strings.TrimPrefix(li.ImportPath, "cloud.google.com/go")
-			fmt.Printf("set li.RelPath from li.ImportPath: %s", li.ImportPath)
 		}
 		c.ClientRelPaths = append(c.ClientRelPaths, li.RelPath)
 	}
