@@ -31,6 +31,5 @@ This runs 1000 iterations on 512kib to 2Gib files in the background, sending out
 | -connection_pool_size | GRPC connection pool size | any positive integer | 4 |
 | -force_garbage_collection | whether to force garbage collection <br> before every write or read benchmark |  `true` or `false` (present/not present) | `false` |
 | -timeout | timeout (maximum time running benchmarks) <br> the program may run for longer while it finishes running processes | any [time.Duration](https://pkg.go.dev/time#Duration) | `1h` |
-| -labels | labels added to cloud monitoring output (ignored when outputting as csv) | any string; should be in the format: <br> `stringKey=\"value\",intKey=3,boolKey=true` | empty |
 
 \* required values
