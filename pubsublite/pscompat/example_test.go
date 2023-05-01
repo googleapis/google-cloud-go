@@ -24,6 +24,7 @@ import (
 	"cloud.google.com/go/pubsub"
 	api "cloud.google.com/go/pubsublite/apiv1"
 	"cloud.google.com/go/pubsublite/pscompat"
+	"github.com/golang/protobuf/ptypes/timestamp"
 	"golang.org/x/oauth2/google"
 	"golang.org/x/sync/errgroup"
 	"google.golang.org/api/option"
@@ -220,6 +221,62 @@ func ExamplePublisherClient_Publish_errorHandling() {
 			// TODO: Inspect and handle fatal error.
 		}
 	}
+}
+
+func ExampleEncodeEventTimeAttribute() {
+	ctx := context.Background()
+	const topic = "projects/my-project/locations/region-or-zone/topics/my-topic"
+	publisher, err := pscompat.NewPublisherClient(ctx, topic)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer publisher.Stop()
+
+	v, err := pscompat.EncodeEventTimeAttribute(&timestamp.Timestamp{
+		Seconds: 1672531200,
+		Nanos:   500000000,
+	})
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	r := publisher.Publish(ctx, &pubsub.Message{
+		Data: []byte("hello world"),
+		Attributes: map[string]string{
+			pscompat.EventTimeAttributeKey: v,
+		},
+	})
+	_, err = r.Get(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleDecodeEventTimeAttribute() {
+	ctx := context.Background()
+	const subscription = "projects/my-project/locations/region-or-zone/subscriptions/my-subscription"
+	subscriber, err := pscompat.NewSubscriberClient(ctx, subscription)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	cctx, cancel := context.WithCancel(ctx)
+	err = subscriber.Receive(cctx, func(ctx context.Context, m *pubsub.Message) {
+		m.Ack()
+		if v, ok := m.Attributes[pscompat.EventTimeAttributeKey]; ok {
+			eventTime, err := pscompat.DecodeEventTimeAttribute(v)
+			if err != nil {
+				// TODO: Handle error.
+			}
+			fmt.Printf("Received message with event time: %v\n", eventTime)
+		}
+	})
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	// Call cancel from the receiver callback or another goroutine to stop
+	// receiving.
+	cancel()
 }
 
 func ExampleSubscriberClient_Receive() {
