@@ -628,15 +628,15 @@ func (c *Client) PartitionQuery(ctx context.Context, req *firestorepb.PartitionQ
 }
 
 // Write streams batches of document updates and deletes, in order. This method is
-// only available via the gRPC API (not REST).
+// only available via gRPC or WebChannel (not REST).
 //
 // This method is not supported for the REST transport.
 func (c *Client) Write(ctx context.Context, opts ...gax.CallOption) (firestorepb.Firestore_WriteClient, error) {
 	return c.internalClient.Write(ctx, opts...)
 }
 
-// Listen listens to changes. This method is only available via the gRPC API (not
-// REST).
+// Listen listens to changes. This method is only available via gRPC or WebChannel
+// (not REST).
 //
 // This method is not supported for the REST transport.
 func (c *Client) Listen(ctx context.Context, opts ...gax.CallOption) (firestorepb.Firestore_ListenClient, error) {
@@ -2229,15 +2229,15 @@ func (c *restClient) PartitionQuery(ctx context.Context, req *firestorepb.Partit
 }
 
 // Write streams batches of document updates and deletes, in order. This method is
-// only available via the gRPC API (not REST).
+// only available via gRPC or WebChannel (not REST).
 //
 // This method is not supported for the REST transport.
 func (c *restClient) Write(ctx context.Context, opts ...gax.CallOption) (firestorepb.Firestore_WriteClient, error) {
 	return nil, fmt.Errorf("Write not yet supported for REST clients")
 }
 
-// Listen listens to changes. This method is only available via the gRPC API (not
-// REST).
+// Listen listens to changes. This method is only available via gRPC or WebChannel
+// (not REST).
 //
 // This method is not supported for the REST transport.
 func (c *restClient) Listen(ctx context.Context, opts ...gax.CallOption) (firestorepb.Firestore_ListenClient, error) {
