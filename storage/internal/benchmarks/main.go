@@ -248,7 +248,7 @@ func main() {
 	recordResultGroup, _ := errgroup.WithContext(ctx)
 	startRecordingResults(w, recordResultGroup, opts.outType)
 
-	benchGroup, _ := errgroup.WithContext(ctx)
+	benchGroup, ctx := errgroup.WithContext(ctx)
 	benchGroup.SetLimit(opts.numWorkers)
 
 	exitWithErrorCode := false
