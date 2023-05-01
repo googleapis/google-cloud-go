@@ -143,6 +143,11 @@ type AnalyticsAdminCallOptions struct {
 	CreateExpandedDataSet                        []gax.CallOption
 	UpdateExpandedDataSet                        []gax.CallOption
 	DeleteExpandedDataSet                        []gax.CallOption
+	GetChannelGroup                              []gax.CallOption
+	ListChannelGroups                            []gax.CallOption
+	CreateChannelGroup                           []gax.CallOption
+	UpdateChannelGroup                           []gax.CallOption
+	DeleteChannelGroup                           []gax.CallOption
 	SetAutomatedGa4ConfigurationOptOut           []gax.CallOption
 	FetchAutomatedGa4ConfigurationOptOut         []gax.CallOption
 	GetBigQueryLink                              []gax.CallOption
@@ -152,6 +157,7 @@ type AnalyticsAdminCallOptions struct {
 	CreateConnectedSiteTag                       []gax.CallOption
 	DeleteConnectedSiteTag                       []gax.CallOption
 	ListConnectedSiteTags                        []gax.CallOption
+	FetchConnectedGa4Property                    []gax.CallOption
 }
 
 func defaultAnalyticsAdminGRPCClientOptions() []option.ClientOption {
@@ -1036,6 +1042,66 @@ func defaultAnalyticsAdminCallOptions() *AnalyticsAdminCallOptions {
 				})
 			}),
 		},
+		GetChannelGroup: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		ListChannelGroups: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		CreateChannelGroup: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		UpdateChannelGroup: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		DeleteChannelGroup: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 		SetAutomatedGa4ConfigurationOptOut: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
@@ -1111,6 +1177,18 @@ func defaultAnalyticsAdminCallOptions() *AnalyticsAdminCallOptions {
 			}),
 		},
 		ListConnectedSiteTags: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		FetchConnectedGa4Property: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -1925,6 +2003,61 @@ func defaultAnalyticsAdminRESTCallOptions() *AnalyticsAdminCallOptions {
 					http.StatusInternalServerError)
 			}),
 		},
+		GetChannelGroup: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusInternalServerError)
+			}),
+		},
+		ListChannelGroups: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusInternalServerError)
+			}),
+		},
+		CreateChannelGroup: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusInternalServerError)
+			}),
+		},
+		UpdateChannelGroup: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusInternalServerError)
+			}),
+		},
+		DeleteChannelGroup: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusInternalServerError)
+			}),
+		},
 		SetAutomatedGa4ConfigurationOptOut: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
@@ -1994,6 +2127,17 @@ func defaultAnalyticsAdminRESTCallOptions() *AnalyticsAdminCallOptions {
 			}),
 		},
 		ListConnectedSiteTags: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusInternalServerError)
+			}),
+		},
+		FetchConnectedGa4Property: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -2110,6 +2254,11 @@ type internalAnalyticsAdminClient interface {
 	CreateExpandedDataSet(context.Context, *adminpb.CreateExpandedDataSetRequest, ...gax.CallOption) (*adminpb.ExpandedDataSet, error)
 	UpdateExpandedDataSet(context.Context, *adminpb.UpdateExpandedDataSetRequest, ...gax.CallOption) (*adminpb.ExpandedDataSet, error)
 	DeleteExpandedDataSet(context.Context, *adminpb.DeleteExpandedDataSetRequest, ...gax.CallOption) error
+	GetChannelGroup(context.Context, *adminpb.GetChannelGroupRequest, ...gax.CallOption) (*adminpb.ChannelGroup, error)
+	ListChannelGroups(context.Context, *adminpb.ListChannelGroupsRequest, ...gax.CallOption) *ChannelGroupIterator
+	CreateChannelGroup(context.Context, *adminpb.CreateChannelGroupRequest, ...gax.CallOption) (*adminpb.ChannelGroup, error)
+	UpdateChannelGroup(context.Context, *adminpb.UpdateChannelGroupRequest, ...gax.CallOption) (*adminpb.ChannelGroup, error)
+	DeleteChannelGroup(context.Context, *adminpb.DeleteChannelGroupRequest, ...gax.CallOption) error
 	SetAutomatedGa4ConfigurationOptOut(context.Context, *adminpb.SetAutomatedGa4ConfigurationOptOutRequest, ...gax.CallOption) (*adminpb.SetAutomatedGa4ConfigurationOptOutResponse, error)
 	FetchAutomatedGa4ConfigurationOptOut(context.Context, *adminpb.FetchAutomatedGa4ConfigurationOptOutRequest, ...gax.CallOption) (*adminpb.FetchAutomatedGa4ConfigurationOptOutResponse, error)
 	GetBigQueryLink(context.Context, *adminpb.GetBigQueryLinkRequest, ...gax.CallOption) (*adminpb.BigQueryLink, error)
@@ -2119,6 +2268,7 @@ type internalAnalyticsAdminClient interface {
 	CreateConnectedSiteTag(context.Context, *adminpb.CreateConnectedSiteTagRequest, ...gax.CallOption) (*adminpb.CreateConnectedSiteTagResponse, error)
 	DeleteConnectedSiteTag(context.Context, *adminpb.DeleteConnectedSiteTagRequest, ...gax.CallOption) error
 	ListConnectedSiteTags(context.Context, *adminpb.ListConnectedSiteTagsRequest, ...gax.CallOption) (*adminpb.ListConnectedSiteTagsResponse, error)
+	FetchConnectedGa4Property(context.Context, *adminpb.FetchConnectedGa4PropertyRequest, ...gax.CallOption) (*adminpb.FetchConnectedGa4PropertyResponse, error)
 }
 
 // AnalyticsAdminClient is a client for interacting with Google Analytics Admin API.
@@ -2737,6 +2887,31 @@ func (c *AnalyticsAdminClient) DeleteExpandedDataSet(ctx context.Context, req *a
 	return c.internalClient.DeleteExpandedDataSet(ctx, req, opts...)
 }
 
+// GetChannelGroup lookup for a single ChannelGroup.
+func (c *AnalyticsAdminClient) GetChannelGroup(ctx context.Context, req *adminpb.GetChannelGroupRequest, opts ...gax.CallOption) (*adminpb.ChannelGroup, error) {
+	return c.internalClient.GetChannelGroup(ctx, req, opts...)
+}
+
+// ListChannelGroups lists ChannelGroups on a property.
+func (c *AnalyticsAdminClient) ListChannelGroups(ctx context.Context, req *adminpb.ListChannelGroupsRequest, opts ...gax.CallOption) *ChannelGroupIterator {
+	return c.internalClient.ListChannelGroups(ctx, req, opts...)
+}
+
+// CreateChannelGroup creates a ChannelGroup.
+func (c *AnalyticsAdminClient) CreateChannelGroup(ctx context.Context, req *adminpb.CreateChannelGroupRequest, opts ...gax.CallOption) (*adminpb.ChannelGroup, error) {
+	return c.internalClient.CreateChannelGroup(ctx, req, opts...)
+}
+
+// UpdateChannelGroup updates a ChannelGroup.
+func (c *AnalyticsAdminClient) UpdateChannelGroup(ctx context.Context, req *adminpb.UpdateChannelGroupRequest, opts ...gax.CallOption) (*adminpb.ChannelGroup, error) {
+	return c.internalClient.UpdateChannelGroup(ctx, req, opts...)
+}
+
+// DeleteChannelGroup deletes a ChannelGroup on a property.
+func (c *AnalyticsAdminClient) DeleteChannelGroup(ctx context.Context, req *adminpb.DeleteChannelGroupRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteChannelGroup(ctx, req, opts...)
+}
+
 // SetAutomatedGa4ConfigurationOptOut sets the opt out status for the automated GA4 setup process for a UA
 // property.
 // Note: this has no effect on GA4 property.
@@ -2793,6 +2968,12 @@ func (c *AnalyticsAdminClient) DeleteConnectedSiteTag(ctx context.Context, req *
 // property.
 func (c *AnalyticsAdminClient) ListConnectedSiteTags(ctx context.Context, req *adminpb.ListConnectedSiteTagsRequest, opts ...gax.CallOption) (*adminpb.ListConnectedSiteTagsResponse, error) {
 	return c.internalClient.ListConnectedSiteTags(ctx, req, opts...)
+}
+
+// FetchConnectedGa4Property given a specified UA property, looks up the GA4 property connected to it.
+// Note: this cannot be used with GA4 properties.
+func (c *AnalyticsAdminClient) FetchConnectedGa4Property(ctx context.Context, req *adminpb.FetchConnectedGa4PropertyRequest, opts ...gax.CallOption) (*adminpb.FetchConnectedGa4PropertyResponse, error) {
+	return c.internalClient.FetchConnectedGa4Property(ctx, req, opts...)
 }
 
 // analyticsAdminGRPCClient is a client for interacting with Google Analytics Admin API over gRPC transport.
@@ -5459,6 +5640,135 @@ func (c *analyticsAdminGRPCClient) DeleteExpandedDataSet(ctx context.Context, re
 	return err
 }
 
+func (c *analyticsAdminGRPCClient) GetChannelGroup(ctx context.Context, req *adminpb.GetChannelGroupRequest, opts ...gax.CallOption) (*adminpb.ChannelGroup, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).GetChannelGroup[0:len((*c.CallOptions).GetChannelGroup):len((*c.CallOptions).GetChannelGroup)], opts...)
+	var resp *adminpb.ChannelGroup
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.analyticsAdminClient.GetChannelGroup(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *analyticsAdminGRPCClient) ListChannelGroups(ctx context.Context, req *adminpb.ListChannelGroupsRequest, opts ...gax.CallOption) *ChannelGroupIterator {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).ListChannelGroups[0:len((*c.CallOptions).ListChannelGroups):len((*c.CallOptions).ListChannelGroups)], opts...)
+	it := &ChannelGroupIterator{}
+	req = proto.Clone(req).(*adminpb.ListChannelGroupsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.ChannelGroup, string, error) {
+		resp := &adminpb.ListChannelGroupsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.analyticsAdminClient.ListChannelGroups(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetChannelGroups(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *analyticsAdminGRPCClient) CreateChannelGroup(ctx context.Context, req *adminpb.CreateChannelGroupRequest, opts ...gax.CallOption) (*adminpb.ChannelGroup, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).CreateChannelGroup[0:len((*c.CallOptions).CreateChannelGroup):len((*c.CallOptions).CreateChannelGroup)], opts...)
+	var resp *adminpb.ChannelGroup
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.analyticsAdminClient.CreateChannelGroup(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *analyticsAdminGRPCClient) UpdateChannelGroup(ctx context.Context, req *adminpb.UpdateChannelGroupRequest, opts ...gax.CallOption) (*adminpb.ChannelGroup, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "channel_group.name", url.QueryEscape(req.GetChannelGroup().GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).UpdateChannelGroup[0:len((*c.CallOptions).UpdateChannelGroup):len((*c.CallOptions).UpdateChannelGroup)], opts...)
+	var resp *adminpb.ChannelGroup
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.analyticsAdminClient.UpdateChannelGroup(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *analyticsAdminGRPCClient) DeleteChannelGroup(ctx context.Context, req *adminpb.DeleteChannelGroupRequest, opts ...gax.CallOption) error {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).DeleteChannelGroup[0:len((*c.CallOptions).DeleteChannelGroup):len((*c.CallOptions).DeleteChannelGroup)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = c.analyticsAdminClient.DeleteChannelGroup(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	return err
+}
+
 func (c *analyticsAdminGRPCClient) SetAutomatedGa4ConfigurationOptOut(ctx context.Context, req *adminpb.SetAutomatedGa4ConfigurationOptOutRequest, opts ...gax.CallOption) (*adminpb.SetAutomatedGa4ConfigurationOptOutResponse, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
@@ -5658,6 +5968,26 @@ func (c *analyticsAdminGRPCClient) ListConnectedSiteTags(ctx context.Context, re
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.analyticsAdminClient.ListConnectedSiteTags(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *analyticsAdminGRPCClient) FetchConnectedGa4Property(ctx context.Context, req *adminpb.FetchConnectedGa4PropertyRequest, opts ...gax.CallOption) (*adminpb.FetchConnectedGa4PropertyResponse, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	opts = append((*c.CallOptions).FetchConnectedGa4Property[0:len((*c.CallOptions).FetchConnectedGa4Property):len((*c.CallOptions).FetchConnectedGa4Property)], opts...)
+	var resp *adminpb.FetchConnectedGa4PropertyResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.analyticsAdminClient.FetchConnectedGa4Property(ctx, req, settings.GRPC...)
 		return err
 	}, opts...)
 	if err != nil {
@@ -12120,6 +12450,329 @@ func (c *analyticsAdminRESTClient) DeleteExpandedDataSet(ctx context.Context, re
 	}, opts...)
 }
 
+// GetChannelGroup lookup for a single ChannelGroup.
+func (c *analyticsAdminRESTClient) GetChannelGroup(ctx context.Context, req *adminpb.GetChannelGroupRequest, opts ...gax.CallOption) (*adminpb.ChannelGroup, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).GetChannelGroup[0:len((*c.CallOptions).GetChannelGroup):len((*c.CallOptions).GetChannelGroup)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &adminpb.ChannelGroup{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// ListChannelGroups lists ChannelGroups on a property.
+func (c *analyticsAdminRESTClient) ListChannelGroups(ctx context.Context, req *adminpb.ListChannelGroupsRequest, opts ...gax.CallOption) *ChannelGroupIterator {
+	it := &ChannelGroupIterator{}
+	req = proto.Clone(req).(*adminpb.ListChannelGroupsRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.ChannelGroup, string, error) {
+		resp := &adminpb.ListChannelGroupsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1alpha/%v/channelGroups", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			httpRsp, err := c.httpClient.Do(httpReq)
+			if err != nil {
+				return err
+			}
+			defer httpRsp.Body.Close()
+
+			if err = googleapi.CheckResponse(httpRsp); err != nil {
+				return err
+			}
+
+			buf, err := ioutil.ReadAll(httpRsp.Body)
+			if err != nil {
+				return err
+			}
+
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return maybeUnknownEnum(err)
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetChannelGroups(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// CreateChannelGroup creates a ChannelGroup.
+func (c *analyticsAdminRESTClient) CreateChannelGroup(ctx context.Context, req *adminpb.CreateChannelGroupRequest, opts ...gax.CallOption) (*adminpb.ChannelGroup, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetChannelGroup()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1alpha/%v/channelGroups", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).CreateChannelGroup[0:len((*c.CallOptions).CreateChannelGroup):len((*c.CallOptions).CreateChannelGroup)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &adminpb.ChannelGroup{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// UpdateChannelGroup updates a ChannelGroup.
+func (c *analyticsAdminRESTClient) UpdateChannelGroup(ctx context.Context, req *adminpb.UpdateChannelGroupRequest, opts ...gax.CallOption) (*adminpb.ChannelGroup, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetChannelGroup()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetChannelGroup().GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetUpdateMask() != nil {
+		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(updateMask))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "channel_group.name", url.QueryEscape(req.GetChannelGroup().GetName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).UpdateChannelGroup[0:len((*c.CallOptions).UpdateChannelGroup):len((*c.CallOptions).UpdateChannelGroup)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &adminpb.ChannelGroup{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// DeleteChannelGroup deletes a ChannelGroup on a property.
+func (c *analyticsAdminRESTClient) DeleteChannelGroup(ctx context.Context, req *adminpb.DeleteChannelGroupRequest, opts ...gax.CallOption) error {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		// Returns nil if there is no error, otherwise wraps
+		// the response code and body into a non-nil error
+		return googleapi.CheckResponse(httpRsp)
+	}, opts...)
+}
+
 // SetAutomatedGa4ConfigurationOptOut sets the opt out status for the automated GA4 setup process for a UA
 // property.
 // Note: this has no effect on GA4 property.
@@ -12701,6 +13354,64 @@ func (c *analyticsAdminRESTClient) ListConnectedSiteTags(ctx context.Context, re
 	return resp, nil
 }
 
+// FetchConnectedGa4Property given a specified UA property, looks up the GA4 property connected to it.
+// Note: this cannot be used with GA4 properties.
+func (c *analyticsAdminRESTClient) FetchConnectedGa4Property(ctx context.Context, req *adminpb.FetchConnectedGa4PropertyRequest, opts ...gax.CallOption) (*adminpb.FetchConnectedGa4PropertyResponse, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1alpha/properties:fetchConnectedGa4Property")
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	params.Add("property", fmt.Sprintf("%v", req.GetProperty()))
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).FetchConnectedGa4Property[0:len((*c.CallOptions).FetchConnectedGa4Property):len((*c.CallOptions).FetchConnectedGa4Property)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &adminpb.FetchConnectedGa4PropertyResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
 // AccessBindingIterator manages a stream of *adminpb.AccessBinding.
 type AccessBindingIterator struct {
 	items    []*adminpb.AccessBinding
@@ -13025,6 +13736,53 @@ func (it *ChangeHistoryEventIterator) bufLen() int {
 }
 
 func (it *ChangeHistoryEventIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// ChannelGroupIterator manages a stream of *adminpb.ChannelGroup.
+type ChannelGroupIterator struct {
+	items    []*adminpb.ChannelGroup
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*adminpb.ChannelGroup, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *ChannelGroupIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *ChannelGroupIterator) Next() (*adminpb.ChannelGroup, error) {
+	var item *adminpb.ChannelGroup
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *ChannelGroupIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *ChannelGroupIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b

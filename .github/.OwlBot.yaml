@@ -60,6 +60,7 @@ deep-remove-regex:
   - /cloudtasks/apiv2beta2/
   - /cloudtasks/apiv2beta3/
   - /compute/apiv1
+  - /confidentialcomputing/apiv1
   - /confidentialcomputing/apiv1alpha1
   - /contactcenterinsights/apiv1/
   - /container/apiv1/
@@ -112,6 +113,8 @@ deep-remove-regex:
   - /iam/credentials/apiv1/
   - /iap/apiv1/
   - /ids/apiv1/
+  - /internal/generated/snippets/confidentialcomputing/apiv1
+  - /internal/generated/snippets/storageinsights/apiv1
   - /iot/apiv1/
   - /kms/apiv1/
   - /kms/inventory/apiv1/
@@ -192,6 +195,7 @@ deep-remove-regex:
   - /speech/apiv1p1beta1/
   - /speech/apiv2/
   - /storage/internal/apiv2/
+  - /storageinsights/apiv1/
   - /storagetransfer/apiv1/
   - /talent/apiv4/
   - /talent/apiv4beta1/
@@ -377,6 +381,8 @@ deep-copy-regex:
     dest: /cloudtasks/apiv2beta3
   - source: /google/cloud/compute/v1/cloud.google.com/go/compute/apiv1
     dest: /compute/apiv1
+  - source: /google/cloud/confidentialcomputing/v1/cloud.google.com/go
+    dest: /
   - source: /google/cloud/confidentialcomputing/v1alpha1/cloud.google.com/go/confidentialcomputing/apiv1alpha1
     dest: /confidentialcomputing/apiv1alpha1
   - source: /google/cloud/contactcenterinsights/v1/cloud.google.com/go/contactcenterinsights/apiv1
@@ -641,6 +647,8 @@ deep-copy-regex:
     dest: /speech/apiv2
   - source: /google/storage/v2/cloud.google.com/go/storage/internal/apiv2
     dest: /storage/internal/apiv2
+  - source: /google/storageinsights/v1/cloud.google.com/go/
+    dest: /
   - source: /google/storagetransfer/v1/cloud.google.com/go/storagetransfer/apiv1
     dest: /storagetransfer/apiv1
   - source: /google/cloud/talent/v4/cloud.google.com/go/talent/apiv4
