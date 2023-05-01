@@ -1,5 +1,12 @@
 # Changes
 
+## [1.20.0](https://github.com/googleapis/google-cloud-go/compare/securitycenter/v1.19.0...securitycenter/v1.20.0) (2023-04-25)
+
+
+### Features
+
+* **securitycenter:** Add cloud_dlp_inspection and cloud_dlp_data_profile fields to finding's list of attributes ([#7808](https://github.com/googleapis/google-cloud-go/issues/7808)) ([2c9b4cf](https://github.com/googleapis/google-cloud-go/commit/2c9b4cf95c5af845537e204cbcf3034f423ea10c))
+
 ## [1.19.0](https://github.com/googleapis/google-cloud-go/compare/securitycenter/v1.18.1...securitycenter/v1.19.0) (2023-03-15)
 
 

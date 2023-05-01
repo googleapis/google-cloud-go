@@ -273,7 +273,7 @@ type ExpandedDataSetFilterExpression_AndGroup struct {
 }
 
 type ExpandedDataSetFilterExpression_NotExpression struct {
-	// A filter expression to be NOT'ed (i.e., inverted, complemented). It
+	// A filter expression to be NOT'ed (that is, inverted, complemented). It
 	// must include a dimension_filter. This cannot be set on the
 	// top level ExpandedDataSetFilterExpression.
 	NotExpression *ExpandedDataSetFilterExpression `protobuf:"bytes,2,opt,name=not_expression,json=notExpression,proto3,oneof"`
@@ -367,7 +367,7 @@ type ExpandedDataSet struct {
 	MetricNames []string `protobuf:"bytes,5,rep,name=metric_names,json=metricNames,proto3" json:"metric_names,omitempty"`
 	// Immutable. A logical expression of ExpandedDataSet filters applied to
 	// dimension included in the ExpandedDataSet. This filter is used to reduce
-	// the number of rows and thus the change of encountering `other row`.
+	// the number of rows and thus the chance of encountering `other` row.
 	DimensionFilterExpression *ExpandedDataSetFilterExpression `protobuf:"bytes,6,opt,name=dimension_filter_expression,json=dimensionFilterExpression,proto3" json:"dimension_filter_expression,omitempty"`
 	// Output only. Time when expanded data set began (or will begin) collecing
 	// data.
