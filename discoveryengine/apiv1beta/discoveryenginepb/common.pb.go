@@ -277,7 +277,9 @@ type UserInfo struct {
 	// This should not be set when using the client side event reporting with
 	// GTM or JavaScript tag in
 	// [UserEventService.CollectUserEvent][google.cloud.discoveryengine.v1beta.UserEventService.CollectUserEvent]
-	// or if [direct_user_request][] is set.
+	// or if
+	// [UserEvent.direct_user_request][google.cloud.discoveryengine.v1beta.UserEvent.direct_user_request]
+	// is set.
 	UserAgent string `protobuf:"bytes,2,opt,name=user_agent,json=userAgent,proto3" json:"user_agent,omitempty"`
 }
 

@@ -89,6 +89,11 @@
                 "ListOperations"
               ]
             },
+            "PurgeDocuments": {
+              "methods": [
+                "PurgeDocuments"
+              ]
+            },
             "UpdateDocument": {
               "methods": [
                 "UpdateDocument"
@@ -132,6 +137,11 @@
             "ListOperations": {
               "methods": [
                 "ListOperations"
+              ]
+            },
+            "PurgeDocuments": {
+              "methods": [
+                "PurgeDocuments"
               ]
             },
             "UpdateDocument": {

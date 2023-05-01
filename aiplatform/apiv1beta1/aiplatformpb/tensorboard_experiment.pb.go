@@ -58,18 +58,20 @@ type TensorboardExperiment struct {
 	UpdateTime *timestamppb.Timestamp `protobuf:"bytes,5,opt,name=update_time,json=updateTime,proto3" json:"update_time,omitempty"`
 	// The labels with user-defined metadata to organize your Datasets.
 	//
-	// Label keys and values can be no longer than 64 characters
+	// Label keys and values cannot be longer than 64 characters
 	// (Unicode codepoints), can only contain lowercase letters, numeric
 	// characters, underscores and dashes. International characters are allowed.
 	// No more than 64 user labels can be associated with one Dataset (System
 	// labels are excluded).
 	//
 	// See https://goo.gl/xmQnxf for more information and examples of labels.
-	// System reserved label keys are prefixed with "aiplatform.googleapis.com/"
-	// and are immutable. Following system labels exist for each Dataset:
-	// * "aiplatform.googleapis.com/dataset_metadata_schema":
-	//   - output only, its value is the
-	//   [metadata_schema's][metadata_schema_uri] title.
+	// System reserved label keys are prefixed with `aiplatform.googleapis.com/`
+	// and are immutable. The following system labels exist for each Dataset:
+	//
+	// * `aiplatform.googleapis.com/dataset_metadata_schema`: output only. Its
+	//    value is the
+	//    [metadata_schema's][google.cloud.aiplatform.v1beta1.Dataset.metadata_schema_uri]
+	//    title.
 	Labels map[string]string `protobuf:"bytes,6,rep,name=labels,proto3" json:"labels,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 	// Used to perform consistent read-modify-write updates. If not set, a blind
 	// "overwrite" update happens.

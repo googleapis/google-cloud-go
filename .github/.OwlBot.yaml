@@ -211,7 +211,7 @@ deep-remove-regex:
   - /videointelligence/apiv1beta2/
   - /videointelligence/apiv1p3beta1/
   - /vision/v2/apiv1/
-  - /vision/v2/apiv1p1beta1/ 
+  - /vision/v2/apiv1p1beta1/
   - /vmmigration/apiv1/
   - /vmwareengine/apiv1/
   - /vpcaccess/apiv1/
@@ -647,7 +647,7 @@ deep-copy-regex:
     dest: /speech/apiv2
   - source: /google/storage/v2/cloud.google.com/go/storage/internal/apiv2
     dest: /storage/internal/apiv2
-  - source: /google/cloud/storageinsights/v1/cloud.google.com/go/
+  - source: /google/cloud/storageinsights/v1/cloud.google.com/go
     dest: /
   - source: /google/storagetransfer/v1/cloud.google.com/go/storagetransfer/apiv1
     dest: /storagetransfer/apiv1
