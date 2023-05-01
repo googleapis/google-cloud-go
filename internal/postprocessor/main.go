@@ -318,7 +318,6 @@ func (p *postProcessor) UpdateSnippetsMetadata() error {
 		if moduleName == "" {
 			return fmt.Errorf("unable to parse module name for %v", clientRelPath)
 		}
-		log.Println(clientRelPath)
 		// Skip if dirs option set and this module is not included.
 		if len(p.modules) > 0 && !contains(p.modules, moduleName) {
 			continue
@@ -327,19 +326,20 @@ func (p *postProcessor) UpdateSnippetsMetadata() error {
 		if strings.Contains(clientRelPath, "debugger/apiv2") {
 			continue
 		}
-		version, err := getModuleVersion(filepath.Join(p.googleCloudDir, moduleName))
-		if err != nil {
-			return err
-		}
 		snpDir := filepath.Join(p.googleCloudDir, "internal", "generated", "snippets", clientRelPath)
-		p := filepath.Join(snpDir, "snippet_metadata.*.json")
-		metadataFiles, err := filepath.Glob(p)
+		glob := filepath.Join(snpDir, "snippet_metadata.*.json")
+		metadataFiles, err := filepath.Glob(glob)
 		if err != nil {
 			return err
 		}
 		if len(metadataFiles) == 0 {
-			log.Println("skipping, file not found with glob: ", p)
+			log.Println("skipping, file not found with glob: ", glob)
 			continue
+		}
+		log.Println("updating ", glob)
+		version, err := getModuleVersion(filepath.Join(p.googleCloudDir, moduleName))
+		if err != nil {
+			return err
 		}
 		read, err := os.ReadFile(metadataFiles[0])
 		if err != nil {
