@@ -42,7 +42,6 @@ type Presets_Query int32
 
 const (
 	// More precise neighbors as a trade-off against slower response.
-	// This is also the default value (field-number 0).
 	Presets_PRECISE Presets_Query = 0
 	// Faster response as a trade-off against less precise neighbors.
 	Presets_FAST Presets_Query = 1
@@ -1277,9 +1276,10 @@ type Examples struct {
 	//	*Examples_NearestNeighborSearchConfig
 	//	*Examples_Presets
 	Config isExamples_Config `protobuf_oneof:"config"`
-	// The Cloud Storage location for the input instances.
+	// The Cloud Storage locations that contain the instances to be
+	// indexed for approximate nearest neighbor search.
 	GcsSource *GcsSource `protobuf:"bytes,1,opt,name=gcs_source,json=gcsSource,proto3" json:"gcs_source,omitempty"`
-	// The number of neighbors to return.
+	// The number of neighbors to return when querying for examples.
 	NeighborCount int32 `protobuf:"varint,3,opt,name=neighbor_count,json=neighborCount,proto3" json:"neighbor_count,omitempty"`
 }
 
@@ -1355,15 +1355,16 @@ type isExamples_Config interface {
 }
 
 type Examples_NearestNeighborSearchConfig struct {
-	// The configuration for the generated index, the semantics are the same as
-	// [metadata][google.cloud.aiplatform.v1beta1.Index.metadata] and should
-	// match NearestNeighborSearchConfig.
+	// The full configuration for the generated index, the semantics are the
+	// same as [metadata][google.cloud.aiplatform.v1beta1.Index.metadata] and
+	// should match
+	// [NearestNeighborSearchConfig](https://cloud.google.com/vertex-ai/docs/explainable-ai/configuring-explanations-example-based#nearest-neighbor-search-config).
 	NearestNeighborSearchConfig *structpb.Value `protobuf:"bytes,2,opt,name=nearest_neighbor_search_config,json=nearestNeighborSearchConfig,proto3,oneof"`
 }
 
 type Examples_Presets struct {
-	// Preset config based on the desired query speed-precision trade-off
-	// and modality
+	// Simplified preset configuration, which automatically sets configuration
+	// values based on the desired query speed-precision trade-off and modality.
 	Presets *Presets `protobuf:"bytes,4,opt,name=presets,proto3,oneof"`
 }
 
@@ -1377,9 +1378,13 @@ type Presets struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Preset option controlling parameters for query speed-precision trade-off
+	// Preset option controlling parameters for speed-precision trade-off when
+	// querying for examples. If omitted, defaults to `PRECISE`.
 	Query *Presets_Query `protobuf:"varint,1,opt,name=query,proto3,enum=google.cloud.aiplatform.v1beta1.Presets_Query,oneof" json:"query,omitempty"`
-	// Preset option controlling parameters for different modalities
+	// The modality of the uploaded model, which automatically configures the
+	// distance measurement and feature normalization for the underlying example
+	// index and queries. If your model does not precisely fit one of these types,
+	// it is okay to choose the closest type.
 	Modality Presets_Modality `protobuf:"varint,2,opt,name=modality,proto3,enum=google.cloud.aiplatform.v1beta1.Presets_Modality" json:"modality,omitempty"`
 }
 
@@ -1438,8 +1443,8 @@ type ExplanationSpecOverride struct {
 	unknownFields protoimpl.UnknownFields
 
 	// The parameters to be overridden. Note that the
-	// [method][google.cloud.aiplatform.v1beta1.ExplanationParameters.method]
-	// cannot be changed. If not specified, no parameter is overridden.
+	// attribution method cannot be changed. If not specified,
+	// no parameter is overridden.
 	Parameters *ExplanationParameters `protobuf:"bytes,1,opt,name=parameters,proto3" json:"parameters,omitempty"`
 	// The metadata to be overridden. If not specified, no metadata is overridden.
 	Metadata *ExplanationMetadataOverride `protobuf:"bytes,2,opt,name=metadata,proto3" json:"metadata,omitempty"`

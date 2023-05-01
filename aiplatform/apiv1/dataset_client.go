@@ -315,8 +315,7 @@ func (c *DatasetClient) GetOperation(ctx context.Context, req *longrunningpb.Get
 	return c.internalClient.GetOperation(ctx, req, opts...)
 }
 
-// ListOperations lists operations that match the specified filter in the request. If
-// the server doesn’t support this method, it returns UNIMPLEMENTED.
+// ListOperations is a utility method from google.longrunning.Operations.
 func (c *DatasetClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	return c.internalClient.ListOperations(ctx, req, opts...)
 }
