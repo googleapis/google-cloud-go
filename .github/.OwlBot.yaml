@@ -383,8 +383,8 @@ deep-copy-regex:
     dest: /compute/apiv1
   - source: /google/cloud/confidentialcomputing/v1/cloud.google.com/go
     dest: /
-  - source: /google/cloud/confidentialcomputing/v1alpha1/cloud.google.com/go/confidentialcomputing/apiv1alpha1
-    dest: /confidentialcomputing/apiv1alpha1
+  - source: /google/cloud/confidentialcomputing/v1alpha1/cloud.google.com/go
+    dest: /
   - source: /google/cloud/contactcenterinsights/v1/cloud.google.com/go/contactcenterinsights/apiv1
     dest: /contactcenterinsights/apiv1
   - source: /google/container/v1/cloud.google.com/go/container/apiv1
