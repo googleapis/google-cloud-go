@@ -691,7 +691,7 @@ type ReceiveSettings struct {
 	UseLegacyFlowControl bool
 
 	// NumGoroutines sets the number of StreamingPull streams to pull messages
-  // from the subscription.
+	// from the subscription.
 	//
 	// NumGoroutines defaults to DefaultReceiveSettings.NumGoroutines.
 	//
