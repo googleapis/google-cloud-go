@@ -115,6 +115,7 @@ deep-remove-regex:
   - /ids/apiv1/
   - /internal/generated/snippets/confidentialcomputing/apiv1
   - /internal/generated/snippets/storageinsights/apiv1
+  - /internal/generated/snippets/support/apiv2
   - /iot/apiv1/
   - /kms/apiv1/
   - /kms/inventory/apiv1/
@@ -197,6 +198,7 @@ deep-remove-regex:
   - /storage/internal/apiv2/
   - /storageinsights/apiv1/
   - /storagetransfer/apiv1/
+  - /support/apiv2/
   - /talent/apiv4/
   - /talent/apiv4beta1/
   - /texttospeech/apiv1/
@@ -651,6 +653,8 @@ deep-copy-regex:
     dest: /
   - source: /google/storagetransfer/v1/cloud.google.com/go/storagetransfer/apiv1
     dest: /storagetransfer/apiv1
+  - source: /google/cloud/support/v2/cloud.google.com/go
+    dest: /
   - source: /google/cloud/talent/v4/cloud.google.com/go/talent/apiv4
     dest: /talent/apiv4
   - source: /google/cloud/talent/v4beta1/cloud.google.com/go/talent/apiv4beta1

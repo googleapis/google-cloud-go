@@ -115,6 +115,7 @@ modules:
   - storage
   - storageinsights
   - storagetransfer
+  - support
   - talent
   - texttospeech
   - tpu
@@ -554,6 +555,12 @@ service-configs:
     service-config: speech_v1p1beta1.yaml
   - input-directory: google/cloud/speech/v2
     service-config: speech_v2.yaml
+  - input-directory: google/cloud/storageinsights/v1
+    service-config: storageinsights_v1.yaml
+    import-path: cloud.google.com/go/storageinsights/apiv1
+  - input-directory: google/cloud/support/v2
+    service-config: cloudsupport_v2.yaml
+    import-path: cloud.google.com/go/support/apiv2
   - input-directory: google/cloud/talent/v4
     service-config: jobs_v4.yaml
   - input-directory: google/cloud/talent/v4beta1
@@ -686,9 +693,6 @@ service-configs:
     import-path: cloud.google.com/go/storage/internal/apiv2
   - input-directory: google/storagetransfer/v1
     service-config: storagetransfer_v1.yaml
-  - input-directory: google/cloud/storageinsights/v1
-    service-config: storageinsights_v1.yaml
-    import-path: cloud.google.com/go/storageinsights/apiv1
     # All entries below are clients that are not currently copied by owlbot. They
     # explicitly express thier import path for some code gen.
   - input-directory: google/devtools/containeranalysis/v1beta1/grafeas
