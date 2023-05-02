@@ -362,14 +362,14 @@ func (co *connection) lockingAppend(pw *pendingWrite) error {
 	var ch chan *pendingWrite
 	var err error
 
-	// We still need to reconnect if we need to signal a new schema for explicit streams.
-	// Rather than adding more state to the connection, we just look at the request as we
-	// do not allow multiplexing to include explicit streams.
+	// Handle promotion of per-request schema to default schema in the case of updates.
+	// Additionally, we check multiplex status as schema changes for explicit streams
+	// require reconnect, whereas multiplex does not.
 	forceReconnect := false
-	if !canMultiplex(pw.writeStreamID) {
-		if pw.writer != nil && pw.descVersion != nil && pw.descVersion.isNewer(pw.writer.curDescVersion) {
+	if pw.writer != nil && pw.descVersion != nil && pw.descVersion.isNewer(pw.writer.curDescVersion) {
+		pw.writer.curDescVersion = pw.descVersion
+		if !canMultiplex(pw.writeStreamID) {
 			forceReconnect = true
-			pw.writer.curDescVersion = pw.descVersion
 		}
 	}
 

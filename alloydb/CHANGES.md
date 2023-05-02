@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [1.0.0](https://github.com/googleapis/google-cloud-go/compare/alloydb/v0.2.1...alloydb/v1.0.0) (2023-04-25)
+
+
+### Features
+
+* **alloydb:** Promote to GA ([#7769](https://github.com/googleapis/google-cloud-go/issues/7769)) ([c6fc46c](https://github.com/googleapis/google-cloud-go/commit/c6fc46c296b37700b7dafed4c95022515c616bbc))
+
 ## [0.2.1](https://github.com/googleapis/google-cloud-go/compare/alloydb/v0.2.0...alloydb/v0.2.1) (2023-04-04)
 
 

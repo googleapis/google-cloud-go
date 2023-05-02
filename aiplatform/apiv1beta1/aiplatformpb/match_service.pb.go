@@ -51,7 +51,7 @@ type FindNeighborsRequest struct {
 	// Format:
 	// `projects/{project}/locations/{location}/indexEndpoints/{index_endpoint}`
 	IndexEndpoint string `protobuf:"bytes,1,opt,name=index_endpoint,json=indexEndpoint,proto3" json:"index_endpoint,omitempty"`
-	// The ID of the DeploydIndex that will serve the request. This request is
+	// The ID of the DeployedIndex that will serve the request. This request is
 	// sent to a specific IndexEndpoint, as per the IndexEndpoint.network. That
 	// IndexEndpoint also has IndexEndpoint.deployed_indexes, and each such index
 	// has a DeployedIndex.id field.
@@ -188,7 +188,7 @@ type ReadIndexDatapointsRequest struct {
 	// Format:
 	// `projects/{project}/locations/{location}/indexEndpoints/{index_endpoint}`
 	IndexEndpoint string `protobuf:"bytes,1,opt,name=index_endpoint,json=indexEndpoint,proto3" json:"index_endpoint,omitempty"`
-	// The ID of the DeploydIndex that will serve the request.
+	// The ID of the DeployedIndex that will serve the request.
 	DeployedIndexId string `protobuf:"bytes,2,opt,name=deployed_index_id,json=deployedIndexId,proto3" json:"deployed_index_id,omitempty"`
 	// IDs of the datapoints to be searched for.
 	Ids []string `protobuf:"bytes,3,rep,name=ids,proto3" json:"ids,omitempty"`

@@ -84,7 +84,7 @@ type Dataset struct {
 	//   title.
 	Labels map[string]string `protobuf:"bytes,7,rep,name=labels,proto3" json:"labels,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 	// All SavedQueries belong to the Dataset will be returned in List/Get
-	// Dataset response. The [annotation_specs][SavedQuery.annotation_specs] field
+	// Dataset response. The annotation_specs field
 	// will not be populated except for UI cases which will only use
 	// [annotation_spec_count][google.cloud.aiplatform.v1beta1.SavedQuery.annotation_spec_count].
 	// In CreateDataset request, a SavedQuery is created together if
@@ -358,9 +358,9 @@ type ExportDataConfig struct {
 	// Types that are assignable to Split:
 	//	*ExportDataConfig_FractionSplit
 	Split isExportDataConfig_Split `protobuf_oneof:"split"`
-	// A filter on Annotations of the Dataset. Only Annotations on to-be-exported
-	// DataItems(specified by [data_items_filter][]) that match this filter will
-	// be exported. The filter syntax is the same as in
+	// An expression for filtering what part of the Dataset is to be exported.
+	// Only Annotations that match this filter will be exported. The filter syntax
+	// is the same as in
 	// [ListAnnotations][google.cloud.aiplatform.v1beta1.DatasetService.ListAnnotations].
 	AnnotationsFilter string `protobuf:"bytes,2,opt,name=annotations_filter,json=annotationsFilter,proto3" json:"annotations_filter,omitempty"`
 }
