@@ -156,7 +156,9 @@ func setup(ctx context.Context) (cleanup func(), err error) {
 // TODO(jba): test errors
 
 func run(t *testing.T, hc *http.Client) (*storage.BucketAttrs, []byte) {
-	ctx := context.Background()
+	ctx, cc := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cc()
+
 	client, err := storage.NewClient(ctx, option.WithHTTPClient(hc))
 	if err != nil {
 		t.Fatal(err)
@@ -191,7 +193,9 @@ func run(t *testing.T, hc *http.Client) (*storage.BucketAttrs, []byte) {
 }
 
 func testReadCRC(t *testing.T, hc *http.Client, mode string) {
-	ctx := context.Background()
+	ctx, cc := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cc()
+
 	client, err := storage.NewClient(ctx, option.WithHTTPClient(hc))
 	if err != nil {
 		t.Fatalf("%s: %v", mode, err)
