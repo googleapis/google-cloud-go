@@ -68,6 +68,9 @@ func TestIntegration_RecordAndReplay(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	rec.RemoveRequestHeaders("X-Goog-Api-Client")
+	rec.RemoveRequestHeaders("X-Goog-Gcs-Idempotency-Token")
+
 	hc, err := rec.Client(ctx, option.WithTokenSource(
 		testutil.TokenSource(ctx, storage.ScopeFullControl)))
 	if err != nil {
