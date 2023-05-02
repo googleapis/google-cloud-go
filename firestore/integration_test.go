@@ -1721,6 +1721,19 @@ func TestIntegration_ColGroupRefPartitionsLarge(t *testing.T) {
 		t.Errorf("Unexpected number of documents across partitions: got %d, want %d", got, want)
 	}
 }
+func TestIntegration_BulkWriter_Set(t *testing.T) {
+	doc := iColl.NewDoc()
+	c := integrationClient(t)
+	ctx := context.Background()
+	bw := c.BulkWriter(ctx)
+
+	f := copyMap(integrationTestMap)
+	f["serverTimeStamp"] = ServerTimestamp
+	_, err := bw.Set(doc, f)
+	if err != nil {
+		t.Errorf("bulkwriter: error performing a set write: %v\n", err)
+	}
+}
 
 func TestIntegration_BulkWriter(t *testing.T) {
 	doc := iColl.NewDoc()

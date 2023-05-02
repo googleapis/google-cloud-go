@@ -2,7 +2,7 @@
   "tests": [
     {
       "description": "set: ServerTimestamp with MergeAll",
-      "comment": "Just as when no merge option is specified, ServerTimestamp\nsentinel values are removed from the data in the update operation and become\ntransforms.",
+      "comment": "Just as when no merge option is specified, ServerTimestamp\nsentinel values are removed from the fields in the update operation and become\ntransforms.",
       "set": {
         "docRefPath": "projects/projectID/databases/(default)/documents/C/d",
         "option": {

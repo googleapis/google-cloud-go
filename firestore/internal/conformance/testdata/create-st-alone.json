@@ -2,7 +2,7 @@
   "tests": [
     {
       "description": "create: ServerTimestamp alone",
-      "comment": "If the only values in the input are ServerTimestamps, then no\nupdate operation should be produced.",
+      "comment": "If the only values in the input are ServerTimestamps, then no\nupdate mask should be produced.",
       "create": {
         "docRefPath": "projects/projectID/databases/(default)/documents/C/d",
         "jsonData": "{\"a\": \"ServerTimestamp\"}",
@@ -13,6 +13,7 @@
               "update": {
                 "name": "projects/projectID/databases/(default)/documents/C/d"
               },
+              "updateMask": {},
               "updateTransforms": [
                 {
                   "fieldPath": "a",

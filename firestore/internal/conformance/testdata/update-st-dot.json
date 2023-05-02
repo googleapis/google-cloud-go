@@ -2,7 +2,7 @@
   "tests": [
     {
       "description": "update: ServerTimestamp with dotted field",
-      "comment": "Like other uses of ServerTimestamp, the data is pruned and the\nfield does not appear in the update mask, because it is in the transform. In this case\nAn update operation is produced just to hold the precondition.",
+      "comment": "Like other uses of ServerTimestamp, the data is pruned and the\nfield does not appear in the update mask, because it is in the transform.",
       "update": {
         "docRefPath": "projects/projectID/databases/(default)/documents/C/d",
         "jsonData": "{\"a.b.c\": \"ServerTimestamp\"}",

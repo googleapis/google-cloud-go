@@ -2,7 +2,7 @@
   "tests": [
     {
       "description": "update-paths: ArrayRemove alone",
-      "comment": "If the only values in the input are ArrayRemove, then no\nupdate operation should be produced.",
+      "comment": "If the only values in the input are ArrayRemove, then no\nupdate mask should be produced in update operation.",
       "updatePaths": {
         "docRefPath": "projects/projectID/databases/(default)/documents/C/d",
         "fieldPaths": [
@@ -22,6 +22,7 @@
               "update": {
                 "name": "projects/projectID/databases/(default)/documents/C/d"
               },
+              "updateMask": {},
               "updateTransforms": [
                 {
                   "fieldPath": "a",

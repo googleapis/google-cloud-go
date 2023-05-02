@@ -363,7 +363,7 @@ func (d *DocumentRef) fpvsToWrites(fpvs []fpv, pc *pb.Precondition) ([]*pb.Write
 }
 
 // newUpdateWithTransform constructs operations for a commit. Most generally, it
-// returns an update operation followed by a transform.
+// returns an update operation with update transforms.
 //
 // If there are no serverTimestampPaths, the transform is omitted.
 //
@@ -377,6 +377,9 @@ func (d *DocumentRef) newUpdateWithTransform(doc *pb.Document, updatePaths []Fie
 			Update: doc,
 		},
 		CurrentDocument: pc,
+		// If the mask is not set for an `update` and the document exists, any
+		// existing data will be overwritten.
+		UpdateMask: &pb.DocumentMask{},
 	}
 	if updateOnEmpty || len(doc.Fields) > 0 ||
 		len(updatePaths) > 0 || (pc != nil && len(transforms) == 0) {
