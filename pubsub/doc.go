@@ -99,7 +99,7 @@ can lead to client library behaving poorly as the application becomes I/O bound.
 
 By default, the number of connections in the gRPC conn pool is min(4,GOMAXPROCS). Each connection supports
 up to 100 streams. Thus, if you have 4 or more CPU cores, the default setting allows a maximum of 400 streams
-which is more than necessary for more use cases.
+which is already excessive for most use cases.
 If you want to change the limits on the number of streams, you can change the number of connections
 in the gRPC connection pool as shown below:
 
