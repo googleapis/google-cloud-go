@@ -250,7 +250,7 @@ func (p *postProcessor) generateModule(modPath, importPath string) error {
 func (p *postProcessor) generateVersionFile(moduleName, path string) error {
 	// These directories are not modules on purpose, don't generate a version
 	// file for them.
-	if strings.Contains(path, "debugger/apiv2") {
+	if strings.Contains(path, "debugger/apiv2") || strings.Contains(path, "orgpolicy/apiv1") {
 		return nil
 	}
 	pathSegments := strings.Split(filepath.Dir(path), "/")
