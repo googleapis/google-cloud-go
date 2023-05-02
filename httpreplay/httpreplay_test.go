@@ -87,6 +87,8 @@ func TestIntegration_RecordAndReplay(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	rep.IgnoreHeader("X-Goog-Api-Client")
+	rep.IgnoreHeader("X-Goog-Gcs-Idempotency-Token")
 	defer rep.Close()
 	hc, err = rep.Client(ctx)
 	if err != nil {
