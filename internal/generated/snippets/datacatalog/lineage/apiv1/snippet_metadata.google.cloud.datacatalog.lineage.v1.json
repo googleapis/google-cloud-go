@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/datacatalog/lineage/apiv1",
-    "version": "1.12.0",
+    "version": "1.13.0",
     "language": "GO",
     "apis": [
       {
@@ -14,7 +14,7 @@
     {
       "regionTag": "datalineage_v1_generated_Lineage_BatchSearchLinkProcesses_sync",
       "title": "datalineage BatchSearchLinkProcesses Sample",
-      "description": "BatchSearchLinkProcesses retrieve information about LineageProcesses associated with specific\nlinks. LineageProcesses are transformation pipelines that result in data\nflowing from source to target assets. Links between assets\nrepresent this operation.\n\nIf you have specific link names, you can use this method to\nverify which LineageProcesses contribute to creating those links.\nSee the\nSearchLinks\nmethod for more information on how to retrieve link name.\n\nYou can retrieve the LineageProcess information in every project where you\nhave the datalineage.events.get permission. The project provided in the\nURL is used for Billing and Quota.",
+      "description": "BatchSearchLinkProcesses retrieve information about LineageProcesses associated with specific\nlinks. LineageProcesses are transformation pipelines that result in data\nflowing from **source** to **target** assets. Links between assets\nrepresent this operation.\n\nIf you have specific link names, you can use this method to\nverify which LineageProcesses contribute to creating those links.\nSee the\n[SearchLinks][google.cloud.datacatalog.lineage.v1.Lineage.SearchLinks]\nmethod for more information on how to retrieve link name.\n\nYou can retrieve the LineageProcess information in every project where you\nhave the `datalineage.events.get` permission. The project provided in the\nURL is used for Billing and Quota.",
       "file": "Client/BatchSearchLinkProcesses/main.go",
       "language": "GO",
       "clientMethod": {
@@ -86,10 +86,10 @@
         },
         "method": {
           "shortName": "CancelOperation",
-          "fullName": "google.cloud.datacatalog.lineage.v1.Lineage.CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
           "service": {
-            "shortName": "Lineage",
-            "fullName": "google.cloud.datacatalog.lineage.v1.Lineage"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -97,7 +97,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -125,7 +125,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "lineagepb.LineageEvent",
+        "resultType": "*lineagepb.LineageEvent",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.datacatalog.lineage.v1.Client"
@@ -171,7 +171,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "lineagepb.Process",
+        "resultType": "*lineagepb.Process",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.datacatalog.lineage.v1.Client"
@@ -217,7 +217,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "lineagepb.Run",
+        "resultType": "*lineagepb.Run",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.datacatalog.lineage.v1.Client"
@@ -314,10 +314,10 @@
         },
         "method": {
           "shortName": "DeleteOperation",
-          "fullName": "google.cloud.datacatalog.lineage.v1.Lineage.DeleteOperation",
+          "fullName": "google.longrunning.Operations.DeleteOperation",
           "service": {
-            "shortName": "Lineage",
-            "fullName": "google.cloud.datacatalog.lineage.v1.Lineage"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -325,7 +325,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -445,7 +445,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "lineagepb.LineageEvent",
+        "resultType": "*lineagepb.LineageEvent",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.datacatalog.lineage.v1.Client"
@@ -491,17 +491,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "longrunningpb.Operation",
+        "resultType": "*longrunningpb.Operation",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.datacatalog.lineage.v1.Client"
         },
         "method": {
           "shortName": "GetOperation",
-          "fullName": "google.cloud.datacatalog.lineage.v1.Lineage.GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
           "service": {
-            "shortName": "Lineage",
-            "fullName": "google.cloud.datacatalog.lineage.v1.Lineage"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -509,7 +509,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -537,7 +537,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "lineagepb.Process",
+        "resultType": "*lineagepb.Process",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.datacatalog.lineage.v1.Client"
@@ -583,7 +583,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "lineagepb.Run",
+        "resultType": "*lineagepb.Run",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.datacatalog.lineage.v1.Client"
@@ -682,10 +682,10 @@
         },
         "method": {
           "shortName": "ListOperations",
-          "fullName": "google.cloud.datacatalog.lineage.v1.Lineage.ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
           "service": {
-            "shortName": "Lineage",
-            "fullName": "google.cloud.datacatalog.lineage.v1.Lineage"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -693,7 +693,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 61,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -747,7 +747,7 @@
     {
       "regionTag": "datalineage_v1_generated_Lineage_ListRuns_sync",
       "title": "datalineage ListRuns Sample",
-      "description": "ListRuns lists runs in the given project and location. List order is descending by\nstart_time.",
+      "description": "ListRuns lists runs in the given project and location. List order is descending by\n`start_time`.",
       "file": "Client/ListRuns/main.go",
       "language": "GO",
       "clientMethod": {
@@ -793,7 +793,7 @@
     {
       "regionTag": "datalineage_v1_generated_Lineage_SearchLinks_sync",
       "title": "datalineage SearchLinks Sample",
-      "description": "SearchLinks retrieve a list of links connected to a specific asset.\nLinks represent the data flow between source (upstream)\nand target (downstream) assets in transformation pipelines.\nLinks are stored in the same project as the Lineage Events that create\nthem.\n\nYou can retrieve links in every project where you have the\ndatalineage.events.get permission. The project provided in the URL\nis used for Billing and Quota.",
+      "description": "SearchLinks retrieve a list of links connected to a specific asset.\nLinks represent the data flow between **source** (upstream)\nand **target** (downstream) assets in transformation pipelines.\nLinks are stored in the same project as the Lineage Events that create\nthem.\n\nYou can retrieve links in every project where you have the\n`datalineage.events.get` permission. The project provided in the URL\nis used for Billing and Quota.",
       "file": "Client/SearchLinks/main.go",
       "language": "GO",
       "clientMethod": {
@@ -859,7 +859,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "lineagepb.Process",
+        "resultType": "*lineagepb.Process",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.datacatalog.lineage.v1.Client"
@@ -905,7 +905,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "lineagepb.Run",
+        "resultType": "*lineagepb.Run",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.datacatalog.lineage.v1.Client"

@@ -25,7 +25,6 @@ import (
 	"go/token"
 	"html/template"
 	"io/fs"
-	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
@@ -150,7 +149,7 @@ func (p *postProcessor) run(ctx context.Context) error {
 	if err := p.InitializeNewModules(manifest); err != nil {
 		return err
 	}
-	if err := p.MoveSnippets(); err != nil {
+	if err := p.UpdateSnippetsMetadata(); err != nil {
 		return err
 	}
 	prTitle, prBody, err := p.GetNewPRTitleAndBody(ctx)
@@ -251,7 +250,7 @@ func (p *postProcessor) generateModule(modPath, importPath string) error {
 func (p *postProcessor) generateVersionFile(moduleName, path string) error {
 	// These directories are not modules on purpose, don't generate a version
 	// file for them.
-	if strings.Contains(path, "debugger/apiv2") {
+	if strings.Contains(path, "debugger/apiv2") || strings.Contains(path, "orgpolicy/apiv1") {
 		return nil
 	}
 	pathSegments := strings.Split(filepath.Dir(path), "/")
@@ -310,53 +309,56 @@ func (p *postProcessor) getDirs() []string {
 	return dirs
 }
 
-func (p *postProcessor) MoveSnippets() error {
-	log.Println("moving snippets")
+func (p *postProcessor) UpdateSnippetsMetadata() error {
+	log.Println("updating snippets metadata")
 	for _, clientRelPath := range p.config.ClientRelPaths {
 		// OwlBot dest relative paths in ClientRelPaths begin with /, so the
 		// first path segment is the second element.
 		moduleName := strings.Split(clientRelPath, "/")[1]
+		if moduleName == "" {
+			return fmt.Errorf("unable to parse module name for %v", clientRelPath)
+		}
+		// Skip if dirs option set and this module is not included.
 		if len(p.modules) > 0 && !contains(p.modules, moduleName) {
 			continue
 		}
-		snpDir := filepath.Join(p.googleCloudDir, clientRelPath, "internal", "snippets")
-		if _, err := os.Stat(snpDir); err != nil {
+		// debugger/apiv2 is not in a module so it does not have version info to read.
+		if strings.Contains(clientRelPath, "debugger/apiv2") {
 			continue
 		}
-
-		toDir := filepath.Join(p.googleCloudDir, "internal", "generated", "snippets", clientRelPath)
-		log.Printf("deleting old snippets and metadata at %s", toDir)
-		if err := os.RemoveAll(toDir); err != nil {
+		snpDir := filepath.Join(p.googleCloudDir, "internal", "generated", "snippets", clientRelPath)
+		glob := filepath.Join(snpDir, "snippet_metadata.*.json")
+		metadataFiles, err := filepath.Glob(glob)
+		if err != nil {
 			return err
 		}
-		log.Printf("moving new snippets and metadata from %s to %s", snpDir, toDir)
-		if err := os.Rename(snpDir, toDir); err != nil {
-			return err
+		if len(metadataFiles) == 0 {
+			log.Println("skipping, file not found with glob: ", glob)
+			continue
 		}
+		log.Println("updating ", glob)
 		version, err := getModuleVersion(filepath.Join(p.googleCloudDir, moduleName))
 		if err != nil {
 			return err
 		}
-		metadataFiles, err := filepath.Glob(filepath.Join(toDir, "snippet_metadata.*.json"))
+		read, err := os.ReadFile(metadataFiles[0])
 		if err != nil {
 			return err
 		}
-		read, err := ioutil.ReadFile(metadataFiles[0])
-		if err != nil {
-			return err
-		}
-		log.Printf("setting $VERSION to %s in %s", version, metadataFiles[0])
-		s := strings.Replace(string(read), "$VERSION", version, 1)
-		err = ioutil.WriteFile(metadataFiles[0], []byte(s), 0)
-		if err != nil {
-			return err
+		if strings.Contains(string(read), "$VERSION") {
+			log.Printf("setting $VERSION to %s in %s", version, metadataFiles[0])
+			s := strings.Replace(string(read), "$VERSION", version, 1)
+			err = os.WriteFile(metadataFiles[0], []byte(s), 0)
+			if err != nil {
+				return err
+			}
 		}
 	}
 	return nil
 }
 
 func getModuleVersion(dir string) (string, error) {
-	node, err := parser.ParseFile(token.NewFileSet(), fmt.Sprintf("%s/internal/version.go", dir), nil, parser.ParseComments)
+	node, err := parser.ParseFile(token.NewFileSet(), filepath.Join(dir, "internal", "version.go"), nil, parser.ParseComments)
 	if err != nil {
 		return "", err
 	}
@@ -539,10 +541,10 @@ func (p *postProcessor) getScopesFromGoogleapisCommitHash(commitHash string) ([]
 		// Need import path
 		for inputDir, li := range p.config.GoogleapisToImportPath {
 			if inputDir == filepath.Dir(filePath) {
-				// trim prefix
-				scope := strings.TrimPrefix(li.ImportPath, "cloud.google.com/go/")
-				// trim version
-				scope = filepath.Dir(scope)
+				// trim service version
+				scope := filepath.Dir(li.RelPath)
+				// trim leading slash
+				scope = strings.TrimPrefix(scope, "/")
 				if _, value := scopesMap[scope]; !value {
 					scopesMap[scope] = true
 					scopes = append(scopes, scope)

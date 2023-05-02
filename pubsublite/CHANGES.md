@@ -1,5 +1,29 @@
 # Changes
 
+## [1.8.0](https://github.com/googleapis/google-cloud-go/compare/pubsublite/v1.7.1...pubsublite/v1.8.0) (2023-04-28)
+
+
+### Features
+
+* **pubsublite:** Expose functions to encode/decode message event times ([#7853](https://github.com/googleapis/google-cloud-go/issues/7853)) ([89bf810](https://github.com/googleapis/google-cloud-go/commit/89bf8106fdd12025abe3cc54484b7bcf084266a0))
+
+
+### Documentation
+
+* **pubsublite:** Associate examples with the correct function ([#7827](https://github.com/googleapis/google-cloud-go/issues/7827)) ([481b161](https://github.com/googleapis/google-cloud-go/commit/481b161d2fe5fbf2b6fb306b9153b2c174e75991))
+
+## [1.7.1](https://github.com/googleapis/google-cloud-go/compare/pubsublite/v1.7.0...pubsublite/v1.7.1) (2023-04-21)
+
+
+### Bug Fixes
+
+* **pubsublite:** Enforce minimum publisher and subscriber timeout of 2 minutes ([#7746](https://github.com/googleapis/google-cloud-go/issues/7746)) ([89a9b0b](https://github.com/googleapis/google-cloud-go/commit/89a9b0b40fd2d4b1cf256b6c90a2108a62c44bed))
+
+
+### Documentation
+
+* **pubsublite:** Example for configuring earlier OAuth token refresh ([#7745](https://github.com/googleapis/google-cloud-go/issues/7745)) ([290d637](https://github.com/googleapis/google-cloud-go/commit/290d637e05401340677b77daa504ddc975fc0901))
+
 ## [1.7.0](https://github.com/googleapis/google-cloud-go/compare/pubsublite/v1.6.0...pubsublite/v1.7.0) (2023-03-20)
 
 

@@ -346,8 +346,8 @@ func TestSubscriptionDeadLetter(t *testing.T) {
 
 			}
 			for _, m := range pull.ReceivedMessages {
-				if int32(i) != m.DeliveryAttempt {
-					t.Fatalf("message delivery attempt not the expected one. expected: %d, actual: %d", i, m.DeliveryAttempt)
+				if int32(i+1) != m.DeliveryAttempt {
+					t.Fatalf("message delivery attempt not the expected one. expected: %d, actual: %d", i+1, m.DeliveryAttempt)
 				}
 				_, err := server.GServer.ModifyAckDeadline(ctx, &pb.ModifyAckDeadlineRequest{
 					Subscription:       sub.Name,
@@ -565,11 +565,19 @@ func TestStreamingPull(t *testing.T) {
 	pclient, sclient, srv, cleanup := newFake(context.TODO(), t)
 	defer cleanup()
 
+	deadLetterTopic := mustCreateTopic(context.TODO(), t, pclient, &pb.Topic{
+		Name: "projects/P/topics/deadLetter",
+	})
+
 	top := mustCreateTopic(context.TODO(), t, pclient, &pb.Topic{Name: "projects/P/topics/T"})
 	sub := mustCreateSubscription(context.TODO(), t, sclient, &pb.Subscription{
 		Name:               "projects/P/subscriptions/S",
 		Topic:              top.Name,
 		AckDeadlineSeconds: 10,
+		DeadLetterPolicy: &pb.DeadLetterPolicy{
+			DeadLetterTopic:     deadLetterTopic.Name,
+			MaxDeliveryAttempts: 3,
+		},
 	})
 
 	want := publish(t, srv, pclient, top, []*pb.PubsubMessage{
@@ -577,7 +585,13 @@ func TestStreamingPull(t *testing.T) {
 		{Data: []byte("d2")},
 		{Data: []byte("d3")},
 	})
-	got := pubsubMessages(streamingPullN(context.TODO(), t, len(want), sclient, sub))
+	received := streamingPullN(context.TODO(), t, len(want), sclient, sub)
+	for _, m := range received {
+		if m.DeliveryAttempt != 1 {
+			t.Errorf("got DeliveryAttempt==%d, want 1", m.DeliveryAttempt)
+		}
+	}
+	got := pubsubMessages(received)
 	if diff := testutil.Diff(got, want); diff != "" {
 		t.Error(diff)
 	}

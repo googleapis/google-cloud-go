@@ -118,17 +118,19 @@ type UserEvent struct {
 	// Token to attribute an API response to user action(s) to trigger the event.
 	//
 	// Highly recommended for user events that are the result of
-	// [PredictionService.Predict][]. This field enables accurate attribution of
-	// recommendation model performance.
+	// [RecommendationService.Recommend][google.cloud.discoveryengine.v1beta.RecommendationService.Recommend].
+	// This field enables accurate attribution of recommendation model
+	// performance.
 	//
 	// The value must be one of:
 	//
 	// * [PredictResponse.attribution_token][] for events that are the result of
-	// [PredictionService.Predict][].
+	// [RecommendationService.Recommend][google.cloud.discoveryengine.v1beta.RecommendationService.Recommend].
 	// * [SearchResponse.attribution_token][google.cloud.discoveryengine.v1beta.SearchResponse.attribution_token] for events that are the result of
-	// [SearchService.Search][].
+	// [SearchService.Search][google.cloud.discoveryengine.v1beta.SearchService.Search].
 	// * [CompleteQueryResponse.attribution_token][] for events that are the
-	// result of [SearchService.CompleteQuery][].
+	// result of
+	// [CompletionService.CompleteQuery][google.cloud.discoveryengine.v1beta.CompletionService.CompleteQuery].
 	//
 	// This token enables us to accurately attribute page view or conversion
 	// completion back to the event and the particular predict response containing
@@ -141,14 +143,15 @@ type UserEvent struct {
 	// predicate from one or more fields of the documents being filtered.
 	//
 	// One example is for `search` events, the associated
-	// [SearchService.SearchRequest][] may contain a filter expression in
-	// [SearchService.SearchRequest.filter][] conforming to
-	// https://google.aip.dev/160#filtering.
+	// [SearchRequest][google.cloud.discoveryengine.v1beta.SearchRequest] may
+	// contain a filter expression in
+	// [SearchRequest.filter][google.cloud.discoveryengine.v1beta.SearchRequest.filter]
+	// conforming to https://google.aip.dev/160#filtering.
 	//
 	// Similarly, for `view-item-list` events that are generated from a
-	// [PredictionService.PredictRequest][], this field may be populated directly
-	// from [PredictionService.PredictRequest.filter][] conforming to
-	// https://google.aip.dev/160#filtering.
+	// [RecommendationService.RecommendRequest][], this field may be populated
+	// directly from [RecommendationService.RecommendRequest.filter][] conforming
+	// to https://google.aip.dev/160#filtering.
 	//
 	// The value must be a UTF-8 encoded string with a length limit of 1,000
 	// characters. Otherwise, an INVALID_ARGUMENT error is returned.
@@ -202,8 +205,8 @@ type UserEvent struct {
 	// those custom attributes when training models and serving predictions, which
 	// helps improve recommendation quality.
 	//
-	// This field needs to pass all below criteria, otherwise an INVALID_ARGUMENT
-	// error is returned:
+	// This field needs to pass all below criteria, otherwise an
+	// `INVALID_ARGUMENT` error is returned:
 	//
 	// * The key must be a UTF-8 encoded string with a length limit of 5,000
 	//   characters.
@@ -213,7 +216,8 @@ type UserEvent struct {
 	// * For number attributes, at most 400 values are allowed.
 	//
 	// For product recommendations, an example of extra user information is
-	// traffic_channel, which is how a user arrives at the site. Users can arrive
+	// ` traffic_channel`, which is how a user arrives at the site. Users can
+	// arrive
 	// at the site by coming to the site directly, coming through Google
 	// search, or in other ways.
 	Attributes map[string]*CustomAttribute `protobuf:"bytes,17,rep,name=attributes,proto3" json:"attributes,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
@@ -500,9 +504,10 @@ type SearchInfo struct {
 	//
 	// At least one of
 	// [search_query][google.cloud.discoveryengine.v1beta.SearchInfo.search_query]
-	// or [page_categories][] is required for `search` events. Other event types
-	// should not set this field. Otherwise, an INVALID_ARGUMENT error is
-	// returned.
+	// or
+	// [PageInfo.page_category][google.cloud.discoveryengine.v1beta.PageInfo.page_category]
+	// is required for `search` events. Other event types should not set this
+	// field. Otherwise, an INVALID_ARGUMENT error is returned.
 	SearchQuery string `protobuf:"bytes,1,opt,name=search_query,json=searchQuery,proto3" json:"search_query,omitempty"`
 	// The order in which products are returned, if applicable.
 	//
@@ -772,17 +777,18 @@ type DocumentInfo struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// A required descriptor of the associated Document.
+	// A required descriptor of the associated
+	// [Document][google.cloud.discoveryengine.v1beta.Document].
 	//
 	// * If [id][google.cloud.discoveryengine.v1beta.DocumentInfo.id] is
-	// specified, then the default values for {location}, {collection_id},
-	// {data_store_id}, and {branch_id} are used when annotating with the stored
-	// Document.
+	// specified, then the default values for
+	// `{location}`, `{collection_id}`, `{data_store_id}`, and `{branch_id}` are
+	// used when annotating with the stored Document.
 	//
 	// * If [name][google.cloud.discoveryengine.v1beta.DocumentInfo.name] is
 	// specified, then the provided values (default values allowed) for
-	// {location}, {collection_id}, {data_store_id}, and {branch_id} are used when
-	// annotating with the stored Document.
+	// `{location}`, `{collection_id}`, `{data_store_id}`, and
+	// `{branch_id}` are used when annotating with the stored Document.
 	//
 	// Types that are assignable to DocumentDescriptor:
 	//	*DocumentInfo_Id
@@ -881,7 +887,7 @@ type DocumentInfo_Id struct {
 
 type DocumentInfo_Name struct {
 	// Required. The Document resource full name, of the form:
-	// projects/{project\_id}/locations/{location}/collections/{collection\_id}/dataStores/{data\_store\_id}/branches/{branch\_id}/documents/{document\_id}
+	// `projects/{project_id}/locations/{location}/collections/{collection_id}/dataStores/{data_store_id}/branches/{branch_id}/documents/{document_id}`
 	Name string `protobuf:"bytes,2,opt,name=name,proto3,oneof"`
 }
 
@@ -985,7 +991,7 @@ type MediaInfo struct {
 	// Media progress should be computed using only the media_progress_duration
 	// relative to the media total length.
 	//
-	// This value must be between [0, 1.0] inclusive.
+	// This value must be between `[0, 1.0]` inclusive.
 	//
 	// If this is not a playback or the progress cannot be computed (e.g. ongoing
 	// livestream), this field should be unset.

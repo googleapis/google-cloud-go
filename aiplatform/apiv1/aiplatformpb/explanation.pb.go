@@ -1151,8 +1151,8 @@ type ExplanationSpecOverride struct {
 	unknownFields protoimpl.UnknownFields
 
 	// The parameters to be overridden. Note that the
-	// [method][google.cloud.aiplatform.v1.ExplanationParameters.method] cannot be
-	// changed. If not specified, no parameter is overridden.
+	// attribution method cannot be changed. If not specified,
+	// no parameter is overridden.
 	Parameters *ExplanationParameters `protobuf:"bytes,1,opt,name=parameters,proto3" json:"parameters,omitempty"`
 	// The metadata to be overridden. If not specified, no metadata is overridden.
 	Metadata *ExplanationMetadataOverride `protobuf:"bytes,2,opt,name=metadata,proto3" json:"metadata,omitempty"`

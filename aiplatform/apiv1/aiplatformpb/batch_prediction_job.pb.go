@@ -200,9 +200,9 @@ type BatchPredictionJob struct {
 	EncryptionSpec *EncryptionSpec `protobuf:"bytes,24,opt,name=encryption_spec,json=encryptionSpec,proto3" json:"encryption_spec,omitempty"`
 	// For custom-trained Models and AutoML Tabular Models, the container of the
 	// DeployedModel instances will send `stderr` and `stdout` streams to
-	// Stackdriver Logging by default. Please note that the logs incur cost,
+	// Cloud Logging by default. Please note that the logs incur cost,
 	// which are subject to [Cloud Logging
-	// pricing](https://cloud.google.com/stackdriver/pricing).
+	// pricing](https://cloud.google.com/logging/pricing).
 	//
 	// User can disable container logging by setting this flag to true.
 	DisableContainerLogging bool `protobuf:"varint,34,opt,name=disable_container_logging,json=disableContainerLogging,proto3" json:"disable_container_logging,omitempty"`

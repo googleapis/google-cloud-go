@@ -533,7 +533,7 @@ func (x *CreateNotificationConfigRequest) GetNotificationConfig() *NotificationC
 	return nil
 }
 
-// Request message for creating security health analytics custom modules.
+// Request message for creating Security Health Analytics custom modules.
 type CreateSecurityHealthAnalyticsCustomModuleRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -760,7 +760,7 @@ func (x *DeleteNotificationConfigRequest) GetName() string {
 	return ""
 }
 
-// Request message for deleting security health analytics custom modules.
+// Request message for deleting Security Health Analytics custom modules.
 type DeleteSecurityHealthAnalyticsCustomModuleRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -1019,7 +1019,7 @@ func (x *GetOrganizationSettingsRequest) GetName() string {
 	return ""
 }
 
-// Request message for getting effective security health analytics custom
+// Request message for getting effective Security Health Analytics custom
 // modules.
 type GetEffectiveSecurityHealthAnalyticsCustomModuleRequest struct {
 	state         protoimpl.MessageState
@@ -1073,7 +1073,7 @@ func (x *GetEffectiveSecurityHealthAnalyticsCustomModuleRequest) GetName() strin
 	return ""
 }
 
-// Request message for getting security health analytics custom modules.
+// Request message for getting Security Health Analytics custom modules.
 type GetSecurityHealthAnalyticsCustomModuleRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -1825,7 +1825,7 @@ func (x *GroupResult) GetCount() int64 {
 	return 0
 }
 
-// Request message for listing descendant security health analytics custom
+// Request message for listing descendant Security Health Analytics custom
 // modules.
 type ListDescendantSecurityHealthAnalyticsCustomModulesRequest struct {
 	state         protoimpl.MessageState
@@ -1897,7 +1897,7 @@ func (x *ListDescendantSecurityHealthAnalyticsCustomModulesRequest) GetPageToken
 	return ""
 }
 
-// Response message for listing descendant security health analytics custom
+// Response message for listing descendant Security Health Analytics custom
 // modules.
 type ListDescendantSecurityHealthAnalyticsCustomModulesResponse struct {
 	state         protoimpl.MessageState
@@ -2224,7 +2224,7 @@ func (x *ListNotificationConfigsResponse) GetNextPageToken() string {
 	return ""
 }
 
-// Request message for listing effective security health analytics custom
+// Request message for listing effective Security Health Analytics custom
 // modules.
 type ListEffectiveSecurityHealthAnalyticsCustomModulesRequest struct {
 	state         protoimpl.MessageState
@@ -2296,7 +2296,7 @@ func (x *ListEffectiveSecurityHealthAnalyticsCustomModulesRequest) GetPageToken(
 	return ""
 }
 
-// Response message for listing effective security health analytics custom
+// Response message for listing effective Security Health Analytics custom
 // modules.
 type ListEffectiveSecurityHealthAnalyticsCustomModulesResponse struct {
 	state         protoimpl.MessageState
@@ -2356,7 +2356,7 @@ func (x *ListEffectiveSecurityHealthAnalyticsCustomModulesResponse) GetNextPageT
 	return ""
 }
 
-// Request message for listing security health analytics custom modules.
+// Request message for listing Security Health Analytics custom modules.
 type ListSecurityHealthAnalyticsCustomModulesRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -2427,7 +2427,7 @@ func (x *ListSecurityHealthAnalyticsCustomModulesRequest) GetPageToken() string 
 	return ""
 }
 
-// Response message for listing security health analytics custom modules.
+// Response message for listing Security Health Analytics custom modules.
 type ListSecurityHealthAnalyticsCustomModulesResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -3723,7 +3723,7 @@ func (x *UpdateOrganizationSettingsRequest) GetUpdateMask() *fieldmaskpb.FieldMa
 	return nil
 }
 
-// Request message for updating security health analytics custom modules.
+// Request message for updating Security Health Analytics custom modules.
 type UpdateSecurityHealthAnalyticsCustomModuleRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -7323,7 +7323,7 @@ type SecurityCenterClient interface {
 	// Updates the SecurityHealthAnalyticsCustomModule under the given name based
 	// on the given update mask. Updating the enablement state is supported on
 	// both resident and inherited modules (though resident modules cannot have an
-	// enablement state of “inherited”). Updating the display name and custom
+	// enablement state of "inherited"). Updating the display name and custom
 	// config of a module is supported on resident modules only.
 	UpdateSecurityHealthAnalyticsCustomModule(ctx context.Context, in *UpdateSecurityHealthAnalyticsCustomModuleRequest, opts ...grpc.CallOption) (*SecurityHealthAnalyticsCustomModule, error)
 	// Updates a source.
@@ -7858,7 +7858,7 @@ type SecurityCenterServer interface {
 	// Updates the SecurityHealthAnalyticsCustomModule under the given name based
 	// on the given update mask. Updating the enablement state is supported on
 	// both resident and inherited modules (though resident modules cannot have an
-	// enablement state of “inherited”). Updating the display name and custom
+	// enablement state of "inherited"). Updating the display name and custom
 	// config of a module is supported on resident modules only.
 	UpdateSecurityHealthAnalyticsCustomModule(context.Context, *UpdateSecurityHealthAnalyticsCustomModuleRequest) (*SecurityHealthAnalyticsCustomModule, error)
 	// Updates a source.
