@@ -321,6 +321,9 @@
         "talent": {
             "component": "talent"
         },
+        "support": {
+            "component": "support"
+        },
         "texttospeech": {
             "component": "texttospeech"
         },
