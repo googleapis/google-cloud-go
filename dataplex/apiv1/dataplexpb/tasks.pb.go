@@ -758,9 +758,8 @@ type Task_TriggerSpec_Schedule struct {
 	// tab, apply a prefix in the cron tab: "CRON_TZ=${IANA_TIME_ZONE}" or
 	// "TZ=${IANA_TIME_ZONE}". The ${IANA_TIME_ZONE} may only be a valid
 	// string from IANA time zone database. For example,
-	// `CRON_TZ=America/New_York 1 * * * *`,
-	// or `TZ=America/New_York 1 * * * *`.
-	// This field is required for RECURRING tasks.
+	// `CRON_TZ=America/New_York 1 * * * *`, or `TZ=America/New_York 1 * * *
+	// *`. This field is required for RECURRING tasks.
 	Schedule string `protobuf:"bytes,100,opt,name=schedule,proto3,oneof"`
 }
 

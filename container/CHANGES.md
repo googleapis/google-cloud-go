@@ -1,5 +1,12 @@
 # Changes
 
+## [1.18.0](https://github.com/googleapis/google-cloud-go/compare/container/v1.17.0...container/v1.18.0) (2023-05-03)
+
+
+### Features
+
+* **container:** Support fleet registration via cluster update ([#7877](https://github.com/googleapis/google-cloud-go/issues/7877)) ([d5d1fe9](https://github.com/googleapis/google-cloud-go/commit/d5d1fe96c9cf3cc3bb0e05fb75297a68bbbd8e41))
+
 ## [1.17.0](https://github.com/googleapis/google-cloud-go/compare/container/v1.16.0...container/v1.17.0) (2023-04-25)
 
 

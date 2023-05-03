@@ -111,6 +111,7 @@ require (
 	cloud.google.com/go/speech v1.15.0
 	cloud.google.com/go/storageinsights v0.0.0
 	cloud.google.com/go/storagetransfer v1.8.0
+	cloud.google.com/go/support v0.0.0
 	cloud.google.com/go/talent v1.5.0
 	cloud.google.com/go/texttospeech v1.6.0
 	cloud.google.com/go/tpu v1.5.0
@@ -427,3 +428,5 @@ replace cloud.google.com/go/alloydb => ../../../alloydb
 replace cloud.google.com/go/workstations => ../../../workstations
 
 replace cloud.google.com/go/confidentialcomputing => ../../../confidentialcomputing
+
+replace cloud.google.com/go/support => ../../../support
