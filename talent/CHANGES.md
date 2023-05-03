@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.5.1](https://github.com/googleapis/google-cloud-go/compare/talent/v1.5.0...talent/v1.5.1) (2023-05-03)
+
+
+### Bug Fixes
+
+* **talent:** Change timeout settings for SearchJobsForAlert ([#7863](https://github.com/googleapis/google-cloud-go/issues/7863)) ([036656b](https://github.com/googleapis/google-cloud-go/commit/036656ba51ee4bb47b61d693e2862354c7e2f636))
+
 ## [1.5.0](https://github.com/googleapis/google-cloud-go/compare/talent/v1.4.1...talent/v1.5.0) (2023-01-04)
 
 
