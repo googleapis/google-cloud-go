@@ -1,5 +1,12 @@
 # Changes
 
+## [0.110.1](https://github.com/googleapis/google-cloud-go/compare/v0.110.0...v0.110.1) (2023-05-03)
+
+
+### Bug Fixes
+
+* **httpreplay:** Add ignore-header flag, fix tests ([#7865](https://github.com/googleapis/google-cloud-go/issues/7865)) ([1829706](https://github.com/googleapis/google-cloud-go/commit/1829706c5ade36cc786b2e6780fda5e7302f965b))
+
 ## [0.110.0](https://github.com/googleapis/google-cloud-go/compare/v0.109.0...v0.110.0) (2023-02-15)
 
 
