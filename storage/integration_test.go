@@ -2251,7 +2251,7 @@ func TestIntegration_WriterContentType(t *testing.T) {
 }
 
 func TestIntegration_WriterChunksize(t *testing.T) {
-	ctx := skipJSONReads(skipGRPC("https://github.com/googleapis/google-cloud-go/issues/7839"), "no reads in test")
+	ctx := skipJSONReads(context.Background(), "no reads in test")
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, bucket, _ string, client *Client) {
 		obj := client.Bucket(bucket).Object("writer-chunksize-test" + uidSpaceObjects.New())
 		objSize := 1<<10<<10 + 1 // 1 Mib + 1 byte
