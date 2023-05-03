@@ -1060,11 +1060,13 @@ func (c *grpcStorageClient) OpenWriter(params *openWriterParams, opts ...storage
 				pr.CloseWithError(err)
 				return
 			}
-			// At this point, the current buffer has been uploaded. Capture the
-			// committed offset here in case the upload was not finalized and
-			// another chunk is to be uploaded.
-			offset = off
-			progress(offset)
+			// At this point, the current buffer has been uploaded. For resumable
+			// uploads, capture the committed offset here in case the upload was not
+			// finalized and another chunk is to be uploaded.
+			if gw.upid != "" {
+				offset = off
+				progress(offset)
+			}
 
 			// When we are done reading data and the chunk has been finalized,
 			// we are done.
