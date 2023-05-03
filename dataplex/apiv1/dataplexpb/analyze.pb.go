@@ -21,14 +21,13 @@
 package dataplexpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -319,6 +318,8 @@ type Content struct {
 	// Types that are assignable to Data:
 	//	*Content_DataText
 	Data isContent_Data `protobuf_oneof:"data"`
+	// Types of content
+	//
 	// Types that are assignable to Content:
 	//	*Content_SqlScript_
 	//	*Content_Notebook_
@@ -483,7 +484,8 @@ type Session struct {
 	UserId string `protobuf:"bytes,2,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
 	// Output only. Session start time.
 	CreateTime *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=create_time,json=createTime,proto3" json:"create_time,omitempty"`
-	State      State                  `protobuf:"varint,4,opt,name=state,proto3,enum=google.cloud.dataplex.v1.State" json:"state,omitempty"`
+	// Output only. State of Session
+	State State `protobuf:"varint,4,opt,name=state,proto3,enum=google.cloud.dataplex.v1.State" json:"state,omitempty"`
 }
 
 func (x *Session) Reset() {
@@ -647,6 +649,7 @@ type Environment_InfrastructureSpec_OsImage struct {
 
 func (*Environment_InfrastructureSpec_OsImage) isEnvironment_InfrastructureSpec_Runtime() {}
 
+// Configuration for sessions created for this environment.
 type Environment_SessionSpec struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -709,6 +712,7 @@ func (x *Environment_SessionSpec) GetEnableFastStartup() bool {
 	return false
 }
 
+// Status of sessions created for this environment.
 type Environment_SessionStatus struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -758,6 +762,7 @@ func (x *Environment_SessionStatus) GetActive() bool {
 	return false
 }
 
+// URI Endpoints to access sessions associated with the Environment.
 type Environment_Endpoints struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache

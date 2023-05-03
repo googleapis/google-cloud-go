@@ -21,14 +21,13 @@
 package dataplexpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -758,9 +757,8 @@ type Task_TriggerSpec_Schedule struct {
 	// tab, apply a prefix in the cron tab: "CRON_TZ=${IANA_TIME_ZONE}" or
 	// "TZ=${IANA_TIME_ZONE}". The ${IANA_TIME_ZONE} may only be a valid
 	// string from IANA time zone database. For example,
-	// `CRON_TZ=America/New_York 1 * * * *`,
-	// or `TZ=America/New_York 1 * * * *`.
-	// This field is required for RECURRING tasks.
+	// `CRON_TZ=America/New_York 1 * * * *`, or `TZ=America/New_York 1 * * *
+	// *`. This field is required for RECURRING tasks.
 	Schedule string `protobuf:"bytes,100,opt,name=schedule,proto3,oneof"`
 }
 
