@@ -7,7 +7,7 @@ require (
 	cloud.google.com/go/datacatalog v1.13.0
 	cloud.google.com/go/iam v0.13.0
 	cloud.google.com/go/storage v1.29.0
-	github.com/apache/arrow/go/v11 v11.0.0
+	github.com/apache/arrow/go/v12 v12.0.0
 	github.com/google/go-cmp v0.5.9
 	github.com/google/uuid v1.3.0
 	github.com/googleapis/gax-go/v2 v2.8.0
