@@ -851,8 +851,10 @@ deep-copy-regex:
     dest: /
   - source: /google/cloud/dataplex/v1/cloud.google.com/go
     dest: /
-  - source: /google/cloud/dataproc/v1/cloud.google.com/go
-    dest: /
+  - source: /google/cloud/dataproc/v1/cloud.google.com/go/dataproc/v2/apiv1
+    dest: /dataproc/apiv1
+  - source: /google/cloud/dataproc/v1/cloud.google.com/go/internal/generated/snippets/dataproc/v2/apiv1
+    dest: /internal/generated/snippets/dataproc/apiv1
   - source: /google/cloud/dataqna/v1alpha/cloud.google.com/go
     dest: /
   - source: /google/datastore/admin/v1/cloud.google.com/go
