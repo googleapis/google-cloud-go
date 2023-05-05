@@ -22,6 +22,9 @@ package loggingpb
 
 import (
 	context "context"
+	reflect "reflect"
+	sync "sync"
+
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	monitoredres "google.golang.org/genproto/googleapis/api/monitoredres"
 	status "google.golang.org/genproto/googleapis/rpc/status"
@@ -32,8 +35,6 @@ import (
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
-	reflect "reflect"
-	sync "sync"
 )
 
 const (
