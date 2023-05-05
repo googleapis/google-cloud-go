@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/aiplatform/apiv1beta1",
-    "version": "1.38.0",
+    "version": "$VERSION",
     "language": "GO",
     "apis": [
       {
@@ -702,7 +702,7 @@
     {
       "regionTag": "aiplatform_v1beta1_generated_DatasetService_ListOperations_sync",
       "title": "aiplatform ListOperations Sample",
-      "description": "ListOperations lists operations that match the specified filter in the request. If\nthe server doesn't support this method, it returns `UNIMPLEMENTED`.",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
       "file": "DatasetClient/ListOperations/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1482,7 +1482,7 @@
     {
       "regionTag": "aiplatform_v1beta1_generated_DeploymentResourcePoolService_ListOperations_sync",
       "title": "aiplatform ListOperations Sample",
-      "description": "ListOperations lists operations that match the specified filter in the request. If\nthe server doesn't support this method, it returns `UNIMPLEMENTED`.",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
       "file": "DeploymentResourcePoolClient/ListOperations/main.go",
       "language": "GO",
       "clientMethod": {
@@ -2216,7 +2216,7 @@
     {
       "regionTag": "aiplatform_v1beta1_generated_EndpointService_ListOperations_sync",
       "title": "aiplatform ListOperations Sample",
-      "description": "ListOperations lists operations that match the specified filter in the request. If\nthe server doesn't support this method, it returns `UNIMPLEMENTED`.",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
       "file": "EndpointClient/ListOperations/main.go",
       "language": "GO",
       "clientMethod": {
@@ -2255,6 +2255,52 @@
         {
           "start": 18,
           "end": 60,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_EndpointService_MutateDeployedModel_sync",
+      "title": "aiplatform MutateDeployedModel Sample",
+      "description": "MutateDeployedModel updates an existing deployed model. Updatable fields include\n`min_replica_count`, `max_replica_count`, `autoscaling_metric_specs`,\n`disable_container_logging` (v1 only), and `enable_container_logging`\n(v1beta1 only).",
+      "file": "EndpointClient/MutateDeployedModel/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "MutateDeployedModel",
+        "fullName": "google.cloud.aiplatform.v1beta1.EndpointClient.MutateDeployedModel",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.MutateDeployedModelRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "MutateDeployedModelOperation",
+        "client": {
+          "shortName": "EndpointClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.EndpointClient"
+        },
+        "method": {
+          "shortName": "MutateDeployedModel",
+          "fullName": "google.cloud.aiplatform.v1beta1.EndpointService.MutateDeployedModel",
+          "service": {
+            "shortName": "EndpointService",
+            "fullName": "google.cloud.aiplatform.v1beta1.EndpointService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
           "type": "FULL"
         }
       ]
@@ -2766,7 +2812,7 @@
     {
       "regionTag": "aiplatform_v1beta1_generated_FeaturestoreOnlineServingService_ListOperations_sync",
       "title": "aiplatform ListOperations Sample",
-      "description": "ListOperations lists operations that match the specified filter in the request. If\nthe server doesn't support this method, it returns `UNIMPLEMENTED`.",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
       "file": "FeaturestoreOnlineServingClient/ListOperations/main.go",
       "language": "GO",
       "clientMethod": {
@@ -4098,7 +4144,7 @@
     {
       "regionTag": "aiplatform_v1beta1_generated_FeaturestoreService_ListOperations_sync",
       "title": "aiplatform ListOperations Sample",
-      "description": "ListOperations lists operations that match the specified filter in the request. If\nthe server doesn't support this method, it returns `UNIMPLEMENTED`.",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
       "file": "FeaturestoreClient/ListOperations/main.go",
       "language": "GO",
       "clientMethod": {
@@ -4970,7 +5016,7 @@
     {
       "regionTag": "aiplatform_v1beta1_generated_IndexEndpointService_ListOperations_sync",
       "title": "aiplatform ListOperations Sample",
-      "description": "ListOperations lists operations that match the specified filter in the request. If\nthe server doesn't support this method, it returns `UNIMPLEMENTED`.",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
       "file": "IndexEndpointClient/ListOperations/main.go",
       "language": "GO",
       "clientMethod": {
@@ -5750,7 +5796,7 @@
     {
       "regionTag": "aiplatform_v1beta1_generated_IndexService_ListOperations_sync",
       "title": "aiplatform ListOperations Sample",
-      "description": "ListOperations lists operations that match the specified filter in the request. If\nthe server doesn't support this method, it returns `UNIMPLEMENTED`.",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
       "file": "IndexClient/ListOperations/main.go",
       "language": "GO",
       "clientMethod": {
@@ -7767,7 +7813,7 @@
     {
       "regionTag": "aiplatform_v1beta1_generated_JobService_ListOperations_sync",
       "title": "aiplatform ListOperations Sample",
-      "description": "ListOperations lists operations that match the specified filter in the request. If\nthe server doesn't support this method, it returns `UNIMPLEMENTED`.",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
       "file": "JobClient/ListOperations/main.go",
       "language": "GO",
       "clientMethod": {
@@ -8453,7 +8499,7 @@
     {
       "regionTag": "aiplatform_v1beta1_generated_MatchService_ListOperations_sync",
       "title": "aiplatform ListOperations Sample",
-      "description": "ListOperations lists operations that match the specified filter in the request. If\nthe server doesn't support this method, it returns `UNIMPLEMENTED`.",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
       "file": "MatchClient/ListOperations/main.go",
       "language": "GO",
       "clientMethod": {
@@ -9969,7 +10015,7 @@
     {
       "regionTag": "aiplatform_v1beta1_generated_MetadataService_ListOperations_sync",
       "title": "aiplatform ListOperations Sample",
-      "description": "ListOperations lists operations that match the specified filter in the request. If\nthe server doesn't support this method, it returns `UNIMPLEMENTED`.",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
       "file": "MetadataClient/ListOperations/main.go",
       "language": "GO",
       "clientMethod": {
@@ -10933,7 +10979,7 @@
     {
       "regionTag": "aiplatform_v1beta1_generated_MigrationService_ListOperations_sync",
       "title": "aiplatform ListOperations Sample",
-      "description": "ListOperations lists operations that match the specified filter in the request. If\nthe server doesn't support this method, it returns `UNIMPLEMENTED`.",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
       "file": "MigrationClient/ListOperations/main.go",
       "language": "GO",
       "clientMethod": {
@@ -11141,6 +11187,510 @@
         "client": {
           "shortName": "MigrationClient",
           "fullName": "google.cloud.aiplatform.v1beta1.MigrationClient"
+        },
+        "method": {
+          "shortName": "WaitOperation",
+          "fullName": "google.longrunning.Operations.WaitOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_ModelGardenService_CancelOperation_sync",
+      "title": "aiplatform CancelOperation Sample",
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "ModelGardenClient/CancelOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CancelOperation",
+        "fullName": "google.cloud.aiplatform.v1beta1.ModelGardenClient.CancelOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.CancelOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "ModelGardenClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.ModelGardenClient"
+        },
+        "method": {
+          "shortName": "CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_ModelGardenService_DeleteOperation_sync",
+      "title": "aiplatform DeleteOperation Sample",
+      "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
+      "file": "ModelGardenClient/DeleteOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteOperation",
+        "fullName": "google.cloud.aiplatform.v1beta1.ModelGardenClient.DeleteOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.DeleteOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "ModelGardenClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.ModelGardenClient"
+        },
+        "method": {
+          "shortName": "DeleteOperation",
+          "fullName": "google.longrunning.Operations.DeleteOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_ModelGardenService_GetIamPolicy_sync",
+      "title": "aiplatform GetIamPolicy Sample",
+      "description": "GetIamPolicy gets the access control policy for a resource. Returns an empty policy\nif the resource exists and does not have a policy set.",
+      "file": "ModelGardenClient/GetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetIamPolicy",
+        "fullName": "google.cloud.aiplatform.v1beta1.ModelGardenClient.GetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.GetIamPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "client": {
+          "shortName": "ModelGardenClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.ModelGardenClient"
+        },
+        "method": {
+          "shortName": "GetIamPolicy",
+          "fullName": "google.iam.v1.IAMPolicy.GetIamPolicy",
+          "service": {
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_ModelGardenService_GetLocation_sync",
+      "title": "aiplatform GetLocation Sample",
+      "description": "GetLocation gets information about a location.",
+      "file": "ModelGardenClient/GetLocation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetLocation",
+        "fullName": "google.cloud.aiplatform.v1beta1.ModelGardenClient.GetLocation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.GetLocationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*locationpb.Location",
+        "client": {
+          "shortName": "ModelGardenClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.ModelGardenClient"
+        },
+        "method": {
+          "shortName": "GetLocation",
+          "fullName": "google.cloud.location.Locations.GetLocation",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_ModelGardenService_GetOperation_sync",
+      "title": "aiplatform GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "ModelGardenClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.aiplatform.v1beta1.ModelGardenClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "ModelGardenClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.ModelGardenClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_ModelGardenService_GetPublisherModel_sync",
+      "title": "aiplatform GetPublisherModel Sample",
+      "description": "GetPublisherModel gets a Model Garden publisher model.",
+      "file": "ModelGardenClient/GetPublisherModel/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetPublisherModel",
+        "fullName": "google.cloud.aiplatform.v1beta1.ModelGardenClient.GetPublisherModel",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.GetPublisherModelRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*aiplatformpb.PublisherModel",
+        "client": {
+          "shortName": "ModelGardenClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.ModelGardenClient"
+        },
+        "method": {
+          "shortName": "GetPublisherModel",
+          "fullName": "google.cloud.aiplatform.v1beta1.ModelGardenService.GetPublisherModel",
+          "service": {
+            "shortName": "ModelGardenService",
+            "fullName": "google.cloud.aiplatform.v1beta1.ModelGardenService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_ModelGardenService_ListLocations_sync",
+      "title": "aiplatform ListLocations Sample",
+      "description": "ListLocations lists information about the supported locations for this service.",
+      "file": "ModelGardenClient/ListLocations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListLocations",
+        "fullName": "google.cloud.aiplatform.v1beta1.ModelGardenClient.ListLocations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.ListLocationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "LocationIterator",
+        "client": {
+          "shortName": "ModelGardenClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.ModelGardenClient"
+        },
+        "method": {
+          "shortName": "ListLocations",
+          "fullName": "google.cloud.location.Locations.ListLocations",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 60,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_ModelGardenService_ListOperations_sync",
+      "title": "aiplatform ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "ModelGardenClient/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.cloud.aiplatform.v1beta1.ModelGardenClient.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "ModelGardenClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.ModelGardenClient"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 60,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_ModelGardenService_SetIamPolicy_sync",
+      "title": "aiplatform SetIamPolicy Sample",
+      "description": "SetIamPolicy sets the access control policy on the specified resource. Replaces\nany existing policy.\n\nCan return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED`\nerrors.",
+      "file": "ModelGardenClient/SetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SetIamPolicy",
+        "fullName": "google.cloud.aiplatform.v1beta1.ModelGardenClient.SetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.SetIamPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "client": {
+          "shortName": "ModelGardenClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.ModelGardenClient"
+        },
+        "method": {
+          "shortName": "SetIamPolicy",
+          "fullName": "google.iam.v1.IAMPolicy.SetIamPolicy",
+          "service": {
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_ModelGardenService_TestIamPermissions_sync",
+      "title": "aiplatform TestIamPermissions Sample",
+      "description": "TestIamPermissions returns permissions that a caller has on the specified resource. If the\nresource does not exist, this will return an empty set of\npermissions, not a `NOT_FOUND` error.\n\nNote: This operation is designed to be used for building\npermission-aware UIs and command-line tools, not for authorization\nchecking. This operation may \"fail open\" without warning.",
+      "file": "ModelGardenClient/TestIamPermissions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "TestIamPermissions",
+        "fullName": "google.cloud.aiplatform.v1beta1.ModelGardenClient.TestIamPermissions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.TestIamPermissionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.TestIamPermissionsResponse",
+        "client": {
+          "shortName": "ModelGardenClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.ModelGardenClient"
+        },
+        "method": {
+          "shortName": "TestIamPermissions",
+          "fullName": "google.iam.v1.IAMPolicy.TestIamPermissions",
+          "service": {
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_ModelGardenService_WaitOperation_sync",
+      "title": "aiplatform WaitOperation Sample",
+      "description": "WaitOperation is a utility method from google.longrunning.Operations.",
+      "file": "ModelGardenClient/WaitOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "WaitOperation",
+        "fullName": "google.cloud.aiplatform.v1beta1.ModelGardenClient.WaitOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.WaitOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "ModelGardenClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.ModelGardenClient"
         },
         "method": {
           "shortName": "WaitOperation",
@@ -12081,7 +12631,7 @@
     {
       "regionTag": "aiplatform_v1beta1_generated_ModelService_ListOperations_sync",
       "title": "aiplatform ListOperations Sample",
-      "description": "ListOperations lists operations that match the specified filter in the request. If\nthe server doesn't support this method, it returns `UNIMPLEMENTED`.",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
       "file": "ModelClient/ListOperations/main.go",
       "language": "GO",
       "clientMethod": {
@@ -13089,7 +13639,7 @@
     {
       "regionTag": "aiplatform_v1beta1_generated_PipelineService_ListOperations_sync",
       "title": "aiplatform ListOperations Sample",
-      "description": "ListOperations lists operations that match the specified filter in the request. If\nthe server doesn't support this method, it returns `UNIMPLEMENTED`.",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
       "file": "PipelineClient/ListOperations/main.go",
       "language": "GO",
       "clientMethod": {
@@ -13685,7 +14235,7 @@
     {
       "regionTag": "aiplatform_v1beta1_generated_PredictionService_ListOperations_sync",
       "title": "aiplatform ListOperations Sample",
-      "description": "ListOperations lists operations that match the specified filter in the request. If\nthe server doesn't support this method, it returns `UNIMPLEMENTED`.",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
       "file": "PredictionClient/ListOperations/main.go",
       "language": "GO",
       "clientMethod": {
@@ -14373,7 +14923,7 @@
     {
       "regionTag": "aiplatform_v1beta1_generated_ScheduleService_ListOperations_sync",
       "title": "aiplatform ListOperations Sample",
-      "description": "ListOperations lists operations that match the specified filter in the request. If\nthe server doesn't support this method, it returns `UNIMPLEMENTED`.",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
       "file": "ScheduleClient/ListOperations/main.go",
       "language": "GO",
       "clientMethod": {
@@ -15105,7 +15655,7 @@
     {
       "regionTag": "aiplatform_v1beta1_generated_SpecialistPoolService_ListOperations_sync",
       "title": "aiplatform ListOperations Sample",
-      "description": "ListOperations lists operations that match the specified filter in the request. If\nthe server doesn't support this method, it returns `UNIMPLEMENTED`.",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
       "file": "SpecialistPoolClient/ListOperations/main.go",
       "language": "GO",
       "clientMethod": {
@@ -16391,7 +16941,7 @@
     {
       "regionTag": "aiplatform_v1beta1_generated_TensorboardService_ListOperations_sync",
       "title": "aiplatform ListOperations Sample",
-      "description": "ListOperations lists operations that match the specified filter in the request. If\nthe server doesn't support this method, it returns `UNIMPLEMENTED`.",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
       "file": "TensorboardClient/ListOperations/main.go",
       "language": "GO",
       "clientMethod": {
@@ -17813,7 +18363,7 @@
     {
       "regionTag": "aiplatform_v1beta1_generated_VizierService_ListOperations_sync",
       "title": "aiplatform ListOperations Sample",
-      "description": "ListOperations lists operations that match the specified filter in the request. If\nthe server doesn't support this method, it returns `UNIMPLEMENTED`.",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
       "file": "VizierClient/ListOperations/main.go",
       "language": "GO",
       "clientMethod": {

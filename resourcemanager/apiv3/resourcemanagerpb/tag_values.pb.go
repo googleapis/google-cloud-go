@@ -21,12 +21,9 @@
 package resourcemanagerpb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	iampb "cloud.google.com/go/iam/apiv1/iampb"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -35,6 +32,8 @@ import (
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -63,10 +62,10 @@ type TagValue struct {
 	// an alphanumeric character ([a-z0-9A-Z]) with dashes (-), underscores (_),
 	// dots (.), and alphanumerics between.
 	ShortName string `protobuf:"bytes,3,opt,name=short_name,json=shortName,proto3" json:"short_name,omitempty"`
-	// Output only. Namespaced name of the TagValue. Now only supported in the
-	// format
-	// `{organization_id}/{tag_key_short_name}/{short_name}`. Other
-	// formats will be supported when we add non-org parented tags.
+	// Output only. The namespaced name of the TagValue. Can be in the form
+	// `{organization_id}/{tag_key_short_name}/{tag_value_short_name}` or
+	// `{project_id}/{tag_key_short_name}/{tag_value_short_name}` or
+	// `{project_number}/{tag_key_short_name}/{tag_value_short_name}`.
 	NamespacedName string `protobuf:"bytes,4,opt,name=namespaced_name,json=namespacedName,proto3" json:"namespaced_name,omitempty"`
 	// Optional. User-assigned description of the TagValue.
 	// Must not exceed 256 characters.
