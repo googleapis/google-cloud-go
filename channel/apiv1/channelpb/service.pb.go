@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -21,11 +21,8 @@
 package channelpb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -34,6 +31,8 @@ import (
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -8400,8 +8399,7 @@ type CloudChannelServiceClient interface {
 	// [CustomerRepricingConfig][google.cloud.channel.v1.CustomerRepricingConfig]
 	// resources. The data for each resource is displayed in the ascending order
 	// of:
-	//
-	// * Customer ID
+	// * customer ID
 	// * [RepricingConfig.EntitlementGranularity.entitlement][google.cloud.channel.v1.RepricingConfig.EntitlementGranularity.entitlement]
 	// * [RepricingConfig.effective_invoice_month][google.cloud.channel.v1.RepricingConfig.effective_invoice_month]
 	// * [CustomerRepricingConfig.update_time][google.cloud.channel.v1.CustomerRepricingConfig.update_time]
@@ -8538,8 +8536,7 @@ type CloudChannelServiceClient interface {
 	// [ChannelPartnerRepricingConfig][google.cloud.channel.v1.ChannelPartnerRepricingConfig]
 	// resources. The data for each resource is displayed in the ascending order
 	// of:
-	//
-	// * Channel Partner ID
+	// * channel partner ID
 	// * [RepricingConfig.effective_invoice_month][google.cloud.channel.v1.RepricingConfig.effective_invoice_month]
 	// * [ChannelPartnerRepricingConfig.update_time][google.cloud.channel.v1.ChannelPartnerRepricingConfig.update_time]
 	//
@@ -9760,8 +9757,7 @@ type CloudChannelServiceServer interface {
 	// [CustomerRepricingConfig][google.cloud.channel.v1.CustomerRepricingConfig]
 	// resources. The data for each resource is displayed in the ascending order
 	// of:
-	//
-	// * Customer ID
+	// * customer ID
 	// * [RepricingConfig.EntitlementGranularity.entitlement][google.cloud.channel.v1.RepricingConfig.EntitlementGranularity.entitlement]
 	// * [RepricingConfig.effective_invoice_month][google.cloud.channel.v1.RepricingConfig.effective_invoice_month]
 	// * [CustomerRepricingConfig.update_time][google.cloud.channel.v1.CustomerRepricingConfig.update_time]
@@ -9898,8 +9894,7 @@ type CloudChannelServiceServer interface {
 	// [ChannelPartnerRepricingConfig][google.cloud.channel.v1.ChannelPartnerRepricingConfig]
 	// resources. The data for each resource is displayed in the ascending order
 	// of:
-	//
-	// * Channel Partner ID
+	// * channel partner ID
 	// * [RepricingConfig.effective_invoice_month][google.cloud.channel.v1.RepricingConfig.effective_invoice_month]
 	// * [ChannelPartnerRepricingConfig.update_time][google.cloud.channel.v1.ChannelPartnerRepricingConfig.update_time]
 	//
