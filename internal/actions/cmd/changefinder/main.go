@@ -26,9 +26,10 @@ import (
 )
 
 var (
-	pullRequest = flag.Bool("pr", false, "indicates if the tool is run against a PR")
-	dir         = flag.String("dir", "", "the root directory to evaluate")
-	quiet       = flag.Bool("q", false, "quiet mode, minimal logging")
+	dir       = flag.String("dir", "", "the root directory to evaluate")
+	format    = flag.String("format", "plain", "output format, one of [plain|github], defaults to 'plain'")
+	ghVarName = flag.String("gh-var", "submodules", "github format's variable name to set output for, defaults to 'submodules'.")
+	quiet     = flag.Bool("q", false, "quiet mode, minimal logging")
 	// Only used in quiet mode, printed in the event of an error.
 	logBuffer []string
 )
@@ -47,10 +48,6 @@ func main() {
 	submodules, err := mods(rootDir)
 	if err != nil {
 		fatalE(err)
-	}
-
-	if !*pullRequest {
-		resetLatestTag(rootDir)
 	}
 
 	changes, err := gitFilesChanges(rootDir)
@@ -76,31 +73,23 @@ func main() {
 		}
 	}
 
-	b, err := json.Marshal(updatedSubmodules)
-	if err != nil {
-		fatal("unable to marshal submodules: %v", err)
-	}
-	fmt.Printf("::set-output name=submodules::%s", b)
+	output(updatedSubmodules)
 }
 
-func resetLatestTag(rootDir string) {
-	c := exec.Command("git", "pull", "--tags")
-	c.Dir = rootDir
-	if err := c.Run(); err != nil {
-		fatal("unable to pull tags: %v", err)
+func output(s []string) error {
+	switch *format {
+	case "github":
+		b, err := json.Marshal(s)
+		if err != nil {
+			fatal("unable to marshal submodules: %v", err)
+		}
+		fmt.Printf("::set-output name=%s::%s", *ghVarName, b)
+	case "plain":
+		fallthrough
+	default:
+		fmt.Println(strings.Join(s, "\n"))
 	}
-
-	tag, err := latestTag(rootDir)
-	if err != nil {
-		fatal("unable to find tag: %v", err)
-	}
-	logg("Latest release: %s", tag)
-
-	c = exec.Command("git", "reset", "--hard", tag)
-	c.Dir = rootDir
-	if err := c.Run(); err != nil {
-		fatal("unable to reset to tag: %v", err)
-	}
+	return nil
 }
 
 func owner(file string, submodules []string) (string, bool) {
@@ -135,24 +124,6 @@ func mods(dir string) (submodules []string, err error) {
 	}
 
 	return submodules, nil
-}
-
-func latestTag(dir string) (string, error) {
-	c := exec.Command("git", "rev-list", "--tags", "--max-count=1")
-	c.Dir = dir
-	b, err := c.Output()
-	if err != nil {
-		return "", err
-	}
-	commit := string(bytes.TrimSpace(b))
-	c = exec.Command("git", "describe", "--tags", commit)
-	c.Dir = dir
-	b, err = c.Output()
-	if err != nil {
-		return "", err
-	}
-	b = bytes.TrimSpace(b)
-	return string(b), nil
 }
 
 func gitFilesChanges(dir string) ([]string, error) {
