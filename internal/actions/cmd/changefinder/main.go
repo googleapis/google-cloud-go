@@ -17,108 +17,124 @@ package main
 import (
 	"bytes"
 	"encoding/json"
+	"flag"
 	"fmt"
-	"io/fs"
 	"log"
 	"os"
 	"os/exec"
-	"path/filepath"
 	"strings"
 )
 
+var (
+	pullRequest = flag.Bool("pr", false, "indicates if the tool is run against a PR")
+	dir         = flag.String("dir", "", "the root directory to evaluate")
+	quiet       = flag.Bool("q", false, "quiet mode, minimal logging")
+	// Only used in quiet mode, printed in the event of an error.
+	logBuffer []string
+)
+
 func main() {
+	flag.Parse()
 	rootDir, err := os.Getwd()
 	if err != nil {
-		log.Fatal(err)
+		fatalE(err)
 	}
-	if len(os.Args) > 1 {
-		rootDir = os.Args[1]
+	if *dir != "" {
+		rootDir = *dir
 	}
-	log.Printf("Root dir: %q", rootDir)
-	var modDirs []string
-	// Find all external modules
-	filepath.WalkDir(rootDir, func(path string, d fs.DirEntry, err error) error {
-		if err != nil {
-			return err
-		}
-		if d.Name() == "internal" {
-			return filepath.SkipDir
-		}
-		if d.Name() == "go.mod" {
-			modDirs = append(modDirs, filepath.Dir(path))
-		}
-		return nil
-	})
+	logg("Root dir: %q", rootDir)
 
-	// Find relative sub-module
-	submodules := map[string]bool{}
-	for _, dir := range modDirs {
-		name, err := modName(dir)
-		if err != nil {
-			log.Fatalf("unable to lookup mod dir")
-		}
-		// Skip non-submodule
-		if name == "cloud.google.com/go" {
-			continue
-		}
-		name = strings.TrimPrefix(name, "cloud.google.com/go/")
-		submodules[name] = true
-	}
-
-	c := exec.Command("git", "pull", "--tags")
-	c.Dir = rootDir
-	if err := c.Run(); err != nil {
-		log.Fatalf("unable to pull tags: %v", err)
-	}
-
-	tag, err := latestTag(rootDir)
+	submodules, err := mods(rootDir)
 	if err != nil {
-		log.Fatalf("unable to find tag: %v", err)
+		fatalE(err)
 	}
-	log.Printf("Latest release: %s", tag)
 
-	c = exec.Command("git", "reset", "--hard", tag)
-	c.Dir = rootDir
-	if err := c.Run(); err != nil {
-		log.Fatalf("unable to reset to tag: %v", err)
+	if !*pullRequest {
+		resetLatestTag(rootDir)
 	}
 
 	changes, err := gitFilesChanges(rootDir)
 	if err != nil {
-		log.Fatalf("unable to get files changed: %v", err)
+		fatal("unable to get files changed: %v", err)
 	}
 
-	updatedSubmodulesSet := map[string]bool{}
+	modulesSeen := map[string]bool{}
+	updatedSubmodules := []string{}
 	for _, change := range changes {
-		//TODO(codyoss): This will not work with nested sub-modules. If we add
-		// those this needs to be updated.
-		pkg := strings.Split(change, "/")[0]
-		log.Printf("update to path: %s", pkg)
-		if submodules[pkg] {
-			updatedSubmodulesSet[pkg] = true
+		if strings.HasPrefix(change, "internal") {
+			continue
+		}
+		submod, ok := owner(change, submodules)
+		if !ok {
+			logg("no module for: %s", change)
+			continue
+		}
+		if _, seen := modulesSeen[submod]; !seen {
+			logg("changes in submodule: %s", submod)
+			updatedSubmodules = append(updatedSubmodules, submod)
+			modulesSeen[submod] = true
 		}
 	}
 
-	updatedSubmodule := []string{}
-	for mod := range updatedSubmodulesSet {
-		updatedSubmodule = append(updatedSubmodule, mod)
-	}
-	b, err := json.Marshal(updatedSubmodule)
+	b, err := json.Marshal(updatedSubmodules)
 	if err != nil {
-		log.Fatalf("unable to marshal submodules: %v", err)
+		fatal("unable to marshal submodules: %v", err)
 	}
 	fmt.Printf("::set-output name=submodules::%s", b)
 }
 
-func modName(dir string) (string, error) {
+func resetLatestTag(rootDir string) {
+	c := exec.Command("git", "pull", "--tags")
+	c.Dir = rootDir
+	if err := c.Run(); err != nil {
+		fatal("unable to pull tags: %v", err)
+	}
+
+	tag, err := latestTag(rootDir)
+	if err != nil {
+		fatal("unable to find tag: %v", err)
+	}
+	logg("Latest release: %s", tag)
+
+	c = exec.Command("git", "reset", "--hard", tag)
+	c.Dir = rootDir
+	if err := c.Run(); err != nil {
+		fatal("unable to reset to tag: %v", err)
+	}
+}
+
+func owner(file string, submodules []string) (string, bool) {
+	submod := ""
+	for _, mod := range submodules {
+		if strings.HasPrefix(file, mod) && len(mod) > len(submod) {
+			submod = mod
+		}
+	}
+
+	return submod, submod != ""
+}
+
+func mods(dir string) (submodules []string, err error) {
 	c := exec.Command("go", "list", "-m")
 	c.Dir = dir
 	b, err := c.Output()
 	if err != nil {
-		return "", err
+		return submodules, err
 	}
-	b = bytes.TrimSpace(b)
-	return string(b), nil
+	list := strings.Split(strings.TrimSpace(string(b)), "\n")
+
+	submodules = []string{}
+	for _, mod := range list {
+		// Skip non-submodule or internal submodules.
+		if mod == "cloud.google.com/go" || strings.Contains(mod, "internal") {
+			continue
+		}
+		logg("found module: %s", mod)
+		mod = strings.TrimPrefix(mod, "cloud.google.com/go/")
+		submodules = append(submodules, mod)
+	}
+
+	return submodules, nil
 }
 
 func latestTag(dir string) (string, error) {
@@ -147,6 +163,29 @@ func gitFilesChanges(dir string) ([]string, error) {
 		return nil, err
 	}
 	b = bytes.TrimSpace(b)
-	log.Printf("Files changed:\n%s", b)
+	logg("Files changed:\n%s", b)
 	return strings.Split(string(b), "\n"), nil
+}
+
+// logg is a potentially quiet log.Printf.
+func logg(format string, values ...interface{}) {
+	if *quiet {
+		logBuffer = append(logBuffer, fmt.Sprintf(format, values...))
+		return
+	}
+	log.Printf(format, values...)
+}
+
+func fatalE(err error) {
+	if *quiet {
+		log.Print(strings.Join(logBuffer, "\n"))
+	}
+	log.Fatal(err)
+}
+
+func fatal(format string, values ...interface{}) {
+	if *quiet {
+		log.Print(strings.Join(logBuffer, "\n"))
+	}
+	log.Fatalf(format, values...)
 }
