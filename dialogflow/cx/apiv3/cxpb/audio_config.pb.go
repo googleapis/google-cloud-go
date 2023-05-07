@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -21,13 +21,12 @@
 package cxpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -471,6 +470,12 @@ type InputAudioConfig struct {
 	// [Cloud Speech API
 	// documentation](https://cloud.google.com/speech-to-text/docs/basics#select-model)
 	// for more details.
+	// If you specify a model, the following models typically have the best
+	// performance:
+	//
+	// - phone_call (best for Agent Assist and telephony)
+	// - latest_short (best for Dialogflow non-telephony)
+	// - command_and_search (best for very short utterances and commands)
 	Model string `protobuf:"bytes,7,opt,name=model,proto3" json:"model,omitempty"`
 	// Optional. Which variant of the [Speech
 	// model][google.cloud.dialogflow.cx.v3.InputAudioConfig.model] to use.
@@ -805,15 +810,25 @@ func (x *OutputAudioConfig) GetSynthesizeSpeechConfig() *SynthesizeSpeechConfig 
 	return nil
 }
 
-// Settings related to speech generating.
+// Settings related to speech synthesizing.
 type TextToSpeechSettings struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Configuration of how speech should be synthesized, mapping from
-	// language (https://dialogflow.com/docs/reference/language) to
+	// Configuration of how speech should be synthesized, mapping from language
+	// (https://cloud.google.com/dialogflow/cx/docs/reference/language) to
 	// SynthesizeSpeechConfig.
+	//
+	// These settings affect:
+	//
+	//  - The synthesize configuration used in [phone
+	//    gateway](https://cloud.google.com/dialogflow/cx/docs/concept/integration/phone-gateway).
+	//
+	//  - You no longer need to specify
+	//    [OutputAudioConfig.synthesize_speech_config][google.cloud.dialogflow.cx.v3.OutputAudioConfig.synthesize_speech_config]
+	//    when invoking API calls. Your agent will use the pre-configured options
+	//    for speech synthesizing.
 	SynthesizeSpeechConfigs map[string]*SynthesizeSpeechConfig `protobuf:"bytes,1,rep,name=synthesize_speech_configs,json=synthesizeSpeechConfigs,proto3" json:"synthesize_speech_configs,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 }
 
