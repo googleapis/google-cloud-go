@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -21,11 +21,8 @@
 package dialogflowpb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	grpc "google.golang.org/grpc"
@@ -36,6 +33,8 @@ import (
 	_ "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -1064,8 +1063,13 @@ type ReloadDocumentRequest struct {
 	// ID>/knowledgeBases/<Knowledge Base ID>/documents/<Document ID>`
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// The source for document reloading.
+	//
 	// If provided, the service will load the contents from the source
 	// and update document in the knowledge base.
+	//
+	// Reloading from a new document source is allowed for smart messaging
+	// documents only. If you want to update the source for other document types,
+	// please delete the existing document and create a new one instead.
 	//
 	// Types that are assignable to Source:
 	//	*ReloadDocumentRequest_ContentUri
