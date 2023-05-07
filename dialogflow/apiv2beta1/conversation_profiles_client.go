@@ -348,11 +348,11 @@ func (c *ConversationProfilesClient) DeleteConversationProfile(ctx context.Conte
 // operation (at https://cloud.google.com/dialogflow/es/docs/how/long-running-operations).
 // The returned Operation type has the following method-specific fields:
 //
-//	metadata:
-//	SetSuggestionFeatureConfigOperationMetadata
+//   metadata:
+//   SetSuggestionFeatureConfigOperationMetadata
 //
-//	response:
-//	ConversationProfile
+//   response:
+//   ConversationProfile
 //
 // If a long running operation to add or update suggestion feature
 // config for the same conversation profile, participant role and suggestion
@@ -375,11 +375,11 @@ func (c *ConversationProfilesClient) SetSuggestionFeatureConfigOperation(name st
 // operation (at https://cloud.google.com/dialogflow/es/docs/how/long-running-operations).
 // The returned Operation type has the following method-specific fields:
 //
-//	metadata:
-//	ClearSuggestionFeatureConfigOperationMetadata
+//   metadata:
+//   ClearSuggestionFeatureConfigOperationMetadata
 //
-//	response:
-//	ConversationProfile
+//   response:
+//   ConversationProfile
 func (c *ConversationProfilesClient) ClearSuggestionFeatureConfig(ctx context.Context, req *dialogflowpb.ClearSuggestionFeatureConfigRequest, opts ...gax.CallOption) (*ClearSuggestionFeatureConfigOperation, error) {
 	return c.internalClient.ClearSuggestionFeatureConfig(ctx, req, opts...)
 }
@@ -410,8 +410,7 @@ func (c *ConversationProfilesClient) GetOperation(ctx context.Context, req *long
 	return c.internalClient.GetOperation(ctx, req, opts...)
 }
 
-// ListOperations lists operations that match the specified filter in the request. If
-// the server doesn’t support this method, it returns UNIMPLEMENTED.
+// ListOperations is a utility method from google.longrunning.Operations.
 func (c *ConversationProfilesClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	return c.internalClient.ListOperations(ctx, req, opts...)
 }
@@ -1260,11 +1259,11 @@ func (c *conversationProfilesRESTClient) DeleteConversationProfile(ctx context.C
 // operation (at https://cloud.google.com/dialogflow/es/docs/how/long-running-operations).
 // The returned Operation type has the following method-specific fields:
 //
-//	metadata:
-//	SetSuggestionFeatureConfigOperationMetadata
+//   metadata:
+//   SetSuggestionFeatureConfigOperationMetadata
 //
-//	response:
-//	ConversationProfile
+//   response:
+//   ConversationProfile
 //
 // If a long running operation to add or update suggestion feature
 // config for the same conversation profile, participant role and suggestion
@@ -1344,11 +1343,11 @@ func (c *conversationProfilesRESTClient) SetSuggestionFeatureConfig(ctx context.
 // operation (at https://cloud.google.com/dialogflow/es/docs/how/long-running-operations).
 // The returned Operation type has the following method-specific fields:
 //
-//	metadata:
-//	ClearSuggestionFeatureConfigOperationMetadata
+//   metadata:
+//   ClearSuggestionFeatureConfigOperationMetadata
 //
-//	response:
-//	ConversationProfile
+//   response:
+//   ConversationProfile
 func (c *conversationProfilesRESTClient) ClearSuggestionFeatureConfig(ctx context.Context, req *dialogflowpb.ClearSuggestionFeatureConfigRequest, opts ...gax.CallOption) (*ClearSuggestionFeatureConfigOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -1663,8 +1662,7 @@ func (c *conversationProfilesRESTClient) GetOperation(ctx context.Context, req *
 	return resp, nil
 }
 
-// ListOperations lists operations that match the specified filter in the request. If
-// the server doesn’t support this method, it returns UNIMPLEMENTED.
+// ListOperations is a utility method from google.longrunning.Operations.
 func (c *conversationProfilesRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
 	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
