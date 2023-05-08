@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/channel/apiv1",
-    "version": "1.12.0",
+    "version": "1.12.1",
     "language": "GO",
     "apis": [
       {
@@ -1433,7 +1433,7 @@
     {
       "regionTag": "cloudchannel_v1_generated_CloudChannelService_ListChannelPartnerRepricingConfigs_sync",
       "title": "cloudchannel ListChannelPartnerRepricingConfigs Sample",
-      "description": "ListChannelPartnerRepricingConfigs lists information about how a Reseller modifies their bill before sending\nit to a ChannelPartner.\n\nPossible Error Codes: \n\n* PERMISSION_DENIED: If the account making the request and the account\nbeing queried are different.\n* NOT_FOUND: The\n[ChannelPartnerRepricingConfig][google.cloud.channel.v1.ChannelPartnerRepricingConfig]\nspecified does not exist or is not associated with the given account.\n* INTERNAL: Any non-user error related to technical issues in the\nbackend. In this case, contact Cloud Channel support.\n\nReturn Value: \nIf successful, the\n[ChannelPartnerRepricingConfig][google.cloud.channel.v1.ChannelPartnerRepricingConfig]\nresources. The data for each resource is displayed in the ascending order\nof: \n* channel partner ID\n* [RepricingConfig.effective_invoice_month][google.cloud.channel.v1.RepricingConfig.effective_invoice_month]\n* [ChannelPartnerRepricingConfig.update_time][google.cloud.channel.v1.ChannelPartnerRepricingConfig.update_time]\n\nIf unsuccessful, returns an error.",
+      "description": "ListChannelPartnerRepricingConfigs lists information about how a Reseller modifies their bill before sending\nit to a ChannelPartner.\n\nPossible Error Codes: \n\n* PERMISSION_DENIED: If the account making the request and the account\nbeing queried are different.\n* NOT_FOUND: The\n[ChannelPartnerRepricingConfig][google.cloud.channel.v1.ChannelPartnerRepricingConfig]\nspecified does not exist or is not associated with the given account.\n* INTERNAL: Any non-user error related to technical issues in the\nbackend. In this case, contact Cloud Channel support.\n\nReturn Value: \nIf successful, the\n[ChannelPartnerRepricingConfig][google.cloud.channel.v1.ChannelPartnerRepricingConfig]\nresources. The data for each resource is displayed in the ascending order\nof: \n\n* Channel Partner ID\n* [RepricingConfig.effective_invoice_month][google.cloud.channel.v1.RepricingConfig.effective_invoice_month]\n* [ChannelPartnerRepricingConfig.update_time][google.cloud.channel.v1.ChannelPartnerRepricingConfig.update_time]\n\nIf unsuccessful, returns an error.",
       "file": "CloudChannelClient/ListChannelPartnerRepricingConfigs/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1479,7 +1479,7 @@
     {
       "regionTag": "cloudchannel_v1_generated_CloudChannelService_ListCustomerRepricingConfigs_sync",
       "title": "cloudchannel ListCustomerRepricingConfigs Sample",
-      "description": "ListCustomerRepricingConfigs lists information about how a Reseller modifies their bill before sending\nit to a Customer.\n\nPossible Error Codes: \n\n* PERMISSION_DENIED: If the account making the request and the account\nbeing queried are different.\n* NOT_FOUND: The\n[CustomerRepricingConfig][google.cloud.channel.v1.CustomerRepricingConfig]\nspecified does not exist or is not associated with the given account.\n* INTERNAL: Any non-user error related to technical issues in the\nbackend. In this case, contact Cloud Channel support.\n\nReturn Value: \nIf successful, the\n[CustomerRepricingConfig][google.cloud.channel.v1.CustomerRepricingConfig]\nresources. The data for each resource is displayed in the ascending order\nof: \n* customer ID\n* [RepricingConfig.EntitlementGranularity.entitlement][google.cloud.channel.v1.RepricingConfig.EntitlementGranularity.entitlement]\n* [RepricingConfig.effective_invoice_month][google.cloud.channel.v1.RepricingConfig.effective_invoice_month]\n* [CustomerRepricingConfig.update_time][google.cloud.channel.v1.CustomerRepricingConfig.update_time]\n\nIf unsuccessful, returns an error.",
+      "description": "ListCustomerRepricingConfigs lists information about how a Reseller modifies their bill before sending\nit to a Customer.\n\nPossible Error Codes: \n\n* PERMISSION_DENIED: If the account making the request and the account\nbeing queried are different.\n* NOT_FOUND: The\n[CustomerRepricingConfig][google.cloud.channel.v1.CustomerRepricingConfig]\nspecified does not exist or is not associated with the given account.\n* INTERNAL: Any non-user error related to technical issues in the\nbackend. In this case, contact Cloud Channel support.\n\nReturn Value: \nIf successful, the\n[CustomerRepricingConfig][google.cloud.channel.v1.CustomerRepricingConfig]\nresources. The data for each resource is displayed in the ascending order\nof: \n\n* Customer ID\n* [RepricingConfig.EntitlementGranularity.entitlement][google.cloud.channel.v1.RepricingConfig.EntitlementGranularity.entitlement]\n* [RepricingConfig.effective_invoice_month][google.cloud.channel.v1.RepricingConfig.effective_invoice_month]\n* [CustomerRepricingConfig.update_time][google.cloud.channel.v1.CustomerRepricingConfig.update_time]\n\nIf unsuccessful, returns an error.",
       "file": "CloudChannelClient/ListCustomerRepricingConfigs/main.go",
       "language": "GO",
       "clientMethod": {

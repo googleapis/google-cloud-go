@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/analytics/admin/apiv1alpha",
-    "version": "0.19.0",
+    "version": "0.19.1",
     "language": "GO",
     "apis": [
       {
@@ -789,6 +789,52 @@
       ]
     },
     {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_CreateChannelGroup_sync",
+      "title": "analyticsadmin CreateChannelGroup Sample",
+      "description": "CreateChannelGroup creates a ChannelGroup.",
+      "file": "AnalyticsAdminClient/CreateChannelGroup/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateChannelGroup",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.CreateChannelGroup",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.CreateChannelGroupRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*adminpb.ChannelGroup",
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "CreateChannelGroup",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.CreateChannelGroup",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_CreateConnectedSiteTag_sync",
       "title": "analyticsadmin CreateConnectedSiteTag Sample",
       "description": "CreateConnectedSiteTag creates a connected site tag for a Universal Analytics property. You can\ncreate a maximum of 20 connected site tags per property.\nNote: This API cannot be used on GA4 properties.",
@@ -1523,6 +1569,51 @@
       ]
     },
     {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_DeleteChannelGroup_sync",
+      "title": "analyticsadmin DeleteChannelGroup Sample",
+      "description": "DeleteChannelGroup deletes a ChannelGroup on a property.",
+      "file": "AnalyticsAdminClient/DeleteChannelGroup/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteChannelGroup",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.DeleteChannelGroup",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.DeleteChannelGroupRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "DeleteChannelGroup",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.DeleteChannelGroup",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_DeleteConnectedSiteTag_sync",
       "title": "analyticsadmin DeleteConnectedSiteTag Sample",
       "description": "DeleteConnectedSiteTag deletes a connected site tag for a Universal Analytics property.\nNote: this has no effect on GA4 properties.",
@@ -2110,6 +2201,52 @@
       ]
     },
     {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_FetchConnectedGa4Property_sync",
+      "title": "analyticsadmin FetchConnectedGa4Property Sample",
+      "description": "FetchConnectedGa4Property given a specified UA property, looks up the GA4 property connected to it.\nNote: this cannot be used with GA4 properties.",
+      "file": "AnalyticsAdminClient/FetchConnectedGa4Property/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "FetchConnectedGa4Property",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.FetchConnectedGa4Property",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.FetchConnectedGa4PropertyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*adminpb.FetchConnectedGa4PropertyResponse",
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "FetchConnectedGa4Property",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.FetchConnectedGa4Property",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_GetAccessBinding_sync",
       "title": "analyticsadmin GetAccessBinding Sample",
       "description": "GetAccessBinding gets information about an access binding.",
@@ -2324,6 +2461,52 @@
         "method": {
           "shortName": "GetBigQueryLink",
           "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.GetBigQueryLink",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_GetChannelGroup_sync",
+      "title": "analyticsadmin GetChannelGroup Sample",
+      "description": "GetChannelGroup lookup for a single ChannelGroup.",
+      "file": "AnalyticsAdminClient/GetChannelGroup/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetChannelGroup",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.GetChannelGroup",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.GetChannelGroupRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*adminpb.ChannelGroup",
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "GetChannelGroup",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.GetChannelGroup",
           "service": {
             "shortName": "AnalyticsAdminService",
             "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
@@ -3290,6 +3473,52 @@
         "method": {
           "shortName": "ListBigQueryLinks",
           "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.ListBigQueryLinks",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 60,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_ListChannelGroups_sync",
+      "title": "analyticsadmin ListChannelGroups Sample",
+      "description": "ListChannelGroups lists ChannelGroups on a property.",
+      "file": "AnalyticsAdminClient/ListChannelGroups/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListChannelGroups",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.ListChannelGroups",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.ListChannelGroupsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ChannelGroupIterator",
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "ListChannelGroups",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.ListChannelGroups",
           "service": {
             "shortName": "AnalyticsAdminService",
             "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
@@ -4302,6 +4531,52 @@
         "method": {
           "shortName": "UpdateAudience",
           "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.UpdateAudience",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_UpdateChannelGroup_sync",
+      "title": "analyticsadmin UpdateChannelGroup Sample",
+      "description": "UpdateChannelGroup updates a ChannelGroup.",
+      "file": "AnalyticsAdminClient/UpdateChannelGroup/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateChannelGroup",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.UpdateChannelGroup",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.UpdateChannelGroupRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*adminpb.ChannelGroup",
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "UpdateChannelGroup",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.UpdateChannelGroup",
           "service": {
             "shortName": "AnalyticsAdminService",
             "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
