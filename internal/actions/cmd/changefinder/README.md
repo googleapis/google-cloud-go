@@ -14,6 +14,8 @@ The available flags are as follows:
  * `-format=[plain|github]`: The `stdout` output format. Default is `plain`.
  * `-gh-var=[variable name]`: The variabe name to set output for in `github`
  format mode. Defaults to `submodules`.
+ * `-base=[ref name]`: The base ref to compare `HEAD` to. Default is
+ `origin/main`.
 
 Example usages from this repo root:
 
