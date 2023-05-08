@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.1](https://github.com/googleapis/google-cloud-go/compare/confidentialcomputing/v0.2.0...confidentialcomputing/v0.2.1) (2023-05-08)
+
+
+### Bug Fixes
+
+* **confidentialcomputing:** Update grpc to v1.55.0 ([1147ce0](https://github.com/googleapis/google-cloud-go/commit/1147ce02a990276ca4f8ab7a1ab65c14da4450ef))
+
 ## [0.2.0](https://github.com/googleapis/google-cloud-go/compare/confidentialcomputing/v0.1.0...confidentialcomputing/v0.2.0) (2023-05-01)
 
 
