@@ -29,6 +29,7 @@ var (
 	dir       = flag.String("dir", "", "the root directory to evaluate")
 	format    = flag.String("format", "plain", "output format, one of [plain|github], defaults to 'plain'")
 	ghVarName = flag.String("gh-var", "submodules", "github format's variable name to set output for, defaults to 'submodules'.")
+	base      = flag.String("base", "origin/main", "the base ref to compare to, defaults to 'origin/main'")
 	quiet     = flag.Bool("q", false, "quiet mode, minimal logging")
 	// Only used in quiet mode, printed in the event of an error.
 	logBuffer []string
@@ -127,7 +128,7 @@ func mods(dir string) (submodules []string, err error) {
 }
 
 func gitFilesChanges(dir string) ([]string, error) {
-	c := exec.Command("git", "diff", "--name-only", "origin/main")
+	c := exec.Command("git", "diff", "--name-only", *base)
 	c.Dir = dir
 	b, err := c.Output()
 	if err != nil {
