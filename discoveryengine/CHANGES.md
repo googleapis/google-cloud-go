@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.1](https://github.com/googleapis/google-cloud-go/compare/discoveryengine/v0.3.0...discoveryengine/v0.3.1) (2023-05-08)
+
+
+### Bug Fixes
+
+* **discoveryengine:** Update grpc to v1.55.0 ([1147ce0](https://github.com/googleapis/google-cloud-go/commit/1147ce02a990276ca4f8ab7a1ab65c14da4450ef))
+
 ## [0.3.0](https://github.com/googleapis/google-cloud-go/compare/discoveryengine/v0.2.0...discoveryengine/v0.3.0) (2023-04-25)
 
 
