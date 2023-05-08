@@ -1,5 +1,12 @@
 # Changes
 
+## [0.7.1](https://github.com/googleapis/google-cloud-go/compare/datalabeling/v0.7.0...datalabeling/v0.7.1) (2023-05-08)
+
+
+### Bug Fixes
+
+* **datalabeling:** Update grpc to v1.55.0 ([1147ce0](https://github.com/googleapis/google-cloud-go/commit/1147ce02a990276ca4f8ab7a1ab65c14da4450ef))
+
 ## [0.7.0](https://github.com/googleapis/google-cloud-go/compare/datalabeling/v0.6.0...datalabeling/v0.7.0) (2023-01-04)
 
 

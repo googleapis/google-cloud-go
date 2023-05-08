@@ -1,5 +1,12 @@
 # Changes
 
+## [1.7.3](https://github.com/googleapis/google-cloud-go/compare/iap/v1.7.2...iap/v1.7.3) (2023-05-08)
+
+
+### Bug Fixes
+
+* **iap:** Update grpc to v1.55.0 ([1147ce0](https://github.com/googleapis/google-cloud-go/commit/1147ce02a990276ca4f8ab7a1ab65c14da4450ef))
+
 ## [1.7.2](https://github.com/googleapis/google-cloud-go/compare/iap/v1.7.1...iap/v1.7.2) (2023-04-11)
 
 
