@@ -31,6 +31,7 @@ import (
 	gtransport "google.golang.org/api/transport/grpc"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/encoding/gzip"
 	"google.golang.org/grpc/metadata"
 
 	vkit "cloud.google.com/go/spanner/apiv1"
@@ -161,6 +162,18 @@ type ClientConfig struct {
 	// Logger is the logger to use for this client. If it is nil, all logging
 	// will be directed to the standard logger.
 	Logger *log.Logger
+
+	//
+	// Sets the compression to use for all gRPC calls. The compressor must be a valid name.
+	// This will enable compression both from the client to the
+	// server and from the server to the client.
+	//
+	// Supported values are:
+	//  gzip: Enable gzip compression
+	//  identity: Disable compression
+	//
+	//  Default: identity
+	Compression string
 }
 
 func contextWithOutgoingMetadata(ctx context.Context, md metadata.MD, disableRouteToLeader bool) context.Context {
@@ -209,7 +222,7 @@ func NewClientWithConfig(ctx context.Context, database string, config ClientConf
 		config.NumChannels = numChannels
 	}
 	// gRPC options.
-	allOpts := allClientOpts(config.NumChannels, opts...)
+	allOpts := allClientOpts(config.NumChannels, config.Compression, opts...)
 	pool, err := gtransport.DialPool(ctx, allOpts...)
 	if err != nil {
 		return nil, err
@@ -263,12 +276,16 @@ func NewClientWithConfig(ctx context.Context, database string, config ClientConf
 // Combines the default options from the generated client, the default options
 // of the hand-written client and the user options to one list of options.
 // Precedence: userOpts > clientDefaultOpts > generatedDefaultOpts
-func allClientOpts(numChannels int, userOpts ...option.ClientOption) []option.ClientOption {
+func allClientOpts(numChannels int, compression string, userOpts ...option.ClientOption) []option.ClientOption {
 	generatedDefaultOpts := vkit.DefaultClientOptions()
 	clientDefaultOpts := []option.ClientOption{
 		option.WithGRPCConnectionPool(numChannels),
 		option.WithUserAgent(fmt.Sprintf("spanner-go/v%s", internal.Version)),
 		internaloption.EnableDirectPath(true),
+	}
+	if compression == "gzip" {
+		clientDefaultOpts = append(clientDefaultOpts, option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
+			grpc.UseCompressor(gzip.Name))))
 	}
 	allDefaultOpts := append(generatedDefaultOpts, clientDefaultOpts...)
 	return append(allDefaultOpts, userOpts...)

@@ -1462,8 +1462,14 @@ func TestIntegration_Reads(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
 	// Set up testing environment.
-	client, _, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, statements[testDialect][testTableDDLStatements])
+	_, dbPath, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, statements[testDialect][testTableDDLStatements])
 	defer cleanup()
+
+	client, err := createClient(ctx, dbPath, ClientConfig{SessionPoolConfig: DefaultSessionPoolConfig, Compression: "gzip"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer client.Close()
 
 	// Includes k0..k14. Strings sort lexically, eg "k1" < "k10" < "k2".
 	var ms []*Mutation
@@ -2271,7 +2277,7 @@ func TestIntegration_InvalidDatabase(t *testing.T) {
 	}
 	ctx := context.Background()
 	dbPath := fmt.Sprintf("projects/%v/instances/%v/databases/invalid", testProjectID, testInstanceID)
-	c, err := createClient(ctx, dbPath, SessionPoolConfig{})
+	c, err := createClient(ctx, dbPath, ClientConfig{SessionPoolConfig: SessionPoolConfig{}})
 	// Client creation should succeed even if the database is invalid.
 	if err != nil {
 		t.Fatal(err)
@@ -3060,7 +3066,7 @@ func TestIntegration_BatchQuery(t *testing.T) {
 	if err = populate(ctx, client); err != nil {
 		t.Fatal(err)
 	}
-	if client2, err = createClient(ctx, dbPath, SessionPoolConfig{}); err != nil {
+	if client2, err = createClient(ctx, dbPath, ClientConfig{SessionPoolConfig: SessionPoolConfig{}}); err != nil {
 		t.Fatal(err)
 	}
 	defer client2.Close()
@@ -3144,7 +3150,7 @@ func TestIntegration_BatchRead(t *testing.T) {
 	if err = populate(ctx, client); err != nil {
 		t.Fatal(err)
 	}
-	if client2, err = createClient(ctx, dbPath, SessionPoolConfig{}); err != nil {
+	if client2, err = createClient(ctx, dbPath, ClientConfig{SessionPoolConfig: SessionPoolConfig{}}); err != nil {
 		t.Fatal(err)
 	}
 	defer client2.Close()
@@ -4376,7 +4382,7 @@ func prepareDBAndClient(ctx context.Context, t *testing.T, spc SessionPoolConfig
 			t.Fatalf("timeout creating testing table %v: %v", dbPath, err)
 		}
 	}
-	client, err := createClient(ctx, dbPath, spc)
+	client, err := createClient(ctx, dbPath, ClientConfig{SessionPoolConfig: spc})
 	if err != nil {
 		t.Fatalf("cannot create data client on DB %v: %v", dbPath, err)
 	}
@@ -4546,7 +4552,7 @@ func isNaN(x interface{}) bool {
 }
 
 // createClient creates Cloud Spanner data client.
-func createClient(ctx context.Context, dbPath string, spc SessionPoolConfig) (client *Client, err error) {
+func createClient(ctx context.Context, dbPath string, config ClientConfig) (client *Client, err error) {
 	opts := grpcHeaderChecker.CallOptions()
 	if spannerHost != "" {
 		opts = append(opts, option.WithEndpoint(spannerHost))
@@ -4554,7 +4560,7 @@ func createClient(ctx context.Context, dbPath string, spc SessionPoolConfig) (cl
 	if dpConfig.attemptDirectPath {
 		opts = append(opts, option.WithGRPCDialOption(grpc.WithDefaultCallOptions(grpc.Peer(peerInfo))))
 	}
-	client, err = NewClientWithConfig(ctx, dbPath, ClientConfig{SessionPoolConfig: spc}, opts...)
+	client, err = NewClientWithConfig(ctx, dbPath, config, opts...)
 	if err != nil {
 		return nil, fmt.Errorf("cannot create data client on DB %v: %v", dbPath, err)
 	}
