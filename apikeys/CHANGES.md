@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [1.0.1](https://github.com/googleapis/google-cloud-go/compare/apikeys/v1.0.0...apikeys/v1.0.1) (2023-05-08)
+
+
+### Bug Fixes
+
+* **apikeys:** Update grpc to v1.55.0 ([1147ce0](https://github.com/googleapis/google-cloud-go/commit/1147ce02a990276ca4f8ab7a1ab65c14da4450ef))
+
 ## [1.0.0](https://github.com/googleapis/google-cloud-go/compare/apikeys/v0.6.0...apikeys/v1.0.0) (2023-04-04)
 
 

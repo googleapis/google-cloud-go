@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -940,7 +940,7 @@ type isExportAgentResponse_Agent interface {
 
 type ExportAgentResponse_AgentUri struct {
 	// The URI to a file containing the exported agent. This field is populated
-	// only if `agent_uri` is specified in
+	// if `agent_uri` is specified in
 	// [ExportAgentRequest][google.cloud.dialogflow.cx.v3.ExportAgentRequest].
 	AgentUri string `protobuf:"bytes,1,opt,name=agent_uri,json=agentUri,proto3,oneof"`
 }

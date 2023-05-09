@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.6.1](https://github.com/googleapis/google-cloud-go/compare/filestore/v1.6.0...filestore/v1.6.1) (2023-05-08)
+
+
+### Bug Fixes
+
+* **filestore:** Update grpc to v1.55.0 ([1147ce0](https://github.com/googleapis/google-cloud-go/commit/1147ce02a990276ca4f8ab7a1ab65c14da4450ef))
+
 ## [1.6.0](https://github.com/googleapis/google-cloud-go/compare/filestore/v1.5.0...filestore/v1.6.0) (2023-03-22)
 
 
