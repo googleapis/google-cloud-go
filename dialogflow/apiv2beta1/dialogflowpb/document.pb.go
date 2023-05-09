@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -1237,8 +1237,13 @@ type ReloadDocumentRequest struct {
 	// ID>/knowledgeBases/<Knowledge Base ID>/documents/<Document ID>`
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// The source for document reloading.
+	//
 	// Optional. If provided, the service will load the contents from the source
 	// and update document in the knowledge base.
+	//
+	// Reloading from a new document source is allowed for smart messaging
+	// documents only. If you want to update the source for other document types,
+	// please delete the existing document and create a new one instead.
 	//
 	// Types that are assignable to Source:
 	//	*ReloadDocumentRequest_GcsSource

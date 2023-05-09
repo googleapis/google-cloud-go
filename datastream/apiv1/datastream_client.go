@@ -3080,6 +3080,9 @@ func (c *restClient) CreatePrivateConnection(ctx context.Context, req *datastrea
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetForce() {
+		params.Add("force", fmt.Sprintf("%v", req.GetForce()))
+	}
 	params.Add("privateConnectionId", fmt.Sprintf("%v", req.GetPrivateConnectionId()))
 	if req.GetRequestId() != "" {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
