@@ -47,15 +47,19 @@ func (c *DatabaseAdminClient) StartBackupOperation(ctx context.Context, backupID
 		return nil, fmt.Errorf("database name %q should conform to pattern %q",
 			databasePath, validDBPattern)
 	}
-	ts := &pbt.Timestamp{Seconds: expireTime.Unix(), Nanos: int32(expireTime.Nanosecond())}
+
+	backup := &databasepb.Backup {
+		Database: databasePath,
+	}
+	if !expireTime.IsZero() {
+		backup.ExpireTime = &pbt.Timestamp{Seconds: expireTime.Unix(), Nanos: int32(expireTime.Nanosecond())}
+	}
+
 	// Create request from parameters.
 	req := &databasepb.CreateBackupRequest{
 		Parent:   fmt.Sprintf("projects/%s/instances/%s", m[1], m[2]),
 		BackupId: backupID,
-		Backup: &databasepb.Backup{
-			Database:   databasePath,
-			ExpireTime: ts,
-		},
+		Backup: backup,
 	}
 	return c.CreateBackup(ctx, req, opts...)
 }
