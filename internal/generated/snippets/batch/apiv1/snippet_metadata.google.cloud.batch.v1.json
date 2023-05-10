@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/batch/apiv1",
-    "version": "1.0.1",
+    "version": "$VERSION",
     "language": "GO",
     "apis": [
       {
@@ -11,51 +11,6 @@
     ]
   },
   "snippets": [
-    {
-      "regionTag": "batch_v1_generated_BatchService_CancelOperation_sync",
-      "title": "batch CancelOperation Sample",
-      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
-      "file": "Client/CancelOperation/main.go",
-      "language": "GO",
-      "clientMethod": {
-        "shortName": "CancelOperation",
-        "fullName": "google.cloud.batch.v1.Client.CancelOperation",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "longrunningpb.CancelOperationRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.batch.v1.Client"
-        },
-        "method": {
-          "shortName": "CancelOperation",
-          "fullName": "google.longrunning.Operations.CancelOperation",
-          "service": {
-            "shortName": "Operations",
-            "fullName": "google.longrunning.Operations"
-          }
-        }
-      },
-      "origin": "API_DEFINITION",
-      "segments": [
-        {
-          "start": 18,
-          "end": 51,
-          "type": "FULL"
-        }
-      ]
-    },
     {
       "regionTag": "batch_v1_generated_BatchService_CreateJob_sync",
       "title": "batch CreateJob Sample",
@@ -144,51 +99,6 @@
         {
           "start": 18,
           "end": 56,
-          "type": "FULL"
-        }
-      ]
-    },
-    {
-      "regionTag": "batch_v1_generated_BatchService_DeleteOperation_sync",
-      "title": "batch DeleteOperation Sample",
-      "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
-      "file": "Client/DeleteOperation/main.go",
-      "language": "GO",
-      "clientMethod": {
-        "shortName": "DeleteOperation",
-        "fullName": "google.cloud.batch.v1.Client.DeleteOperation",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "longrunningpb.DeleteOperationRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.batch.v1.Client"
-        },
-        "method": {
-          "shortName": "DeleteOperation",
-          "fullName": "google.longrunning.Operations.DeleteOperation",
-          "service": {
-            "shortName": "Operations",
-            "fullName": "google.longrunning.Operations"
-          }
-        }
-      },
-      "origin": "API_DEFINITION",
-      "segments": [
-        {
-          "start": 18,
-          "end": 51,
           "type": "FULL"
         }
       ]
