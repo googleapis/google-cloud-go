@@ -1,5 +1,16 @@
 # Changes
 
+## [1.33.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.32.1...dialogflow/v1.33.0) (2023-05-10)
+
+
+### Features
+
+* **dialogflow/cx:** Extended CreateAgent timeout to 180 seconds feat: added debug info to StreamingDetectIntent ([31c3766](https://github.com/googleapis/google-cloud-go/commit/31c3766c9c4cab411669c14fc1a30bd6d2e3f2dd))
+* **dialogflow/cx:** Extended CreateAgent timeout to 180 seconds feat: added debug info to StreamingDetectIntent ([31c3766](https://github.com/googleapis/google-cloud-go/commit/31c3766c9c4cab411669c14fc1a30bd6d2e3f2dd))
+* **dialogflow:** Extended StreamingListCallCompanionEvents timeout to 600 seconds ([#7880](https://github.com/googleapis/google-cloud-go/issues/7880)) ([0d5df81](https://github.com/googleapis/google-cloud-go/commit/0d5df8160fc6368d916c18aabf1a8b7bcebb4d3c))
+* **dialogflow:** Extended StreamingListCallCompanionEvents timeout to 600 seconds feat: added debug info for StreamingDetectIntent ([31c3766](https://github.com/googleapis/google-cloud-go/commit/31c3766c9c4cab411669c14fc1a30bd6d2e3f2dd))
+* **dialogflow:** Extended StreamingListCallCompanionEvents timeout to 600 seconds feat: added debug info for StreamingDetectIntent ([31c3766](https://github.com/googleapis/google-cloud-go/commit/31c3766c9c4cab411669c14fc1a30bd6d2e3f2dd))
+
 ## [1.32.1](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.32.0...dialogflow/v1.32.1) (2023-05-08)
 
 
