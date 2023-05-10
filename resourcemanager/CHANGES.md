@@ -1,5 +1,12 @@
 # Changes
 
+## [1.8.2](https://github.com/googleapis/google-cloud-go/compare/resourcemanager/v1.8.1...resourcemanager/v1.8.2) (2023-05-10)
+
+
+### Documentation
+
+* **resourcemanager:** Update formatting for Purpose class documentation ([31c3766](https://github.com/googleapis/google-cloud-go/commit/31c3766c9c4cab411669c14fc1a30bd6d2e3f2dd))
+
 ## [1.8.1](https://github.com/googleapis/google-cloud-go/compare/resourcemanager/v1.8.0...resourcemanager/v1.8.1) (2023-05-08)
 
 
