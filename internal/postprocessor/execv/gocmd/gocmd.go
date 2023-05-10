@@ -75,12 +75,13 @@ func ModTidyAll(dir string) error {
 	return nil
 }
 
-// ListModName finds a modules name for a given directory.
+// ListModName finds a module's name for a given directory.
 func ListModName(dir string) (string, error) {
 	modC := execv.Command("go", "list", "-m")
 	modC.Dir = dir
+	modC.Env = []string{"GOWORK=off"}
 	mod, err := modC.Output()
-	return string(mod), err
+	return strings.TrimSpace(string(mod)), err
 }
 
 // ListModDirName finds the directory in which the module resides. Returns
