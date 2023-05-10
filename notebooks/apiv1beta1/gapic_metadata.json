@@ -10,6 +10,11 @@
         "grpc": {
           "libraryClient": "NotebookClient",
           "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
             "CreateEnvironment": {
               "methods": [
                 "CreateEnvironment"
@@ -30,14 +35,34 @@
                 "DeleteInstance"
               ]
             },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
             "GetEnvironment": {
               "methods": [
                 "GetEnvironment"
               ]
             },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
             "GetInstance": {
               "methods": [
                 "GetInstance"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
               ]
             },
             "IsInstanceUpgradeable": {
@@ -55,6 +80,16 @@
                 "ListInstances"
               ]
             },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
             "RegisterInstance": {
               "methods": [
                 "RegisterInstance"
@@ -68,6 +103,11 @@
             "ResetInstance": {
               "methods": [
                 "ResetInstance"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
               ]
             },
             "SetInstanceAccelerator": {
@@ -93,6 +133,11 @@
             "StopInstance": {
               "methods": [
                 "StopInstance"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
               ]
             },
             "UpgradeInstance": {
@@ -110,6 +155,11 @@
         "rest": {
           "libraryClient": "NotebookClient",
           "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
             "CreateEnvironment": {
               "methods": [
                 "CreateEnvironment"
@@ -130,14 +180,34 @@
                 "DeleteInstance"
               ]
             },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
             "GetEnvironment": {
               "methods": [
                 "GetEnvironment"
               ]
             },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
             "GetInstance": {
               "methods": [
                 "GetInstance"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
               ]
             },
             "IsInstanceUpgradeable": {
@@ -155,6 +225,16 @@
                 "ListInstances"
               ]
             },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
             "RegisterInstance": {
               "methods": [
                 "RegisterInstance"
@@ -168,6 +248,11 @@
             "ResetInstance": {
               "methods": [
                 "ResetInstance"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
               ]
             },
             "SetInstanceAccelerator": {
@@ -193,6 +278,11 @@
             "StopInstance": {
               "methods": [
                 "StopInstance"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
               ]
             },
             "UpgradeInstance": {

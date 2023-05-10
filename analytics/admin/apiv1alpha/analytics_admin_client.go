@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@ import (
 	"net/url"
 	"time"
 
+	adminpb "cloud.google.com/go/analytics/admin/apiv1alpha/adminpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
@@ -33,7 +34,6 @@ import (
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
-	adminpb "google.golang.org/genproto/googleapis/analytics/admin/v1alpha"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -121,9 +121,43 @@ type AnalyticsAdminCallOptions struct {
 	CreateAudience                               []gax.CallOption
 	UpdateAudience                               []gax.CallOption
 	ArchiveAudience                              []gax.CallOption
+	GetSearchAds360Link                          []gax.CallOption
+	ListSearchAds360Links                        []gax.CallOption
+	CreateSearchAds360Link                       []gax.CallOption
+	DeleteSearchAds360Link                       []gax.CallOption
+	UpdateSearchAds360Link                       []gax.CallOption
 	GetAttributionSettings                       []gax.CallOption
 	UpdateAttributionSettings                    []gax.CallOption
 	RunAccessReport                              []gax.CallOption
+	CreateAccessBinding                          []gax.CallOption
+	GetAccessBinding                             []gax.CallOption
+	UpdateAccessBinding                          []gax.CallOption
+	DeleteAccessBinding                          []gax.CallOption
+	ListAccessBindings                           []gax.CallOption
+	BatchCreateAccessBindings                    []gax.CallOption
+	BatchGetAccessBindings                       []gax.CallOption
+	BatchUpdateAccessBindings                    []gax.CallOption
+	BatchDeleteAccessBindings                    []gax.CallOption
+	GetExpandedDataSet                           []gax.CallOption
+	ListExpandedDataSets                         []gax.CallOption
+	CreateExpandedDataSet                        []gax.CallOption
+	UpdateExpandedDataSet                        []gax.CallOption
+	DeleteExpandedDataSet                        []gax.CallOption
+	GetChannelGroup                              []gax.CallOption
+	ListChannelGroups                            []gax.CallOption
+	CreateChannelGroup                           []gax.CallOption
+	UpdateChannelGroup                           []gax.CallOption
+	DeleteChannelGroup                           []gax.CallOption
+	SetAutomatedGa4ConfigurationOptOut           []gax.CallOption
+	FetchAutomatedGa4ConfigurationOptOut         []gax.CallOption
+	GetBigQueryLink                              []gax.CallOption
+	ListBigQueryLinks                            []gax.CallOption
+	GetEnhancedMeasurementSettings               []gax.CallOption
+	UpdateEnhancedMeasurementSettings            []gax.CallOption
+	CreateConnectedSiteTag                       []gax.CallOption
+	DeleteConnectedSiteTag                       []gax.CallOption
+	ListConnectedSiteTags                        []gax.CallOption
+	FetchConnectedGa4Property                    []gax.CallOption
 }
 
 func defaultAnalyticsAdminGRPCClientOptions() []option.ClientOption {
@@ -140,66 +174,11 @@ func defaultAnalyticsAdminGRPCClientOptions() []option.ClientOption {
 
 func defaultAnalyticsAdminCallOptions() *AnalyticsAdminCallOptions {
 	return &AnalyticsAdminCallOptions{
-		GetAccount: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnCodes([]codes.Code{
-					codes.Unavailable,
-					codes.Unknown,
-				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				})
-			}),
-		},
-		ListAccounts: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnCodes([]codes.Code{
-					codes.Unavailable,
-					codes.Unknown,
-				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				})
-			}),
-		},
-		DeleteAccount: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnCodes([]codes.Code{
-					codes.Unavailable,
-					codes.Unknown,
-				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				})
-			}),
-		},
-		UpdateAccount: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnCodes([]codes.Code{
-					codes.Unavailable,
-					codes.Unknown,
-				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				})
-			}),
-		},
-		ProvisionAccountTicket: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnCodes([]codes.Code{
-					codes.Unavailable,
-					codes.Unknown,
-				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				})
-			}),
-		},
+		GetAccount:             []gax.CallOption{},
+		ListAccounts:           []gax.CallOption{},
+		DeleteAccount:          []gax.CallOption{},
+		UpdateAccount:          []gax.CallOption{},
+		ProvisionAccountTicket: []gax.CallOption{},
 		ListAccountSummaries: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
@@ -212,282 +191,29 @@ func defaultAnalyticsAdminCallOptions() *AnalyticsAdminCallOptions {
 				})
 			}),
 		},
-		GetProperty: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnCodes([]codes.Code{
-					codes.Unavailable,
-					codes.Unknown,
-				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				})
-			}),
-		},
-		ListProperties: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnCodes([]codes.Code{
-					codes.Unavailable,
-					codes.Unknown,
-				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				})
-			}),
-		},
-		CreateProperty: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnCodes([]codes.Code{
-					codes.Unavailable,
-					codes.Unknown,
-				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				})
-			}),
-		},
-		DeleteProperty: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnCodes([]codes.Code{
-					codes.Unavailable,
-					codes.Unknown,
-				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				})
-			}),
-		},
-		UpdateProperty: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnCodes([]codes.Code{
-					codes.Unavailable,
-					codes.Unknown,
-				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				})
-			}),
-		},
-		GetUserLink: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnCodes([]codes.Code{
-					codes.Unavailable,
-					codes.Unknown,
-				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				})
-			}),
-		},
-		BatchGetUserLinks: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnCodes([]codes.Code{
-					codes.Unavailable,
-					codes.Unknown,
-				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				})
-			}),
-		},
-		ListUserLinks: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnCodes([]codes.Code{
-					codes.Unavailable,
-					codes.Unknown,
-				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				})
-			}),
-		},
-		AuditUserLinks: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnCodes([]codes.Code{
-					codes.Unavailable,
-					codes.Unknown,
-				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				})
-			}),
-		},
-		CreateUserLink: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnCodes([]codes.Code{
-					codes.Unavailable,
-					codes.Unknown,
-				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				})
-			}),
-		},
-		BatchCreateUserLinks: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnCodes([]codes.Code{
-					codes.Unavailable,
-					codes.Unknown,
-				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				})
-			}),
-		},
-		UpdateUserLink: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnCodes([]codes.Code{
-					codes.Unavailable,
-					codes.Unknown,
-				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				})
-			}),
-		},
-		BatchUpdateUserLinks: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnCodes([]codes.Code{
-					codes.Unavailable,
-					codes.Unknown,
-				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				})
-			}),
-		},
-		DeleteUserLink: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnCodes([]codes.Code{
-					codes.Unavailable,
-					codes.Unknown,
-				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				})
-			}),
-		},
-		BatchDeleteUserLinks: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnCodes([]codes.Code{
-					codes.Unavailable,
-					codes.Unknown,
-				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				})
-			}),
-		},
-		CreateFirebaseLink: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnCodes([]codes.Code{
-					codes.Unavailable,
-					codes.Unknown,
-				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				})
-			}),
-		},
-		DeleteFirebaseLink: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnCodes([]codes.Code{
-					codes.Unavailable,
-					codes.Unknown,
-				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				})
-			}),
-		},
-		ListFirebaseLinks: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnCodes([]codes.Code{
-					codes.Unavailable,
-					codes.Unknown,
-				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				})
-			}),
-		},
-		GetGlobalSiteTag: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnCodes([]codes.Code{
-					codes.Unavailable,
-					codes.Unknown,
-				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				})
-			}),
-		},
-		CreateGoogleAdsLink: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnCodes([]codes.Code{
-					codes.Unavailable,
-					codes.Unknown,
-				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				})
-			}),
-		},
-		UpdateGoogleAdsLink: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnCodes([]codes.Code{
-					codes.Unavailable,
-					codes.Unknown,
-				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				})
-			}),
-		},
-		DeleteGoogleAdsLink: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnCodes([]codes.Code{
-					codes.Unavailable,
-					codes.Unknown,
-				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				})
-			}),
-		},
-		ListGoogleAdsLinks: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnCodes([]codes.Code{
-					codes.Unavailable,
-					codes.Unknown,
-				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				})
-			}),
-		},
+		GetProperty:          []gax.CallOption{},
+		ListProperties:       []gax.CallOption{},
+		CreateProperty:       []gax.CallOption{},
+		DeleteProperty:       []gax.CallOption{},
+		UpdateProperty:       []gax.CallOption{},
+		GetUserLink:          []gax.CallOption{},
+		BatchGetUserLinks:    []gax.CallOption{},
+		ListUserLinks:        []gax.CallOption{},
+		AuditUserLinks:       []gax.CallOption{},
+		CreateUserLink:       []gax.CallOption{},
+		BatchCreateUserLinks: []gax.CallOption{},
+		UpdateUserLink:       []gax.CallOption{},
+		BatchUpdateUserLinks: []gax.CallOption{},
+		DeleteUserLink:       []gax.CallOption{},
+		BatchDeleteUserLinks: []gax.CallOption{},
+		CreateFirebaseLink:   []gax.CallOption{},
+		DeleteFirebaseLink:   []gax.CallOption{},
+		ListFirebaseLinks:    []gax.CallOption{},
+		GetGlobalSiteTag:     []gax.CallOption{},
+		CreateGoogleAdsLink:  []gax.CallOption{},
+		UpdateGoogleAdsLink:  []gax.CallOption{},
+		DeleteGoogleAdsLink:  []gax.CallOption{},
+		ListGoogleAdsLinks:   []gax.CallOption{},
 		GetDataSharingSettings: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
@@ -1052,6 +778,66 @@ func defaultAnalyticsAdminCallOptions() *AnalyticsAdminCallOptions {
 				})
 			}),
 		},
+		GetSearchAds360Link: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		ListSearchAds360Links: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		CreateSearchAds360Link: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		DeleteSearchAds360Link: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		UpdateSearchAds360Link: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 		GetAttributionSettings: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
@@ -1077,6 +863,332 @@ func defaultAnalyticsAdminCallOptions() *AnalyticsAdminCallOptions {
 			}),
 		},
 		RunAccessReport: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		CreateAccessBinding: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		GetAccessBinding: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		UpdateAccessBinding: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		DeleteAccessBinding: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		ListAccessBindings: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		BatchCreateAccessBindings: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		BatchGetAccessBindings: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		BatchUpdateAccessBindings: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		BatchDeleteAccessBindings: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		GetExpandedDataSet: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		ListExpandedDataSets: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		CreateExpandedDataSet: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		UpdateExpandedDataSet: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		DeleteExpandedDataSet: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		GetChannelGroup: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		ListChannelGroups: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		CreateChannelGroup: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		UpdateChannelGroup: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		DeleteChannelGroup: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		SetAutomatedGa4ConfigurationOptOut: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		FetchAutomatedGa4ConfigurationOptOut: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		GetBigQueryLink: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		ListBigQueryLinks: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		GetEnhancedMeasurementSettings:    []gax.CallOption{},
+		UpdateEnhancedMeasurementSettings: []gax.CallOption{},
+		CreateConnectedSiteTag: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		DeleteConnectedSiteTag: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		ListConnectedSiteTags: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		FetchConnectedGa4Property: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -1093,61 +1205,11 @@ func defaultAnalyticsAdminCallOptions() *AnalyticsAdminCallOptions {
 
 func defaultAnalyticsAdminRESTCallOptions() *AnalyticsAdminCallOptions {
 	return &AnalyticsAdminCallOptions{
-		GetAccount: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnHTTPCodes(gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				},
-					http.StatusServiceUnavailable,
-					http.StatusInternalServerError)
-			}),
-		},
-		ListAccounts: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnHTTPCodes(gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				},
-					http.StatusServiceUnavailable,
-					http.StatusInternalServerError)
-			}),
-		},
-		DeleteAccount: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnHTTPCodes(gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				},
-					http.StatusServiceUnavailable,
-					http.StatusInternalServerError)
-			}),
-		},
-		UpdateAccount: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnHTTPCodes(gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				},
-					http.StatusServiceUnavailable,
-					http.StatusInternalServerError)
-			}),
-		},
-		ProvisionAccountTicket: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnHTTPCodes(gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				},
-					http.StatusServiceUnavailable,
-					http.StatusInternalServerError)
-			}),
-		},
+		GetAccount:             []gax.CallOption{},
+		ListAccounts:           []gax.CallOption{},
+		DeleteAccount:          []gax.CallOption{},
+		UpdateAccount:          []gax.CallOption{},
+		ProvisionAccountTicket: []gax.CallOption{},
 		ListAccountSummaries: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
@@ -1159,259 +1221,29 @@ func defaultAnalyticsAdminRESTCallOptions() *AnalyticsAdminCallOptions {
 					http.StatusInternalServerError)
 			}),
 		},
-		GetProperty: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnHTTPCodes(gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				},
-					http.StatusServiceUnavailable,
-					http.StatusInternalServerError)
-			}),
-		},
-		ListProperties: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnHTTPCodes(gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				},
-					http.StatusServiceUnavailable,
-					http.StatusInternalServerError)
-			}),
-		},
-		CreateProperty: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnHTTPCodes(gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				},
-					http.StatusServiceUnavailable,
-					http.StatusInternalServerError)
-			}),
-		},
-		DeleteProperty: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnHTTPCodes(gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				},
-					http.StatusServiceUnavailable,
-					http.StatusInternalServerError)
-			}),
-		},
-		UpdateProperty: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnHTTPCodes(gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				},
-					http.StatusServiceUnavailable,
-					http.StatusInternalServerError)
-			}),
-		},
-		GetUserLink: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnHTTPCodes(gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				},
-					http.StatusServiceUnavailable,
-					http.StatusInternalServerError)
-			}),
-		},
-		BatchGetUserLinks: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnHTTPCodes(gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				},
-					http.StatusServiceUnavailable,
-					http.StatusInternalServerError)
-			}),
-		},
-		ListUserLinks: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnHTTPCodes(gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				},
-					http.StatusServiceUnavailable,
-					http.StatusInternalServerError)
-			}),
-		},
-		AuditUserLinks: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnHTTPCodes(gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				},
-					http.StatusServiceUnavailable,
-					http.StatusInternalServerError)
-			}),
-		},
-		CreateUserLink: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnHTTPCodes(gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				},
-					http.StatusServiceUnavailable,
-					http.StatusInternalServerError)
-			}),
-		},
-		BatchCreateUserLinks: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnHTTPCodes(gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				},
-					http.StatusServiceUnavailable,
-					http.StatusInternalServerError)
-			}),
-		},
-		UpdateUserLink: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnHTTPCodes(gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				},
-					http.StatusServiceUnavailable,
-					http.StatusInternalServerError)
-			}),
-		},
-		BatchUpdateUserLinks: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnHTTPCodes(gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				},
-					http.StatusServiceUnavailable,
-					http.StatusInternalServerError)
-			}),
-		},
-		DeleteUserLink: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnHTTPCodes(gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				},
-					http.StatusServiceUnavailable,
-					http.StatusInternalServerError)
-			}),
-		},
-		BatchDeleteUserLinks: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnHTTPCodes(gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				},
-					http.StatusServiceUnavailable,
-					http.StatusInternalServerError)
-			}),
-		},
-		CreateFirebaseLink: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnHTTPCodes(gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				},
-					http.StatusServiceUnavailable,
-					http.StatusInternalServerError)
-			}),
-		},
-		DeleteFirebaseLink: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnHTTPCodes(gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				},
-					http.StatusServiceUnavailable,
-					http.StatusInternalServerError)
-			}),
-		},
-		ListFirebaseLinks: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnHTTPCodes(gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				},
-					http.StatusServiceUnavailable,
-					http.StatusInternalServerError)
-			}),
-		},
-		GetGlobalSiteTag: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnHTTPCodes(gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				},
-					http.StatusServiceUnavailable,
-					http.StatusInternalServerError)
-			}),
-		},
-		CreateGoogleAdsLink: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnHTTPCodes(gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				},
-					http.StatusServiceUnavailable,
-					http.StatusInternalServerError)
-			}),
-		},
-		UpdateGoogleAdsLink: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnHTTPCodes(gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				},
-					http.StatusServiceUnavailable,
-					http.StatusInternalServerError)
-			}),
-		},
-		DeleteGoogleAdsLink: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnHTTPCodes(gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				},
-					http.StatusServiceUnavailable,
-					http.StatusInternalServerError)
-			}),
-		},
-		ListGoogleAdsLinks: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnHTTPCodes(gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				},
-					http.StatusServiceUnavailable,
-					http.StatusInternalServerError)
-			}),
-		},
+		GetProperty:          []gax.CallOption{},
+		ListProperties:       []gax.CallOption{},
+		CreateProperty:       []gax.CallOption{},
+		DeleteProperty:       []gax.CallOption{},
+		UpdateProperty:       []gax.CallOption{},
+		GetUserLink:          []gax.CallOption{},
+		BatchGetUserLinks:    []gax.CallOption{},
+		ListUserLinks:        []gax.CallOption{},
+		AuditUserLinks:       []gax.CallOption{},
+		CreateUserLink:       []gax.CallOption{},
+		BatchCreateUserLinks: []gax.CallOption{},
+		UpdateUserLink:       []gax.CallOption{},
+		BatchUpdateUserLinks: []gax.CallOption{},
+		DeleteUserLink:       []gax.CallOption{},
+		BatchDeleteUserLinks: []gax.CallOption{},
+		CreateFirebaseLink:   []gax.CallOption{},
+		DeleteFirebaseLink:   []gax.CallOption{},
+		ListFirebaseLinks:    []gax.CallOption{},
+		GetGlobalSiteTag:     []gax.CallOption{},
+		CreateGoogleAdsLink:  []gax.CallOption{},
+		UpdateGoogleAdsLink:  []gax.CallOption{},
+		DeleteGoogleAdsLink:  []gax.CallOption{},
+		ListGoogleAdsLinks:   []gax.CallOption{},
 		GetDataSharingSettings: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
@@ -1929,6 +1761,61 @@ func defaultAnalyticsAdminRESTCallOptions() *AnalyticsAdminCallOptions {
 					http.StatusInternalServerError)
 			}),
 		},
+		GetSearchAds360Link: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusInternalServerError)
+			}),
+		},
+		ListSearchAds360Links: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusInternalServerError)
+			}),
+		},
+		CreateSearchAds360Link: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusInternalServerError)
+			}),
+		},
+		DeleteSearchAds360Link: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusInternalServerError)
+			}),
+		},
+		UpdateSearchAds360Link: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusInternalServerError)
+			}),
+		},
 		GetAttributionSettings: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
@@ -1952,6 +1839,305 @@ func defaultAnalyticsAdminRESTCallOptions() *AnalyticsAdminCallOptions {
 			}),
 		},
 		RunAccessReport: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusInternalServerError)
+			}),
+		},
+		CreateAccessBinding: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusInternalServerError)
+			}),
+		},
+		GetAccessBinding: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusInternalServerError)
+			}),
+		},
+		UpdateAccessBinding: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusInternalServerError)
+			}),
+		},
+		DeleteAccessBinding: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusInternalServerError)
+			}),
+		},
+		ListAccessBindings: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusInternalServerError)
+			}),
+		},
+		BatchCreateAccessBindings: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusInternalServerError)
+			}),
+		},
+		BatchGetAccessBindings: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusInternalServerError)
+			}),
+		},
+		BatchUpdateAccessBindings: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusInternalServerError)
+			}),
+		},
+		BatchDeleteAccessBindings: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusInternalServerError)
+			}),
+		},
+		GetExpandedDataSet: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusInternalServerError)
+			}),
+		},
+		ListExpandedDataSets: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusInternalServerError)
+			}),
+		},
+		CreateExpandedDataSet: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusInternalServerError)
+			}),
+		},
+		UpdateExpandedDataSet: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusInternalServerError)
+			}),
+		},
+		DeleteExpandedDataSet: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusInternalServerError)
+			}),
+		},
+		GetChannelGroup: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusInternalServerError)
+			}),
+		},
+		ListChannelGroups: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusInternalServerError)
+			}),
+		},
+		CreateChannelGroup: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusInternalServerError)
+			}),
+		},
+		UpdateChannelGroup: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusInternalServerError)
+			}),
+		},
+		DeleteChannelGroup: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusInternalServerError)
+			}),
+		},
+		SetAutomatedGa4ConfigurationOptOut: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusInternalServerError)
+			}),
+		},
+		FetchAutomatedGa4ConfigurationOptOut: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusInternalServerError)
+			}),
+		},
+		GetBigQueryLink: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusInternalServerError)
+			}),
+		},
+		ListBigQueryLinks: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusInternalServerError)
+			}),
+		},
+		GetEnhancedMeasurementSettings:    []gax.CallOption{},
+		UpdateEnhancedMeasurementSettings: []gax.CallOption{},
+		CreateConnectedSiteTag: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusInternalServerError)
+			}),
+		},
+		DeleteConnectedSiteTag: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusInternalServerError)
+			}),
+		},
+		ListConnectedSiteTags: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusInternalServerError)
+			}),
+		},
+		FetchConnectedGa4Property: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -2046,9 +2232,43 @@ type internalAnalyticsAdminClient interface {
 	CreateAudience(context.Context, *adminpb.CreateAudienceRequest, ...gax.CallOption) (*adminpb.Audience, error)
 	UpdateAudience(context.Context, *adminpb.UpdateAudienceRequest, ...gax.CallOption) (*adminpb.Audience, error)
 	ArchiveAudience(context.Context, *adminpb.ArchiveAudienceRequest, ...gax.CallOption) error
+	GetSearchAds360Link(context.Context, *adminpb.GetSearchAds360LinkRequest, ...gax.CallOption) (*adminpb.SearchAds360Link, error)
+	ListSearchAds360Links(context.Context, *adminpb.ListSearchAds360LinksRequest, ...gax.CallOption) *SearchAds360LinkIterator
+	CreateSearchAds360Link(context.Context, *adminpb.CreateSearchAds360LinkRequest, ...gax.CallOption) (*adminpb.SearchAds360Link, error)
+	DeleteSearchAds360Link(context.Context, *adminpb.DeleteSearchAds360LinkRequest, ...gax.CallOption) error
+	UpdateSearchAds360Link(context.Context, *adminpb.UpdateSearchAds360LinkRequest, ...gax.CallOption) (*adminpb.SearchAds360Link, error)
 	GetAttributionSettings(context.Context, *adminpb.GetAttributionSettingsRequest, ...gax.CallOption) (*adminpb.AttributionSettings, error)
 	UpdateAttributionSettings(context.Context, *adminpb.UpdateAttributionSettingsRequest, ...gax.CallOption) (*adminpb.AttributionSettings, error)
 	RunAccessReport(context.Context, *adminpb.RunAccessReportRequest, ...gax.CallOption) (*adminpb.RunAccessReportResponse, error)
+	CreateAccessBinding(context.Context, *adminpb.CreateAccessBindingRequest, ...gax.CallOption) (*adminpb.AccessBinding, error)
+	GetAccessBinding(context.Context, *adminpb.GetAccessBindingRequest, ...gax.CallOption) (*adminpb.AccessBinding, error)
+	UpdateAccessBinding(context.Context, *adminpb.UpdateAccessBindingRequest, ...gax.CallOption) (*adminpb.AccessBinding, error)
+	DeleteAccessBinding(context.Context, *adminpb.DeleteAccessBindingRequest, ...gax.CallOption) error
+	ListAccessBindings(context.Context, *adminpb.ListAccessBindingsRequest, ...gax.CallOption) *AccessBindingIterator
+	BatchCreateAccessBindings(context.Context, *adminpb.BatchCreateAccessBindingsRequest, ...gax.CallOption) (*adminpb.BatchCreateAccessBindingsResponse, error)
+	BatchGetAccessBindings(context.Context, *adminpb.BatchGetAccessBindingsRequest, ...gax.CallOption) (*adminpb.BatchGetAccessBindingsResponse, error)
+	BatchUpdateAccessBindings(context.Context, *adminpb.BatchUpdateAccessBindingsRequest, ...gax.CallOption) (*adminpb.BatchUpdateAccessBindingsResponse, error)
+	BatchDeleteAccessBindings(context.Context, *adminpb.BatchDeleteAccessBindingsRequest, ...gax.CallOption) error
+	GetExpandedDataSet(context.Context, *adminpb.GetExpandedDataSetRequest, ...gax.CallOption) (*adminpb.ExpandedDataSet, error)
+	ListExpandedDataSets(context.Context, *adminpb.ListExpandedDataSetsRequest, ...gax.CallOption) *ExpandedDataSetIterator
+	CreateExpandedDataSet(context.Context, *adminpb.CreateExpandedDataSetRequest, ...gax.CallOption) (*adminpb.ExpandedDataSet, error)
+	UpdateExpandedDataSet(context.Context, *adminpb.UpdateExpandedDataSetRequest, ...gax.CallOption) (*adminpb.ExpandedDataSet, error)
+	DeleteExpandedDataSet(context.Context, *adminpb.DeleteExpandedDataSetRequest, ...gax.CallOption) error
+	GetChannelGroup(context.Context, *adminpb.GetChannelGroupRequest, ...gax.CallOption) (*adminpb.ChannelGroup, error)
+	ListChannelGroups(context.Context, *adminpb.ListChannelGroupsRequest, ...gax.CallOption) *ChannelGroupIterator
+	CreateChannelGroup(context.Context, *adminpb.CreateChannelGroupRequest, ...gax.CallOption) (*adminpb.ChannelGroup, error)
+	UpdateChannelGroup(context.Context, *adminpb.UpdateChannelGroupRequest, ...gax.CallOption) (*adminpb.ChannelGroup, error)
+	DeleteChannelGroup(context.Context, *adminpb.DeleteChannelGroupRequest, ...gax.CallOption) error
+	SetAutomatedGa4ConfigurationOptOut(context.Context, *adminpb.SetAutomatedGa4ConfigurationOptOutRequest, ...gax.CallOption) (*adminpb.SetAutomatedGa4ConfigurationOptOutResponse, error)
+	FetchAutomatedGa4ConfigurationOptOut(context.Context, *adminpb.FetchAutomatedGa4ConfigurationOptOutRequest, ...gax.CallOption) (*adminpb.FetchAutomatedGa4ConfigurationOptOutResponse, error)
+	GetBigQueryLink(context.Context, *adminpb.GetBigQueryLinkRequest, ...gax.CallOption) (*adminpb.BigQueryLink, error)
+	ListBigQueryLinks(context.Context, *adminpb.ListBigQueryLinksRequest, ...gax.CallOption) *BigQueryLinkIterator
+	GetEnhancedMeasurementSettings(context.Context, *adminpb.GetEnhancedMeasurementSettingsRequest, ...gax.CallOption) (*adminpb.EnhancedMeasurementSettings, error)
+	UpdateEnhancedMeasurementSettings(context.Context, *adminpb.UpdateEnhancedMeasurementSettingsRequest, ...gax.CallOption) (*adminpb.EnhancedMeasurementSettings, error)
+	CreateConnectedSiteTag(context.Context, *adminpb.CreateConnectedSiteTagRequest, ...gax.CallOption) (*adminpb.CreateConnectedSiteTagResponse, error)
+	DeleteConnectedSiteTag(context.Context, *adminpb.DeleteConnectedSiteTagRequest, ...gax.CallOption) error
+	ListConnectedSiteTags(context.Context, *adminpb.ListConnectedSiteTagsRequest, ...gax.CallOption) (*adminpb.ListConnectedSiteTagsResponse, error)
+	FetchConnectedGa4Property(context.Context, *adminpb.FetchConnectedGa4PropertyRequest, ...gax.CallOption) (*adminpb.FetchConnectedGa4PropertyResponse, error)
 }
 
 // AnalyticsAdminClient is a client for interacting with Google Analytics Admin API.
@@ -2160,7 +2380,7 @@ func (c *AnalyticsAdminClient) CreateProperty(ctx context.Context, req *adminpb.
 // will be permanently purged.
 // https://support.google.com/analytics/answer/6154772 (at https://support.google.com/analytics/answer/6154772)
 //
-// Returns an error if the target is not found, or is not an GA4 Property.
+// Returns an error if the target is not found, or is not a GA4 Property.
 func (c *AnalyticsAdminClient) DeleteProperty(ctx context.Context, req *adminpb.DeletePropertyRequest, opts ...gax.CallOption) (*adminpb.Property, error) {
 	return c.internalClient.DeleteProperty(ctx, req, opts...)
 }
@@ -2314,7 +2534,8 @@ func (c *AnalyticsAdminClient) UpdateMeasurementProtocolSecret(ctx context.Conte
 // AcknowledgeUserDataCollection acknowledges the terms of user data collection for the specified property.
 //
 // This acknowledgement must be completed (either in the Google Analytics UI
-// or via this API) before MeasurementProtocolSecret resources may be created.
+// or through this API) before MeasurementProtocolSecret resources may be
+// created.
 func (c *AnalyticsAdminClient) AcknowledgeUserDataCollection(ctx context.Context, req *adminpb.AcknowledgeUserDataCollectionRequest, opts ...gax.CallOption) (*adminpb.AcknowledgeUserDataCollectionResponse, error) {
 	return c.internalClient.AcknowledgeUserDataCollection(ctx, req, opts...)
 }
@@ -2512,12 +2733,14 @@ func (c *AnalyticsAdminClient) GetDataStream(ctx context.Context, req *adminpb.G
 
 // GetAudience lookup for a single Audience.
 // Audiences created before 2020 may not be supported.
+// Default audiences will not show filter definitions.
 func (c *AnalyticsAdminClient) GetAudience(ctx context.Context, req *adminpb.GetAudienceRequest, opts ...gax.CallOption) (*adminpb.Audience, error) {
 	return c.internalClient.GetAudience(ctx, req, opts...)
 }
 
 // ListAudiences lists Audiences on a property.
 // Audiences created before 2020 may not be supported.
+// Default audiences will not show filter definitions.
 func (c *AnalyticsAdminClient) ListAudiences(ctx context.Context, req *adminpb.ListAudiencesRequest, opts ...gax.CallOption) *AudienceIterator {
 	return c.internalClient.ListAudiences(ctx, req, opts...)
 }
@@ -2535,6 +2758,31 @@ func (c *AnalyticsAdminClient) UpdateAudience(ctx context.Context, req *adminpb.
 // ArchiveAudience archives an Audience on a property.
 func (c *AnalyticsAdminClient) ArchiveAudience(ctx context.Context, req *adminpb.ArchiveAudienceRequest, opts ...gax.CallOption) error {
 	return c.internalClient.ArchiveAudience(ctx, req, opts...)
+}
+
+// GetSearchAds360Link look up a single SearchAds360Link
+func (c *AnalyticsAdminClient) GetSearchAds360Link(ctx context.Context, req *adminpb.GetSearchAds360LinkRequest, opts ...gax.CallOption) (*adminpb.SearchAds360Link, error) {
+	return c.internalClient.GetSearchAds360Link(ctx, req, opts...)
+}
+
+// ListSearchAds360Links lists all SearchAds360Links on a property.
+func (c *AnalyticsAdminClient) ListSearchAds360Links(ctx context.Context, req *adminpb.ListSearchAds360LinksRequest, opts ...gax.CallOption) *SearchAds360LinkIterator {
+	return c.internalClient.ListSearchAds360Links(ctx, req, opts...)
+}
+
+// CreateSearchAds360Link creates a SearchAds360Link.
+func (c *AnalyticsAdminClient) CreateSearchAds360Link(ctx context.Context, req *adminpb.CreateSearchAds360LinkRequest, opts ...gax.CallOption) (*adminpb.SearchAds360Link, error) {
+	return c.internalClient.CreateSearchAds360Link(ctx, req, opts...)
+}
+
+// DeleteSearchAds360Link deletes a SearchAds360Link on a property.
+func (c *AnalyticsAdminClient) DeleteSearchAds360Link(ctx context.Context, req *adminpb.DeleteSearchAds360LinkRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteSearchAds360Link(ctx, req, opts...)
+}
+
+// UpdateSearchAds360Link updates a SearchAds360Link on a property.
+func (c *AnalyticsAdminClient) UpdateSearchAds360Link(ctx context.Context, req *adminpb.UpdateSearchAds360LinkRequest, opts ...gax.CallOption) (*adminpb.SearchAds360Link, error) {
+	return c.internalClient.UpdateSearchAds360Link(ctx, req, opts...)
 }
 
 // GetAttributionSettings lookup for a AttributionSettings singleton.
@@ -2562,6 +2810,170 @@ func (c *AnalyticsAdminClient) UpdateAttributionSettings(ctx context.Context, re
 // searchChangeHistoryEvents (at https://developers.google.com/analytics/devguides/config/admin/v1/rest/v1alpha/accounts/searchChangeHistoryEvents).
 func (c *AnalyticsAdminClient) RunAccessReport(ctx context.Context, req *adminpb.RunAccessReportRequest, opts ...gax.CallOption) (*adminpb.RunAccessReportResponse, error) {
 	return c.internalClient.RunAccessReport(ctx, req, opts...)
+}
+
+// CreateAccessBinding creates an access binding on an account or property.
+func (c *AnalyticsAdminClient) CreateAccessBinding(ctx context.Context, req *adminpb.CreateAccessBindingRequest, opts ...gax.CallOption) (*adminpb.AccessBinding, error) {
+	return c.internalClient.CreateAccessBinding(ctx, req, opts...)
+}
+
+// GetAccessBinding gets information about an access binding.
+func (c *AnalyticsAdminClient) GetAccessBinding(ctx context.Context, req *adminpb.GetAccessBindingRequest, opts ...gax.CallOption) (*adminpb.AccessBinding, error) {
+	return c.internalClient.GetAccessBinding(ctx, req, opts...)
+}
+
+// UpdateAccessBinding updates an access binding on an account or property.
+func (c *AnalyticsAdminClient) UpdateAccessBinding(ctx context.Context, req *adminpb.UpdateAccessBindingRequest, opts ...gax.CallOption) (*adminpb.AccessBinding, error) {
+	return c.internalClient.UpdateAccessBinding(ctx, req, opts...)
+}
+
+// DeleteAccessBinding deletes an access binding on an account or property.
+func (c *AnalyticsAdminClient) DeleteAccessBinding(ctx context.Context, req *adminpb.DeleteAccessBindingRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteAccessBinding(ctx, req, opts...)
+}
+
+// ListAccessBindings lists all access bindings on an account or property.
+func (c *AnalyticsAdminClient) ListAccessBindings(ctx context.Context, req *adminpb.ListAccessBindingsRequest, opts ...gax.CallOption) *AccessBindingIterator {
+	return c.internalClient.ListAccessBindings(ctx, req, opts...)
+}
+
+// BatchCreateAccessBindings creates information about multiple access bindings to an account or
+// property.
+//
+// This method is transactional. If any AccessBinding cannot be created, none
+// of the AccessBindings will be created.
+func (c *AnalyticsAdminClient) BatchCreateAccessBindings(ctx context.Context, req *adminpb.BatchCreateAccessBindingsRequest, opts ...gax.CallOption) (*adminpb.BatchCreateAccessBindingsResponse, error) {
+	return c.internalClient.BatchCreateAccessBindings(ctx, req, opts...)
+}
+
+// BatchGetAccessBindings gets information about multiple access bindings to an account or property.
+func (c *AnalyticsAdminClient) BatchGetAccessBindings(ctx context.Context, req *adminpb.BatchGetAccessBindingsRequest, opts ...gax.CallOption) (*adminpb.BatchGetAccessBindingsResponse, error) {
+	return c.internalClient.BatchGetAccessBindings(ctx, req, opts...)
+}
+
+// BatchUpdateAccessBindings updates information about multiple access bindings to an account or
+// property.
+func (c *AnalyticsAdminClient) BatchUpdateAccessBindings(ctx context.Context, req *adminpb.BatchUpdateAccessBindingsRequest, opts ...gax.CallOption) (*adminpb.BatchUpdateAccessBindingsResponse, error) {
+	return c.internalClient.BatchUpdateAccessBindings(ctx, req, opts...)
+}
+
+// BatchDeleteAccessBindings deletes information about multiple users’ links to an account or property.
+func (c *AnalyticsAdminClient) BatchDeleteAccessBindings(ctx context.Context, req *adminpb.BatchDeleteAccessBindingsRequest, opts ...gax.CallOption) error {
+	return c.internalClient.BatchDeleteAccessBindings(ctx, req, opts...)
+}
+
+// GetExpandedDataSet lookup for a single ExpandedDataSet.
+func (c *AnalyticsAdminClient) GetExpandedDataSet(ctx context.Context, req *adminpb.GetExpandedDataSetRequest, opts ...gax.CallOption) (*adminpb.ExpandedDataSet, error) {
+	return c.internalClient.GetExpandedDataSet(ctx, req, opts...)
+}
+
+// ListExpandedDataSets lists ExpandedDataSets on a property.
+func (c *AnalyticsAdminClient) ListExpandedDataSets(ctx context.Context, req *adminpb.ListExpandedDataSetsRequest, opts ...gax.CallOption) *ExpandedDataSetIterator {
+	return c.internalClient.ListExpandedDataSets(ctx, req, opts...)
+}
+
+// CreateExpandedDataSet creates a ExpandedDataSet.
+func (c *AnalyticsAdminClient) CreateExpandedDataSet(ctx context.Context, req *adminpb.CreateExpandedDataSetRequest, opts ...gax.CallOption) (*adminpb.ExpandedDataSet, error) {
+	return c.internalClient.CreateExpandedDataSet(ctx, req, opts...)
+}
+
+// UpdateExpandedDataSet updates a ExpandedDataSet on a property.
+func (c *AnalyticsAdminClient) UpdateExpandedDataSet(ctx context.Context, req *adminpb.UpdateExpandedDataSetRequest, opts ...gax.CallOption) (*adminpb.ExpandedDataSet, error) {
+	return c.internalClient.UpdateExpandedDataSet(ctx, req, opts...)
+}
+
+// DeleteExpandedDataSet deletes a ExpandedDataSet on a property.
+func (c *AnalyticsAdminClient) DeleteExpandedDataSet(ctx context.Context, req *adminpb.DeleteExpandedDataSetRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteExpandedDataSet(ctx, req, opts...)
+}
+
+// GetChannelGroup lookup for a single ChannelGroup.
+func (c *AnalyticsAdminClient) GetChannelGroup(ctx context.Context, req *adminpb.GetChannelGroupRequest, opts ...gax.CallOption) (*adminpb.ChannelGroup, error) {
+	return c.internalClient.GetChannelGroup(ctx, req, opts...)
+}
+
+// ListChannelGroups lists ChannelGroups on a property.
+func (c *AnalyticsAdminClient) ListChannelGroups(ctx context.Context, req *adminpb.ListChannelGroupsRequest, opts ...gax.CallOption) *ChannelGroupIterator {
+	return c.internalClient.ListChannelGroups(ctx, req, opts...)
+}
+
+// CreateChannelGroup creates a ChannelGroup.
+func (c *AnalyticsAdminClient) CreateChannelGroup(ctx context.Context, req *adminpb.CreateChannelGroupRequest, opts ...gax.CallOption) (*adminpb.ChannelGroup, error) {
+	return c.internalClient.CreateChannelGroup(ctx, req, opts...)
+}
+
+// UpdateChannelGroup updates a ChannelGroup.
+func (c *AnalyticsAdminClient) UpdateChannelGroup(ctx context.Context, req *adminpb.UpdateChannelGroupRequest, opts ...gax.CallOption) (*adminpb.ChannelGroup, error) {
+	return c.internalClient.UpdateChannelGroup(ctx, req, opts...)
+}
+
+// DeleteChannelGroup deletes a ChannelGroup on a property.
+func (c *AnalyticsAdminClient) DeleteChannelGroup(ctx context.Context, req *adminpb.DeleteChannelGroupRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteChannelGroup(ctx, req, opts...)
+}
+
+// SetAutomatedGa4ConfigurationOptOut sets the opt out status for the automated GA4 setup process for a UA
+// property.
+// Note: this has no effect on GA4 property.
+func (c *AnalyticsAdminClient) SetAutomatedGa4ConfigurationOptOut(ctx context.Context, req *adminpb.SetAutomatedGa4ConfigurationOptOutRequest, opts ...gax.CallOption) (*adminpb.SetAutomatedGa4ConfigurationOptOutResponse, error) {
+	return c.internalClient.SetAutomatedGa4ConfigurationOptOut(ctx, req, opts...)
+}
+
+// FetchAutomatedGa4ConfigurationOptOut fetches the opt out status for the automated GA4 setup process for a UA
+// property.
+// Note: this has no effect on GA4 property.
+func (c *AnalyticsAdminClient) FetchAutomatedGa4ConfigurationOptOut(ctx context.Context, req *adminpb.FetchAutomatedGa4ConfigurationOptOutRequest, opts ...gax.CallOption) (*adminpb.FetchAutomatedGa4ConfigurationOptOutResponse, error) {
+	return c.internalClient.FetchAutomatedGa4ConfigurationOptOut(ctx, req, opts...)
+}
+
+// GetBigQueryLink lookup for a single BigQuery Link.
+func (c *AnalyticsAdminClient) GetBigQueryLink(ctx context.Context, req *adminpb.GetBigQueryLinkRequest, opts ...gax.CallOption) (*adminpb.BigQueryLink, error) {
+	return c.internalClient.GetBigQueryLink(ctx, req, opts...)
+}
+
+// ListBigQueryLinks lists BigQuery Links on a property.
+func (c *AnalyticsAdminClient) ListBigQueryLinks(ctx context.Context, req *adminpb.ListBigQueryLinksRequest, opts ...gax.CallOption) *BigQueryLinkIterator {
+	return c.internalClient.ListBigQueryLinks(ctx, req, opts...)
+}
+
+// GetEnhancedMeasurementSettings returns the enhanced measurement settings for this data stream.
+// Note that the stream must enable enhanced measurement for these settings to
+// take effect.
+func (c *AnalyticsAdminClient) GetEnhancedMeasurementSettings(ctx context.Context, req *adminpb.GetEnhancedMeasurementSettingsRequest, opts ...gax.CallOption) (*adminpb.EnhancedMeasurementSettings, error) {
+	return c.internalClient.GetEnhancedMeasurementSettings(ctx, req, opts...)
+}
+
+// UpdateEnhancedMeasurementSettings updates the enhanced measurement settings for this data stream.
+// Note that the stream must enable enhanced measurement for these settings to
+// take effect.
+func (c *AnalyticsAdminClient) UpdateEnhancedMeasurementSettings(ctx context.Context, req *adminpb.UpdateEnhancedMeasurementSettingsRequest, opts ...gax.CallOption) (*adminpb.EnhancedMeasurementSettings, error) {
+	return c.internalClient.UpdateEnhancedMeasurementSettings(ctx, req, opts...)
+}
+
+// CreateConnectedSiteTag creates a connected site tag for a Universal Analytics property. You can
+// create a maximum of 20 connected site tags per property.
+// Note: This API cannot be used on GA4 properties.
+func (c *AnalyticsAdminClient) CreateConnectedSiteTag(ctx context.Context, req *adminpb.CreateConnectedSiteTagRequest, opts ...gax.CallOption) (*adminpb.CreateConnectedSiteTagResponse, error) {
+	return c.internalClient.CreateConnectedSiteTag(ctx, req, opts...)
+}
+
+// DeleteConnectedSiteTag deletes a connected site tag for a Universal Analytics property.
+// Note: this has no effect on GA4 properties.
+func (c *AnalyticsAdminClient) DeleteConnectedSiteTag(ctx context.Context, req *adminpb.DeleteConnectedSiteTagRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteConnectedSiteTag(ctx, req, opts...)
+}
+
+// ListConnectedSiteTags lists the connected site tags for a Universal Analytics property. A maximum
+// of 20 connected site tags will be returned. Note: this has no effect on GA4
+// property.
+func (c *AnalyticsAdminClient) ListConnectedSiteTags(ctx context.Context, req *adminpb.ListConnectedSiteTagsRequest, opts ...gax.CallOption) (*adminpb.ListConnectedSiteTagsResponse, error) {
+	return c.internalClient.ListConnectedSiteTags(ctx, req, opts...)
+}
+
+// FetchConnectedGa4Property given a specified UA property, looks up the GA4 property connected to it.
+// Note: this cannot be used with GA4 properties.
+func (c *AnalyticsAdminClient) FetchConnectedGa4Property(ctx context.Context, req *adminpb.FetchConnectedGa4PropertyRequest, opts ...gax.CallOption) (*adminpb.FetchConnectedGa4PropertyResponse, error) {
+	return c.internalClient.FetchConnectedGa4Property(ctx, req, opts...)
 }
 
 // analyticsAdminGRPCClient is a client for interacting with Google Analytics Admin API over gRPC transport.
@@ -4691,6 +5103,135 @@ func (c *analyticsAdminGRPCClient) ArchiveAudience(ctx context.Context, req *adm
 	return err
 }
 
+func (c *analyticsAdminGRPCClient) GetSearchAds360Link(ctx context.Context, req *adminpb.GetSearchAds360LinkRequest, opts ...gax.CallOption) (*adminpb.SearchAds360Link, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).GetSearchAds360Link[0:len((*c.CallOptions).GetSearchAds360Link):len((*c.CallOptions).GetSearchAds360Link)], opts...)
+	var resp *adminpb.SearchAds360Link
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.analyticsAdminClient.GetSearchAds360Link(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *analyticsAdminGRPCClient) ListSearchAds360Links(ctx context.Context, req *adminpb.ListSearchAds360LinksRequest, opts ...gax.CallOption) *SearchAds360LinkIterator {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).ListSearchAds360Links[0:len((*c.CallOptions).ListSearchAds360Links):len((*c.CallOptions).ListSearchAds360Links)], opts...)
+	it := &SearchAds360LinkIterator{}
+	req = proto.Clone(req).(*adminpb.ListSearchAds360LinksRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.SearchAds360Link, string, error) {
+		resp := &adminpb.ListSearchAds360LinksResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.analyticsAdminClient.ListSearchAds360Links(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetSearchAds_360Links(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *analyticsAdminGRPCClient) CreateSearchAds360Link(ctx context.Context, req *adminpb.CreateSearchAds360LinkRequest, opts ...gax.CallOption) (*adminpb.SearchAds360Link, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).CreateSearchAds360Link[0:len((*c.CallOptions).CreateSearchAds360Link):len((*c.CallOptions).CreateSearchAds360Link)], opts...)
+	var resp *adminpb.SearchAds360Link
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.analyticsAdminClient.CreateSearchAds360Link(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *analyticsAdminGRPCClient) DeleteSearchAds360Link(ctx context.Context, req *adminpb.DeleteSearchAds360LinkRequest, opts ...gax.CallOption) error {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).DeleteSearchAds360Link[0:len((*c.CallOptions).DeleteSearchAds360Link):len((*c.CallOptions).DeleteSearchAds360Link)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = c.analyticsAdminClient.DeleteSearchAds360Link(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	return err
+}
+
+func (c *analyticsAdminGRPCClient) UpdateSearchAds360Link(ctx context.Context, req *adminpb.UpdateSearchAds360LinkRequest, opts ...gax.CallOption) (*adminpb.SearchAds360Link, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "search_ads_360_link.name", url.QueryEscape(req.GetSearchAds_360Link().GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).UpdateSearchAds360Link[0:len((*c.CallOptions).UpdateSearchAds360Link):len((*c.CallOptions).UpdateSearchAds360Link)], opts...)
+	var resp *adminpb.SearchAds360Link
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.analyticsAdminClient.UpdateSearchAds360Link(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
 func (c *analyticsAdminGRPCClient) GetAttributionSettings(ctx context.Context, req *adminpb.GetAttributionSettingsRequest, opts ...gax.CallOption) (*adminpb.AttributionSettings, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
@@ -4757,6 +5298,704 @@ func (c *analyticsAdminGRPCClient) RunAccessReport(ctx context.Context, req *adm
 	return resp, nil
 }
 
+func (c *analyticsAdminGRPCClient) CreateAccessBinding(ctx context.Context, req *adminpb.CreateAccessBindingRequest, opts ...gax.CallOption) (*adminpb.AccessBinding, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).CreateAccessBinding[0:len((*c.CallOptions).CreateAccessBinding):len((*c.CallOptions).CreateAccessBinding)], opts...)
+	var resp *adminpb.AccessBinding
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.analyticsAdminClient.CreateAccessBinding(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *analyticsAdminGRPCClient) GetAccessBinding(ctx context.Context, req *adminpb.GetAccessBindingRequest, opts ...gax.CallOption) (*adminpb.AccessBinding, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).GetAccessBinding[0:len((*c.CallOptions).GetAccessBinding):len((*c.CallOptions).GetAccessBinding)], opts...)
+	var resp *adminpb.AccessBinding
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.analyticsAdminClient.GetAccessBinding(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *analyticsAdminGRPCClient) UpdateAccessBinding(ctx context.Context, req *adminpb.UpdateAccessBindingRequest, opts ...gax.CallOption) (*adminpb.AccessBinding, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "access_binding.name", url.QueryEscape(req.GetAccessBinding().GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).UpdateAccessBinding[0:len((*c.CallOptions).UpdateAccessBinding):len((*c.CallOptions).UpdateAccessBinding)], opts...)
+	var resp *adminpb.AccessBinding
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.analyticsAdminClient.UpdateAccessBinding(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *analyticsAdminGRPCClient) DeleteAccessBinding(ctx context.Context, req *adminpb.DeleteAccessBindingRequest, opts ...gax.CallOption) error {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).DeleteAccessBinding[0:len((*c.CallOptions).DeleteAccessBinding):len((*c.CallOptions).DeleteAccessBinding)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = c.analyticsAdminClient.DeleteAccessBinding(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	return err
+}
+
+func (c *analyticsAdminGRPCClient) ListAccessBindings(ctx context.Context, req *adminpb.ListAccessBindingsRequest, opts ...gax.CallOption) *AccessBindingIterator {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).ListAccessBindings[0:len((*c.CallOptions).ListAccessBindings):len((*c.CallOptions).ListAccessBindings)], opts...)
+	it := &AccessBindingIterator{}
+	req = proto.Clone(req).(*adminpb.ListAccessBindingsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.AccessBinding, string, error) {
+		resp := &adminpb.ListAccessBindingsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.analyticsAdminClient.ListAccessBindings(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetAccessBindings(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *analyticsAdminGRPCClient) BatchCreateAccessBindings(ctx context.Context, req *adminpb.BatchCreateAccessBindingsRequest, opts ...gax.CallOption) (*adminpb.BatchCreateAccessBindingsResponse, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).BatchCreateAccessBindings[0:len((*c.CallOptions).BatchCreateAccessBindings):len((*c.CallOptions).BatchCreateAccessBindings)], opts...)
+	var resp *adminpb.BatchCreateAccessBindingsResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.analyticsAdminClient.BatchCreateAccessBindings(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *analyticsAdminGRPCClient) BatchGetAccessBindings(ctx context.Context, req *adminpb.BatchGetAccessBindingsRequest, opts ...gax.CallOption) (*adminpb.BatchGetAccessBindingsResponse, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).BatchGetAccessBindings[0:len((*c.CallOptions).BatchGetAccessBindings):len((*c.CallOptions).BatchGetAccessBindings)], opts...)
+	var resp *adminpb.BatchGetAccessBindingsResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.analyticsAdminClient.BatchGetAccessBindings(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *analyticsAdminGRPCClient) BatchUpdateAccessBindings(ctx context.Context, req *adminpb.BatchUpdateAccessBindingsRequest, opts ...gax.CallOption) (*adminpb.BatchUpdateAccessBindingsResponse, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).BatchUpdateAccessBindings[0:len((*c.CallOptions).BatchUpdateAccessBindings):len((*c.CallOptions).BatchUpdateAccessBindings)], opts...)
+	var resp *adminpb.BatchUpdateAccessBindingsResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.analyticsAdminClient.BatchUpdateAccessBindings(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *analyticsAdminGRPCClient) BatchDeleteAccessBindings(ctx context.Context, req *adminpb.BatchDeleteAccessBindingsRequest, opts ...gax.CallOption) error {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).BatchDeleteAccessBindings[0:len((*c.CallOptions).BatchDeleteAccessBindings):len((*c.CallOptions).BatchDeleteAccessBindings)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = c.analyticsAdminClient.BatchDeleteAccessBindings(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	return err
+}
+
+func (c *analyticsAdminGRPCClient) GetExpandedDataSet(ctx context.Context, req *adminpb.GetExpandedDataSetRequest, opts ...gax.CallOption) (*adminpb.ExpandedDataSet, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).GetExpandedDataSet[0:len((*c.CallOptions).GetExpandedDataSet):len((*c.CallOptions).GetExpandedDataSet)], opts...)
+	var resp *adminpb.ExpandedDataSet
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.analyticsAdminClient.GetExpandedDataSet(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *analyticsAdminGRPCClient) ListExpandedDataSets(ctx context.Context, req *adminpb.ListExpandedDataSetsRequest, opts ...gax.CallOption) *ExpandedDataSetIterator {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).ListExpandedDataSets[0:len((*c.CallOptions).ListExpandedDataSets):len((*c.CallOptions).ListExpandedDataSets)], opts...)
+	it := &ExpandedDataSetIterator{}
+	req = proto.Clone(req).(*adminpb.ListExpandedDataSetsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.ExpandedDataSet, string, error) {
+		resp := &adminpb.ListExpandedDataSetsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.analyticsAdminClient.ListExpandedDataSets(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetExpandedDataSets(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *analyticsAdminGRPCClient) CreateExpandedDataSet(ctx context.Context, req *adminpb.CreateExpandedDataSetRequest, opts ...gax.CallOption) (*adminpb.ExpandedDataSet, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).CreateExpandedDataSet[0:len((*c.CallOptions).CreateExpandedDataSet):len((*c.CallOptions).CreateExpandedDataSet)], opts...)
+	var resp *adminpb.ExpandedDataSet
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.analyticsAdminClient.CreateExpandedDataSet(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *analyticsAdminGRPCClient) UpdateExpandedDataSet(ctx context.Context, req *adminpb.UpdateExpandedDataSetRequest, opts ...gax.CallOption) (*adminpb.ExpandedDataSet, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "expanded_data_set.name", url.QueryEscape(req.GetExpandedDataSet().GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).UpdateExpandedDataSet[0:len((*c.CallOptions).UpdateExpandedDataSet):len((*c.CallOptions).UpdateExpandedDataSet)], opts...)
+	var resp *adminpb.ExpandedDataSet
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.analyticsAdminClient.UpdateExpandedDataSet(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *analyticsAdminGRPCClient) DeleteExpandedDataSet(ctx context.Context, req *adminpb.DeleteExpandedDataSetRequest, opts ...gax.CallOption) error {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).DeleteExpandedDataSet[0:len((*c.CallOptions).DeleteExpandedDataSet):len((*c.CallOptions).DeleteExpandedDataSet)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = c.analyticsAdminClient.DeleteExpandedDataSet(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	return err
+}
+
+func (c *analyticsAdminGRPCClient) GetChannelGroup(ctx context.Context, req *adminpb.GetChannelGroupRequest, opts ...gax.CallOption) (*adminpb.ChannelGroup, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).GetChannelGroup[0:len((*c.CallOptions).GetChannelGroup):len((*c.CallOptions).GetChannelGroup)], opts...)
+	var resp *adminpb.ChannelGroup
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.analyticsAdminClient.GetChannelGroup(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *analyticsAdminGRPCClient) ListChannelGroups(ctx context.Context, req *adminpb.ListChannelGroupsRequest, opts ...gax.CallOption) *ChannelGroupIterator {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).ListChannelGroups[0:len((*c.CallOptions).ListChannelGroups):len((*c.CallOptions).ListChannelGroups)], opts...)
+	it := &ChannelGroupIterator{}
+	req = proto.Clone(req).(*adminpb.ListChannelGroupsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.ChannelGroup, string, error) {
+		resp := &adminpb.ListChannelGroupsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.analyticsAdminClient.ListChannelGroups(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetChannelGroups(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *analyticsAdminGRPCClient) CreateChannelGroup(ctx context.Context, req *adminpb.CreateChannelGroupRequest, opts ...gax.CallOption) (*adminpb.ChannelGroup, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).CreateChannelGroup[0:len((*c.CallOptions).CreateChannelGroup):len((*c.CallOptions).CreateChannelGroup)], opts...)
+	var resp *adminpb.ChannelGroup
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.analyticsAdminClient.CreateChannelGroup(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *analyticsAdminGRPCClient) UpdateChannelGroup(ctx context.Context, req *adminpb.UpdateChannelGroupRequest, opts ...gax.CallOption) (*adminpb.ChannelGroup, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "channel_group.name", url.QueryEscape(req.GetChannelGroup().GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).UpdateChannelGroup[0:len((*c.CallOptions).UpdateChannelGroup):len((*c.CallOptions).UpdateChannelGroup)], opts...)
+	var resp *adminpb.ChannelGroup
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.analyticsAdminClient.UpdateChannelGroup(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *analyticsAdminGRPCClient) DeleteChannelGroup(ctx context.Context, req *adminpb.DeleteChannelGroupRequest, opts ...gax.CallOption) error {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).DeleteChannelGroup[0:len((*c.CallOptions).DeleteChannelGroup):len((*c.CallOptions).DeleteChannelGroup)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = c.analyticsAdminClient.DeleteChannelGroup(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	return err
+}
+
+func (c *analyticsAdminGRPCClient) SetAutomatedGa4ConfigurationOptOut(ctx context.Context, req *adminpb.SetAutomatedGa4ConfigurationOptOutRequest, opts ...gax.CallOption) (*adminpb.SetAutomatedGa4ConfigurationOptOutResponse, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	opts = append((*c.CallOptions).SetAutomatedGa4ConfigurationOptOut[0:len((*c.CallOptions).SetAutomatedGa4ConfigurationOptOut):len((*c.CallOptions).SetAutomatedGa4ConfigurationOptOut)], opts...)
+	var resp *adminpb.SetAutomatedGa4ConfigurationOptOutResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.analyticsAdminClient.SetAutomatedGa4ConfigurationOptOut(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *analyticsAdminGRPCClient) FetchAutomatedGa4ConfigurationOptOut(ctx context.Context, req *adminpb.FetchAutomatedGa4ConfigurationOptOutRequest, opts ...gax.CallOption) (*adminpb.FetchAutomatedGa4ConfigurationOptOutResponse, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	opts = append((*c.CallOptions).FetchAutomatedGa4ConfigurationOptOut[0:len((*c.CallOptions).FetchAutomatedGa4ConfigurationOptOut):len((*c.CallOptions).FetchAutomatedGa4ConfigurationOptOut)], opts...)
+	var resp *adminpb.FetchAutomatedGa4ConfigurationOptOutResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.analyticsAdminClient.FetchAutomatedGa4ConfigurationOptOut(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *analyticsAdminGRPCClient) GetBigQueryLink(ctx context.Context, req *adminpb.GetBigQueryLinkRequest, opts ...gax.CallOption) (*adminpb.BigQueryLink, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).GetBigQueryLink[0:len((*c.CallOptions).GetBigQueryLink):len((*c.CallOptions).GetBigQueryLink)], opts...)
+	var resp *adminpb.BigQueryLink
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.analyticsAdminClient.GetBigQueryLink(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *analyticsAdminGRPCClient) ListBigQueryLinks(ctx context.Context, req *adminpb.ListBigQueryLinksRequest, opts ...gax.CallOption) *BigQueryLinkIterator {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).ListBigQueryLinks[0:len((*c.CallOptions).ListBigQueryLinks):len((*c.CallOptions).ListBigQueryLinks)], opts...)
+	it := &BigQueryLinkIterator{}
+	req = proto.Clone(req).(*adminpb.ListBigQueryLinksRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.BigQueryLink, string, error) {
+		resp := &adminpb.ListBigQueryLinksResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.analyticsAdminClient.ListBigQueryLinks(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetBigqueryLinks(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *analyticsAdminGRPCClient) GetEnhancedMeasurementSettings(ctx context.Context, req *adminpb.GetEnhancedMeasurementSettingsRequest, opts ...gax.CallOption) (*adminpb.EnhancedMeasurementSettings, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).GetEnhancedMeasurementSettings[0:len((*c.CallOptions).GetEnhancedMeasurementSettings):len((*c.CallOptions).GetEnhancedMeasurementSettings)], opts...)
+	var resp *adminpb.EnhancedMeasurementSettings
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.analyticsAdminClient.GetEnhancedMeasurementSettings(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *analyticsAdminGRPCClient) UpdateEnhancedMeasurementSettings(ctx context.Context, req *adminpb.UpdateEnhancedMeasurementSettingsRequest, opts ...gax.CallOption) (*adminpb.EnhancedMeasurementSettings, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "enhanced_measurement_settings.name", url.QueryEscape(req.GetEnhancedMeasurementSettings().GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).UpdateEnhancedMeasurementSettings[0:len((*c.CallOptions).UpdateEnhancedMeasurementSettings):len((*c.CallOptions).UpdateEnhancedMeasurementSettings)], opts...)
+	var resp *adminpb.EnhancedMeasurementSettings
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.analyticsAdminClient.UpdateEnhancedMeasurementSettings(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *analyticsAdminGRPCClient) CreateConnectedSiteTag(ctx context.Context, req *adminpb.CreateConnectedSiteTagRequest, opts ...gax.CallOption) (*adminpb.CreateConnectedSiteTagResponse, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	opts = append((*c.CallOptions).CreateConnectedSiteTag[0:len((*c.CallOptions).CreateConnectedSiteTag):len((*c.CallOptions).CreateConnectedSiteTag)], opts...)
+	var resp *adminpb.CreateConnectedSiteTagResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.analyticsAdminClient.CreateConnectedSiteTag(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *analyticsAdminGRPCClient) DeleteConnectedSiteTag(ctx context.Context, req *adminpb.DeleteConnectedSiteTagRequest, opts ...gax.CallOption) error {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	opts = append((*c.CallOptions).DeleteConnectedSiteTag[0:len((*c.CallOptions).DeleteConnectedSiteTag):len((*c.CallOptions).DeleteConnectedSiteTag)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = c.analyticsAdminClient.DeleteConnectedSiteTag(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	return err
+}
+
+func (c *analyticsAdminGRPCClient) ListConnectedSiteTags(ctx context.Context, req *adminpb.ListConnectedSiteTagsRequest, opts ...gax.CallOption) (*adminpb.ListConnectedSiteTagsResponse, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	opts = append((*c.CallOptions).ListConnectedSiteTags[0:len((*c.CallOptions).ListConnectedSiteTags):len((*c.CallOptions).ListConnectedSiteTags)], opts...)
+	var resp *adminpb.ListConnectedSiteTagsResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.analyticsAdminClient.ListConnectedSiteTags(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *analyticsAdminGRPCClient) FetchConnectedGa4Property(ctx context.Context, req *adminpb.FetchConnectedGa4PropertyRequest, opts ...gax.CallOption) (*adminpb.FetchConnectedGa4PropertyResponse, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	opts = append((*c.CallOptions).FetchConnectedGa4Property[0:len((*c.CallOptions).FetchConnectedGa4Property):len((*c.CallOptions).FetchConnectedGa4Property)], opts...)
+	var resp *adminpb.FetchConnectedGa4PropertyResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.analyticsAdminClient.FetchConnectedGa4Property(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
 // GetAccount lookup for a single Account.
 func (c *analyticsAdminRESTClient) GetAccount(ctx context.Context, req *adminpb.GetAccountRequest, opts ...gax.CallOption) (*adminpb.Account, error) {
 	baseUrl, err := url.Parse(c.endpoint)
@@ -4764,6 +6003,11 @@ func (c *analyticsAdminRESTClient) GetAccount(ctx context.Context, req *adminpb.
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
@@ -4836,6 +6080,7 @@ func (c *analyticsAdminRESTClient) ListAccounts(ctx context.Context, req *adminp
 		baseUrl.Path += fmt.Sprintf("/v1alpha/accounts")
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetPageSize() != 0 {
 			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
 		}
@@ -4922,6 +6167,11 @@ func (c *analyticsAdminRESTClient) DeleteAccount(ctx context.Context, req *admin
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
@@ -4965,6 +6215,7 @@ func (c *analyticsAdminRESTClient) UpdateAccount(ctx context.Context, req *admin
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetAccount().GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
 		updateMask, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
@@ -5034,6 +6285,11 @@ func (c *analyticsAdminRESTClient) ProvisionAccountTicket(ctx context.Context, r
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/accounts:provisionAccountTicket")
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
 	opts = append((*c.CallOptions).ProvisionAccountTicket[0:len((*c.CallOptions).ProvisionAccountTicket):len((*c.CallOptions).ProvisionAccountTicket)], opts...)
@@ -5099,6 +6355,7 @@ func (c *analyticsAdminRESTClient) ListAccountSummaries(ctx context.Context, req
 		baseUrl.Path += fmt.Sprintf("/v1alpha/accountSummaries")
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetPageSize() != 0 {
 			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
 		}
@@ -5172,6 +6429,11 @@ func (c *analyticsAdminRESTClient) GetProperty(ctx context.Context, req *adminpb
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
@@ -5244,6 +6506,7 @@ func (c *analyticsAdminRESTClient) ListProperties(ctx context.Context, req *admi
 		baseUrl.Path += fmt.Sprintf("/v1alpha/properties")
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		if req.GetPageSize() != 0 {
 			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
@@ -5328,6 +6591,11 @@ func (c *analyticsAdminRESTClient) CreateProperty(ctx context.Context, req *admi
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/properties")
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
 	opts = append((*c.CallOptions).CreateProperty[0:len((*c.CallOptions).CreateProperty):len((*c.CallOptions).CreateProperty)], opts...)
@@ -5381,13 +6649,18 @@ func (c *analyticsAdminRESTClient) CreateProperty(ctx context.Context, req *admi
 // will be permanently purged.
 // https://support.google.com/analytics/answer/6154772 (at https://support.google.com/analytics/answer/6154772)
 //
-// Returns an error if the target is not found, or is not an GA4 Property.
+// Returns an error if the target is not found, or is not a GA4 Property.
 func (c *analyticsAdminRESTClient) DeleteProperty(ctx context.Context, req *adminpb.DeletePropertyRequest, opts ...gax.CallOption) (*adminpb.Property, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
@@ -5450,6 +6723,7 @@ func (c *analyticsAdminRESTClient) UpdateProperty(ctx context.Context, req *admi
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetProperty().GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
 		updateMask, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
@@ -5513,6 +6787,11 @@ func (c *analyticsAdminRESTClient) GetUserLink(ctx context.Context, req *adminpb
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
@@ -5567,8 +6846,11 @@ func (c *analyticsAdminRESTClient) BatchGetUserLinks(ctx context.Context, req *a
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v/userLinks:batchGet", req.GetParent())
 
 	params := url.Values{}
-	if req.GetNames() != nil {
-		params.Add("names", fmt.Sprintf("%v", req.GetNames()))
+	params.Add("$alt", "json;enum-encoding=int")
+	if items := req.GetNames(); len(items) > 0 {
+		for _, item := range items {
+			params.Add("names", fmt.Sprintf("%v", item))
+		}
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -5640,6 +6922,7 @@ func (c *analyticsAdminRESTClient) ListUserLinks(ctx context.Context, req *admin
 		baseUrl.Path += fmt.Sprintf("/v1alpha/%v/userLinks", req.GetParent())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetPageSize() != 0 {
 			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
 		}
@@ -5740,6 +7023,11 @@ func (c *analyticsAdminRESTClient) AuditUserLinks(ctx context.Context, req *admi
 		}
 		baseUrl.Path += fmt.Sprintf("/v1alpha/%v/userLinks:audit", req.GetParent())
 
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+
+		baseUrl.RawQuery = params.Encode()
+
 		// Build HTTP headers from client and context metadata.
 		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
 		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -5816,6 +7104,7 @@ func (c *analyticsAdminRESTClient) CreateUserLink(ctx context.Context, req *admi
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v/userLinks", req.GetParent())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetNotifyNewUser() {
 		params.Add("notifyNewUser", fmt.Sprintf("%v", req.GetNotifyNewUser()))
 	}
@@ -5884,6 +7173,11 @@ func (c *analyticsAdminRESTClient) BatchCreateUserLinks(ctx context.Context, req
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v/userLinks:batchCreate", req.GetParent())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
@@ -5944,6 +7238,11 @@ func (c *analyticsAdminRESTClient) UpdateUserLink(ctx context.Context, req *admi
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetUserLink().GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "user_link.name", url.QueryEscape(req.GetUserLink().GetName())))
 
@@ -6003,6 +7302,11 @@ func (c *analyticsAdminRESTClient) BatchUpdateUserLinks(ctx context.Context, req
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v/userLinks:batchUpdate", req.GetParent())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
@@ -6056,6 +7360,11 @@ func (c *analyticsAdminRESTClient) DeleteUserLink(ctx context.Context, req *admi
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
@@ -6096,6 +7405,11 @@ func (c *analyticsAdminRESTClient) BatchDeleteUserLinks(ctx context.Context, req
 		return err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v/userLinks:batchDelete", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
@@ -6140,6 +7454,11 @@ func (c *analyticsAdminRESTClient) CreateFirebaseLink(ctx context.Context, req *
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v/firebaseLinks", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
@@ -6194,6 +7513,11 @@ func (c *analyticsAdminRESTClient) DeleteFirebaseLink(ctx context.Context, req *
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
@@ -6244,6 +7568,7 @@ func (c *analyticsAdminRESTClient) ListFirebaseLinks(ctx context.Context, req *a
 		baseUrl.Path += fmt.Sprintf("/v1alpha/%v/firebaseLinks", req.GetParent())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetPageSize() != 0 {
 			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
 		}
@@ -6318,6 +7643,11 @@ func (c *analyticsAdminRESTClient) GetGlobalSiteTag(ctx context.Context, req *ad
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
@@ -6377,6 +7707,11 @@ func (c *analyticsAdminRESTClient) CreateGoogleAdsLink(ctx context.Context, req 
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v/googleAdsLinks", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
@@ -6439,6 +7774,7 @@ func (c *analyticsAdminRESTClient) UpdateGoogleAdsLink(ctx context.Context, req 
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetGoogleAdsLink().GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
 		updateMask, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
@@ -6502,6 +7838,11 @@ func (c *analyticsAdminRESTClient) DeleteGoogleAdsLink(ctx context.Context, req 
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
@@ -6551,6 +7892,7 @@ func (c *analyticsAdminRESTClient) ListGoogleAdsLinks(ctx context.Context, req *
 		baseUrl.Path += fmt.Sprintf("/v1alpha/%v/googleAdsLinks", req.GetParent())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetPageSize() != 0 {
 			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
 		}
@@ -6625,6 +7967,11 @@ func (c *analyticsAdminRESTClient) GetDataSharingSettings(ctx context.Context, r
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
@@ -6677,6 +8024,11 @@ func (c *analyticsAdminRESTClient) GetMeasurementProtocolSecret(ctx context.Cont
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
@@ -6746,6 +8098,7 @@ func (c *analyticsAdminRESTClient) ListMeasurementProtocolSecrets(ctx context.Co
 		baseUrl.Path += fmt.Sprintf("/v1alpha/%v/measurementProtocolSecrets", req.GetParent())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetPageSize() != 0 {
 			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
 		}
@@ -6826,6 +8179,11 @@ func (c *analyticsAdminRESTClient) CreateMeasurementProtocolSecret(ctx context.C
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v/measurementProtocolSecrets", req.GetParent())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
@@ -6879,6 +8237,11 @@ func (c *analyticsAdminRESTClient) DeleteMeasurementProtocolSecret(ctx context.C
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
@@ -6922,6 +8285,7 @@ func (c *analyticsAdminRESTClient) UpdateMeasurementProtocolSecret(ctx context.C
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetMeasurementProtocolSecret().GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
 		updateMask, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
@@ -6980,7 +8344,8 @@ func (c *analyticsAdminRESTClient) UpdateMeasurementProtocolSecret(ctx context.C
 // AcknowledgeUserDataCollection acknowledges the terms of user data collection for the specified property.
 //
 // This acknowledgement must be completed (either in the Google Analytics UI
-// or via this API) before MeasurementProtocolSecret resources may be created.
+// or through this API) before MeasurementProtocolSecret resources may be
+// created.
 func (c *analyticsAdminRESTClient) AcknowledgeUserDataCollection(ctx context.Context, req *adminpb.AcknowledgeUserDataCollectionRequest, opts ...gax.CallOption) (*adminpb.AcknowledgeUserDataCollectionResponse, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -6993,6 +8358,11 @@ func (c *analyticsAdminRESTClient) AcknowledgeUserDataCollection(ctx context.Con
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v:acknowledgeUserDataCollection", req.GetProperty())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "property", url.QueryEscape(req.GetProperty())))
@@ -7067,6 +8437,11 @@ func (c *analyticsAdminRESTClient) SearchChangeHistoryEvents(ctx context.Context
 		}
 		baseUrl.Path += fmt.Sprintf("/v1alpha/%v:searchChangeHistoryEvents", req.GetAccount())
 
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+
+		baseUrl.RawQuery = params.Encode()
+
 		// Build HTTP headers from client and context metadata.
 		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
 		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -7131,6 +8506,11 @@ func (c *analyticsAdminRESTClient) GetGoogleSignalsSettings(ctx context.Context,
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
@@ -7192,6 +8572,7 @@ func (c *analyticsAdminRESTClient) UpdateGoogleSignalsSettings(ctx context.Conte
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetGoogleSignalsSettings().GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
 		updateMask, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
@@ -7262,6 +8643,11 @@ func (c *analyticsAdminRESTClient) CreateConversionEvent(ctx context.Context, re
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v/conversionEvents", req.GetParent())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
@@ -7314,6 +8700,11 @@ func (c *analyticsAdminRESTClient) GetConversionEvent(ctx context.Context, req *
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
@@ -7368,6 +8759,11 @@ func (c *analyticsAdminRESTClient) DeleteConversionEvent(ctx context.Context, re
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
@@ -7419,6 +8815,7 @@ func (c *analyticsAdminRESTClient) ListConversionEvents(ctx context.Context, req
 		baseUrl.Path += fmt.Sprintf("/v1alpha/%v/conversionEvents", req.GetParent())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetPageSize() != 0 {
 			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
 		}
@@ -7492,6 +8889,11 @@ func (c *analyticsAdminRESTClient) GetDisplayVideo360AdvertiserLink(ctx context.
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
@@ -7559,6 +8961,7 @@ func (c *analyticsAdminRESTClient) ListDisplayVideo360AdvertiserLinks(ctx contex
 		baseUrl.Path += fmt.Sprintf("/v1alpha/%v/displayVideo360AdvertiserLinks", req.GetParent())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetPageSize() != 0 {
 			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
 		}
@@ -7643,6 +9046,11 @@ func (c *analyticsAdminRESTClient) CreateDisplayVideo360AdvertiserLink(ctx conte
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v/displayVideo360AdvertiserLinks", req.GetParent())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
@@ -7696,6 +9104,11 @@ func (c *analyticsAdminRESTClient) DeleteDisplayVideo360AdvertiserLink(ctx conte
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
@@ -7739,6 +9152,7 @@ func (c *analyticsAdminRESTClient) UpdateDisplayVideo360AdvertiserLink(ctx conte
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetDisplayVideo_360AdvertiserLink().GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
 		updateMask, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
@@ -7801,6 +9215,11 @@ func (c *analyticsAdminRESTClient) GetDisplayVideo360AdvertiserLinkProposal(ctx 
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
@@ -7869,6 +9288,7 @@ func (c *analyticsAdminRESTClient) ListDisplayVideo360AdvertiserLinkProposals(ct
 		baseUrl.Path += fmt.Sprintf("/v1alpha/%v/displayVideo360AdvertiserLinkProposals", req.GetParent())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetPageSize() != 0 {
 			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
 		}
@@ -7949,6 +9369,11 @@ func (c *analyticsAdminRESTClient) CreateDisplayVideo360AdvertiserLinkProposal(c
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v/displayVideo360AdvertiserLinkProposals", req.GetParent())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
@@ -8003,6 +9428,11 @@ func (c *analyticsAdminRESTClient) DeleteDisplayVideo360AdvertiserLinkProposal(c
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
@@ -8045,6 +9475,11 @@ func (c *analyticsAdminRESTClient) ApproveDisplayVideo360AdvertiserLinkProposal(
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v:approve", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
@@ -8111,6 +9546,11 @@ func (c *analyticsAdminRESTClient) CancelDisplayVideo360AdvertiserLinkProposal(c
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v:cancel", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
@@ -8170,6 +9610,11 @@ func (c *analyticsAdminRESTClient) CreateCustomDimension(ctx context.Context, re
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v/customDimensions", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
@@ -8232,6 +9677,7 @@ func (c *analyticsAdminRESTClient) UpdateCustomDimension(ctx context.Context, re
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetCustomDimension().GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
 		updateMask, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
@@ -8309,6 +9755,7 @@ func (c *analyticsAdminRESTClient) ListCustomDimensions(ctx context.Context, req
 		baseUrl.Path += fmt.Sprintf("/v1alpha/%v/customDimensions", req.GetParent())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetPageSize() != 0 {
 			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
 		}
@@ -8388,6 +9835,11 @@ func (c *analyticsAdminRESTClient) ArchiveCustomDimension(ctx context.Context, r
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v:archive", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
@@ -8422,6 +9874,11 @@ func (c *analyticsAdminRESTClient) GetCustomDimension(ctx context.Context, req *
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
@@ -8482,6 +9939,11 @@ func (c *analyticsAdminRESTClient) CreateCustomMetric(ctx context.Context, req *
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v/customMetrics", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
@@ -8544,6 +10006,7 @@ func (c *analyticsAdminRESTClient) UpdateCustomMetric(ctx context.Context, req *
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetCustomMetric().GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
 		updateMask, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
@@ -8621,6 +10084,7 @@ func (c *analyticsAdminRESTClient) ListCustomMetrics(ctx context.Context, req *a
 		baseUrl.Path += fmt.Sprintf("/v1alpha/%v/customMetrics", req.GetParent())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetPageSize() != 0 {
 			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
 		}
@@ -8700,6 +10164,11 @@ func (c *analyticsAdminRESTClient) ArchiveCustomMetric(ctx context.Context, req 
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v:archive", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
@@ -8734,6 +10203,11 @@ func (c *analyticsAdminRESTClient) GetCustomMetric(ctx context.Context, req *adm
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
@@ -8787,6 +10261,11 @@ func (c *analyticsAdminRESTClient) GetDataRetentionSettings(ctx context.Context,
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
@@ -8849,6 +10328,7 @@ func (c *analyticsAdminRESTClient) UpdateDataRetentionSettings(ctx context.Conte
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetDataRetentionSettings().GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
 		updateMask, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
@@ -8919,6 +10399,11 @@ func (c *analyticsAdminRESTClient) CreateDataStream(ctx context.Context, req *ad
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v/dataStreams", req.GetParent())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
@@ -8972,6 +10457,11 @@ func (c *analyticsAdminRESTClient) DeleteDataStream(ctx context.Context, req *ad
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
@@ -9015,6 +10505,7 @@ func (c *analyticsAdminRESTClient) UpdateDataStream(ctx context.Context, req *ad
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetDataStream().GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
 		updateMask, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
@@ -9092,6 +10583,7 @@ func (c *analyticsAdminRESTClient) ListDataStreams(ctx context.Context, req *adm
 		baseUrl.Path += fmt.Sprintf("/v1alpha/%v/dataStreams", req.GetParent())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetPageSize() != 0 {
 			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
 		}
@@ -9165,6 +10657,11 @@ func (c *analyticsAdminRESTClient) GetDataStream(ctx context.Context, req *admin
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
@@ -9212,12 +10709,18 @@ func (c *analyticsAdminRESTClient) GetDataStream(ctx context.Context, req *admin
 
 // GetAudience lookup for a single Audience.
 // Audiences created before 2020 may not be supported.
+// Default audiences will not show filter definitions.
 func (c *analyticsAdminRESTClient) GetAudience(ctx context.Context, req *adminpb.GetAudienceRequest, opts ...gax.CallOption) (*adminpb.Audience, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
@@ -9266,6 +10769,7 @@ func (c *analyticsAdminRESTClient) GetAudience(ctx context.Context, req *adminpb
 
 // ListAudiences lists Audiences on a property.
 // Audiences created before 2020 may not be supported.
+// Default audiences will not show filter definitions.
 func (c *analyticsAdminRESTClient) ListAudiences(ctx context.Context, req *adminpb.ListAudiencesRequest, opts ...gax.CallOption) *AudienceIterator {
 	it := &AudienceIterator{}
 	req = proto.Clone(req).(*adminpb.ListAudiencesRequest)
@@ -9287,6 +10791,7 @@ func (c *analyticsAdminRESTClient) ListAudiences(ctx context.Context, req *admin
 		baseUrl.Path += fmt.Sprintf("/v1alpha/%v/audiences", req.GetParent())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetPageSize() != 0 {
 			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
 		}
@@ -9367,6 +10872,11 @@ func (c *analyticsAdminRESTClient) CreateAudience(ctx context.Context, req *admi
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v/audiences", req.GetParent())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
@@ -9428,6 +10938,7 @@ func (c *analyticsAdminRESTClient) UpdateAudience(ctx context.Context, req *admi
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetAudience().GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
 		updateMask, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
@@ -9497,6 +11008,11 @@ func (c *analyticsAdminRESTClient) ArchiveAudience(ctx context.Context, req *adm
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v:archive", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
@@ -9524,6 +11040,329 @@ func (c *analyticsAdminRESTClient) ArchiveAudience(ctx context.Context, req *adm
 	}, opts...)
 }
 
+// GetSearchAds360Link look up a single SearchAds360Link
+func (c *analyticsAdminRESTClient) GetSearchAds360Link(ctx context.Context, req *adminpb.GetSearchAds360LinkRequest, opts ...gax.CallOption) (*adminpb.SearchAds360Link, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).GetSearchAds360Link[0:len((*c.CallOptions).GetSearchAds360Link):len((*c.CallOptions).GetSearchAds360Link)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &adminpb.SearchAds360Link{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// ListSearchAds360Links lists all SearchAds360Links on a property.
+func (c *analyticsAdminRESTClient) ListSearchAds360Links(ctx context.Context, req *adminpb.ListSearchAds360LinksRequest, opts ...gax.CallOption) *SearchAds360LinkIterator {
+	it := &SearchAds360LinkIterator{}
+	req = proto.Clone(req).(*adminpb.ListSearchAds360LinksRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.SearchAds360Link, string, error) {
+		resp := &adminpb.ListSearchAds360LinksResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1alpha/%v/searchAds360Links", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			httpRsp, err := c.httpClient.Do(httpReq)
+			if err != nil {
+				return err
+			}
+			defer httpRsp.Body.Close()
+
+			if err = googleapi.CheckResponse(httpRsp); err != nil {
+				return err
+			}
+
+			buf, err := ioutil.ReadAll(httpRsp.Body)
+			if err != nil {
+				return err
+			}
+
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return maybeUnknownEnum(err)
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetSearchAds_360Links(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// CreateSearchAds360Link creates a SearchAds360Link.
+func (c *analyticsAdminRESTClient) CreateSearchAds360Link(ctx context.Context, req *adminpb.CreateSearchAds360LinkRequest, opts ...gax.CallOption) (*adminpb.SearchAds360Link, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetSearchAds_360Link()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1alpha/%v/searchAds360Links", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).CreateSearchAds360Link[0:len((*c.CallOptions).CreateSearchAds360Link):len((*c.CallOptions).CreateSearchAds360Link)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &adminpb.SearchAds360Link{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// DeleteSearchAds360Link deletes a SearchAds360Link on a property.
+func (c *analyticsAdminRESTClient) DeleteSearchAds360Link(ctx context.Context, req *adminpb.DeleteSearchAds360LinkRequest, opts ...gax.CallOption) error {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		// Returns nil if there is no error, otherwise wraps
+		// the response code and body into a non-nil error
+		return googleapi.CheckResponse(httpRsp)
+	}, opts...)
+}
+
+// UpdateSearchAds360Link updates a SearchAds360Link on a property.
+func (c *analyticsAdminRESTClient) UpdateSearchAds360Link(ctx context.Context, req *adminpb.UpdateSearchAds360LinkRequest, opts ...gax.CallOption) (*adminpb.SearchAds360Link, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetSearchAds_360Link()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetSearchAds_360Link().GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetUpdateMask() != nil {
+		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(updateMask))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "search_ads_360_link.name", url.QueryEscape(req.GetSearchAds_360Link().GetName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).UpdateSearchAds360Link[0:len((*c.CallOptions).UpdateSearchAds360Link):len((*c.CallOptions).UpdateSearchAds360Link)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &adminpb.SearchAds360Link{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
 // GetAttributionSettings lookup for a AttributionSettings singleton.
 func (c *analyticsAdminRESTClient) GetAttributionSettings(ctx context.Context, req *adminpb.GetAttributionSettingsRequest, opts ...gax.CallOption) (*adminpb.AttributionSettings, error) {
 	baseUrl, err := url.Parse(c.endpoint)
@@ -9531,6 +11370,11 @@ func (c *analyticsAdminRESTClient) GetAttributionSettings(ctx context.Context, r
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
@@ -9593,6 +11437,7 @@ func (c *analyticsAdminRESTClient) UpdateAttributionSettings(ctx context.Context
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetAttributionSettings().GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
 		updateMask, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
@@ -9674,6 +11519,11 @@ func (c *analyticsAdminRESTClient) RunAccessReport(ctx context.Context, req *adm
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha/%v:runAccessReport", req.GetEntity())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "entity", url.QueryEscape(req.GetEntity())))
 
@@ -9717,6 +11567,1896 @@ func (c *analyticsAdminRESTClient) RunAccessReport(ctx context.Context, req *adm
 		return nil, e
 	}
 	return resp, nil
+}
+
+// CreateAccessBinding creates an access binding on an account or property.
+func (c *analyticsAdminRESTClient) CreateAccessBinding(ctx context.Context, req *adminpb.CreateAccessBindingRequest, opts ...gax.CallOption) (*adminpb.AccessBinding, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetAccessBinding()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1alpha/%v/accessBindings", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).CreateAccessBinding[0:len((*c.CallOptions).CreateAccessBinding):len((*c.CallOptions).CreateAccessBinding)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &adminpb.AccessBinding{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// GetAccessBinding gets information about an access binding.
+func (c *analyticsAdminRESTClient) GetAccessBinding(ctx context.Context, req *adminpb.GetAccessBindingRequest, opts ...gax.CallOption) (*adminpb.AccessBinding, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).GetAccessBinding[0:len((*c.CallOptions).GetAccessBinding):len((*c.CallOptions).GetAccessBinding)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &adminpb.AccessBinding{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// UpdateAccessBinding updates an access binding on an account or property.
+func (c *analyticsAdminRESTClient) UpdateAccessBinding(ctx context.Context, req *adminpb.UpdateAccessBindingRequest, opts ...gax.CallOption) (*adminpb.AccessBinding, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetAccessBinding()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetAccessBinding().GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "access_binding.name", url.QueryEscape(req.GetAccessBinding().GetName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).UpdateAccessBinding[0:len((*c.CallOptions).UpdateAccessBinding):len((*c.CallOptions).UpdateAccessBinding)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &adminpb.AccessBinding{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// DeleteAccessBinding deletes an access binding on an account or property.
+func (c *analyticsAdminRESTClient) DeleteAccessBinding(ctx context.Context, req *adminpb.DeleteAccessBindingRequest, opts ...gax.CallOption) error {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		// Returns nil if there is no error, otherwise wraps
+		// the response code and body into a non-nil error
+		return googleapi.CheckResponse(httpRsp)
+	}, opts...)
+}
+
+// ListAccessBindings lists all access bindings on an account or property.
+func (c *analyticsAdminRESTClient) ListAccessBindings(ctx context.Context, req *adminpb.ListAccessBindingsRequest, opts ...gax.CallOption) *AccessBindingIterator {
+	it := &AccessBindingIterator{}
+	req = proto.Clone(req).(*adminpb.ListAccessBindingsRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.AccessBinding, string, error) {
+		resp := &adminpb.ListAccessBindingsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1alpha/%v/accessBindings", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			httpRsp, err := c.httpClient.Do(httpReq)
+			if err != nil {
+				return err
+			}
+			defer httpRsp.Body.Close()
+
+			if err = googleapi.CheckResponse(httpRsp); err != nil {
+				return err
+			}
+
+			buf, err := ioutil.ReadAll(httpRsp.Body)
+			if err != nil {
+				return err
+			}
+
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return maybeUnknownEnum(err)
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetAccessBindings(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// BatchCreateAccessBindings creates information about multiple access bindings to an account or
+// property.
+//
+// This method is transactional. If any AccessBinding cannot be created, none
+// of the AccessBindings will be created.
+func (c *analyticsAdminRESTClient) BatchCreateAccessBindings(ctx context.Context, req *adminpb.BatchCreateAccessBindingsRequest, opts ...gax.CallOption) (*adminpb.BatchCreateAccessBindingsResponse, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1alpha/%v/accessBindings:batchCreate", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).BatchCreateAccessBindings[0:len((*c.CallOptions).BatchCreateAccessBindings):len((*c.CallOptions).BatchCreateAccessBindings)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &adminpb.BatchCreateAccessBindingsResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// BatchGetAccessBindings gets information about multiple access bindings to an account or property.
+func (c *analyticsAdminRESTClient) BatchGetAccessBindings(ctx context.Context, req *adminpb.BatchGetAccessBindingsRequest, opts ...gax.CallOption) (*adminpb.BatchGetAccessBindingsResponse, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1alpha/%v/accessBindings:batchGet", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if items := req.GetNames(); len(items) > 0 {
+		for _, item := range items {
+			params.Add("names", fmt.Sprintf("%v", item))
+		}
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).BatchGetAccessBindings[0:len((*c.CallOptions).BatchGetAccessBindings):len((*c.CallOptions).BatchGetAccessBindings)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &adminpb.BatchGetAccessBindingsResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// BatchUpdateAccessBindings updates information about multiple access bindings to an account or
+// property.
+func (c *analyticsAdminRESTClient) BatchUpdateAccessBindings(ctx context.Context, req *adminpb.BatchUpdateAccessBindingsRequest, opts ...gax.CallOption) (*adminpb.BatchUpdateAccessBindingsResponse, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1alpha/%v/accessBindings:batchUpdate", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).BatchUpdateAccessBindings[0:len((*c.CallOptions).BatchUpdateAccessBindings):len((*c.CallOptions).BatchUpdateAccessBindings)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &adminpb.BatchUpdateAccessBindingsResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// BatchDeleteAccessBindings deletes information about multiple users’ links to an account or property.
+func (c *analyticsAdminRESTClient) BatchDeleteAccessBindings(ctx context.Context, req *adminpb.BatchDeleteAccessBindingsRequest, opts ...gax.CallOption) error {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1alpha/%v/accessBindings:batchDelete", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		// Returns nil if there is no error, otherwise wraps
+		// the response code and body into a non-nil error
+		return googleapi.CheckResponse(httpRsp)
+	}, opts...)
+}
+
+// GetExpandedDataSet lookup for a single ExpandedDataSet.
+func (c *analyticsAdminRESTClient) GetExpandedDataSet(ctx context.Context, req *adminpb.GetExpandedDataSetRequest, opts ...gax.CallOption) (*adminpb.ExpandedDataSet, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).GetExpandedDataSet[0:len((*c.CallOptions).GetExpandedDataSet):len((*c.CallOptions).GetExpandedDataSet)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &adminpb.ExpandedDataSet{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// ListExpandedDataSets lists ExpandedDataSets on a property.
+func (c *analyticsAdminRESTClient) ListExpandedDataSets(ctx context.Context, req *adminpb.ListExpandedDataSetsRequest, opts ...gax.CallOption) *ExpandedDataSetIterator {
+	it := &ExpandedDataSetIterator{}
+	req = proto.Clone(req).(*adminpb.ListExpandedDataSetsRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.ExpandedDataSet, string, error) {
+		resp := &adminpb.ListExpandedDataSetsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1alpha/%v/expandedDataSets", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			httpRsp, err := c.httpClient.Do(httpReq)
+			if err != nil {
+				return err
+			}
+			defer httpRsp.Body.Close()
+
+			if err = googleapi.CheckResponse(httpRsp); err != nil {
+				return err
+			}
+
+			buf, err := ioutil.ReadAll(httpRsp.Body)
+			if err != nil {
+				return err
+			}
+
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return maybeUnknownEnum(err)
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetExpandedDataSets(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// CreateExpandedDataSet creates a ExpandedDataSet.
+func (c *analyticsAdminRESTClient) CreateExpandedDataSet(ctx context.Context, req *adminpb.CreateExpandedDataSetRequest, opts ...gax.CallOption) (*adminpb.ExpandedDataSet, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetExpandedDataSet()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1alpha/%v/expandedDataSets", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).CreateExpandedDataSet[0:len((*c.CallOptions).CreateExpandedDataSet):len((*c.CallOptions).CreateExpandedDataSet)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &adminpb.ExpandedDataSet{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// UpdateExpandedDataSet updates a ExpandedDataSet on a property.
+func (c *analyticsAdminRESTClient) UpdateExpandedDataSet(ctx context.Context, req *adminpb.UpdateExpandedDataSetRequest, opts ...gax.CallOption) (*adminpb.ExpandedDataSet, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetExpandedDataSet()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetExpandedDataSet().GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetUpdateMask() != nil {
+		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(updateMask))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "expanded_data_set.name", url.QueryEscape(req.GetExpandedDataSet().GetName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).UpdateExpandedDataSet[0:len((*c.CallOptions).UpdateExpandedDataSet):len((*c.CallOptions).UpdateExpandedDataSet)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &adminpb.ExpandedDataSet{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// DeleteExpandedDataSet deletes a ExpandedDataSet on a property.
+func (c *analyticsAdminRESTClient) DeleteExpandedDataSet(ctx context.Context, req *adminpb.DeleteExpandedDataSetRequest, opts ...gax.CallOption) error {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		// Returns nil if there is no error, otherwise wraps
+		// the response code and body into a non-nil error
+		return googleapi.CheckResponse(httpRsp)
+	}, opts...)
+}
+
+// GetChannelGroup lookup for a single ChannelGroup.
+func (c *analyticsAdminRESTClient) GetChannelGroup(ctx context.Context, req *adminpb.GetChannelGroupRequest, opts ...gax.CallOption) (*adminpb.ChannelGroup, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).GetChannelGroup[0:len((*c.CallOptions).GetChannelGroup):len((*c.CallOptions).GetChannelGroup)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &adminpb.ChannelGroup{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// ListChannelGroups lists ChannelGroups on a property.
+func (c *analyticsAdminRESTClient) ListChannelGroups(ctx context.Context, req *adminpb.ListChannelGroupsRequest, opts ...gax.CallOption) *ChannelGroupIterator {
+	it := &ChannelGroupIterator{}
+	req = proto.Clone(req).(*adminpb.ListChannelGroupsRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.ChannelGroup, string, error) {
+		resp := &adminpb.ListChannelGroupsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1alpha/%v/channelGroups", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			httpRsp, err := c.httpClient.Do(httpReq)
+			if err != nil {
+				return err
+			}
+			defer httpRsp.Body.Close()
+
+			if err = googleapi.CheckResponse(httpRsp); err != nil {
+				return err
+			}
+
+			buf, err := ioutil.ReadAll(httpRsp.Body)
+			if err != nil {
+				return err
+			}
+
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return maybeUnknownEnum(err)
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetChannelGroups(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// CreateChannelGroup creates a ChannelGroup.
+func (c *analyticsAdminRESTClient) CreateChannelGroup(ctx context.Context, req *adminpb.CreateChannelGroupRequest, opts ...gax.CallOption) (*adminpb.ChannelGroup, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetChannelGroup()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1alpha/%v/channelGroups", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).CreateChannelGroup[0:len((*c.CallOptions).CreateChannelGroup):len((*c.CallOptions).CreateChannelGroup)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &adminpb.ChannelGroup{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// UpdateChannelGroup updates a ChannelGroup.
+func (c *analyticsAdminRESTClient) UpdateChannelGroup(ctx context.Context, req *adminpb.UpdateChannelGroupRequest, opts ...gax.CallOption) (*adminpb.ChannelGroup, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetChannelGroup()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetChannelGroup().GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetUpdateMask() != nil {
+		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(updateMask))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "channel_group.name", url.QueryEscape(req.GetChannelGroup().GetName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).UpdateChannelGroup[0:len((*c.CallOptions).UpdateChannelGroup):len((*c.CallOptions).UpdateChannelGroup)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &adminpb.ChannelGroup{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// DeleteChannelGroup deletes a ChannelGroup on a property.
+func (c *analyticsAdminRESTClient) DeleteChannelGroup(ctx context.Context, req *adminpb.DeleteChannelGroupRequest, opts ...gax.CallOption) error {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		// Returns nil if there is no error, otherwise wraps
+		// the response code and body into a non-nil error
+		return googleapi.CheckResponse(httpRsp)
+	}, opts...)
+}
+
+// SetAutomatedGa4ConfigurationOptOut sets the opt out status for the automated GA4 setup process for a UA
+// property.
+// Note: this has no effect on GA4 property.
+func (c *analyticsAdminRESTClient) SetAutomatedGa4ConfigurationOptOut(ctx context.Context, req *adminpb.SetAutomatedGa4ConfigurationOptOutRequest, opts ...gax.CallOption) (*adminpb.SetAutomatedGa4ConfigurationOptOutResponse, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1alpha/properties:setAutomatedGa4ConfigurationOptOut")
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).SetAutomatedGa4ConfigurationOptOut[0:len((*c.CallOptions).SetAutomatedGa4ConfigurationOptOut):len((*c.CallOptions).SetAutomatedGa4ConfigurationOptOut)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &adminpb.SetAutomatedGa4ConfigurationOptOutResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// FetchAutomatedGa4ConfigurationOptOut fetches the opt out status for the automated GA4 setup process for a UA
+// property.
+// Note: this has no effect on GA4 property.
+func (c *analyticsAdminRESTClient) FetchAutomatedGa4ConfigurationOptOut(ctx context.Context, req *adminpb.FetchAutomatedGa4ConfigurationOptOutRequest, opts ...gax.CallOption) (*adminpb.FetchAutomatedGa4ConfigurationOptOutResponse, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1alpha/properties:fetchAutomatedGa4ConfigurationOptOut")
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).FetchAutomatedGa4ConfigurationOptOut[0:len((*c.CallOptions).FetchAutomatedGa4ConfigurationOptOut):len((*c.CallOptions).FetchAutomatedGa4ConfigurationOptOut)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &adminpb.FetchAutomatedGa4ConfigurationOptOutResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// GetBigQueryLink lookup for a single BigQuery Link.
+func (c *analyticsAdminRESTClient) GetBigQueryLink(ctx context.Context, req *adminpb.GetBigQueryLinkRequest, opts ...gax.CallOption) (*adminpb.BigQueryLink, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).GetBigQueryLink[0:len((*c.CallOptions).GetBigQueryLink):len((*c.CallOptions).GetBigQueryLink)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &adminpb.BigQueryLink{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// ListBigQueryLinks lists BigQuery Links on a property.
+func (c *analyticsAdminRESTClient) ListBigQueryLinks(ctx context.Context, req *adminpb.ListBigQueryLinksRequest, opts ...gax.CallOption) *BigQueryLinkIterator {
+	it := &BigQueryLinkIterator{}
+	req = proto.Clone(req).(*adminpb.ListBigQueryLinksRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.BigQueryLink, string, error) {
+		resp := &adminpb.ListBigQueryLinksResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1alpha/%v/bigQueryLinks", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			httpRsp, err := c.httpClient.Do(httpReq)
+			if err != nil {
+				return err
+			}
+			defer httpRsp.Body.Close()
+
+			if err = googleapi.CheckResponse(httpRsp); err != nil {
+				return err
+			}
+
+			buf, err := ioutil.ReadAll(httpRsp.Body)
+			if err != nil {
+				return err
+			}
+
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return maybeUnknownEnum(err)
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetBigqueryLinks(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// GetEnhancedMeasurementSettings returns the enhanced measurement settings for this data stream.
+// Note that the stream must enable enhanced measurement for these settings to
+// take effect.
+func (c *analyticsAdminRESTClient) GetEnhancedMeasurementSettings(ctx context.Context, req *adminpb.GetEnhancedMeasurementSettingsRequest, opts ...gax.CallOption) (*adminpb.EnhancedMeasurementSettings, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).GetEnhancedMeasurementSettings[0:len((*c.CallOptions).GetEnhancedMeasurementSettings):len((*c.CallOptions).GetEnhancedMeasurementSettings)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &adminpb.EnhancedMeasurementSettings{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// UpdateEnhancedMeasurementSettings updates the enhanced measurement settings for this data stream.
+// Note that the stream must enable enhanced measurement for these settings to
+// take effect.
+func (c *analyticsAdminRESTClient) UpdateEnhancedMeasurementSettings(ctx context.Context, req *adminpb.UpdateEnhancedMeasurementSettingsRequest, opts ...gax.CallOption) (*adminpb.EnhancedMeasurementSettings, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetEnhancedMeasurementSettings()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetEnhancedMeasurementSettings().GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetUpdateMask() != nil {
+		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(updateMask))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "enhanced_measurement_settings.name", url.QueryEscape(req.GetEnhancedMeasurementSettings().GetName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).UpdateEnhancedMeasurementSettings[0:len((*c.CallOptions).UpdateEnhancedMeasurementSettings):len((*c.CallOptions).UpdateEnhancedMeasurementSettings)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &adminpb.EnhancedMeasurementSettings{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// CreateConnectedSiteTag creates a connected site tag for a Universal Analytics property. You can
+// create a maximum of 20 connected site tags per property.
+// Note: This API cannot be used on GA4 properties.
+func (c *analyticsAdminRESTClient) CreateConnectedSiteTag(ctx context.Context, req *adminpb.CreateConnectedSiteTagRequest, opts ...gax.CallOption) (*adminpb.CreateConnectedSiteTagResponse, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1alpha/properties:createConnectedSiteTag")
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).CreateConnectedSiteTag[0:len((*c.CallOptions).CreateConnectedSiteTag):len((*c.CallOptions).CreateConnectedSiteTag)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &adminpb.CreateConnectedSiteTagResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// DeleteConnectedSiteTag deletes a connected site tag for a Universal Analytics property.
+// Note: this has no effect on GA4 properties.
+func (c *analyticsAdminRESTClient) DeleteConnectedSiteTag(ctx context.Context, req *adminpb.DeleteConnectedSiteTagRequest, opts ...gax.CallOption) error {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1alpha/properties:deleteConnectedSiteTag")
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		// Returns nil if there is no error, otherwise wraps
+		// the response code and body into a non-nil error
+		return googleapi.CheckResponse(httpRsp)
+	}, opts...)
+}
+
+// ListConnectedSiteTags lists the connected site tags for a Universal Analytics property. A maximum
+// of 20 connected site tags will be returned. Note: this has no effect on GA4
+// property.
+func (c *analyticsAdminRESTClient) ListConnectedSiteTags(ctx context.Context, req *adminpb.ListConnectedSiteTagsRequest, opts ...gax.CallOption) (*adminpb.ListConnectedSiteTagsResponse, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1alpha/properties:listConnectedSiteTags")
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).ListConnectedSiteTags[0:len((*c.CallOptions).ListConnectedSiteTags):len((*c.CallOptions).ListConnectedSiteTags)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &adminpb.ListConnectedSiteTagsResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// FetchConnectedGa4Property given a specified UA property, looks up the GA4 property connected to it.
+// Note: this cannot be used with GA4 properties.
+func (c *analyticsAdminRESTClient) FetchConnectedGa4Property(ctx context.Context, req *adminpb.FetchConnectedGa4PropertyRequest, opts ...gax.CallOption) (*adminpb.FetchConnectedGa4PropertyResponse, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1alpha/properties:fetchConnectedGa4Property")
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	params.Add("property", fmt.Sprintf("%v", req.GetProperty()))
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).FetchConnectedGa4Property[0:len((*c.CallOptions).FetchConnectedGa4Property):len((*c.CallOptions).FetchConnectedGa4Property)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &adminpb.FetchConnectedGa4PropertyResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// AccessBindingIterator manages a stream of *adminpb.AccessBinding.
+type AccessBindingIterator struct {
+	items    []*adminpb.AccessBinding
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*adminpb.AccessBinding, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *AccessBindingIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *AccessBindingIterator) Next() (*adminpb.AccessBinding, error) {
+	var item *adminpb.AccessBinding
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *AccessBindingIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *AccessBindingIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
 }
 
 // AccountIterator manages a stream of *adminpb.Account.
@@ -9907,6 +13647,53 @@ func (it *AuditUserLinkIterator) takeBuf() interface{} {
 	return b
 }
 
+// BigQueryLinkIterator manages a stream of *adminpb.BigQueryLink.
+type BigQueryLinkIterator struct {
+	items    []*adminpb.BigQueryLink
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*adminpb.BigQueryLink, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *BigQueryLinkIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *BigQueryLinkIterator) Next() (*adminpb.BigQueryLink, error) {
+	var item *adminpb.BigQueryLink
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *BigQueryLinkIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *BigQueryLinkIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
 // ChangeHistoryEventIterator manages a stream of *adminpb.ChangeHistoryEvent.
 type ChangeHistoryEventIterator struct {
 	items    []*adminpb.ChangeHistoryEvent
@@ -9949,6 +13736,53 @@ func (it *ChangeHistoryEventIterator) bufLen() int {
 }
 
 func (it *ChangeHistoryEventIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// ChannelGroupIterator manages a stream of *adminpb.ChannelGroup.
+type ChannelGroupIterator struct {
+	items    []*adminpb.ChannelGroup
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*adminpb.ChannelGroup, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *ChannelGroupIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *ChannelGroupIterator) Next() (*adminpb.ChannelGroup, error) {
+	var item *adminpb.ChannelGroup
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *ChannelGroupIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *ChannelGroupIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
@@ -10236,6 +14070,53 @@ func (it *DisplayVideo360AdvertiserLinkProposalIterator) takeBuf() interface{} {
 	return b
 }
 
+// ExpandedDataSetIterator manages a stream of *adminpb.ExpandedDataSet.
+type ExpandedDataSetIterator struct {
+	items    []*adminpb.ExpandedDataSet
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*adminpb.ExpandedDataSet, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *ExpandedDataSetIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *ExpandedDataSetIterator) Next() (*adminpb.ExpandedDataSet, error) {
+	var item *adminpb.ExpandedDataSet
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *ExpandedDataSetIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *ExpandedDataSetIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
 // FirebaseLinkIterator manages a stream of *adminpb.FirebaseLink.
 type FirebaseLinkIterator struct {
 	items    []*adminpb.FirebaseLink
@@ -10419,6 +14300,53 @@ func (it *PropertyIterator) bufLen() int {
 }
 
 func (it *PropertyIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// SearchAds360LinkIterator manages a stream of *adminpb.SearchAds360Link.
+type SearchAds360LinkIterator struct {
+	items    []*adminpb.SearchAds360Link
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*adminpb.SearchAds360Link, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *SearchAds360LinkIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *SearchAds360LinkIterator) Next() (*adminpb.SearchAds360Link, error) {
+	var item *adminpb.SearchAds360Link
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *SearchAds360LinkIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *SearchAds360LinkIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b

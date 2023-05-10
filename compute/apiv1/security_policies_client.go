@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -25,14 +25,15 @@ import (
 	"net/http"
 	"net/url"
 	"sort"
+	"time"
 
+	computepb "cloud.google.com/go/compute/apiv1/computepb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	httptransport "google.golang.org/api/transport/http"
-	computepb "google.golang.org/genproto/googleapis/cloud/compute/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/encoding/protojson"
@@ -59,18 +60,68 @@ type SecurityPoliciesCallOptions struct {
 
 func defaultSecurityPoliciesRESTCallOptions() *SecurityPoliciesCallOptions {
 	return &SecurityPoliciesCallOptions{
-		AddRule:                         []gax.CallOption{},
-		AggregatedList:                  []gax.CallOption{},
-		Delete:                          []gax.CallOption{},
-		Get:                             []gax.CallOption{},
-		GetRule:                         []gax.CallOption{},
-		Insert:                          []gax.CallOption{},
-		List:                            []gax.CallOption{},
-		ListPreconfiguredExpressionSets: []gax.CallOption{},
-		Patch:                           []gax.CallOption{},
-		PatchRule:                       []gax.CallOption{},
-		RemoveRule:                      []gax.CallOption{},
-		SetLabels:                       []gax.CallOption{},
+		AddRule: []gax.CallOption{},
+		AggregatedList: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
+		Delete: []gax.CallOption{},
+		Get: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
+		GetRule: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
+		Insert: []gax.CallOption{},
+		List: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
+		ListPreconfiguredExpressionSets: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
+		Patch:      []gax.CallOption{},
+		PatchRule:  []gax.CallOption{},
+		RemoveRule: []gax.CallOption{},
+		SetLabels:  []gax.CallOption{},
 	}
 }
 
@@ -168,7 +219,7 @@ func (c *SecurityPoliciesClient) ListPreconfiguredExpressionSets(ctx context.Con
 	return c.internalClient.ListPreconfiguredExpressionSets(ctx, req, opts...)
 }
 
-// Patch patches the specified policy with the data included in the request. This cannot be used to be update the rules in the policy. Please use the per rule methods like addRule, patchRule, and removeRule instead.
+// Patch patches the specified policy with the data included in the request. To clear fields in the rule, leave the fields empty and specify them in the updateMask. This cannot be used to be update the rules in the policy. Please use the per rule methods like addRule, patchRule, and removeRule instead.
 func (c *SecurityPoliciesClient) Patch(ctx context.Context, req *computepb.PatchSecurityPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Patch(ctx, req, opts...)
 }
@@ -878,7 +929,7 @@ func (c *securityPoliciesRESTClient) ListPreconfiguredExpressionSets(ctx context
 	return resp, nil
 }
 
-// Patch patches the specified policy with the data included in the request. This cannot be used to be update the rules in the policy. Please use the per rule methods like addRule, patchRule, and removeRule instead.
+// Patch patches the specified policy with the data included in the request. To clear fields in the rule, leave the fields empty and specify them in the updateMask. This cannot be used to be update the rules in the policy. Please use the per rule methods like addRule, patchRule, and removeRule instead.
 func (c *securityPoliciesRESTClient) Patch(ctx context.Context, req *computepb.PatchSecurityPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetSecurityPolicyResource()

@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -26,8 +26,10 @@ import (
 	"net/url"
 	"time"
 
+	assuredworkloadspb "cloud.google.com/go/assuredworkloads/apiv1beta1/assuredworkloadspb"
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
@@ -35,8 +37,6 @@ import (
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
-	assuredworkloadspb "google.golang.org/genproto/googleapis/cloud/assuredworkloads/v1beta1"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -763,6 +763,7 @@ func (c *restClient) CreateWorkload(ctx context.Context, req *assuredworkloadspb
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/workloads", req.GetParent())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetExternalId() != "" {
 		params.Add("externalId", fmt.Sprintf("%v", req.GetExternalId()))
 	}
@@ -830,6 +831,7 @@ func (c *restClient) UpdateWorkload(ctx context.Context, req *assuredworkloadspb
 	baseUrl.Path += fmt.Sprintf("")
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
 		updateMask, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
@@ -855,8 +857,10 @@ func (c *restClient) UpdateWorkload(ctx context.Context, req *assuredworkloadspb
 		params.Add("workload.cjisSettings.kmsSettings.rotationPeriod", string(rotationPeriod))
 	}
 	params.Add("workload.complianceRegime", fmt.Sprintf("%v", req.GetWorkload().GetComplianceRegime()))
-	if req.GetWorkload().GetCompliantButDisallowedServices() != nil {
-		params.Add("workload.compliantButDisallowedServices", fmt.Sprintf("%v", req.GetWorkload().GetCompliantButDisallowedServices()))
+	if items := req.GetWorkload().GetCompliantButDisallowedServices(); len(items) > 0 {
+		for _, item := range items {
+			params.Add("workload.compliantButDisallowedServices", fmt.Sprintf("%v", item))
+		}
 	}
 	if req.GetWorkload().GetCreateTime() != nil {
 		createTime, err := protojson.Marshal(req.GetWorkload().GetCreateTime())
@@ -937,8 +941,10 @@ func (c *restClient) UpdateWorkload(ctx context.Context, req *assuredworkloadspb
 	if req.GetWorkload().GetProvisionedResourcesParent() != "" {
 		params.Add("workload.provisionedResourcesParent", fmt.Sprintf("%v", req.GetWorkload().GetProvisionedResourcesParent()))
 	}
-	if req.GetWorkload().GetSaaEnrollmentResponse().GetSetupErrors() != nil {
-		params.Add("workload.saaEnrollmentResponse.setupErrors", fmt.Sprintf("%v", req.GetWorkload().GetSaaEnrollmentResponse().GetSetupErrors()))
+	if items := req.GetWorkload().GetSaaEnrollmentResponse().GetSetupErrors(); len(items) > 0 {
+		for _, item := range items {
+			params.Add("workload.saaEnrollmentResponse.setupErrors", fmt.Sprintf("%v", item))
+		}
 	}
 	if req.GetWorkload().GetSaaEnrollmentResponse() != nil && req.GetWorkload().GetSaaEnrollmentResponse().SetupStatus != nil {
 		params.Add("workload.saaEnrollmentResponse.setupStatus", fmt.Sprintf("%v", req.GetWorkload().GetSaaEnrollmentResponse().GetSetupStatus()))
@@ -1008,6 +1014,11 @@ func (c *restClient) RestrictAllowedResources(ctx context.Context, req *assuredw
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:restrictAllowedResources", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
@@ -1067,6 +1078,7 @@ func (c *restClient) DeleteWorkload(ctx context.Context, req *assuredworkloadspb
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetEtag() != "" {
 		params.Add("etag", fmt.Sprintf("%v", req.GetEtag()))
 	}
@@ -1109,6 +1121,7 @@ func (c *restClient) GetWorkload(ctx context.Context, req *assuredworkloadspb.Ge
 	baseUrl.Path += fmt.Sprintf("")
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	params.Add("name", fmt.Sprintf("%v", req.GetName()))
 
 	baseUrl.RawQuery = params.Encode()
@@ -1166,6 +1179,7 @@ func (c *restClient) AnalyzeWorkloadMove(ctx context.Context, req *assuredworklo
 	baseUrl.Path += fmt.Sprintf("")
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetProject() != "" {
 		params.Add("project", fmt.Sprintf("%v", req.GetProject()))
 	}
@@ -1241,6 +1255,7 @@ func (c *restClient) ListWorkloads(ctx context.Context, req *assuredworkloadspb.
 		baseUrl.Path += fmt.Sprintf("")
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -1318,6 +1333,11 @@ func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
@@ -1385,6 +1405,7 @@ func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.List
 		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/operations", req.GetName())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}

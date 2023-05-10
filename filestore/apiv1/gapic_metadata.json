@@ -20,6 +20,11 @@
                 "CreateInstance"
               ]
             },
+            "CreateSnapshot": {
+              "methods": [
+                "CreateSnapshot"
+              ]
+            },
             "DeleteBackup": {
               "methods": [
                 "DeleteBackup"
@@ -28,6 +33,11 @@
             "DeleteInstance": {
               "methods": [
                 "DeleteInstance"
+              ]
+            },
+            "DeleteSnapshot": {
+              "methods": [
+                "DeleteSnapshot"
               ]
             },
             "GetBackup": {
@@ -40,6 +50,11 @@
                 "GetInstance"
               ]
             },
+            "GetSnapshot": {
+              "methods": [
+                "GetSnapshot"
+              ]
+            },
             "ListBackups": {
               "methods": [
                 "ListBackups"
@@ -48,6 +63,11 @@
             "ListInstances": {
               "methods": [
                 "ListInstances"
+              ]
+            },
+            "ListSnapshots": {
+              "methods": [
+                "ListSnapshots"
               ]
             },
             "RestoreInstance": {
@@ -63,6 +83,96 @@
             "UpdateInstance": {
               "methods": [
                 "UpdateInstance"
+              ]
+            },
+            "UpdateSnapshot": {
+              "methods": [
+                "UpdateSnapshot"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "CloudFilestoreManagerClient",
+          "rpcs": {
+            "CreateBackup": {
+              "methods": [
+                "CreateBackup"
+              ]
+            },
+            "CreateInstance": {
+              "methods": [
+                "CreateInstance"
+              ]
+            },
+            "CreateSnapshot": {
+              "methods": [
+                "CreateSnapshot"
+              ]
+            },
+            "DeleteBackup": {
+              "methods": [
+                "DeleteBackup"
+              ]
+            },
+            "DeleteInstance": {
+              "methods": [
+                "DeleteInstance"
+              ]
+            },
+            "DeleteSnapshot": {
+              "methods": [
+                "DeleteSnapshot"
+              ]
+            },
+            "GetBackup": {
+              "methods": [
+                "GetBackup"
+              ]
+            },
+            "GetInstance": {
+              "methods": [
+                "GetInstance"
+              ]
+            },
+            "GetSnapshot": {
+              "methods": [
+                "GetSnapshot"
+              ]
+            },
+            "ListBackups": {
+              "methods": [
+                "ListBackups"
+              ]
+            },
+            "ListInstances": {
+              "methods": [
+                "ListInstances"
+              ]
+            },
+            "ListSnapshots": {
+              "methods": [
+                "ListSnapshots"
+              ]
+            },
+            "RestoreInstance": {
+              "methods": [
+                "RestoreInstance"
+              ]
+            },
+            "UpdateBackup": {
+              "methods": [
+                "UpdateBackup"
+              ]
+            },
+            "UpdateInstance": {
+              "methods": [
+                "UpdateInstance"
+              ]
+            },
+            "UpdateSnapshot": {
+              "methods": [
+                "UpdateSnapshot"
               ]
             }
           }

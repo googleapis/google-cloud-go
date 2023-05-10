@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,9 +20,9 @@ import (
 	"context"
 
 	assuredworkloads "cloud.google.com/go/assuredworkloads/apiv1beta1"
+	assuredworkloadspb "cloud.google.com/go/assuredworkloads/apiv1beta1/assuredworkloadspb"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	"google.golang.org/api/iterator"
-	assuredworkloadspb "google.golang.org/genproto/googleapis/cloud/assuredworkloads/v1beta1"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 )
 
 func ExampleNewClient() {
@@ -74,7 +74,7 @@ func ExampleClient_CreateWorkload() {
 
 	req := &assuredworkloadspb.CreateWorkloadRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/assuredworkloads/v1beta1#CreateWorkloadRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/assuredworkloads/apiv1beta1/assuredworkloadspb#CreateWorkloadRequest.
 	}
 	op, err := c.CreateWorkload(ctx, req)
 	if err != nil {
@@ -104,7 +104,7 @@ func ExampleClient_UpdateWorkload() {
 
 	req := &assuredworkloadspb.UpdateWorkloadRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/assuredworkloads/v1beta1#UpdateWorkloadRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/assuredworkloads/apiv1beta1/assuredworkloadspb#UpdateWorkloadRequest.
 	}
 	resp, err := c.UpdateWorkload(ctx, req)
 	if err != nil {
@@ -129,7 +129,7 @@ func ExampleClient_RestrictAllowedResources() {
 
 	req := &assuredworkloadspb.RestrictAllowedResourcesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/assuredworkloads/v1beta1#RestrictAllowedResourcesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/assuredworkloads/apiv1beta1/assuredworkloadspb#RestrictAllowedResourcesRequest.
 	}
 	resp, err := c.RestrictAllowedResources(ctx, req)
 	if err != nil {
@@ -154,7 +154,7 @@ func ExampleClient_DeleteWorkload() {
 
 	req := &assuredworkloadspb.DeleteWorkloadRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/assuredworkloads/v1beta1#DeleteWorkloadRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/assuredworkloads/apiv1beta1/assuredworkloadspb#DeleteWorkloadRequest.
 	}
 	err = c.DeleteWorkload(ctx, req)
 	if err != nil {
@@ -177,7 +177,7 @@ func ExampleClient_GetWorkload() {
 
 	req := &assuredworkloadspb.GetWorkloadRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/assuredworkloads/v1beta1#GetWorkloadRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/assuredworkloads/apiv1beta1/assuredworkloadspb#GetWorkloadRequest.
 	}
 	resp, err := c.GetWorkload(ctx, req)
 	if err != nil {
@@ -202,7 +202,7 @@ func ExampleClient_AnalyzeWorkloadMove() {
 
 	req := &assuredworkloadspb.AnalyzeWorkloadMoveRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/assuredworkloads/v1beta1#AnalyzeWorkloadMoveRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/assuredworkloads/apiv1beta1/assuredworkloadspb#AnalyzeWorkloadMoveRequest.
 	}
 	resp, err := c.AnalyzeWorkloadMove(ctx, req)
 	if err != nil {
@@ -227,7 +227,7 @@ func ExampleClient_ListWorkloads() {
 
 	req := &assuredworkloadspb.ListWorkloadsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/assuredworkloads/v1beta1#ListWorkloadsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/assuredworkloads/apiv1beta1/assuredworkloadspb#ListWorkloadsRequest.
 	}
 	it := c.ListWorkloads(ctx, req)
 	for {
@@ -258,7 +258,7 @@ func ExampleClient_GetOperation() {
 
 	req := &longrunningpb.GetOperationRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/longrunning#GetOperationRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/longrunning/autogen/longrunningpb#GetOperationRequest.
 	}
 	resp, err := c.GetOperation(ctx, req)
 	if err != nil {
@@ -283,7 +283,7 @@ func ExampleClient_ListOperations() {
 
 	req := &longrunningpb.ListOperationsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/longrunning#ListOperationsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/longrunning/autogen/longrunningpb#ListOperationsRequest.
 	}
 	it := c.ListOperations(ctx, req)
 	for {

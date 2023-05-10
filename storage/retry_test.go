@@ -33,7 +33,6 @@ import (
 )
 
 func TestIndefiniteRetries(t *testing.T) {
-
 	uploadRoute := "/upload"
 
 	var resumableUploadIDs atomic.Value

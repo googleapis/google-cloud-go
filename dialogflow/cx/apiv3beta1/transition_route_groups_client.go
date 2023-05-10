@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -26,6 +26,8 @@ import (
 	"net/url"
 	"time"
 
+	cxpb "cloud.google.com/go/dialogflow/cx/apiv3beta1/cxpb"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
@@ -33,9 +35,7 @@ import (
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
-	cxpb "google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -216,7 +216,8 @@ type internalTransitionRouteGroupsClient interface {
 // TransitionRouteGroupsClient is a client for interacting with Dialogflow API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
-// Service for managing TransitionRouteGroups.
+// Service for managing
+// TransitionRouteGroups.
 type TransitionRouteGroupsClient struct {
 	// The internal transport-dependent client.
 	internalClient internalTransitionRouteGroupsClient
@@ -253,12 +254,15 @@ func (c *TransitionRouteGroupsClient) ListTransitionRouteGroups(ctx context.Cont
 	return c.internalClient.ListTransitionRouteGroups(ctx, req, opts...)
 }
 
-// GetTransitionRouteGroup retrieves the specified TransitionRouteGroup.
+// GetTransitionRouteGroup retrieves the specified
+// TransitionRouteGroup.
 func (c *TransitionRouteGroupsClient) GetTransitionRouteGroup(ctx context.Context, req *cxpb.GetTransitionRouteGroupRequest, opts ...gax.CallOption) (*cxpb.TransitionRouteGroup, error) {
 	return c.internalClient.GetTransitionRouteGroup(ctx, req, opts...)
 }
 
-// CreateTransitionRouteGroup creates an TransitionRouteGroup in the specified flow.
+// CreateTransitionRouteGroup creates an
+// TransitionRouteGroup
+// in the specified flow.
 //
 // Note: You should always train a flow prior to sending it queries. See the
 // training
@@ -267,7 +271,8 @@ func (c *TransitionRouteGroupsClient) CreateTransitionRouteGroup(ctx context.Con
 	return c.internalClient.CreateTransitionRouteGroup(ctx, req, opts...)
 }
 
-// UpdateTransitionRouteGroup updates the specified TransitionRouteGroup.
+// UpdateTransitionRouteGroup updates the specified
+// TransitionRouteGroup.
 //
 // Note: You should always train a flow prior to sending it queries. See the
 // training
@@ -276,7 +281,8 @@ func (c *TransitionRouteGroupsClient) UpdateTransitionRouteGroup(ctx context.Con
 	return c.internalClient.UpdateTransitionRouteGroup(ctx, req, opts...)
 }
 
-// DeleteTransitionRouteGroup deletes the specified TransitionRouteGroup.
+// DeleteTransitionRouteGroup deletes the specified
+// TransitionRouteGroup.
 //
 // Note: You should always train a flow prior to sending it queries. See the
 // training
@@ -337,7 +343,8 @@ type transitionRouteGroupsGRPCClient struct {
 // NewTransitionRouteGroupsClient creates a new transition route groups client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
-// Service for managing TransitionRouteGroups.
+// Service for managing
+// TransitionRouteGroups.
 func NewTransitionRouteGroupsClient(ctx context.Context, opts ...option.ClientOption) (*TransitionRouteGroupsClient, error) {
 	clientOpts := defaultTransitionRouteGroupsGRPCClientOptions()
 	if newTransitionRouteGroupsClientHook != nil {
@@ -414,7 +421,8 @@ type transitionRouteGroupsRESTClient struct {
 
 // NewTransitionRouteGroupsRESTClient creates a new transition route groups rest client.
 //
-// Service for managing TransitionRouteGroups.
+// Service for managing
+// TransitionRouteGroups.
 func NewTransitionRouteGroupsRESTClient(ctx context.Context, opts ...option.ClientOption) (*TransitionRouteGroupsClient, error) {
 	clientOpts := append(defaultTransitionRouteGroupsRESTClientOptions(), opts...)
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
@@ -753,6 +761,7 @@ func (c *transitionRouteGroupsRESTClient) ListTransitionRouteGroups(ctx context.
 		baseUrl.Path += fmt.Sprintf("/v3beta1/%v/transitionRouteGroups", req.GetParent())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetLanguageCode() != "" {
 			params.Add("languageCode", fmt.Sprintf("%v", req.GetLanguageCode()))
 		}
@@ -821,7 +830,8 @@ func (c *transitionRouteGroupsRESTClient) ListTransitionRouteGroups(ctx context.
 	return it
 }
 
-// GetTransitionRouteGroup retrieves the specified TransitionRouteGroup.
+// GetTransitionRouteGroup retrieves the specified
+// TransitionRouteGroup.
 func (c *transitionRouteGroupsRESTClient) GetTransitionRouteGroup(ctx context.Context, req *cxpb.GetTransitionRouteGroupRequest, opts ...gax.CallOption) (*cxpb.TransitionRouteGroup, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -830,6 +840,7 @@ func (c *transitionRouteGroupsRESTClient) GetTransitionRouteGroup(ctx context.Co
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v", req.GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetLanguageCode() != "" {
 		params.Add("languageCode", fmt.Sprintf("%v", req.GetLanguageCode()))
 	}
@@ -881,7 +892,9 @@ func (c *transitionRouteGroupsRESTClient) GetTransitionRouteGroup(ctx context.Co
 	return resp, nil
 }
 
-// CreateTransitionRouteGroup creates an TransitionRouteGroup in the specified flow.
+// CreateTransitionRouteGroup creates an
+// TransitionRouteGroup
+// in the specified flow.
 //
 // Note: You should always train a flow prior to sending it queries. See the
 // training
@@ -901,6 +914,7 @@ func (c *transitionRouteGroupsRESTClient) CreateTransitionRouteGroup(ctx context
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v/transitionRouteGroups", req.GetParent())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetLanguageCode() != "" {
 		params.Add("languageCode", fmt.Sprintf("%v", req.GetLanguageCode()))
 	}
@@ -952,7 +966,8 @@ func (c *transitionRouteGroupsRESTClient) CreateTransitionRouteGroup(ctx context
 	return resp, nil
 }
 
-// UpdateTransitionRouteGroup updates the specified TransitionRouteGroup.
+// UpdateTransitionRouteGroup updates the specified
+// TransitionRouteGroup.
 //
 // Note: You should always train a flow prior to sending it queries. See the
 // training
@@ -972,6 +987,7 @@ func (c *transitionRouteGroupsRESTClient) UpdateTransitionRouteGroup(ctx context
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v", req.GetTransitionRouteGroup().GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetLanguageCode() != "" {
 		params.Add("languageCode", fmt.Sprintf("%v", req.GetLanguageCode()))
 	}
@@ -1030,7 +1046,8 @@ func (c *transitionRouteGroupsRESTClient) UpdateTransitionRouteGroup(ctx context
 	return resp, nil
 }
 
-// DeleteTransitionRouteGroup deletes the specified TransitionRouteGroup.
+// DeleteTransitionRouteGroup deletes the specified
+// TransitionRouteGroup.
 //
 // Note: You should always train a flow prior to sending it queries. See the
 // training
@@ -1043,6 +1060,7 @@ func (c *transitionRouteGroupsRESTClient) DeleteTransitionRouteGroup(ctx context
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v", req.GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetForce() {
 		params.Add("force", fmt.Sprintf("%v", req.GetForce()))
 	}
@@ -1083,6 +1101,11 @@ func (c *transitionRouteGroupsRESTClient) GetLocation(ctx context.Context, req *
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
@@ -1151,6 +1174,7 @@ func (c *transitionRouteGroupsRESTClient) ListLocations(ctx context.Context, req
 		baseUrl.Path += fmt.Sprintf("/v3beta1/%v/locations", req.GetName())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -1227,6 +1251,11 @@ func (c *transitionRouteGroupsRESTClient) CancelOperation(ctx context.Context, r
 	}
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v:cancel", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
@@ -1261,6 +1290,11 @@ func (c *transitionRouteGroupsRESTClient) GetOperation(ctx context.Context, req 
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
@@ -1329,6 +1363,7 @@ func (c *transitionRouteGroupsRESTClient) ListOperations(ctx context.Context, re
 		baseUrl.Path += fmt.Sprintf("/v3beta1/%v/operations", req.GetName())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}

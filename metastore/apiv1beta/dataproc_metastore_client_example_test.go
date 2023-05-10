@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,9 +19,12 @@ package metastore_test
 import (
 	"context"
 
+	iampb "cloud.google.com/go/iam/apiv1/iampb"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	metastore "cloud.google.com/go/metastore/apiv1beta"
+	metastorepb "cloud.google.com/go/metastore/apiv1beta/metastorepb"
 	"google.golang.org/api/iterator"
-	metastorepb "google.golang.org/genproto/googleapis/cloud/metastore/v1beta"
+	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 )
 
 func ExampleNewDataprocMetastoreClient() {
@@ -73,7 +76,7 @@ func ExampleDataprocMetastoreClient_ListServices() {
 
 	req := &metastorepb.ListServicesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/metastore/v1beta#ListServicesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/metastore/apiv1beta/metastorepb#ListServicesRequest.
 	}
 	it := c.ListServices(ctx, req)
 	for {
@@ -104,7 +107,7 @@ func ExampleDataprocMetastoreClient_GetService() {
 
 	req := &metastorepb.GetServiceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/metastore/v1beta#GetServiceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/metastore/apiv1beta/metastorepb#GetServiceRequest.
 	}
 	resp, err := c.GetService(ctx, req)
 	if err != nil {
@@ -129,7 +132,7 @@ func ExampleDataprocMetastoreClient_CreateService() {
 
 	req := &metastorepb.CreateServiceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/metastore/v1beta#CreateServiceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/metastore/apiv1beta/metastorepb#CreateServiceRequest.
 	}
 	op, err := c.CreateService(ctx, req)
 	if err != nil {
@@ -159,7 +162,7 @@ func ExampleDataprocMetastoreClient_UpdateService() {
 
 	req := &metastorepb.UpdateServiceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/metastore/v1beta#UpdateServiceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/metastore/apiv1beta/metastorepb#UpdateServiceRequest.
 	}
 	op, err := c.UpdateService(ctx, req)
 	if err != nil {
@@ -189,7 +192,7 @@ func ExampleDataprocMetastoreClient_DeleteService() {
 
 	req := &metastorepb.DeleteServiceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/metastore/v1beta#DeleteServiceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/metastore/apiv1beta/metastorepb#DeleteServiceRequest.
 	}
 	op, err := c.DeleteService(ctx, req)
 	if err != nil {
@@ -217,7 +220,7 @@ func ExampleDataprocMetastoreClient_ListMetadataImports() {
 
 	req := &metastorepb.ListMetadataImportsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/metastore/v1beta#ListMetadataImportsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/metastore/apiv1beta/metastorepb#ListMetadataImportsRequest.
 	}
 	it := c.ListMetadataImports(ctx, req)
 	for {
@@ -248,7 +251,7 @@ func ExampleDataprocMetastoreClient_GetMetadataImport() {
 
 	req := &metastorepb.GetMetadataImportRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/metastore/v1beta#GetMetadataImportRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/metastore/apiv1beta/metastorepb#GetMetadataImportRequest.
 	}
 	resp, err := c.GetMetadataImport(ctx, req)
 	if err != nil {
@@ -273,7 +276,7 @@ func ExampleDataprocMetastoreClient_CreateMetadataImport() {
 
 	req := &metastorepb.CreateMetadataImportRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/metastore/v1beta#CreateMetadataImportRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/metastore/apiv1beta/metastorepb#CreateMetadataImportRequest.
 	}
 	op, err := c.CreateMetadataImport(ctx, req)
 	if err != nil {
@@ -303,7 +306,7 @@ func ExampleDataprocMetastoreClient_UpdateMetadataImport() {
 
 	req := &metastorepb.UpdateMetadataImportRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/metastore/v1beta#UpdateMetadataImportRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/metastore/apiv1beta/metastorepb#UpdateMetadataImportRequest.
 	}
 	op, err := c.UpdateMetadataImport(ctx, req)
 	if err != nil {
@@ -333,7 +336,7 @@ func ExampleDataprocMetastoreClient_ExportMetadata() {
 
 	req := &metastorepb.ExportMetadataRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/metastore/v1beta#ExportMetadataRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/metastore/apiv1beta/metastorepb#ExportMetadataRequest.
 	}
 	op, err := c.ExportMetadata(ctx, req)
 	if err != nil {
@@ -363,7 +366,7 @@ func ExampleDataprocMetastoreClient_RestoreService() {
 
 	req := &metastorepb.RestoreServiceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/metastore/v1beta#RestoreServiceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/metastore/apiv1beta/metastorepb#RestoreServiceRequest.
 	}
 	op, err := c.RestoreService(ctx, req)
 	if err != nil {
@@ -393,7 +396,7 @@ func ExampleDataprocMetastoreClient_ListBackups() {
 
 	req := &metastorepb.ListBackupsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/metastore/v1beta#ListBackupsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/metastore/apiv1beta/metastorepb#ListBackupsRequest.
 	}
 	it := c.ListBackups(ctx, req)
 	for {
@@ -424,7 +427,7 @@ func ExampleDataprocMetastoreClient_GetBackup() {
 
 	req := &metastorepb.GetBackupRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/metastore/v1beta#GetBackupRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/metastore/apiv1beta/metastorepb#GetBackupRequest.
 	}
 	resp, err := c.GetBackup(ctx, req)
 	if err != nil {
@@ -449,7 +452,7 @@ func ExampleDataprocMetastoreClient_CreateBackup() {
 
 	req := &metastorepb.CreateBackupRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/metastore/v1beta#CreateBackupRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/metastore/apiv1beta/metastorepb#CreateBackupRequest.
 	}
 	op, err := c.CreateBackup(ctx, req)
 	if err != nil {
@@ -479,7 +482,7 @@ func ExampleDataprocMetastoreClient_DeleteBackup() {
 
 	req := &metastorepb.DeleteBackupRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/metastore/v1beta#DeleteBackupRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/metastore/apiv1beta/metastorepb#DeleteBackupRequest.
 	}
 	op, err := c.DeleteBackup(ctx, req)
 	if err != nil {
@@ -489,5 +492,353 @@ func ExampleDataprocMetastoreClient_DeleteBackup() {
 	err = op.Wait(ctx)
 	if err != nil {
 		// TODO: Handle error.
+	}
+}
+
+func ExampleDataprocMetastoreClient_RemoveIamPolicy() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := metastore.NewDataprocMetastoreClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &metastorepb.RemoveIamPolicyRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/metastore/apiv1beta/metastorepb#RemoveIamPolicyRequest.
+	}
+	resp, err := c.RemoveIamPolicy(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleDataprocMetastoreClient_QueryMetadata() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := metastore.NewDataprocMetastoreClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &metastorepb.QueryMetadataRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/metastore/apiv1beta/metastorepb#QueryMetadataRequest.
+	}
+	op, err := c.QueryMetadata(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleDataprocMetastoreClient_MoveTableToDatabase() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := metastore.NewDataprocMetastoreClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &metastorepb.MoveTableToDatabaseRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/metastore/apiv1beta/metastorepb#MoveTableToDatabaseRequest.
+	}
+	op, err := c.MoveTableToDatabase(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleDataprocMetastoreClient_AlterMetadataResourceLocation() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := metastore.NewDataprocMetastoreClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &metastorepb.AlterMetadataResourceLocationRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/metastore/apiv1beta/metastorepb#AlterMetadataResourceLocationRequest.
+	}
+	op, err := c.AlterMetadataResourceLocation(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleDataprocMetastoreClient_GetLocation() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := metastore.NewDataprocMetastoreClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &locationpb.GetLocationRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/location#GetLocationRequest.
+	}
+	resp, err := c.GetLocation(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleDataprocMetastoreClient_ListLocations() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := metastore.NewDataprocMetastoreClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &locationpb.ListLocationsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/location#ListLocationsRequest.
+	}
+	it := c.ListLocations(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
+}
+
+func ExampleDataprocMetastoreClient_GetIamPolicy() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := metastore.NewDataprocMetastoreClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &iampb.GetIamPolicyRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/iam/apiv1/iampb#GetIamPolicyRequest.
+	}
+	resp, err := c.GetIamPolicy(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleDataprocMetastoreClient_SetIamPolicy() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := metastore.NewDataprocMetastoreClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &iampb.SetIamPolicyRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/iam/apiv1/iampb#SetIamPolicyRequest.
+	}
+	resp, err := c.SetIamPolicy(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleDataprocMetastoreClient_TestIamPermissions() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := metastore.NewDataprocMetastoreClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &iampb.TestIamPermissionsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/iam/apiv1/iampb#TestIamPermissionsRequest.
+	}
+	resp, err := c.TestIamPermissions(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleDataprocMetastoreClient_CancelOperation() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := metastore.NewDataprocMetastoreClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &longrunningpb.CancelOperationRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/longrunning/autogen/longrunningpb#CancelOperationRequest.
+	}
+	err = c.CancelOperation(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleDataprocMetastoreClient_DeleteOperation() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := metastore.NewDataprocMetastoreClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &longrunningpb.DeleteOperationRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/longrunning/autogen/longrunningpb#DeleteOperationRequest.
+	}
+	err = c.DeleteOperation(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleDataprocMetastoreClient_GetOperation() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := metastore.NewDataprocMetastoreClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &longrunningpb.GetOperationRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/longrunning/autogen/longrunningpb#GetOperationRequest.
+	}
+	resp, err := c.GetOperation(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleDataprocMetastoreClient_ListOperations() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := metastore.NewDataprocMetastoreClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &longrunningpb.ListOperationsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/longrunning/autogen/longrunningpb#ListOperationsRequest.
+	}
+	it := c.ListOperations(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
 	}
 }

@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,10 +20,10 @@ import (
 	"context"
 
 	cx "cloud.google.com/go/dialogflow/cx/apiv3beta1"
+	cxpb "cloud.google.com/go/dialogflow/cx/apiv3beta1/cxpb"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	"google.golang.org/api/iterator"
-	cxpb "google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 )
 
 func ExampleNewWebhooksClient() {
@@ -75,7 +75,7 @@ func ExampleWebhooksClient_ListWebhooks() {
 
 	req := &cxpb.ListWebhooksRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1#ListWebhooksRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/cx/apiv3beta1/cxpb#ListWebhooksRequest.
 	}
 	it := c.ListWebhooks(ctx, req)
 	for {
@@ -106,7 +106,7 @@ func ExampleWebhooksClient_GetWebhook() {
 
 	req := &cxpb.GetWebhookRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1#GetWebhookRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/cx/apiv3beta1/cxpb#GetWebhookRequest.
 	}
 	resp, err := c.GetWebhook(ctx, req)
 	if err != nil {
@@ -131,7 +131,7 @@ func ExampleWebhooksClient_CreateWebhook() {
 
 	req := &cxpb.CreateWebhookRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1#CreateWebhookRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/cx/apiv3beta1/cxpb#CreateWebhookRequest.
 	}
 	resp, err := c.CreateWebhook(ctx, req)
 	if err != nil {
@@ -156,7 +156,7 @@ func ExampleWebhooksClient_UpdateWebhook() {
 
 	req := &cxpb.UpdateWebhookRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1#UpdateWebhookRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/cx/apiv3beta1/cxpb#UpdateWebhookRequest.
 	}
 	resp, err := c.UpdateWebhook(ctx, req)
 	if err != nil {
@@ -181,7 +181,7 @@ func ExampleWebhooksClient_DeleteWebhook() {
 
 	req := &cxpb.DeleteWebhookRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1#DeleteWebhookRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/cx/apiv3beta1/cxpb#DeleteWebhookRequest.
 	}
 	err = c.DeleteWebhook(ctx, req)
 	if err != nil {
@@ -260,7 +260,7 @@ func ExampleWebhooksClient_CancelOperation() {
 
 	req := &longrunningpb.CancelOperationRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/longrunning#CancelOperationRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/longrunning/autogen/longrunningpb#CancelOperationRequest.
 	}
 	err = c.CancelOperation(ctx, req)
 	if err != nil {
@@ -283,7 +283,7 @@ func ExampleWebhooksClient_GetOperation() {
 
 	req := &longrunningpb.GetOperationRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/longrunning#GetOperationRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/longrunning/autogen/longrunningpb#GetOperationRequest.
 	}
 	resp, err := c.GetOperation(ctx, req)
 	if err != nil {
@@ -308,7 +308,7 @@ func ExampleWebhooksClient_ListOperations() {
 
 	req := &longrunningpb.ListOperationsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/longrunning#ListOperationsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/longrunning/autogen/longrunningpb#ListOperationsRequest.
 	}
 	it := c.ListOperations(ctx, req)
 	for {

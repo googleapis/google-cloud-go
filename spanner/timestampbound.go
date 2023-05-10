@@ -20,9 +20,9 @@ import (
 	"fmt"
 	"time"
 
+	sppb "cloud.google.com/go/spanner/apiv1/spannerpb"
 	pbd "github.com/golang/protobuf/ptypes/duration"
 	pbt "github.com/golang/protobuf/ptypes/timestamp"
-	sppb "google.golang.org/genproto/googleapis/spanner/v1"
 )
 
 // timestampBoundType specifies the timestamp bound mode.

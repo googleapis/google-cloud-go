@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,10 +19,10 @@ package retail_test
 import (
 	"context"
 
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	retail "cloud.google.com/go/retail/apiv2alpha"
+	retailpb "cloud.google.com/go/retail/apiv2alpha/retailpb"
 	"google.golang.org/api/iterator"
-	retailpb "google.golang.org/genproto/googleapis/cloud/retail/v2alpha"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 )
 
 func ExampleNewControlClient() {
@@ -74,7 +74,7 @@ func ExampleControlClient_CreateControl() {
 
 	req := &retailpb.CreateControlRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2alpha#CreateControlRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/retail/apiv2alpha/retailpb#CreateControlRequest.
 	}
 	resp, err := c.CreateControl(ctx, req)
 	if err != nil {
@@ -99,7 +99,7 @@ func ExampleControlClient_DeleteControl() {
 
 	req := &retailpb.DeleteControlRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2alpha#DeleteControlRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/retail/apiv2alpha/retailpb#DeleteControlRequest.
 	}
 	err = c.DeleteControl(ctx, req)
 	if err != nil {
@@ -122,7 +122,7 @@ func ExampleControlClient_UpdateControl() {
 
 	req := &retailpb.UpdateControlRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2alpha#UpdateControlRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/retail/apiv2alpha/retailpb#UpdateControlRequest.
 	}
 	resp, err := c.UpdateControl(ctx, req)
 	if err != nil {
@@ -147,7 +147,7 @@ func ExampleControlClient_GetControl() {
 
 	req := &retailpb.GetControlRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2alpha#GetControlRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/retail/apiv2alpha/retailpb#GetControlRequest.
 	}
 	resp, err := c.GetControl(ctx, req)
 	if err != nil {
@@ -172,7 +172,7 @@ func ExampleControlClient_ListControls() {
 
 	req := &retailpb.ListControlsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2alpha#ListControlsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/retail/apiv2alpha/retailpb#ListControlsRequest.
 	}
 	it := c.ListControls(ctx, req)
 	for {
@@ -203,7 +203,7 @@ func ExampleControlClient_GetOperation() {
 
 	req := &longrunningpb.GetOperationRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/longrunning#GetOperationRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/longrunning/autogen/longrunningpb#GetOperationRequest.
 	}
 	resp, err := c.GetOperation(ctx, req)
 	if err != nil {
@@ -228,7 +228,7 @@ func ExampleControlClient_ListOperations() {
 
 	req := &longrunningpb.ListOperationsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/longrunning#ListOperationsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/longrunning/autogen/longrunningpb#ListOperationsRequest.
 	}
 	it := c.ListOperations(ctx, req)
 	for {

@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -26,6 +26,8 @@ import (
 	"net/url"
 	"time"
 
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	retailpb "cloud.google.com/go/retail/apiv2alpha/retailpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
@@ -33,8 +35,6 @@ import (
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
-	retailpb "google.golang.org/genproto/googleapis/cloud/retail/v2alpha"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -137,7 +137,7 @@ type internalSearchClient interface {
 // Service for search.
 //
 // This feature is only available for users who have Retail Search enabled.
-// Please enable Retail Search on Cloud Console before using this feature.
+// Enable Retail Search on Cloud Console before using this feature.
 type SearchClient struct {
 	// The internal transport-dependent client.
 	internalClient internalSearchClient
@@ -172,7 +172,7 @@ func (c *SearchClient) Connection() *grpc.ClientConn {
 // Search performs a search.
 //
 // This feature is only available for users who have Retail Search enabled.
-// Please enable Retail Search on Cloud Console before using this feature.
+// Enable Retail Search on Cloud Console before using this feature.
 func (c *SearchClient) Search(ctx context.Context, req *retailpb.SearchRequest, opts ...gax.CallOption) *SearchResponse_SearchResultIterator {
 	return c.internalClient.Search(ctx, req, opts...)
 }
@@ -215,7 +215,7 @@ type searchGRPCClient struct {
 // Service for search.
 //
 // This feature is only available for users who have Retail Search enabled.
-// Please enable Retail Search on Cloud Console before using this feature.
+// Enable Retail Search on Cloud Console before using this feature.
 func NewSearchClient(ctx context.Context, opts ...option.ClientOption) (*SearchClient, error) {
 	clientOpts := defaultSearchGRPCClientOptions()
 	if newSearchClientHook != nil {
@@ -294,7 +294,7 @@ type searchRESTClient struct {
 // Service for search.
 //
 // This feature is only available for users who have Retail Search enabled.
-// Please enable Retail Search on Cloud Console before using this feature.
+// Enable Retail Search on Cloud Console before using this feature.
 func NewSearchRESTClient(ctx context.Context, opts ...option.ClientOption) (*SearchClient, error) {
 	clientOpts := append(defaultSearchRESTClientOptions(), opts...)
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
@@ -455,7 +455,7 @@ func (c *searchGRPCClient) ListOperations(ctx context.Context, req *longrunningp
 // Search performs a search.
 //
 // This feature is only available for users who have Retail Search enabled.
-// Please enable Retail Search on Cloud Console before using this feature.
+// Enable Retail Search on Cloud Console before using this feature.
 func (c *searchRESTClient) Search(ctx context.Context, req *retailpb.SearchRequest, opts ...gax.CallOption) *SearchResponse_SearchResultIterator {
 	it := &SearchResponse_SearchResultIterator{}
 	req = proto.Clone(req).(*retailpb.SearchRequest)
@@ -481,6 +481,11 @@ func (c *searchRESTClient) Search(ctx context.Context, req *retailpb.SearchReque
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v2alpha/%v:search", req.GetPlacement())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+
+		baseUrl.RawQuery = params.Encode()
 
 		// Build HTTP headers from client and context metadata.
 		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
@@ -545,6 +550,11 @@ func (c *searchRESTClient) GetOperation(ctx context.Context, req *longrunningpb.
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2alpha/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
@@ -613,6 +623,7 @@ func (c *searchRESTClient) ListOperations(ctx context.Context, req *longrunningp
 		baseUrl.Path += fmt.Sprintf("/v2alpha/%v/operations", req.GetName())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}

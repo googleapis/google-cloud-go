@@ -21,7 +21,8 @@ import (
 	"google.golang.org/api/option"
 
 	vkit "cloud.google.com/go/pubsublite/apiv1"
-	pb "google.golang.org/genproto/googleapis/cloud/pubsublite/v1"
+	pb "cloud.google.com/go/pubsublite/apiv1/pubsublitepb"
+	fmpb "google.golang.org/genproto/protobuf/field_mask"
 )
 
 var (
@@ -37,6 +38,10 @@ var (
 // regions and zones where Pub/Sub Lite is available.
 //
 // An AdminClient may be shared by multiple goroutines.
+//
+// Close must be called to release resources when an AdminClient is no longer
+// required. If the client is available for the lifetime of the program, then
+// Close need not be called at exit.
 type AdminClient struct {
 	admin *vkit.AdminClient
 }
@@ -151,7 +156,7 @@ func (ac *AdminClient) Topics(ctx context.Context, parent string) *TopicIterator
 }
 
 type createSubscriptionSettings struct {
-	backlogLocation BacklogLocation
+	target SeekTarget
 }
 
 // CreateSubscriptionOption is an option for AdminClient.CreateSubscription.
@@ -159,27 +164,42 @@ type CreateSubscriptionOption interface {
 	apply(*createSubscriptionSettings)
 }
 
-type startingOffset struct {
-	backlogLocation BacklogLocation
+type targetLocation struct {
+	target SeekTarget
 }
 
-func (so startingOffset) apply(settings *createSubscriptionSettings) {
-	settings.backlogLocation = so.backlogLocation
+func (tl targetLocation) apply(settings *createSubscriptionSettings) {
+	settings.target = tl.target
 }
 
 // StartingOffset specifies the offset at which a newly created subscription
 // will start receiving messages.
+//
+// Deprecated. This is equivalent to calling AtTargetLocation with a
+// BacklogLocation and will be removed in the next major version.
 func StartingOffset(location BacklogLocation) CreateSubscriptionOption {
-	return startingOffset{location}
+	return targetLocation{location}
+}
+
+// AtTargetLocation specifies the target location within the message backlog
+// that a new subscription should be initialized to.
+//
+// An additional seek request is initiated if the target location is a publish
+// or event time. If the seek fails, the created subscription is not deleted.
+func AtTargetLocation(target SeekTarget) CreateSubscriptionOption {
+	return targetLocation{target}
 }
 
 // CreateSubscription creates a new subscription from the given config. If the
 // subscription already exists an error will be returned.
 //
 // By default, a new subscription will only receive messages published after
-// the subscription was created. Use StartingOffset to override.
+// the subscription was created. Use AtTargetLocation to initialize the
+// subscription to another location within the message backlog.
 func (ac *AdminClient) CreateSubscription(ctx context.Context, config SubscriptionConfig, opts ...CreateSubscriptionOption) (*SubscriptionConfig, error) {
-	var settings createSubscriptionSettings
+	settings := createSubscriptionSettings{
+		target: End,
+	}
 	for _, opt := range opts {
 		opt.apply(&settings)
 	}
@@ -191,15 +211,52 @@ func (ac *AdminClient) CreateSubscription(ctx context.Context, config Subscripti
 	if _, err := wire.ParseTopicPath(config.Topic); err != nil {
 		return nil, err
 	}
-	req := &pb.CreateSubscriptionRequest{
+
+	var skipBacklog, requiresSeek, requiresUpdate bool
+	switch settings.target.(type) {
+	case PublishTime, EventTime:
+		requiresSeek = true
+	case BacklogLocation:
+		skipBacklog = settings.target.(BacklogLocation) == End
+	}
+
+	// Request 1 - create the subscription.
+	createReq := &pb.CreateSubscriptionRequest{
 		Parent:         subsPath.LocationPath().String(),
 		Subscription:   config.toProto(),
 		SubscriptionId: subsPath.SubscriptionID,
-		SkipBacklog:    settings.backlogLocation != Beginning,
+		SkipBacklog:    skipBacklog,
 	}
-	subspb, err := ac.admin.CreateSubscription(ctx, req)
+	if requiresSeek && createReq.Subscription.GetExportConfig().GetDesiredState() == pb.ExportConfig_ACTIVE {
+		// Export subscriptions must be paused while seeking. The state is later
+		// updated to active.
+		requiresUpdate = true
+		createReq.Subscription.ExportConfig.DesiredState = pb.ExportConfig_PAUSED
+	}
+	subspb, err := ac.admin.CreateSubscription(ctx, createReq)
 	if err != nil {
 		return nil, err
+	}
+
+	// Request 2 (optional) - seek the subscription.
+	if requiresSeek {
+		if _, err = ac.SeekSubscription(ctx, subsPath.String(), settings.target); err != nil {
+			return nil, err
+		}
+	}
+
+	// Request 3 (optional) - make the export subscription active.
+	if requiresUpdate {
+		updateReq := &pb.UpdateSubscriptionRequest{
+			Subscription: &pb.Subscription{
+				Name:         subsPath.String(),
+				ExportConfig: &pb.ExportConfig{DesiredState: pb.ExportConfig_ACTIVE},
+			},
+			UpdateMask: &fmpb.FieldMask{Paths: []string{"export_config.desired_state"}},
+		}
+		if subspb, err = ac.admin.UpdateSubscription(ctx, updateReq); err != nil {
+			return nil, err
+		}
 	}
 	return protoToSubscriptionConfig(subspb), nil
 }

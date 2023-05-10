@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,8 +20,8 @@ import (
 	"context"
 
 	filestore "cloud.google.com/go/filestore/apiv1"
+	filestorepb "cloud.google.com/go/filestore/apiv1/filestorepb"
 	"google.golang.org/api/iterator"
-	filestorepb "google.golang.org/genproto/googleapis/cloud/filestore/v1"
 )
 
 func ExampleNewCloudFilestoreManagerClient() {
@@ -32,6 +32,23 @@ func ExampleNewCloudFilestoreManagerClient() {
 	// - It may require specifying regional endpoints when creating the service client as shown in:
 	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := filestore.NewCloudFilestoreManagerClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
+func ExampleNewCloudFilestoreManagerRESTClient() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := filestore.NewCloudFilestoreManagerRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -56,7 +73,7 @@ func ExampleCloudFilestoreManagerClient_ListInstances() {
 
 	req := &filestorepb.ListInstancesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/filestore/v1#ListInstancesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/filestore/apiv1/filestorepb#ListInstancesRequest.
 	}
 	it := c.ListInstances(ctx, req)
 	for {
@@ -87,7 +104,7 @@ func ExampleCloudFilestoreManagerClient_GetInstance() {
 
 	req := &filestorepb.GetInstanceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/filestore/v1#GetInstanceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/filestore/apiv1/filestorepb#GetInstanceRequest.
 	}
 	resp, err := c.GetInstance(ctx, req)
 	if err != nil {
@@ -112,7 +129,7 @@ func ExampleCloudFilestoreManagerClient_CreateInstance() {
 
 	req := &filestorepb.CreateInstanceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/filestore/v1#CreateInstanceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/filestore/apiv1/filestorepb#CreateInstanceRequest.
 	}
 	op, err := c.CreateInstance(ctx, req)
 	if err != nil {
@@ -142,7 +159,7 @@ func ExampleCloudFilestoreManagerClient_UpdateInstance() {
 
 	req := &filestorepb.UpdateInstanceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/filestore/v1#UpdateInstanceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/filestore/apiv1/filestorepb#UpdateInstanceRequest.
 	}
 	op, err := c.UpdateInstance(ctx, req)
 	if err != nil {
@@ -172,7 +189,7 @@ func ExampleCloudFilestoreManagerClient_RestoreInstance() {
 
 	req := &filestorepb.RestoreInstanceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/filestore/v1#RestoreInstanceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/filestore/apiv1/filestorepb#RestoreInstanceRequest.
 	}
 	op, err := c.RestoreInstance(ctx, req)
 	if err != nil {
@@ -202,7 +219,7 @@ func ExampleCloudFilestoreManagerClient_DeleteInstance() {
 
 	req := &filestorepb.DeleteInstanceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/filestore/v1#DeleteInstanceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/filestore/apiv1/filestorepb#DeleteInstanceRequest.
 	}
 	op, err := c.DeleteInstance(ctx, req)
 	if err != nil {
@@ -213,6 +230,150 @@ func ExampleCloudFilestoreManagerClient_DeleteInstance() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+}
+
+func ExampleCloudFilestoreManagerClient_ListSnapshots() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := filestore.NewCloudFilestoreManagerClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &filestorepb.ListSnapshotsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/filestore/apiv1/filestorepb#ListSnapshotsRequest.
+	}
+	it := c.ListSnapshots(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
+}
+
+func ExampleCloudFilestoreManagerClient_GetSnapshot() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := filestore.NewCloudFilestoreManagerClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &filestorepb.GetSnapshotRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/filestore/apiv1/filestorepb#GetSnapshotRequest.
+	}
+	resp, err := c.GetSnapshot(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleCloudFilestoreManagerClient_CreateSnapshot() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := filestore.NewCloudFilestoreManagerClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &filestorepb.CreateSnapshotRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/filestore/apiv1/filestorepb#CreateSnapshotRequest.
+	}
+	op, err := c.CreateSnapshot(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleCloudFilestoreManagerClient_DeleteSnapshot() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := filestore.NewCloudFilestoreManagerClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &filestorepb.DeleteSnapshotRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/filestore/apiv1/filestorepb#DeleteSnapshotRequest.
+	}
+	op, err := c.DeleteSnapshot(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleCloudFilestoreManagerClient_UpdateSnapshot() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := filestore.NewCloudFilestoreManagerClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &filestorepb.UpdateSnapshotRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/filestore/apiv1/filestorepb#UpdateSnapshotRequest.
+	}
+	op, err := c.UpdateSnapshot(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
 }
 
 func ExampleCloudFilestoreManagerClient_ListBackups() {
@@ -230,7 +391,7 @@ func ExampleCloudFilestoreManagerClient_ListBackups() {
 
 	req := &filestorepb.ListBackupsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/filestore/v1#ListBackupsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/filestore/apiv1/filestorepb#ListBackupsRequest.
 	}
 	it := c.ListBackups(ctx, req)
 	for {
@@ -261,7 +422,7 @@ func ExampleCloudFilestoreManagerClient_GetBackup() {
 
 	req := &filestorepb.GetBackupRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/filestore/v1#GetBackupRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/filestore/apiv1/filestorepb#GetBackupRequest.
 	}
 	resp, err := c.GetBackup(ctx, req)
 	if err != nil {
@@ -286,7 +447,7 @@ func ExampleCloudFilestoreManagerClient_CreateBackup() {
 
 	req := &filestorepb.CreateBackupRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/filestore/v1#CreateBackupRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/filestore/apiv1/filestorepb#CreateBackupRequest.
 	}
 	op, err := c.CreateBackup(ctx, req)
 	if err != nil {
@@ -316,7 +477,7 @@ func ExampleCloudFilestoreManagerClient_DeleteBackup() {
 
 	req := &filestorepb.DeleteBackupRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/filestore/v1#DeleteBackupRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/filestore/apiv1/filestorepb#DeleteBackupRequest.
 	}
 	op, err := c.DeleteBackup(ctx, req)
 	if err != nil {
@@ -344,7 +505,7 @@ func ExampleCloudFilestoreManagerClient_UpdateBackup() {
 
 	req := &filestorepb.UpdateBackupRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/filestore/v1#UpdateBackupRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/filestore/apiv1/filestorepb#UpdateBackupRequest.
 	}
 	op, err := c.UpdateBackup(ctx, req)
 	if err != nil {

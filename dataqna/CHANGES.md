@@ -1,5 +1,33 @@
 # Changes
 
+## [0.7.1](https://github.com/googleapis/google-cloud-go/compare/dataqna/v0.7.0...dataqna/v0.7.1) (2023-05-08)
+
+
+### Bug Fixes
+
+* **dataqna:** Update grpc to v1.55.0 ([1147ce0](https://github.com/googleapis/google-cloud-go/commit/1147ce02a990276ca4f8ab7a1ab65c14da4450ef))
+
+## [0.7.0](https://github.com/googleapis/google-cloud-go/compare/dataqna/v0.6.0...dataqna/v0.7.0) (2023-01-04)
+
+
+### Features
+
+* **dataqna:** Add REST client ([06a54a1](https://github.com/googleapis/google-cloud-go/commit/06a54a16a5866cce966547c51e203b9e09a25bc0))
+
+## [0.6.0](https://github.com/googleapis/google-cloud-go/compare/dataqna/v0.5.0...dataqna/v0.6.0) (2022-09-21)
+
+
+### Features
+
+* **dataqna:** rewrite signatures in terms of new types for betas ([9f303f9](https://github.com/googleapis/google-cloud-go/commit/9f303f9efc2e919a9a6bd828f3cdb1fcb3b8b390))
+
+## [0.5.0](https://github.com/googleapis/google-cloud-go/compare/dataqna/v0.4.0...dataqna/v0.5.0) (2022-09-19)
+
+
+### Features
+
+* **dataqna:** start generating proto message types ([563f546](https://github.com/googleapis/google-cloud-go/commit/563f546262e68102644db64134d1071fc8caa383))
+
 ## [0.4.0](https://github.com/googleapis/google-cloud-go/compare/dataqna/v0.3.0...dataqna/v0.4.0) (2022-06-29)
 
 

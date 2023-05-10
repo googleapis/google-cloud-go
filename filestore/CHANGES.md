@@ -1,6 +1,41 @@
 # Changes
 
 
+## [1.6.1](https://github.com/googleapis/google-cloud-go/compare/filestore/v1.6.0...filestore/v1.6.1) (2023-05-08)
+
+
+### Bug Fixes
+
+* **filestore:** Update grpc to v1.55.0 ([1147ce0](https://github.com/googleapis/google-cloud-go/commit/1147ce02a990276ca4f8ab7a1ab65c14da4450ef))
+
+## [1.6.0](https://github.com/googleapis/google-cloud-go/compare/filestore/v1.5.0...filestore/v1.6.0) (2023-03-22)
+
+
+### Features
+
+* **filestore:** Updating the client to match the latest v1 API ([c967961](https://github.com/googleapis/google-cloud-go/commit/c967961ed95750e173af0193ec8d0974471f43ff))
+
+## [1.5.0](https://github.com/googleapis/google-cloud-go/compare/filestore/v1.4.0...filestore/v1.5.0) (2023-01-04)
+
+
+### Features
+
+* **filestore:** Add REST client ([06a54a1](https://github.com/googleapis/google-cloud-go/commit/06a54a16a5866cce966547c51e203b9e09a25bc0))
+
+## [1.4.0](https://github.com/googleapis/google-cloud-go/compare/filestore/v1.3.0...filestore/v1.4.0) (2022-11-03)
+
+
+### Features
+
+* **filestore:** rewrite signatures in terms of new location ([3c4b2b3](https://github.com/googleapis/google-cloud-go/commit/3c4b2b34565795537aac1661e6af2442437e34ad))
+
+## [1.3.0](https://github.com/googleapis/google-cloud-go/compare/filestore/v1.2.0...filestore/v1.3.0) (2022-10-25)
+
+
+### Features
+
+* **filestore:** start generating stubs dir ([de2d180](https://github.com/googleapis/google-cloud-go/commit/de2d18066dc613b72f6f8db93ca60146dabcfdcc))
+
 ## [1.2.0](https://github.com/googleapis/google-cloud-go/compare/filestore/v1.1.0...filestore/v1.2.0) (2022-02-23)
 
 

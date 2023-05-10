@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -28,6 +28,8 @@ import (
 
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	retailpb "cloud.google.com/go/retail/apiv2alpha/retailpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
@@ -35,8 +37,6 @@ import (
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
-	retailpb "google.golang.org/genproto/googleapis/cloud/retail/v2alpha"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -531,9 +531,9 @@ func (c *ProductClient) ImportProductsOperation(name string) *ImportProductsOper
 //
 // This process is asynchronous and does not require the
 // Product to exist before updating
-// fulfillment information. If the request is valid, the update will be
-// enqueued and processed downstream. As a consequence, when a response is
-// returned, updates are not immediately manifested in the
+// fulfillment information. If the request is valid, the update is enqueued
+// and processed downstream. As a consequence, when a response is returned,
+// updates are not immediately manifested in the
 // Product queried by
 // ProductService.GetProduct
 // or
@@ -543,10 +543,10 @@ func (c *ProductClient) ImportProductsOperation(name string) *ImportProductsOper
 // ProductService.CreateProduct
 // and
 // ProductService.UpdateProduct,
-// the specified inventory field value(s) will overwrite any existing value(s)
+// the specified inventory field value(s) overwrite any existing value(s)
 // while ignoring the last update time for this field. Furthermore, the last
-// update time for the specified inventory fields will be overwritten to the
-// time of the
+// update times for the specified inventory fields are overwritten by the
+// times of the
 // ProductService.CreateProduct
 // or
 // ProductService.UpdateProduct
@@ -554,11 +554,11 @@ func (c *ProductClient) ImportProductsOperation(name string) *ImportProductsOper
 //
 // If no inventory fields are set in
 // CreateProductRequest.product,
-// then any pre-existing inventory information for this product will be used.
+// then any pre-existing inventory information for this product is used.
 //
 // If no inventory fields are set in
 // SetInventoryRequest.set_mask,
-// then any existing inventory information will be preserved.
+// then any existing inventory information is preserved.
 //
 // Pre-existing inventory information can only be updated with
 // ProductService.SetInventory,
@@ -566,8 +566,14 @@ func (c *ProductClient) ImportProductsOperation(name string) *ImportProductsOper
 // and
 // ProductService.RemoveFulfillmentPlaces.
 //
-// This feature is only available for users who have Retail Search enabled.
-// Please enable Retail Search on Cloud Console before using this feature.
+// The returned Operations is obsolete after
+// one day, and the GetOperation
+// API returns NOT_FOUND afterwards.
+//
+// If conflicting updates are issued, the
+// Operations associated with the stale
+// updates are not marked as done until
+// they are obsolete.
 func (c *ProductClient) SetInventory(ctx context.Context, req *retailpb.SetInventoryRequest, opts ...gax.CallOption) (*SetInventoryOperation, error) {
 	return c.internalClient.SetInventory(ctx, req, opts...)
 }
@@ -578,7 +584,15 @@ func (c *ProductClient) SetInventoryOperation(name string) *SetInventoryOperatio
 	return c.internalClient.SetInventoryOperation(name)
 }
 
-// AddFulfillmentPlaces incrementally adds place IDs to
+// AddFulfillmentPlaces it is recommended to use the
+// ProductService.AddLocalInventories
+// method instead of
+// ProductService.AddFulfillmentPlaces.
+// ProductService.AddLocalInventories
+// achieves the same results but provides more fine-grained control over
+// ingesting local inventory data.
+//
+// Incrementally adds place IDs to
 // Product.fulfillment_info.place_ids.
 //
 // This process is asynchronous and does not require the
@@ -591,8 +605,14 @@ func (c *ProductClient) SetInventoryOperation(name string) *SetInventoryOperatio
 // or
 // ProductService.ListProducts.
 //
-// This feature is only available for users who have Retail Search enabled.
-// Please enable Retail Search on Cloud Console before using this feature.
+// The returned Operations will be obsolete
+// after 1 day, and GetOperation
+// API will return NOT_FOUND afterwards.
+//
+// If conflicting updates are issued, the
+// Operations associated with the stale
+// updates will not be marked as done
+// until being obsolete.
 func (c *ProductClient) AddFulfillmentPlaces(ctx context.Context, req *retailpb.AddFulfillmentPlacesRequest, opts ...gax.CallOption) (*AddFulfillmentPlacesOperation, error) {
 	return c.internalClient.AddFulfillmentPlaces(ctx, req, opts...)
 }
@@ -603,7 +623,15 @@ func (c *ProductClient) AddFulfillmentPlacesOperation(name string) *AddFulfillme
 	return c.internalClient.AddFulfillmentPlacesOperation(name)
 }
 
-// RemoveFulfillmentPlaces incrementally removes place IDs from a
+// RemoveFulfillmentPlaces it is recommended to use the
+// ProductService.RemoveLocalInventories
+// method instead of
+// ProductService.RemoveFulfillmentPlaces.
+// ProductService.RemoveLocalInventories
+// achieves the same results but provides more fine-grained control over
+// ingesting local inventory data.
+//
+// Incrementally removes place IDs from a
 // Product.fulfillment_info.place_ids.
 //
 // This process is asynchronous and does not require the
@@ -616,8 +644,14 @@ func (c *ProductClient) AddFulfillmentPlacesOperation(name string) *AddFulfillme
 // or
 // ProductService.ListProducts.
 //
-// This feature is only available for users who have Retail Search enabled.
-// Please enable Retail Search on Cloud Console before using this feature.
+// The returned Operations will be obsolete
+// after 1 day, and GetOperation
+// API will return NOT_FOUND afterwards.
+//
+// If conflicting updates are issued, the
+// Operations associated with the stale
+// updates will not be marked as done
+// until being obsolete.
 func (c *ProductClient) RemoveFulfillmentPlaces(ctx context.Context, req *retailpb.RemoveFulfillmentPlacesRequest, opts ...gax.CallOption) (*RemoveFulfillmentPlacesOperation, error) {
 	return c.internalClient.RemoveFulfillmentPlaces(ctx, req, opts...)
 }
@@ -648,8 +682,14 @@ func (c *ProductClient) RemoveFulfillmentPlacesOperation(name string) *RemoveFul
 // ProductService.UpdateProduct
 // has no effect on local inventories.
 //
-// This feature is only available for users who have Retail Search enabled.
-// Please enable Retail Search on Cloud Console before using this feature.
+// The returned Operations will be obsolete
+// after 1 day, and GetOperation
+// API will return NOT_FOUND afterwards.
+//
+// If conflicting updates are issued, the
+// Operations associated with the stale
+// updates will not be marked as done
+// until being obsolete.
 func (c *ProductClient) AddLocalInventories(ctx context.Context, req *retailpb.AddLocalInventoriesRequest, opts ...gax.CallOption) (*AddLocalInventoriesOperation, error) {
 	return c.internalClient.AddLocalInventories(ctx, req, opts...)
 }
@@ -678,8 +718,14 @@ func (c *ProductClient) AddLocalInventoriesOperation(name string) *AddLocalInven
 // ProductService.UpdateProduct
 // has no effect on local inventories.
 //
-// This feature is only available for users who have Retail Search enabled.
-// Please enable Retail Search on Cloud Console before using this feature.
+// The returned Operations will be obsolete
+// after 1 day, and GetOperation
+// API will return NOT_FOUND afterwards.
+//
+// If conflicting updates are issued, the
+// Operations associated with the stale
+// updates will not be marked as done
+// until being obsolete.
 func (c *ProductClient) RemoveLocalInventories(ctx context.Context, req *retailpb.RemoveLocalInventoriesRequest, opts ...gax.CallOption) (*RemoveLocalInventoriesOperation, error) {
 	return c.internalClient.RemoveLocalInventories(ctx, req, opts...)
 }
@@ -1260,6 +1306,7 @@ func (c *productRESTClient) CreateProduct(ctx context.Context, req *retailpb.Cre
 	baseUrl.Path += fmt.Sprintf("/v2alpha/%v/products", req.GetParent())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	params.Add("productId", fmt.Sprintf("%v", req.GetProductId()))
 
 	baseUrl.RawQuery = params.Encode()
@@ -1316,6 +1363,11 @@ func (c *productRESTClient) GetProduct(ctx context.Context, req *retailpb.GetPro
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2alpha/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
@@ -1384,6 +1436,7 @@ func (c *productRESTClient) ListProducts(ctx context.Context, req *retailpb.List
 		baseUrl.Path += fmt.Sprintf("/v2alpha/%v/products", req.GetParent())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -1478,6 +1531,7 @@ func (c *productRESTClient) UpdateProduct(ctx context.Context, req *retailpb.Upd
 	baseUrl.Path += fmt.Sprintf("/v2alpha/%v", req.GetProduct().GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetAllowMissing() {
 		params.Add("allowMissing", fmt.Sprintf("%v", req.GetAllowMissing()))
 	}
@@ -1544,6 +1598,14 @@ func (c *productRESTClient) DeleteProduct(ctx context.Context, req *retailpb.Del
 	}
 	baseUrl.Path += fmt.Sprintf("/v2alpha/%v", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetForce() {
+		params.Add("force", fmt.Sprintf("%v", req.GetForce()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
@@ -1600,6 +1662,11 @@ func (c *productRESTClient) PurgeProducts(ctx context.Context, req *retailpb.Pur
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2alpha/%v/products:purge", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
@@ -1670,6 +1737,11 @@ func (c *productRESTClient) ImportProducts(ctx context.Context, req *retailpb.Im
 	}
 	baseUrl.Path += fmt.Sprintf("/v2alpha/%v/products:import", req.GetParent())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
@@ -1725,9 +1797,9 @@ func (c *productRESTClient) ImportProducts(ctx context.Context, req *retailpb.Im
 //
 // This process is asynchronous and does not require the
 // Product to exist before updating
-// fulfillment information. If the request is valid, the update will be
-// enqueued and processed downstream. As a consequence, when a response is
-// returned, updates are not immediately manifested in the
+// fulfillment information. If the request is valid, the update is enqueued
+// and processed downstream. As a consequence, when a response is returned,
+// updates are not immediately manifested in the
 // Product queried by
 // ProductService.GetProduct
 // or
@@ -1737,10 +1809,10 @@ func (c *productRESTClient) ImportProducts(ctx context.Context, req *retailpb.Im
 // ProductService.CreateProduct
 // and
 // ProductService.UpdateProduct,
-// the specified inventory field value(s) will overwrite any existing value(s)
+// the specified inventory field value(s) overwrite any existing value(s)
 // while ignoring the last update time for this field. Furthermore, the last
-// update time for the specified inventory fields will be overwritten to the
-// time of the
+// update times for the specified inventory fields are overwritten by the
+// times of the
 // ProductService.CreateProduct
 // or
 // ProductService.UpdateProduct
@@ -1748,11 +1820,11 @@ func (c *productRESTClient) ImportProducts(ctx context.Context, req *retailpb.Im
 //
 // If no inventory fields are set in
 // CreateProductRequest.product,
-// then any pre-existing inventory information for this product will be used.
+// then any pre-existing inventory information for this product is used.
 //
 // If no inventory fields are set in
 // SetInventoryRequest.set_mask,
-// then any existing inventory information will be preserved.
+// then any existing inventory information is preserved.
 //
 // Pre-existing inventory information can only be updated with
 // ProductService.SetInventory,
@@ -1760,8 +1832,14 @@ func (c *productRESTClient) ImportProducts(ctx context.Context, req *retailpb.Im
 // and
 // ProductService.RemoveFulfillmentPlaces.
 //
-// This feature is only available for users who have Retail Search enabled.
-// Please enable Retail Search on Cloud Console before using this feature.
+// The returned Operations is obsolete after
+// one day, and the GetOperation
+// API returns NOT_FOUND afterwards.
+//
+// If conflicting updates are issued, the
+// Operations associated with the stale
+// updates are not marked as done until
+// they are obsolete.
 func (c *productRESTClient) SetInventory(ctx context.Context, req *retailpb.SetInventoryRequest, opts ...gax.CallOption) (*SetInventoryOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -1774,6 +1852,11 @@ func (c *productRESTClient) SetInventory(ctx context.Context, req *retailpb.SetI
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2alpha/%v:setInventory", req.GetInventory().GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "inventory.name", url.QueryEscape(req.GetInventory().GetName())))
@@ -1824,7 +1907,15 @@ func (c *productRESTClient) SetInventory(ctx context.Context, req *retailpb.SetI
 	}, nil
 }
 
-// AddFulfillmentPlaces incrementally adds place IDs to
+// AddFulfillmentPlaces it is recommended to use the
+// ProductService.AddLocalInventories
+// method instead of
+// ProductService.AddFulfillmentPlaces.
+// ProductService.AddLocalInventories
+// achieves the same results but provides more fine-grained control over
+// ingesting local inventory data.
+//
+// Incrementally adds place IDs to
 // Product.fulfillment_info.place_ids.
 //
 // This process is asynchronous and does not require the
@@ -1837,8 +1928,14 @@ func (c *productRESTClient) SetInventory(ctx context.Context, req *retailpb.SetI
 // or
 // ProductService.ListProducts.
 //
-// This feature is only available for users who have Retail Search enabled.
-// Please enable Retail Search on Cloud Console before using this feature.
+// The returned Operations will be obsolete
+// after 1 day, and GetOperation
+// API will return NOT_FOUND afterwards.
+//
+// If conflicting updates are issued, the
+// Operations associated with the stale
+// updates will not be marked as done
+// until being obsolete.
 func (c *productRESTClient) AddFulfillmentPlaces(ctx context.Context, req *retailpb.AddFulfillmentPlacesRequest, opts ...gax.CallOption) (*AddFulfillmentPlacesOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -1851,6 +1948,11 @@ func (c *productRESTClient) AddFulfillmentPlaces(ctx context.Context, req *retai
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2alpha/%v:addFulfillmentPlaces", req.GetProduct())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "product", url.QueryEscape(req.GetProduct())))
@@ -1901,7 +2003,15 @@ func (c *productRESTClient) AddFulfillmentPlaces(ctx context.Context, req *retai
 	}, nil
 }
 
-// RemoveFulfillmentPlaces incrementally removes place IDs from a
+// RemoveFulfillmentPlaces it is recommended to use the
+// ProductService.RemoveLocalInventories
+// method instead of
+// ProductService.RemoveFulfillmentPlaces.
+// ProductService.RemoveLocalInventories
+// achieves the same results but provides more fine-grained control over
+// ingesting local inventory data.
+//
+// Incrementally removes place IDs from a
 // Product.fulfillment_info.place_ids.
 //
 // This process is asynchronous and does not require the
@@ -1914,8 +2024,14 @@ func (c *productRESTClient) AddFulfillmentPlaces(ctx context.Context, req *retai
 // or
 // ProductService.ListProducts.
 //
-// This feature is only available for users who have Retail Search enabled.
-// Please enable Retail Search on Cloud Console before using this feature.
+// The returned Operations will be obsolete
+// after 1 day, and GetOperation
+// API will return NOT_FOUND afterwards.
+//
+// If conflicting updates are issued, the
+// Operations associated with the stale
+// updates will not be marked as done
+// until being obsolete.
 func (c *productRESTClient) RemoveFulfillmentPlaces(ctx context.Context, req *retailpb.RemoveFulfillmentPlacesRequest, opts ...gax.CallOption) (*RemoveFulfillmentPlacesOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -1928,6 +2044,11 @@ func (c *productRESTClient) RemoveFulfillmentPlaces(ctx context.Context, req *re
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2alpha/%v:removeFulfillmentPlaces", req.GetProduct())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "product", url.QueryEscape(req.GetProduct())))
@@ -1998,8 +2119,14 @@ func (c *productRESTClient) RemoveFulfillmentPlaces(ctx context.Context, req *re
 // ProductService.UpdateProduct
 // has no effect on local inventories.
 //
-// This feature is only available for users who have Retail Search enabled.
-// Please enable Retail Search on Cloud Console before using this feature.
+// The returned Operations will be obsolete
+// after 1 day, and GetOperation
+// API will return NOT_FOUND afterwards.
+//
+// If conflicting updates are issued, the
+// Operations associated with the stale
+// updates will not be marked as done
+// until being obsolete.
 func (c *productRESTClient) AddLocalInventories(ctx context.Context, req *retailpb.AddLocalInventoriesRequest, opts ...gax.CallOption) (*AddLocalInventoriesOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -2012,6 +2139,11 @@ func (c *productRESTClient) AddLocalInventories(ctx context.Context, req *retail
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2alpha/%v:addLocalInventories", req.GetProduct())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "product", url.QueryEscape(req.GetProduct())))
@@ -2080,8 +2212,14 @@ func (c *productRESTClient) AddLocalInventories(ctx context.Context, req *retail
 // ProductService.UpdateProduct
 // has no effect on local inventories.
 //
-// This feature is only available for users who have Retail Search enabled.
-// Please enable Retail Search on Cloud Console before using this feature.
+// The returned Operations will be obsolete
+// after 1 day, and GetOperation
+// API will return NOT_FOUND afterwards.
+//
+// If conflicting updates are issued, the
+// Operations associated with the stale
+// updates will not be marked as done
+// until being obsolete.
 func (c *productRESTClient) RemoveLocalInventories(ctx context.Context, req *retailpb.RemoveLocalInventoriesRequest, opts ...gax.CallOption) (*RemoveLocalInventoriesOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -2094,6 +2232,11 @@ func (c *productRESTClient) RemoveLocalInventories(ctx context.Context, req *ret
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2alpha/%v:removeLocalInventories", req.GetProduct())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "product", url.QueryEscape(req.GetProduct())))
@@ -2151,6 +2294,11 @@ func (c *productRESTClient) GetOperation(ctx context.Context, req *longrunningpb
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2alpha/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
@@ -2219,6 +2367,7 @@ func (c *productRESTClient) ListOperations(ctx context.Context, req *longrunning
 		baseUrl.Path += fmt.Sprintf("/v2alpha/%v/operations", req.GetName())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}

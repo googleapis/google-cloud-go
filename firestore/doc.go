@@ -247,5 +247,17 @@ directed to the emulator instead of the production Firestore service.
 To install and run the emulator and its environment variables, see the documentation
 at https://cloud.google.com/sdk/gcloud/reference/beta/emulators/firestore/. Once the
 emulator is running, set FIRESTORE_EMULATOR_HOST to the API endpoint.
+
+	// Set FIRESTORE_EMULATOR_HOST environment variable.
+	err := os.Setenv("FIRESTORE_EMULATOR_HOST", "localhost:9000")
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// Create client as usual.
+	client, err := firestore.NewClient(ctx, "my-project-id")
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer client.Close()
 */
 package firestore

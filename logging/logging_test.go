@@ -28,6 +28,8 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"path/filepath"
+	"reflect"
 	"runtime"
 	"strings"
 	"sync"
@@ -39,6 +41,7 @@ import (
 	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/internal/uid"
 	"cloud.google.com/go/logging"
+	logpb "cloud.google.com/go/logging/apiv2/loggingpb"
 	"cloud.google.com/go/logging/internal"
 	ltesting "cloud.google.com/go/logging/internal/testing"
 	"cloud.google.com/go/logging/logadmin"
@@ -49,7 +52,6 @@ import (
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	mrpb "google.golang.org/genproto/googleapis/api/monitoredres"
-	logpb "google.golang.org/genproto/googleapis/logging/v2"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -239,6 +241,20 @@ func TestLogAndEntries(t *testing.T) {
 	}
 	if msg, ok := compareEntries(got, want); !ok {
 		t.Error(msg)
+	}
+}
+
+func TestLogInvalidUtf8(t *testing.T) {
+	lg := client.Logger(testLogID)
+	msg := fmt.Sprintf("\x6c\x6f\x67\xe5")
+	lg.Log(logging.Entry{
+		Payload:   msg,
+		Timestamp: time.Now(),
+	})
+	err := lg.Flush()
+	s, _ := status.FromError(err)
+	if !strings.Contains(s.Message(), "string field contains invalid UTF-8") {
+		t.Fatalf("got an incorrect error: %v", err)
 	}
 }
 
@@ -714,6 +730,142 @@ func TestStandardLogger(t *testing.T) {
 	}
 	if got, want := logging.Severity(got[0].Severity), logging.Info; got != want {
 		t.Errorf("severity: got %s, want %s", got, want)
+	}
+}
+
+func TestStandardLoggerPopulateSourceLocation(t *testing.T) {
+	initLogs() // Generate new testLogID
+	ctx := context.Background()
+	lg := client.Logger(testLogID, logging.SourceLocationPopulation(logging.AlwaysPopulateSourceLocation))
+	slg := lg.StandardLogger(logging.Info)
+
+	_, _, line, lineOk := runtime.Caller(0)
+	if !lineOk {
+		t.Fatal("Cannot determine line number")
+	}
+	wantLine := int64(line + 5)
+	slg.Print("info")
+	if err := lg.Flush(); err != nil {
+		t.Fatal(err)
+	}
+	var got []*logging.Entry
+	ok := waitFor(func() bool {
+		var err error
+		got, err = allTestLogEntries(ctx)
+		if err != nil {
+			t.Log("fetching log entries: ", err)
+			return false
+		}
+		return len(got) == 1
+	})
+	if !ok {
+		t.Fatalf("timed out; got: %d, want: %d\n", len(got), 1)
+	}
+	if len(got) != 1 {
+		t.Fatalf("expected non-nil request with one entry; got:\n%+v", got)
+	}
+	if got, want := filepath.Base(got[0].SourceLocation.GetFile()), "logging_test.go"; got != want {
+		t.Errorf("sourcelocation file: got %s, want %s", got, want)
+	}
+	if got, want := got[0].SourceLocation.GetFunction(), "cloud.google.com/go/logging_test.TestStandardLoggerPopulateSourceLocation"; got != want {
+		t.Errorf("sourcelocation function: got %s, want %s", got, want)
+	}
+	if got := got[0].SourceLocation.Line; got != wantLine {
+		t.Errorf("source location line: got %d, want %d", got, wantLine)
+	}
+}
+
+func TestStandardLoggerFromTemplate(t *testing.T) {
+	tests := []struct {
+		name     string
+		template logging.Entry
+		message  string
+		want     logging.Entry
+	}{
+		{
+			name: "severity only",
+			template: logging.Entry{
+				Severity: logging.Error,
+			},
+			message: "log message",
+			want: logging.Entry{
+				Severity: logging.Error,
+				Payload:  "log message\n",
+			},
+		},
+		{
+			name: "severity and trace",
+			template: logging.Entry{
+				Severity: logging.Info,
+				Trace:    "projects/P/traces/105445aa7843bc8bf206b120001000",
+			},
+			message: "log message",
+			want: logging.Entry{
+				Severity: logging.Info,
+				Payload:  "log message\n",
+				Trace:    "projects/P/traces/105445aa7843bc8bf206b120001000",
+			},
+		},
+		{
+			name: "severity and http request",
+			template: logging.Entry{
+				Severity: logging.Info,
+				HTTPRequest: &logging.HTTPRequest{
+					Request: &http.Request{
+						Method: "GET",
+						Host:   "example.com",
+					},
+					Status: 200,
+				},
+			},
+			message: "log message",
+			want: logging.Entry{
+				Severity: logging.Info,
+				Payload:  "log message\n",
+				HTTPRequest: &logging.HTTPRequest{
+					Request: &http.Request{
+						Method: "GET",
+						Host:   "example.com",
+					},
+					Status: 200,
+				},
+			},
+		},
+		{
+			name: "payload in template is ignored",
+			template: logging.Entry{
+				Severity: logging.Info,
+				Payload:  "this should not be set in the template",
+				Trace:    "projects/P/traces/105445aa7843bc8bf206b120001000",
+			},
+			message: "log message",
+			want: logging.Entry{
+				Severity: logging.Info,
+				Payload:  "log message\n",
+				Trace:    "projects/P/traces/105445aa7843bc8bf206b120001000",
+			},
+		},
+	}
+	lg := client.Logger(testLogID)
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			mock := func(got logging.Entry, l *logging.Logger, parent string, skipLevels int) (*logpb.LogEntry, error) {
+				if !reflect.DeepEqual(got, tc.want) {
+					t.Errorf("Emitted Entry incorrect. Expected %v got %v", tc.want, got)
+				}
+				// Return value is not interesting
+				return &logpb.LogEntry{}, nil
+			}
+
+			f := logging.SetToLogEntryInternal(mock)
+			defer func() { logging.SetToLogEntryInternal(f) }()
+
+			slg := lg.StandardLoggerFromTemplate(&tc.template)
+			slg.Print(tc.message)
+			if err := lg.Flush(); err != nil {
+				t.Fatal(err)
+			}
+		})
 	}
 }
 
@@ -1281,12 +1433,14 @@ func TestRedirectOutputFormats(t *testing.T) {
 						Method: "POST",
 					},
 				},
+
 				Payload: "this is text payload",
 			},
-			want: `{"message":"this is text payload","severity":"DEBUG","httpRequest":{"request_method":"POST","request_url":"https://example.com/test"},` +
-				`"timestamp":"seconds:1000","logging.googleapis.com/labels":{"key1":"value1","key2":"value2"},"logging.googleapis.com/insertId":"0000AAA01",` +
-				`"logging.googleapis.com/operation":{"id":"0123456789","producer":"test"},"logging.googleapis.com/sourceLocation":{"file":"acme.go","line":100,"function":"main"},` +
-				`"logging.googleapis.com/spanId":"000000000001","logging.googleapis.com/trace":"projects/P/ABCD12345678AB12345678","logging.googleapis.com/trace_sampled":true}`,
+			want: `{"httpRequest":{"requestMethod":"POST","requestUrl":"https://example.com/test"},"logging.googleapis.com/insertId":"0000AAA01",` +
+				`"logging.googleapis.com/labels":{"key1":"value1","key2":"value2"},"logging.googleapis.com/operation":{"id":"0123456789","producer":"test"},` +
+				`"logging.googleapis.com/sourceLocation":{"file":"acme.go","function":"main","line":100},"logging.googleapis.com/spanId":"000000000001",` +
+				`"logging.googleapis.com/trace":"projects/P/ABCD12345678AB12345678","logging.googleapis.com/trace_sampled":true,` +
+				`"message":"this is text payload","severity":"DEBUG","timestamp":"seconds:1000"}`,
 		},
 		{
 			name: "full data redirect with json payload",
@@ -1318,10 +1472,11 @@ func TestRedirectOutputFormats(t *testing.T) {
 					"Latency": 321,
 				},
 			},
-			want: `{"message":{"Latency":321,"Message":"message part of the payload"},"severity":"DEBUG","httpRequest":{"request_method":"POST","request_url":"https://example.com/test"},` +
-				`"timestamp":"seconds:1000","logging.googleapis.com/labels":{"key1":"value1","key2":"value2"},"logging.googleapis.com/insertId":"0000AAA01",` +
-				`"logging.googleapis.com/operation":{"id":"0123456789","producer":"test"},"logging.googleapis.com/sourceLocation":{"file":"acme.go","line":100,"function":"main"},` +
-				`"logging.googleapis.com/spanId":"000000000001","logging.googleapis.com/trace":"projects/P/ABCD12345678AB12345678","logging.googleapis.com/trace_sampled":true}`,
+			want: `{"httpRequest":{"requestMethod":"POST","requestUrl":"https://example.com/test"},"logging.googleapis.com/insertId":"0000AAA01",` +
+				`"logging.googleapis.com/labels":{"key1":"value1","key2":"value2"},"logging.googleapis.com/operation":{"id":"0123456789","producer":"test"},` +
+				`"logging.googleapis.com/sourceLocation":{"file":"acme.go","function":"main","line":100},"logging.googleapis.com/spanId":"000000000001",` +
+				`"logging.googleapis.com/trace":"projects/P/ABCD12345678AB12345678","logging.googleapis.com/trace_sampled":true,` +
+				`"message":{"Latency":321,"Message":"message part of the payload"},"severity":"DEBUG","timestamp":"seconds:1000"}`,
 		},
 		{
 			name: "error on redirect with proto payload",

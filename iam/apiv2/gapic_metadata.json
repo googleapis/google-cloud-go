@@ -30,9 +30,39 @@
                 "GetPolicy"
               ]
             },
-            "ListApplicablePolicies": {
+            "ListPolicies": {
               "methods": [
-                "ListApplicablePolicies"
+                "ListPolicies"
+              ]
+            },
+            "UpdatePolicy": {
+              "methods": [
+                "UpdatePolicy"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "PoliciesClient",
+          "rpcs": {
+            "CreatePolicy": {
+              "methods": [
+                "CreatePolicy"
+              ]
+            },
+            "DeletePolicy": {
+              "methods": [
+                "DeletePolicy"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetPolicy": {
+              "methods": [
+                "GetPolicy"
               ]
             },
             "ListPolicies": {

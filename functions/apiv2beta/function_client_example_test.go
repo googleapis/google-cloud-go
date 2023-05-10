@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,11 +20,11 @@ import (
 	"context"
 
 	functions "cloud.google.com/go/functions/apiv2beta"
+	functionspb "cloud.google.com/go/functions/apiv2beta/functionspb"
+	iampb "cloud.google.com/go/iam/apiv1/iampb"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	"google.golang.org/api/iterator"
-	functionspb "google.golang.org/genproto/googleapis/cloud/functions/v2beta"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
-	iampb "google.golang.org/genproto/googleapis/iam/v1"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 )
 
 func ExampleNewFunctionClient() {
@@ -76,7 +76,7 @@ func ExampleFunctionClient_GetFunction() {
 
 	req := &functionspb.GetFunctionRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/functions/v2beta#GetFunctionRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/functions/apiv2beta/functionspb#GetFunctionRequest.
 	}
 	resp, err := c.GetFunction(ctx, req)
 	if err != nil {
@@ -101,7 +101,7 @@ func ExampleFunctionClient_ListFunctions() {
 
 	req := &functionspb.ListFunctionsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/functions/v2beta#ListFunctionsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/functions/apiv2beta/functionspb#ListFunctionsRequest.
 	}
 	it := c.ListFunctions(ctx, req)
 	for {
@@ -132,7 +132,7 @@ func ExampleFunctionClient_CreateFunction() {
 
 	req := &functionspb.CreateFunctionRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/functions/v2beta#CreateFunctionRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/functions/apiv2beta/functionspb#CreateFunctionRequest.
 	}
 	op, err := c.CreateFunction(ctx, req)
 	if err != nil {
@@ -162,7 +162,7 @@ func ExampleFunctionClient_UpdateFunction() {
 
 	req := &functionspb.UpdateFunctionRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/functions/v2beta#UpdateFunctionRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/functions/apiv2beta/functionspb#UpdateFunctionRequest.
 	}
 	op, err := c.UpdateFunction(ctx, req)
 	if err != nil {
@@ -192,7 +192,7 @@ func ExampleFunctionClient_DeleteFunction() {
 
 	req := &functionspb.DeleteFunctionRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/functions/v2beta#DeleteFunctionRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/functions/apiv2beta/functionspb#DeleteFunctionRequest.
 	}
 	op, err := c.DeleteFunction(ctx, req)
 	if err != nil {
@@ -220,7 +220,7 @@ func ExampleFunctionClient_GenerateUploadUrl() {
 
 	req := &functionspb.GenerateUploadUrlRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/functions/v2beta#GenerateUploadUrlRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/functions/apiv2beta/functionspb#GenerateUploadUrlRequest.
 	}
 	resp, err := c.GenerateUploadUrl(ctx, req)
 	if err != nil {
@@ -245,7 +245,7 @@ func ExampleFunctionClient_GenerateDownloadUrl() {
 
 	req := &functionspb.GenerateDownloadUrlRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/functions/v2beta#GenerateDownloadUrlRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/functions/apiv2beta/functionspb#GenerateDownloadUrlRequest.
 	}
 	resp, err := c.GenerateDownloadUrl(ctx, req)
 	if err != nil {
@@ -270,7 +270,7 @@ func ExampleFunctionClient_ListRuntimes() {
 
 	req := &functionspb.ListRuntimesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/functions/v2beta#ListRuntimesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/functions/apiv2beta/functionspb#ListRuntimesRequest.
 	}
 	resp, err := c.ListRuntimes(ctx, req)
 	if err != nil {
@@ -326,7 +326,7 @@ func ExampleFunctionClient_GetIamPolicy() {
 
 	req := &iampb.GetIamPolicyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/iam/v1#GetIamPolicyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/iam/apiv1/iampb#GetIamPolicyRequest.
 	}
 	resp, err := c.GetIamPolicy(ctx, req)
 	if err != nil {
@@ -351,7 +351,7 @@ func ExampleFunctionClient_SetIamPolicy() {
 
 	req := &iampb.SetIamPolicyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/iam/v1#SetIamPolicyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/iam/apiv1/iampb#SetIamPolicyRequest.
 	}
 	resp, err := c.SetIamPolicy(ctx, req)
 	if err != nil {
@@ -376,7 +376,7 @@ func ExampleFunctionClient_TestIamPermissions() {
 
 	req := &iampb.TestIamPermissionsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/iam/v1#TestIamPermissionsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/iam/apiv1/iampb#TestIamPermissionsRequest.
 	}
 	resp, err := c.TestIamPermissions(ctx, req)
 	if err != nil {
@@ -401,7 +401,7 @@ func ExampleFunctionClient_GetOperation() {
 
 	req := &longrunningpb.GetOperationRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/longrunning#GetOperationRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/longrunning/autogen/longrunningpb#GetOperationRequest.
 	}
 	resp, err := c.GetOperation(ctx, req)
 	if err != nil {
@@ -426,7 +426,7 @@ func ExampleFunctionClient_ListOperations() {
 
 	req := &longrunningpb.ListOperationsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/longrunning#ListOperationsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/longrunning/autogen/longrunningpb#ListOperationsRequest.
 	}
 	it := c.ListOperations(ctx, req)
 	for {

@@ -20,8 +20,8 @@ import (
 	"fmt"
 	"sort"
 
+	"cloud.google.com/go/firestore/apiv1/firestorepb"
 	"google.golang.org/api/iterator"
-	firestorepb "google.golang.org/genproto/googleapis/firestore/v1"
 )
 
 // A CollectionGroupRef is a reference to a group of collections sharing the
@@ -109,7 +109,7 @@ func (cgr CollectionGroupRef) getPartitions(ctx context.Context, partitionCount 
 			break
 		}
 		if err != nil {
-			return nil, fmt.Errorf("GetPartitions: %v", err)
+			return nil, fmt.Errorf("GetPartitions: %w", err)
 		}
 		cursorReferences = append(cursorReferences, cursor.GetValues()...)
 	}

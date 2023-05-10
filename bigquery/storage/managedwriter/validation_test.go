@@ -388,6 +388,21 @@ func TestValidation_Values(t *testing.T) {
 				withIntegerArraySum("enum_repeated", 7, 1),
 			},
 		},
+		{
+			description: "proto2 w/column annotations",
+			tableSchema: testdata.ValidationColumnAnnotations,
+			inputRow: &testdata.ValidationP2ColumnAnnotations{
+				First:  proto.String("first_val"),
+				Second: proto.String("second_val"),
+				Third:  proto.String("third_val"),
+			},
+			constraints: []constraintOption{
+				withExactRowCount(1),
+				withStringValueCount("first", "first_val", 1),
+				withStringValueCount("second", "third_val", 1),
+				withStringValueCount("特別コラム", "second_val", 1),
+			},
+		},
 	}
 
 	// Common setup.
@@ -395,7 +410,7 @@ func TestValidation_Values(t *testing.T) {
 	defer mwClient.Close()
 	defer bqClient.Close()
 
-	dataset, cleanup, err := setupTestDataset(context.Background(), t, bqClient, "us-east1")
+	dataset, cleanup, err := setupTestDataset(context.Background(), t, bqClient, "us-east4")
 	if err != nil {
 		t.Fatalf("failed to init test dataset: %v", err)
 	}

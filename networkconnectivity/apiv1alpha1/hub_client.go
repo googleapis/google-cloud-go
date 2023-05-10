@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -28,6 +28,8 @@ import (
 
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	networkconnectivitypb "cloud.google.com/go/networkconnectivity/apiv1alpha1/networkconnectivitypb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
@@ -35,8 +37,6 @@ import (
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
-	networkconnectivitypb "google.golang.org/genproto/googleapis/cloud/networkconnectivity/v1alpha1"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -816,6 +816,7 @@ func (c *hubRESTClient) ListHubs(ctx context.Context, req *networkconnectivitypb
 		baseUrl.Path += fmt.Sprintf("/v1alpha1/%v/hubs", req.GetParent())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -895,6 +896,11 @@ func (c *hubRESTClient) GetHub(ctx context.Context, req *networkconnectivitypb.G
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha1/%v", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
@@ -956,6 +962,7 @@ func (c *hubRESTClient) CreateHub(ctx context.Context, req *networkconnectivityp
 	baseUrl.Path += fmt.Sprintf("/v1alpha1/%v/hubs", req.GetParent())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetHubId() != "" {
 		params.Add("hubId", fmt.Sprintf("%v", req.GetHubId()))
 	}
@@ -1030,6 +1037,7 @@ func (c *hubRESTClient) UpdateHub(ctx context.Context, req *networkconnectivityp
 	baseUrl.Path += fmt.Sprintf("/v1alpha1/%v", req.GetHub().GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetRequestId() != "" {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -1101,6 +1109,7 @@ func (c *hubRESTClient) DeleteHub(ctx context.Context, req *networkconnectivityp
 	baseUrl.Path += fmt.Sprintf("/v1alpha1/%v", req.GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetRequestId() != "" {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -1178,6 +1187,7 @@ func (c *hubRESTClient) ListSpokes(ctx context.Context, req *networkconnectivity
 		baseUrl.Path += fmt.Sprintf("/v1alpha1/%v/spokes", req.GetParent())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -1257,6 +1267,11 @@ func (c *hubRESTClient) GetSpoke(ctx context.Context, req *networkconnectivitypb
 	}
 	baseUrl.Path += fmt.Sprintf("/v1alpha1/%v", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
@@ -1318,6 +1333,7 @@ func (c *hubRESTClient) CreateSpoke(ctx context.Context, req *networkconnectivit
 	baseUrl.Path += fmt.Sprintf("/v1alpha1/%v/spokes", req.GetParent())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetRequestId() != "" {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -1392,6 +1408,7 @@ func (c *hubRESTClient) UpdateSpoke(ctx context.Context, req *networkconnectivit
 	baseUrl.Path += fmt.Sprintf("/v1alpha1/%v", req.GetSpoke().GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetRequestId() != "" {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -1463,6 +1480,7 @@ func (c *hubRESTClient) DeleteSpoke(ctx context.Context, req *networkconnectivit
 	baseUrl.Path += fmt.Sprintf("/v1alpha1/%v", req.GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetRequestId() != "" {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}

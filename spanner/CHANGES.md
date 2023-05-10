@@ -1,5 +1,105 @@
 # Changes
 
+## [1.45.1](https://github.com/googleapis/google-cloud-go/compare/spanner/v1.45.0...spanner/v1.45.1) (2023-04-21)
+
+
+### Bug Fixes
+
+* **spanner/spannertest:** Send transaction id in result metadata ([#7809](https://github.com/googleapis/google-cloud-go/issues/7809)) ([e3bbd5f](https://github.com/googleapis/google-cloud-go/commit/e3bbd5f10b3922ab2eb50cb39daccd7bc1891892))
+* **spanner:** Context timeout should be wrapped correctly ([#7744](https://github.com/googleapis/google-cloud-go/issues/7744)) ([f8e22f6](https://github.com/googleapis/google-cloud-go/commit/f8e22f6cbba10fc262e87b4d06d5c1289d877503))
+
+## [1.45.0](https://github.com/googleapis/google-cloud-go/compare/spanner/v1.44.0...spanner/v1.45.0) (2023-04-10)
+
+
+### Features
+
+* **spanner/spansql:** Add support for missing DDL syntax for ALTER CHANGE STREAM ([#7429](https://github.com/googleapis/google-cloud-go/issues/7429)) ([d34fe02](https://github.com/googleapis/google-cloud-go/commit/d34fe02cfa31520f88dedbd41bbc887e8faa857f))
+* **spanner/spansql:** Support fine-grained access control DDL syntax ([#6691](https://github.com/googleapis/google-cloud-go/issues/6691)) ([a7edf6b](https://github.com/googleapis/google-cloud-go/commit/a7edf6b5c62d02b7d5199fc83d435f6a37a8eac5))
+* **spanner/spansql:** Support grant/revoke view, change stream, table function ([#7533](https://github.com/googleapis/google-cloud-go/issues/7533)) ([9c61215](https://github.com/googleapis/google-cloud-go/commit/9c612159647d540e694ec9e84cab5cdd1c94d2b8))
+* **spanner:** Add x-goog-spanner-route-to-leader header to Spanner RPC contexts for RW/PDML transactions. ([#7500](https://github.com/googleapis/google-cloud-go/issues/7500)) ([fcab05f](https://github.com/googleapis/google-cloud-go/commit/fcab05faa5026896af76b762eed5b7b6b2e7ee07))
+* **spanner:** Adding new fields for Serverless analytics ([69067f8](https://github.com/googleapis/google-cloud-go/commit/69067f8c0075099a84dd9d40e438711881710784))
+* **spanner:** Enable custom decoding for list value ([#7463](https://github.com/googleapis/google-cloud-go/issues/7463)) ([3aeadcd](https://github.com/googleapis/google-cloud-go/commit/3aeadcd97eaf2707c2f6e288c8b72ef29f49a185))
+* **spanner:** Update iam and longrunning deps ([91a1f78](https://github.com/googleapis/google-cloud-go/commit/91a1f784a109da70f63b96414bba8a9b4254cddd))
+
+
+### Bug Fixes
+
+* **spanner/spansql:** Fix SQL for CREATE CHANGE STREAM TableName; case ([#7514](https://github.com/googleapis/google-cloud-go/issues/7514)) ([fc5fd86](https://github.com/googleapis/google-cloud-go/commit/fc5fd8652771aeca73e7a28ee68134155a5a9499))
+* **spanner:** Correcting the proto field Id for field data_boost_enabled ([00fff3a](https://github.com/googleapis/google-cloud-go/commit/00fff3a58bed31274ab39af575876dab91d708c9))
+
+## [1.44.0](https://github.com/googleapis/google-cloud-go/compare/spanner/v1.43.0...spanner/v1.44.0) (2023-02-01)
+
+
+### Features
+
+* **spanner/spansql:** Add support for ALTER INDEX statement ([#7287](https://github.com/googleapis/google-cloud-go/issues/7287)) ([fbe1bd4](https://github.com/googleapis/google-cloud-go/commit/fbe1bd4d0806302a48ff4a5822867757893a5f2d))
+* **spanner/spansql:** Add support for managing the optimizer statistics package ([#7283](https://github.com/googleapis/google-cloud-go/issues/7283)) ([e528221](https://github.com/googleapis/google-cloud-go/commit/e52822139e2821a11873c2d6af85a5fea07700e8))
+* **spanner:** Add support for Optimistic Concurrency Control ([#7332](https://github.com/googleapis/google-cloud-go/issues/7332)) ([48ba16f](https://github.com/googleapis/google-cloud-go/commit/48ba16f3a09893a3527a22838ad1e9ff829da15b))
+
+## [1.43.0](https://github.com/googleapis/google-cloud-go/compare/spanner/v1.42.0...spanner/v1.43.0) (2023-01-19)
+
+
+### Features
+
+* **spanner/spansql:** Add support for change stream value_capture_type option ([#7201](https://github.com/googleapis/google-cloud-go/issues/7201)) ([27b3398](https://github.com/googleapis/google-cloud-go/commit/27b33988f078779c2d641f776a11b2095a5ccc51))
+* **spanner/spansql:** Support `default_leader` database option ([#7187](https://github.com/googleapis/google-cloud-go/issues/7187)) ([88adaa2](https://github.com/googleapis/google-cloud-go/commit/88adaa216832467560c19e61528b5ce5f1e5ff76))
+* **spanner:** Add REST client ([06a54a1](https://github.com/googleapis/google-cloud-go/commit/06a54a16a5866cce966547c51e203b9e09a25bc0))
+* **spanner:** Inline begin transaction for ReadWriteTransactions ([#7149](https://github.com/googleapis/google-cloud-go/issues/7149)) ([2ce3606](https://github.com/googleapis/google-cloud-go/commit/2ce360644439a386aeaad7df5f47541667bd621b))
+
+
+### Bug Fixes
+
+* **spanner:** Fix integration tests data race ([#7229](https://github.com/googleapis/google-cloud-go/issues/7229)) ([a741024](https://github.com/googleapis/google-cloud-go/commit/a741024abd6fb1f073831503c2717b2a44226a59))
+
+## [1.42.0](https://github.com/googleapis/google-cloud-go/compare/spanner/v1.41.0...spanner/v1.42.0) (2022-12-14)
+
+
+### Features
+
+* **spanner:** Add database roles ([#5701](https://github.com/googleapis/google-cloud-go/issues/5701)) ([6bb95ef](https://github.com/googleapis/google-cloud-go/commit/6bb95efb7997692a52c321e787e633a5045b21f8))
+* **spanner:** Rewrite signatures and type in terms of new location ([620e6d8](https://github.com/googleapis/google-cloud-go/commit/620e6d828ad8641663ae351bfccfe46281e817ad))
+
+
+### Bug Fixes
+
+* **spanner:** Fallback to check grpc error message if ResourceType is nil for checking sessionNotFound errors ([#7163](https://github.com/googleapis/google-cloud-go/issues/7163)) ([2552e09](https://github.com/googleapis/google-cloud-go/commit/2552e092cff01e0d6b80fefaa7877f77e36db6be))
+
+## [1.41.0](https://github.com/googleapis/google-cloud-go/compare/spanner/v1.40.0...spanner/v1.41.0) (2022-12-01)
+
+
+### Features
+
+* **spanner:** Start generating proto stubs ([#7030](https://github.com/googleapis/google-cloud-go/issues/7030)) ([41f446f](https://github.com/googleapis/google-cloud-go/commit/41f446f891a17c97278879f2207fd58996fd038c))
+
+## [1.40.0](https://github.com/googleapis/google-cloud-go/compare/spanner/v1.39.0...spanner/v1.40.0) (2022-11-03)
+
+
+### Features
+
+* **spanner/spansql:** Add support for interval arg of some date/timestamp functions ([#6950](https://github.com/googleapis/google-cloud-go/issues/6950)) ([1ce0f7d](https://github.com/googleapis/google-cloud-go/commit/1ce0f7d38778068fd1d9a171377067739f4ea8d6))
+* **spanner:** Configurable logger ([#6958](https://github.com/googleapis/google-cloud-go/issues/6958)) ([bd85442](https://github.com/googleapis/google-cloud-go/commit/bd85442bc6fb8c18d1a7c6d73850d220c3973c46)), refs [#6957](https://github.com/googleapis/google-cloud-go/issues/6957)
+* **spanner:** PG JSONB support ([#6874](https://github.com/googleapis/google-cloud-go/issues/6874)) ([5b14658](https://github.com/googleapis/google-cloud-go/commit/5b146587939ccc3403945c756cbf68e6f2d41fda))
+* **spanner:** Update result_set.proto to return undeclared parameters in ExecuteSql API ([de4e16a](https://github.com/googleapis/google-cloud-go/commit/de4e16a498354ea7271f5b396f7cb2bb430052aa))
+* **spanner:** Update transaction.proto to include different lock modes ([caf4afa](https://github.com/googleapis/google-cloud-go/commit/caf4afa139ad7b38b6df3e3b17b8357c81e1fd6c))
+
+## [1.39.0](https://github.com/googleapis/google-cloud-go/compare/spanner/v1.38.0...spanner/v1.39.0) (2022-09-21)
+
+
+### Features
+
+* **spanner/admin/database:** Add custom instance config operations ([ec1a190](https://github.com/googleapis/google-cloud-go/commit/ec1a190abbc4436fcaeaa1421c7d9df624042752))
+* **spanner/admin/instance:** Add custom instance config operations ([ef2b0b1](https://github.com/googleapis/google-cloud-go/commit/ef2b0b1d4de9beb9005537ae48d7d8e1c0f23b98))
+* **spanner/spannersql:** Add backticks when name contains a hypen ([#6621](https://github.com/googleapis/google-cloud-go/issues/6621)) ([e88ca66](https://github.com/googleapis/google-cloud-go/commit/e88ca66ca950e15d9011322dbfca3c88ccceb0ec))
+* **spanner/spansql:** Add support for create, alter and drop change … ([#6669](https://github.com/googleapis/google-cloud-go/issues/6669)) ([cc4620a](https://github.com/googleapis/google-cloud-go/commit/cc4620a5ee3a9129a4cdd48d90d4060ba0bbcd58))
+* **spanner:** Retry spanner transactions and mutations when RST_STREAM error ([#6699](https://github.com/googleapis/google-cloud-go/issues/6699)) ([1b56cd0](https://github.com/googleapis/google-cloud-go/commit/1b56cd0ec31bc32362259fc722907e092bae081a))
+
+
+### Bug Fixes
+
+* **spanner/admin/database:** Revert add custom instance config operations (change broke client libraries; reverting before any are released) ([ec1a190](https://github.com/googleapis/google-cloud-go/commit/ec1a190abbc4436fcaeaa1421c7d9df624042752))
+* **spanner:** Destroy session when client is closing ([#6700](https://github.com/googleapis/google-cloud-go/issues/6700)) ([a1ce541](https://github.com/googleapis/google-cloud-go/commit/a1ce5410f1e0f4d68dae0ddc790518e9978faf0c))
+* **spanner:** Spanner sessions will be cleaned up from the backend ([#6679](https://github.com/googleapis/google-cloud-go/issues/6679)) ([c27097e](https://github.com/googleapis/google-cloud-go/commit/c27097e236abeb8439a67ad9b716d05c001aea2e))
+
 ## [1.38.0](https://github.com/googleapis/google-cloud-go/compare/spanner/v1.37.0...spanner/v1.38.0) (2022-09-03)
 
 

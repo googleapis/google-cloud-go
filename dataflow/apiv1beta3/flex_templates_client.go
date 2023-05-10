@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -25,13 +25,13 @@ import (
 	"net/http"
 	"net/url"
 
+	dataflowpb "cloud.google.com/go/dataflow/apiv1beta3/dataflowpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
-	dataflowpb "google.golang.org/genproto/googleapis/dataflow/v1beta3"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/encoding/protojson"
@@ -295,6 +295,11 @@ func (c *flexTemplatesRESTClient) LaunchFlexTemplate(ctx context.Context, req *d
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1b3/projects/%v/locations/%v/flexTemplates:launch", req.GetProjectId(), req.GetLocation())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project_id", url.QueryEscape(req.GetProjectId()), "location", url.QueryEscape(req.GetLocation())))

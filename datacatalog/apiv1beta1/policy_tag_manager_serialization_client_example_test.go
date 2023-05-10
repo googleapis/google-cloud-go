@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import (
 	"context"
 
 	datacatalog "cloud.google.com/go/datacatalog/apiv1beta1"
-	datacatalogpb "google.golang.org/genproto/googleapis/cloud/datacatalog/v1beta1"
+	datacatalogpb "cloud.google.com/go/datacatalog/apiv1beta1/datacatalogpb"
 )
 
 func ExampleNewPolicyTagManagerSerializationClient() {
@@ -72,7 +72,7 @@ func ExamplePolicyTagManagerSerializationClient_ImportTaxonomies() {
 
 	req := &datacatalogpb.ImportTaxonomiesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datacatalog/v1beta1#ImportTaxonomiesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/datacatalog/apiv1beta1/datacatalogpb#ImportTaxonomiesRequest.
 	}
 	resp, err := c.ImportTaxonomies(ctx, req)
 	if err != nil {
@@ -97,7 +97,7 @@ func ExamplePolicyTagManagerSerializationClient_ExportTaxonomies() {
 
 	req := &datacatalogpb.ExportTaxonomiesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datacatalog/v1beta1#ExportTaxonomiesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/datacatalog/apiv1beta1/datacatalogpb#ExportTaxonomiesRequest.
 	}
 	resp, err := c.ExportTaxonomies(ctx, req)
 	if err != nil {

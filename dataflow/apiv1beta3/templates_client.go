@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -26,13 +26,13 @@ import (
 	"net/url"
 	"time"
 
+	dataflowpb "cloud.google.com/go/dataflow/apiv1beta3/dataflowpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
-	dataflowpb "google.golang.org/genproto/googleapis/dataflow/v1beta3"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/encoding/protojson"
@@ -364,6 +364,11 @@ func (c *templatesRESTClient) CreateJobFromTemplate(ctx context.Context, req *da
 	}
 	baseUrl.Path += fmt.Sprintf("/v1b3/projects/%v/locations/%v/templates", req.GetProjectId(), req.GetLocation())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project_id", url.QueryEscape(req.GetProjectId()), "location", url.QueryEscape(req.GetLocation())))
 
@@ -425,6 +430,7 @@ func (c *templatesRESTClient) LaunchTemplate(ctx context.Context, req *dataflowp
 	baseUrl.Path += fmt.Sprintf("/v1b3/projects/%v/locations/%v/templates:launch", req.GetProjectId(), req.GetLocation())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetDynamicTemplate().GetGcsPath() != "" {
 		params.Add("dynamicTemplate.gcsPath", fmt.Sprintf("%v", req.GetDynamicTemplate().GetGcsPath()))
 	}
@@ -494,6 +500,7 @@ func (c *templatesRESTClient) GetTemplate(ctx context.Context, req *dataflowpb.G
 	baseUrl.Path += fmt.Sprintf("/v1b3/projects/%v/locations/%v/templates:get", req.GetProjectId(), req.GetLocation())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetGcsPath() != "" {
 		params.Add("gcsPath", fmt.Sprintf("%v", req.GetGcsPath()))
 	}

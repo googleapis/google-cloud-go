@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,10 +20,10 @@ import (
 	"context"
 
 	cx "cloud.google.com/go/dialogflow/cx/apiv3beta1"
+	cxpb "cloud.google.com/go/dialogflow/cx/apiv3beta1/cxpb"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	"google.golang.org/api/iterator"
-	cxpb "google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 )
 
 func ExampleNewFlowsClient() {
@@ -75,7 +75,7 @@ func ExampleFlowsClient_CreateFlow() {
 
 	req := &cxpb.CreateFlowRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1#CreateFlowRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/cx/apiv3beta1/cxpb#CreateFlowRequest.
 	}
 	resp, err := c.CreateFlow(ctx, req)
 	if err != nil {
@@ -100,7 +100,7 @@ func ExampleFlowsClient_DeleteFlow() {
 
 	req := &cxpb.DeleteFlowRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1#DeleteFlowRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/cx/apiv3beta1/cxpb#DeleteFlowRequest.
 	}
 	err = c.DeleteFlow(ctx, req)
 	if err != nil {
@@ -123,7 +123,7 @@ func ExampleFlowsClient_ListFlows() {
 
 	req := &cxpb.ListFlowsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1#ListFlowsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/cx/apiv3beta1/cxpb#ListFlowsRequest.
 	}
 	it := c.ListFlows(ctx, req)
 	for {
@@ -154,7 +154,7 @@ func ExampleFlowsClient_GetFlow() {
 
 	req := &cxpb.GetFlowRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1#GetFlowRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/cx/apiv3beta1/cxpb#GetFlowRequest.
 	}
 	resp, err := c.GetFlow(ctx, req)
 	if err != nil {
@@ -179,7 +179,7 @@ func ExampleFlowsClient_UpdateFlow() {
 
 	req := &cxpb.UpdateFlowRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1#UpdateFlowRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/cx/apiv3beta1/cxpb#UpdateFlowRequest.
 	}
 	resp, err := c.UpdateFlow(ctx, req)
 	if err != nil {
@@ -204,7 +204,7 @@ func ExampleFlowsClient_TrainFlow() {
 
 	req := &cxpb.TrainFlowRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1#TrainFlowRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/cx/apiv3beta1/cxpb#TrainFlowRequest.
 	}
 	op, err := c.TrainFlow(ctx, req)
 	if err != nil {
@@ -232,7 +232,7 @@ func ExampleFlowsClient_ValidateFlow() {
 
 	req := &cxpb.ValidateFlowRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1#ValidateFlowRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/cx/apiv3beta1/cxpb#ValidateFlowRequest.
 	}
 	resp, err := c.ValidateFlow(ctx, req)
 	if err != nil {
@@ -257,7 +257,7 @@ func ExampleFlowsClient_GetFlowValidationResult() {
 
 	req := &cxpb.GetFlowValidationResultRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1#GetFlowValidationResultRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/cx/apiv3beta1/cxpb#GetFlowValidationResultRequest.
 	}
 	resp, err := c.GetFlowValidationResult(ctx, req)
 	if err != nil {
@@ -282,7 +282,7 @@ func ExampleFlowsClient_ImportFlow() {
 
 	req := &cxpb.ImportFlowRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1#ImportFlowRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/cx/apiv3beta1/cxpb#ImportFlowRequest.
 	}
 	op, err := c.ImportFlow(ctx, req)
 	if err != nil {
@@ -312,7 +312,7 @@ func ExampleFlowsClient_ExportFlow() {
 
 	req := &cxpb.ExportFlowRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1#ExportFlowRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/cx/apiv3beta1/cxpb#ExportFlowRequest.
 	}
 	op, err := c.ExportFlow(ctx, req)
 	if err != nil {
@@ -398,7 +398,7 @@ func ExampleFlowsClient_CancelOperation() {
 
 	req := &longrunningpb.CancelOperationRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/longrunning#CancelOperationRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/longrunning/autogen/longrunningpb#CancelOperationRequest.
 	}
 	err = c.CancelOperation(ctx, req)
 	if err != nil {
@@ -421,7 +421,7 @@ func ExampleFlowsClient_GetOperation() {
 
 	req := &longrunningpb.GetOperationRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/longrunning#GetOperationRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/longrunning/autogen/longrunningpb#GetOperationRequest.
 	}
 	resp, err := c.GetOperation(ctx, req)
 	if err != nil {
@@ -446,7 +446,7 @@ func ExampleFlowsClient_ListOperations() {
 
 	req := &longrunningpb.ListOperationsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/longrunning#ListOperationsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/longrunning/autogen/longrunningpb#ListOperationsRequest.
 	}
 	it := c.ListOperations(ctx, req)
 	for {

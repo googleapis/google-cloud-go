@@ -4,47 +4,52 @@ items:
   name: cloud.google.com/go/storage
   id: storage
   summary: "<p>Package storage provides an easy way to work with Google Cloud Storage.\nGoogle
-    Cloud Storage stores data in named objects, which are grouped into buckets.</p>\n<p>More
-    information about Google Cloud Storage is available at\nhttps://cloud.google.com/storage/docs.</p>\n<p>See
-    https://pkg.go.dev/cloud.google.com/go for authentication, timeouts,\nconnection
-    pooling and similar aspects of this package.</p>\n<h3>Creating a Client</h3>\n<p>To
-    start working with this package, create a client:</p>\n<pre class=\"prettyprint\"><code>ctx
+    Cloud Storage stores data in named objects, which are grouped into buckets.\n<p>More
+    information about Google Cloud Storage is available at\n<a href=\"https://cloud.google.com/storage/docs\">https://cloud.google.com/storage/docs</a>.\n<p>See
+    <a href=\"https://pkg.go.dev/cloud.google.com/go\">https://pkg.go.dev/cloud.google.com/go</a>
+    for authentication, timeouts,\nconnection pooling and similar aspects of this
+    package.\n<h2 id=\"hdr-Creating_a_Client\">Creating a Client</h2>\n<p>To start
+    working with this package, create a <a href=\"#Client\">Client</a>:\n<pre class=\"prettyprint\">ctx
     := context.Background()\nclient, err := storage.NewClient(ctx)\nif err != nil
-    {\n    // TODO: Handle error.\n}\n</code></pre><p>The client will use your default
+    {\n    // TODO: Handle error.\n}\n</pre>\n<p>The client will use your default
     application credentials. Clients should be\nreused instead of created as needed.
-    The methods of Client are safe for\nconcurrent use by multiple goroutines.</p>\n<p>If
+    The methods of <a href=\"#Client\">Client</a> are safe for\nconcurrent use by
+    multiple goroutines.\n<p>You may configure the client by passing in options from
+    the <a href=\"/google.golang.org/api/option\">google.golang.org/api/option</a>\npackage.
+    You may also use options defined in this package, such as <a href=\"#WithJSONReads\">WithJSONReads</a>.\n<p>If
     you only wish to access public data, you can create\nan unauthenticated client
-    with</p>\n<pre class=\"prettyprint\"><code>client, err := storage.NewClient(ctx,
-    option.WithoutAuthentication())\n</code></pre><p>To use an emulator with this
-    library, you can set the STORAGE_EMULATOR_HOST\nenvironment variable to the address
-    at which your emulator is running. This will\nsend requests to that address instead
-    of to Cloud Storage. You can then create\nand use a client as usual:</p>\n<pre
-    class=\"prettyprint\"><code>// Set STORAGE_EMULATOR_HOST environment variable.\nerr
-    := os.Setenv(&quot;STORAGE_EMULATOR_HOST&quot;, &quot;localhost:9000&quot;)\nif
+    with\n<pre class=\"prettyprint\">client, err := storage.NewClient(ctx, option.WithoutAuthentication())\n</pre>\n<p>To
+    use an emulator with this library, you can set the STORAGE_EMULATOR_HOST\nenvironment
+    variable to the address at which your emulator is running. This will\nsend requests
+    to that address instead of to Cloud Storage. You can then create\nand use a client
+    as usual:\n<pre class=\"prettyprint\">// Set STORAGE_EMULATOR_HOST environment
+    variable.\nerr := os.Setenv(&quot;STORAGE_EMULATOR_HOST&quot;, &quot;localhost:9000&quot;)\nif
     err != nil {\n    // TODO: Handle error.\n}\n\n// Create client as usual.\nclient,
     err := storage.NewClient(ctx)\nif err != nil {\n    // TODO: Handle error.\n}\n\n//
     This request is now directed to http://localhost:9000/storage/v1/b\n// instead
     of https://storage.googleapis.com/storage/v1/b\nif err := client.Bucket(&quot;my-bucket&quot;).Create(ctx,
-    projectID, nil); err != nil {\n    // TODO: Handle error.\n}\n</code></pre><p>Please
-    note that there is no official emulator for Cloud Storage.</p>\n<h3>Buckets</h3>\n<p>A
+    projectID, nil); err != nil {\n    // TODO: Handle error.\n}\n</pre>\n<p>Please
+    note that there is no official emulator for Cloud Storage.\n<h2 id=\"hdr-Buckets\">Buckets</h2>\n<p>A
     Google Cloud Storage bucket is a collection of objects. To work with a\nbucket,
-    make a bucket handle:</p>\n<pre class=\"prettyprint\"><code>bkt := client.Bucket(bucketName)\n</code></pre><p>A
-    handle is a reference to a bucket. You can have a handle even if the\nbucket doesn't
-    exist yet. To create a bucket in Google Cloud Storage,\ncall Create on the handle:</p>\n<pre
-    class=\"prettyprint\"><code>if err := bkt.Create(ctx, projectID, nil); err !=
-    nil {\n    // TODO: Handle error.\n}\n</code></pre><p>Note that although buckets
-    are associated with projects, bucket names are\nglobal across all projects.</p>\n<p>Each
-    bucket has associated metadata, represented in this package by\nBucketAttrs. The
-    third argument to BucketHandle.Create allows you to set\nthe initial BucketAttrs
-    of a bucket. To retrieve a bucket's attributes, use\nAttrs:</p>\n<pre class=\"prettyprint\"><code>attrs,
-    err := bkt.Attrs(ctx)\nif err != nil {\n    // TODO: Handle error.\n}\nfmt.Printf(&quot;bucket
-    %s, created at %s, is located in %s with storage class %s\\n&quot;,\n    attrs.Name,
-    attrs.Created, attrs.Location, attrs.StorageClass)\n</code></pre><h3>Objects</h3>\n<p>An
-    object holds arbitrary data as a sequence of bytes, like a file. You\nrefer to
-    objects using a handle, just as with buckets, but unlike buckets\nyou don't explicitly
+    make a bucket handle:\n<pre class=\"prettyprint\">bkt := client.Bucket(bucketName)\n</pre>\n<p>A
+    handle is a reference to a bucket. You can have a handle even if the\nbucket doesn&apos;t
+    exist yet. To create a bucket in Google Cloud Storage,\ncall <a href=\"#BucketHandle.Create\">BucketHandle.Create</a>:\n<pre
+    class=\"prettyprint\">if err := bkt.Create(ctx, projectID, nil); err != nil {\n
+    \   // TODO: Handle error.\n}\n</pre>\n<p>Note that although buckets are associated
+    with projects, bucket names are\nglobal across all projects.\n<p>Each bucket has
+    associated metadata, represented in this package by\n<a href=\"#BucketAttrs\">BucketAttrs</a>.
+    The third argument to <a href=\"#BucketHandle.Create\">BucketHandle.Create</a>
+    allows you to set\nthe initial <a href=\"#BucketAttrs\">BucketAttrs</a> of a bucket.
+    To retrieve a bucket&apos;s attributes, use\n<a href=\"#BucketHandle.Attrs\">BucketHandle.Attrs</a>:\n<pre
+    class=\"prettyprint\">attrs, err := bkt.Attrs(ctx)\nif err != nil {\n    // TODO:
+    Handle error.\n}\nfmt.Printf(&quot;bucket %s, created at %s, is located in %s
+    with storage class %s\\n&quot;,\n    attrs.Name, attrs.Created, attrs.Location,
+    attrs.StorageClass)\n</pre>\n<h2 id=\"hdr-Objects\">Objects</h2>\n<p>An object
+    holds arbitrary data as a sequence of bytes, like a file. You\nrefer to objects
+    using a handle, just as with buckets, but unlike buckets\nyou don&apos;t explicitly
     create an object. Instead, the first time you write\nto an object it will be created.
-    You can use the standard Go io.Reader\nand io.Writer interfaces to read and write
-    object data:</p>\n<pre class=\"prettyprint\"><code>obj := bkt.Object(&quot;data&quot;)\n//
+    You can use the standard Go <a href=\"/io#Reader\">io.Reader</a>\nand <a href=\"/io#Writer\">io.Writer</a>
+    interfaces to read and write object data:\n<pre class=\"prettyprint\">obj := bkt.Object(&quot;data&quot;)\n//
     Write something to obj.\n// w implements io.Writer.\nw := obj.NewWriter(ctx)\n//
     Write some text to obj. This will either create the object or overwrite whatever
     is there already.\nif _, err := fmt.Fprintf(w, &quot;This object contains text.\\n&quot;);
@@ -52,82 +57,106 @@ items:
     err := w.Close(); err != nil {\n    // TODO: Handle error.\n}\n\n// Read it back.\nr,
     err := obj.NewReader(ctx)\nif err != nil {\n    // TODO: Handle error.\n}\ndefer
     r.Close()\nif _, err := io.Copy(os.Stdout, r); err != nil {\n    // TODO: Handle
-    error.\n}\n// Prints &quot;This object contains text.&quot;\n</code></pre><p>Objects
-    also have attributes, which you can fetch with Attrs:</p>\n<pre class=\"prettyprint\"><code>objAttrs,
-    err := obj.Attrs(ctx)\nif err != nil {\n    // TODO: Handle error.\n}\nfmt.Printf(&quot;object
-    %s has size %d and can be read using %s\\n&quot;,\n    objAttrs.Name, objAttrs.Size,
-    objAttrs.MediaLink)\n</code></pre><h3>Listing objects</h3>\n<p>Listing objects
-    in a bucket is done with the Bucket.Objects method:</p>\n<pre class=\"prettyprint\"><code>query
-    := &amp;storage.Query{Prefix: &quot;&quot;}\n\nvar names []string\nit := bkt.Objects(ctx,
-    query)\nfor {\n    attrs, err := it.Next()\n    if err == iterator.Done {\n        break\n
-    \   }\n    if err != nil {\n        log.Fatal(err)\n    }\n    names = append(names,
-    attrs.Name)\n}\n</code></pre><p>Objects are listed lexicographically by name.
-    To filter objects\nlexicographically, Query.StartOffset and/or Query.EndOffset
-    can be used:</p>\n<pre class=\"prettyprint\"><code>query := &amp;storage.Query{\n
+    error.\n}\n// Prints &quot;This object contains text.&quot;\n</pre>\n<p>Objects
+    also have attributes, which you can fetch with <a href=\"#ObjectHandle.Attrs\">ObjectHandle.Attrs</a>:\n<pre
+    class=\"prettyprint\">objAttrs, err := obj.Attrs(ctx)\nif err != nil {\n    //
+    TODO: Handle error.\n}\nfmt.Printf(&quot;object %s has size %d and can be read
+    using %s\\n&quot;,\n    objAttrs.Name, objAttrs.Size, objAttrs.MediaLink)\n</pre>\n<h2
+    id=\"hdr-Listing_objects\">Listing objects</h2>\n<p>Listing objects in a bucket
+    is done with the <a href=\"#BucketHandle.Objects\">BucketHandle.Objects</a> method:\n<pre
+    class=\"prettyprint\">query := &amp;storage.Query{Prefix: &quot;&quot;}\n\nvar
+    names []string\nit := bkt.Objects(ctx, query)\nfor {\n    attrs, err := it.Next()\n
+    \   if err == iterator.Done {\n        break\n    }\n    if err != nil {\n        log.Fatal(err)\n
+    \   }\n    names = append(names, attrs.Name)\n}\n</pre>\n<p>Objects are listed
+    lexicographically by name. To filter objects\nlexicographically, [Query.StartOffset]
+    and/or [Query.EndOffset] can be used:\n<pre class=\"prettyprint\">query := &amp;storage.Query{\n
     \   Prefix: &quot;&quot;,\n    StartOffset: &quot;bar/&quot;,  // Only list objects
     lexicographically &gt;= &quot;bar/&quot;\n    EndOffset: &quot;foo/&quot;,    //
-    Only list objects lexicographically &lt; &quot;foo/&quot;\n}\n\n// ... as before\n</code></pre><p>If
+    Only list objects lexicographically &lt; &quot;foo/&quot;\n}\n\n// ... as before\n</pre>\n<p>If
     only a subset of object attributes is needed when listing, specifying this\nsubset
-    using Query.SetAttrSelection may speed up the listing process:</p>\n<pre class=\"prettyprint\"><code>query
-    := &amp;storage.Query{Prefix: &quot;&quot;}\nquery.SetAttrSelection([]string{&quot;Name&quot;})\n\n//
-    ... as before\n</code></pre><h3>ACLs</h3>\n<p>Both objects and buckets have ACLs
-    (Access Control Lists). An ACL is a list of\nACLRules, each of which specifies
+    using <a href=\"#Query.SetAttrSelection\">Query.SetAttrSelection</a> may speed
+    up the listing process:\n<pre class=\"prettyprint\">query := &amp;storage.Query{Prefix:
+    &quot;&quot;}\nquery.SetAttrSelection([]string{&quot;Name&quot;})\n\n// ... as
+    before\n</pre>\n<h2 id=\"hdr-ACLs\">ACLs</h2>\n<p>Both objects and buckets have
+    ACLs (Access Control Lists). An ACL is a list of\nACLRules, each of which specifies
     the role of a user, group or project. ACLs\nare suitable for fine-grained control,
-    but you may prefer using IAM to control\naccess at the project level (see\nhttps://cloud.google.com/storage/docs/access-control/iam).</p>\n<p>To
-    list the ACLs of a bucket or object, obtain an ACLHandle and call its List method:</p>\n<pre
-    class=\"prettyprint\"><code>acls, err := obj.ACL().List(ctx)\nif err != nil {\n
-    \   // TODO: Handle error.\n}\nfor _, rule := range acls {\n    fmt.Printf(&quot;%s
-    has role %s\\n&quot;, rule.Entity, rule.Role)\n}\n</code></pre><p>You can also
-    set and delete ACLs.</p>\n<h3>Conditions</h3>\n<p>Every object has a generation
-    and a metageneration. The generation changes\nwhenever the content changes, and
-    the metageneration changes whenever the\nmetadata changes. Conditions let you
-    check these values before an operation;\nthe operation only executes if the conditions
-    match. You can use conditions to\nprevent race conditions in read-modify-write
-    operations.</p>\n<p>For example, say you've read an object's metadata into objAttrs.
-    Now\nyou want to write to that object, but only if its contents haven't changed\nsince
-    you read it. Here is how to express that:</p>\n<pre class=\"prettyprint\"><code>w
+    but you may prefer using IAM to control\naccess at the project level (see <a href=\"https://cloud.google.com/storage/docs/access-control/iam\">Cloud
+    Storage IAM docs</a>.\n<p>To list the ACLs of a bucket or object, obtain an <a
+    href=\"#ACLHandle\">ACLHandle</a> and call <a href=\"#ACLHandle.List\">ACLHandle.List</a>:\n<pre
+    class=\"prettyprint\">acls, err := obj.ACL().List(ctx)\nif err != nil {\n    //
+    TODO: Handle error.\n}\nfor _, rule := range acls {\n    fmt.Printf(&quot;%s has
+    role %s\\n&quot;, rule.Entity, rule.Role)\n}\n</pre>\n<p>You can also set and
+    delete ACLs.\n<h2 id=\"hdr-Conditions\">Conditions</h2>\n<p>Every object has a
+    generation and a metageneration. The generation changes\nwhenever the content
+    changes, and the metageneration changes whenever the\nmetadata changes. <a href=\"#Conditions\">Conditions</a>
+    let you check these values before an operation;\nthe operation only executes if
+    the conditions match. You can use conditions to\nprevent race conditions in read-modify-write
+    operations.\n<p>For example, say you&apos;ve read an object&apos;s metadata into
+    objAttrs. Now\nyou want to write to that object, but only if its contents haven&apos;t
+    changed\nsince you read it. Here is how to express that:\n<pre class=\"prettyprint\">w
     = obj.If(storage.Conditions{GenerationMatch: objAttrs.Generation}).NewWriter(ctx)\n//
-    Proceed with writing as above.\n</code></pre><h3>Signed URLs</h3>\n<p>You can
-    obtain a URL that lets anyone read or write an object for a limited time.\nSigning
+    Proceed with writing as above.\n</pre>\n<h2 id=\"hdr-Signed_URLs\">Signed URLs</h2>\n<p>You
+    can obtain a URL that lets anyone read or write an object for a limited time.\nSigning
     a URL requires credentials authorized to sign a URL. To use the same\nauthentication
-    that was used when instantiating the Storage client, use the\nBucketHandle.SignedURL
-    method.</p>\n<pre class=\"prettyprint\"><code>url, err := client.Bucket(bucketName).SignedURL(objectName,
-    opts)\nif err != nil {\n    // TODO: Handle error.\n}\nfmt.Println(url)\n</code></pre><p>You
-    can also sign a URL wihout creating a client. See the documentation of\nSignedURL
-    for details.</p>\n<pre class=\"prettyprint\"><code>url, err := storage.SignedURL(bucketName,
-    &quot;shared-object&quot;, opts)\nif err != nil {\n    // TODO: Handle error.\n}\nfmt.Println(url)\n</code></pre><h3>Post
-    Policy V4 Signed Request</h3>\n<p>A type of signed request that allows uploads
-    through HTML forms directly to Cloud Storage with\ntemporary permission. Conditions
-    can be applied to restrict how the HTML form is used and exercised\nby a user.</p>\n<p>For
-    more information, please see https://cloud.google.com/storage/docs/xml-api/post-object
-    as well\nas the documentation of BucketHandle.GenerateSignedPostPolicyV4.</p>\n<pre
-    class=\"prettyprint\"><code>pv4, err := client.Bucket(bucketName).GenerateSignedPostPolicyV4(objectName,
+    that was used when instantiating the Storage client, use\n<a href=\"#BucketHandle.SignedURL\">BucketHandle.SignedURL</a>.\n<pre
+    class=\"prettyprint\">url, err := client.Bucket(bucketName).SignedURL(objectName,
+    opts)\nif err != nil {\n    // TODO: Handle error.\n}\nfmt.Println(url)\n</pre>\n<p>You
+    can also sign a URL without creating a client. See the documentation of\n<a href=\"#SignedURL\">SignedURL</a>
+    for details.\n<pre class=\"prettyprint\">url, err := storage.SignedURL(bucketName,
+    &quot;shared-object&quot;, opts)\nif err != nil {\n    // TODO: Handle error.\n}\nfmt.Println(url)\n</pre>\n<h2
+    id=\"hdr-Post_Policy_V4_Signed_Request\">Post Policy V4 Signed Request</h2>\n<p>A
+    type of signed request that allows uploads through HTML forms directly to Cloud
+    Storage with\ntemporary permission. Conditions can be applied to restrict how
+    the HTML form is used and exercised\nby a user.\n<p>For more information, please
+    see the <a href=\"https://cloud.google.com/storage/docs/xml-api/post-object\">XML
+    POST Object docs</a> as well\nas the documentation of <a href=\"#BucketHandle.GenerateSignedPostPolicyV4\">BucketHandle.GenerateSignedPostPolicyV4</a>.\n<pre
+    class=\"prettyprint\">pv4, err := client.Bucket(bucketName).GenerateSignedPostPolicyV4(objectName,
     opts)\nif err != nil {\n    // TODO: Handle error.\n}\nfmt.Printf(&quot;URL: %s\\nFields;
-    %v\\n&quot;, pv4.URL, pv4.Fields)\n</code></pre><h3>Errors</h3>\n<p>Errors returned
-    by this client are often of the type googleapi.Error.\nThese errors can be introspected
-    for more information by using errors.As\nwith the richer googleapi.Error type.
-    For example:</p>\n<pre class=\"prettyprint\"><code>var e &#42;googleapi.Error\nif
-    ok := errors.As(err, &amp;e); ok {\n\t  if e.Code == 409 { ... }\n}\n</code></pre><p>See
-    https://pkg.go.dev/google.golang.org/api/googleapi#Error for more information.</p>\n<h3>Retrying
-    failed requests</h3>\n<p>Methods in this package may retry calls that fail with
-    transient errors.\nRetrying continues indefinitely unless the controlling context
-    is canceled, the\nclient is closed, or a non-transient error is received. To stop
-    retries from\ncontinuing, use context timeouts or cancellation.</p>\n<p>The retry
-    strategy in this library follows best practices for Cloud Storage. By\ndefault,
-    operations are retried only if they are idempotent, and exponential\nbackoff with
-    jitter is employed. In addition, errors are only retried if they\nare defined
-    as transient by the service. See\nhttps://cloud.google.com/storage/docs/retry-strategy
-    for more information.</p>\n<p>Users can configure non-default retry behavior for
-    a single library call (using\nBucketHandle.Retryer and ObjectHandle.Retryer) or
-    for all calls made by a\nclient (using Client.SetRetry). For example:</p>\n<pre
-    class=\"prettyprint\"><code>o := client.Bucket(bucket).Object(object).Retryer(\n\t//
+    %v\\n&quot;, pv4.URL, pv4.Fields)\n</pre>\n<h2 id=\"hdr-Credential_requirements_for_signing\">Credential
+    requirements for signing</h2>\n<p>If the GoogleAccessID and PrivateKey option
+    fields are not provided, they will\nbe automatically detected by <a href=\"#BucketHandle.SignedURL\">BucketHandle.SignedURL</a>
+    and\n<a href=\"#BucketHandle.GenerateSignedPostPolicyV4\">BucketHandle.GenerateSignedPostPolicyV4</a>
+    if any of the following are true:\n<ul>\n<li>you are authenticated to the Storage
+    Client with a service account&apos;s\ndownloaded private key, either directly
+    in code or by setting the\nGOOGLE_APPLICATION_CREDENTIALS environment variable
+    (see <a href=\"https://cloud.google.com/storage/docs/authentication#libauth\">Other
+    Environments</a>),\n<li>your application is running on Google Compute Engine (GCE),
+    or\n<li>you are logged into <a href=\"https://cloud.google.com/sdk/gcloud/reference/auth/application-default/login\">gcloud
+    using application default credentials</a>\nwith <a href=\"https://cloud.google.com/sdk/gcloud/reference#--impersonate-service-account\">impersonation
+    enabled</a>.\n</ul>\n<p>Detecting GoogleAccessID may not be possible if you are
+    authenticated using a\ntoken source or using <a href=\"/google.golang.org/api/option#WithHTTPClient\">option.WithHTTPClient</a>.
+    In this case, you can provide a\nservice account email for GoogleAccessID and
+    the client will attempt to sign\nthe URL or Post Policy using that service account.\n<p>To
+    generate the signature, you must have:\n<ul>\n<li>iam.serviceAccounts.signBlob
+    permissions on the GoogleAccessID service\naccount, and\n<li>the <a href=\"https://console.developers.google.com/apis/api/iamcredentials.googleapis.com/overview\">IAM
+    Service Account Credentials API</a> enabled (unless authenticating\nwith a downloaded
+    private key).\n</ul>\n<h2 id=\"hdr-Errors\">Errors</h2>\n<p>Errors returned by
+    this client are often of the type <a href=\"/google.golang.org/api/googleapi#Error\">googleapi.Error</a>.\nThese
+    errors can be introspected for more information by using <a href=\"/errors#As\">errors.As</a>\nwith
+    the richer <a href=\"/google.golang.org/api/googleapi#Error\">googleapi.Error</a>
+    type. For example:\n<pre class=\"prettyprint\">var e &#42;googleapi.Error\nif
+    ok := errors.As(err, &amp;e); ok {\n\t  if e.Code == 409 { ... }\n}\n</pre>\n<h2
+    id=\"hdr-Retrying_failed_requests\">Retrying failed requests</h2>\n<p>Methods
+    in this package may retry calls that fail with transient errors.\nRetrying continues
+    indefinitely unless the controlling context is canceled, the\nclient is closed,
+    or a non-transient error is received. To stop retries from\ncontinuing, use context
+    timeouts or cancellation.\n<p>The retry strategy in this library follows best
+    practices for Cloud Storage. By\ndefault, operations are retried only if they
+    are idempotent, and exponential\nbackoff with jitter is employed. In addition,
+    errors are only retried if they\nare defined as transient by the service. See
+    the <a href=\"https://cloud.google.com/storage/docs/retry-strategy\">Cloud Storage
+    retry docs</a>\nfor more information.\n<p>Users can configure non-default retry
+    behavior for a single library call (using\n<a href=\"#BucketHandle.Retryer\">BucketHandle.Retryer</a>
+    and <a href=\"#ObjectHandle.Retryer\">ObjectHandle.Retryer</a>) or for all calls
+    made by a\nclient (using <a href=\"#Client.SetRetry\">Client.SetRetry</a>). For
+    example:\n<pre class=\"prettyprint\">o := client.Bucket(bucket).Object(object).Retryer(\n\t//
     Use WithBackoff to change the timing of the exponential backoff.\n\tstorage.WithBackoff(gax.Backoff{\n\t\tInitial:
     \   2 &#42; time.Second,\n\t}),\n\t// Use WithPolicy to configure the idempotency
     policy. RetryAlways will\n\t// retry the operation even if it is non-idempotent.\n\tstorage.WithPolicy(storage.RetryAlways),\n)\n\n//
     Use a context timeout to set an overall deadline on the call, including all\n//
     potential retries.\nctx, cancel := context.WithTimeout(ctx, 5&#42;time.Second)\ndefer
     cancel()\n\n// Delete an object using the specified strategy and timeout.\nif
-    err := o.Delete(ctx); err != nil {\n\t// Handle err.\n}\n</code></pre>"
+    err := o.Delete(ctx); err != nil {\n\t// Handle err.\n}\n</pre>\n"
   type: package
   langs:
   - go
@@ -146,6 +175,7 @@ items:
   - cloud.google.com/go/storage.ACLRole
   - cloud.google.com/go/storage.RoleOwner,RoleReader,RoleWriter
   - cloud.google.com/go/storage.ACLRule
+  - cloud.google.com/go/storage.Autoclass
   - cloud.google.com/go/storage.BucketAttrs
   - cloud.google.com/go/storage.BucketAttrsToUpdate
   - cloud.google.com/go/storage.BucketAttrsToUpdate.DeleteLabel
@@ -193,6 +223,7 @@ items:
   - cloud.google.com/go/storage.Conditions
   - cloud.google.com/go/storage.Copier
   - cloud.google.com/go/storage.Copier.Run
+  - cloud.google.com/go/storage.CustomPlacementConfig
   - cloud.google.com/go/storage.HMACKey
   - cloud.google.com/go/storage.HMACKeyAttrsToUpdate
   - cloud.google.com/go/storage.HMACKeyHandle
@@ -286,7 +317,10 @@ items:
   - cloud.google.com/go/storage.Writer.Close
   - cloud.google.com/go/storage.Writer.CloseWithError
   - cloud.google.com/go/storage.Writer.Write
+  - cloud.google.com/go/storage.ShouldRetry
   - cloud.google.com/go/storage.SignedURL
+  - cloud.google.com/go/storage.WithJSONReads
+  - cloud.google.com/go/storage.WithXMLReads
   alt_link: https://pkg.go.dev/cloud.google.com/go/storage
   friendlyApiName: Storage API
 - uid: cloud.google.com/go/storage.DeleteAction,SetStorageClassAction,AbortIncompleteMPUAction
@@ -423,7 +457,7 @@ items:
       entity <a href="#cloud_google_com_go_storage_ACLEntity">ACLEntity</a>) (err
       <a href="https://pkg.go.dev/builtin#error">error</a>)
   codeexamples:
-  - content: "package main\n\nimport (\n\t\"cloud.google.com/go/storage\"\n\t\"context\"\n)\n\nfunc
+  - content: "package main\n\nimport (\n\t\"context\"\n\n\t\"cloud.google.com/go/storage\"\n)\n\nfunc
       main() {\n\tctx := context.Background()\n\tclient, err := storage.NewClient(ctx)\n\tif
       err != nil {\n\t\t// TODO: handle error.\n\t}\n\t// No longer grant access to
       the bucket to everyone on the Internet.\n\tif err := client.Bucket(\"my-bucket\").ACL().Delete(ctx,
@@ -444,7 +478,7 @@ items:
       (rules []<a href="#cloud_google_com_go_storage_ACLRule">ACLRule</a>, err <a
       href="https://pkg.go.dev/builtin#error">error</a>)
   codeexamples:
-  - content: "package main\n\nimport (\n\t\"cloud.google.com/go/storage\"\n\t\"context\"\n\t\"fmt\"\n)\n\nfunc
+  - content: "package main\n\nimport (\n\t\"context\"\n\t\"fmt\"\n\n\t\"cloud.google.com/go/storage\"\n)\n\nfunc
       main() {\n\tctx := context.Background()\n\tclient, err := storage.NewClient(ctx)\n\tif
       err != nil {\n\t\t// TODO: handle error.\n\t}\n\t// List the default object
       ACLs for my-bucket.\n\taclRules, err := client.Bucket(\"my-bucket\").DefaultObjectACL().List(ctx)\n\tif
@@ -465,7 +499,7 @@ items:
       entity <a href="#cloud_google_com_go_storage_ACLEntity">ACLEntity</a>, role
       <a href="#cloud_google_com_go_storage_ACLRole">ACLRole</a>) (err <a href="https://pkg.go.dev/builtin#error">error</a>)
   codeexamples:
-  - content: "package main\n\nimport (\n\t\"cloud.google.com/go/storage\"\n\t\"context\"\n)\n\nfunc
+  - content: "package main\n\nimport (\n\t\"context\"\n\n\t\"cloud.google.com/go/storage\"\n)\n\nfunc
       main() {\n\tctx := context.Background()\n\tclient, err := storage.NewClient(ctx)\n\tif
       err != nil {\n\t\t// TODO: handle error.\n\t}\n\t// Let any authenticated user
       read my-bucket/my-object.\n\tobj := client.Bucket(\"my-bucket\").Object(\"my-object\")\n\tif
@@ -510,6 +544,25 @@ items:
       href=\"#cloud_google_com_go_storage_ACLRole\">ACLRole</a>\n\tDomain      <a
       href=\"https://pkg.go.dev/builtin#string\">string</a>\n\tEmail       <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\tProjectTeam
       *<a href=\"#cloud_google_com_go_storage_ProjectTeam\">ProjectTeam</a>\n}"
+- uid: cloud.google.com/go/storage.Autoclass
+  name: Autoclass
+  id: Autoclass
+  summary: |
+    Autoclass holds the bucket's autoclass configuration. If enabled,
+    allows for the automatic selection of the best storage class
+    based on object access patterns. See
+    https://cloud.google.com/storage/docs/using-autoclass for more information.
+  parent: cloud.google.com/go/storage
+  type: type
+  langs:
+  - go
+  syntax:
+    content: "type Autoclass struct {\n\t// Enabled specifies whether the autoclass
+      feature is enabled\n\t// on the bucket.\n\tEnabled <a href=\"https://pkg.go.dev/builtin#bool\">bool</a>\n\t//
+      ToggleTime is the time from which Autoclass was last toggled.\n\t// If Autoclass
+      is enabled when the bucket is created, the ToggleTime\n\t// is set to the bucket
+      creation time. This field is read-only.\n\tToggleTime <a href=\"https://pkg.go.dev/time\">time</a>.<a
+      href=\"https://pkg.go.dev/time#Time\">Time</a>\n}"
 - uid: cloud.google.com/go/storage.BucketAttrs
   name: BucketAttrs
   id: BucketAttrs
@@ -548,14 +601,17 @@ items:
       It should be set only when creating a bucket.\n\t// It is always empty for BucketAttrs
       returned from the service.\n\t// See https://cloud.google.com/storage/docs/json_api/v1/buckets/insert\n\t//
       for valid values.\n\tPredefinedDefaultObjectACL <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\n\t//
-      Location is the location of the bucket. It defaults to \"US\".\n\tLocation <a
-      href=\"https://pkg.go.dev/builtin#string\">string</a>\n\n\t// MetaGeneration
-      is the metadata generation of the bucket.\n\t// This field is read-only.\n\tMetaGeneration
-      <a href=\"https://pkg.go.dev/builtin#int64\">int64</a>\n\n\t// StorageClass
-      is the default storage class of the bucket. This defines\n\t// how objects in
-      the bucket are stored and determines the SLA\n\t// and the cost of storage.
-      Typical values are \"STANDARD\", \"NEARLINE\",\n\t// \"COLDLINE\" and \"ARCHIVE\".
-      Defaults to \"STANDARD\".\n\t// See https://cloud.google.com/storage/docs/storage-classes
+      Location is the location of the bucket. It defaults to \"US\".\n\t// If specifying
+      a dual-region, CustomPlacementConfig should be set in conjunction.\n\tLocation
+      <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\n\t// The bucket's
+      custom placement configuration that holds a list of\n\t// regional locations
+      for custom dual regions.\n\tCustomPlacementConfig *<a href=\"#cloud_google_com_go_storage_CustomPlacementConfig\">CustomPlacementConfig</a>\n\n\t//
+      MetaGeneration is the metadata generation of the bucket.\n\t// This field is
+      read-only.\n\tMetaGeneration <a href=\"https://pkg.go.dev/builtin#int64\">int64</a>\n\n\t//
+      StorageClass is the default storage class of the bucket. This defines\n\t//
+      how objects in the bucket are stored and determines the SLA\n\t// and the cost
+      of storage. Typical values are \"STANDARD\", \"NEARLINE\",\n\t// \"COLDLINE\"
+      and \"ARCHIVE\". Defaults to \"STANDARD\".\n\t// See https://cloud.google.com/storage/docs/storage-classes
       for all\n\t// valid values.\n\tStorageClass <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\n\t//
       Created is the creation time of the bucket.\n\t// This field is read-only.\n\tCreated
       <a href=\"https://pkg.go.dev/time\">time</a>.<a href=\"https://pkg.go.dev/time#Time\">Time</a>\n\n\t//
@@ -588,7 +644,10 @@ items:
       <a href=\"https://pkg.go.dev/builtin#uint64\">uint64</a>\n\n\t// RPO configures
       the Recovery Point Objective (RPO) policy of the bucket.\n\t// Set to RPOAsyncTurbo
       to turn on Turbo Replication for a bucket.\n\t// See https://cloud.google.com/storage/docs/managing-turbo-replication
-      for\n\t// more information.\n\tRPO <a href=\"#cloud_google_com_go_storage_RPO\">RPO</a>\n}"
+      for\n\t// more information.\n\tRPO <a href=\"#cloud_google_com_go_storage_RPO\">RPO</a>\n\n\t//
+      Autoclass holds the bucket's autoclass configuration. If enabled,\n\t// allows
+      for the automatic selection of the best storage class\n\t// based on object
+      access patterns.\n\tAutoclass *<a href=\"#cloud_google_com_go_storage_Autoclass\">Autoclass</a>\n}"
 - uid: cloud.google.com/go/storage.BucketAttrsToUpdate
   name: BucketAttrsToUpdate
   id: BucketAttrsToUpdate
@@ -646,7 +705,9 @@ items:
       <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\n\t// RPO configures
       the Recovery Point Objective (RPO) policy of the bucket.\n\t// Set to RPOAsyncTurbo
       to turn on Turbo Replication for a bucket.\n\t// See https://cloud.google.com/storage/docs/managing-turbo-replication
-      for\n\t// more information.\n\tRPO <a href=\"#cloud_google_com_go_storage_RPO\">RPO</a>\n\t//
+      for\n\t// more information.\n\tRPO <a href=\"#cloud_google_com_go_storage_RPO\">RPO</a>\n\n\t//
+      If set, updates the autoclass configuration of the bucket.\n\t// See https://cloud.google.com/storage/docs/using-autoclass
+      for more information.\n\tAutoclass *<a href=\"#cloud_google_com_go_storage_Autoclass\">Autoclass</a>\n\t//
       contains filtered or unexported fields\n}"
 - uid: cloud.google.com/go/storage.BucketAttrsToUpdate.DeleteLabel
   name: |
@@ -723,7 +784,7 @@ items:
   syntax:
     content: "type BucketHandle struct {\n\t// contains filtered or unexported fields\n}"
   codeexamples:
-  - content: "package main\n\nimport (\n\t\"cloud.google.com/go/storage\"\n\t\"context\"\n\t\"fmt\"\n)\n\nfunc
+  - content: "package main\n\nimport (\n\t\"context\"\n\t\"fmt\"\n\n\t\"cloud.google.com/go/storage\"\n)\n\nfunc
       main() {\n\tctx := context.Background()\n\tclient, err := storage.NewClient(ctx)\n\tif
       err != nil {\n\t\t// TODO: handle error.\n\t}\n\n\tattrs, err := client.Bucket(\"my-bucket\").Attrs(ctx)\n\tif
       err == storage.ErrBucketNotExist {\n\t\tfmt.Println(\"The bucket does not exist\")\n\t\treturn\n\t}\n\tif
@@ -764,7 +825,7 @@ items:
       *<a href="#cloud_google_com_go_storage_Notification">Notification</a>, err <a
       href="https://pkg.go.dev/builtin#error">error</a>)
   codeexamples:
-  - content: "package main\n\nimport (\n\t\"cloud.google.com/go/storage\"\n\t\"context\"\n\t\"fmt\"\n)\n\nfunc
+  - content: "package main\n\nimport (\n\t\"context\"\n\t\"fmt\"\n\n\t\"cloud.google.com/go/storage\"\n)\n\nfunc
       main() {\n\tctx := context.Background()\n\tclient, err := storage.NewClient(ctx)\n\tif
       err != nil {\n\t\t// TODO: handle error.\n\t}\n\tb := client.Bucket(\"my-bucket\")\n\tn,
       err := b.AddNotification(ctx, &storage.Notification{\n\t\tTopicProjectID: \"my-project\",\n\t\tTopicID:
@@ -786,7 +847,7 @@ items:
       (attrs *<a href="#cloud_google_com_go_storage_BucketAttrs">BucketAttrs</a>,
       err <a href="https://pkg.go.dev/builtin#error">error</a>)
   codeexamples:
-  - content: "package main\n\nimport (\n\t\"cloud.google.com/go/storage\"\n\t\"context\"\n\t\"fmt\"\n)\n\nfunc
+  - content: "package main\n\nimport (\n\t\"context\"\n\t\"fmt\"\n\n\t\"cloud.google.com/go/storage\"\n)\n\nfunc
       main() {\n\tctx := context.Background()\n\tclient, err := storage.NewClient(ctx)\n\tif
       err != nil {\n\t\t// TODO: handle error.\n\t}\n\tattrs, err := client.Bucket(\"my-bucket\").Attrs(ctx)\n\tif
       err != nil {\n\t\t// TODO: handle error.\n\t}\n\tfmt.Println(attrs)\n}\n"
@@ -807,7 +868,7 @@ items:
       projectID <a href="https://pkg.go.dev/builtin#string">string</a>, attrs *<a
       href="#cloud_google_com_go_storage_BucketAttrs">BucketAttrs</a>) (err <a href="https://pkg.go.dev/builtin#error">error</a>)
   codeexamples:
-  - content: "package main\n\nimport (\n\t\"cloud.google.com/go/storage\"\n\t\"context\"\n)\n\nfunc
+  - content: "package main\n\nimport (\n\t\"context\"\n\n\t\"cloud.google.com/go/storage\"\n)\n\nfunc
       main() {\n\tctx := context.Background()\n\tclient, err := storage.NewClient(ctx)\n\tif
       err != nil {\n\t\t// TODO: handle error.\n\t}\n\tif err := client.Bucket(\"my-bucket\").Create(ctx,
       \"my-project\", nil); err != nil {\n\t\t// TODO: handle error.\n\t}\n}\n"
@@ -841,7 +902,7 @@ items:
       Delete(ctx <a href="https://pkg.go.dev/context">context</a>.<a href="https://pkg.go.dev/context#Context">Context</a>)
       (err <a href="https://pkg.go.dev/builtin#error">error</a>)
   codeexamples:
-  - content: "package main\n\nimport (\n\t\"cloud.google.com/go/storage\"\n\t\"context\"\n)\n\nfunc
+  - content: "package main\n\nimport (\n\t\"context\"\n\n\t\"cloud.google.com/go/storage\"\n)\n\nfunc
       main() {\n\tctx := context.Background()\n\tclient, err := storage.NewClient(ctx)\n\tif
       err != nil {\n\t\t// TODO: handle error.\n\t}\n\tif err := client.Bucket(\"my-bucket\").Delete(ctx);
       err != nil {\n\t\t// TODO: handle error.\n\t}\n}\n"
@@ -860,7 +921,7 @@ items:
       DeleteNotification(ctx <a href="https://pkg.go.dev/context">context</a>.<a href="https://pkg.go.dev/context#Context">Context</a>,
       id <a href="https://pkg.go.dev/builtin#string">string</a>) (err <a href="https://pkg.go.dev/builtin#error">error</a>)
   codeexamples:
-  - content: "package main\n\nimport (\n\t\"cloud.google.com/go/storage\"\n\t\"context\"\n)\n\nvar
+  - content: "package main\n\nimport (\n\t\"context\"\n\n\t\"cloud.google.com/go/storage\"\n)\n\nvar
       notificationID string\n\nfunc main() {\n\tctx := context.Background()\n\tclient,
       err := storage.NewClient(ctx)\n\tif err != nil {\n\t\t// TODO: handle error.\n\t}\n\tb
       := client.Bucket(\"my-bucket\")\n\t// TODO: Obtain notificationID from BucketHandle.AddNotification\n\t//
@@ -874,18 +935,11 @@ items:
     GenerateSignedPostPolicyV4 generates a PostPolicyV4 value from bucket, object and opts.
     The generated URL and fields will then allow an unauthenticated client to perform multipart uploads.
 
-    This method only requires the Expires field in the specified PostPolicyV4Options
-    to be non-nil. If not provided, it attempts to fill the GoogleAccessID and PrivateKey
-    from the GOOGLE_APPLICATION_CREDENTIALS environment variable.
-    If you are authenticating with a custom HTTP client, Service Account based
-    auto-detection will be hindered.
+    This method requires the Expires field in the specified PostPolicyV4Options
+    to be non-nil. You may need to set the GoogleAccessID and PrivateKey fields
+    in some cases. Read more on the [automatic detection of credentials] for this method.
 
-    If no private key is found, it attempts to use the GoogleAccessID to sign the URL.
-    This requires the IAM Service Account Credentials API to be enabled
-    (https://console.developers.google.com/apis/api/iamcredentials.googleapis.com/overview)
-    and iam.serviceAccounts.signBlob permissions on the GoogleAccessID service account.
-    If you do not want these fields set for you, you may pass them in through opts or use
-    GenerateSignedPostPolicyV4(bucket, name string, opts *PostPolicyV4Options) instead.
+    [automatic detection of credentials]: https://pkg.go.dev/cloud.google.com/go/storage#hdr-Credential_requirements_for_signing
   parent: cloud.google.com/go/storage.BucketHandle
   type: method
   langs:
@@ -950,7 +1004,7 @@ items:
       LockRetentionPolicy(ctx <a href="https://pkg.go.dev/context">context</a>.<a
       href="https://pkg.go.dev/context#Context">Context</a>) <a href="https://pkg.go.dev/builtin#error">error</a>
   codeexamples:
-  - content: "package main\n\nimport (\n\t\"cloud.google.com/go/storage\"\n\t\"context\"\n)\n\nfunc
+  - content: "package main\n\nimport (\n\t\"context\"\n\n\t\"cloud.google.com/go/storage\"\n)\n\nfunc
       main() {\n\tctx := context.Background()\n\tclient, err := storage.NewClient(ctx)\n\tif
       err != nil {\n\t\t// TODO: handle error.\n\t}\n\tb := client.Bucket(\"my-bucket\")\n\tattrs,
       err := b.Attrs(ctx)\n\tif err != nil {\n\t\t// TODO: handle error.\n\t}\n\t//
@@ -975,7 +1029,7 @@ items:
       (n map[<a href="https://pkg.go.dev/builtin#string">string</a>]*<a href="#cloud_google_com_go_storage_Notification">Notification</a>,
       err <a href="https://pkg.go.dev/builtin#error">error</a>)
   codeexamples:
-  - content: "package main\n\nimport (\n\t\"cloud.google.com/go/storage\"\n\t\"context\"\n\t\"fmt\"\n)\n\nfunc
+  - content: "package main\n\nimport (\n\t\"context\"\n\t\"fmt\"\n\n\t\"cloud.google.com/go/storage\"\n)\n\nfunc
       main() {\n\tctx := context.Background()\n\tclient, err := storage.NewClient(ctx)\n\tif
       err != nil {\n\t\t// TODO: handle error.\n\t}\n\tb := client.Bucket(\"my-bucket\")\n\tns,
       err := b.Notifications(ctx)\n\tif err != nil {\n\t\t// TODO: handle error.\n\t}\n\tfor
@@ -984,14 +1038,11 @@ items:
   name: |
     func (*BucketHandle) Object
   id: Object
-  summary: |
-    Object returns an ObjectHandle, which provides operations on the named object.
-    This call does not perform any network operations such as fetching the object or verifying its existence.
-    Use methods on ObjectHandle to perform network operations.
-
-    name must consist entirely of valid UTF-8-encoded runes. The full specification
-    for valid object names can be found at:
-      https://cloud.google.com/storage/docs/naming-objects
+  summary: "Object returns an ObjectHandle, which provides operations on the named
+    object.\nThis call does not perform any network operations such as fetching the
+    object or verifying its existence.\nUse methods on ObjectHandle to perform network
+    operations.\n\nname must consist entirely of valid UTF-8-encoded runes. The full
+    specification\nfor valid object names can be found at:\n\n\thttps://cloud.google.com/storage/docs/naming-objects\n"
   parent: cloud.google.com/go/storage.BucketHandle
   type: method
   langs:
@@ -1018,7 +1069,7 @@ items:
       Objects(ctx <a href="https://pkg.go.dev/context">context</a>.<a href="https://pkg.go.dev/context#Context">Context</a>,
       q *<a href="#cloud_google_com_go_storage_Query">Query</a>) *<a href="#cloud_google_com_go_storage_ObjectIterator">ObjectIterator</a>
   codeexamples:
-  - content: "package main\n\nimport (\n\t\"cloud.google.com/go/storage\"\n\t\"context\"\n)\n\nfunc
+  - content: "package main\n\nimport (\n\t\"context\"\n\n\t\"cloud.google.com/go/storage\"\n)\n\nfunc
       main() {\n\tctx := context.Background()\n\tclient, err := storage.NewClient(ctx)\n\tif
       err != nil {\n\t\t// TODO: handle error.\n\t}\n\tit := client.Bucket(\"my-bucket\").Objects(ctx,
       nil)\n\t_ = it // TODO: iterate using Next or iterator.Pager.\n}\n"
@@ -1050,22 +1101,17 @@ items:
   id: SignedURL
   summary: |
     SignedURL returns a URL for the specified object. Signed URLs allow anyone
-    access to a restricted resource for a limited time without needing a
-    Google account or signing in. For more information about signed URLs, see
-    https://cloud.google.com/storage/docs/accesscontrol#signed_urls_query_string_authentication
+    access to a restricted resource for a limited time without needing a Google
+    account or signing in.
+    For more information about signed URLs, see "[Overview of access control]."
 
-    This method only requires the Method and Expires fields in the specified
-    SignedURLOptions opts to be non-nil. If not provided, it attempts to fill the
-    GoogleAccessID and PrivateKey from the GOOGLE_APPLICATION_CREDENTIALS environment variable.
-    If you are authenticating with a custom HTTP client, Service Account based
-    auto-detection will be hindered.
+    This method requires the Method and Expires fields in the specified
+    SignedURLOptions to be non-nil. You may need to set the GoogleAccessID and
+    PrivateKey fields in some cases. Read more on the [automatic detection of credentials]
+    for this method.
 
-    If no private key is found, it attempts to use the GoogleAccessID to sign the URL.
-    This requires the IAM Service Account Credentials API to be enabled
-    (https://console.developers.google.com/apis/api/iamcredentials.googleapis.com/overview)
-    and iam.serviceAccounts.signBlob permissions on the GoogleAccessID service account.
-    If you do not want these fields set for you, you may pass them in through opts or use
-    SignedURL(bucket, name string, opts *SignedURLOptions) instead.
+    [Overview of access control]: https://cloud.google.com/storage/docs/accesscontrol#signed_urls_query_string_authentication
+    [automatic detection of credentials]: https://pkg.go.dev/cloud.google.com/go/storage#hdr-Credential_requirements_for_signing
   parent: cloud.google.com/go/storage.BucketHandle
   type: method
   langs:
@@ -1092,12 +1138,12 @@ items:
       (attrs *<a href="#cloud_google_com_go_storage_BucketAttrs">BucketAttrs</a>,
       err <a href="https://pkg.go.dev/builtin#error">error</a>)
   codeexamples:
-  - content: "package main\n\nimport (\n\t\"cloud.google.com/go/storage\"\n\t\"context\"\n\t\"fmt\"\n)\n\nfunc
+  - content: "package main\n\nimport (\n\t\"context\"\n\t\"fmt\"\n\n\t\"cloud.google.com/go/storage\"\n)\n\nfunc
       main() {\n\tctx := context.Background()\n\tclient, err := storage.NewClient(ctx)\n\tif
       err != nil {\n\t\t// TODO: handle error.\n\t}\n\t// Enable versioning in the
       bucket, regardless of its previous value.\n\tattrs, err := client.Bucket(\"my-bucket\").Update(ctx,\n\t\tstorage.BucketAttrsToUpdate{VersioningEnabled:
       true})\n\tif err != nil {\n\t\t// TODO: handle error.\n\t}\n\tfmt.Println(attrs)\n}\n"
-  - content: "package main\n\nimport (\n\t\"cloud.google.com/go/storage\"\n\t\"context\"\n\t\"fmt\"\n)\n\nfunc
+  - content: "package main\n\nimport (\n\t\"context\"\n\t\"fmt\"\n\n\t\"cloud.google.com/go/storage\"\n)\n\nfunc
       main() {\n\tctx := context.Background()\n\tclient, err := storage.NewClient(ctx)\n\tif
       err != nil {\n\t\t// TODO: handle error.\n\t}\n\tb := client.Bucket(\"my-bucket\")\n\tattrs,
       err := b.Attrs(ctx)\n\tif err != nil {\n\t\t// TODO: handle error.\n\t}\n\tvar
@@ -1158,7 +1204,7 @@ items:
       Next() (*<a href="#cloud_google_com_go_storage_BucketAttrs">BucketAttrs</a>,
       <a href="https://pkg.go.dev/builtin#error">error</a>)
   codeexamples:
-  - content: "package main\n\nimport (\n\t\"cloud.google.com/go/storage\"\n\t\"context\"\n\t\"fmt\"\n\t\"google.golang.org/api/iterator\"\n)\n\nfunc
+  - content: "package main\n\nimport (\n\t\"context\"\n\t\"fmt\"\n\n\t\"cloud.google.com/go/storage\"\n\t\"google.golang.org/api/iterator\"\n)\n\nfunc
       main() {\n\tctx := context.Background()\n\tclient, err := storage.NewClient(ctx)\n\tif
       err != nil {\n\t\t// TODO: handle error.\n\t}\n\tit := client.Buckets(ctx, \"my-project\")\n\tfor
       {\n\t\tbucketAttrs, err := it.Next()\n\t\tif err == iterator.Done {\n\t\t\tbreak\n\t\t}\n\t\tif
@@ -1277,6 +1323,9 @@ items:
 
     Clients should be reused instead of created as needed. The methods of Client
     are safe for concurrent use by multiple goroutines.
+
+    You may configure the client by passing in options from the [google.golang.org/api/option]
+    package. You may also use options defined in this package, such as [WithJSONReads].
   parent: cloud.google.com/go/storage.Client
   type: function
   langs:
@@ -1287,14 +1336,14 @@ items:
       href="https://pkg.go.dev/google.golang.org/api/option#ClientOption">ClientOption</a>)
       (*<a href="#cloud_google_com_go_storage_Client">Client</a>, <a href="https://pkg.go.dev/builtin#error">error</a>)
   codeexamples:
-  - content: "package main\n\nimport (\n\t\"cloud.google.com/go/storage\"\n\t\"context\"\n)\n\nfunc
+  - content: "package main\n\nimport (\n\t\"context\"\n\n\t\"cloud.google.com/go/storage\"\n)\n\nfunc
       main() {\n\tctx := context.Background()\n\t// Use Google Application Default
       Credentials to authorize and authenticate the client.\n\t// More information
       about Application Default Credentials and how to enable is at\n\t// https://developers.google.com/identity/protocols/application-default-credentials.\n\tclient,
       err := storage.NewClient(ctx)\n\tif err != nil {\n\t\t// TODO: handle error.\n\t}\n\t//
       Use the client.\n\n\t// Close the client when finished.\n\tif err := client.Close();
       err != nil {\n\t\t// TODO: handle error.\n\t}\n}\n"
-  - content: "package main\n\nimport (\n\t\"cloud.google.com/go/storage\"\n\t\"context\"\n\t\"google.golang.org/api/option\"\n)\n\nfunc
+  - content: "package main\n\nimport (\n\t\"context\"\n\n\t\"cloud.google.com/go/storage\"\n\t\"google.golang.org/api/option\"\n)\n\nfunc
       main() {\n\tctx := context.Background()\n\tclient, err := storage.NewClient(ctx,
       option.WithoutAuthentication())\n\tif err != nil {\n\t\t// TODO: handle error.\n\t}\n\t//
       Use the client.\n\n\t// Close the client when finished.\n\tif err := client.Close();
@@ -1304,14 +1353,10 @@ items:
   name: |
     func (*Client) Bucket
   id: Bucket
-  summary: |
-    Bucket returns a BucketHandle, which provides operations on the named bucket.
-    This call does not perform any network operations.
-
-    The supplied name must contain only lowercase letters, numbers, dashes,
-    underscores, and dots. The full specification for valid bucket names can be
-    found at:
-      https://cloud.google.com/storage/docs/bucket-naming
+  summary: "Bucket returns a BucketHandle, which provides operations on the named
+    bucket.\nThis call does not perform any network operations.\n\nThe supplied name
+    must contain only lowercase letters, numbers, dashes,\nunderscores, and dots.
+    The full specification for valid bucket names can be\nfound at:\n\n\thttps://cloud.google.com/storage/docs/bucket-naming\n"
   parent: cloud.google.com/go/storage.Client
   type: method
   langs:
@@ -1339,7 +1384,7 @@ items:
       <a href="https://pkg.go.dev/context">context</a>.<a href="https://pkg.go.dev/context#Context">Context</a>,
       projectID <a href="https://pkg.go.dev/builtin#string">string</a>) *<a href="#cloud_google_com_go_storage_BucketIterator">BucketIterator</a>
   codeexamples:
-  - content: "package main\n\nimport (\n\t\"cloud.google.com/go/storage\"\n\t\"context\"\n)\n\nfunc
+  - content: "package main\n\nimport (\n\t\"context\"\n\n\t\"cloud.google.com/go/storage\"\n)\n\nfunc
       main() {\n\tctx := context.Background()\n\tclient, err := storage.NewClient(ctx)\n\tif
       err != nil {\n\t\t// TODO: handle error.\n\t}\n\tit := client.Buckets(ctx, \"my-project\")\n\t_
       = it // TODO: iterate using Next or iterator.Pager.\n}\n"
@@ -1377,7 +1422,7 @@ items:
       opts ...<a href="#cloud_google_com_go_storage_HMACKeyOption">HMACKeyOption</a>)
       (*<a href="#cloud_google_com_go_storage_HMACKey">HMACKey</a>, <a href="https://pkg.go.dev/builtin#error">error</a>)
   codeexamples:
-  - content: "package main\n\nimport (\n\t\"cloud.google.com/go/storage\"\n\t\"context\"\n)\n\nfunc
+  - content: "package main\n\nimport (\n\t\"context\"\n\n\t\"cloud.google.com/go/storage\"\n)\n\nfunc
       main() {\n\tctx := context.Background()\n\tclient, err := storage.NewClient(ctx)\n\tif
       err != nil {\n\t\t// TODO: handle error.\n\t}\n\n\thkey, err := client.CreateHMACKey(ctx,
       \"project-id\", \"service-account-email\")\n\tif err != nil {\n\t\t// TODO:
@@ -1417,13 +1462,13 @@ items:
       projectID <a href="https://pkg.go.dev/builtin#string">string</a>, opts ...<a
       href="#cloud_google_com_go_storage_HMACKeyOption">HMACKeyOption</a>) *<a href="#cloud_google_com_go_storage_HMACKeysIterator">HMACKeysIterator</a>
   codeexamples:
-  - content: "package main\n\nimport (\n\t\"cloud.google.com/go/storage\"\n\t\"context\"\n\t\"google.golang.org/api/iterator\"\n)\n\nfunc
+  - content: "package main\n\nimport (\n\t\"context\"\n\n\t\"cloud.google.com/go/storage\"\n\t\"google.golang.org/api/iterator\"\n)\n\nfunc
       main() {\n\tctx := context.Background()\n\tclient, err := storage.NewClient(ctx)\n\tif
       err != nil {\n\t\t// TODO: handle error.\n\t}\n\n\titer := client.ListHMACKeys(ctx,
       \"project-id\")\n\tfor {\n\t\tkey, err := iter.Next()\n\t\tif err == iterator.Done
       {\n\t\t\tbreak\n\t\t}\n\t\tif err != nil {\n\t\t\t// TODO: handle error.\n\t\t}\n\t\t_
       = key // TODO: Use the key.\n\t}\n}\n"
-  - content: "package main\n\nimport (\n\t\"cloud.google.com/go/storage\"\n\t\"context\"\n\t\"google.golang.org/api/iterator\"\n)\n\nfunc
+  - content: "package main\n\nimport (\n\t\"context\"\n\n\t\"cloud.google.com/go/storage\"\n\t\"google.golang.org/api/iterator\"\n)\n\nfunc
       main() {\n\tctx := context.Background()\n\tclient, err := storage.NewClient(ctx)\n\tif
       err != nil {\n\t\t// TODO: handle error.\n\t}\n\n\titer := client.ListHMACKeys(ctx,
       \"project-id\", storage.ForHMACKeyServiceAccountEmail(\"service@account.email\"))\n\tfor
@@ -1431,7 +1476,7 @@ items:
       err != nil {\n\t\t\t// TODO: handle error.\n\t\t}\n\t\t_ = key // TODO: Use
       the key.\n\t}\n}\n"
     name: forServiceAccountEmail
-  - content: "package main\n\nimport (\n\t\"cloud.google.com/go/storage\"\n\t\"context\"\n\t\"google.golang.org/api/iterator\"\n)\n\nfunc
+  - content: "package main\n\nimport (\n\t\"context\"\n\n\t\"cloud.google.com/go/storage\"\n\t\"google.golang.org/api/iterator\"\n)\n\nfunc
       main() {\n\tctx := context.Background()\n\tclient, err := storage.NewClient(ctx)\n\tif
       err != nil {\n\t\t// TODO: handle error.\n\t}\n\n\titer := client.ListHMACKeys(ctx,
       \"project-id\", storage.ShowDeletedHMACKeys())\n\tfor {\n\t\tkey, err := iter.Next()\n\t\tif
@@ -1510,7 +1555,7 @@ items:
       (attrs *<a href="#cloud_google_com_go_storage_ObjectAttrs">ObjectAttrs</a>,
       err <a href="https://pkg.go.dev/builtin#error">error</a>)
   codeexamples:
-  - content: "package main\n\nimport (\n\t\"cloud.google.com/go/storage\"\n\t\"context\"\n\t\"fmt\"\n)\n\nfunc
+  - content: "package main\n\nimport (\n\t\"context\"\n\t\"fmt\"\n\n\t\"cloud.google.com/go/storage\"\n)\n\nfunc
       main() {\n\tctx := context.Background()\n\tclient, err := storage.NewClient(ctx)\n\tif
       err != nil {\n\t\t// TODO: handle error.\n\t}\n\tbkt := client.Bucket(\"bucketname\")\n\tsrc1
       := bkt.Object(\"o1\")\n\tsrc2 := bkt.Object(\"o2\")\n\tdst := bkt.Object(\"o3\")\n\n\t//
@@ -1541,17 +1586,19 @@ items:
       If GenerationMatch is zero, it has no effect.\n\t// Use DoesNotExist to specify
       that the object does not exist in the bucket.\n\tGenerationMatch <a href=\"https://pkg.go.dev/builtin#int64\">int64</a>\n\n\t//
       GenerationNotMatch specifies that the object must not have the given\n\t// generation
-      for the operation to occur.\n\t// If GenerationNotMatch is zero, it has no effect.\n\tGenerationNotMatch
-      <a href=\"https://pkg.go.dev/builtin#int64\">int64</a>\n\n\t// DoesNotExist
-      specifies that the object must not exist in the bucket for\n\t// the operation
-      to occur.\n\t// If DoesNotExist is false, it has no effect.\n\tDoesNotExist
+      for the operation to occur.\n\t// If GenerationNotMatch is zero, it has no effect.\n\t//
+      This condition only works for object reads if the WithJSONReads client\n\t//
+      option is set.\n\tGenerationNotMatch <a href=\"https://pkg.go.dev/builtin#int64\">int64</a>\n\n\t//
+      DoesNotExist specifies that the object must not exist in the bucket for\n\t//
+      the operation to occur.\n\t// If DoesNotExist is false, it has no effect.\n\tDoesNotExist
       <a href=\"https://pkg.go.dev/builtin#bool\">bool</a>\n\n\t// MetagenerationMatch
       specifies that the object must have the given\n\t// metageneration for the operation
       to occur.\n\t// If MetagenerationMatch is zero, it has no effect.\n\tMetagenerationMatch
       <a href=\"https://pkg.go.dev/builtin#int64\">int64</a>\n\n\t// MetagenerationNotMatch
       specifies that the object must not have the given\n\t// metageneration for the
-      operation to occur.\n\t// If MetagenerationNotMatch is zero, it has no effect.\n\tMetagenerationNotMatch
-      <a href=\"https://pkg.go.dev/builtin#int64\">int64</a>\n}"
+      operation to occur.\n\t// If MetagenerationNotMatch is zero, it has no effect.\n\t//
+      This condition only works for object reads if the WithJSONReads client\n\t//
+      option is set.\n\tMetagenerationNotMatch <a href=\"https://pkg.go.dev/builtin#int64\">int64</a>\n}"
 - uid: cloud.google.com/go/storage.Copier
   name: Copier
   id: Copier
@@ -1601,7 +1648,7 @@ items:
       (attrs *<a href="#cloud_google_com_go_storage_ObjectAttrs">ObjectAttrs</a>,
       err <a href="https://pkg.go.dev/builtin#error">error</a>)
   codeexamples:
-  - content: "package main\n\nimport (\n\t\"cloud.google.com/go/storage\"\n\t\"context\"\n\t\"fmt\"\n)\n\nfunc
+  - content: "package main\n\nimport (\n\t\"context\"\n\t\"fmt\"\n\n\t\"cloud.google.com/go/storage\"\n)\n\nfunc
       main() {\n\tctx := context.Background()\n\tclient, err := storage.NewClient(ctx)\n\tif
       err != nil {\n\t\t// TODO: handle error.\n\t}\n\tsrc := client.Bucket(\"bucketname\").Object(\"file1\")\n\tdst
       := client.Bucket(\"another-bucketname\").Object(\"file2\")\n\n\t// Copy content
@@ -1610,7 +1657,7 @@ items:
       TODO: Handle error, possibly resuming with copier.RewriteToken.\n\t}\n\tfmt.Println(attrs)\n\n\t//
       Just copy content.\n\tattrs, err = dst.CopierFrom(src).Run(ctx)\n\tif err !=
       nil {\n\t\t// TODO: Handle error. No way to resume.\n\t}\n\tfmt.Println(attrs)\n}\n"
-  - content: "package main\n\nimport (\n\t\"cloud.google.com/go/storage\"\n\t\"context\"\n\t\"log\"\n)\n\nfunc
+  - content: "package main\n\nimport (\n\t\"context\"\n\t\"log\"\n\n\t\"cloud.google.com/go/storage\"\n)\n\nfunc
       main() {\n\t// Display progress across multiple rewrite RPCs.\n\tctx := context.Background()\n\tclient,
       err := storage.NewClient(ctx)\n\tif err != nil {\n\t\t// TODO: handle error.\n\t}\n\tsrc
       := client.Bucket(\"bucketname\").Object(\"file1\")\n\tdst := client.Bucket(\"another-bucketname\").Object(\"file2\")\n\n\tcopier
@@ -1618,6 +1665,21 @@ items:
       uint64) {\n\t\tlog.Printf(\"copy %.1f%% done\", float64(copiedBytes)/float64(totalBytes)*100)\n\t}\n\tif
       _, err := copier.Run(ctx); err != nil {\n\t\t// TODO: handle error.\n\t}\n}\n"
     name: progress
+- uid: cloud.google.com/go/storage.CustomPlacementConfig
+  name: CustomPlacementConfig
+  id: CustomPlacementConfig
+  summary: |
+    CustomPlacementConfig holds the bucket's custom placement
+    configuration for Custom Dual Regions. See
+    https://cloud.google.com/storage/docs/locations#location-dr for more information.
+  parent: cloud.google.com/go/storage
+  type: type
+  langs:
+  - go
+  syntax:
+    content: "type CustomPlacementConfig struct {\n\t// The list of regional locations
+      in which data is placed.\n\t// Custom Dual Regions require exactly 2 regional
+      locations.\n\tDataLocations []<a href=\"https://pkg.go.dev/builtin#string\">string</a>\n}"
 - uid: cloud.google.com/go/storage.HMACKey
   name: HMACKey
   id: HMACKey
@@ -1696,7 +1758,7 @@ items:
       opts ...<a href="#cloud_google_com_go_storage_HMACKeyOption">HMACKeyOption</a>)
       <a href="https://pkg.go.dev/builtin#error">error</a>
   codeexamples:
-  - content: "package main\n\nimport (\n\t\"cloud.google.com/go/storage\"\n\t\"context\"\n)\n\nfunc
+  - content: "package main\n\nimport (\n\t\"context\"\n\n\t\"cloud.google.com/go/storage\"\n)\n\nfunc
       main() {\n\tctx := context.Background()\n\tclient, err := storage.NewClient(ctx)\n\tif
       err != nil {\n\t\t// TODO: handle error.\n\t}\n\n\thkh := client.HMACKeyHandle(\"project-id\",
       \"access-key-id\")\n\t// Make sure that the HMACKey being deleted has a status
@@ -1724,7 +1786,7 @@ items:
       opts ...<a href="#cloud_google_com_go_storage_HMACKeyOption">HMACKeyOption</a>)
       (*<a href="#cloud_google_com_go_storage_HMACKey">HMACKey</a>, <a href="https://pkg.go.dev/builtin#error">error</a>)
   codeexamples:
-  - content: "package main\n\nimport (\n\t\"cloud.google.com/go/storage\"\n\t\"context\"\n)\n\nfunc
+  - content: "package main\n\nimport (\n\t\"context\"\n\n\t\"cloud.google.com/go/storage\"\n)\n\nfunc
       main() {\n\tctx := context.Background()\n\tclient, err := storage.NewClient(ctx)\n\tif
       err != nil {\n\t\t// TODO: handle error.\n\t}\n\n\thkh := client.HMACKeyHandle(\"project-id\",
       \"access-key-id\")\n\thkey, err := hkh.Get(ctx)\n\tif err != nil {\n\t\t// TODO:
@@ -1748,7 +1810,7 @@ items:
       opts ...<a href="#cloud_google_com_go_storage_HMACKeyOption">HMACKeyOption</a>)
       (*<a href="#cloud_google_com_go_storage_HMACKey">HMACKey</a>, <a href="https://pkg.go.dev/builtin#error">error</a>)
   codeexamples:
-  - content: "package main\n\nimport (\n\t\"cloud.google.com/go/storage\"\n\t\"context\"\n)\n\nfunc
+  - content: "package main\n\nimport (\n\t\"context\"\n\n\t\"cloud.google.com/go/storage\"\n)\n\nfunc
       main() {\n\tctx := context.Background()\n\tclient, err := storage.NewClient(ctx)\n\tif
       err != nil {\n\t\t// TODO: handle error.\n\t}\n\n\thkh := client.HMACKeyHandle(\"project-id\",
       \"access-key-id\")\n\tukey, err := hkh.Update(ctx, storage.HMACKeyAttrsToUpdate{\n\t\tState:
@@ -1941,8 +2003,10 @@ items:
   langs:
   - go
   syntax:
-    content: "type LifecycleCondition struct {\n\t// AgeInDays is the age of the object
-      in days.\n\tAgeInDays <a href=\"https://pkg.go.dev/builtin#int64\">int64</a>\n\n\t//
+    content: "type LifecycleCondition struct {\n\t// AllObjects is used to select
+      all objects in a bucket by\n\t// setting AgeInDays to 0.\n\tAllObjects <a href=\"https://pkg.go.dev/builtin#bool\">bool</a>\n\n\t//
+      AgeInDays is the age of the object in days.\n\t// If you want to set AgeInDays
+      to `0` use AllObjects set to `true`.\n\tAgeInDays <a href=\"https://pkg.go.dev/builtin#int64\">int64</a>\n\n\t//
       CreatedBefore is the time the object was created.\n\t//\n\t// This condition
       is satisfied when an object is created before midnight of\n\t// the specified
       date in UTC.\n\tCreatedBefore <a href=\"https://pkg.go.dev/time\">time</a>.<a
@@ -1952,14 +2016,17 @@ items:
       in UTC.\n\t//\n\t// This condition can only be satisfied if CustomTime has been
       set.\n\tCustomTimeBefore <a href=\"https://pkg.go.dev/time\">time</a>.<a href=\"https://pkg.go.dev/time#Time\">Time</a>\n\n\t//
       DaysSinceCustomTime is the days elapsed since the CustomTime date of the\n\t//
-      object. This condition can only be satisfied if CustomTime has been set.\n\tDaysSinceCustomTime
-      <a href=\"https://pkg.go.dev/builtin#int64\">int64</a>\n\n\t// DaysSinceNoncurrentTime
-      is the days elapsed since the noncurrent timestamp\n\t// of the object. This
-      condition is relevant only for versioned objects.\n\tDaysSinceNoncurrentTime
-      <a href=\"https://pkg.go.dev/builtin#int64\">int64</a>\n\n\t// Liveness specifies
-      the object's liveness. Relevant only for versioned objects\n\tLiveness <a href=\"#cloud_google_com_go_storage_Liveness\">Liveness</a>\n\n\t//
-      MatchesPrefix is the condition matching an object if any of the\n\t// matches_prefix
-      strings are an exact prefix of the object's name.\n\tMatchesPrefix []<a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\n\t//
+      object. This condition can only be satisfied if CustomTime has been set.\n\t//
+      Note: Using `0` as the value will be ignored by the library and not sent to
+      the API.\n\tDaysSinceCustomTime <a href=\"https://pkg.go.dev/builtin#int64\">int64</a>\n\n\t//
+      DaysSinceNoncurrentTime is the days elapsed since the noncurrent timestamp\n\t//
+      of the object. This condition is relevant only for versioned objects.\n\t//
+      Note: Using `0` as the value will be ignored by the library and not sent to
+      the API.\n\tDaysSinceNoncurrentTime <a href=\"https://pkg.go.dev/builtin#int64\">int64</a>\n\n\t//
+      Liveness specifies the object's liveness. Relevant only for versioned objects\n\tLiveness
+      <a href=\"#cloud_google_com_go_storage_Liveness\">Liveness</a>\n\n\t// MatchesPrefix
+      is the condition matching an object if any of the\n\t// matches_prefix strings
+      are an exact prefix of the object's name.\n\tMatchesPrefix []<a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\n\t//
       MatchesStorageClasses is the condition matching the object's storage\n\t// class.\n\t//\n\t//
       Values include \"STANDARD\", \"NEARLINE\", \"COLDLINE\" and \"ARCHIVE\".\n\tMatchesStorageClasses
       []<a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\n\t// MatchesSuffix
@@ -1972,8 +2039,9 @@ items:
       href=\"https://pkg.go.dev/time#Time\">Time</a>\n\n\t// NumNewerVersions is the
       condition matching objects with a number of newer versions.\n\t//\n\t// If the
       value is N, this condition is satisfied when there are at least N\n\t// versions
-      (including the live version) newer than this version of the\n\t// object.\n\tNumNewerVersions
-      <a href=\"https://pkg.go.dev/builtin#int64\">int64</a>\n}"
+      (including the live version) newer than this version of the\n\t// object.\n\t//
+      Note: Using `0` as the value will be ignored by the library and not sent to
+      the API.\n\tNumNewerVersions <a href=\"https://pkg.go.dev/builtin#int64\">int64</a>\n}"
 - uid: cloud.google.com/go/storage.LifecycleRule
   name: LifecycleRule
   id: LifecycleRule
@@ -2138,23 +2206,19 @@ items:
       to manage object lifecycles.\n\t//\n\t// CustomTime cannot be removed once set
       on an object. It can be updated to a\n\t// later value but not to an earlier
       one. For more information see\n\t// https://cloud.google.com/storage/docs/metadata#custom-time
-      .\n\tCustomTime <a href=\"https://pkg.go.dev/time\">time</a>.<a href=\"https://pkg.go.dev/time#Time\">Time</a>\n}"
+      .\n\tCustomTime <a href=\"https://pkg.go.dev/time\">time</a>.<a href=\"https://pkg.go.dev/time#Time\">Time</a>\n\n\t//
+      ComponentCount is the number of objects contained within a composite object.\n\t//
+      For non-composite objects, the value will be zero.\n\t// This field is read-only.\n\tComponentCount
+      <a href=\"https://pkg.go.dev/builtin#int64\">int64</a>\n}"
 - uid: cloud.google.com/go/storage.ObjectAttrsToUpdate
   name: ObjectAttrsToUpdate
   id: ObjectAttrsToUpdate
-  summary: |
-    ObjectAttrsToUpdate is used to update the attributes of an object.
-    Only fields set to non-nil values will be updated.
-    For all fields except CustomTime, set the field to its zero value to delete
-    it. CustomTime cannot be deleted or changed to an earlier time once set.
-
-    For example, to change ContentType and delete ContentEncoding and
-    Metadata, use
-       ObjectAttrsToUpdate{
-           ContentType: "text/html",
-           ContentEncoding: "",
-           Metadata: map[string]string{},
-       }
+  summary: "ObjectAttrsToUpdate is used to update the attributes of an object.\nOnly
+    fields set to non-nil values will be updated.\nFor all fields except CustomTime,
+    set the field to its zero value to delete\nit. CustomTime cannot be deleted or
+    changed to an earlier time once set.\n\nFor example, to change ContentType and
+    delete ContentEncoding and\nMetadata, use\n\n\tObjectAttrsToUpdate{\n\t    ContentType:
+    \"text/html\",\n\t    ContentEncoding: \"\",\n\t    Metadata: map[string]string{},\n\t}\n"
   parent: cloud.google.com/go/storage
   type: type
   langs:
@@ -2194,7 +2258,7 @@ items:
   syntax:
     content: "type ObjectHandle struct {\n\t// contains filtered or unexported fields\n}"
   codeexamples:
-  - content: "package main\n\nimport (\n\t\"cloud.google.com/go/storage\"\n\t\"context\"\n\t\"fmt\"\n)\n\nfunc
+  - content: "package main\n\nimport (\n\t\"context\"\n\t\"fmt\"\n\n\t\"cloud.google.com/go/storage\"\n)\n\nfunc
       main() {\n\tctx := context.Background()\n\tclient, err := storage.NewClient(ctx)\n\tif
       err != nil {\n\t\t// TODO: handle error.\n\t}\n\n\tattrs, err := client.Bucket(\"my-bucket\").Object(\"my-object\").Attrs(ctx)\n\tif
       err == storage.ErrObjectNotExist {\n\t\tfmt.Println(\"The object does not exist\")\n\t\treturn\n\t}\n\tif
@@ -2233,11 +2297,11 @@ items:
       (attrs *<a href="#cloud_google_com_go_storage_ObjectAttrs">ObjectAttrs</a>,
       err <a href="https://pkg.go.dev/builtin#error">error</a>)
   codeexamples:
-  - content: "package main\n\nimport (\n\t\"cloud.google.com/go/storage\"\n\t\"context\"\n\t\"fmt\"\n)\n\nfunc
+  - content: "package main\n\nimport (\n\t\"context\"\n\t\"fmt\"\n\n\t\"cloud.google.com/go/storage\"\n)\n\nfunc
       main() {\n\tctx := context.Background()\n\tclient, err := storage.NewClient(ctx)\n\tif
       err != nil {\n\t\t// TODO: handle error.\n\t}\n\tobjAttrs, err := client.Bucket(\"my-bucket\").Object(\"my-object\").Attrs(ctx)\n\tif
       err != nil {\n\t\t// TODO: handle error.\n\t}\n\tfmt.Println(objAttrs)\n}\n"
-  - content: "package main\n\nimport (\n\t\"cloud.google.com/go/storage\"\n\t\"context\"\n\t\"fmt\"\n\t\"time\"\n)\n\nfunc
+  - content: "package main\n\nimport (\n\t\"context\"\n\t\"fmt\"\n\t\"time\"\n\n\t\"cloud.google.com/go/storage\"\n)\n\nfunc
       main() {\n\tctx := context.Background()\n\tclient, err := storage.NewClient(ctx)\n\tif
       err != nil {\n\t\t// TODO: handle error.\n\t}\n\tobj := client.Bucket(\"my-bucket\").Object(\"my-object\")\n\t//
       Read the object.\n\tobjAttrs1, err := obj.Attrs(ctx)\n\tif err != nil {\n\t\t//
@@ -2299,7 +2363,7 @@ items:
       CopierFrom(src *<a href="#cloud_google_com_go_storage_ObjectHandle">ObjectHandle</a>)
       *<a href="#cloud_google_com_go_storage_Copier">Copier</a>
   codeexamples:
-  - content: "package main\n\nimport (\n\t\"cloud.google.com/go/storage\"\n\t\"context\"\n)\n\nvar
+  - content: "package main\n\nimport (\n\t\"context\"\n\n\t\"cloud.google.com/go/storage\"\n)\n\nvar
       key1, key2 []byte\n\nfunc main() {\n\t// To rotate the encryption key on an
       object, copy it onto itself.\n\tctx := context.Background()\n\tclient, err :=
       storage.NewClient(ctx)\n\tif err != nil {\n\t\t// TODO: handle error.\n\t}\n\tobj
@@ -2322,7 +2386,7 @@ items:
       Delete(ctx <a href="https://pkg.go.dev/context">context</a>.<a href="https://pkg.go.dev/context#Context">Context</a>)
       <a href="https://pkg.go.dev/builtin#error">error</a>
   codeexamples:
-  - content: "package main\n\nimport (\n\t\"cloud.google.com/go/storage\"\n\t\"context\"\n\t\"fmt\"\n\t\"google.golang.org/api/iterator\"\n)\n\nfunc
+  - content: "package main\n\nimport (\n\t\"context\"\n\t\"fmt\"\n\n\t\"cloud.google.com/go/storage\"\n\t\"google.golang.org/api/iterator\"\n)\n\nfunc
       main() {\n\tctx := context.Background()\n\tclient, err := storage.NewClient(ctx)\n\tif
       err != nil {\n\t\t// TODO: handle error.\n\t}\n\t// To delete multiple objects
       in a bucket, list them with an\n\t// ObjectIterator, then Delete them.\n\n\t//
@@ -2352,7 +2416,7 @@ items:
     content: func (o *<a href="#cloud_google_com_go_storage_ObjectHandle">ObjectHandle</a>)
       Generation(gen <a href="https://pkg.go.dev/builtin#int64">int64</a>) *<a href="#cloud_google_com_go_storage_ObjectHandle">ObjectHandle</a>
   codeexamples:
-  - content: "package main\n\nimport (\n\t\"cloud.google.com/go/storage\"\n\t\"context\"\n\t\"io\"\n\t\"os\"\n)\n\nvar
+  - content: "package main\n\nimport (\n\t\"context\"\n\t\"io\"\n\t\"os\"\n\n\t\"cloud.google.com/go/storage\"\n)\n\nvar
       gen int64\n\nfunc main() {\n\t// Read an object's contents from generation gen,
       regardless of the\n\t// current generation of the object.\n\tctx := context.Background()\n\tclient,
       err := storage.NewClient(ctx)\n\tif err != nil {\n\t\t// TODO: handle error.\n\t}\n\tobj
@@ -2378,7 +2442,7 @@ items:
       If(conds <a href="#cloud_google_com_go_storage_Conditions">Conditions</a>) *<a
       href="#cloud_google_com_go_storage_ObjectHandle">ObjectHandle</a>
   codeexamples:
-  - content: "package main\n\nimport (\n\t\"cloud.google.com/go/storage\"\n\t\"context\"\n\t\"google.golang.org/api/googleapi\"\n\t\"io\"\n\t\"net/http\"\n\t\"os\"\n)\n\nvar
+  - content: "package main\n\nimport (\n\t\"context\"\n\t\"io\"\n\t\"net/http\"\n\t\"os\"\n\n\t\"cloud.google.com/go/storage\"\n\t\"google.golang.org/api/googleapi\"\n)\n\nvar
       gen int64\n\nfunc main() {\n\t// Read from an object only if the current generation
       is gen.\n\tctx := context.Background()\n\tclient, err := storage.NewClient(ctx)\n\tif
       err != nil {\n\t\t// TODO: handle error.\n\t}\n\tobj := client.Bucket(\"my-bucket\").Object(\"my-object\")\n\trc,
@@ -2408,7 +2472,7 @@ items:
       Key(encryptionKey []<a href="https://pkg.go.dev/builtin#byte">byte</a>) *<a
       href="#cloud_google_com_go_storage_ObjectHandle">ObjectHandle</a>
   codeexamples:
-  - content: "package main\n\nimport (\n\t\"cloud.google.com/go/storage\"\n\t\"context\"\n)\n\nvar
+  - content: "package main\n\nimport (\n\t\"context\"\n\n\t\"cloud.google.com/go/storage\"\n)\n\nvar
       secretKey []byte\n\nfunc main() {\n\tctx := context.Background()\n\tclient,
       err := storage.NewClient(ctx)\n\tif err != nil {\n\t\t// TODO: handle error.\n\t}\n\tobj
       := client.Bucket(\"my-bucket\").Object(\"my-object\")\n\t// Encrypt the object's
@@ -2440,14 +2504,14 @@ items:
       offset, length <a href="https://pkg.go.dev/builtin#int64">int64</a>) (r *<a
       href="#cloud_google_com_go_storage_Reader">Reader</a>, err <a href="https://pkg.go.dev/builtin#error">error</a>)
   codeexamples:
-  - content: "package main\n\nimport (\n\t\"cloud.google.com/go/storage\"\n\t\"context\"\n\t\"fmt\"\n\t\"io/ioutil\"\n)\n\nfunc
+  - content: "package main\n\nimport (\n\t\"context\"\n\t\"fmt\"\n\t\"io/ioutil\"\n\n\t\"cloud.google.com/go/storage\"\n)\n\nfunc
       main() {\n\tctx := context.Background()\n\tclient, err := storage.NewClient(ctx)\n\tif
       err != nil {\n\t\t// TODO: handle error.\n\t}\n\t// Read only the first 64K.\n\trc,
       err := client.Bucket(\"bucketname\").Object(\"filename1\").NewRangeReader(ctx,
       0, 64*1024)\n\tif err != nil {\n\t\t// TODO: handle error.\n\t}\n\tdefer rc.Close()\n\n\tslurp,
       err := ioutil.ReadAll(rc)\n\tif err != nil {\n\t\t// TODO: handle error.\n\t}\n\tfmt.Printf(\"first
       64K of file contents:\\n%s\\n\", slurp)\n}\n"
-  - content: "package main\n\nimport (\n\t\"cloud.google.com/go/storage\"\n\t\"context\"\n\t\"fmt\"\n\t\"io/ioutil\"\n)\n\nfunc
+  - content: "package main\n\nimport (\n\t\"context\"\n\t\"fmt\"\n\t\"io/ioutil\"\n\n\t\"cloud.google.com/go/storage\"\n)\n\nfunc
       main() {\n\tctx := context.Background()\n\tclient, err := storage.NewClient(ctx)\n\tif
       err != nil {\n\t\t// TODO: handle error.\n\t}\n\t// Read only the last 10 bytes
       until the end of the file.\n\trc, err := client.Bucket(\"bucketname\").Object(\"filename1\").NewRangeReader(ctx,
@@ -2455,7 +2519,7 @@ items:
       err := ioutil.ReadAll(rc)\n\tif err != nil {\n\t\t// TODO: handle error.\n\t}\n\tfmt.Printf(\"Last
       10 bytes from the end of the file:\\n%s\\n\", slurp)\n}\n"
     name: lastNBytes
-  - content: "package main\n\nimport (\n\t\"cloud.google.com/go/storage\"\n\t\"context\"\n\t\"fmt\"\n\t\"io/ioutil\"\n)\n\nfunc
+  - content: "package main\n\nimport (\n\t\"context\"\n\t\"fmt\"\n\t\"io/ioutil\"\n\n\t\"cloud.google.com/go/storage\"\n)\n\nfunc
       main() {\n\tctx := context.Background()\n\tclient, err := storage.NewClient(ctx)\n\tif
       err != nil {\n\t\t// TODO: handle error.\n\t}\n\t// Read from the 101st byte
       until the end of the file.\n\trc, err := client.Bucket(\"bucketname\").Object(\"filename1\").NewRangeReader(ctx,
@@ -2482,7 +2546,7 @@ items:
       NewReader(ctx <a href="https://pkg.go.dev/context">context</a>.<a href="https://pkg.go.dev/context#Context">Context</a>)
       (*<a href="#cloud_google_com_go_storage_Reader">Reader</a>, <a href="https://pkg.go.dev/builtin#error">error</a>)
   codeexamples:
-  - content: "package main\n\nimport (\n\t\"cloud.google.com/go/storage\"\n\t\"context\"\n\t\"fmt\"\n\t\"io/ioutil\"\n)\n\nfunc
+  - content: "package main\n\nimport (\n\t\"context\"\n\t\"fmt\"\n\t\"io/ioutil\"\n\n\t\"cloud.google.com/go/storage\"\n)\n\nfunc
       main() {\n\tctx := context.Background()\n\tclient, err := storage.NewClient(ctx)\n\tif
       err != nil {\n\t\t// TODO: handle error.\n\t}\n\trc, err := client.Bucket(\"my-bucket\").Object(\"my-object\").NewReader(ctx)\n\tif
       err != nil {\n\t\t// TODO: handle error.\n\t}\n\tslurp, err := ioutil.ReadAll(rc)\n\trc.Close()\n\tif
@@ -2520,7 +2584,7 @@ items:
       NewWriter(ctx <a href="https://pkg.go.dev/context">context</a>.<a href="https://pkg.go.dev/context#Context">Context</a>)
       *<a href="#cloud_google_com_go_storage_Writer">Writer</a>
   codeexamples:
-  - content: "package main\n\nimport (\n\t\"cloud.google.com/go/storage\"\n\t\"context\"\n)\n\nfunc
+  - content: "package main\n\nimport (\n\t\"context\"\n\n\t\"cloud.google.com/go/storage\"\n)\n\nfunc
       main() {\n\tctx := context.Background()\n\tclient, err := storage.NewClient(ctx)\n\tif
       err != nil {\n\t\t// TODO: handle error.\n\t}\n\twc := client.Bucket(\"bucketname\").Object(\"filename1\").NewWriter(ctx)\n\t_
       = wc // TODO: Use the Writer.\n}\n"
@@ -2590,7 +2654,7 @@ items:
       (oa *<a href="#cloud_google_com_go_storage_ObjectAttrs">ObjectAttrs</a>, err
       <a href="https://pkg.go.dev/builtin#error">error</a>)
   codeexamples:
-  - content: "package main\n\nimport (\n\t\"cloud.google.com/go/storage\"\n\t\"context\"\n\t\"fmt\"\n)\n\nfunc
+  - content: "package main\n\nimport (\n\t\"context\"\n\t\"fmt\"\n\n\t\"cloud.google.com/go/storage\"\n)\n\nfunc
       main() {\n\tctx := context.Background()\n\tclient, err := storage.NewClient(ctx)\n\tif
       err != nil {\n\t\t// TODO: handle error.\n\t}\n\t// Change only the content
       type of the object.\n\tobjAttrs, err := client.Bucket(\"my-bucket\").Object(\"my-object\").Update(ctx,
@@ -2640,7 +2704,7 @@ items:
       Next() (*<a href="#cloud_google_com_go_storage_ObjectAttrs">ObjectAttrs</a>,
       <a href="https://pkg.go.dev/builtin#error">error</a>)
   codeexamples:
-  - content: "package main\n\nimport (\n\t\"cloud.google.com/go/storage\"\n\t\"context\"\n\t\"fmt\"\n\t\"google.golang.org/api/iterator\"\n)\n\nfunc
+  - content: "package main\n\nimport (\n\t\"context\"\n\t\"fmt\"\n\n\t\"cloud.google.com/go/storage\"\n\t\"google.golang.org/api/iterator\"\n)\n\nfunc
       main() {\n\tctx := context.Background()\n\tclient, err := storage.NewClient(ctx)\n\tif
       err != nil {\n\t\t// TODO: handle error.\n\t}\n\tit := client.Bucket(\"my-bucket\").Objects(ctx,
       nil)\n\tfor {\n\t\tobjAttrs, err := it.Next()\n\t\tif err == iterator.Done {\n\t\t\tbreak\n\t\t}\n\t\tif
@@ -2723,7 +2787,7 @@ items:
       opts *<a href="#cloud_google_com_go_storage_PostPolicyV4Options">PostPolicyV4Options</a>)
       (*<a href="#cloud_google_com_go_storage_PostPolicyV4">PostPolicyV4</a>, <a href="https://pkg.go.dev/builtin#error">error</a>)
   codeexamples:
-  - content: "package main\n\nimport (\n\t\"bytes\"\n\t\"cloud.google.com/go/storage\"\n\t\"io\"\n\t\"mime/multipart\"\n\t\"net/http\"\n\t\"time\"\n)\n\nfunc
+  - content: "package main\n\nimport (\n\t\"bytes\"\n\t\"io\"\n\t\"mime/multipart\"\n\t\"net/http\"\n\t\"time\"\n\n\t\"cloud.google.com/go/storage\"\n)\n\nfunc
       main() {\n\tpv4, err := storage.GenerateSignedPostPolicyV4(\"my-bucket\", \"my-object.txt\",
       &storage.PostPolicyV4Options{\n\t\tGoogleAccessID: \"my-access-id\",\n\t\tPrivateKey:
       \    []byte(\"my-private-key\"),\n\n\t\t// The upload expires in 2hours.\n\t\tExpires:
@@ -3273,8 +3337,8 @@ items:
   summary: |
     WithErrorFunc allows users to pass a custom function to the retryer. Errors
     will be retried if and only if `shouldRetry(err)` returns true.
-    By default, the following errors are retried (see invoke.go for the default
-    shouldRetry function):
+    By default, the following errors are retried (see ShouldRetry for the default
+    function):
 
     - HTTP responses with codes 408, 429, 502, 503, and 504.
 
@@ -3285,7 +3349,8 @@ items:
     - Wrapped versions of these errors.
 
     This option can be used to retry on a different set of errors than the
-    default.
+    default. Users can use the default ShouldRetry function inside their custom
+    function if they only want to make minor modifications to default behavior.
   parent: cloud.google.com/go/storage.RetryOption
   type: function
   langs:
@@ -3625,7 +3690,7 @@ items:
       []<a href="https://pkg.go.dev/builtin#byte">byte</a>) (n <a href="https://pkg.go.dev/builtin#int">int</a>,
       err <a href="https://pkg.go.dev/builtin#error">error</a>)
   codeexamples:
-  - content: "package main\n\nimport (\n\t\"cloud.google.com/go/storage\"\n\t\"context\"\n\t\"fmt\"\n)\n\nfunc
+  - content: "package main\n\nimport (\n\t\"context\"\n\t\"fmt\"\n\n\t\"cloud.google.com/go/storage\"\n)\n\nfunc
       main() {\n\tctx := context.Background()\n\tclient, err := storage.NewClient(ctx)\n\tif
       err != nil {\n\t\t// TODO: handle error.\n\t}\n\twc := client.Bucket(\"bucketname\").Object(\"filename1\").NewWriter(ctx)\n\twc.ContentType
       = \"text/plain\"\n\twc.ACL = []storage.ACLRule{{Entity: storage.AllUsers, Role:
@@ -3634,7 +3699,7 @@ items:
       in some error situations,\n\t\t// so always check the error from Close.\n\t}\n\tif
       err := wc.Close(); err != nil {\n\t\t// TODO: handle error.\n\t}\n\tfmt.Println(\"updated
       object:\", wc.Attrs())\n}\n"
-  - content: "package main\n\nimport (\n\t\"cloud.google.com/go/storage\"\n\t\"context\"\n\t\"fmt\"\n\t\"hash/crc32\"\n)\n\nfunc
+  - content: "package main\n\nimport (\n\t\"context\"\n\t\"fmt\"\n\t\"hash/crc32\"\n\n\t\"cloud.google.com/go/storage\"\n)\n\nfunc
       main() {\n\tctx := context.Background()\n\tclient, err := storage.NewClient(ctx)\n\tif
       err != nil {\n\t\t// TODO: handle error.\n\t}\n\tdata := []byte(\"verify me\")\n\twc
       := client.Bucket(\"bucketname\").Object(\"filename1\").NewWriter(ctx)\n\twc.CRC32C
@@ -3644,7 +3709,7 @@ items:
       so always check the error from Close.\n\t}\n\tif err := wc.Close(); err != nil
       {\n\t\t// TODO: handle error.\n\t}\n\tfmt.Println(\"updated object:\", wc.Attrs())\n}\n"
     name: checksum
-  - content: "package main\n\nimport (\n\t\"cloud.google.com/go/storage\"\n\t\"context\"\n\t\"fmt\"\n\t\"time\"\n)\n\nfunc
+  - content: "package main\n\nimport (\n\t\"context\"\n\t\"fmt\"\n\t\"time\"\n\n\t\"cloud.google.com/go/storage\"\n)\n\nfunc
       main() {\n\tctx := context.Background()\n\tclient, err := storage.NewClient(ctx)\n\tif
       err != nil {\n\t\t// TODO: handle error.\n\t}\n\ttctx, cancel := context.WithTimeout(ctx,
       30*time.Second)\n\tdefer cancel() // Cancel when done, whether we time out or
@@ -3656,6 +3721,27 @@ items:
       err := wc.Close(); err != nil {\n\t\t// TODO: handle error.\n\t}\n\tfmt.Println(\"updated
       object:\", wc.Attrs())\n}\n"
     name: timeout
+- uid: cloud.google.com/go/storage.ShouldRetry
+  name: |
+    func ShouldRetry
+  id: ShouldRetry
+  summary: |
+    ShouldRetry returns true if an error is retryable, based on best practice
+    guidance from GCS. See
+    https://cloud.google.com/storage/docs/retry-strategy#go for more information
+    on what errors are considered retryable.
+
+    If you would like to customize retryable errors, use the WithErrorFunc to
+    supply a RetryOption to your library calls. For example, to retry additional
+    errors, you can write a custom func that wraps ShouldRetry and also specifies
+    additional errors that should return true.
+  parent: cloud.google.com/go/storage
+  type: function
+  langs:
+  - go
+  syntax:
+    content: func ShouldRetry(err <a href="https://pkg.go.dev/builtin#error">error</a>)
+      <a href="https://pkg.go.dev/builtin#bool">bool</a>
 - uid: cloud.google.com/go/storage.SignedURL
   name: |
     func SignedURL
@@ -3676,9 +3762,45 @@ items:
       opts *<a href="#cloud_google_com_go_storage_SignedURLOptions">SignedURLOptions</a>)
       (<a href="https://pkg.go.dev/builtin#string">string</a>, <a href="https://pkg.go.dev/builtin#error">error</a>)
   codeexamples:
-  - content: "package main\n\nimport (\n\t\"cloud.google.com/go/storage\"\n\t\"fmt\"\n\t\"io/ioutil\"\n\t\"time\"\n)\n\nfunc
+  - content: "package main\n\nimport (\n\t\"fmt\"\n\t\"io/ioutil\"\n\t\"time\"\n\n\t\"cloud.google.com/go/storage\"\n)\n\nfunc
       main() {\n\tpkey, err := ioutil.ReadFile(\"my-private-key.pem\")\n\tif err !=
       nil {\n\t\t// TODO: handle error.\n\t}\n\turl, err := storage.SignedURL(\"my-bucket\",
       \"my-object\", &storage.SignedURLOptions{\n\t\tGoogleAccessID: \"xxx@developer.gserviceaccount.com\",\n\t\tPrivateKey:
       \    pkey,\n\t\tMethod:         \"GET\",\n\t\tExpires:        time.Now().Add(48
       * time.Hour),\n\t})\n\tif err != nil {\n\t\t// TODO: handle error.\n\t}\n\tfmt.Println(url)\n}\n"
+- uid: cloud.google.com/go/storage.WithJSONReads
+  name: |
+    func WithJSONReads
+  id: WithJSONReads
+  summary: |
+    WithJSONReads is an option that may be passed to a Storage Client on creation.
+    It sets the client to use the JSON API for object reads. Currently, the
+    default API used for reads is XML.
+    Setting this option is required to use the GenerationNotMatch condition.
+
+    Note that when this option is set, reads will return a zero date for
+    [ReaderObjectAttrs].LastModified and may return a different value for
+    [ReaderObjectAttrs].CacheControl.
+  parent: cloud.google.com/go/storage
+  type: function
+  langs:
+  - go
+  syntax:
+    content: func WithJSONReads() <a href="https://pkg.go.dev/google.golang.org/api/option">option</a>.<a
+      href="https://pkg.go.dev/google.golang.org/api/option#ClientOption">ClientOption</a>
+- uid: cloud.google.com/go/storage.WithXMLReads
+  name: |
+    func WithXMLReads
+  id: WithXMLReads
+  summary: |
+    WithXMLReads is an option that may be passed to a Storage Client on creation.
+    It sets the client to use the JSON API for object reads.
+
+    This is the current default.
+  parent: cloud.google.com/go/storage
+  type: function
+  langs:
+  - go
+  syntax:
+    content: func WithXMLReads() <a href="https://pkg.go.dev/google.golang.org/api/option">option</a>.<a
+      href="https://pkg.go.dev/google.golang.org/api/option#ClientOption">ClientOption</a>

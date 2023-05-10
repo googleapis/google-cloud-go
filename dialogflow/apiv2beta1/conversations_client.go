@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -26,6 +26,8 @@ import (
 	"net/url"
 	"time"
 
+	dialogflowpb "cloud.google.com/go/dialogflow/apiv2beta1/dialogflowpb"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
@@ -33,9 +35,7 @@ import (
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
-	dialogflowpb "google.golang.org/genproto/googleapis/cloud/dialogflow/v2beta1"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -47,17 +47,19 @@ var newConversationsClientHook clientHook
 
 // ConversationsCallOptions contains the retry settings for each method of ConversationsClient.
 type ConversationsCallOptions struct {
-	CreateConversation   []gax.CallOption
-	ListConversations    []gax.CallOption
-	GetConversation      []gax.CallOption
-	CompleteConversation []gax.CallOption
-	BatchCreateMessages  []gax.CallOption
-	ListMessages         []gax.CallOption
-	GetLocation          []gax.CallOption
-	ListLocations        []gax.CallOption
-	CancelOperation      []gax.CallOption
-	GetOperation         []gax.CallOption
-	ListOperations       []gax.CallOption
+	CreateConversation         []gax.CallOption
+	ListConversations          []gax.CallOption
+	GetConversation            []gax.CallOption
+	CompleteConversation       []gax.CallOption
+	BatchCreateMessages        []gax.CallOption
+	ListMessages               []gax.CallOption
+	SuggestConversationSummary []gax.CallOption
+	GenerateStatelessSummary   []gax.CallOption
+	GetLocation                []gax.CallOption
+	ListLocations              []gax.CallOption
+	CancelOperation            []gax.CallOption
+	GetOperation               []gax.CallOption
+	ListOperations             []gax.CallOption
 }
 
 func defaultConversationsGRPCClientOptions() []option.ClientOption {
@@ -140,6 +142,28 @@ func defaultConversationsCallOptions() *ConversationsCallOptions {
 				})
 			}),
 		},
+		SuggestConversationSummary: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		GenerateStatelessSummary: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 		GetLocation:     []gax.CallOption{},
 		ListLocations:   []gax.CallOption{},
 		CancelOperation: []gax.CallOption{},
@@ -210,6 +234,26 @@ func defaultConversationsRESTCallOptions() *ConversationsCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
+		SuggestConversationSummary: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		GenerateStatelessSummary: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
 		GetLocation:     []gax.CallOption{},
 		ListLocations:   []gax.CallOption{},
 		CancelOperation: []gax.CallOption{},
@@ -229,6 +273,8 @@ type internalConversationsClient interface {
 	CompleteConversation(context.Context, *dialogflowpb.CompleteConversationRequest, ...gax.CallOption) (*dialogflowpb.Conversation, error)
 	BatchCreateMessages(context.Context, *dialogflowpb.BatchCreateMessagesRequest, ...gax.CallOption) (*dialogflowpb.BatchCreateMessagesResponse, error)
 	ListMessages(context.Context, *dialogflowpb.ListMessagesRequest, ...gax.CallOption) *MessageIterator
+	SuggestConversationSummary(context.Context, *dialogflowpb.SuggestConversationSummaryRequest, ...gax.CallOption) (*dialogflowpb.SuggestConversationSummaryResponse, error)
+	GenerateStatelessSummary(context.Context, *dialogflowpb.GenerateStatelessSummaryRequest, ...gax.CallOption) (*dialogflowpb.GenerateStatelessSummaryResponse, error)
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
 	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
 	CancelOperation(context.Context, *longrunningpb.CancelOperationRequest, ...gax.CallOption) error
@@ -239,7 +285,8 @@ type internalConversationsClient interface {
 // ConversationsClient is a client for interacting with Dialogflow API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
-// Service for managing Conversations.
+// Service for managing
+// Conversations.
 type ConversationsClient struct {
 	// The internal transport-dependent client.
 	internalClient internalConversationsClient
@@ -284,11 +331,14 @@ func (c *ConversationsClient) Connection() *grpc.ClientConn {
 // For Assist Stage, there’s no dialogflow agent responding to user queries.
 // But we will provide suggestions which are generated from conversation.
 //
-// If Conversation.conversation_profile is configured for a dialogflow
-// agent, conversation will start from Automated Agent Stage, otherwise, it
-// will start from Assist Stage. And during Automated Agent Stage, once an
-// Intent with Intent.live_agent_handoff is triggered, conversation
-// will transfer to Assist Stage.
+// If
+// Conversation.conversation_profile
+// is configured for a dialogflow agent, conversation will start from
+// Automated Agent Stage, otherwise, it will start from Assist Stage. And
+// during Automated Agent Stage, once an
+// Intent with
+// Intent.live_agent_handoff
+// is triggered, conversation will transfer to Assist Stage.
 func (c *ConversationsClient) CreateConversation(ctx context.Context, req *dialogflowpb.CreateConversationRequest, opts ...gax.CallOption) (*dialogflowpb.Conversation, error) {
 	return c.internalClient.CreateConversation(ctx, req, opts...)
 }
@@ -321,6 +371,19 @@ func (c *ConversationsClient) BatchCreateMessages(ctx context.Context, req *dial
 // create_time_epoch_microseconds > [first item's create_time of previous request] and empty page_token.
 func (c *ConversationsClient) ListMessages(ctx context.Context, req *dialogflowpb.ListMessagesRequest, opts ...gax.CallOption) *MessageIterator {
 	return c.internalClient.ListMessages(ctx, req, opts...)
+}
+
+// SuggestConversationSummary suggest summary for a conversation based on specific historical messages.
+// The range of the messages to be used for summary can be specified in the
+// request.
+func (c *ConversationsClient) SuggestConversationSummary(ctx context.Context, req *dialogflowpb.SuggestConversationSummaryRequest, opts ...gax.CallOption) (*dialogflowpb.SuggestConversationSummaryResponse, error) {
+	return c.internalClient.SuggestConversationSummary(ctx, req, opts...)
+}
+
+// GenerateStatelessSummary generates and returns a summary for a conversation that does not have a
+// resource created for it.
+func (c *ConversationsClient) GenerateStatelessSummary(ctx context.Context, req *dialogflowpb.GenerateStatelessSummaryRequest, opts ...gax.CallOption) (*dialogflowpb.GenerateStatelessSummaryResponse, error) {
+	return c.internalClient.GenerateStatelessSummary(ctx, req, opts...)
 }
 
 // GetLocation gets information about a location.
@@ -375,7 +438,8 @@ type conversationsGRPCClient struct {
 // NewConversationsClient creates a new conversations client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
-// Service for managing Conversations.
+// Service for managing
+// Conversations.
 func NewConversationsClient(ctx context.Context, opts ...option.ClientOption) (*ConversationsClient, error) {
 	clientOpts := defaultConversationsGRPCClientOptions()
 	if newConversationsClientHook != nil {
@@ -452,7 +516,8 @@ type conversationsRESTClient struct {
 
 // NewConversationsRESTClient creates a new conversations rest client.
 //
-// Service for managing Conversations.
+// Service for managing
+// Conversations.
 func NewConversationsRESTClient(ctx context.Context, opts ...option.ClientOption) (*ConversationsClient, error) {
 	clientOpts := append(defaultConversationsRESTClientOptions(), opts...)
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
@@ -681,6 +746,50 @@ func (c *conversationsGRPCClient) ListMessages(ctx context.Context, req *dialogf
 	return it
 }
 
+func (c *conversationsGRPCClient) SuggestConversationSummary(ctx context.Context, req *dialogflowpb.SuggestConversationSummaryRequest, opts ...gax.CallOption) (*dialogflowpb.SuggestConversationSummaryResponse, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "conversation", url.QueryEscape(req.GetConversation())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).SuggestConversationSummary[0:len((*c.CallOptions).SuggestConversationSummary):len((*c.CallOptions).SuggestConversationSummary)], opts...)
+	var resp *dialogflowpb.SuggestConversationSummaryResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.conversationsClient.SuggestConversationSummary(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *conversationsGRPCClient) GenerateStatelessSummary(ctx context.Context, req *dialogflowpb.GenerateStatelessSummaryRequest, opts ...gax.CallOption) (*dialogflowpb.GenerateStatelessSummaryResponse, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "stateless_conversation.parent", url.QueryEscape(req.GetStatelessConversation().GetParent())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).GenerateStatelessSummary[0:len((*c.CallOptions).GenerateStatelessSummary):len((*c.CallOptions).GenerateStatelessSummary)], opts...)
+	var resp *dialogflowpb.GenerateStatelessSummaryResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.conversationsClient.GenerateStatelessSummary(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
 func (c *conversationsGRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
@@ -831,11 +940,14 @@ func (c *conversationsGRPCClient) ListOperations(ctx context.Context, req *longr
 // For Assist Stage, there’s no dialogflow agent responding to user queries.
 // But we will provide suggestions which are generated from conversation.
 //
-// If Conversation.conversation_profile is configured for a dialogflow
-// agent, conversation will start from Automated Agent Stage, otherwise, it
-// will start from Assist Stage. And during Automated Agent Stage, once an
-// Intent with Intent.live_agent_handoff is triggered, conversation
-// will transfer to Assist Stage.
+// If
+// Conversation.conversation_profile
+// is configured for a dialogflow agent, conversation will start from
+// Automated Agent Stage, otherwise, it will start from Assist Stage. And
+// during Automated Agent Stage, once an
+// Intent with
+// Intent.live_agent_handoff
+// is triggered, conversation will transfer to Assist Stage.
 func (c *conversationsRESTClient) CreateConversation(ctx context.Context, req *dialogflowpb.CreateConversationRequest, opts ...gax.CallOption) (*dialogflowpb.Conversation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetConversation()
@@ -851,6 +963,7 @@ func (c *conversationsRESTClient) CreateConversation(ctx context.Context, req *d
 	baseUrl.Path += fmt.Sprintf("/v2beta1/%v/conversations", req.GetParent())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetConversationId() != "" {
 		params.Add("conversationId", fmt.Sprintf("%v", req.GetConversationId()))
 	}
@@ -924,6 +1037,7 @@ func (c *conversationsRESTClient) ListConversations(ctx context.Context, req *di
 		baseUrl.Path += fmt.Sprintf("/v2beta1/%v/conversations", req.GetParent())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -1000,6 +1114,11 @@ func (c *conversationsRESTClient) GetConversation(ctx context.Context, req *dial
 	}
 	baseUrl.Path += fmt.Sprintf("/v2beta1/%v", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
@@ -1060,6 +1179,11 @@ func (c *conversationsRESTClient) CompleteConversation(ctx context.Context, req 
 	}
 	baseUrl.Path += fmt.Sprintf("/v2beta1/%v:complete", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
@@ -1119,6 +1243,11 @@ func (c *conversationsRESTClient) BatchCreateMessages(ctx context.Context, req *
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2beta1/%v/messages:batchCreate", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
@@ -1190,6 +1319,7 @@ func (c *conversationsRESTClient) ListMessages(ctx context.Context, req *dialogf
 		baseUrl.Path += fmt.Sprintf("/v2beta1/%v/messages", req.GetParent())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -1258,6 +1388,137 @@ func (c *conversationsRESTClient) ListMessages(ctx context.Context, req *dialogf
 	return it
 }
 
+// SuggestConversationSummary suggest summary for a conversation based on specific historical messages.
+// The range of the messages to be used for summary can be specified in the
+// request.
+func (c *conversationsRESTClient) SuggestConversationSummary(ctx context.Context, req *dialogflowpb.SuggestConversationSummaryRequest, opts ...gax.CallOption) (*dialogflowpb.SuggestConversationSummaryResponse, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v2beta1/%v/suggestions:suggestConversationSummary", req.GetConversation())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "conversation", url.QueryEscape(req.GetConversation())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).SuggestConversationSummary[0:len((*c.CallOptions).SuggestConversationSummary):len((*c.CallOptions).SuggestConversationSummary)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &dialogflowpb.SuggestConversationSummaryResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// GenerateStatelessSummary generates and returns a summary for a conversation that does not have a
+// resource created for it.
+func (c *conversationsRESTClient) GenerateStatelessSummary(ctx context.Context, req *dialogflowpb.GenerateStatelessSummaryRequest, opts ...gax.CallOption) (*dialogflowpb.GenerateStatelessSummaryResponse, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v2beta1/%v/suggestions:generateStatelessSummary", req.GetStatelessConversation().GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "stateless_conversation.parent", url.QueryEscape(req.GetStatelessConversation().GetParent())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).GenerateStatelessSummary[0:len((*c.CallOptions).GenerateStatelessSummary):len((*c.CallOptions).GenerateStatelessSummary)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &dialogflowpb.GenerateStatelessSummaryResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
 // GetLocation gets information about a location.
 func (c *conversationsRESTClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	baseUrl, err := url.Parse(c.endpoint)
@@ -1265,6 +1526,11 @@ func (c *conversationsRESTClient) GetLocation(ctx context.Context, req *location
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2beta1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
@@ -1333,6 +1599,7 @@ func (c *conversationsRESTClient) ListLocations(ctx context.Context, req *locati
 		baseUrl.Path += fmt.Sprintf("/v2beta1/%v/locations", req.GetName())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -1409,6 +1676,11 @@ func (c *conversationsRESTClient) CancelOperation(ctx context.Context, req *long
 	}
 	baseUrl.Path += fmt.Sprintf("/v2beta1/%v:cancel", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
@@ -1443,6 +1715,11 @@ func (c *conversationsRESTClient) GetOperation(ctx context.Context, req *longrun
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2beta1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
@@ -1511,6 +1788,7 @@ func (c *conversationsRESTClient) ListOperations(ctx context.Context, req *longr
 		baseUrl.Path += fmt.Sprintf("/v2beta1/%v/operations", req.GetName())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}

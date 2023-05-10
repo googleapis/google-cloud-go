@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,10 +20,10 @@ import (
 	"context"
 
 	certificatemanager "cloud.google.com/go/certificatemanager/apiv1"
+	certificatemanagerpb "cloud.google.com/go/certificatemanager/apiv1/certificatemanagerpb"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	"google.golang.org/api/iterator"
-	certificatemanagerpb "google.golang.org/genproto/googleapis/cloud/certificatemanager/v1"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 )
 
 func ExampleNewClient() {
@@ -34,6 +34,23 @@ func ExampleNewClient() {
 	// - It may require specifying regional endpoints when creating the service client as shown in:
 	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := certificatemanager.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
+func ExampleNewRESTClient() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := certificatemanager.NewRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -58,7 +75,7 @@ func ExampleClient_ListCertificates() {
 
 	req := &certificatemanagerpb.ListCertificatesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/certificatemanager/v1#ListCertificatesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/certificatemanager/apiv1/certificatemanagerpb#ListCertificatesRequest.
 	}
 	it := c.ListCertificates(ctx, req)
 	for {
@@ -89,7 +106,7 @@ func ExampleClient_GetCertificate() {
 
 	req := &certificatemanagerpb.GetCertificateRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/certificatemanager/v1#GetCertificateRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/certificatemanager/apiv1/certificatemanagerpb#GetCertificateRequest.
 	}
 	resp, err := c.GetCertificate(ctx, req)
 	if err != nil {
@@ -114,7 +131,7 @@ func ExampleClient_CreateCertificate() {
 
 	req := &certificatemanagerpb.CreateCertificateRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/certificatemanager/v1#CreateCertificateRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/certificatemanager/apiv1/certificatemanagerpb#CreateCertificateRequest.
 	}
 	op, err := c.CreateCertificate(ctx, req)
 	if err != nil {
@@ -144,7 +161,7 @@ func ExampleClient_UpdateCertificate() {
 
 	req := &certificatemanagerpb.UpdateCertificateRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/certificatemanager/v1#UpdateCertificateRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/certificatemanager/apiv1/certificatemanagerpb#UpdateCertificateRequest.
 	}
 	op, err := c.UpdateCertificate(ctx, req)
 	if err != nil {
@@ -174,7 +191,7 @@ func ExampleClient_DeleteCertificate() {
 
 	req := &certificatemanagerpb.DeleteCertificateRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/certificatemanager/v1#DeleteCertificateRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/certificatemanager/apiv1/certificatemanagerpb#DeleteCertificateRequest.
 	}
 	op, err := c.DeleteCertificate(ctx, req)
 	if err != nil {
@@ -202,7 +219,7 @@ func ExampleClient_ListCertificateMaps() {
 
 	req := &certificatemanagerpb.ListCertificateMapsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/certificatemanager/v1#ListCertificateMapsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/certificatemanager/apiv1/certificatemanagerpb#ListCertificateMapsRequest.
 	}
 	it := c.ListCertificateMaps(ctx, req)
 	for {
@@ -233,7 +250,7 @@ func ExampleClient_GetCertificateMap() {
 
 	req := &certificatemanagerpb.GetCertificateMapRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/certificatemanager/v1#GetCertificateMapRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/certificatemanager/apiv1/certificatemanagerpb#GetCertificateMapRequest.
 	}
 	resp, err := c.GetCertificateMap(ctx, req)
 	if err != nil {
@@ -258,7 +275,7 @@ func ExampleClient_CreateCertificateMap() {
 
 	req := &certificatemanagerpb.CreateCertificateMapRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/certificatemanager/v1#CreateCertificateMapRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/certificatemanager/apiv1/certificatemanagerpb#CreateCertificateMapRequest.
 	}
 	op, err := c.CreateCertificateMap(ctx, req)
 	if err != nil {
@@ -288,7 +305,7 @@ func ExampleClient_UpdateCertificateMap() {
 
 	req := &certificatemanagerpb.UpdateCertificateMapRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/certificatemanager/v1#UpdateCertificateMapRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/certificatemanager/apiv1/certificatemanagerpb#UpdateCertificateMapRequest.
 	}
 	op, err := c.UpdateCertificateMap(ctx, req)
 	if err != nil {
@@ -318,7 +335,7 @@ func ExampleClient_DeleteCertificateMap() {
 
 	req := &certificatemanagerpb.DeleteCertificateMapRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/certificatemanager/v1#DeleteCertificateMapRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/certificatemanager/apiv1/certificatemanagerpb#DeleteCertificateMapRequest.
 	}
 	op, err := c.DeleteCertificateMap(ctx, req)
 	if err != nil {
@@ -346,7 +363,7 @@ func ExampleClient_ListCertificateMapEntries() {
 
 	req := &certificatemanagerpb.ListCertificateMapEntriesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/certificatemanager/v1#ListCertificateMapEntriesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/certificatemanager/apiv1/certificatemanagerpb#ListCertificateMapEntriesRequest.
 	}
 	it := c.ListCertificateMapEntries(ctx, req)
 	for {
@@ -377,7 +394,7 @@ func ExampleClient_GetCertificateMapEntry() {
 
 	req := &certificatemanagerpb.GetCertificateMapEntryRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/certificatemanager/v1#GetCertificateMapEntryRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/certificatemanager/apiv1/certificatemanagerpb#GetCertificateMapEntryRequest.
 	}
 	resp, err := c.GetCertificateMapEntry(ctx, req)
 	if err != nil {
@@ -402,7 +419,7 @@ func ExampleClient_CreateCertificateMapEntry() {
 
 	req := &certificatemanagerpb.CreateCertificateMapEntryRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/certificatemanager/v1#CreateCertificateMapEntryRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/certificatemanager/apiv1/certificatemanagerpb#CreateCertificateMapEntryRequest.
 	}
 	op, err := c.CreateCertificateMapEntry(ctx, req)
 	if err != nil {
@@ -432,7 +449,7 @@ func ExampleClient_UpdateCertificateMapEntry() {
 
 	req := &certificatemanagerpb.UpdateCertificateMapEntryRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/certificatemanager/v1#UpdateCertificateMapEntryRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/certificatemanager/apiv1/certificatemanagerpb#UpdateCertificateMapEntryRequest.
 	}
 	op, err := c.UpdateCertificateMapEntry(ctx, req)
 	if err != nil {
@@ -462,7 +479,7 @@ func ExampleClient_DeleteCertificateMapEntry() {
 
 	req := &certificatemanagerpb.DeleteCertificateMapEntryRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/certificatemanager/v1#DeleteCertificateMapEntryRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/certificatemanager/apiv1/certificatemanagerpb#DeleteCertificateMapEntryRequest.
 	}
 	op, err := c.DeleteCertificateMapEntry(ctx, req)
 	if err != nil {
@@ -490,7 +507,7 @@ func ExampleClient_ListDnsAuthorizations() {
 
 	req := &certificatemanagerpb.ListDnsAuthorizationsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/certificatemanager/v1#ListDnsAuthorizationsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/certificatemanager/apiv1/certificatemanagerpb#ListDnsAuthorizationsRequest.
 	}
 	it := c.ListDnsAuthorizations(ctx, req)
 	for {
@@ -521,7 +538,7 @@ func ExampleClient_GetDnsAuthorization() {
 
 	req := &certificatemanagerpb.GetDnsAuthorizationRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/certificatemanager/v1#GetDnsAuthorizationRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/certificatemanager/apiv1/certificatemanagerpb#GetDnsAuthorizationRequest.
 	}
 	resp, err := c.GetDnsAuthorization(ctx, req)
 	if err != nil {
@@ -546,7 +563,7 @@ func ExampleClient_CreateDnsAuthorization() {
 
 	req := &certificatemanagerpb.CreateDnsAuthorizationRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/certificatemanager/v1#CreateDnsAuthorizationRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/certificatemanager/apiv1/certificatemanagerpb#CreateDnsAuthorizationRequest.
 	}
 	op, err := c.CreateDnsAuthorization(ctx, req)
 	if err != nil {
@@ -576,7 +593,7 @@ func ExampleClient_UpdateDnsAuthorization() {
 
 	req := &certificatemanagerpb.UpdateDnsAuthorizationRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/certificatemanager/v1#UpdateDnsAuthorizationRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/certificatemanager/apiv1/certificatemanagerpb#UpdateDnsAuthorizationRequest.
 	}
 	op, err := c.UpdateDnsAuthorization(ctx, req)
 	if err != nil {
@@ -606,9 +623,123 @@ func ExampleClient_DeleteDnsAuthorization() {
 
 	req := &certificatemanagerpb.DeleteDnsAuthorizationRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/certificatemanager/v1#DeleteDnsAuthorizationRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/certificatemanager/apiv1/certificatemanagerpb#DeleteDnsAuthorizationRequest.
 	}
 	op, err := c.DeleteDnsAuthorization(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleClient_ListCertificateIssuanceConfigs() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := certificatemanager.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &certificatemanagerpb.ListCertificateIssuanceConfigsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/certificatemanager/apiv1/certificatemanagerpb#ListCertificateIssuanceConfigsRequest.
+	}
+	it := c.ListCertificateIssuanceConfigs(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
+}
+
+func ExampleClient_GetCertificateIssuanceConfig() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := certificatemanager.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &certificatemanagerpb.GetCertificateIssuanceConfigRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/certificatemanager/apiv1/certificatemanagerpb#GetCertificateIssuanceConfigRequest.
+	}
+	resp, err := c.GetCertificateIssuanceConfig(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_CreateCertificateIssuanceConfig() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := certificatemanager.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &certificatemanagerpb.CreateCertificateIssuanceConfigRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/certificatemanager/apiv1/certificatemanagerpb#CreateCertificateIssuanceConfigRequest.
+	}
+	op, err := c.CreateCertificateIssuanceConfig(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_DeleteCertificateIssuanceConfig() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := certificatemanager.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &certificatemanagerpb.DeleteCertificateIssuanceConfigRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/certificatemanager/apiv1/certificatemanagerpb#DeleteCertificateIssuanceConfigRequest.
+	}
+	op, err := c.DeleteCertificateIssuanceConfig(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -690,7 +821,7 @@ func ExampleClient_CancelOperation() {
 
 	req := &longrunningpb.CancelOperationRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/longrunning#CancelOperationRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/longrunning/autogen/longrunningpb#CancelOperationRequest.
 	}
 	err = c.CancelOperation(ctx, req)
 	if err != nil {
@@ -713,7 +844,7 @@ func ExampleClient_DeleteOperation() {
 
 	req := &longrunningpb.DeleteOperationRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/longrunning#DeleteOperationRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/longrunning/autogen/longrunningpb#DeleteOperationRequest.
 	}
 	err = c.DeleteOperation(ctx, req)
 	if err != nil {
@@ -736,7 +867,7 @@ func ExampleClient_GetOperation() {
 
 	req := &longrunningpb.GetOperationRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/longrunning#GetOperationRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/longrunning/autogen/longrunningpb#GetOperationRequest.
 	}
 	resp, err := c.GetOperation(ctx, req)
 	if err != nil {
@@ -761,7 +892,7 @@ func ExampleClient_ListOperations() {
 
 	req := &longrunningpb.ListOperationsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/longrunning#ListOperationsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/longrunning/autogen/longrunningpb#ListOperationsRequest.
 	}
 	it := c.ListOperations(ctx, req)
 	for {

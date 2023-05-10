@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,11 +20,11 @@ import (
 	"context"
 
 	appconnectors "cloud.google.com/go/beyondcorp/appconnectors/apiv1"
+	appconnectorspb "cloud.google.com/go/beyondcorp/appconnectors/apiv1/appconnectorspb"
+	iampb "cloud.google.com/go/iam/apiv1/iampb"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	"google.golang.org/api/iterator"
-	appconnectorspb "google.golang.org/genproto/googleapis/cloud/beyondcorp/appconnectors/v1"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
-	iampb "google.golang.org/genproto/googleapis/iam/v1"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 )
 
 func ExampleNewClient() {
@@ -59,7 +59,7 @@ func ExampleClient_ListAppConnectors() {
 
 	req := &appconnectorspb.ListAppConnectorsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/beyondcorp/appconnectors/v1#ListAppConnectorsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/beyondcorp/appconnectors/apiv1/appconnectorspb#ListAppConnectorsRequest.
 	}
 	it := c.ListAppConnectors(ctx, req)
 	for {
@@ -90,7 +90,7 @@ func ExampleClient_GetAppConnector() {
 
 	req := &appconnectorspb.GetAppConnectorRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/beyondcorp/appconnectors/v1#GetAppConnectorRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/beyondcorp/appconnectors/apiv1/appconnectorspb#GetAppConnectorRequest.
 	}
 	resp, err := c.GetAppConnector(ctx, req)
 	if err != nil {
@@ -115,7 +115,7 @@ func ExampleClient_CreateAppConnector() {
 
 	req := &appconnectorspb.CreateAppConnectorRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/beyondcorp/appconnectors/v1#CreateAppConnectorRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/beyondcorp/appconnectors/apiv1/appconnectorspb#CreateAppConnectorRequest.
 	}
 	op, err := c.CreateAppConnector(ctx, req)
 	if err != nil {
@@ -145,7 +145,7 @@ func ExampleClient_UpdateAppConnector() {
 
 	req := &appconnectorspb.UpdateAppConnectorRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/beyondcorp/appconnectors/v1#UpdateAppConnectorRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/beyondcorp/appconnectors/apiv1/appconnectorspb#UpdateAppConnectorRequest.
 	}
 	op, err := c.UpdateAppConnector(ctx, req)
 	if err != nil {
@@ -175,7 +175,7 @@ func ExampleClient_DeleteAppConnector() {
 
 	req := &appconnectorspb.DeleteAppConnectorRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/beyondcorp/appconnectors/v1#DeleteAppConnectorRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/beyondcorp/appconnectors/apiv1/appconnectorspb#DeleteAppConnectorRequest.
 	}
 	op, err := c.DeleteAppConnector(ctx, req)
 	if err != nil {
@@ -203,7 +203,7 @@ func ExampleClient_ReportStatus() {
 
 	req := &appconnectorspb.ReportStatusRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/beyondcorp/appconnectors/v1#ReportStatusRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/beyondcorp/appconnectors/apiv1/appconnectorspb#ReportStatusRequest.
 	}
 	op, err := c.ReportStatus(ctx, req)
 	if err != nil {
@@ -289,7 +289,7 @@ func ExampleClient_GetIamPolicy() {
 
 	req := &iampb.GetIamPolicyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/iam/v1#GetIamPolicyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/iam/apiv1/iampb#GetIamPolicyRequest.
 	}
 	resp, err := c.GetIamPolicy(ctx, req)
 	if err != nil {
@@ -314,7 +314,7 @@ func ExampleClient_SetIamPolicy() {
 
 	req := &iampb.SetIamPolicyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/iam/v1#SetIamPolicyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/iam/apiv1/iampb#SetIamPolicyRequest.
 	}
 	resp, err := c.SetIamPolicy(ctx, req)
 	if err != nil {
@@ -339,7 +339,7 @@ func ExampleClient_TestIamPermissions() {
 
 	req := &iampb.TestIamPermissionsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/iam/v1#TestIamPermissionsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/iam/apiv1/iampb#TestIamPermissionsRequest.
 	}
 	resp, err := c.TestIamPermissions(ctx, req)
 	if err != nil {
@@ -364,7 +364,7 @@ func ExampleClient_CancelOperation() {
 
 	req := &longrunningpb.CancelOperationRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/longrunning#CancelOperationRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/longrunning/autogen/longrunningpb#CancelOperationRequest.
 	}
 	err = c.CancelOperation(ctx, req)
 	if err != nil {
@@ -387,7 +387,7 @@ func ExampleClient_DeleteOperation() {
 
 	req := &longrunningpb.DeleteOperationRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/longrunning#DeleteOperationRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/longrunning/autogen/longrunningpb#DeleteOperationRequest.
 	}
 	err = c.DeleteOperation(ctx, req)
 	if err != nil {
@@ -410,7 +410,7 @@ func ExampleClient_GetOperation() {
 
 	req := &longrunningpb.GetOperationRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/longrunning#GetOperationRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/longrunning/autogen/longrunningpb#GetOperationRequest.
 	}
 	resp, err := c.GetOperation(ctx, req)
 	if err != nil {
@@ -435,7 +435,7 @@ func ExampleClient_ListOperations() {
 
 	req := &longrunningpb.ListOperationsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/longrunning#ListOperationsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/longrunning/autogen/longrunningpb#ListOperationsRequest.
 	}
 	it := c.ListOperations(ctx, req)
 	for {

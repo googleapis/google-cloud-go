@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -25,14 +25,15 @@ import (
 	"net/http"
 	"net/url"
 	"sort"
+	"time"
 
+	computepb "cloud.google.com/go/compute/apiv1/computepb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	httptransport "google.golang.org/api/transport/http"
-	computepb "google.golang.org/genproto/googleapis/cloud/compute/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/encoding/protojson"
@@ -56,23 +57,65 @@ type DisksCallOptions struct {
 	SetIamPolicy           []gax.CallOption
 	SetLabels              []gax.CallOption
 	TestIamPermissions     []gax.CallOption
+	Update                 []gax.CallOption
 }
 
 func defaultDisksRESTCallOptions() *DisksCallOptions {
 	return &DisksCallOptions{
-		AddResourcePolicies:    []gax.CallOption{},
-		AggregatedList:         []gax.CallOption{},
-		CreateSnapshot:         []gax.CallOption{},
-		Delete:                 []gax.CallOption{},
-		Get:                    []gax.CallOption{},
-		GetIamPolicy:           []gax.CallOption{},
-		Insert:                 []gax.CallOption{},
-		List:                   []gax.CallOption{},
+		AddResourcePolicies: []gax.CallOption{},
+		AggregatedList: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
+		CreateSnapshot: []gax.CallOption{},
+		Delete:         []gax.CallOption{},
+		Get: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
+		GetIamPolicy: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
+		Insert: []gax.CallOption{},
+		List: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
 		RemoveResourcePolicies: []gax.CallOption{},
 		Resize:                 []gax.CallOption{},
 		SetIamPolicy:           []gax.CallOption{},
 		SetLabels:              []gax.CallOption{},
 		TestIamPermissions:     []gax.CallOption{},
+		Update:                 []gax.CallOption{},
 	}
 }
 
@@ -94,6 +137,7 @@ type internalDisksClient interface {
 	SetIamPolicy(context.Context, *computepb.SetIamPolicyDiskRequest, ...gax.CallOption) (*computepb.Policy, error)
 	SetLabels(context.Context, *computepb.SetLabelsDiskRequest, ...gax.CallOption) (*Operation, error)
 	TestIamPermissions(context.Context, *computepb.TestIamPermissionsDiskRequest, ...gax.CallOption) (*computepb.TestPermissionsResponse, error)
+	Update(context.Context, *computepb.UpdateDiskRequest, ...gax.CallOption) (*Operation, error)
 }
 
 // DisksClient is a client for interacting with Google Compute Engine API.
@@ -151,7 +195,7 @@ func (c *DisksClient) Delete(ctx context.Context, req *computepb.DeleteDiskReque
 	return c.internalClient.Delete(ctx, req, opts...)
 }
 
-// Get returns a specified persistent disk. Gets a list of available persistent disks by making a list() request.
+// Get returns the specified persistent disk.
 func (c *DisksClient) Get(ctx context.Context, req *computepb.GetDiskRequest, opts ...gax.CallOption) (*computepb.Disk, error) {
 	return c.internalClient.Get(ctx, req, opts...)
 }
@@ -194,6 +238,11 @@ func (c *DisksClient) SetLabels(ctx context.Context, req *computepb.SetLabelsDis
 // TestIamPermissions returns permissions that a caller has on the specified resource.
 func (c *DisksClient) TestIamPermissions(ctx context.Context, req *computepb.TestIamPermissionsDiskRequest, opts ...gax.CallOption) (*computepb.TestPermissionsResponse, error) {
 	return c.internalClient.TestIamPermissions(ctx, req, opts...)
+}
+
+// Update updates the specified disk with the data included in the request. The update is performed only on selected fields included as part of update-mask. Only the following fields can be modified: user_license.
+func (c *DisksClient) Update(ctx context.Context, req *computepb.UpdateDiskRequest, opts ...gax.CallOption) (*Operation, error) {
+	return c.internalClient.Update(ctx, req, opts...)
 }
 
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
@@ -608,7 +657,7 @@ func (c *disksRESTClient) Delete(ctx context.Context, req *computepb.DeleteDiskR
 	return op, nil
 }
 
-// Get returns a specified persistent disk. Gets a list of available persistent disks by making a list() request.
+// Get returns the specified persistent disk.
 func (c *disksRESTClient) Get(ctx context.Context, req *computepb.GetDiskRequest, opts ...gax.CallOption) (*computepb.Disk, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -1238,6 +1287,87 @@ func (c *disksRESTClient) TestIamPermissions(ctx context.Context, req *computepb
 		return nil, e
 	}
 	return resp, nil
+}
+
+// Update updates the specified disk with the data included in the request. The update is performed only on selected fields included as part of update-mask. Only the following fields can be modified: user_license.
+func (c *disksRESTClient) Update(ctx context.Context, req *computepb.UpdateDiskRequest, opts ...gax.CallOption) (*Operation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true}
+	body := req.GetDiskResource()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/disks/%v", req.GetProject(), req.GetZone(), req.GetDisk())
+
+	params := url.Values{}
+	if req != nil && req.Paths != nil {
+		params.Add("paths", fmt.Sprintf("%v", req.GetPaths()))
+	}
+	if req != nil && req.RequestId != nil {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+	if req != nil && req.UpdateMask != nil {
+		params.Add("updateMask", fmt.Sprintf("%v", req.GetUpdateMask()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "zone", url.QueryEscape(req.GetZone()), "disk", url.QueryEscape(req.GetDisk())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Update[0:len((*c.CallOptions).Update):len((*c.CallOptions).Update)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &computepb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	op := &Operation{
+		&zoneOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+			zone:    req.GetZone(),
+		},
+	}
+	return op, nil
 }
 
 // DiskIterator manages a stream of *computepb.Disk.

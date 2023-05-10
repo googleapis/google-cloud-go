@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,10 +19,10 @@ package storagetransfer_test
 import (
 	"context"
 
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	storagetransfer "cloud.google.com/go/storagetransfer/apiv1"
+	storagetransferpb "cloud.google.com/go/storagetransfer/apiv1/storagetransferpb"
 	"google.golang.org/api/iterator"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
-	storagetransferpb "google.golang.org/genproto/googleapis/storagetransfer/v1"
 )
 
 func ExampleNewClient() {
@@ -33,6 +33,23 @@ func ExampleNewClient() {
 	// - It may require specifying regional endpoints when creating the service client as shown in:
 	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := storagetransfer.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
+func ExampleNewRESTClient() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := storagetransfer.NewRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -57,7 +74,7 @@ func ExampleClient_GetGoogleServiceAccount() {
 
 	req := &storagetransferpb.GetGoogleServiceAccountRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/storagetransfer/v1#GetGoogleServiceAccountRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/storagetransfer/apiv1/storagetransferpb#GetGoogleServiceAccountRequest.
 	}
 	resp, err := c.GetGoogleServiceAccount(ctx, req)
 	if err != nil {
@@ -82,7 +99,7 @@ func ExampleClient_CreateTransferJob() {
 
 	req := &storagetransferpb.CreateTransferJobRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/storagetransfer/v1#CreateTransferJobRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/storagetransfer/apiv1/storagetransferpb#CreateTransferJobRequest.
 	}
 	resp, err := c.CreateTransferJob(ctx, req)
 	if err != nil {
@@ -107,7 +124,7 @@ func ExampleClient_UpdateTransferJob() {
 
 	req := &storagetransferpb.UpdateTransferJobRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/storagetransfer/v1#UpdateTransferJobRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/storagetransfer/apiv1/storagetransferpb#UpdateTransferJobRequest.
 	}
 	resp, err := c.UpdateTransferJob(ctx, req)
 	if err != nil {
@@ -132,7 +149,7 @@ func ExampleClient_GetTransferJob() {
 
 	req := &storagetransferpb.GetTransferJobRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/storagetransfer/v1#GetTransferJobRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/storagetransfer/apiv1/storagetransferpb#GetTransferJobRequest.
 	}
 	resp, err := c.GetTransferJob(ctx, req)
 	if err != nil {
@@ -157,7 +174,7 @@ func ExampleClient_ListTransferJobs() {
 
 	req := &storagetransferpb.ListTransferJobsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/storagetransfer/v1#ListTransferJobsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/storagetransfer/apiv1/storagetransferpb#ListTransferJobsRequest.
 	}
 	it := c.ListTransferJobs(ctx, req)
 	for {
@@ -188,7 +205,7 @@ func ExampleClient_PauseTransferOperation() {
 
 	req := &storagetransferpb.PauseTransferOperationRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/storagetransfer/v1#PauseTransferOperationRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/storagetransfer/apiv1/storagetransferpb#PauseTransferOperationRequest.
 	}
 	err = c.PauseTransferOperation(ctx, req)
 	if err != nil {
@@ -211,7 +228,7 @@ func ExampleClient_ResumeTransferOperation() {
 
 	req := &storagetransferpb.ResumeTransferOperationRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/storagetransfer/v1#ResumeTransferOperationRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/storagetransfer/apiv1/storagetransferpb#ResumeTransferOperationRequest.
 	}
 	err = c.ResumeTransferOperation(ctx, req)
 	if err != nil {
@@ -234,7 +251,7 @@ func ExampleClient_RunTransferJob() {
 
 	req := &storagetransferpb.RunTransferJobRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/storagetransfer/v1#RunTransferJobRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/storagetransfer/apiv1/storagetransferpb#RunTransferJobRequest.
 	}
 	op, err := c.RunTransferJob(ctx, req)
 	if err != nil {
@@ -262,7 +279,7 @@ func ExampleClient_DeleteTransferJob() {
 
 	req := &storagetransferpb.DeleteTransferJobRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/storagetransfer/v1#DeleteTransferJobRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/storagetransfer/apiv1/storagetransferpb#DeleteTransferJobRequest.
 	}
 	err = c.DeleteTransferJob(ctx, req)
 	if err != nil {
@@ -285,7 +302,7 @@ func ExampleClient_CreateAgentPool() {
 
 	req := &storagetransferpb.CreateAgentPoolRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/storagetransfer/v1#CreateAgentPoolRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/storagetransfer/apiv1/storagetransferpb#CreateAgentPoolRequest.
 	}
 	resp, err := c.CreateAgentPool(ctx, req)
 	if err != nil {
@@ -310,7 +327,7 @@ func ExampleClient_UpdateAgentPool() {
 
 	req := &storagetransferpb.UpdateAgentPoolRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/storagetransfer/v1#UpdateAgentPoolRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/storagetransfer/apiv1/storagetransferpb#UpdateAgentPoolRequest.
 	}
 	resp, err := c.UpdateAgentPool(ctx, req)
 	if err != nil {
@@ -335,7 +352,7 @@ func ExampleClient_GetAgentPool() {
 
 	req := &storagetransferpb.GetAgentPoolRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/storagetransfer/v1#GetAgentPoolRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/storagetransfer/apiv1/storagetransferpb#GetAgentPoolRequest.
 	}
 	resp, err := c.GetAgentPool(ctx, req)
 	if err != nil {
@@ -360,7 +377,7 @@ func ExampleClient_ListAgentPools() {
 
 	req := &storagetransferpb.ListAgentPoolsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/storagetransfer/v1#ListAgentPoolsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/storagetransfer/apiv1/storagetransferpb#ListAgentPoolsRequest.
 	}
 	it := c.ListAgentPools(ctx, req)
 	for {
@@ -391,7 +408,7 @@ func ExampleClient_DeleteAgentPool() {
 
 	req := &storagetransferpb.DeleteAgentPoolRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/storagetransfer/v1#DeleteAgentPoolRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/storagetransfer/apiv1/storagetransferpb#DeleteAgentPoolRequest.
 	}
 	err = c.DeleteAgentPool(ctx, req)
 	if err != nil {
@@ -414,7 +431,7 @@ func ExampleClient_CancelOperation() {
 
 	req := &longrunningpb.CancelOperationRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/longrunning#CancelOperationRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/longrunning/autogen/longrunningpb#CancelOperationRequest.
 	}
 	err = c.CancelOperation(ctx, req)
 	if err != nil {
@@ -437,7 +454,7 @@ func ExampleClient_GetOperation() {
 
 	req := &longrunningpb.GetOperationRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/longrunning#GetOperationRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/longrunning/autogen/longrunningpb#GetOperationRequest.
 	}
 	resp, err := c.GetOperation(ctx, req)
 	if err != nil {
@@ -462,7 +479,7 @@ func ExampleClient_ListOperations() {
 
 	req := &longrunningpb.ListOperationsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/longrunning#ListOperationsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/longrunning/autogen/longrunningpb#ListOperationsRequest.
 	}
 	it := c.ListOperations(ctx, req)
 	for {

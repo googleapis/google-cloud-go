@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import (
 	"context"
 
 	dataflow "cloud.google.com/go/dataflow/apiv1beta3"
-	dataflowpb "google.golang.org/genproto/googleapis/dataflow/v1beta3"
+	dataflowpb "cloud.google.com/go/dataflow/apiv1beta3/dataflowpb"
 )
 
 func ExampleNewFlexTemplatesClient() {
@@ -72,7 +72,7 @@ func ExampleFlexTemplatesClient_LaunchFlexTemplate() {
 
 	req := &dataflowpb.LaunchFlexTemplateRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/dataflow/v1beta3#LaunchFlexTemplateRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataflow/apiv1beta3/dataflowpb#LaunchFlexTemplateRequest.
 	}
 	resp, err := c.LaunchFlexTemplate(ctx, req)
 	if err != nil {

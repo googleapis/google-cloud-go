@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,11 +20,11 @@ import (
 	"context"
 
 	aiplatform "cloud.google.com/go/aiplatform/apiv1beta1"
+	aiplatformpb "cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb"
+	iampb "cloud.google.com/go/iam/apiv1/iampb"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	"google.golang.org/api/iterator"
-	aiplatformpb "google.golang.org/genproto/googleapis/cloud/aiplatform/v1beta1"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
-	iampb "google.golang.org/genproto/googleapis/iam/v1"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 )
 
 func ExampleNewVizierClient() {
@@ -76,7 +76,7 @@ func ExampleVizierClient_CreateStudy() {
 
 	req := &aiplatformpb.CreateStudyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1beta1#CreateStudyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#CreateStudyRequest.
 	}
 	resp, err := c.CreateStudy(ctx, req)
 	if err != nil {
@@ -101,7 +101,7 @@ func ExampleVizierClient_GetStudy() {
 
 	req := &aiplatformpb.GetStudyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1beta1#GetStudyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#GetStudyRequest.
 	}
 	resp, err := c.GetStudy(ctx, req)
 	if err != nil {
@@ -126,7 +126,7 @@ func ExampleVizierClient_ListStudies() {
 
 	req := &aiplatformpb.ListStudiesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1beta1#ListStudiesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#ListStudiesRequest.
 	}
 	it := c.ListStudies(ctx, req)
 	for {
@@ -157,7 +157,7 @@ func ExampleVizierClient_DeleteStudy() {
 
 	req := &aiplatformpb.DeleteStudyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1beta1#DeleteStudyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#DeleteStudyRequest.
 	}
 	err = c.DeleteStudy(ctx, req)
 	if err != nil {
@@ -180,7 +180,7 @@ func ExampleVizierClient_LookupStudy() {
 
 	req := &aiplatformpb.LookupStudyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1beta1#LookupStudyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#LookupStudyRequest.
 	}
 	resp, err := c.LookupStudy(ctx, req)
 	if err != nil {
@@ -205,7 +205,7 @@ func ExampleVizierClient_SuggestTrials() {
 
 	req := &aiplatformpb.SuggestTrialsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1beta1#SuggestTrialsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#SuggestTrialsRequest.
 	}
 	op, err := c.SuggestTrials(ctx, req)
 	if err != nil {
@@ -235,7 +235,7 @@ func ExampleVizierClient_CreateTrial() {
 
 	req := &aiplatformpb.CreateTrialRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1beta1#CreateTrialRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#CreateTrialRequest.
 	}
 	resp, err := c.CreateTrial(ctx, req)
 	if err != nil {
@@ -260,7 +260,7 @@ func ExampleVizierClient_GetTrial() {
 
 	req := &aiplatformpb.GetTrialRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1beta1#GetTrialRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#GetTrialRequest.
 	}
 	resp, err := c.GetTrial(ctx, req)
 	if err != nil {
@@ -285,7 +285,7 @@ func ExampleVizierClient_ListTrials() {
 
 	req := &aiplatformpb.ListTrialsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1beta1#ListTrialsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#ListTrialsRequest.
 	}
 	it := c.ListTrials(ctx, req)
 	for {
@@ -316,7 +316,7 @@ func ExampleVizierClient_AddTrialMeasurement() {
 
 	req := &aiplatformpb.AddTrialMeasurementRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1beta1#AddTrialMeasurementRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#AddTrialMeasurementRequest.
 	}
 	resp, err := c.AddTrialMeasurement(ctx, req)
 	if err != nil {
@@ -341,7 +341,7 @@ func ExampleVizierClient_CompleteTrial() {
 
 	req := &aiplatformpb.CompleteTrialRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1beta1#CompleteTrialRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#CompleteTrialRequest.
 	}
 	resp, err := c.CompleteTrial(ctx, req)
 	if err != nil {
@@ -366,7 +366,7 @@ func ExampleVizierClient_DeleteTrial() {
 
 	req := &aiplatformpb.DeleteTrialRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1beta1#DeleteTrialRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#DeleteTrialRequest.
 	}
 	err = c.DeleteTrial(ctx, req)
 	if err != nil {
@@ -389,7 +389,7 @@ func ExampleVizierClient_CheckTrialEarlyStoppingState() {
 
 	req := &aiplatformpb.CheckTrialEarlyStoppingStateRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1beta1#CheckTrialEarlyStoppingStateRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#CheckTrialEarlyStoppingStateRequest.
 	}
 	op, err := c.CheckTrialEarlyStoppingState(ctx, req)
 	if err != nil {
@@ -419,7 +419,7 @@ func ExampleVizierClient_StopTrial() {
 
 	req := &aiplatformpb.StopTrialRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1beta1#StopTrialRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#StopTrialRequest.
 	}
 	resp, err := c.StopTrial(ctx, req)
 	if err != nil {
@@ -444,7 +444,7 @@ func ExampleVizierClient_ListOptimalTrials() {
 
 	req := &aiplatformpb.ListOptimalTrialsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1beta1#ListOptimalTrialsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#ListOptimalTrialsRequest.
 	}
 	resp, err := c.ListOptimalTrials(ctx, req)
 	if err != nil {
@@ -525,7 +525,7 @@ func ExampleVizierClient_GetIamPolicy() {
 
 	req := &iampb.GetIamPolicyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/iam/v1#GetIamPolicyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/iam/apiv1/iampb#GetIamPolicyRequest.
 	}
 	resp, err := c.GetIamPolicy(ctx, req)
 	if err != nil {
@@ -550,7 +550,7 @@ func ExampleVizierClient_SetIamPolicy() {
 
 	req := &iampb.SetIamPolicyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/iam/v1#SetIamPolicyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/iam/apiv1/iampb#SetIamPolicyRequest.
 	}
 	resp, err := c.SetIamPolicy(ctx, req)
 	if err != nil {
@@ -575,7 +575,7 @@ func ExampleVizierClient_TestIamPermissions() {
 
 	req := &iampb.TestIamPermissionsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/iam/v1#TestIamPermissionsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/iam/apiv1/iampb#TestIamPermissionsRequest.
 	}
 	resp, err := c.TestIamPermissions(ctx, req)
 	if err != nil {
@@ -600,7 +600,7 @@ func ExampleVizierClient_CancelOperation() {
 
 	req := &longrunningpb.CancelOperationRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/longrunning#CancelOperationRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/longrunning/autogen/longrunningpb#CancelOperationRequest.
 	}
 	err = c.CancelOperation(ctx, req)
 	if err != nil {
@@ -623,7 +623,7 @@ func ExampleVizierClient_DeleteOperation() {
 
 	req := &longrunningpb.DeleteOperationRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/longrunning#DeleteOperationRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/longrunning/autogen/longrunningpb#DeleteOperationRequest.
 	}
 	err = c.DeleteOperation(ctx, req)
 	if err != nil {
@@ -646,7 +646,7 @@ func ExampleVizierClient_GetOperation() {
 
 	req := &longrunningpb.GetOperationRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/longrunning#GetOperationRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/longrunning/autogen/longrunningpb#GetOperationRequest.
 	}
 	resp, err := c.GetOperation(ctx, req)
 	if err != nil {
@@ -671,7 +671,7 @@ func ExampleVizierClient_ListOperations() {
 
 	req := &longrunningpb.ListOperationsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/longrunning#ListOperationsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/longrunning/autogen/longrunningpb#ListOperationsRequest.
 	}
 	it := c.ListOperations(ctx, req)
 	for {
@@ -702,7 +702,7 @@ func ExampleVizierClient_WaitOperation() {
 
 	req := &longrunningpb.WaitOperationRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/longrunning#WaitOperationRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/longrunning/autogen/longrunningpb#WaitOperationRequest.
 	}
 	resp, err := c.WaitOperation(ctx, req)
 	if err != nil {

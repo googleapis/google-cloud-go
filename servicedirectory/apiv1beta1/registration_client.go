@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -26,6 +26,8 @@ import (
 	"net/url"
 	"time"
 
+	iampb "cloud.google.com/go/iam/apiv1/iampb"
+	servicedirectorypb "cloud.google.com/go/servicedirectory/apiv1beta1/servicedirectorypb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
@@ -33,8 +35,6 @@ import (
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
-	servicedirectorypb "google.golang.org/genproto/googleapis/cloud/servicedirectory/v1beta1"
-	iampb "google.golang.org/genproto/googleapis/iam/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -1314,6 +1314,7 @@ func (c *registrationRESTClient) CreateNamespace(ctx context.Context, req *servi
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/namespaces", req.GetParent())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	params.Add("namespaceId", fmt.Sprintf("%v", req.GetNamespaceId()))
 
 	baseUrl.RawQuery = params.Encode()
@@ -1385,6 +1386,7 @@ func (c *registrationRESTClient) ListNamespaces(ctx context.Context, req *servic
 		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/namespaces", req.GetParent())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -1464,6 +1466,11 @@ func (c *registrationRESTClient) GetNamespace(ctx context.Context, req *serviced
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
@@ -1525,6 +1532,7 @@ func (c *registrationRESTClient) UpdateNamespace(ctx context.Context, req *servi
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetNamespace().GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
 		updateMask, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
@@ -1589,6 +1597,11 @@ func (c *registrationRESTClient) DeleteNamespace(ctx context.Context, req *servi
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
@@ -1632,6 +1645,7 @@ func (c *registrationRESTClient) CreateService(ctx context.Context, req *service
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/services", req.GetParent())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	params.Add("serviceId", fmt.Sprintf("%v", req.GetServiceId()))
 
 	baseUrl.RawQuery = params.Encode()
@@ -1703,6 +1717,7 @@ func (c *registrationRESTClient) ListServices(ctx context.Context, req *serviced
 		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/services", req.GetParent())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -1782,6 +1797,11 @@ func (c *registrationRESTClient) GetService(ctx context.Context, req *servicedir
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
@@ -1843,6 +1863,7 @@ func (c *registrationRESTClient) UpdateService(ctx context.Context, req *service
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetService().GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
 		updateMask, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
@@ -1907,6 +1928,11 @@ func (c *registrationRESTClient) DeleteService(ctx context.Context, req *service
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
@@ -1950,6 +1976,7 @@ func (c *registrationRESTClient) CreateEndpoint(ctx context.Context, req *servic
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/endpoints", req.GetParent())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	params.Add("endpointId", fmt.Sprintf("%v", req.GetEndpointId()))
 
 	baseUrl.RawQuery = params.Encode()
@@ -2021,6 +2048,7 @@ func (c *registrationRESTClient) ListEndpoints(ctx context.Context, req *service
 		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/endpoints", req.GetParent())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -2100,6 +2128,11 @@ func (c *registrationRESTClient) GetEndpoint(ctx context.Context, req *servicedi
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
@@ -2161,6 +2194,7 @@ func (c *registrationRESTClient) UpdateEndpoint(ctx context.Context, req *servic
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetEndpoint().GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
 		updateMask, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
@@ -2224,6 +2258,11 @@ func (c *registrationRESTClient) DeleteEndpoint(ctx context.Context, req *servic
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
@@ -2264,6 +2303,11 @@ func (c *registrationRESTClient) GetIamPolicy(ctx context.Context, req *iampb.Ge
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:getIamPolicy", req.GetResource())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
@@ -2324,6 +2368,11 @@ func (c *registrationRESTClient) SetIamPolicy(ctx context.Context, req *iampb.Se
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:setIamPolicy", req.GetResource())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
 
@@ -2382,6 +2431,11 @@ func (c *registrationRESTClient) TestIamPermissions(ctx context.Context, req *ia
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:testIamPermissions", req.GetResource())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))

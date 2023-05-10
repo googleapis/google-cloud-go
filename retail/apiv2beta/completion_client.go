@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -28,6 +28,8 @@ import (
 
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	retailpb "cloud.google.com/go/retail/apiv2beta/retailpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
@@ -35,8 +37,6 @@ import (
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
-	retailpb "google.golang.org/genproto/googleapis/cloud/retail/v2beta"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -162,7 +162,7 @@ type internalCompletionClient interface {
 // CompletionClient is a client for interacting with Retail API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
-// Auto-completion service for retail.
+// Autocomplete service for retail.
 //
 // This feature is only available for users who have Retail Search enabled.
 // Enable Retail Search on Cloud Console before using this feature.
@@ -269,7 +269,7 @@ type completionGRPCClient struct {
 // NewCompletionClient creates a new completion service client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
-// Auto-completion service for retail.
+// Autocomplete service for retail.
 //
 // This feature is only available for users who have Retail Search enabled.
 // Enable Retail Search on Cloud Console before using this feature.
@@ -364,7 +364,7 @@ type completionRESTClient struct {
 
 // NewCompletionRESTClient creates a new completion service rest client.
 //
-// Auto-completion service for retail.
+// Autocomplete service for retail.
 //
 // This feature is only available for users who have Retail Search enabled.
 // Enable Retail Search on Cloud Console before using this feature.
@@ -548,14 +548,20 @@ func (c *completionRESTClient) CompleteQuery(ctx context.Context, req *retailpb.
 	baseUrl.Path += fmt.Sprintf("/v2beta/%v:completeQuery", req.GetCatalog())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetDataset() != "" {
 		params.Add("dataset", fmt.Sprintf("%v", req.GetDataset()))
 	}
 	if req.GetDeviceType() != "" {
 		params.Add("deviceType", fmt.Sprintf("%v", req.GetDeviceType()))
 	}
-	if req.GetLanguageCodes() != nil {
-		params.Add("languageCodes", fmt.Sprintf("%v", req.GetLanguageCodes()))
+	if req.GetEntity() != "" {
+		params.Add("entity", fmt.Sprintf("%v", req.GetEntity()))
+	}
+	if items := req.GetLanguageCodes(); len(items) > 0 {
+		for _, item := range items {
+			params.Add("languageCodes", fmt.Sprintf("%v", item))
+		}
 	}
 	if req.GetMaxSuggestions() != 0 {
 		params.Add("maxSuggestions", fmt.Sprintf("%v", req.GetMaxSuggestions()))
@@ -634,6 +640,11 @@ func (c *completionRESTClient) ImportCompletionData(ctx context.Context, req *re
 	}
 	baseUrl.Path += fmt.Sprintf("/v2beta/%v/completionData:import", req.GetParent())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
@@ -690,6 +701,11 @@ func (c *completionRESTClient) GetOperation(ctx context.Context, req *longrunnin
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2beta/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
@@ -758,6 +774,7 @@ func (c *completionRESTClient) ListOperations(ctx context.Context, req *longrunn
 		baseUrl.Path += fmt.Sprintf("/v2beta/%v/operations", req.GetName())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}

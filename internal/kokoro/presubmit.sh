@@ -40,8 +40,6 @@ try3() { eval "$*" || eval "$*" || eval "$*"; }
 
 # All packages, including +build tools, are fetched.
 try3 go mod download
-./internal/kokoro/vet.sh
-./internal/kokoro/check_incompat_changes.sh
 
 set +e # Run all tests, don't stop after the first failure.
 exit_code=0
@@ -50,8 +48,7 @@ exit_code=0
 # to be pushed to GCS as artifact.
 runPresubmitTests() {
   if [[ $PWD != *"/internal/"* ]] ||
-    [[ $PWD != *"/third_party/"* ]] &&
-    [[ $KOKORO_JOB_NAME == *"earliest"* ]]; then
+    [[ $PWD != *"/third_party/"* ]]; then
     # internal tools only expected to work with latest go version
     return
   fi

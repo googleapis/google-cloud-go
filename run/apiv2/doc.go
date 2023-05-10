@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,7 +17,16 @@
 // Package run is an auto-generated package for the
 // Cloud Run Admin API.
 //
-//	NOTE: This package is in beta. It is not stable, and may be subject to changes.
+// Deploy and manage user provided container images that scale automatically
+// based on incoming requests. The Cloud Run Admin API v1 follows the Knative
+// Serving API specification, while v2 is aligned with Google Cloud AIP-based
+// API standards, as described in https://google.aip.dev/ (at
+// https://google.aip.dev/).
+//
+// # General documentation
+//
+// For information about setting deadlines, reusing contexts, and more
+// please visit https://pkg.go.dev/cloud.google.com/go.
 //
 // # Example usage
 //
@@ -29,7 +38,7 @@
 //	// - It may require correct/in-range values for request initialization.
 //	// - It may require specifying regional endpoints when creating the service client as shown in:
 //	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-//	c, err := run.NewRevisionsClient(ctx)
+//	c, err := run.NewExecutionsClient(ctx)
 //	if err != nil {
 //		// TODO: Handle error.
 //	}
@@ -49,17 +58,17 @@
 //	// - It may require correct/in-range values for request initialization.
 //	// - It may require specifying regional endpoints when creating the service client as shown in:
 //	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-//	c, err := run.NewRevisionsClient(ctx)
+//	c, err := run.NewExecutionsClient(ctx)
 //	if err != nil {
 //		// TODO: Handle error.
 //	}
 //	defer c.Close()
 //
-//	req := &runpb.GetRevisionRequest{
+//	req := &runpb.GetExecutionRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/run/v2#GetRevisionRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/run/apiv2/runpb#GetExecutionRequest.
 //	}
-//	resp, err := c.GetRevision(ctx, req)
+//	resp, err := c.GetExecution(ctx, req)
 //	if err != nil {
 //		// TODO: Handle error.
 //	}
@@ -68,18 +77,17 @@
 //
 // # Use of Context
 //
-// The ctx passed to NewRevisionsClient is used for authentication requests and
+// The ctx passed to NewExecutionsClient is used for authentication requests and
 // for creating the underlying connection, but is not used for subsequent calls.
 // Individual methods on the client use the ctx given to them.
 //
 // To close the open connection, use the Close() method.
-//
-// For information about setting deadlines, reusing contexts, and more
-// please visit https://pkg.go.dev/cloud.google.com/go.
 package run // import "cloud.google.com/go/run/apiv2"
 
 import (
 	"context"
+	"fmt"
+	"net/http"
 	"os"
 	"runtime"
 	"strconv"
@@ -167,4 +175,23 @@ func versionGo() string {
 		return s
 	}
 	return "UNKNOWN"
+}
+
+// maybeUnknownEnum wraps the given proto-JSON parsing error if it is the result
+// of receiving an unknown enum value.
+func maybeUnknownEnum(err error) error {
+	if strings.Contains(err.Error(), "invalid value for enum type") {
+		err = fmt.Errorf("received an unknown enum value; a later version of the library may support it: %w", err)
+	}
+	return err
+}
+
+// buildHeaders extracts metadata from the outgoing context, joins it with any other
+// given metadata, and converts them into a http.Header.
+func buildHeaders(ctx context.Context, mds ...metadata.MD) http.Header {
+	if cmd, ok := metadata.FromOutgoingContext(ctx); ok {
+		mds = append(mds, cmd)
+	}
+	md := metadata.Join(mds...)
+	return http.Header(md)
 }

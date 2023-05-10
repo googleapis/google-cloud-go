@@ -282,10 +282,46 @@ func TestParamType(t *testing.T) {
 		}
 	}
 }
-
 func TestParamTypeErrors(t *testing.T) {
 	for _, val := range []interface{}{
-		nil, uint(0), new([]int), make(chan int),
+		nil, uint(0), new([]int), make(chan int), map[string]interface{}{},
+	} {
+		_, err := paramType(reflect.TypeOf(val), reflect.ValueOf(val))
+		if err == nil {
+			t.Errorf("%v (%T): got nil, want error", val, val)
+		}
+	}
+
+	type recArr struct {
+		RecArr []recArr
+	}
+	type recMap struct {
+		RecMap map[string]recMap
+	}
+	queryParam := QueryParameterValue{
+		StructValue: map[string]QueryParameterValue{
+			"nested": {
+				Type: StandardSQLDataType{
+					TypeKind: "STRING",
+				},
+				Value: "TEST",
+			},
+		},
+	}
+	standardSQL := StandardSQLDataType{
+		ArrayElementType: &StandardSQLDataType{
+			TypeKind: "NUMERIC",
+		},
+	}
+	recursiveArr := recArr{
+		RecArr: []recArr{},
+	}
+	recursiveMap := recMap{
+		RecMap: map[string]recMap{},
+	}
+	// Recursive structs
+	for _, val := range []interface{}{
+		queryParam, standardSQL, recursiveArr, recursiveMap,
 	} {
 		_, err := paramType(reflect.TypeOf(val), reflect.ValueOf(val))
 		if err == nil {

@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@ import (
 	"net/url"
 	"time"
 
+	budgetspb "cloud.google.com/go/billing/budgets/apiv1beta1/budgetspb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
@@ -33,7 +34,6 @@ import (
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
-	budgetspb "google.golang.org/genproto/googleapis/cloud/billing/budgets/v1beta1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -553,6 +553,11 @@ func (c *budgetRESTClient) CreateBudget(ctx context.Context, req *budgetspb.Crea
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/budgets", req.GetParent())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
@@ -616,6 +621,11 @@ func (c *budgetRESTClient) UpdateBudget(ctx context.Context, req *budgetspb.Upda
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetBudget().GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "budget.name", url.QueryEscape(req.GetBudget().GetName())))
 
@@ -673,6 +683,11 @@ func (c *budgetRESTClient) GetBudget(ctx context.Context, req *budgetspb.GetBudg
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
@@ -746,6 +761,7 @@ func (c *budgetRESTClient) ListBudgets(ctx context.Context, req *budgetspb.ListB
 		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/budgets", req.GetParent())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetPageSize() != 0 {
 			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
 		}
@@ -818,6 +834,11 @@ func (c *budgetRESTClient) DeleteBudget(ctx context.Context, req *budgetspb.Dele
 		return err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))

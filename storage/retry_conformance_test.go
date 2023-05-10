@@ -208,6 +208,28 @@ var methods = map[string][]retryFunc{
 			}
 			return err
 		},
+		func(ctx context.Context, c *Client, fs *resources, _ bool) error {
+			// Test JSON reads.
+			client, ok := c.tc.(*httpStorageClient)
+			if ok {
+				client.config.readAPIWasSet = true
+				client.config.useJSONforReads = true
+				defer func() {
+					client.config.readAPIWasSet = false
+					client.config.useJSONforReads = false
+				}()
+			}
+
+			r, err := c.Bucket(fs.bucket.Name).Object(fs.object.Name).NewReader(ctx)
+			if err != nil {
+				return err
+			}
+			wr, err := io.Copy(ioutil.Discard, r)
+			if got, want := wr, len(randomBytesToWrite); got != int64(want) {
+				return fmt.Errorf("body length mismatch\ngot:\n%v\n\nwant:\n%v", got, want)
+			}
+			return err
+		},
 	},
 	"storage.objects.download": {
 		func(ctx context.Context, c *Client, fs *resources, _ bool) error {
@@ -216,6 +238,42 @@ var methods = map[string][]retryFunc{
 			if err := uploadTestObject(fs.bucket.Name, objName, randomBytes9MB); err != nil {
 				return fmt.Errorf("failed to create 9 MiB large object pre test, err: %v", err)
 			}
+			// Download the large test object for the S8 download method group.
+			r, err := c.Bucket(fs.bucket.Name).Object(objName).NewReader(ctx)
+			if err != nil {
+				return err
+			}
+			defer r.Close()
+			data, err := ioutil.ReadAll(r)
+			if err != nil {
+				return fmt.Errorf("failed to ReadAll, err: %v", err)
+			}
+			if got, want := len(data), size9MB; got != want {
+				return fmt.Errorf("body length mismatch\ngot:\n%v\n\nwant:\n%v", got, want)
+			}
+			if got, want := data, randomBytes9MB; !bytes.Equal(got, want) {
+				return fmt.Errorf("body mismatch\ngot:\n%v\n\nwant:\n%v", got, want)
+			}
+			return nil
+		},
+		func(ctx context.Context, c *Client, fs *resources, _ bool) error {
+			// Test JSON reads.
+			// Before running the test method, populate a large test object of 9 MiB.
+			objName := objectIDs.New()
+			if err := uploadTestObject(fs.bucket.Name, objName, randomBytes9MB); err != nil {
+				return fmt.Errorf("failed to create 9 MiB large object pre test, err: %v", err)
+			}
+
+			client, ok := c.tc.(*httpStorageClient)
+			if ok {
+				client.config.readAPIWasSet = true
+				client.config.useJSONforReads = true
+				defer func() {
+					client.config.readAPIWasSet = false
+					client.config.useJSONforReads = false
+				}()
+			}
+
 			// Download the large test object for the S8 download method group.
 			r, err := c.Bucket(fs.bucket.Name).Object(objName).NewReader(ctx)
 			if err != nil {
@@ -333,6 +391,25 @@ var methods = map[string][]retryFunc{
 			}
 			if err := objW.Close(); err != nil {
 				return fmt.Errorf("Writer.Close: %v", err)
+			}
+			return nil
+		},
+	},
+	"storage.resumable.upload": {
+		func(ctx context.Context, c *Client, fs *resources, preconditions bool) error {
+			obj := c.Bucket(fs.bucket.Name).Object(objectIDs.New())
+			if preconditions {
+				obj = obj.If(Conditions{DoesNotExist: true})
+			}
+			w := obj.NewWriter(ctx)
+			// Set Writer.ChunkSize to 2 MiB to perform resumable uploads.
+			w.ChunkSize = 2097152
+
+			if _, err := w.Write(randomBytes9MB); err != nil {
+				return fmt.Errorf("writing object: %v", err)
+			}
+			if err := w.Close(); err != nil {
+				return fmt.Errorf("closing object: %v", err)
 			}
 			return nil
 		},

@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,10 +20,10 @@ import (
 	"context"
 
 	dialogflow "cloud.google.com/go/dialogflow/apiv2"
+	dialogflowpb "cloud.google.com/go/dialogflow/apiv2/dialogflowpb"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	"google.golang.org/api/iterator"
-	dialogflowpb "google.golang.org/genproto/googleapis/cloud/dialogflow/v2"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 )
 
 func ExampleNewEnvironmentsClient() {
@@ -34,6 +34,23 @@ func ExampleNewEnvironmentsClient() {
 	// - It may require specifying regional endpoints when creating the service client as shown in:
 	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dialogflow.NewEnvironmentsClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
+func ExampleNewEnvironmentsRESTClient() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := dialogflow.NewEnvironmentsRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -58,7 +75,7 @@ func ExampleEnvironmentsClient_ListEnvironments() {
 
 	req := &dialogflowpb.ListEnvironmentsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#ListEnvironmentsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/apiv2/dialogflowpb#ListEnvironmentsRequest.
 	}
 	it := c.ListEnvironments(ctx, req)
 	for {
@@ -89,7 +106,7 @@ func ExampleEnvironmentsClient_GetEnvironment() {
 
 	req := &dialogflowpb.GetEnvironmentRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#GetEnvironmentRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/apiv2/dialogflowpb#GetEnvironmentRequest.
 	}
 	resp, err := c.GetEnvironment(ctx, req)
 	if err != nil {
@@ -114,7 +131,7 @@ func ExampleEnvironmentsClient_CreateEnvironment() {
 
 	req := &dialogflowpb.CreateEnvironmentRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#CreateEnvironmentRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/apiv2/dialogflowpb#CreateEnvironmentRequest.
 	}
 	resp, err := c.CreateEnvironment(ctx, req)
 	if err != nil {
@@ -139,7 +156,7 @@ func ExampleEnvironmentsClient_UpdateEnvironment() {
 
 	req := &dialogflowpb.UpdateEnvironmentRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#UpdateEnvironmentRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/apiv2/dialogflowpb#UpdateEnvironmentRequest.
 	}
 	resp, err := c.UpdateEnvironment(ctx, req)
 	if err != nil {
@@ -164,7 +181,7 @@ func ExampleEnvironmentsClient_DeleteEnvironment() {
 
 	req := &dialogflowpb.DeleteEnvironmentRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#DeleteEnvironmentRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/apiv2/dialogflowpb#DeleteEnvironmentRequest.
 	}
 	err = c.DeleteEnvironment(ctx, req)
 	if err != nil {
@@ -187,7 +204,7 @@ func ExampleEnvironmentsClient_GetEnvironmentHistory() {
 
 	req := &dialogflowpb.GetEnvironmentHistoryRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#GetEnvironmentHistoryRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/apiv2/dialogflowpb#GetEnvironmentHistoryRequest.
 	}
 	it := c.GetEnvironmentHistory(ctx, req)
 	for {
@@ -274,7 +291,7 @@ func ExampleEnvironmentsClient_CancelOperation() {
 
 	req := &longrunningpb.CancelOperationRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/longrunning#CancelOperationRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/longrunning/autogen/longrunningpb#CancelOperationRequest.
 	}
 	err = c.CancelOperation(ctx, req)
 	if err != nil {
@@ -297,7 +314,7 @@ func ExampleEnvironmentsClient_GetOperation() {
 
 	req := &longrunningpb.GetOperationRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/longrunning#GetOperationRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/longrunning/autogen/longrunningpb#GetOperationRequest.
 	}
 	resp, err := c.GetOperation(ctx, req)
 	if err != nil {
@@ -322,7 +339,7 @@ func ExampleEnvironmentsClient_ListOperations() {
 
 	req := &longrunningpb.ListOperationsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/longrunning#ListOperationsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/longrunning/autogen/longrunningpb#ListOperationsRequest.
 	}
 	it := c.ListOperations(ctx, req)
 	for {

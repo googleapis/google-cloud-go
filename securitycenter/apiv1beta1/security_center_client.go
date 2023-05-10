@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -26,9 +26,11 @@ import (
 	"net/url"
 	"time"
 
+	iampb "cloud.google.com/go/iam/apiv1/iampb"
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
-	emptypb "github.com/golang/protobuf/ptypes/empty"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	securitycenterpb "cloud.google.com/go/securitycenter/apiv1beta1/securitycenterpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
@@ -36,14 +38,12 @@ import (
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
-	securitycenterpb "google.golang.org/genproto/googleapis/cloud/securitycenter/v1beta1"
-	iampb "google.golang.org/genproto/googleapis/iam/v1"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
+	emptypb "google.golang.org/protobuf/types/known/emptypb"
 )
 
 var newClientHook clientHook
@@ -1202,6 +1202,11 @@ func (c *restClient) CreateSource(ctx context.Context, req *securitycenterpb.Cre
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/sources", req.GetParent())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
@@ -1264,6 +1269,7 @@ func (c *restClient) CreateFinding(ctx context.Context, req *securitycenterpb.Cr
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/findings", req.GetParent())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	params.Add("findingId", fmt.Sprintf("%v", req.GetFindingId()))
 
 	baseUrl.RawQuery = params.Encode()
@@ -1327,6 +1333,11 @@ func (c *restClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRe
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:getIamPolicy", req.GetResource())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
 
@@ -1380,6 +1391,11 @@ func (c *restClient) GetOrganizationSettings(ctx context.Context, req *securityc
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
@@ -1432,6 +1448,11 @@ func (c *restClient) GetSource(ctx context.Context, req *securitycenterpb.GetSou
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
@@ -1505,6 +1526,11 @@ func (c *restClient) GroupAssets(ctx context.Context, req *securitycenterpb.Grou
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/assets:group", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+
+		baseUrl.RawQuery = params.Encode()
 
 		// Build HTTP headers from client and context metadata.
 		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
@@ -1593,6 +1619,11 @@ func (c *restClient) GroupFindings(ctx context.Context, req *securitycenterpb.Gr
 		}
 		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/findings:group", req.GetParent())
 
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+
+		baseUrl.RawQuery = params.Encode()
+
 		// Build HTTP headers from client and context metadata.
 		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
 		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1671,6 +1702,7 @@ func (c *restClient) ListAssets(ctx context.Context, req *securitycenterpb.ListA
 		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/assets", req.GetParent())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetCompareDuration() != nil {
 			compareDuration, err := protojson.Marshal(req.GetCompareDuration())
 			if err != nil {
@@ -1788,6 +1820,7 @@ func (c *restClient) ListFindings(ctx context.Context, req *securitycenterpb.Lis
 		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/findings", req.GetParent())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFieldMask() != nil {
 			fieldMask, err := protojson.Marshal(req.GetFieldMask())
 			if err != nil {
@@ -1895,6 +1928,7 @@ func (c *restClient) ListSources(ctx context.Context, req *securitycenterpb.List
 		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/sources", req.GetParent())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetPageSize() != 0 {
 			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
 		}
@@ -1979,6 +2013,11 @@ func (c *restClient) RunAssetDiscovery(ctx context.Context, req *securitycenterp
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/assets:runDiscovery", req.GetParent())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
@@ -2042,6 +2081,11 @@ func (c *restClient) SetFindingState(ctx context.Context, req *securitycenterpb.
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:setState", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
@@ -2101,6 +2145,11 @@ func (c *restClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRe
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:setIamPolicy", req.GetResource())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
 
@@ -2159,6 +2208,11 @@ func (c *restClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamP
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:testIamPermissions", req.GetResource())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
@@ -2222,6 +2276,7 @@ func (c *restClient) UpdateFinding(ctx context.Context, req *securitycenterpb.Up
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetFinding().GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
 		updateMask, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
@@ -2293,6 +2348,7 @@ func (c *restClient) UpdateOrganizationSettings(ctx context.Context, req *securi
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetOrganizationSettings().GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
 		updateMask, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
@@ -2364,6 +2420,7 @@ func (c *restClient) UpdateSource(ctx context.Context, req *securitycenterpb.Upd
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetSource().GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
 		updateMask, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
@@ -2435,6 +2492,7 @@ func (c *restClient) UpdateSecurityMarks(ctx context.Context, req *securitycente
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetSecurityMarks().GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetStartTime() != nil {
 		startTime, err := protojson.Marshal(req.GetStartTime())
 		if err != nil {

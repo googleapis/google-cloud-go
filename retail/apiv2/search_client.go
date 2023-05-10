@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -23,13 +23,13 @@ import (
 	"net/url"
 	"time"
 
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	retailpb "cloud.google.com/go/retail/apiv2/retailpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
-	retailpb "google.golang.org/genproto/googleapis/cloud/retail/v2"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -103,7 +103,7 @@ type internalSearchClient interface {
 // Service for search.
 //
 // This feature is only available for users who have Retail Search enabled.
-// Please enable Retail Search on Cloud Console before using this feature.
+// Enable Retail Search on Cloud Console before using this feature.
 type SearchClient struct {
 	// The internal transport-dependent client.
 	internalClient internalSearchClient
@@ -138,7 +138,7 @@ func (c *SearchClient) Connection() *grpc.ClientConn {
 // Search performs a search.
 //
 // This feature is only available for users who have Retail Search enabled.
-// Please enable Retail Search on Cloud Console before using this feature.
+// Enable Retail Search on Cloud Console before using this feature.
 func (c *SearchClient) Search(ctx context.Context, req *retailpb.SearchRequest, opts ...gax.CallOption) *SearchResponse_SearchResultIterator {
 	return c.internalClient.Search(ctx, req, opts...)
 }
@@ -181,7 +181,7 @@ type searchGRPCClient struct {
 // Service for search.
 //
 // This feature is only available for users who have Retail Search enabled.
-// Please enable Retail Search on Cloud Console before using this feature.
+// Enable Retail Search on Cloud Console before using this feature.
 func NewSearchClient(ctx context.Context, opts ...option.ClientOption) (*SearchClient, error) {
 	clientOpts := defaultSearchGRPCClientOptions()
 	if newSearchClientHook != nil {

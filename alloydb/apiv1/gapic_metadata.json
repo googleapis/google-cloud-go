@@ -1,0 +1,283 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.alloydb.v1",
+  "libraryPackage": "cloud.google.com/go/alloydb/apiv1",
+  "services": {
+    "AlloyDBAdmin": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "AlloyDBAdminClient",
+          "rpcs": {
+            "BatchCreateInstances": {
+              "methods": [
+                "BatchCreateInstances"
+              ]
+            },
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateBackup": {
+              "methods": [
+                "CreateBackup"
+              ]
+            },
+            "CreateCluster": {
+              "methods": [
+                "CreateCluster"
+              ]
+            },
+            "CreateInstance": {
+              "methods": [
+                "CreateInstance"
+              ]
+            },
+            "DeleteBackup": {
+              "methods": [
+                "DeleteBackup"
+              ]
+            },
+            "DeleteCluster": {
+              "methods": [
+                "DeleteCluster"
+              ]
+            },
+            "DeleteInstance": {
+              "methods": [
+                "DeleteInstance"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "FailoverInstance": {
+              "methods": [
+                "FailoverInstance"
+              ]
+            },
+            "GetBackup": {
+              "methods": [
+                "GetBackup"
+              ]
+            },
+            "GetCluster": {
+              "methods": [
+                "GetCluster"
+              ]
+            },
+            "GetInstance": {
+              "methods": [
+                "GetInstance"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListBackups": {
+              "methods": [
+                "ListBackups"
+              ]
+            },
+            "ListClusters": {
+              "methods": [
+                "ListClusters"
+              ]
+            },
+            "ListInstances": {
+              "methods": [
+                "ListInstances"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListSupportedDatabaseFlags": {
+              "methods": [
+                "ListSupportedDatabaseFlags"
+              ]
+            },
+            "RestartInstance": {
+              "methods": [
+                "RestartInstance"
+              ]
+            },
+            "RestoreCluster": {
+              "methods": [
+                "RestoreCluster"
+              ]
+            },
+            "UpdateBackup": {
+              "methods": [
+                "UpdateBackup"
+              ]
+            },
+            "UpdateCluster": {
+              "methods": [
+                "UpdateCluster"
+              ]
+            },
+            "UpdateInstance": {
+              "methods": [
+                "UpdateInstance"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "AlloyDBAdminClient",
+          "rpcs": {
+            "BatchCreateInstances": {
+              "methods": [
+                "BatchCreateInstances"
+              ]
+            },
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateBackup": {
+              "methods": [
+                "CreateBackup"
+              ]
+            },
+            "CreateCluster": {
+              "methods": [
+                "CreateCluster"
+              ]
+            },
+            "CreateInstance": {
+              "methods": [
+                "CreateInstance"
+              ]
+            },
+            "DeleteBackup": {
+              "methods": [
+                "DeleteBackup"
+              ]
+            },
+            "DeleteCluster": {
+              "methods": [
+                "DeleteCluster"
+              ]
+            },
+            "DeleteInstance": {
+              "methods": [
+                "DeleteInstance"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "FailoverInstance": {
+              "methods": [
+                "FailoverInstance"
+              ]
+            },
+            "GetBackup": {
+              "methods": [
+                "GetBackup"
+              ]
+            },
+            "GetCluster": {
+              "methods": [
+                "GetCluster"
+              ]
+            },
+            "GetInstance": {
+              "methods": [
+                "GetInstance"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListBackups": {
+              "methods": [
+                "ListBackups"
+              ]
+            },
+            "ListClusters": {
+              "methods": [
+                "ListClusters"
+              ]
+            },
+            "ListInstances": {
+              "methods": [
+                "ListInstances"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListSupportedDatabaseFlags": {
+              "methods": [
+                "ListSupportedDatabaseFlags"
+              ]
+            },
+            "RestartInstance": {
+              "methods": [
+                "RestartInstance"
+              ]
+            },
+            "RestoreCluster": {
+              "methods": [
+                "RestoreCluster"
+              ]
+            },
+            "UpdateBackup": {
+              "methods": [
+                "UpdateBackup"
+              ]
+            },
+            "UpdateCluster": {
+              "methods": [
+                "UpdateCluster"
+              ]
+            },
+            "UpdateInstance": {
+              "methods": [
+                "UpdateInstance"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import (
 	"context"
 
 	automl "cloud.google.com/go/automl/apiv1beta1"
-	automlpb "google.golang.org/genproto/googleapis/cloud/automl/v1beta1"
+	automlpb "cloud.google.com/go/automl/apiv1beta1/automlpb"
 )
 
 func ExampleNewPredictionClient() {
@@ -72,7 +72,7 @@ func ExamplePredictionClient_Predict() {
 
 	req := &automlpb.PredictRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/automl/v1beta1#PredictRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/automl/apiv1beta1/automlpb#PredictRequest.
 	}
 	resp, err := c.Predict(ctx, req)
 	if err != nil {
@@ -97,7 +97,7 @@ func ExamplePredictionClient_BatchPredict() {
 
 	req := &automlpb.BatchPredictRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/automl/v1beta1#BatchPredictRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/automl/apiv1beta1/automlpb#BatchPredictRequest.
 	}
 	op, err := c.BatchPredict(ctx, req)
 	if err != nil {

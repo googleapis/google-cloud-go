@@ -1,5 +1,55 @@
 # Changes
 
+## [1.8.1](https://github.com/googleapis/google-cloud-go/compare/resourcemanager/v1.8.0...resourcemanager/v1.8.1) (2023-05-08)
+
+
+### Bug Fixes
+
+* **resourcemanager:** Update grpc to v1.55.0 ([1147ce0](https://github.com/googleapis/google-cloud-go/commit/1147ce02a990276ca4f8ab7a1ab65c14da4450ef))
+
+## [1.8.0](https://github.com/googleapis/google-cloud-go/compare/resourcemanager/v1.7.0...resourcemanager/v1.8.0) (2023-04-25)
+
+
+### Features
+
+* **resourcemanager:** Add TagHolds, GetNamespacedTagKey, and GetNamespacedTagValue APIs. Adds support for project parented tags ([#7796](https://github.com/googleapis/google-cloud-go/issues/7796)) ([52471c8](https://github.com/googleapis/google-cloud-go/commit/52471c84101ef5f6b528fdb206a5659a07014bfd))
+
+## [1.7.0](https://github.com/googleapis/google-cloud-go/compare/resourcemanager/v1.6.0...resourcemanager/v1.7.0) (2023-04-04)
+
+
+### Features
+
+* **resourcemanager:** Promote to GA ([597ea0f](https://github.com/googleapis/google-cloud-go/commit/597ea0fe09bcea04e884dffe78add850edb2120d))
+* **resourcemanager:** Promote to GA ([fce42e0](https://github.com/googleapis/google-cloud-go/commit/fce42e0e6764e27760cf6f137b66fed45145ebf8))
+
+## [1.6.0](https://github.com/googleapis/google-cloud-go/compare/resourcemanager/v1.5.0...resourcemanager/v1.6.0) (2023-03-15)
+
+
+### Features
+
+* **resourcemanager:** Update iam and longrunning deps ([91a1f78](https://github.com/googleapis/google-cloud-go/commit/91a1f784a109da70f63b96414bba8a9b4254cddd))
+
+## [1.5.0](https://github.com/googleapis/google-cloud-go/compare/resourcemanager/v1.4.0...resourcemanager/v1.5.0) (2023-01-04)
+
+
+### Features
+
+* **resourcemanager:** Add REST client ([06a54a1](https://github.com/googleapis/google-cloud-go/commit/06a54a16a5866cce966547c51e203b9e09a25bc0))
+
+## [1.4.0](https://github.com/googleapis/google-cloud-go/compare/resourcemanager/v1.3.0...resourcemanager/v1.4.0) (2022-11-03)
+
+
+### Features
+
+* **resourcemanager:** rewrite signatures in terms of new location ([3c4b2b3](https://github.com/googleapis/google-cloud-go/commit/3c4b2b34565795537aac1661e6af2442437e34ad))
+
+## [1.3.0](https://github.com/googleapis/google-cloud-go/compare/resourcemanager/v1.2.0...resourcemanager/v1.3.0) (2022-10-25)
+
+
+### Features
+
+* **resourcemanager:** start generating stubs dir ([de2d180](https://github.com/googleapis/google-cloud-go/commit/de2d18066dc613b72f6f8db93ca60146dabcfdcc))
+
 ## [1.2.0](https://github.com/googleapis/google-cloud-go/compare/resourcemanager/v1.1.0...resourcemanager/v1.2.0) (2022-02-23)
 
 

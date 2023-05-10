@@ -66,6 +66,66 @@
               ]
             }
           }
+        },
+        "rest": {
+          "libraryClient": "CloudFunctionsClient",
+          "rpcs": {
+            "CallFunction": {
+              "methods": [
+                "CallFunction"
+              ]
+            },
+            "CreateFunction": {
+              "methods": [
+                "CreateFunction"
+              ]
+            },
+            "DeleteFunction": {
+              "methods": [
+                "DeleteFunction"
+              ]
+            },
+            "GenerateDownloadUrl": {
+              "methods": [
+                "GenerateDownloadUrl"
+              ]
+            },
+            "GenerateUploadUrl": {
+              "methods": [
+                "GenerateUploadUrl"
+              ]
+            },
+            "GetFunction": {
+              "methods": [
+                "GetFunction"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "ListFunctions": {
+              "methods": [
+                "ListFunctions"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
+            "UpdateFunction": {
+              "methods": [
+                "UpdateFunction"
+              ]
+            }
+          }
         }
       }
     }

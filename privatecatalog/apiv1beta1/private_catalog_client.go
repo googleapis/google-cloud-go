@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ import (
 	"net/http"
 	"net/url"
 
+	privatecatalogpb "cloud.google.com/go/privatecatalog/apiv1beta1/privatecatalogpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
@@ -31,7 +32,6 @@ import (
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
-	privatecatalogpb "google.golang.org/genproto/googleapis/cloud/privatecatalog/v1beta1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/encoding/protojson"
@@ -505,6 +505,7 @@ func (c *restClient) SearchCatalogs(ctx context.Context, req *privatecatalogpb.S
 		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/catalogs:search", req.GetResource())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetPageSize() != 0 {
 			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
 		}
@@ -596,6 +597,7 @@ func (c *restClient) SearchProducts(ctx context.Context, req *privatecatalogpb.S
 		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/products:search", req.GetResource())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetPageSize() != 0 {
 			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
 		}
@@ -687,6 +689,7 @@ func (c *restClient) SearchVersions(ctx context.Context, req *privatecatalogpb.S
 		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/versions:search", req.GetResource())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetPageSize() != 0 {
 			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
 		}

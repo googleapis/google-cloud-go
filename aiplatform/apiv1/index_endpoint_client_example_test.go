@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,11 +20,11 @@ import (
 	"context"
 
 	aiplatform "cloud.google.com/go/aiplatform/apiv1"
+	aiplatformpb "cloud.google.com/go/aiplatform/apiv1/aiplatformpb"
+	iampb "cloud.google.com/go/iam/apiv1/iampb"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	"google.golang.org/api/iterator"
-	aiplatformpb "google.golang.org/genproto/googleapis/cloud/aiplatform/v1"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
-	iampb "google.golang.org/genproto/googleapis/iam/v1"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 )
 
 func ExampleNewIndexEndpointClient() {
@@ -59,7 +59,7 @@ func ExampleIndexEndpointClient_CreateIndexEndpoint() {
 
 	req := &aiplatformpb.CreateIndexEndpointRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1#CreateIndexEndpointRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1/aiplatformpb#CreateIndexEndpointRequest.
 	}
 	op, err := c.CreateIndexEndpoint(ctx, req)
 	if err != nil {
@@ -89,7 +89,7 @@ func ExampleIndexEndpointClient_GetIndexEndpoint() {
 
 	req := &aiplatformpb.GetIndexEndpointRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1#GetIndexEndpointRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1/aiplatformpb#GetIndexEndpointRequest.
 	}
 	resp, err := c.GetIndexEndpoint(ctx, req)
 	if err != nil {
@@ -114,7 +114,7 @@ func ExampleIndexEndpointClient_ListIndexEndpoints() {
 
 	req := &aiplatformpb.ListIndexEndpointsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1#ListIndexEndpointsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1/aiplatformpb#ListIndexEndpointsRequest.
 	}
 	it := c.ListIndexEndpoints(ctx, req)
 	for {
@@ -145,7 +145,7 @@ func ExampleIndexEndpointClient_UpdateIndexEndpoint() {
 
 	req := &aiplatformpb.UpdateIndexEndpointRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1#UpdateIndexEndpointRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1/aiplatformpb#UpdateIndexEndpointRequest.
 	}
 	resp, err := c.UpdateIndexEndpoint(ctx, req)
 	if err != nil {
@@ -170,7 +170,7 @@ func ExampleIndexEndpointClient_DeleteIndexEndpoint() {
 
 	req := &aiplatformpb.DeleteIndexEndpointRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1#DeleteIndexEndpointRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1/aiplatformpb#DeleteIndexEndpointRequest.
 	}
 	op, err := c.DeleteIndexEndpoint(ctx, req)
 	if err != nil {
@@ -198,7 +198,7 @@ func ExampleIndexEndpointClient_DeployIndex() {
 
 	req := &aiplatformpb.DeployIndexRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1#DeployIndexRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1/aiplatformpb#DeployIndexRequest.
 	}
 	op, err := c.DeployIndex(ctx, req)
 	if err != nil {
@@ -228,7 +228,7 @@ func ExampleIndexEndpointClient_UndeployIndex() {
 
 	req := &aiplatformpb.UndeployIndexRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1#UndeployIndexRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1/aiplatformpb#UndeployIndexRequest.
 	}
 	op, err := c.UndeployIndex(ctx, req)
 	if err != nil {
@@ -258,7 +258,7 @@ func ExampleIndexEndpointClient_MutateDeployedIndex() {
 
 	req := &aiplatformpb.MutateDeployedIndexRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1#MutateDeployedIndexRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1/aiplatformpb#MutateDeployedIndexRequest.
 	}
 	op, err := c.MutateDeployedIndex(ctx, req)
 	if err != nil {
@@ -344,7 +344,7 @@ func ExampleIndexEndpointClient_GetIamPolicy() {
 
 	req := &iampb.GetIamPolicyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/iam/v1#GetIamPolicyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/iam/apiv1/iampb#GetIamPolicyRequest.
 	}
 	resp, err := c.GetIamPolicy(ctx, req)
 	if err != nil {
@@ -369,7 +369,7 @@ func ExampleIndexEndpointClient_SetIamPolicy() {
 
 	req := &iampb.SetIamPolicyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/iam/v1#SetIamPolicyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/iam/apiv1/iampb#SetIamPolicyRequest.
 	}
 	resp, err := c.SetIamPolicy(ctx, req)
 	if err != nil {
@@ -394,7 +394,7 @@ func ExampleIndexEndpointClient_TestIamPermissions() {
 
 	req := &iampb.TestIamPermissionsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/iam/v1#TestIamPermissionsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/iam/apiv1/iampb#TestIamPermissionsRequest.
 	}
 	resp, err := c.TestIamPermissions(ctx, req)
 	if err != nil {
@@ -419,7 +419,7 @@ func ExampleIndexEndpointClient_CancelOperation() {
 
 	req := &longrunningpb.CancelOperationRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/longrunning#CancelOperationRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/longrunning/autogen/longrunningpb#CancelOperationRequest.
 	}
 	err = c.CancelOperation(ctx, req)
 	if err != nil {
@@ -442,7 +442,7 @@ func ExampleIndexEndpointClient_DeleteOperation() {
 
 	req := &longrunningpb.DeleteOperationRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/longrunning#DeleteOperationRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/longrunning/autogen/longrunningpb#DeleteOperationRequest.
 	}
 	err = c.DeleteOperation(ctx, req)
 	if err != nil {
@@ -465,7 +465,7 @@ func ExampleIndexEndpointClient_GetOperation() {
 
 	req := &longrunningpb.GetOperationRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/longrunning#GetOperationRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/longrunning/autogen/longrunningpb#GetOperationRequest.
 	}
 	resp, err := c.GetOperation(ctx, req)
 	if err != nil {
@@ -490,7 +490,7 @@ func ExampleIndexEndpointClient_ListOperations() {
 
 	req := &longrunningpb.ListOperationsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/longrunning#ListOperationsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/longrunning/autogen/longrunningpb#ListOperationsRequest.
 	}
 	it := c.ListOperations(ctx, req)
 	for {
@@ -521,7 +521,7 @@ func ExampleIndexEndpointClient_WaitOperation() {
 
 	req := &longrunningpb.WaitOperationRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/longrunning#WaitOperationRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/longrunning/autogen/longrunningpb#WaitOperationRequest.
 	}
 	resp, err := c.WaitOperation(ctx, req)
 	if err != nil {

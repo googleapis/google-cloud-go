@@ -136,6 +136,17 @@ type TableMetadata struct {
 	// ETag is the ETag obtained when reading metadata. Pass it to Table.Update to
 	// ensure that the metadata hasn't changed since it was read.
 	ETag string
+
+	// Defines the default collation specification of new STRING fields
+	// in the table. During table creation or update, if a STRING field is added
+	// to this table without explicit collation specified, then the table inherits
+	// the table default collation. A change to this field affects only fields
+	// added afterwards, and does not alter the existing fields.
+	// The following values are supported:
+	//   - 'und:ci': undetermined locale, case insensitive.
+	//   - '': empty string. Default to case-sensitive behavior.
+	// More information: https://cloud.google.com/bigquery/docs/reference/standard-sql/collation-concepts
+	DefaultCollation string
 }
 
 // TableCreateDisposition specifies the circumstances under which destination table will be created.
@@ -663,6 +674,7 @@ func (tm *TableMetadata) toBQ() (*bq.Table, error) {
 	if tm.ETag != "" {
 		return nil, errors.New("cannot set ETag on create")
 	}
+	t.DefaultCollation = string(tm.DefaultCollation)
 	return t, nil
 }
 
@@ -743,6 +755,7 @@ func bqToTableMetadata(t *bq.Table, c *Client) (*TableMetadata, error) {
 		CreationTime:           unixMillisToTime(t.CreationTime),
 		LastModifiedTime:       unixMillisToTime(int64(t.LastModifiedTime)),
 		ETag:                   t.Etag,
+		DefaultCollation:       t.DefaultCollation,
 		EncryptionConfig:       bqToEncryptionConfig(t.EncryptionConfiguration),
 		RequirePartitionFilter: t.RequirePartitionFilter,
 		SnapshotDefinition:     bqToSnapshotDefinition(t.SnapshotDefinition, c),
@@ -800,6 +813,12 @@ func (t *Table) Read(ctx context.Context) *RowIterator {
 }
 
 func (t *Table) read(ctx context.Context, pf pageFetcher) *RowIterator {
+	if t.c.isStorageReadAvailable() {
+		it, err := newStorageRowIteratorFromTable(ctx, t, false)
+		if err == nil {
+			return it
+		}
+	}
 	return newRowIterator(ctx, &rowSource{t: t}, pf)
 }
 
@@ -924,6 +943,10 @@ func (tm *TableMetadataToUpdate) toBQ() (*bq.Table, error) {
 		t.View.UseLegacySql = optional.ToBool(tm.UseLegacySQL)
 		t.View.ForceSendFields = append(t.View.ForceSendFields, "UseLegacySql")
 	}
+	if tm.DefaultCollation != nil {
+		t.DefaultCollation = optional.ToString(tm.DefaultCollation)
+		forceSend("DefaultCollation")
+	}
 	labels, forces, nulls := tm.update()
 	t.Labels = labels
 	t.ForceSendFields = append(t.ForceSendFields, forces...)
@@ -996,6 +1019,10 @@ type TableMetadataToUpdate struct {
 	// RequirePartitionFilter governs whether the table enforces partition
 	// elimination when referenced in a query.
 	RequirePartitionFilter optional.Bool
+
+	// Defines the default collation specification of new STRING fields
+	// in the table.
+	DefaultCollation optional.String
 
 	labelUpdater
 }

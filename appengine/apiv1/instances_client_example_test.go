@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,8 +20,8 @@ import (
 	"context"
 
 	appengine "cloud.google.com/go/appengine/apiv1"
+	appenginepb "cloud.google.com/go/appengine/apiv1/appenginepb"
 	"google.golang.org/api/iterator"
-	appenginepb "google.golang.org/genproto/googleapis/appengine/v1"
 )
 
 func ExampleNewInstancesClient() {
@@ -32,6 +32,23 @@ func ExampleNewInstancesClient() {
 	// - It may require specifying regional endpoints when creating the service client as shown in:
 	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := appengine.NewInstancesClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
+func ExampleNewInstancesRESTClient() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := appengine.NewInstancesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -56,7 +73,7 @@ func ExampleInstancesClient_ListInstances() {
 
 	req := &appenginepb.ListInstancesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/appengine/v1#ListInstancesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/appengine/apiv1/appenginepb#ListInstancesRequest.
 	}
 	it := c.ListInstances(ctx, req)
 	for {
@@ -87,7 +104,7 @@ func ExampleInstancesClient_GetInstance() {
 
 	req := &appenginepb.GetInstanceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/appengine/v1#GetInstanceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/appengine/apiv1/appenginepb#GetInstanceRequest.
 	}
 	resp, err := c.GetInstance(ctx, req)
 	if err != nil {
@@ -112,7 +129,7 @@ func ExampleInstancesClient_DeleteInstance() {
 
 	req := &appenginepb.DeleteInstanceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/appengine/v1#DeleteInstanceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/appengine/apiv1/appenginepb#DeleteInstanceRequest.
 	}
 	op, err := c.DeleteInstance(ctx, req)
 	if err != nil {
@@ -140,7 +157,7 @@ func ExampleInstancesClient_DebugInstance() {
 
 	req := &appenginepb.DebugInstanceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/appengine/v1#DebugInstanceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/appengine/apiv1/appenginepb#DebugInstanceRequest.
 	}
 	op, err := c.DebugInstance(ctx, req)
 	if err != nil {

@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -26,8 +26,10 @@ import (
 	"net/url"
 	"time"
 
+	dialogflowpb "cloud.google.com/go/dialogflow/apiv2beta1/dialogflowpb"
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
@@ -35,9 +37,7 @@ import (
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
-	dialogflowpb "google.golang.org/genproto/googleapis/cloud/dialogflow/v2beta1"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -266,7 +266,8 @@ type internalConversationProfilesClient interface {
 // ConversationProfilesClient is a client for interacting with Dialogflow API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
-// Service for managing ConversationProfiles.
+// Service for managing
+// ConversationProfiles.
 type ConversationProfilesClient struct {
 	// The internal transport-dependent client.
 	internalClient internalConversationProfilesClient
@@ -317,7 +318,8 @@ func (c *ConversationProfilesClient) GetConversationProfile(ctx context.Context,
 //
 // ConversationProfile.CreateTime and ConversationProfile.UpdateTime
 // aren’t populated in the response. You can retrieve them via
-// GetConversationProfile API.
+// GetConversationProfile
+// API.
 func (c *ConversationProfilesClient) CreateConversationProfile(ctx context.Context, req *dialogflowpb.CreateConversationProfileRequest, opts ...gax.CallOption) (*dialogflowpb.ConversationProfile, error) {
 	return c.internalClient.CreateConversationProfile(ctx, req, opts...)
 }
@@ -326,7 +328,8 @@ func (c *ConversationProfilesClient) CreateConversationProfile(ctx context.Conte
 //
 // ConversationProfile.CreateTime and ConversationProfile.UpdateTime
 // aren’t populated in the response. You can retrieve them via
-// GetConversationProfile API.
+// GetConversationProfile
+// API.
 func (c *ConversationProfilesClient) UpdateConversationProfile(ctx context.Context, req *dialogflowpb.UpdateConversationProfileRequest, opts ...gax.CallOption) (*dialogflowpb.ConversationProfile, error) {
 	return c.internalClient.UpdateConversationProfile(ctx, req, opts...)
 }
@@ -345,9 +348,11 @@ func (c *ConversationProfilesClient) DeleteConversationProfile(ctx context.Conte
 // operation (at https://cloud.google.com/dialogflow/es/docs/how/long-running-operations).
 // The returned Operation type has the following method-specific fields:
 //
-//	metadata: SetSuggestionFeatureConfigOperationMetadata
+//	metadata:
+//	SetSuggestionFeatureConfigOperationMetadata
 //
-//	response: ConversationProfile
+//	response:
+//	ConversationProfile
 //
 // If a long running operation to add or update suggestion feature
 // config for the same conversation profile, participant role and suggestion
@@ -370,9 +375,11 @@ func (c *ConversationProfilesClient) SetSuggestionFeatureConfigOperation(name st
 // operation (at https://cloud.google.com/dialogflow/es/docs/how/long-running-operations).
 // The returned Operation type has the following method-specific fields:
 //
-//	metadata: ClearSuggestionFeatureConfigOperationMetadata
+//	metadata:
+//	ClearSuggestionFeatureConfigOperationMetadata
 //
-//	response: ConversationProfile
+//	response:
+//	ConversationProfile
 func (c *ConversationProfilesClient) ClearSuggestionFeatureConfig(ctx context.Context, req *dialogflowpb.ClearSuggestionFeatureConfigRequest, opts ...gax.CallOption) (*ClearSuggestionFeatureConfigOperation, error) {
 	return c.internalClient.ClearSuggestionFeatureConfig(ctx, req, opts...)
 }
@@ -440,7 +447,8 @@ type conversationProfilesGRPCClient struct {
 // NewConversationProfilesClient creates a new conversation profiles client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
-// Service for managing ConversationProfiles.
+// Service for managing
+// ConversationProfiles.
 func NewConversationProfilesClient(ctx context.Context, opts ...option.ClientOption) (*ConversationProfilesClient, error) {
 	clientOpts := defaultConversationProfilesGRPCClientOptions()
 	if newConversationProfilesClientHook != nil {
@@ -533,7 +541,8 @@ type conversationProfilesRESTClient struct {
 
 // NewConversationProfilesRESTClient creates a new conversation profiles rest client.
 //
-// Service for managing ConversationProfiles.
+// Service for managing
+// ConversationProfiles.
 func NewConversationProfilesRESTClient(ctx context.Context, opts ...option.ClientOption) (*ConversationProfilesClient, error) {
 	clientOpts := append(defaultConversationProfilesRESTClientOptions(), opts...)
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
@@ -930,6 +939,7 @@ func (c *conversationProfilesRESTClient) ListConversationProfiles(ctx context.Co
 		baseUrl.Path += fmt.Sprintf("/v2beta1/%v/conversationProfiles", req.GetParent())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetPageSize() != 0 {
 			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
 		}
@@ -1003,6 +1013,11 @@ func (c *conversationProfilesRESTClient) GetConversationProfile(ctx context.Cont
 	}
 	baseUrl.Path += fmt.Sprintf("/v2beta1/%v", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
@@ -1052,7 +1067,8 @@ func (c *conversationProfilesRESTClient) GetConversationProfile(ctx context.Cont
 //
 // ConversationProfile.CreateTime and ConversationProfile.UpdateTime
 // aren’t populated in the response. You can retrieve them via
-// GetConversationProfile API.
+// GetConversationProfile
+// API.
 func (c *conversationProfilesRESTClient) CreateConversationProfile(ctx context.Context, req *dialogflowpb.CreateConversationProfileRequest, opts ...gax.CallOption) (*dialogflowpb.ConversationProfile, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetConversationProfile()
@@ -1066,6 +1082,11 @@ func (c *conversationProfilesRESTClient) CreateConversationProfile(ctx context.C
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2beta1/%v/conversationProfiles", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
@@ -1116,7 +1137,8 @@ func (c *conversationProfilesRESTClient) CreateConversationProfile(ctx context.C
 //
 // ConversationProfile.CreateTime and ConversationProfile.UpdateTime
 // aren’t populated in the response. You can retrieve them via
-// GetConversationProfile API.
+// GetConversationProfile
+// API.
 func (c *conversationProfilesRESTClient) UpdateConversationProfile(ctx context.Context, req *dialogflowpb.UpdateConversationProfileRequest, opts ...gax.CallOption) (*dialogflowpb.ConversationProfile, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetConversationProfile()
@@ -1132,6 +1154,7 @@ func (c *conversationProfilesRESTClient) UpdateConversationProfile(ctx context.C
 	baseUrl.Path += fmt.Sprintf("/v2beta1/%v", req.GetConversationProfile().GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
 		updateMask, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
@@ -1195,6 +1218,11 @@ func (c *conversationProfilesRESTClient) DeleteConversationProfile(ctx context.C
 	}
 	baseUrl.Path += fmt.Sprintf("/v2beta1/%v", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
@@ -1231,9 +1259,11 @@ func (c *conversationProfilesRESTClient) DeleteConversationProfile(ctx context.C
 // operation (at https://cloud.google.com/dialogflow/es/docs/how/long-running-operations).
 // The returned Operation type has the following method-specific fields:
 //
-//	metadata: SetSuggestionFeatureConfigOperationMetadata
+//	metadata:
+//	SetSuggestionFeatureConfigOperationMetadata
 //
-//	response: ConversationProfile
+//	response:
+//	ConversationProfile
 //
 // If a long running operation to add or update suggestion feature
 // config for the same conversation profile, participant role and suggestion
@@ -1251,6 +1281,11 @@ func (c *conversationProfilesRESTClient) SetSuggestionFeatureConfig(ctx context.
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2beta1/%v:setSuggestionFeatureConfig", req.GetConversationProfile())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "conversation_profile", url.QueryEscape(req.GetConversationProfile())))
@@ -1308,9 +1343,11 @@ func (c *conversationProfilesRESTClient) SetSuggestionFeatureConfig(ctx context.
 // operation (at https://cloud.google.com/dialogflow/es/docs/how/long-running-operations).
 // The returned Operation type has the following method-specific fields:
 //
-//	metadata: ClearSuggestionFeatureConfigOperationMetadata
+//	metadata:
+//	ClearSuggestionFeatureConfigOperationMetadata
 //
-//	response: ConversationProfile
+//	response:
+//	ConversationProfile
 func (c *conversationProfilesRESTClient) ClearSuggestionFeatureConfig(ctx context.Context, req *dialogflowpb.ClearSuggestionFeatureConfigRequest, opts ...gax.CallOption) (*ClearSuggestionFeatureConfigOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -1323,6 +1360,11 @@ func (c *conversationProfilesRESTClient) ClearSuggestionFeatureConfig(ctx contex
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2beta1/%v:clearSuggestionFeatureConfig", req.GetConversationProfile())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "conversation_profile", url.QueryEscape(req.GetConversationProfile())))
@@ -1380,6 +1422,11 @@ func (c *conversationProfilesRESTClient) GetLocation(ctx context.Context, req *l
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2beta1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
@@ -1448,6 +1495,7 @@ func (c *conversationProfilesRESTClient) ListLocations(ctx context.Context, req 
 		baseUrl.Path += fmt.Sprintf("/v2beta1/%v/locations", req.GetName())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -1524,6 +1572,11 @@ func (c *conversationProfilesRESTClient) CancelOperation(ctx context.Context, re
 	}
 	baseUrl.Path += fmt.Sprintf("/v2beta1/%v:cancel", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
@@ -1558,6 +1611,11 @@ func (c *conversationProfilesRESTClient) GetOperation(ctx context.Context, req *
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2beta1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
@@ -1626,6 +1684,7 @@ func (c *conversationProfilesRESTClient) ListOperations(ctx context.Context, req
 		baseUrl.Path += fmt.Sprintf("/v2beta1/%v/operations", req.GetName())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}

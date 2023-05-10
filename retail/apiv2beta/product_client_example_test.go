@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,10 +19,10 @@ package retail_test
 import (
 	"context"
 
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	retail "cloud.google.com/go/retail/apiv2beta"
+	retailpb "cloud.google.com/go/retail/apiv2beta/retailpb"
 	"google.golang.org/api/iterator"
-	retailpb "google.golang.org/genproto/googleapis/cloud/retail/v2beta"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 )
 
 func ExampleNewProductClient() {
@@ -74,7 +74,7 @@ func ExampleProductClient_CreateProduct() {
 
 	req := &retailpb.CreateProductRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2beta#CreateProductRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/retail/apiv2beta/retailpb#CreateProductRequest.
 	}
 	resp, err := c.CreateProduct(ctx, req)
 	if err != nil {
@@ -99,7 +99,7 @@ func ExampleProductClient_GetProduct() {
 
 	req := &retailpb.GetProductRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2beta#GetProductRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/retail/apiv2beta/retailpb#GetProductRequest.
 	}
 	resp, err := c.GetProduct(ctx, req)
 	if err != nil {
@@ -124,7 +124,7 @@ func ExampleProductClient_ListProducts() {
 
 	req := &retailpb.ListProductsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2beta#ListProductsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/retail/apiv2beta/retailpb#ListProductsRequest.
 	}
 	it := c.ListProducts(ctx, req)
 	for {
@@ -155,7 +155,7 @@ func ExampleProductClient_UpdateProduct() {
 
 	req := &retailpb.UpdateProductRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2beta#UpdateProductRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/retail/apiv2beta/retailpb#UpdateProductRequest.
 	}
 	resp, err := c.UpdateProduct(ctx, req)
 	if err != nil {
@@ -180,7 +180,7 @@ func ExampleProductClient_DeleteProduct() {
 
 	req := &retailpb.DeleteProductRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2beta#DeleteProductRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/retail/apiv2beta/retailpb#DeleteProductRequest.
 	}
 	err = c.DeleteProduct(ctx, req)
 	if err != nil {
@@ -203,7 +203,7 @@ func ExampleProductClient_ImportProducts() {
 
 	req := &retailpb.ImportProductsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2beta#ImportProductsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/retail/apiv2beta/retailpb#ImportProductsRequest.
 	}
 	op, err := c.ImportProducts(ctx, req)
 	if err != nil {
@@ -233,7 +233,7 @@ func ExampleProductClient_SetInventory() {
 
 	req := &retailpb.SetInventoryRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2beta#SetInventoryRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/retail/apiv2beta/retailpb#SetInventoryRequest.
 	}
 	op, err := c.SetInventory(ctx, req)
 	if err != nil {
@@ -263,7 +263,7 @@ func ExampleProductClient_AddFulfillmentPlaces() {
 
 	req := &retailpb.AddFulfillmentPlacesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2beta#AddFulfillmentPlacesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/retail/apiv2beta/retailpb#AddFulfillmentPlacesRequest.
 	}
 	op, err := c.AddFulfillmentPlaces(ctx, req)
 	if err != nil {
@@ -293,7 +293,7 @@ func ExampleProductClient_RemoveFulfillmentPlaces() {
 
 	req := &retailpb.RemoveFulfillmentPlacesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2beta#RemoveFulfillmentPlacesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/retail/apiv2beta/retailpb#RemoveFulfillmentPlacesRequest.
 	}
 	op, err := c.RemoveFulfillmentPlaces(ctx, req)
 	if err != nil {
@@ -323,7 +323,7 @@ func ExampleProductClient_AddLocalInventories() {
 
 	req := &retailpb.AddLocalInventoriesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2beta#AddLocalInventoriesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/retail/apiv2beta/retailpb#AddLocalInventoriesRequest.
 	}
 	op, err := c.AddLocalInventories(ctx, req)
 	if err != nil {
@@ -353,7 +353,7 @@ func ExampleProductClient_RemoveLocalInventories() {
 
 	req := &retailpb.RemoveLocalInventoriesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2beta#RemoveLocalInventoriesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/retail/apiv2beta/retailpb#RemoveLocalInventoriesRequest.
 	}
 	op, err := c.RemoveLocalInventories(ctx, req)
 	if err != nil {
@@ -383,7 +383,7 @@ func ExampleProductClient_GetOperation() {
 
 	req := &longrunningpb.GetOperationRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/longrunning#GetOperationRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/longrunning/autogen/longrunningpb#GetOperationRequest.
 	}
 	resp, err := c.GetOperation(ctx, req)
 	if err != nil {
@@ -408,7 +408,7 @@ func ExampleProductClient_ListOperations() {
 
 	req := &longrunningpb.ListOperationsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/longrunning#ListOperationsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/longrunning/autogen/longrunningpb#ListOperationsRequest.
 	}
 	it := c.ListOperations(ctx, req)
 	for {

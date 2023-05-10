@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -26,8 +26,10 @@ import (
 	"net/url"
 	"time"
 
+	automlpb "cloud.google.com/go/automl/apiv1beta1/automlpb"
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
@@ -35,8 +37,6 @@ import (
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
-	automlpb "google.golang.org/genproto/googleapis/cloud/automl/v1beta1"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -1605,6 +1605,11 @@ func (c *restClient) CreateDataset(ctx context.Context, req *automlpb.CreateData
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/datasets", req.GetParent())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
@@ -1657,6 +1662,11 @@ func (c *restClient) GetDataset(ctx context.Context, req *automlpb.GetDatasetReq
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
@@ -1725,6 +1735,7 @@ func (c *restClient) ListDatasets(ctx context.Context, req *automlpb.ListDataset
 		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/datasets", req.GetParent())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -1809,6 +1820,7 @@ func (c *restClient) UpdateDataset(ctx context.Context, req *automlpb.UpdateData
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetDataset().GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
 		updateMask, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
@@ -1875,6 +1887,11 @@ func (c *restClient) DeleteDataset(ctx context.Context, req *automlpb.DeleteData
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
@@ -1948,6 +1965,11 @@ func (c *restClient) ImportData(ctx context.Context, req *automlpb.ImportDataReq
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:importData", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
@@ -2013,6 +2035,11 @@ func (c *restClient) ExportData(ctx context.Context, req *automlpb.ExportDataReq
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:exportData", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
@@ -2070,6 +2097,11 @@ func (c *restClient) GetAnnotationSpec(ctx context.Context, req *automlpb.GetAnn
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
@@ -2124,6 +2156,7 @@ func (c *restClient) GetTableSpec(ctx context.Context, req *automlpb.GetTableSpe
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetFieldMask() != nil {
 		fieldMask, err := protojson.Marshal(req.GetFieldMask())
 		if err != nil {
@@ -2201,6 +2234,7 @@ func (c *restClient) ListTableSpecs(ctx context.Context, req *automlpb.ListTable
 		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/tableSpecs", req.GetParent())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFieldMask() != nil {
 			fieldMask, err := protojson.Marshal(req.GetFieldMask())
 			if err != nil {
@@ -2292,6 +2326,7 @@ func (c *restClient) UpdateTableSpec(ctx context.Context, req *automlpb.UpdateTa
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetTableSpec().GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
 		updateMask, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
@@ -2356,6 +2391,7 @@ func (c *restClient) GetColumnSpec(ctx context.Context, req *automlpb.GetColumnS
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetFieldMask() != nil {
 		fieldMask, err := protojson.Marshal(req.GetFieldMask())
 		if err != nil {
@@ -2433,6 +2469,7 @@ func (c *restClient) ListColumnSpecs(ctx context.Context, req *automlpb.ListColu
 		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/columnSpecs", req.GetParent())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFieldMask() != nil {
 			fieldMask, err := protojson.Marshal(req.GetFieldMask())
 			if err != nil {
@@ -2524,6 +2561,7 @@ func (c *restClient) UpdateColumnSpec(ctx context.Context, req *automlpb.UpdateC
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetColumnSpec().GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
 		updateMask, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
@@ -2598,6 +2636,11 @@ func (c *restClient) CreateModel(ctx context.Context, req *automlpb.CreateModelR
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/models", req.GetParent())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
@@ -2654,6 +2697,11 @@ func (c *restClient) GetModel(ctx context.Context, req *automlpb.GetModelRequest
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
@@ -2722,6 +2770,7 @@ func (c *restClient) ListModels(ctx context.Context, req *automlpb.ListModelsReq
 		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/models", req.GetParent())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -2802,6 +2851,11 @@ func (c *restClient) DeleteModel(ctx context.Context, req *automlpb.DeleteModelR
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
@@ -2876,6 +2930,11 @@ func (c *restClient) DeployModel(ctx context.Context, req *automlpb.DeployModelR
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:deploy", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
@@ -2944,6 +3003,11 @@ func (c *restClient) UndeployModel(ctx context.Context, req *automlpb.UndeployMo
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:undeploy", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
@@ -3014,6 +3078,11 @@ func (c *restClient) ExportModel(ctx context.Context, req *automlpb.ExportModelR
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:export", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
@@ -3091,6 +3160,11 @@ func (c *restClient) ExportEvaluatedExamples(ctx context.Context, req *automlpb.
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:exportEvaluatedExamples", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
@@ -3147,6 +3221,11 @@ func (c *restClient) GetModelEvaluation(ctx context.Context, req *automlpb.GetMo
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
@@ -3215,6 +3294,7 @@ func (c *restClient) ListModelEvaluations(ctx context.Context, req *automlpb.Lis
 		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/modelEvaluations", req.GetParent())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}

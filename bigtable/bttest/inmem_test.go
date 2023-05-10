@@ -747,6 +747,47 @@ func TestReadRowsError(t *testing.T) {
 	}
 }
 
+func TestReadRowsErrorOnEmptyRegex(t *testing.T) {
+	ctx := context.Background()
+	s := &server{
+		tables: make(map[string]*table),
+	}
+	newTbl := btapb.Table{
+		ColumnFamilies: map[string]*btapb.ColumnFamily{
+			"cf0": {GcRule: &btapb.GcRule{Rule: &btapb.GcRule_MaxNumVersions{MaxNumVersions: 1}}},
+		},
+	}
+	tblInfo, err := s.CreateTable(ctx, &btapb.CreateTableRequest{Parent: "cluster", TableId: "t", Table: &newTbl})
+	if err != nil {
+		t.Fatalf("Creating table: %v", err)
+	}
+	mreq := &btpb.MutateRowRequest{
+		TableName: tblInfo.Name,
+		RowKey:    []byte("row"),
+		Mutations: []*btpb.Mutation{{
+			Mutation: &btpb.Mutation_SetCell_{SetCell: &btpb.Mutation_SetCell{
+				FamilyName:      "cf0",
+				ColumnQualifier: []byte("col"),
+				TimestampMicros: 1000,
+				Value:           []byte{},
+			}},
+		}},
+	}
+	if _, err := s.MutateRow(ctx, mreq); err != nil {
+		t.Fatalf("Populating table: %v", err)
+	}
+
+	mock := &MockReadRowsServer{}
+	req := &btpb.ReadRowsRequest{
+		TableName: tblInfo.Name, Filter: &btpb.RowFilter{
+			Filter: &btpb.RowFilter_RowKeyRegexFilter{RowKeyRegexFilter: []byte("")},
+		}, // Empty regexes should be rejected.
+	}
+	if err = s.ReadRows(req, mock); err == nil {
+		t.Fatal("ReadRows got no error, want error")
+	}
+}
+
 func TestReadRowsAfterDeletion(t *testing.T) {
 	ctx := context.Background()
 	s := &server{

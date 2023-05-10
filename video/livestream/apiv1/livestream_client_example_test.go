@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,9 +19,11 @@ package livestream_test
 import (
 	"context"
 
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	livestream "cloud.google.com/go/video/livestream/apiv1"
+	livestreampb "cloud.google.com/go/video/livestream/apiv1/livestreampb"
 	"google.golang.org/api/iterator"
-	livestreampb "google.golang.org/genproto/googleapis/cloud/video/livestream/v1"
+	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 )
 
 func ExampleNewClient() {
@@ -32,6 +34,23 @@ func ExampleNewClient() {
 	// - It may require specifying regional endpoints when creating the service client as shown in:
 	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := livestream.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
+func ExampleNewRESTClient() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := livestream.NewRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -56,7 +75,7 @@ func ExampleClient_CreateChannel() {
 
 	req := &livestreampb.CreateChannelRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/video/livestream/v1#CreateChannelRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/video/livestream/apiv1/livestreampb#CreateChannelRequest.
 	}
 	op, err := c.CreateChannel(ctx, req)
 	if err != nil {
@@ -86,7 +105,7 @@ func ExampleClient_ListChannels() {
 
 	req := &livestreampb.ListChannelsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/video/livestream/v1#ListChannelsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/video/livestream/apiv1/livestreampb#ListChannelsRequest.
 	}
 	it := c.ListChannels(ctx, req)
 	for {
@@ -117,7 +136,7 @@ func ExampleClient_GetChannel() {
 
 	req := &livestreampb.GetChannelRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/video/livestream/v1#GetChannelRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/video/livestream/apiv1/livestreampb#GetChannelRequest.
 	}
 	resp, err := c.GetChannel(ctx, req)
 	if err != nil {
@@ -142,7 +161,7 @@ func ExampleClient_DeleteChannel() {
 
 	req := &livestreampb.DeleteChannelRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/video/livestream/v1#DeleteChannelRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/video/livestream/apiv1/livestreampb#DeleteChannelRequest.
 	}
 	op, err := c.DeleteChannel(ctx, req)
 	if err != nil {
@@ -170,7 +189,7 @@ func ExampleClient_UpdateChannel() {
 
 	req := &livestreampb.UpdateChannelRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/video/livestream/v1#UpdateChannelRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/video/livestream/apiv1/livestreampb#UpdateChannelRequest.
 	}
 	op, err := c.UpdateChannel(ctx, req)
 	if err != nil {
@@ -200,7 +219,7 @@ func ExampleClient_StartChannel() {
 
 	req := &livestreampb.StartChannelRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/video/livestream/v1#StartChannelRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/video/livestream/apiv1/livestreampb#StartChannelRequest.
 	}
 	op, err := c.StartChannel(ctx, req)
 	if err != nil {
@@ -230,7 +249,7 @@ func ExampleClient_StopChannel() {
 
 	req := &livestreampb.StopChannelRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/video/livestream/v1#StopChannelRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/video/livestream/apiv1/livestreampb#StopChannelRequest.
 	}
 	op, err := c.StopChannel(ctx, req)
 	if err != nil {
@@ -260,7 +279,7 @@ func ExampleClient_CreateInput() {
 
 	req := &livestreampb.CreateInputRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/video/livestream/v1#CreateInputRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/video/livestream/apiv1/livestreampb#CreateInputRequest.
 	}
 	op, err := c.CreateInput(ctx, req)
 	if err != nil {
@@ -290,7 +309,7 @@ func ExampleClient_ListInputs() {
 
 	req := &livestreampb.ListInputsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/video/livestream/v1#ListInputsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/video/livestream/apiv1/livestreampb#ListInputsRequest.
 	}
 	it := c.ListInputs(ctx, req)
 	for {
@@ -321,7 +340,7 @@ func ExampleClient_GetInput() {
 
 	req := &livestreampb.GetInputRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/video/livestream/v1#GetInputRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/video/livestream/apiv1/livestreampb#GetInputRequest.
 	}
 	resp, err := c.GetInput(ctx, req)
 	if err != nil {
@@ -346,7 +365,7 @@ func ExampleClient_DeleteInput() {
 
 	req := &livestreampb.DeleteInputRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/video/livestream/v1#DeleteInputRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/video/livestream/apiv1/livestreampb#DeleteInputRequest.
 	}
 	op, err := c.DeleteInput(ctx, req)
 	if err != nil {
@@ -374,7 +393,7 @@ func ExampleClient_UpdateInput() {
 
 	req := &livestreampb.UpdateInputRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/video/livestream/v1#UpdateInputRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/video/livestream/apiv1/livestreampb#UpdateInputRequest.
 	}
 	op, err := c.UpdateInput(ctx, req)
 	if err != nil {
@@ -404,7 +423,7 @@ func ExampleClient_CreateEvent() {
 
 	req := &livestreampb.CreateEventRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/video/livestream/v1#CreateEventRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/video/livestream/apiv1/livestreampb#CreateEventRequest.
 	}
 	resp, err := c.CreateEvent(ctx, req)
 	if err != nil {
@@ -429,7 +448,7 @@ func ExampleClient_ListEvents() {
 
 	req := &livestreampb.ListEventsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/video/livestream/v1#ListEventsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/video/livestream/apiv1/livestreampb#ListEventsRequest.
 	}
 	it := c.ListEvents(ctx, req)
 	for {
@@ -460,7 +479,7 @@ func ExampleClient_GetEvent() {
 
 	req := &livestreampb.GetEventRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/video/livestream/v1#GetEventRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/video/livestream/apiv1/livestreampb#GetEventRequest.
 	}
 	resp, err := c.GetEvent(ctx, req)
 	if err != nil {
@@ -485,10 +504,168 @@ func ExampleClient_DeleteEvent() {
 
 	req := &livestreampb.DeleteEventRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/video/livestream/v1#DeleteEventRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/video/livestream/apiv1/livestreampb#DeleteEventRequest.
 	}
 	err = c.DeleteEvent(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
+	}
+}
+
+func ExampleClient_GetLocation() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := livestream.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &locationpb.GetLocationRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/location#GetLocationRequest.
+	}
+	resp, err := c.GetLocation(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_ListLocations() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := livestream.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &locationpb.ListLocationsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/location#ListLocationsRequest.
+	}
+	it := c.ListLocations(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
+}
+
+func ExampleClient_CancelOperation() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := livestream.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &longrunningpb.CancelOperationRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/longrunning/autogen/longrunningpb#CancelOperationRequest.
+	}
+	err = c.CancelOperation(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleClient_DeleteOperation() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := livestream.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &longrunningpb.DeleteOperationRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/longrunning/autogen/longrunningpb#DeleteOperationRequest.
+	}
+	err = c.DeleteOperation(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleClient_GetOperation() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := livestream.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &longrunningpb.GetOperationRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/longrunning/autogen/longrunningpb#GetOperationRequest.
+	}
+	resp, err := c.GetOperation(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_ListOperations() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := livestream.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &longrunningpb.ListOperationsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/longrunning/autogen/longrunningpb#ListOperationsRequest.
+	}
+	it := c.ListOperations(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
 	}
 }

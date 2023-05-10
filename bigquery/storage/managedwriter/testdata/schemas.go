@@ -257,4 +257,43 @@ var (
 			Repeated: true,
 		},
 	}
+
+	ValidationColumnAnnotations bigquery.Schema = bigquery.Schema{
+		{
+			Name: "first",
+			Type: bigquery.StringFieldType,
+		},
+		{
+			Name: "second",
+			Type: bigquery.StringFieldType,
+		},
+		{
+			Name: "特別コラム",
+			Type: bigquery.StringFieldType,
+		},
+	}
+
+	ExampleEmployeeSchema bigquery.Schema = bigquery.Schema{
+		{
+			Name: "id",
+			Type: bigquery.IntegerFieldType,
+		},
+		{
+			Name: "username",
+			Type: bigquery.StringFieldType,
+		},
+		{
+			Name: "given_name",
+			Type: bigquery.StringFieldType,
+		},
+		{
+			Name:     "departments",
+			Type:     bigquery.StringFieldType,
+			Repeated: true,
+		},
+		{
+			Name: "salary",
+			Type: bigquery.IntegerFieldType,
+		},
+	}
 )

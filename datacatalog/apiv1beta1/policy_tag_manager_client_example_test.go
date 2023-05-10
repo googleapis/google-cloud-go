@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,9 +20,9 @@ import (
 	"context"
 
 	datacatalog "cloud.google.com/go/datacatalog/apiv1beta1"
+	datacatalogpb "cloud.google.com/go/datacatalog/apiv1beta1/datacatalogpb"
+	iampb "cloud.google.com/go/iam/apiv1/iampb"
 	"google.golang.org/api/iterator"
-	datacatalogpb "google.golang.org/genproto/googleapis/cloud/datacatalog/v1beta1"
-	iampb "google.golang.org/genproto/googleapis/iam/v1"
 )
 
 func ExampleNewPolicyTagManagerClient() {
@@ -74,7 +74,7 @@ func ExamplePolicyTagManagerClient_CreateTaxonomy() {
 
 	req := &datacatalogpb.CreateTaxonomyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datacatalog/v1beta1#CreateTaxonomyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/datacatalog/apiv1beta1/datacatalogpb#CreateTaxonomyRequest.
 	}
 	resp, err := c.CreateTaxonomy(ctx, req)
 	if err != nil {
@@ -99,7 +99,7 @@ func ExamplePolicyTagManagerClient_DeleteTaxonomy() {
 
 	req := &datacatalogpb.DeleteTaxonomyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datacatalog/v1beta1#DeleteTaxonomyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/datacatalog/apiv1beta1/datacatalogpb#DeleteTaxonomyRequest.
 	}
 	err = c.DeleteTaxonomy(ctx, req)
 	if err != nil {
@@ -122,7 +122,7 @@ func ExamplePolicyTagManagerClient_UpdateTaxonomy() {
 
 	req := &datacatalogpb.UpdateTaxonomyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datacatalog/v1beta1#UpdateTaxonomyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/datacatalog/apiv1beta1/datacatalogpb#UpdateTaxonomyRequest.
 	}
 	resp, err := c.UpdateTaxonomy(ctx, req)
 	if err != nil {
@@ -147,7 +147,7 @@ func ExamplePolicyTagManagerClient_ListTaxonomies() {
 
 	req := &datacatalogpb.ListTaxonomiesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datacatalog/v1beta1#ListTaxonomiesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/datacatalog/apiv1beta1/datacatalogpb#ListTaxonomiesRequest.
 	}
 	it := c.ListTaxonomies(ctx, req)
 	for {
@@ -178,7 +178,7 @@ func ExamplePolicyTagManagerClient_GetTaxonomy() {
 
 	req := &datacatalogpb.GetTaxonomyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datacatalog/v1beta1#GetTaxonomyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/datacatalog/apiv1beta1/datacatalogpb#GetTaxonomyRequest.
 	}
 	resp, err := c.GetTaxonomy(ctx, req)
 	if err != nil {
@@ -203,7 +203,7 @@ func ExamplePolicyTagManagerClient_CreatePolicyTag() {
 
 	req := &datacatalogpb.CreatePolicyTagRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datacatalog/v1beta1#CreatePolicyTagRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/datacatalog/apiv1beta1/datacatalogpb#CreatePolicyTagRequest.
 	}
 	resp, err := c.CreatePolicyTag(ctx, req)
 	if err != nil {
@@ -228,7 +228,7 @@ func ExamplePolicyTagManagerClient_DeletePolicyTag() {
 
 	req := &datacatalogpb.DeletePolicyTagRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datacatalog/v1beta1#DeletePolicyTagRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/datacatalog/apiv1beta1/datacatalogpb#DeletePolicyTagRequest.
 	}
 	err = c.DeletePolicyTag(ctx, req)
 	if err != nil {
@@ -251,7 +251,7 @@ func ExamplePolicyTagManagerClient_UpdatePolicyTag() {
 
 	req := &datacatalogpb.UpdatePolicyTagRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datacatalog/v1beta1#UpdatePolicyTagRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/datacatalog/apiv1beta1/datacatalogpb#UpdatePolicyTagRequest.
 	}
 	resp, err := c.UpdatePolicyTag(ctx, req)
 	if err != nil {
@@ -276,7 +276,7 @@ func ExamplePolicyTagManagerClient_ListPolicyTags() {
 
 	req := &datacatalogpb.ListPolicyTagsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datacatalog/v1beta1#ListPolicyTagsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/datacatalog/apiv1beta1/datacatalogpb#ListPolicyTagsRequest.
 	}
 	it := c.ListPolicyTags(ctx, req)
 	for {
@@ -307,7 +307,7 @@ func ExamplePolicyTagManagerClient_GetPolicyTag() {
 
 	req := &datacatalogpb.GetPolicyTagRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datacatalog/v1beta1#GetPolicyTagRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/datacatalog/apiv1beta1/datacatalogpb#GetPolicyTagRequest.
 	}
 	resp, err := c.GetPolicyTag(ctx, req)
 	if err != nil {
@@ -332,7 +332,7 @@ func ExamplePolicyTagManagerClient_GetIamPolicy() {
 
 	req := &iampb.GetIamPolicyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/iam/v1#GetIamPolicyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/iam/apiv1/iampb#GetIamPolicyRequest.
 	}
 	resp, err := c.GetIamPolicy(ctx, req)
 	if err != nil {
@@ -357,7 +357,7 @@ func ExamplePolicyTagManagerClient_SetIamPolicy() {
 
 	req := &iampb.SetIamPolicyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/iam/v1#SetIamPolicyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/iam/apiv1/iampb#SetIamPolicyRequest.
 	}
 	resp, err := c.SetIamPolicy(ctx, req)
 	if err != nil {
@@ -382,7 +382,7 @@ func ExamplePolicyTagManagerClient_TestIamPermissions() {
 
 	req := &iampb.TestIamPermissionsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/iam/v1#TestIamPermissionsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/iam/apiv1/iampb#TestIamPermissionsRequest.
 	}
 	resp, err := c.TestIamPermissions(ctx, req)
 	if err != nil {

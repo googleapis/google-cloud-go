@@ -26,9 +26,13 @@ import (
 	"reflect"
 	"runtime"
 	"sort"
+	"sync"
 	"testing"
 	"time"
 
+	apiv1 "cloud.google.com/go/firestore/apiv1/admin"
+	"cloud.google.com/go/firestore/apiv1/admin/adminpb"
+	firestorev1 "cloud.google.com/go/firestore/apiv1/firestorepb"
 	"cloud.google.com/go/internal/pretty"
 	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/internal/uid"
@@ -54,6 +58,7 @@ const (
 
 var (
 	iClient       *Client
+	iAdminClient  *apiv1.FirestoreAdminClient
 	iColl         *CollectionRef
 	collectionIDs = uid.NewSpace("go-integration-test", nil)
 )
@@ -75,7 +80,8 @@ func initIntegrationTest() {
 	if ts == nil {
 		log.Fatal("The project key must be set. See CONTRIBUTING.md for details")
 	}
-	wantDBPath := "projects/" + testProjectID + "/databases/(default)"
+	projectPath := "projects/" + testProjectID
+	wantDBPath := projectPath + "/databases/(default)"
 
 	ti := &testutil.HeadersEnforcer{
 		Checkers: []*testutil.HeaderChecker{
@@ -102,18 +108,74 @@ func initIntegrationTest() {
 	}
 	iClient = c
 	iColl = c.Collection(collectionIDs.New())
+
+	adminC, err := apiv1.NewFirestoreAdminClient(ctx, option.WithTokenSource(ts))
+	if err != nil {
+		log.Fatalf("NewFirestoreAdminClient: %v", err)
+	}
+	iAdminClient = adminC
+
+	createIndexes(ctx, wantDBPath)
+
 	refDoc := iColl.NewDoc()
 	integrationTestMap["ref"] = refDoc
 	wantIntegrationTestMap["ref"] = refDoc
 	integrationTestStruct.Ref = refDoc
 }
 
-func cleanupIntegrationTest() {
-	if iClient == nil {
-		return
+// createIndexes creates composite indexes on provided Firestore database
+// Indexes are required to run queries with composite filters on multiple fields.
+// Without indexes, FailedPrecondition rpc error is seen with
+// desc 'The query requires multiple indexes'.
+func createIndexes(ctx context.Context, dbPath string) {
+	var createIndexWg sync.WaitGroup
+
+	indexFields := [][]string{{"updatedAt", "weight", "height"}, {"weight", "height"}}
+	indexParent := fmt.Sprintf("%s/collectionGroups/%s", dbPath, iColl.ID)
+
+	createIndexWg.Add(len(indexFields))
+	for _, fields := range indexFields {
+		var adminPbIndexFields []*adminpb.Index_IndexField
+		for _, field := range fields {
+			adminPbIndexFields = append(adminPbIndexFields, &adminpb.Index_IndexField{
+				FieldPath: field,
+				ValueMode: &adminpb.Index_IndexField_Order_{
+					Order: adminpb.Index_IndexField_ASCENDING,
+				},
+			})
+		}
+		req := &adminpb.CreateIndexRequest{
+			Parent: indexParent,
+			Index: &adminpb.Index{
+				QueryScope: adminpb.Index_COLLECTION,
+				Fields:     adminPbIndexFields,
+			},
+		}
+		go func(req *adminpb.CreateIndexRequest) {
+			op, err := iAdminClient.CreateIndex(ctx, req)
+			if err != nil {
+				log.Fatalf("CreateIndex: %v", err)
+			}
+
+			_, err = op.Wait(ctx)
+			if err != nil {
+				log.Fatalf("Wait: %v", err)
+			}
+			createIndexWg.Done()
+		}(req)
 	}
-	// TODO(jba): delete everything in integrationColl.
-	iClient.Close()
+	createIndexWg.Wait()
+}
+
+func cleanupIntegrationTest() {
+	if iClient != nil {
+		// TODO(jba): delete everything in integrationColl.
+		iClient.Close()
+	}
+
+	if iAdminClient != nil {
+		iAdminClient.Close()
+	}
 }
 
 // integrationClient should be called by integration tests to get a valid client. It will never
@@ -643,6 +705,153 @@ func TestIntegration_WriteBatch(t *testing.T) {
 	}
 	// TODO(jba): test two updates to the same document when it is supported.
 	// TODO(jba): test verify when it is supported.
+}
+
+func TestIntegration_QueryDocuments_WhereEntity(t *testing.T) {
+	ctx := context.Background()
+	coll := integrationColl(t)
+	h := testHelper{t}
+	nowTime := time.Now()
+	todayTime := nowTime.Unix()
+	yesterdayTime := nowTime.AddDate(0, 0, -1).Unix()
+	docs := []map[string]interface{}{
+		// To support running this test in parallel with the others, use a field name
+		// that we don't use anywhere else.
+		{"height": 1, "weight": 99, "updatedAt": yesterdayTime},
+		{"height": 2, "weight": 98, "updatedAt": yesterdayTime},
+		{"height": 3, "weight": 97, "updatedAt": yesterdayTime},
+		{"height": 4, "weight": 96, "updatedAt": todayTime},
+		{"height": 5, "weight": 95, "updatedAt": todayTime},
+		{"height": 6, "weight": 94, "updatedAt": todayTime},
+		{"height": 7, "weight": 93, "updatedAt": todayTime},
+		{"height": 8, "weight": 93, "updatedAt": todayTime},
+	}
+	var wants []map[string]interface{}
+	for _, doc := range docs {
+		newDoc := coll.NewDoc()
+		wants = append(wants, map[string]interface{}{
+			"height":    int64(doc["height"].(int)),
+			"weight":    int64(doc["weight"].(int)),
+			"updatedAt": doc["updatedAt"].(int64),
+		})
+		h.mustCreate(newDoc, doc)
+	}
+
+	q := coll.Select("height", "weight", "updatedAt")
+	for i, test := range []struct {
+		desc    string
+		q       Query
+		want    []map[string]interface{}
+		orderBy bool // Some query types do not allow ordering.
+	}{
+		{
+			desc: "height == 5",
+			q: q.WhereEntity(PropertyFilter{
+				Path:     "height",
+				Operator: "==",
+				Value:    5,
+			}),
+			want:    wants[4:5],
+			orderBy: false,
+		},
+		{
+			desc: "height > 1",
+			q: q.WhereEntity(PropertyFilter{
+				Path:     "height",
+				Operator: ">",
+				Value:    1,
+			}),
+			want:    wants[1:],
+			orderBy: true,
+		},
+
+		{desc: "((weight > 97 AND updatedAt == yesterdayTime) OR (weight < 94)) AND height == 8",
+			q: q.WhereEntity(
+				AndFilter{
+					Filters: []EntityFilter{
+						OrFilter{
+							Filters: []EntityFilter{
+								AndFilter{
+									[]EntityFilter{
+										PropertyFilter{Path: "height", Operator: "<", Value: 3},
+										PropertyFilter{Path: "updatedAt", Operator: "==", Value: yesterdayTime},
+									},
+								},
+								PropertyFilter{Path: "height", Operator: ">", Value: 6},
+							},
+						},
+						PropertyFilter{Path: "weight", Operator: "==", Value: 93},
+					},
+				},
+			),
+			want:    wants[6:],
+			orderBy: true,
+		},
+		{
+			desc: "height > 5 OR height < 8",
+			q: q.WhereEntity(
+				AndFilter{
+					Filters: []EntityFilter{
+						PropertyFilter{
+							Path:     "height",
+							Operator: ">",
+							Value:    5,
+						},
+						PropertyFilter{
+							Path:     "height",
+							Operator: "<",
+							Value:    8,
+						},
+					},
+				},
+			),
+			want:    wants[5:7],
+			orderBy: true,
+		},
+		{
+			desc: "height <= 2 OR height > 7",
+			q: q.WhereEntity(
+				OrFilter{
+					Filters: []EntityFilter{
+						PropertyFilter{
+							Path:     "height",
+							Operator: "<=",
+							Value:    2,
+						},
+						PropertyFilter{
+							Path:     "height",
+							Operator: ">",
+							Value:    7,
+						},
+					},
+				},
+			),
+			want: []map[string]interface{}{
+				{"height": int64(1), "weight": int64(99), "updatedAt": int64(yesterdayTime)},
+				{"height": int64(2), "weight": int64(98), "updatedAt": int64(yesterdayTime)},
+				{"height": int64(8), "weight": int64(93), "updatedAt": int64(todayTime)},
+			},
+			orderBy: true,
+		},
+	} {
+		if test.orderBy {
+			test.q = test.q.OrderBy("height", Asc)
+		}
+		gotDocs, err := test.q.Documents(ctx).GetAll()
+		if err != nil {
+			t.Errorf("#%d: %+v: %v", i, test.q, err)
+			continue
+		}
+		if len(gotDocs) != len(test.want) {
+			t.Errorf("#%d: (%q) %+v: got %d wants, want %d", i, test.desc, test.q, len(gotDocs), len(test.want))
+			continue
+		}
+		for j, g := range gotDocs {
+			if got, want := g.Data(), test.want[j]; !testEqual(got, want) {
+				t.Errorf("#%d: %+v, #%d: got\n%+v\nwant\n%+v", i, test.q, j, got, want)
+			}
+		}
+	}
 }
 
 func TestIntegration_QueryDocuments(t *testing.T) {
@@ -1770,6 +1979,105 @@ func TestIntegration_BulkWriter(t *testing.T) {
 
 		if res == nil {
 			t.Error("bulkwriter: write attempt returned nil results")
+		}
+	}
+}
+
+func TestIntegration_CountAggregationQuery(t *testing.T) {
+	str := uid.NewSpace("firestore-count", &uid.Options{})
+	datum := str.New()
+
+	docs := []*DocumentRef{
+		iColl.NewDoc(),
+		iColl.NewDoc(),
+	}
+
+	c := integrationClient(t)
+	ctx := context.Background()
+	bw := c.BulkWriter(ctx)
+	jobs := make([]*BulkWriterJob, 0)
+
+	// Populate the collection
+	f := map[string]interface{}{
+		"str": datum,
+	}
+	for _, d := range docs {
+		j, err := bw.Create(d, f)
+		jobs = append(jobs, j)
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+	bw.End()
+
+	for _, j := range jobs {
+		_, err := j.Results()
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	alias := "twos"
+	q := iColl.Where("str", "==", datum)
+	aq := q.NewAggregationQuery()
+	ar, err := aq.WithCount(alias).Get(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	count, ok := ar[alias]
+	if !ok {
+		t.Errorf("key %s not in response %v", alias, ar)
+	}
+	cv := count.(*firestorev1.Value)
+	if cv.GetIntegerValue() != 2 {
+		t.Errorf("COUNT aggregation query mismatch;\ngot: %d, want: %d", cv.GetIntegerValue(), 2)
+	}
+}
+
+func TestIntegration_ClientReadTime(t *testing.T) {
+	docs := []*DocumentRef{
+		iColl.NewDoc(),
+		iColl.NewDoc(),
+	}
+
+	c := integrationClient(t)
+	ctx := context.Background()
+	bw := c.BulkWriter(ctx)
+	jobs := make([]*BulkWriterJob, 0)
+
+	// Populate the collection
+	f := integrationTestMap
+	for _, d := range docs {
+		j, err := bw.Create(d, f)
+		jobs = append(jobs, j)
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+	bw.End()
+
+	for _, j := range jobs {
+		_, err := j.Results()
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	tm := time.Now()
+	c.WithReadOptions(ReadTime(tm))
+
+	ds, err := c.GetAll(ctx, docs)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	// TODO(6894): Re-enable this test when snapshot reads is available on test project.
+	t.SkipNow()
+	for _, d := range ds {
+		if !tm.Equal(d.ReadTime) {
+			t.Errorf("wanted read time: %v; got: %v",
+				tm.UnixNano(), d.ReadTime.UnixNano())
 		}
 	}
 }

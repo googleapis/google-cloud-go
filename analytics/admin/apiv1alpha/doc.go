@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,6 +18,11 @@
 // Google Analytics Admin API.
 //
 //	NOTE: This package is in alpha. It is not stable, and is likely to change.
+//
+// # General documentation
+//
+// For information about setting deadlines, reusing contexts, and more
+// please visit https://pkg.go.dev/cloud.google.com/go.
 //
 // # Example usage
 //
@@ -57,7 +62,7 @@
 //
 //	req := &adminpb.GetAccountRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#GetAccountRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/analytics/admin/apiv1alpha/adminpb#GetAccountRequest.
 //	}
 //	resp, err := c.GetAccount(ctx, req)
 //	if err != nil {
@@ -73,9 +78,6 @@
 // Individual methods on the client use the ctx given to them.
 //
 // To close the open connection, use the Close() method.
-//
-// For information about setting deadlines, reusing contexts, and more
-// please visit https://pkg.go.dev/cloud.google.com/go.
 package admin // import "cloud.google.com/go/analytics/admin/apiv1alpha"
 
 import (

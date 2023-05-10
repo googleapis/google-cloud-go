@@ -74,7 +74,6 @@ try3() { eval "$*" || eval "$*" || eval "$*"; }
 
 # All packages, including +build tools, are fetched.
 try3 go mod download
-./internal/kokoro/vet.sh
 
 # runDirectoryTests runs all tests in the current directory.
 # If a PATH argument is specified, it runs `go test [PATH]`.
@@ -99,13 +98,13 @@ runDirectoryTests() {
 runEmulatorTests() {
   if [ -f "emulator_test.sh" ]; then
     ./emulator_test.sh
+    # Takes the kokoro output log (raw stdout) and creates a machine-parseable
+    # xUnit XML file.
+    cat sponge_log.log |
+      go-junit-report -set-exit-code >sponge_log.xml
+    # Add the exit codes together so we exit non-zero if any module fails.
+    exit_code=$(($exit_code + $?))
   fi
-  # Takes the kokoro output log (raw stdout) and creates a machine-parseable
-  # xUnit XML file.
-  cat sponge_log.log \
-    | go-junit-report -set-exit-code > sponge_log.xml
-  # Add the exit codes together so we exit non-zero if any module fails.
-  exit_code=$(($exit_code + $?))
 }
 
 # testAllModules runs all modules' tests, including emulator tests.

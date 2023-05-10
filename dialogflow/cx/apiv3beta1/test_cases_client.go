@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -26,8 +26,10 @@ import (
 	"net/url"
 	"time"
 
+	cxpb "cloud.google.com/go/dialogflow/cx/apiv3beta1/cxpb"
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
@@ -35,9 +37,7 @@ import (
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
-	cxpb "google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -383,8 +383,9 @@ type internalTestCasesClient interface {
 // TestCasesClient is a client for interacting with Dialogflow API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
-// Service for managing [Test Cases][google.cloud.dialogflow.cx.v3beta1.TestCase] and
-// [Test Case Results][google.cloud.dialogflow.cx.v3beta1.TestCaseResult].
+// Service for managing [Test
+// Cases][google.cloud.dialogflow.cx.v3beta1.TestCase] and [Test Case
+// Results][google.cloud.dialogflow.cx.v3beta1.TestCaseResult].
 type TestCasesClient struct {
 	// The internal transport-dependent client.
 	internalClient internalTestCasesClient
@@ -452,9 +453,11 @@ func (c *TestCasesClient) UpdateTestCase(ctx context.Context, req *cxpb.UpdateTe
 // operation (at https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 // The returned Operation type has the following method-specific fields:
 //
-//	metadata: RunTestCaseMetadata
+//	metadata:
+//	RunTestCaseMetadata
 //
-//	response: RunTestCaseResponse
+//	response:
+//	RunTestCaseResponse
 func (c *TestCasesClient) RunTestCase(ctx context.Context, req *cxpb.RunTestCaseRequest, opts ...gax.CallOption) (*RunTestCaseOperation, error) {
 	return c.internalClient.RunTestCase(ctx, req, opts...)
 }
@@ -471,9 +474,11 @@ func (c *TestCasesClient) RunTestCaseOperation(name string) *RunTestCaseOperatio
 // operation (at https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 // The returned Operation type has the following method-specific fields:
 //
-//	metadata: BatchRunTestCasesMetadata
+//	metadata:
+//	BatchRunTestCasesMetadata
 //
-//	response: BatchRunTestCasesResponse
+//	response:
+//	BatchRunTestCasesResponse
 func (c *TestCasesClient) BatchRunTestCases(ctx context.Context, req *cxpb.BatchRunTestCasesRequest, opts ...gax.CallOption) (*BatchRunTestCasesOperation, error) {
 	return c.internalClient.BatchRunTestCases(ctx, req, opts...)
 }
@@ -497,9 +502,11 @@ func (c *TestCasesClient) CalculateCoverage(ctx context.Context, req *cxpb.Calcu
 // operation (at https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 // The returned Operation type has the following method-specific fields:
 //
-//	metadata: ImportTestCasesMetadata
+//	metadata:
+//	ImportTestCasesMetadata
 //
-//	response: ImportTestCasesResponse
+//	response:
+//	ImportTestCasesResponse
 func (c *TestCasesClient) ImportTestCases(ctx context.Context, req *cxpb.ImportTestCasesRequest, opts ...gax.CallOption) (*ImportTestCasesOperation, error) {
 	return c.internalClient.ImportTestCases(ctx, req, opts...)
 }
@@ -517,9 +524,11 @@ func (c *TestCasesClient) ImportTestCasesOperation(name string) *ImportTestCases
 // operation (at https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 // The returned Operation type has the following method-specific fields:
 //
-//	metadata: ExportTestCasesMetadata
+//	metadata:
+//	ExportTestCasesMetadata
 //
-//	response: ExportTestCasesResponse
+//	response:
+//	ExportTestCasesResponse
 func (c *TestCasesClient) ExportTestCases(ctx context.Context, req *cxpb.ExportTestCasesRequest, opts ...gax.CallOption) (*ExportTestCasesOperation, error) {
 	return c.internalClient.ExportTestCases(ctx, req, opts...)
 }
@@ -597,8 +606,9 @@ type testCasesGRPCClient struct {
 // NewTestCasesClient creates a new test cases client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
-// Service for managing [Test Cases][google.cloud.dialogflow.cx.v3beta1.TestCase] and
-// [Test Case Results][google.cloud.dialogflow.cx.v3beta1.TestCaseResult].
+// Service for managing [Test
+// Cases][google.cloud.dialogflow.cx.v3beta1.TestCase] and [Test Case
+// Results][google.cloud.dialogflow.cx.v3beta1.TestCaseResult].
 func NewTestCasesClient(ctx context.Context, opts ...option.ClientOption) (*TestCasesClient, error) {
 	clientOpts := defaultTestCasesGRPCClientOptions()
 	if newTestCasesClientHook != nil {
@@ -691,8 +701,9 @@ type testCasesRESTClient struct {
 
 // NewTestCasesRESTClient creates a new test cases rest client.
 //
-// Service for managing [Test Cases][google.cloud.dialogflow.cx.v3beta1.TestCase] and
-// [Test Case Results][google.cloud.dialogflow.cx.v3beta1.TestCaseResult].
+// Service for managing [Test
+// Cases][google.cloud.dialogflow.cx.v3beta1.TestCase] and [Test Case
+// Results][google.cloud.dialogflow.cx.v3beta1.TestCaseResult].
 func NewTestCasesRESTClient(ctx context.Context, opts ...option.ClientOption) (*TestCasesClient, error) {
 	clientOpts := append(defaultTestCasesRESTClientOptions(), opts...)
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
@@ -1226,6 +1237,7 @@ func (c *testCasesRESTClient) ListTestCases(ctx context.Context, req *cxpb.ListT
 		baseUrl.Path += fmt.Sprintf("/v3beta1/%v/testCases", req.GetParent())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetPageSize() != 0 {
 			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
 		}
@@ -1308,6 +1320,11 @@ func (c *testCasesRESTClient) BatchDeleteTestCases(ctx context.Context, req *cxp
 	}
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v/testCases:batchDelete", req.GetParent())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
@@ -1342,6 +1359,11 @@ func (c *testCasesRESTClient) GetTestCase(ctx context.Context, req *cxpb.GetTest
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
@@ -1402,6 +1424,11 @@ func (c *testCasesRESTClient) CreateTestCase(ctx context.Context, req *cxpb.Crea
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v/testCases", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
@@ -1464,6 +1491,7 @@ func (c *testCasesRESTClient) UpdateTestCase(ctx context.Context, req *cxpb.Upda
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v", req.GetTestCase().GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
 		updateMask, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
@@ -1525,9 +1553,11 @@ func (c *testCasesRESTClient) UpdateTestCase(ctx context.Context, req *cxpb.Upda
 // operation (at https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 // The returned Operation type has the following method-specific fields:
 //
-//	metadata: RunTestCaseMetadata
+//	metadata:
+//	RunTestCaseMetadata
 //
-//	response: RunTestCaseResponse
+//	response:
+//	RunTestCaseResponse
 func (c *testCasesRESTClient) RunTestCase(ctx context.Context, req *cxpb.RunTestCaseRequest, opts ...gax.CallOption) (*RunTestCaseOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -1540,6 +1570,11 @@ func (c *testCasesRESTClient) RunTestCase(ctx context.Context, req *cxpb.RunTest
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v:run", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
@@ -1596,9 +1631,11 @@ func (c *testCasesRESTClient) RunTestCase(ctx context.Context, req *cxpb.RunTest
 // operation (at https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 // The returned Operation type has the following method-specific fields:
 //
-//	metadata: BatchRunTestCasesMetadata
+//	metadata:
+//	BatchRunTestCasesMetadata
 //
-//	response: BatchRunTestCasesResponse
+//	response:
+//	BatchRunTestCasesResponse
 func (c *testCasesRESTClient) BatchRunTestCases(ctx context.Context, req *cxpb.BatchRunTestCasesRequest, opts ...gax.CallOption) (*BatchRunTestCasesOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -1611,6 +1648,11 @@ func (c *testCasesRESTClient) BatchRunTestCases(ctx context.Context, req *cxpb.B
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v/testCases:batchRun", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
@@ -1670,6 +1712,7 @@ func (c *testCasesRESTClient) CalculateCoverage(ctx context.Context, req *cxpb.C
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v/testCases:calculateCoverage", req.GetAgent())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	params.Add("type", fmt.Sprintf("%v", req.GetType()))
 
 	baseUrl.RawQuery = params.Encode()
@@ -1727,9 +1770,11 @@ func (c *testCasesRESTClient) CalculateCoverage(ctx context.Context, req *cxpb.C
 // operation (at https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 // The returned Operation type has the following method-specific fields:
 //
-//	metadata: ImportTestCasesMetadata
+//	metadata:
+//	ImportTestCasesMetadata
 //
-//	response: ImportTestCasesResponse
+//	response:
+//	ImportTestCasesResponse
 func (c *testCasesRESTClient) ImportTestCases(ctx context.Context, req *cxpb.ImportTestCasesRequest, opts ...gax.CallOption) (*ImportTestCasesOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -1742,6 +1787,11 @@ func (c *testCasesRESTClient) ImportTestCases(ctx context.Context, req *cxpb.Imp
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v/testCases:import", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
@@ -1799,9 +1849,11 @@ func (c *testCasesRESTClient) ImportTestCases(ctx context.Context, req *cxpb.Imp
 // operation (at https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 // The returned Operation type has the following method-specific fields:
 //
-//	metadata: ExportTestCasesMetadata
+//	metadata:
+//	ExportTestCasesMetadata
 //
-//	response: ExportTestCasesResponse
+//	response:
+//	ExportTestCasesResponse
 func (c *testCasesRESTClient) ExportTestCases(ctx context.Context, req *cxpb.ExportTestCasesRequest, opts ...gax.CallOption) (*ExportTestCasesOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -1814,6 +1866,11 @@ func (c *testCasesRESTClient) ExportTestCases(ctx context.Context, req *cxpb.Exp
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v/testCases:export", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
@@ -1886,6 +1943,7 @@ func (c *testCasesRESTClient) ListTestCaseResults(ctx context.Context, req *cxpb
 		baseUrl.Path += fmt.Sprintf("/v3beta1/%v/results", req.GetParent())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -1962,6 +2020,11 @@ func (c *testCasesRESTClient) GetTestCaseResult(ctx context.Context, req *cxpb.G
 	}
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
@@ -2014,6 +2077,11 @@ func (c *testCasesRESTClient) GetLocation(ctx context.Context, req *locationpb.G
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
@@ -2082,6 +2150,7 @@ func (c *testCasesRESTClient) ListLocations(ctx context.Context, req *locationpb
 		baseUrl.Path += fmt.Sprintf("/v3beta1/%v/locations", req.GetName())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -2158,6 +2227,11 @@ func (c *testCasesRESTClient) CancelOperation(ctx context.Context, req *longrunn
 	}
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v:cancel", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
@@ -2192,6 +2266,11 @@ func (c *testCasesRESTClient) GetOperation(ctx context.Context, req *longrunning
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
@@ -2260,6 +2339,7 @@ func (c *testCasesRESTClient) ListOperations(ctx context.Context, req *longrunni
 		baseUrl.Path += fmt.Sprintf("/v3beta1/%v/operations", req.GetName())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}

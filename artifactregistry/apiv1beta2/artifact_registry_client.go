@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -26,8 +26,11 @@ import (
 	"net/url"
 	"time"
 
+	artifactregistrypb "cloud.google.com/go/artifactregistry/apiv1beta2/artifactregistrypb"
+	iampb "cloud.google.com/go/iam/apiv1/iampb"
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
@@ -35,9 +38,7 @@ import (
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
-	artifactregistrypb "google.golang.org/genproto/googleapis/devtools/artifactregistry/v1beta2"
-	iampb "google.golang.org/genproto/googleapis/iam/v1"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
+	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -74,6 +75,8 @@ type CallOptions struct {
 	TestIamPermissions    []gax.CallOption
 	GetProjectSettings    []gax.CallOption
 	UpdateProjectSettings []gax.CallOption
+	GetLocation           []gax.CallOption
+	ListLocations         []gax.CallOption
 }
 
 func defaultGRPCClientOptions() []option.ClientOption {
@@ -265,6 +268,8 @@ func defaultCallOptions() *CallOptions {
 		TestIamPermissions:    []gax.CallOption{},
 		GetProjectSettings:    []gax.CallOption{},
 		UpdateProjectSettings: []gax.CallOption{},
+		GetLocation:           []gax.CallOption{},
+		ListLocations:         []gax.CallOption{},
 	}
 }
 
@@ -430,6 +435,8 @@ func defaultRESTCallOptions() *CallOptions {
 		TestIamPermissions:    []gax.CallOption{},
 		GetProjectSettings:    []gax.CallOption{},
 		UpdateProjectSettings: []gax.CallOption{},
+		GetLocation:           []gax.CallOption{},
+		ListLocations:         []gax.CallOption{},
 	}
 }
 
@@ -469,6 +476,8 @@ type internalClient interface {
 	TestIamPermissions(context.Context, *iampb.TestIamPermissionsRequest, ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error)
 	GetProjectSettings(context.Context, *artifactregistrypb.GetProjectSettingsRequest, ...gax.CallOption) (*artifactregistrypb.ProjectSettings, error)
 	UpdateProjectSettings(context.Context, *artifactregistrypb.UpdateProjectSettingsRequest, ...gax.CallOption) (*artifactregistrypb.ProjectSettings, error)
+	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
+	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
 }
 
 // Client is a client for interacting with Artifact Registry API.
@@ -699,6 +708,16 @@ func (c *Client) UpdateProjectSettings(ctx context.Context, req *artifactregistr
 	return c.internalClient.UpdateProjectSettings(ctx, req, opts...)
 }
 
+// GetLocation gets information about a location.
+func (c *Client) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
+	return c.internalClient.GetLocation(ctx, req, opts...)
+}
+
+// ListLocations lists information about the supported locations for this service.
+func (c *Client) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
+	return c.internalClient.ListLocations(ctx, req, opts...)
+}
+
 // gRPCClient is a client for interacting with Artifact Registry API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
@@ -719,6 +738,8 @@ type gRPCClient struct {
 	// It is exposed so that its CallOptions can be modified if required.
 	// Users should not Close this client.
 	LROClient **lroauto.OperationsClient
+
+	locationsClient locationpb.LocationsClient
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
@@ -770,6 +791,7 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		disableDeadlines: disableDeadlines,
 		client:           artifactregistrypb.NewArtifactRegistryClient(connPool),
 		CallOptions:      &client.CallOptions,
+		locationsClient:  locationpb.NewLocationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
 
@@ -1559,6 +1581,68 @@ func (c *gRPCClient) UpdateProjectSettings(ctx context.Context, req *artifactreg
 	return resp, nil
 }
 
+func (c *gRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).GetLocation[0:len((*c.CallOptions).GetLocation):len((*c.CallOptions).GetLocation)], opts...)
+	var resp *locationpb.Location
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.locationsClient.GetLocation(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
+	it := &LocationIterator{}
+	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
+		resp := &locationpb.ListLocationsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.locationsClient.ListLocations(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetLocations(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
 // ImportAptArtifacts imports Apt artifacts. The returned Operation will complete once the
 // resources are imported. Package, Version, and File resources are created
 // based on the imported artifacts. Imported artifacts that conflict with
@@ -1575,6 +1659,11 @@ func (c *restClient) ImportAptArtifacts(ctx context.Context, req *artifactregist
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta2/%v/aptArtifacts:import", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
@@ -1641,6 +1730,11 @@ func (c *restClient) ImportYumArtifacts(ctx context.Context, req *artifactregist
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta2/%v/yumArtifacts:import", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
@@ -1713,6 +1807,7 @@ func (c *restClient) ListRepositories(ctx context.Context, req *artifactregistry
 		baseUrl.Path += fmt.Sprintf("/v1beta2/%v/repositories", req.GetParent())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetPageSize() != 0 {
 			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
 		}
@@ -1786,6 +1881,11 @@ func (c *restClient) GetRepository(ctx context.Context, req *artifactregistrypb.
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta2/%v", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
@@ -1848,6 +1948,7 @@ func (c *restClient) CreateRepository(ctx context.Context, req *artifactregistry
 	baseUrl.Path += fmt.Sprintf("/v1beta2/%v/repositories", req.GetParent())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetRepositoryId() != "" {
 		params.Add("repositoryId", fmt.Sprintf("%v", req.GetRepositoryId()))
 	}
@@ -1919,6 +2020,7 @@ func (c *restClient) UpdateRepository(ctx context.Context, req *artifactregistry
 	baseUrl.Path += fmt.Sprintf("/v1beta2/%v", req.GetRepository().GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
 		updateMask, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
@@ -1983,6 +2085,11 @@ func (c *restClient) DeleteRepository(ctx context.Context, req *artifactregistry
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta2/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
@@ -2055,6 +2162,7 @@ func (c *restClient) ListPackages(ctx context.Context, req *artifactregistrypb.L
 		baseUrl.Path += fmt.Sprintf("/v1beta2/%v/packages", req.GetParent())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetPageSize() != 0 {
 			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
 		}
@@ -2128,6 +2236,11 @@ func (c *restClient) GetPackage(ctx context.Context, req *artifactregistrypb.Get
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta2/%v", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
@@ -2181,6 +2294,11 @@ func (c *restClient) DeletePackage(ctx context.Context, req *artifactregistrypb.
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta2/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
@@ -2253,6 +2371,7 @@ func (c *restClient) ListVersions(ctx context.Context, req *artifactregistrypb.L
 		baseUrl.Path += fmt.Sprintf("/v1beta2/%v/versions", req.GetParent())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetOrderBy() != "" {
 			params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))
 		}
@@ -2333,6 +2452,7 @@ func (c *restClient) GetVersion(ctx context.Context, req *artifactregistrypb.Get
 	baseUrl.Path += fmt.Sprintf("/v1beta2/%v", req.GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetView() != 0 {
 		params.Add("view", fmt.Sprintf("%v", req.GetView()))
 	}
@@ -2394,6 +2514,7 @@ func (c *restClient) DeleteVersion(ctx context.Context, req *artifactregistrypb.
 	baseUrl.Path += fmt.Sprintf("/v1beta2/%v", req.GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetForce() {
 		params.Add("force", fmt.Sprintf("%v", req.GetForce()))
 	}
@@ -2471,6 +2592,7 @@ func (c *restClient) ListFiles(ctx context.Context, req *artifactregistrypb.List
 		baseUrl.Path += fmt.Sprintf("/v1beta2/%v/files", req.GetParent())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -2547,6 +2669,11 @@ func (c *restClient) GetFile(ctx context.Context, req *artifactregistrypb.GetFil
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta2/%v", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
@@ -2614,6 +2741,7 @@ func (c *restClient) ListTags(ctx context.Context, req *artifactregistrypb.ListT
 		baseUrl.Path += fmt.Sprintf("/v1beta2/%v/tags", req.GetParent())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -2690,6 +2818,11 @@ func (c *restClient) GetTag(ctx context.Context, req *artifactregistrypb.GetTagR
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta2/%v", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
@@ -2751,6 +2884,7 @@ func (c *restClient) CreateTag(ctx context.Context, req *artifactregistrypb.Crea
 	baseUrl.Path += fmt.Sprintf("/v1beta2/%v/tags", req.GetParent())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetTagId() != "" {
 		params.Add("tagId", fmt.Sprintf("%v", req.GetTagId()))
 	}
@@ -2818,6 +2952,7 @@ func (c *restClient) UpdateTag(ctx context.Context, req *artifactregistrypb.Upda
 	baseUrl.Path += fmt.Sprintf("/v1beta2/%v", req.GetTag().GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
 		updateMask, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
@@ -2881,6 +3016,11 @@ func (c *restClient) DeleteTag(ctx context.Context, req *artifactregistrypb.Dele
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta2/%v", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
@@ -2921,6 +3061,11 @@ func (c *restClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRe
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta2/%v:setIamPolicy", req.GetResource())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
@@ -2976,6 +3121,7 @@ func (c *restClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRe
 	baseUrl.Path += fmt.Sprintf("/v1beta2/%v:getIamPolicy", req.GetResource())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetOptions().GetRequestedPolicyVersion() != 0 {
 		params.Add("options.requestedPolicyVersion", fmt.Sprintf("%v", req.GetOptions().GetRequestedPolicyVersion()))
 	}
@@ -3041,6 +3187,11 @@ func (c *restClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamP
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta2/%v:testIamPermissions", req.GetResource())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
 
@@ -3093,6 +3244,11 @@ func (c *restClient) GetProjectSettings(ctx context.Context, req *artifactregist
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta2/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
@@ -3155,6 +3311,7 @@ func (c *restClient) UpdateProjectSettings(ctx context.Context, req *artifactreg
 	baseUrl.Path += fmt.Sprintf("/v1beta2/%v", req.GetProjectSettings().GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
 		updateMask, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
@@ -3208,6 +3365,155 @@ func (c *restClient) UpdateProjectSettings(ctx context.Context, req *artifactreg
 		return nil, e
 	}
 	return resp, nil
+}
+
+// GetLocation gets information about a location.
+func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta2/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).GetLocation[0:len((*c.CallOptions).GetLocation):len((*c.CallOptions).GetLocation)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &locationpb.Location{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// ListLocations lists information about the supported locations for this service.
+func (c *restClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
+	it := &LocationIterator{}
+	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
+		resp := &locationpb.ListLocationsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1beta2/%v/locations", req.GetName())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			httpRsp, err := c.httpClient.Do(httpReq)
+			if err != nil {
+				return err
+			}
+			defer httpRsp.Body.Close()
+
+			if err = googleapi.CheckResponse(httpRsp); err != nil {
+				return err
+			}
+
+			buf, err := ioutil.ReadAll(httpRsp.Body)
+			if err != nil {
+				return err
+			}
+
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return maybeUnknownEnum(err)
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetLocations(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
 }
 
 // CreateRepositoryOperation manages a long-running operation from CreateRepository.
@@ -3711,6 +4017,53 @@ func (it *FileIterator) bufLen() int {
 }
 
 func (it *FileIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// LocationIterator manages a stream of *locationpb.Location.
+type LocationIterator struct {
+	items    []*locationpb.Location
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*locationpb.Location, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *LocationIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *LocationIterator) Next() (*locationpb.Location, error) {
+	var item *locationpb.Location
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *LocationIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *LocationIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b

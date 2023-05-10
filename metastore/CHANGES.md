@@ -1,5 +1,62 @@
 # Changes
 
+## [1.10.1](https://github.com/googleapis/google-cloud-go/compare/metastore/v1.10.0...metastore/v1.10.1) (2023-05-08)
+
+
+### Bug Fixes
+
+* **metastore:** Update grpc to v1.55.0 ([1147ce0](https://github.com/googleapis/google-cloud-go/commit/1147ce02a990276ca4f8ab7a1ab65c14da4450ef))
+
+## [1.10.0](https://github.com/googleapis/google-cloud-go/compare/metastore/v1.9.1...metastore/v1.10.0) (2023-01-04)
+
+
+### Features
+
+* **metastore:** Add REST client ([06a54a1](https://github.com/googleapis/google-cloud-go/commit/06a54a16a5866cce966547c51e203b9e09a25bc0))
+
+## [1.9.1](https://github.com/googleapis/google-cloud-go/compare/metastore/v1.9.0...metastore/v1.9.1) (2022-12-15)
+
+
+### Documentation
+
+* **metastore:** Fix formatting for subnetwork field pattern ([bf75547](https://github.com/googleapis/google-cloud-go/commit/bf75547278ef342c79b958e886925da553b0bcc2))
+* **metastore:** Fix formatting for subnetwork field pattern ([7357077](https://github.com/googleapis/google-cloud-go/commit/735707796d81d7f6f32fc3415800c512fe62297e))
+
+## [1.9.0](https://github.com/googleapis/google-cloud-go/compare/metastore/v1.8.0...metastore/v1.9.0) (2022-12-01)
+
+
+### Features
+
+* **metastore:** added federation API feat: added EncryptionConfig field feat: added NetworkConfig field feat: added DatabaseType field feat: added TelemetryConfiguration field ([7231644](https://github.com/googleapis/google-cloud-go/commit/7231644e71f05abc864924a0065b9ea22a489180))
+
+## [1.8.0](https://github.com/googleapis/google-cloud-go/compare/metastore/v1.7.0...metastore/v1.8.0) (2022-11-03)
+
+
+### Features
+
+* **metastore:** rewrite signatures in terms of new location ([3c4b2b3](https://github.com/googleapis/google-cloud-go/commit/3c4b2b34565795537aac1661e6af2442437e34ad))
+
+## [1.7.0](https://github.com/googleapis/google-cloud-go/compare/metastore/v1.6.0...metastore/v1.7.0) (2022-10-25)
+
+
+### Features
+
+* **metastore:** start generating stubs dir ([de2d180](https://github.com/googleapis/google-cloud-go/commit/de2d18066dc613b72f6f8db93ca60146dabcfdcc))
+
+## [1.6.0](https://github.com/googleapis/google-cloud-go/compare/metastore/v1.5.0...metastore/v1.6.0) (2022-09-21)
+
+
+### Features
+
+* **metastore:** rewrite signatures in terms of new types for betas ([9f303f9](https://github.com/googleapis/google-cloud-go/commit/9f303f9efc2e919a9a6bd828f3cdb1fcb3b8b390))
+
+## [1.5.0](https://github.com/googleapis/google-cloud-go/compare/metastore/v1.4.0...metastore/v1.5.0) (2022-09-19)
+
+
+### Features
+
+* **metastore:** start generating proto message types ([563f546](https://github.com/googleapis/google-cloud-go/commit/563f546262e68102644db64134d1071fc8caa383))
+
 ## [1.4.0](https://github.com/googleapis/google-cloud-go/compare/metastore/v1.3.0...metastore/v1.4.0) (2022-09-15)
 
 

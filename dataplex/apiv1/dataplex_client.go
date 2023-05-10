@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -23,16 +23,16 @@ import (
 	"net/url"
 	"time"
 
+	dataplexpb "cloud.google.com/go/dataplex/apiv1/dataplexpb"
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
-	dataplexpb "google.golang.org/genproto/googleapis/cloud/dataplex/v1"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -67,6 +67,7 @@ type CallOptions struct {
 	ListTasks         []gax.CallOption
 	GetTask           []gax.CallOption
 	ListJobs          []gax.CallOption
+	RunTask           []gax.CallOption
 	GetJob            []gax.CallOption
 	CancelJob         []gax.CallOption
 	CreateEnvironment []gax.CallOption
@@ -241,6 +242,7 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
+		RunTask: []gax.CallOption{},
 		GetJob: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
@@ -329,6 +331,7 @@ type internalClient interface {
 	ListTasks(context.Context, *dataplexpb.ListTasksRequest, ...gax.CallOption) *TaskIterator
 	GetTask(context.Context, *dataplexpb.GetTaskRequest, ...gax.CallOption) (*dataplexpb.Task, error)
 	ListJobs(context.Context, *dataplexpb.ListJobsRequest, ...gax.CallOption) *JobIterator
+	RunTask(context.Context, *dataplexpb.RunTaskRequest, ...gax.CallOption) (*dataplexpb.RunTaskResponse, error)
 	GetJob(context.Context, *dataplexpb.GetJobRequest, ...gax.CallOption) (*dataplexpb.Job, error)
 	CancelJob(context.Context, *dataplexpb.CancelJobRequest, ...gax.CallOption) error
 	CreateEnvironment(context.Context, *dataplexpb.CreateEnvironmentRequest, ...gax.CallOption) (*CreateEnvironmentOperation, error)
@@ -585,6 +588,11 @@ func (c *Client) GetTask(ctx context.Context, req *dataplexpb.GetTaskRequest, op
 // ListJobs lists Jobs under the given task.
 func (c *Client) ListJobs(ctx context.Context, req *dataplexpb.ListJobsRequest, opts ...gax.CallOption) *JobIterator {
 	return c.internalClient.ListJobs(ctx, req, opts...)
+}
+
+// RunTask run an on demand execution of a Task.
+func (c *Client) RunTask(ctx context.Context, req *dataplexpb.RunTaskRequest, opts ...gax.CallOption) (*dataplexpb.RunTaskResponse, error) {
+	return c.internalClient.RunTask(ctx, req, opts...)
 }
 
 // GetJob get job resource.
@@ -1517,6 +1525,23 @@ func (c *gRPCClient) ListJobs(ctx context.Context, req *dataplexpb.ListJobsReque
 	it.pageInfo.Token = req.GetPageToken()
 
 	return it
+}
+
+func (c *gRPCClient) RunTask(ctx context.Context, req *dataplexpb.RunTaskRequest, opts ...gax.CallOption) (*dataplexpb.RunTaskResponse, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).RunTask[0:len((*c.CallOptions).RunTask):len((*c.CallOptions).RunTask)], opts...)
+	var resp *dataplexpb.RunTaskResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.RunTask(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
 }
 
 func (c *gRPCClient) GetJob(ctx context.Context, req *dataplexpb.GetJobRequest, opts ...gax.CallOption) (*dataplexpb.Job, error) {

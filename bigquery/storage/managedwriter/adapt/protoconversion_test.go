@@ -19,9 +19,9 @@ import (
 	"reflect"
 	"testing"
 
+	"cloud.google.com/go/bigquery/storage/apiv1/storagepb"
 	"cloud.google.com/go/bigquery/storage/managedwriter/testdata"
 	"github.com/google/go-cmp/cmp"
-	storagepb "google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/reflect/protodesc"
@@ -412,6 +412,59 @@ func TestSchemaToProtoConversion(t *testing.T) {
 					{Name: proto.String("nicknames"), Number: proto.Int32(3), Type: descriptorpb.FieldDescriptorProto_TYPE_STRING.Enum(), Label: descriptorpb.FieldDescriptorProto_LABEL_REPEATED.Enum()},
 				},
 			},
+		},
+		{
+			description: "indirect names",
+			bq: &storagepb.TableSchema{
+				Fields: []*storagepb.TableFieldSchema{
+					{Name: "foo", Type: storagepb.TableFieldSchema_STRING, Mode: storagepb.TableFieldSchema_NULLABLE},
+					{Name: "火", Type: storagepb.TableFieldSchema_INT64, Mode: storagepb.TableFieldSchema_REQUIRED},
+					{Name: "水_addict", Type: storagepb.TableFieldSchema_BYTES, Mode: storagepb.TableFieldSchema_REPEATED},
+					{Name: "0col", Type: storagepb.TableFieldSchema_INT64, Mode: storagepb.TableFieldSchema_NULLABLE},
+					{Name: "funny-name", Type: storagepb.TableFieldSchema_INT64, Mode: storagepb.TableFieldSchema_NULLABLE},
+				}},
+			wantProto2: func() *descriptorpb.DescriptorProto {
+				dp := &descriptorpb.DescriptorProto{
+					Name: proto.String("root"),
+					Field: []*descriptorpb.FieldDescriptorProto{
+						{
+							Name:   proto.String("foo"),
+							Number: proto.Int32(1),
+							Type:   descriptorpb.FieldDescriptorProto_TYPE_STRING.Enum(),
+							Label:  descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum()},
+						{
+							Name:    proto.String("col_54Gr"),
+							Number:  proto.Int32(2),
+							Type:    descriptorpb.FieldDescriptorProto_TYPE_INT64.Enum(),
+							Options: &descriptorpb.FieldOptions{},
+							Label:   descriptorpb.FieldDescriptorProto_LABEL_REQUIRED.Enum()},
+						{
+							Name:    proto.String("col_5rC0X2FkZGljdA"),
+							Number:  proto.Int32(3),
+							Type:    descriptorpb.FieldDescriptorProto_TYPE_BYTES.Enum(),
+							Options: &descriptorpb.FieldOptions{},
+							Label:   descriptorpb.FieldDescriptorProto_LABEL_REPEATED.Enum(),
+						},
+						{
+							Name:    proto.String("col_MGNvbA"),
+							Number:  proto.Int32(4),
+							Type:    descriptorpb.FieldDescriptorProto_TYPE_INT64.Enum(),
+							Options: &descriptorpb.FieldOptions{},
+							Label:   descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum()},
+						{
+							Name:    proto.String("col_ZnVubnktbmFtZQ"),
+							Number:  proto.Int32(5),
+							Type:    descriptorpb.FieldDescriptorProto_TYPE_INT64.Enum(),
+							Options: &descriptorpb.FieldOptions{},
+							Label:   descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum()},
+					},
+				}
+				proto.SetExtension(dp.Field[1].Options, storagepb.E_ColumnName, "火")
+				proto.SetExtension(dp.Field[2].Options, storagepb.E_ColumnName, "水_addict")
+				proto.SetExtension(dp.Field[3].Options, storagepb.E_ColumnName, "0col")
+				proto.SetExtension(dp.Field[4].Options, storagepb.E_ColumnName, "funny-name")
+				return dp
+			}(),
 		},
 	}
 	for _, tc := range testCases {

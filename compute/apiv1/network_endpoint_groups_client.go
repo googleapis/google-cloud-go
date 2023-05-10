@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -25,14 +25,15 @@ import (
 	"net/http"
 	"net/url"
 	"sort"
+	"time"
 
+	computepb "cloud.google.com/go/compute/apiv1/computepb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	httptransport "google.golang.org/api/transport/http"
-	computepb "google.golang.org/genproto/googleapis/cloud/compute/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/encoding/protojson"
@@ -56,15 +57,45 @@ type NetworkEndpointGroupsCallOptions struct {
 
 func defaultNetworkEndpointGroupsRESTCallOptions() *NetworkEndpointGroupsCallOptions {
 	return &NetworkEndpointGroupsCallOptions{
-		AggregatedList:         []gax.CallOption{},
+		AggregatedList: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
 		AttachNetworkEndpoints: []gax.CallOption{},
 		Delete:                 []gax.CallOption{},
 		DetachNetworkEndpoints: []gax.CallOption{},
-		Get:                    []gax.CallOption{},
-		Insert:                 []gax.CallOption{},
-		List:                   []gax.CallOption{},
-		ListNetworkEndpoints:   []gax.CallOption{},
-		TestIamPermissions:     []gax.CallOption{},
+		Get: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
+		Insert: []gax.CallOption{},
+		List: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
+		ListNetworkEndpoints: []gax.CallOption{},
+		TestIamPermissions:   []gax.CallOption{},
 	}
 }
 
@@ -139,7 +170,7 @@ func (c *NetworkEndpointGroupsClient) DetachNetworkEndpoints(ctx context.Context
 	return c.internalClient.DetachNetworkEndpoints(ctx, req, opts...)
 }
 
-// Get returns the specified network endpoint group. Gets a list of available network endpoint groups by making a list() request.
+// Get returns the specified network endpoint group.
 func (c *NetworkEndpointGroupsClient) Get(ctx context.Context, req *computepb.GetNetworkEndpointGroupRequest, opts ...gax.CallOption) (*computepb.NetworkEndpointGroup, error) {
 	return c.internalClient.Get(ctx, req, opts...)
 }
@@ -573,7 +604,7 @@ func (c *networkEndpointGroupsRESTClient) DetachNetworkEndpoints(ctx context.Con
 	return op, nil
 }
 
-// Get returns the specified network endpoint group. Gets a list of available network endpoint groups by making a list() request.
+// Get returns the specified network endpoint group.
 func (c *networkEndpointGroupsRESTClient) Get(ctx context.Context, req *computepb.GetNetworkEndpointGroupRequest, opts ...gax.CallOption) (*computepb.NetworkEndpointGroup, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {

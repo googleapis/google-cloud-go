@@ -31,6 +31,31 @@
               ]
             }
           }
+        },
+        "rest": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "ComputeThreatListDiff": {
+              "methods": [
+                "ComputeThreatListDiff"
+              ]
+            },
+            "CreateSubmission": {
+              "methods": [
+                "CreateSubmission"
+              ]
+            },
+            "SearchHashes": {
+              "methods": [
+                "SearchHashes"
+              ]
+            },
+            "SearchUris": {
+              "methods": [
+                "SearchUris"
+              ]
+            }
+          }
         }
       }
     }

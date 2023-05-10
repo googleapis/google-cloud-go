@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,9 +19,10 @@ package service_test
 import (
 	"context"
 
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	service "cloud.google.com/go/orchestration/airflow/service/apiv1"
+	servicepb "cloud.google.com/go/orchestration/airflow/service/apiv1/servicepb"
 	"google.golang.org/api/iterator"
-	servicepb "google.golang.org/genproto/googleapis/cloud/orchestration/airflow/service/v1"
 )
 
 func ExampleNewEnvironmentsClient() {
@@ -32,6 +33,23 @@ func ExampleNewEnvironmentsClient() {
 	// - It may require specifying regional endpoints when creating the service client as shown in:
 	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := service.NewEnvironmentsClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
+func ExampleNewEnvironmentsRESTClient() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := service.NewEnvironmentsRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -56,7 +74,7 @@ func ExampleEnvironmentsClient_CreateEnvironment() {
 
 	req := &servicepb.CreateEnvironmentRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/orchestration/airflow/service/v1#CreateEnvironmentRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/orchestration/airflow/service/apiv1/servicepb#CreateEnvironmentRequest.
 	}
 	op, err := c.CreateEnvironment(ctx, req)
 	if err != nil {
@@ -86,7 +104,7 @@ func ExampleEnvironmentsClient_GetEnvironment() {
 
 	req := &servicepb.GetEnvironmentRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/orchestration/airflow/service/v1#GetEnvironmentRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/orchestration/airflow/service/apiv1/servicepb#GetEnvironmentRequest.
 	}
 	resp, err := c.GetEnvironment(ctx, req)
 	if err != nil {
@@ -111,7 +129,7 @@ func ExampleEnvironmentsClient_ListEnvironments() {
 
 	req := &servicepb.ListEnvironmentsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/orchestration/airflow/service/v1#ListEnvironmentsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/orchestration/airflow/service/apiv1/servicepb#ListEnvironmentsRequest.
 	}
 	it := c.ListEnvironments(ctx, req)
 	for {
@@ -142,7 +160,7 @@ func ExampleEnvironmentsClient_UpdateEnvironment() {
 
 	req := &servicepb.UpdateEnvironmentRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/orchestration/airflow/service/v1#UpdateEnvironmentRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/orchestration/airflow/service/apiv1/servicepb#UpdateEnvironmentRequest.
 	}
 	op, err := c.UpdateEnvironment(ctx, req)
 	if err != nil {
@@ -172,7 +190,7 @@ func ExampleEnvironmentsClient_DeleteEnvironment() {
 
 	req := &servicepb.DeleteEnvironmentRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/orchestration/airflow/service/v1#DeleteEnvironmentRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/orchestration/airflow/service/apiv1/servicepb#DeleteEnvironmentRequest.
 	}
 	op, err := c.DeleteEnvironment(ctx, req)
 	if err != nil {
@@ -182,5 +200,144 @@ func ExampleEnvironmentsClient_DeleteEnvironment() {
 	err = op.Wait(ctx)
 	if err != nil {
 		// TODO: Handle error.
+	}
+}
+
+func ExampleEnvironmentsClient_SaveSnapshot() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := service.NewEnvironmentsClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &servicepb.SaveSnapshotRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/orchestration/airflow/service/apiv1/servicepb#SaveSnapshotRequest.
+	}
+	op, err := c.SaveSnapshot(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleEnvironmentsClient_LoadSnapshot() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := service.NewEnvironmentsClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &servicepb.LoadSnapshotRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/orchestration/airflow/service/apiv1/servicepb#LoadSnapshotRequest.
+	}
+	op, err := c.LoadSnapshot(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleEnvironmentsClient_DeleteOperation() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := service.NewEnvironmentsClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &longrunningpb.DeleteOperationRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/longrunning/autogen/longrunningpb#DeleteOperationRequest.
+	}
+	err = c.DeleteOperation(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleEnvironmentsClient_GetOperation() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := service.NewEnvironmentsClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &longrunningpb.GetOperationRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/longrunning/autogen/longrunningpb#GetOperationRequest.
+	}
+	resp, err := c.GetOperation(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleEnvironmentsClient_ListOperations() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := service.NewEnvironmentsClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &longrunningpb.ListOperationsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/longrunning/autogen/longrunningpb#ListOperationsRequest.
+	}
+	it := c.ListOperations(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
 	}
 }

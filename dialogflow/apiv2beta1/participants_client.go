@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -26,6 +26,8 @@ import (
 	"net/url"
 	"time"
 
+	dialogflowpb "cloud.google.com/go/dialogflow/apiv2beta1/dialogflowpb"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
@@ -33,9 +35,7 @@ import (
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
-	dialogflowpb "google.golang.org/genproto/googleapis/cloud/dialogflow/v2beta1"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -335,7 +335,8 @@ type internalParticipantsClient interface {
 // ParticipantsClient is a client for interacting with Dialogflow API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
-// Service for managing Participants.
+// Service for managing
+// Participants.
 type ParticipantsClient struct {
 	// The internal transport-dependent client.
 	internalClient internalParticipantsClient
@@ -412,6 +413,8 @@ func (c *ParticipantsClient) AnalyzeContent(ctx context.Context, req *dialogflow
 // Note: Always use agent versions for production traffic
 // sent to virtual agents. See Versions and
 // environments (at https://cloud.google.com/dialogflow/es/docs/agents-versions).
+//
+// This method is not supported for the REST transport.
 func (c *ParticipantsClient) StreamingAnalyzeContent(ctx context.Context, opts ...gax.CallOption) (dialogflowpb.Participants_StreamingAnalyzeContentClient, error) {
 	return c.internalClient.StreamingAnalyzeContent(ctx, opts...)
 }
@@ -419,9 +422,12 @@ func (c *ParticipantsClient) StreamingAnalyzeContent(ctx context.Context, opts .
 // SuggestArticles gets suggested articles for a participant based on specific historical
 // messages.
 //
-// Note that ListSuggestions will only list the auto-generated
-// suggestions, while CompileSuggestion will try to compile suggestion
-// based on the provided conversation context in the real time.
+// Note that
+// ListSuggestions
+// will only list the auto-generated suggestions, while
+// CompileSuggestion
+// will try to compile suggestion based on the provided conversation context
+// in the real time.
 func (c *ParticipantsClient) SuggestArticles(ctx context.Context, req *dialogflowpb.SuggestArticlesRequest, opts ...gax.CallOption) (*dialogflowpb.SuggestArticlesResponse, error) {
 	return c.internalClient.SuggestArticles(ctx, req, opts...)
 }
@@ -440,9 +446,9 @@ func (c *ParticipantsClient) SuggestSmartReplies(ctx context.Context, req *dialo
 
 // ListSuggestions deprecated: Use inline suggestion, event based suggestion or
 // Suggestion* API instead.
-// See [HumanAgentAssistantConfig.name (at http://HumanAgentAssistantConfig.name)][google.cloud.dialogflow.v2beta1.HumanAgentAssistantConfig.name (at http://google.cloud.dialogflow.v2beta1.HumanAgentAssistantConfig.name)] for more
-// details.
-// Removal Date: 2020-09-01.
+// See
+// [HumanAgentAssistantConfig.name (at http://HumanAgentAssistantConfig.name)][google.cloud.dialogflow.v2beta1.HumanAgentAssistantConfig.name (at http://google.cloud.dialogflow.v2beta1.HumanAgentAssistantConfig.name)]
+// for more details. Removal Date: 2020-09-01.
 //
 // Retrieves suggestions for live agents.
 //
@@ -463,14 +469,21 @@ func (c *ParticipantsClient) ListSuggestions(ctx context.Context, req *dialogflo
 	return c.internalClient.ListSuggestions(ctx, req, opts...)
 }
 
-// CompileSuggestion deprecated. use SuggestArticles and SuggestFaqAnswers instead.
+// CompileSuggestion deprecated. use
+// SuggestArticles
+// and
+// SuggestFaqAnswers
+// instead.
 //
 // Gets suggestions for a participant based on specific historical
 // messages.
 //
-// Note that ListSuggestions will only list the auto-generated
-// suggestions, while CompileSuggestion will try to compile suggestion
-// based on the provided conversation context in the real time.
+// Note that
+// ListSuggestions
+// will only list the auto-generated suggestions, while
+// CompileSuggestion
+// will try to compile suggestion based on the provided conversation context
+// in the real time.
 //
 // Deprecated: CompileSuggestion may be removed in a future version.
 func (c *ParticipantsClient) CompileSuggestion(ctx context.Context, req *dialogflowpb.CompileSuggestionRequest, opts ...gax.CallOption) (*dialogflowpb.CompileSuggestionResponse, error) {
@@ -529,7 +542,8 @@ type participantsGRPCClient struct {
 // NewParticipantsClient creates a new participants client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
-// Service for managing Participants.
+// Service for managing
+// Participants.
 func NewParticipantsClient(ctx context.Context, opts ...option.ClientOption) (*ParticipantsClient, error) {
 	clientOpts := defaultParticipantsGRPCClientOptions()
 	if newParticipantsClientHook != nil {
@@ -606,7 +620,8 @@ type participantsRESTClient struct {
 
 // NewParticipantsRESTClient creates a new participants rest client.
 //
-// Service for managing Participants.
+// Service for managing
+// Participants.
 func NewParticipantsRESTClient(ctx context.Context, opts ...option.ClientOption) (*ParticipantsClient, error) {
 	clientOpts := append(defaultParticipantsRESTClientOptions(), opts...)
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
@@ -1090,6 +1105,11 @@ func (c *participantsRESTClient) CreateParticipant(ctx context.Context, req *dia
 	}
 	baseUrl.Path += fmt.Sprintf("/v2beta1/%v/participants", req.GetParent())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
@@ -1142,6 +1162,11 @@ func (c *participantsRESTClient) GetParticipant(ctx context.Context, req *dialog
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2beta1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
@@ -1210,6 +1235,7 @@ func (c *participantsRESTClient) ListParticipants(ctx context.Context, req *dial
 		baseUrl.Path += fmt.Sprintf("/v2beta1/%v/participants", req.GetParent())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetPageSize() != 0 {
 			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
 		}
@@ -1291,6 +1317,7 @@ func (c *participantsRESTClient) UpdateParticipant(ctx context.Context, req *dia
 	baseUrl.Path += fmt.Sprintf("/v2beta1/%v", req.GetParticipant().GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
 		updateMask, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
@@ -1365,6 +1392,11 @@ func (c *participantsRESTClient) AnalyzeContent(ctx context.Context, req *dialog
 	}
 	baseUrl.Path += fmt.Sprintf("/v2beta1/%v:analyzeContent", req.GetParticipant())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "participant", url.QueryEscape(req.GetParticipant())))
 
@@ -1425,6 +1457,8 @@ func (c *participantsRESTClient) AnalyzeContent(ctx context.Context, req *dialog
 // Note: Always use agent versions for production traffic
 // sent to virtual agents. See Versions and
 // environments (at https://cloud.google.com/dialogflow/es/docs/agents-versions).
+//
+// This method is not supported for the REST transport.
 func (c *participantsRESTClient) StreamingAnalyzeContent(ctx context.Context, opts ...gax.CallOption) (dialogflowpb.Participants_StreamingAnalyzeContentClient, error) {
 	return nil, fmt.Errorf("StreamingAnalyzeContent not yet supported for REST clients")
 }
@@ -1432,9 +1466,12 @@ func (c *participantsRESTClient) StreamingAnalyzeContent(ctx context.Context, op
 // SuggestArticles gets suggested articles for a participant based on specific historical
 // messages.
 //
-// Note that ListSuggestions will only list the auto-generated
-// suggestions, while CompileSuggestion will try to compile suggestion
-// based on the provided conversation context in the real time.
+// Note that
+// ListSuggestions
+// will only list the auto-generated suggestions, while
+// CompileSuggestion
+// will try to compile suggestion based on the provided conversation context
+// in the real time.
 func (c *participantsRESTClient) SuggestArticles(ctx context.Context, req *dialogflowpb.SuggestArticlesRequest, opts ...gax.CallOption) (*dialogflowpb.SuggestArticlesResponse, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -1447,6 +1484,11 @@ func (c *participantsRESTClient) SuggestArticles(ctx context.Context, req *dialo
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2beta1/%v/suggestions:suggestArticles", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
@@ -1508,6 +1550,11 @@ func (c *participantsRESTClient) SuggestFaqAnswers(ctx context.Context, req *dia
 	}
 	baseUrl.Path += fmt.Sprintf("/v2beta1/%v/suggestions:suggestFaqAnswers", req.GetParent())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
@@ -1568,6 +1615,11 @@ func (c *participantsRESTClient) SuggestSmartReplies(ctx context.Context, req *d
 	}
 	baseUrl.Path += fmt.Sprintf("/v2beta1/%v/suggestions:suggestSmartReplies", req.GetParent())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
@@ -1615,9 +1667,9 @@ func (c *participantsRESTClient) SuggestSmartReplies(ctx context.Context, req *d
 
 // ListSuggestions deprecated: Use inline suggestion, event based suggestion or
 // Suggestion* API instead.
-// See [HumanAgentAssistantConfig.name (at http://HumanAgentAssistantConfig.name)][google.cloud.dialogflow.v2beta1.HumanAgentAssistantConfig.name (at http://google.cloud.dialogflow.v2beta1.HumanAgentAssistantConfig.name)] for more
-// details.
-// Removal Date: 2020-09-01.
+// See
+// [HumanAgentAssistantConfig.name (at http://HumanAgentAssistantConfig.name)][google.cloud.dialogflow.v2beta1.HumanAgentAssistantConfig.name (at http://google.cloud.dialogflow.v2beta1.HumanAgentAssistantConfig.name)]
+// for more details. Removal Date: 2020-09-01.
 //
 // Retrieves suggestions for live agents.
 //
@@ -1655,6 +1707,7 @@ func (c *participantsRESTClient) ListSuggestions(ctx context.Context, req *dialo
 		baseUrl.Path += fmt.Sprintf("/v2beta1/%v/suggestions", req.GetParent())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -1723,14 +1776,21 @@ func (c *participantsRESTClient) ListSuggestions(ctx context.Context, req *dialo
 	return it
 }
 
-// CompileSuggestion deprecated. use SuggestArticles and SuggestFaqAnswers instead.
+// CompileSuggestion deprecated. use
+// SuggestArticles
+// and
+// SuggestFaqAnswers
+// instead.
 //
 // Gets suggestions for a participant based on specific historical
 // messages.
 //
-// Note that ListSuggestions will only list the auto-generated
-// suggestions, while CompileSuggestion will try to compile suggestion
-// based on the provided conversation context in the real time.
+// Note that
+// ListSuggestions
+// will only list the auto-generated suggestions, while
+// CompileSuggestion
+// will try to compile suggestion based on the provided conversation context
+// in the real time.
 //
 // Deprecated: CompileSuggestion may be removed in a future version.
 func (c *participantsRESTClient) CompileSuggestion(ctx context.Context, req *dialogflowpb.CompileSuggestionRequest, opts ...gax.CallOption) (*dialogflowpb.CompileSuggestionResponse, error) {
@@ -1745,6 +1805,11 @@ func (c *participantsRESTClient) CompileSuggestion(ctx context.Context, req *dia
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2beta1/%v/suggestions:compile", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
@@ -1798,6 +1863,11 @@ func (c *participantsRESTClient) GetLocation(ctx context.Context, req *locationp
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2beta1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
@@ -1866,6 +1936,7 @@ func (c *participantsRESTClient) ListLocations(ctx context.Context, req *locatio
 		baseUrl.Path += fmt.Sprintf("/v2beta1/%v/locations", req.GetName())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -1942,6 +2013,11 @@ func (c *participantsRESTClient) CancelOperation(ctx context.Context, req *longr
 	}
 	baseUrl.Path += fmt.Sprintf("/v2beta1/%v:cancel", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
@@ -1976,6 +2052,11 @@ func (c *participantsRESTClient) GetOperation(ctx context.Context, req *longrunn
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2beta1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
@@ -2044,6 +2125,7 @@ func (c *participantsRESTClient) ListOperations(ctx context.Context, req *longru
 		baseUrl.Path += fmt.Sprintf("/v2beta1/%v/operations", req.GetName())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}

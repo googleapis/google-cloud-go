@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -26,6 +26,8 @@ import (
 	"net/url"
 	"time"
 
+	cxpb "cloud.google.com/go/dialogflow/cx/apiv3beta1/cxpb"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
@@ -33,9 +35,7 @@ import (
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
-	cxpb "google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -253,13 +253,15 @@ func (c *SecuritySettingsClient) CreateSecuritySettings(ctx context.Context, req
 	return c.internalClient.CreateSecuritySettings(ctx, req, opts...)
 }
 
-// GetSecuritySettings retrieves the specified SecuritySettings.
+// GetSecuritySettings retrieves the specified
+// SecuritySettings.
 // The returned settings may be stale by up to 1 minute.
 func (c *SecuritySettingsClient) GetSecuritySettings(ctx context.Context, req *cxpb.GetSecuritySettingsRequest, opts ...gax.CallOption) (*cxpb.SecuritySettings, error) {
 	return c.internalClient.GetSecuritySettings(ctx, req, opts...)
 }
 
-// UpdateSecuritySettings updates the specified SecuritySettings.
+// UpdateSecuritySettings updates the specified
+// SecuritySettings.
 func (c *SecuritySettingsClient) UpdateSecuritySettings(ctx context.Context, req *cxpb.UpdateSecuritySettingsRequest, opts ...gax.CallOption) (*cxpb.SecuritySettings, error) {
 	return c.internalClient.UpdateSecuritySettings(ctx, req, opts...)
 }
@@ -269,7 +271,8 @@ func (c *SecuritySettingsClient) ListSecuritySettings(ctx context.Context, req *
 	return c.internalClient.ListSecuritySettings(ctx, req, opts...)
 }
 
-// DeleteSecuritySettings deletes the specified SecuritySettings.
+// DeleteSecuritySettings deletes the specified
+// SecuritySettings.
 func (c *SecuritySettingsClient) DeleteSecuritySettings(ctx context.Context, req *cxpb.DeleteSecuritySettingsRequest, opts ...gax.CallOption) error {
 	return c.internalClient.DeleteSecuritySettings(ctx, req, opts...)
 }
@@ -735,6 +738,11 @@ func (c *securitySettingsRESTClient) CreateSecuritySettings(ctx context.Context,
 	}
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v/securitySettings", req.GetParent())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
@@ -780,7 +788,8 @@ func (c *securitySettingsRESTClient) CreateSecuritySettings(ctx context.Context,
 	return resp, nil
 }
 
-// GetSecuritySettings retrieves the specified SecuritySettings.
+// GetSecuritySettings retrieves the specified
+// SecuritySettings.
 // The returned settings may be stale by up to 1 minute.
 func (c *securitySettingsRESTClient) GetSecuritySettings(ctx context.Context, req *cxpb.GetSecuritySettingsRequest, opts ...gax.CallOption) (*cxpb.SecuritySettings, error) {
 	baseUrl, err := url.Parse(c.endpoint)
@@ -788,6 +797,11 @@ func (c *securitySettingsRESTClient) GetSecuritySettings(ctx context.Context, re
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
@@ -834,7 +848,8 @@ func (c *securitySettingsRESTClient) GetSecuritySettings(ctx context.Context, re
 	return resp, nil
 }
 
-// UpdateSecuritySettings updates the specified SecuritySettings.
+// UpdateSecuritySettings updates the specified
+// SecuritySettings.
 func (c *securitySettingsRESTClient) UpdateSecuritySettings(ctx context.Context, req *cxpb.UpdateSecuritySettingsRequest, opts ...gax.CallOption) (*cxpb.SecuritySettings, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetSecuritySettings()
@@ -850,6 +865,7 @@ func (c *securitySettingsRESTClient) UpdateSecuritySettings(ctx context.Context,
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v", req.GetSecuritySettings().GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
 		updateMask, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
@@ -927,6 +943,7 @@ func (c *securitySettingsRESTClient) ListSecuritySettings(ctx context.Context, r
 		baseUrl.Path += fmt.Sprintf("/v3beta1/%v/securitySettings", req.GetParent())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetPageSize() != 0 {
 			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
 		}
@@ -992,13 +1009,19 @@ func (c *securitySettingsRESTClient) ListSecuritySettings(ctx context.Context, r
 	return it
 }
 
-// DeleteSecuritySettings deletes the specified SecuritySettings.
+// DeleteSecuritySettings deletes the specified
+// SecuritySettings.
 func (c *securitySettingsRESTClient) DeleteSecuritySettings(ctx context.Context, req *cxpb.DeleteSecuritySettingsRequest, opts ...gax.CallOption) error {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
 		return err
 	}
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
@@ -1034,6 +1057,11 @@ func (c *securitySettingsRESTClient) GetLocation(ctx context.Context, req *locat
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
@@ -1102,6 +1130,7 @@ func (c *securitySettingsRESTClient) ListLocations(ctx context.Context, req *loc
 		baseUrl.Path += fmt.Sprintf("/v3beta1/%v/locations", req.GetName())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -1178,6 +1207,11 @@ func (c *securitySettingsRESTClient) CancelOperation(ctx context.Context, req *l
 	}
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v:cancel", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
@@ -1212,6 +1246,11 @@ func (c *securitySettingsRESTClient) GetOperation(ctx context.Context, req *long
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
@@ -1280,6 +1319,7 @@ func (c *securitySettingsRESTClient) ListOperations(ctx context.Context, req *lo
 		baseUrl.Path += fmt.Sprintf("/v3beta1/%v/operations", req.GetName())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}

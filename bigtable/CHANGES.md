@@ -1,5 +1,34 @@
 # Changes
 
+## [1.18.1](https://github.com/googleapis/google-cloud-go/compare/bigtable/v1.18.0...bigtable/v1.18.1) (2022-12-02)
+
+
+### Bug Fixes
+
+* **bigtable:** downgrade some dependencies ([7540152](https://github.com/googleapis/google-cloud-go/commit/754015236d5af7c82a75da218b71a87b9ead6eb5))
+
+## [1.18.0](https://github.com/googleapis/google-cloud-go/compare/bigtable/v1.17.0...bigtable/v1.18.0) (2022-11-10)
+
+
+### Features
+
+* **bigtable:** Add support for request stats ([#6991](https://github.com/googleapis/google-cloud-go/issues/6991)) ([609421e](https://github.com/googleapis/google-cloud-go/commit/609421e87ff25971f3fc29e15dbcdaa7fba02d11))
+
+## [1.17.0](https://github.com/googleapis/google-cloud-go/compare/bigtable/v1.16.0...bigtable/v1.17.0) (2022-11-03)
+
+
+### Features
+
+* **bigtable:** Add create table metadata support ([#6813](https://github.com/googleapis/google-cloud-go/issues/6813)) ([d497377](https://github.com/googleapis/google-cloud-go/commit/d4973774b6b31a2091bcff06c01af6acf4378e93))
+* **bigtable:** Add update table metadata support ([#6746](https://github.com/googleapis/google-cloud-go/issues/6746)) ([f19ffad](https://github.com/googleapis/google-cloud-go/commit/f19ffada53d45919e872bec7089f0a540a35755d))
+* **bigtable:** Update genproto ([#6710](https://github.com/googleapis/google-cloud-go/issues/6710)) ([34f3aa4](https://github.com/googleapis/google-cloud-go/commit/34f3aa4c36c9a082e4bde1aad6f18951eb48cb51))
+
+
+### Bug Fixes
+
+* **bigtable:** CellsPer(Row|Column)LimitFilter should error with arguments &lt;= 0. ([#6495](https://github.com/googleapis/google-cloud-go/issues/6495)) ([7724d8f](https://github.com/googleapis/google-cloud-go/commit/7724d8f077db62d543571b11bd17d5494fbd0260))
+* **bigtable:** Fix flaky AdminBackUp test ([#6917](https://github.com/googleapis/google-cloud-go/issues/6917)) ([45cc61e](https://github.com/googleapis/google-cloud-go/commit/45cc61ecad8dd67ac1b17b1f8e03043ff6ab4792))
+
 ## [1.16.0](https://github.com/googleapis/google-cloud-go/compare/bigtable/v1.15.0...bigtable/v1.16.0) (2022-07-27)
 
 

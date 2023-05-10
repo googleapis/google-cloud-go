@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -26,13 +26,13 @@ import (
 	"net/url"
 	"time"
 
+	languagepb "cloud.google.com/go/language/apiv1beta2/languagepb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
-	languagepb "google.golang.org/genproto/googleapis/cloud/language/v1beta2"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -211,7 +211,7 @@ func defaultRESTCallOptions() *CallOptions {
 	}
 }
 
-// internalClient is an interface that defines the methods available from Google Cloud Natural Language API.
+// internalClient is an interface that defines the methods available from Cloud Natural Language API.
 type internalClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -224,7 +224,7 @@ type internalClient interface {
 	AnnotateText(context.Context, *languagepb.AnnotateTextRequest, ...gax.CallOption) (*languagepb.AnnotateTextResponse, error)
 }
 
-// Client is a client for interacting with Google Cloud Natural Language API.
+// Client is a client for interacting with Cloud Natural Language API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // Provides text analysis operations such as sentiment analysis and entity
@@ -279,7 +279,7 @@ func (c *Client) AnalyzeEntitySentiment(ctx context.Context, req *languagepb.Ana
 }
 
 // AnalyzeSyntax analyzes the syntax of the text and provides sentence boundaries and
-// tokenization along with part-of-speech tags, dependency trees, and other
+// tokenization along with part of speech tags, dependency trees, and other
 // properties.
 func (c *Client) AnalyzeSyntax(ctx context.Context, req *languagepb.AnalyzeSyntaxRequest, opts ...gax.CallOption) (*languagepb.AnalyzeSyntaxResponse, error) {
 	return c.internalClient.AnalyzeSyntax(ctx, req, opts...)
@@ -296,7 +296,7 @@ func (c *Client) AnnotateText(ctx context.Context, req *languagepb.AnnotateTextR
 	return c.internalClient.AnnotateText(ctx, req, opts...)
 }
 
-// gRPCClient is a client for interacting with Google Cloud Natural Language API over gRPC transport.
+// gRPCClient is a client for interacting with Cloud Natural Language API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type gRPCClient struct {
@@ -581,6 +581,11 @@ func (c *restClient) AnalyzeSentiment(ctx context.Context, req *languagepb.Analy
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta2/documents:analyzeSentiment")
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
 	opts = append((*c.CallOptions).AnalyzeSentiment[0:len((*c.CallOptions).AnalyzeSentiment):len((*c.CallOptions).AnalyzeSentiment)], opts...)
@@ -640,6 +645,11 @@ func (c *restClient) AnalyzeEntities(ctx context.Context, req *languagepb.Analyz
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta2/documents:analyzeEntities")
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
 	opts = append((*c.CallOptions).AnalyzeEntities[0:len((*c.CallOptions).AnalyzeEntities):len((*c.CallOptions).AnalyzeEntities)], opts...)
@@ -698,6 +708,11 @@ func (c *restClient) AnalyzeEntitySentiment(ctx context.Context, req *languagepb
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta2/documents:analyzeEntitySentiment")
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
 	opts = append((*c.CallOptions).AnalyzeEntitySentiment[0:len((*c.CallOptions).AnalyzeEntitySentiment):len((*c.CallOptions).AnalyzeEntitySentiment)], opts...)
@@ -742,7 +757,7 @@ func (c *restClient) AnalyzeEntitySentiment(ctx context.Context, req *languagepb
 }
 
 // AnalyzeSyntax analyzes the syntax of the text and provides sentence boundaries and
-// tokenization along with part-of-speech tags, dependency trees, and other
+// tokenization along with part of speech tags, dependency trees, and other
 // properties.
 func (c *restClient) AnalyzeSyntax(ctx context.Context, req *languagepb.AnalyzeSyntaxRequest, opts ...gax.CallOption) (*languagepb.AnalyzeSyntaxResponse, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
@@ -756,6 +771,11 @@ func (c *restClient) AnalyzeSyntax(ctx context.Context, req *languagepb.AnalyzeS
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta2/documents:analyzeSyntax")
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
@@ -814,6 +834,11 @@ func (c *restClient) ClassifyText(ctx context.Context, req *languagepb.ClassifyT
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta2/documents:classifyText")
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
 	opts = append((*c.CallOptions).ClassifyText[0:len((*c.CallOptions).ClassifyText):len((*c.CallOptions).ClassifyText)], opts...)
@@ -871,6 +896,11 @@ func (c *restClient) AnnotateText(ctx context.Context, req *languagepb.AnnotateT
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta2/documents:annotateText")
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))

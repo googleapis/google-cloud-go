@@ -20,9 +20,9 @@ import (
 	"context"
 
 	admin "cloud.google.com/go/iam/admin/apiv1"
+	"cloud.google.com/go/iam/admin/apiv1/adminpb"
+	"cloud.google.com/go/iam/apiv1/iampb"
 	"google.golang.org/api/iterator"
-	adminpb "google.golang.org/genproto/googleapis/iam/admin/v1"
-	iampb "google.golang.org/genproto/googleapis/iam/v1"
 )
 
 func ExampleNewIamClient() {

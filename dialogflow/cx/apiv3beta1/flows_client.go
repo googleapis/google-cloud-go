@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -26,9 +26,10 @@ import (
 	"net/url"
 	"time"
 
+	cxpb "cloud.google.com/go/dialogflow/cx/apiv3beta1/cxpb"
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
-	structpb "github.com/golang/protobuf/ptypes/struct"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
@@ -36,14 +37,13 @@ import (
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
-	cxpb "google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
+	structpb "google.golang.org/protobuf/types/known/structpb"
 )
 
 var newFlowsClientHook clientHook
@@ -455,7 +455,8 @@ func (c *FlowsClient) GetFlowValidationResult(ctx context.Context, req *cxpb.Get
 //	metadata: An empty Struct
 //	message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
 //
-//	response: ImportFlowResponse
+//	response:
+//	ImportFlowResponse
 //
 // Note: You should always train a flow prior to sending it queries. See the
 // training
@@ -479,7 +480,8 @@ func (c *FlowsClient) ImportFlowOperation(name string) *ImportFlowOperation {
 //	metadata: An empty Struct
 //	message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
 //
-//	response: ExportFlowResponse
+//	response:
+//	ExportFlowResponse
 //
 // Note that resources (e.g. intents, entities, webhooks) that the flow
 // references will also be exported.
@@ -1106,6 +1108,7 @@ func (c *flowsRESTClient) CreateFlow(ctx context.Context, req *cxpb.CreateFlowRe
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v/flows", req.GetParent())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetLanguageCode() != "" {
 		params.Add("languageCode", fmt.Sprintf("%v", req.GetLanguageCode()))
 	}
@@ -1166,6 +1169,7 @@ func (c *flowsRESTClient) DeleteFlow(ctx context.Context, req *cxpb.DeleteFlowRe
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v", req.GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetForce() {
 		params.Add("force", fmt.Sprintf("%v", req.GetForce()))
 	}
@@ -1221,6 +1225,7 @@ func (c *flowsRESTClient) ListFlows(ctx context.Context, req *cxpb.ListFlowsRequ
 		baseUrl.Path += fmt.Sprintf("/v3beta1/%v/flows", req.GetParent())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetLanguageCode() != "" {
 			params.Add("languageCode", fmt.Sprintf("%v", req.GetLanguageCode()))
 		}
@@ -1298,6 +1303,7 @@ func (c *flowsRESTClient) GetFlow(ctx context.Context, req *cxpb.GetFlowRequest,
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v", req.GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetLanguageCode() != "" {
 		params.Add("languageCode", fmt.Sprintf("%v", req.GetLanguageCode()))
 	}
@@ -1369,6 +1375,7 @@ func (c *flowsRESTClient) UpdateFlow(ctx context.Context, req *cxpb.UpdateFlowRe
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v", req.GetFlow().GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetLanguageCode() != "" {
 		params.Add("languageCode", fmt.Sprintf("%v", req.GetLanguageCode()))
 	}
@@ -1456,6 +1463,11 @@ func (c *flowsRESTClient) TrainFlow(ctx context.Context, req *cxpb.TrainFlowRequ
 	}
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v:train", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
@@ -1521,6 +1533,11 @@ func (c *flowsRESTClient) ValidateFlow(ctx context.Context, req *cxpb.ValidateFl
 	}
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v:validate", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
@@ -1576,6 +1593,7 @@ func (c *flowsRESTClient) GetFlowValidationResult(ctx context.Context, req *cxpb
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v", req.GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetLanguageCode() != "" {
 		params.Add("languageCode", fmt.Sprintf("%v", req.GetLanguageCode()))
 	}
@@ -1636,7 +1654,8 @@ func (c *flowsRESTClient) GetFlowValidationResult(ctx context.Context, req *cxpb
 //	metadata: An empty Struct
 //	message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
 //
-//	response: ImportFlowResponse
+//	response:
+//	ImportFlowResponse
 //
 // Note: You should always train a flow prior to sending it queries. See the
 // training
@@ -1653,6 +1672,11 @@ func (c *flowsRESTClient) ImportFlow(ctx context.Context, req *cxpb.ImportFlowRe
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v/flows:import", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
@@ -1712,7 +1736,8 @@ func (c *flowsRESTClient) ImportFlow(ctx context.Context, req *cxpb.ImportFlowRe
 //	metadata: An empty Struct
 //	message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
 //
-//	response: ExportFlowResponse
+//	response:
+//	ExportFlowResponse
 //
 // Note that resources (e.g. intents, entities, webhooks) that the flow
 // references will also be exported.
@@ -1728,6 +1753,11 @@ func (c *flowsRESTClient) ExportFlow(ctx context.Context, req *cxpb.ExportFlowRe
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v:export", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
@@ -1785,6 +1815,11 @@ func (c *flowsRESTClient) GetLocation(ctx context.Context, req *locationpb.GetLo
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
@@ -1853,6 +1888,7 @@ func (c *flowsRESTClient) ListLocations(ctx context.Context, req *locationpb.Lis
 		baseUrl.Path += fmt.Sprintf("/v3beta1/%v/locations", req.GetName())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -1929,6 +1965,11 @@ func (c *flowsRESTClient) CancelOperation(ctx context.Context, req *longrunningp
 	}
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v:cancel", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
@@ -1963,6 +2004,11 @@ func (c *flowsRESTClient) GetOperation(ctx context.Context, req *longrunningpb.G
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
@@ -2031,6 +2077,7 @@ func (c *flowsRESTClient) ListOperations(ctx context.Context, req *longrunningpb
 		baseUrl.Path += fmt.Sprintf("/v3beta1/%v/operations", req.GetName())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}

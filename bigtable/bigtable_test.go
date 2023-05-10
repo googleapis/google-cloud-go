@@ -249,6 +249,87 @@ func TestReadRowsInvalidRowSet(t *testing.T) {
 	}
 }
 
+func TestReadRowsRequestStats(t *testing.T) {
+	testEnv, err := NewEmulatedEnv(IntegrationTestConfig{})
+	if err != nil {
+		t.Fatalf("NewEmulatedEnv failed: %v", err)
+	}
+	conn, err := grpc.Dial(testEnv.server.Addr, grpc.WithInsecure(), grpc.WithBlock(),
+		grpc.WithDefaultCallOptions(grpc.MaxCallSendMsgSize(100<<20), grpc.MaxCallRecvMsgSize(100<<20)),
+	)
+	if err != nil {
+		t.Fatalf("grpc.Dial failed: %v", err)
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
+	defer cancel()
+	adminClient, err := NewAdminClient(ctx, testEnv.config.Project, testEnv.config.Instance, option.WithGRPCConn(conn))
+	if err != nil {
+		t.Fatalf("NewClient failed: %v", err)
+	}
+	defer adminClient.Close()
+	tableConf := &TableConf{
+		TableID: testEnv.config.Table,
+		Families: map[string]GCPolicy{
+			"f": NoGcPolicy(),
+		},
+	}
+	if err := adminClient.CreateTableFromConf(ctx, tableConf); err != nil {
+		t.Fatalf("CreateTable(%v) failed: %v", testEnv.config.Table, err)
+	}
+
+	client, err := NewClient(ctx, testEnv.config.Project, testEnv.config.Instance, option.WithGRPCConn(conn))
+	if err != nil {
+		t.Fatalf("NewClient failed: %v", err)
+	}
+	defer client.Close()
+	table := client.Open(testEnv.config.Table)
+
+	m := NewMutation()
+	m.Set("f", "q", ServerTime, []byte("value"))
+
+	if err = table.Apply(ctx, "row1", m); err != nil {
+		t.Fatalf("Apply failed: %v", err)
+	}
+
+	m = NewMutation()
+	m.Set("f", "q", ServerTime, []byte("value"))
+	m.Set("f", "q2", ServerTime, []byte("value2"))
+	if err = table.Apply(ctx, "row2", m); err != nil {
+		t.Fatalf("Apply failed: %v", err)
+	}
+
+	m = NewMutation()
+	m.Set("f", "excluded", ServerTime, []byte("value"))
+	if err = table.Apply(ctx, "row3", m); err != nil {
+		t.Fatalf("Apply failed: %v", err)
+	}
+
+	statsChannel := make(chan FullReadStats, 1)
+
+	readStart := time.Now()
+	if err := table.ReadRows(ctx, RowRange{}, func(r Row) bool { return true }, WithFullReadStats(func(s *FullReadStats) { statsChannel <- *s }), RowFilter(ColumnFilter("q.*"))); err != nil {
+		t.Fatalf("NewClient failed: %v", err)
+	}
+	readElapsed := time.Since(readStart)
+
+	got := <-statsChannel
+
+	wantIter := ReadIterationStats{
+		RowsSeenCount:      3,
+		RowsReturnedCount:  2,
+		CellsSeenCount:     4,
+		CellsReturnedCount: 3,
+	}
+
+	if diff := cmp.Diff(wantIter, got.ReadIterationStats); diff != "" {
+		t.Errorf("ReadRows RequestStats are incorrect (-want +got):\n%s", diff)
+	}
+
+	if got.RequestLatencyStats.FrontendServerLatency > readElapsed || got.RequestLatencyStats.FrontendServerLatency <= 0 {
+		t.Fatalf("ReadRows FrontendServerLatency should be in range 0, %v", readElapsed)
+	}
+}
+
 // TestHeaderPopulatedWithAppProfile verifies that request params header is populated with table name and app profile
 func TestHeaderPopulatedWithAppProfile(t *testing.T) {
 	testEnv, err := NewEmulatedEnv(IntegrationTestConfig{})

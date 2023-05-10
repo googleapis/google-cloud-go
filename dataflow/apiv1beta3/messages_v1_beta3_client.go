@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ import (
 	"net/http"
 	"net/url"
 
+	dataflowpb "cloud.google.com/go/dataflow/apiv1beta3/dataflowpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
@@ -31,7 +32,6 @@ import (
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
-	dataflowpb "google.golang.org/genproto/googleapis/dataflow/v1beta3"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/encoding/protojson"
@@ -348,6 +348,7 @@ func (c *messagesV1Beta3RESTClient) ListJobMessages(ctx context.Context, req *da
 		baseUrl.Path += fmt.Sprintf("/v1b3/projects/%v/locations/%v/jobs/%v/messages", req.GetProjectId(), req.GetLocation(), req.GetJobId())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetEndTime() != nil {
 			endTime, err := protojson.Marshal(req.GetEndTime())
 			if err != nil {

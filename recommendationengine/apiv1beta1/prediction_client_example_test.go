@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,8 +20,8 @@ import (
 	"context"
 
 	recommendationengine "cloud.google.com/go/recommendationengine/apiv1beta1"
+	recommendationenginepb "cloud.google.com/go/recommendationengine/apiv1beta1/recommendationenginepb"
 	"google.golang.org/api/iterator"
-	recommendationenginepb "google.golang.org/genproto/googleapis/cloud/recommendationengine/v1beta1"
 )
 
 func ExampleNewPredictionClient() {
@@ -73,7 +73,7 @@ func ExamplePredictionClient_Predict() {
 
 	req := &recommendationenginepb.PredictRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/recommendationengine/v1beta1#PredictRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/recommendationengine/apiv1beta1/recommendationenginepb#PredictRequest.
 	}
 	it := c.Predict(ctx, req)
 	for {

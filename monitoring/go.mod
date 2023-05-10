@@ -1,26 +1,30 @@
 module cloud.google.com/go/monitoring
 
-go 1.17
+go 1.19
 
 require (
-	cloud.google.com/go v0.102.1
-	github.com/golang/protobuf v1.5.2
-	github.com/googleapis/gax-go/v2 v2.4.0
-	google.golang.org/api v0.95.0
-	google.golang.org/genproto v0.0.0-20220815135757-37a418bb8959
-	google.golang.org/grpc v1.48.0
-	google.golang.org/protobuf v1.28.1
+	cloud.google.com/go v0.110.0
+	cloud.google.com/go/longrunning v0.4.1
+	github.com/golang/protobuf v1.5.3
+	github.com/googleapis/gax-go/v2 v2.8.0
+	google.golang.org/api v0.118.0
+	google.golang.org/genproto v0.0.0-20230410155749-daa745c078e1
+	google.golang.org/grpc v1.55.0
+	google.golang.org/protobuf v1.30.0
 )
 
 require (
-	cloud.google.com/go/compute v1.7.0 // indirect
-	github.com/golang/groupcache v0.0.0-20200121045136-8c9f03a8e57e // indirect
-	github.com/google/go-cmp v0.5.8 // indirect
-	github.com/googleapis/enterprise-certificate-proxy v0.1.0 // indirect
-	go.opencensus.io v0.23.0 // indirect
-	golang.org/x/net v0.0.0-20220624214902-1bab6f366d9e // indirect
-	golang.org/x/oauth2 v0.0.0-20220909003341-f21342109be1 // indirect
-	golang.org/x/sys v0.0.0-20220624220833-87e55d714810 // indirect
-	golang.org/x/text v0.3.7 // indirect
+	cloud.google.com/go/compute v1.19.0 // indirect
+	cloud.google.com/go/compute/metadata v0.2.3 // indirect
+	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
+	github.com/google/go-cmp v0.5.9 // indirect
+	github.com/google/s2a-go v0.1.0 // indirect
+	github.com/googleapis/enterprise-certificate-proxy v0.2.3 // indirect
+	go.opencensus.io v0.24.0 // indirect
+	golang.org/x/crypto v0.7.0 // indirect
+	golang.org/x/net v0.9.0 // indirect
+	golang.org/x/oauth2 v0.7.0 // indirect
+	golang.org/x/sys v0.7.0 // indirect
+	golang.org/x/text v0.9.0 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
 )

@@ -9,8 +9,14 @@
         "accesscontextmanager": {
             "component": "accesscontextmanager"
         },
+        "advisorynotifications": {
+            "component": "advisorynotifications"
+        },
         "aiplatform": {
             "component": "aiplatform"
+        },
+        "alloydb": {
+            "component": "alloydb"
         },
         "analytics": {
             "component": "analytics"
@@ -78,6 +84,12 @@
         "compute": {
             "component": "compute"
         },
+        "compute/metadata": {
+            "component": "compute/metadata"
+        },
+        "confidentialcomputing": {
+            "component": "confidentialcomputing"
+        },
         "contactcenterinsights": {
             "component": "contactcenterinsights"
         },
@@ -120,6 +132,9 @@
         "dialogflow": {
             "component": "dialogflow"
         },
+        "discoveryengine": {
+            "component": "discoveryengine"
+        },
         "dlp": {
             "component": "dlp"
         },
@@ -128,6 +143,9 @@
         },
         "domains": {
             "component": "domains"
+        },
+        "edgecontainer": {
+            "component": "edgecontainer"
         },
         "essentialcontacts": {
             "component": "essentialcontacts"
@@ -183,8 +201,14 @@
         "lifesciences": {
             "component": "lifesciences"
         },
+        "longrunning": {
+            "component": "longrunning"
+        },
         "managedidentities": {
             "component": "managedidentities"
+        },
+        "maps": {
+            "component": "maps"
         },
         "mediatranslation": {
             "component": "mediatranslation"
@@ -288,11 +312,17 @@
         "speech": {
             "component": "speech"
         },
+        "storageinsights": {
+            "component": "storageinsights"
+        },
         "storagetransfer": {
             "component": "storagetransfer"
         },
         "talent": {
             "component": "talent"
+        },
+        "support": {
+            "component": "support"
         },
         "texttospeech": {
             "component": "texttospeech"
@@ -318,6 +348,9 @@
         "vmmigration": {
             "component": "vmmigration"
         },
+        "vmwareengine": {
+            "component": "vmwareengine"
+        },
         "vpcaccess": {
             "component": "vpcaccess"
         },
@@ -329,6 +362,9 @@
         },
         "workflows": {
             "component": "workflows"
+        },
+        "workstations": {
+            "component": "workstations"
         }
     },
     "plugins": ["sentence-case"]

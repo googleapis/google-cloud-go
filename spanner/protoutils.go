@@ -23,8 +23,8 @@ import (
 	"time"
 
 	"cloud.google.com/go/civil"
+	sppb "cloud.google.com/go/spanner/apiv1/spannerpb"
 	proto3 "github.com/golang/protobuf/ptypes/struct"
-	sppb "google.golang.org/genproto/googleapis/spanner/v1"
 )
 
 // Helpers to generate protobuf values and Cloud Spanner types.
@@ -79,6 +79,10 @@ func pgNumericType() *sppb.Type {
 
 func jsonType() *sppb.Type {
 	return &sppb.Type{Code: sppb.TypeCode_JSON}
+}
+
+func pgJsonbType() *sppb.Type {
+	return &sppb.Type{Code: sppb.TypeCode_JSON, TypeAnnotation: sppb.TypeAnnotationCode_PG_JSONB}
 }
 
 func bytesProto(b []byte) *proto3.Value {
