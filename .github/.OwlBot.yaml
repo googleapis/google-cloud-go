@@ -236,7 +236,6 @@ deep-remove-regex:
   - /internal/generated/snippets/managedidentities/apiv1/
   - /internal/generated/snippets/maps/addressvalidation/apiv1/
   - /internal/generated/snippets/maps/mapsplatformdatasets/apiv1alpha/
-  - /internal/generated/snippets/maps/places/apiv1/
   - /internal/generated/snippets/maps/routing/apiv2/
   - /internal/generated/snippets/mediatranslation/apiv1beta1/
   - /internal/generated/snippets/memcache/apiv1/
@@ -346,7 +345,6 @@ deep-remove-regex:
   - /managedidentities/apiv1/
   - /maps/addressvalidation/apiv1/
   - /maps/mapsplatformdatasets/apiv1alpha/
-  - /maps/places/apiv1/
   - /maps/routing/apiv2/
   - /mediatranslation/apiv1beta1/
   - /memcache/apiv1/
@@ -732,8 +730,6 @@ deep-copy-regex:
   - source: /google/maps/addressvalidation/v1/cloud.google.com/go
     dest: /
   - source: /google/maps/mapsplatformdatasets/v1alpha/cloud.google.com/go
-    dest: /
-  - source: /google/maps/places/v1/cloud.google.com/go
     dest: /
   - source: /google/maps/routing/v2/cloud.google.com/go
     dest: /
