@@ -18,9 +18,9 @@ import (
 	"context"
 	"errors"
 
+	pb "cloud.google.com/go/firestore/apiv1/firestorepb"
 	"cloud.google.com/go/internal/trace"
 	gax "github.com/googleapis/gax-go/v2"
-	pb "google.golang.org/genproto/googleapis/firestore/v1"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -34,6 +34,7 @@ type Transaction struct {
 	maxAttempts    int
 	readOnly       bool
 	readAfterWrite bool
+	readSettings   *readSettings
 }
 
 // A TransactionOption is an option passed to Client.Transaction.
@@ -98,9 +99,10 @@ func (c *Client) RunTransaction(ctx context.Context, f func(context.Context, *Tr
 	}
 	db := c.path()
 	t := &Transaction{
-		c:           c,
-		ctx:         withResourceHeader(ctx, db),
-		maxAttempts: DefaultTransactionMaxAttempts,
+		c:            c,
+		ctx:          withResourceHeader(ctx, db),
+		maxAttempts:  DefaultTransactionMaxAttempts,
+		readSettings: &readSettings{},
 	}
 	for _, opt := range opts {
 		opt.config(t)
@@ -220,7 +222,7 @@ func (t *Transaction) GetAll(drs []*DocumentRef) ([]*DocumentSnapshot, error) {
 		t.readAfterWrite = true
 		return nil, errReadAfterWrite
 	}
-	return t.c.getAll(t.ctx, drs, t.id)
+	return t.c.getAll(t.ctx, drs, t.id, t.readSettings)
 }
 
 // A Queryer is a Query or a CollectionRef. CollectionRefs act as queries whose
@@ -238,7 +240,7 @@ func (t *Transaction) Documents(q Queryer) *DocumentIterator {
 	}
 	query := q.query()
 	return &DocumentIterator{
-		iter: newQueryDocumentIterator(t.ctx, query, t.id), q: query,
+		iter: newQueryDocumentIterator(t.ctx, query, t.id, t.readSettings), q: query,
 	}
 }
 
@@ -250,7 +252,7 @@ func (t *Transaction) DocumentRefs(cr *CollectionRef) *DocumentRefIterator {
 		t.readAfterWrite = true
 		return &DocumentRefIterator{err: errReadAfterWrite}
 	}
-	return newDocumentRefIterator(t.ctx, cr, t.id)
+	return newDocumentRefIterator(t.ctx, cr, t.id, t.readSettings)
 }
 
 // Create adds a Create operation to the Transaction.
@@ -286,4 +288,13 @@ func (t *Transaction) addWrites(ws []*pb.Write, err error) error {
 	}
 	t.writes = append(t.writes, ws...)
 	return nil
+}
+
+// WithReadOptions specifies constraints for accessing documents from the database,
+// e.g. at what time snapshot to read the documents.
+func (t *Transaction) WithReadOptions(opts ...ReadOption) *Transaction {
+	for _, ro := range opts {
+		ro.apply(t.readSettings)
+	}
+	return t
 }

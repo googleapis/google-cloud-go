@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -26,8 +26,11 @@ import (
 	"net/url"
 	"time"
 
+	aiplatformpb "cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb"
+	iampb "cloud.google.com/go/iam/apiv1/iampb"
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
@@ -35,10 +38,7 @@ import (
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
-	aiplatformpb "google.golang.org/genproto/googleapis/cloud/aiplatform/v1beta1"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
-	iampb "google.golang.org/genproto/googleapis/iam/v1"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/encoding/protojson"
@@ -64,6 +64,13 @@ type JobCallOptions struct {
 	ListHyperparameterTuningJobs                  []gax.CallOption
 	DeleteHyperparameterTuningJob                 []gax.CallOption
 	CancelHyperparameterTuningJob                 []gax.CallOption
+	CreateNasJob                                  []gax.CallOption
+	GetNasJob                                     []gax.CallOption
+	ListNasJobs                                   []gax.CallOption
+	DeleteNasJob                                  []gax.CallOption
+	CancelNasJob                                  []gax.CallOption
+	GetNasTrialDetail                             []gax.CallOption
+	ListNasTrialDetails                           []gax.CallOption
 	CreateBatchPredictionJob                      []gax.CallOption
 	GetBatchPredictionJob                         []gax.CallOption
 	ListBatchPredictionJobs                       []gax.CallOption
@@ -118,6 +125,13 @@ func defaultJobCallOptions() *JobCallOptions {
 		ListHyperparameterTuningJobs:                  []gax.CallOption{},
 		DeleteHyperparameterTuningJob:                 []gax.CallOption{},
 		CancelHyperparameterTuningJob:                 []gax.CallOption{},
+		CreateNasJob:                                  []gax.CallOption{},
+		GetNasJob:                                     []gax.CallOption{},
+		ListNasJobs:                                   []gax.CallOption{},
+		DeleteNasJob:                                  []gax.CallOption{},
+		CancelNasJob:                                  []gax.CallOption{},
+		GetNasTrialDetail:                             []gax.CallOption{},
+		ListNasTrialDetails:                           []gax.CallOption{},
 		CreateBatchPredictionJob:                      []gax.CallOption{},
 		GetBatchPredictionJob:                         []gax.CallOption{},
 		ListBatchPredictionJobs:                       []gax.CallOption{},
@@ -161,6 +175,13 @@ func defaultJobRESTCallOptions() *JobCallOptions {
 		ListHyperparameterTuningJobs:                  []gax.CallOption{},
 		DeleteHyperparameterTuningJob:                 []gax.CallOption{},
 		CancelHyperparameterTuningJob:                 []gax.CallOption{},
+		CreateNasJob:                                  []gax.CallOption{},
+		GetNasJob:                                     []gax.CallOption{},
+		ListNasJobs:                                   []gax.CallOption{},
+		DeleteNasJob:                                  []gax.CallOption{},
+		CancelNasJob:                                  []gax.CallOption{},
+		GetNasTrialDetail:                             []gax.CallOption{},
+		ListNasTrialDetails:                           []gax.CallOption{},
 		CreateBatchPredictionJob:                      []gax.CallOption{},
 		GetBatchPredictionJob:                         []gax.CallOption{},
 		ListBatchPredictionJobs:                       []gax.CallOption{},
@@ -210,6 +231,14 @@ type internalJobClient interface {
 	DeleteHyperparameterTuningJob(context.Context, *aiplatformpb.DeleteHyperparameterTuningJobRequest, ...gax.CallOption) (*DeleteHyperparameterTuningJobOperation, error)
 	DeleteHyperparameterTuningJobOperation(name string) *DeleteHyperparameterTuningJobOperation
 	CancelHyperparameterTuningJob(context.Context, *aiplatformpb.CancelHyperparameterTuningJobRequest, ...gax.CallOption) error
+	CreateNasJob(context.Context, *aiplatformpb.CreateNasJobRequest, ...gax.CallOption) (*aiplatformpb.NasJob, error)
+	GetNasJob(context.Context, *aiplatformpb.GetNasJobRequest, ...gax.CallOption) (*aiplatformpb.NasJob, error)
+	ListNasJobs(context.Context, *aiplatformpb.ListNasJobsRequest, ...gax.CallOption) *NasJobIterator
+	DeleteNasJob(context.Context, *aiplatformpb.DeleteNasJobRequest, ...gax.CallOption) (*DeleteNasJobOperation, error)
+	DeleteNasJobOperation(name string) *DeleteNasJobOperation
+	CancelNasJob(context.Context, *aiplatformpb.CancelNasJobRequest, ...gax.CallOption) error
+	GetNasTrialDetail(context.Context, *aiplatformpb.GetNasTrialDetailRequest, ...gax.CallOption) (*aiplatformpb.NasTrialDetail, error)
+	ListNasTrialDetails(context.Context, *aiplatformpb.ListNasTrialDetailsRequest, ...gax.CallOption) *NasTrialDetailIterator
 	CreateBatchPredictionJob(context.Context, *aiplatformpb.CreateBatchPredictionJobRequest, ...gax.CallOption) (*aiplatformpb.BatchPredictionJob, error)
 	GetBatchPredictionJob(context.Context, *aiplatformpb.GetBatchPredictionJobRequest, ...gax.CallOption) (*aiplatformpb.BatchPredictionJob, error)
 	ListBatchPredictionJobs(context.Context, *aiplatformpb.ListBatchPredictionJobsRequest, ...gax.CallOption) *BatchPredictionJobIterator
@@ -308,13 +337,16 @@ func (c *JobClient) DeleteCustomJobOperation(name string) *DeleteCustomJobOperat
 // CancelCustomJob cancels a CustomJob.
 // Starts asynchronous cancellation on the CustomJob. The server
 // makes a best effort to cancel the job, but success is not
-// guaranteed. Clients can use JobService.GetCustomJob or
-// other methods to check whether the cancellation succeeded or whether the
+// guaranteed. Clients can use
+// JobService.GetCustomJob
+// or other methods to check whether the cancellation succeeded or whether the
 // job completed despite cancellation. On successful cancellation,
 // the CustomJob is not deleted; instead it becomes a job with
-// a CustomJob.error value with a google.rpc.Status.code of 1,
-// corresponding to Code.CANCELLED, and CustomJob.state is set to
-// CANCELLED.
+// a CustomJob.error value
+// with a google.rpc.Status.code of 1, corresponding
+// to Code.CANCELLED, and
+// CustomJob.state is set
+// to CANCELLED.
 func (c *JobClient) CancelCustomJob(ctx context.Context, req *aiplatformpb.CancelCustomJobRequest, opts ...gax.CallOption) error {
 	return c.internalClient.CancelCustomJob(ctx, req, opts...)
 }
@@ -379,15 +411,72 @@ func (c *JobClient) DeleteHyperparameterTuningJobOperation(name string) *DeleteH
 // CancelHyperparameterTuningJob cancels a HyperparameterTuningJob.
 // Starts asynchronous cancellation on the HyperparameterTuningJob. The server
 // makes a best effort to cancel the job, but success is not
-// guaranteed. Clients can use JobService.GetHyperparameterTuningJob or
-// other methods to check whether the cancellation succeeded or whether the
+// guaranteed. Clients can use
+// JobService.GetHyperparameterTuningJob
+// or other methods to check whether the cancellation succeeded or whether the
 // job completed despite cancellation. On successful cancellation,
 // the HyperparameterTuningJob is not deleted; instead it becomes a job with
-// a HyperparameterTuningJob.error value with a google.rpc.Status.code
-// of 1, corresponding to Code.CANCELLED, and
-// HyperparameterTuningJob.state is set to CANCELLED.
+// a
+// HyperparameterTuningJob.error
+// value with a google.rpc.Status.code of 1,
+// corresponding to Code.CANCELLED, and
+// HyperparameterTuningJob.state
+// is set to CANCELLED.
 func (c *JobClient) CancelHyperparameterTuningJob(ctx context.Context, req *aiplatformpb.CancelHyperparameterTuningJobRequest, opts ...gax.CallOption) error {
 	return c.internalClient.CancelHyperparameterTuningJob(ctx, req, opts...)
+}
+
+// CreateNasJob creates a NasJob
+func (c *JobClient) CreateNasJob(ctx context.Context, req *aiplatformpb.CreateNasJobRequest, opts ...gax.CallOption) (*aiplatformpb.NasJob, error) {
+	return c.internalClient.CreateNasJob(ctx, req, opts...)
+}
+
+// GetNasJob gets a NasJob
+func (c *JobClient) GetNasJob(ctx context.Context, req *aiplatformpb.GetNasJobRequest, opts ...gax.CallOption) (*aiplatformpb.NasJob, error) {
+	return c.internalClient.GetNasJob(ctx, req, opts...)
+}
+
+// ListNasJobs lists NasJobs in a Location.
+func (c *JobClient) ListNasJobs(ctx context.Context, req *aiplatformpb.ListNasJobsRequest, opts ...gax.CallOption) *NasJobIterator {
+	return c.internalClient.ListNasJobs(ctx, req, opts...)
+}
+
+// DeleteNasJob deletes a NasJob.
+func (c *JobClient) DeleteNasJob(ctx context.Context, req *aiplatformpb.DeleteNasJobRequest, opts ...gax.CallOption) (*DeleteNasJobOperation, error) {
+	return c.internalClient.DeleteNasJob(ctx, req, opts...)
+}
+
+// DeleteNasJobOperation returns a new DeleteNasJobOperation from a given name.
+// The name must be that of a previously created DeleteNasJobOperation, possibly from a different process.
+func (c *JobClient) DeleteNasJobOperation(name string) *DeleteNasJobOperation {
+	return c.internalClient.DeleteNasJobOperation(name)
+}
+
+// CancelNasJob cancels a NasJob.
+// Starts asynchronous cancellation on the NasJob. The server
+// makes a best effort to cancel the job, but success is not
+// guaranteed. Clients can use
+// JobService.GetNasJob
+// or other methods to check whether the cancellation succeeded or whether the
+// job completed despite cancellation. On successful cancellation,
+// the NasJob is not deleted; instead it becomes a job with
+// a NasJob.error value with a
+// google.rpc.Status.code of 1, corresponding to
+// Code.CANCELLED, and
+// NasJob.state is set to
+// CANCELLED.
+func (c *JobClient) CancelNasJob(ctx context.Context, req *aiplatformpb.CancelNasJobRequest, opts ...gax.CallOption) error {
+	return c.internalClient.CancelNasJob(ctx, req, opts...)
+}
+
+// GetNasTrialDetail gets a NasTrialDetail.
+func (c *JobClient) GetNasTrialDetail(ctx context.Context, req *aiplatformpb.GetNasTrialDetailRequest, opts ...gax.CallOption) (*aiplatformpb.NasTrialDetail, error) {
+	return c.internalClient.GetNasTrialDetail(ctx, req, opts...)
+}
+
+// ListNasTrialDetails list top NasTrialDetails of a NasJob.
+func (c *JobClient) ListNasTrialDetails(ctx context.Context, req *aiplatformpb.ListNasTrialDetailsRequest, opts ...gax.CallOption) *NasTrialDetailIterator {
+	return c.internalClient.ListNasTrialDetails(ctx, req, opts...)
 }
 
 // CreateBatchPredictionJob creates a BatchPredictionJob. A BatchPredictionJob once created will
@@ -422,12 +511,14 @@ func (c *JobClient) DeleteBatchPredictionJobOperation(name string) *DeleteBatchP
 //
 // Starts asynchronous cancellation on the BatchPredictionJob. The server
 // makes the best effort to cancel the job, but success is not
-// guaranteed. Clients can use JobService.GetBatchPredictionJob or
-// other methods to check whether the cancellation succeeded or whether the
+// guaranteed. Clients can use
+// JobService.GetBatchPredictionJob
+// or other methods to check whether the cancellation succeeded or whether the
 // job completed despite cancellation. On a successful cancellation,
 // the BatchPredictionJob is not deleted;instead its
-// BatchPredictionJob.state is set to CANCELLED. Any files already
-// outputted by the job are not deleted.
+// BatchPredictionJob.state
+// is set to CANCELLED. Any files already outputted by the job are not
+// deleted.
 func (c *JobClient) CancelBatchPredictionJob(ctx context.Context, req *aiplatformpb.CancelBatchPredictionJobRequest, opts ...gax.CallOption) error {
 	return c.internalClient.CancelBatchPredictionJob(ctx, req, opts...)
 }
@@ -477,7 +568,8 @@ func (c *JobClient) DeleteModelDeploymentMonitoringJobOperation(name string) *De
 
 // PauseModelDeploymentMonitoringJob pauses a ModelDeploymentMonitoringJob. If the job is running, the server
 // makes a best effort to cancel the job. Will mark
-// ModelDeploymentMonitoringJob.state to ‘PAUSED’.
+// ModelDeploymentMonitoringJob.state
+// to ‘PAUSED’.
 func (c *JobClient) PauseModelDeploymentMonitoringJob(ctx context.Context, req *aiplatformpb.PauseModelDeploymentMonitoringJobRequest, opts ...gax.CallOption) error {
 	return c.internalClient.PauseModelDeploymentMonitoringJob(ctx, req, opts...)
 }
@@ -1130,6 +1222,179 @@ func (c *jobGRPCClient) CancelHyperparameterTuningJob(ctx context.Context, req *
 		return err
 	}, opts...)
 	return err
+}
+
+func (c *jobGRPCClient) CreateNasJob(ctx context.Context, req *aiplatformpb.CreateNasJobRequest, opts ...gax.CallOption) (*aiplatformpb.NasJob, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).CreateNasJob[0:len((*c.CallOptions).CreateNasJob):len((*c.CallOptions).CreateNasJob)], opts...)
+	var resp *aiplatformpb.NasJob
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.jobClient.CreateNasJob(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *jobGRPCClient) GetNasJob(ctx context.Context, req *aiplatformpb.GetNasJobRequest, opts ...gax.CallOption) (*aiplatformpb.NasJob, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).GetNasJob[0:len((*c.CallOptions).GetNasJob):len((*c.CallOptions).GetNasJob)], opts...)
+	var resp *aiplatformpb.NasJob
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.jobClient.GetNasJob(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *jobGRPCClient) ListNasJobs(ctx context.Context, req *aiplatformpb.ListNasJobsRequest, opts ...gax.CallOption) *NasJobIterator {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).ListNasJobs[0:len((*c.CallOptions).ListNasJobs):len((*c.CallOptions).ListNasJobs)], opts...)
+	it := &NasJobIterator{}
+	req = proto.Clone(req).(*aiplatformpb.ListNasJobsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*aiplatformpb.NasJob, string, error) {
+		resp := &aiplatformpb.ListNasJobsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.jobClient.ListNasJobs(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetNasJobs(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *jobGRPCClient) DeleteNasJob(ctx context.Context, req *aiplatformpb.DeleteNasJobRequest, opts ...gax.CallOption) (*DeleteNasJobOperation, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).DeleteNasJob[0:len((*c.CallOptions).DeleteNasJob):len((*c.CallOptions).DeleteNasJob)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.jobClient.DeleteNasJob(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &DeleteNasJobOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *jobGRPCClient) CancelNasJob(ctx context.Context, req *aiplatformpb.CancelNasJobRequest, opts ...gax.CallOption) error {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).CancelNasJob[0:len((*c.CallOptions).CancelNasJob):len((*c.CallOptions).CancelNasJob)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = c.jobClient.CancelNasJob(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	return err
+}
+
+func (c *jobGRPCClient) GetNasTrialDetail(ctx context.Context, req *aiplatformpb.GetNasTrialDetailRequest, opts ...gax.CallOption) (*aiplatformpb.NasTrialDetail, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).GetNasTrialDetail[0:len((*c.CallOptions).GetNasTrialDetail):len((*c.CallOptions).GetNasTrialDetail)], opts...)
+	var resp *aiplatformpb.NasTrialDetail
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.jobClient.GetNasTrialDetail(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *jobGRPCClient) ListNasTrialDetails(ctx context.Context, req *aiplatformpb.ListNasTrialDetailsRequest, opts ...gax.CallOption) *NasTrialDetailIterator {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).ListNasTrialDetails[0:len((*c.CallOptions).ListNasTrialDetails):len((*c.CallOptions).ListNasTrialDetails)], opts...)
+	it := &NasTrialDetailIterator{}
+	req = proto.Clone(req).(*aiplatformpb.ListNasTrialDetailsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*aiplatformpb.NasTrialDetail, string, error) {
+		resp := &aiplatformpb.ListNasTrialDetailsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.jobClient.ListNasTrialDetails(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetNasTrialDetails(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
 }
 
 func (c *jobGRPCClient) CreateBatchPredictionJob(ctx context.Context, req *aiplatformpb.CreateBatchPredictionJobRequest, opts ...gax.CallOption) (*aiplatformpb.BatchPredictionJob, error) {
@@ -1970,13 +2235,16 @@ func (c *jobRESTClient) DeleteCustomJob(ctx context.Context, req *aiplatformpb.D
 // CancelCustomJob cancels a CustomJob.
 // Starts asynchronous cancellation on the CustomJob. The server
 // makes a best effort to cancel the job, but success is not
-// guaranteed. Clients can use JobService.GetCustomJob or
-// other methods to check whether the cancellation succeeded or whether the
+// guaranteed. Clients can use
+// JobService.GetCustomJob
+// or other methods to check whether the cancellation succeeded or whether the
 // job completed despite cancellation. On successful cancellation,
 // the CustomJob is not deleted; instead it becomes a job with
-// a CustomJob.error value with a google.rpc.Status.code of 1,
-// corresponding to Code.CANCELLED, and CustomJob.state is set to
-// CANCELLED.
+// a CustomJob.error value
+// with a google.rpc.Status.code of 1, corresponding
+// to Code.CANCELLED, and
+// CustomJob.state is set
+// to CANCELLED.
 func (c *jobRESTClient) CancelCustomJob(ctx context.Context, req *aiplatformpb.CancelCustomJobRequest, opts ...gax.CallOption) error {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -2598,13 +2866,17 @@ func (c *jobRESTClient) DeleteHyperparameterTuningJob(ctx context.Context, req *
 // CancelHyperparameterTuningJob cancels a HyperparameterTuningJob.
 // Starts asynchronous cancellation on the HyperparameterTuningJob. The server
 // makes a best effort to cancel the job, but success is not
-// guaranteed. Clients can use JobService.GetHyperparameterTuningJob or
-// other methods to check whether the cancellation succeeded or whether the
+// guaranteed. Clients can use
+// JobService.GetHyperparameterTuningJob
+// or other methods to check whether the cancellation succeeded or whether the
 // job completed despite cancellation. On successful cancellation,
 // the HyperparameterTuningJob is not deleted; instead it becomes a job with
-// a HyperparameterTuningJob.error value with a google.rpc.Status.code
-// of 1, corresponding to Code.CANCELLED, and
-// HyperparameterTuningJob.state is set to CANCELLED.
+// a
+// HyperparameterTuningJob.error
+// value with a google.rpc.Status.code of 1,
+// corresponding to Code.CANCELLED, and
+// HyperparameterTuningJob.state
+// is set to CANCELLED.
 func (c *jobRESTClient) CancelHyperparameterTuningJob(ctx context.Context, req *aiplatformpb.CancelHyperparameterTuningJobRequest, opts ...gax.CallOption) error {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -2643,6 +2915,466 @@ func (c *jobRESTClient) CancelHyperparameterTuningJob(ctx context.Context, req *
 		// the response code and body into a non-nil error
 		return googleapi.CheckResponse(httpRsp)
 	}, opts...)
+}
+
+// CreateNasJob creates a NasJob
+func (c *jobRESTClient) CreateNasJob(ctx context.Context, req *aiplatformpb.CreateNasJobRequest, opts ...gax.CallOption) (*aiplatformpb.NasJob, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetNasJob()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/nasJobs", req.GetParent())
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).CreateNasJob[0:len((*c.CallOptions).CreateNasJob):len((*c.CallOptions).CreateNasJob)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &aiplatformpb.NasJob{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// GetNasJob gets a NasJob
+func (c *jobRESTClient) GetNasJob(ctx context.Context, req *aiplatformpb.GetNasJobRequest, opts ...gax.CallOption) (*aiplatformpb.NasJob, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).GetNasJob[0:len((*c.CallOptions).GetNasJob):len((*c.CallOptions).GetNasJob)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &aiplatformpb.NasJob{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// ListNasJobs lists NasJobs in a Location.
+func (c *jobRESTClient) ListNasJobs(ctx context.Context, req *aiplatformpb.ListNasJobsRequest, opts ...gax.CallOption) *NasJobIterator {
+	it := &NasJobIterator{}
+	req = proto.Clone(req).(*aiplatformpb.ListNasJobsRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*aiplatformpb.NasJob, string, error) {
+		resp := &aiplatformpb.ListNasJobsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/nasJobs", req.GetParent())
+
+		params := url.Values{}
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+		if req.GetReadMask() != nil {
+			readMask, err := protojson.Marshal(req.GetReadMask())
+			if err != nil {
+				return nil, "", err
+			}
+			params.Add("readMask", string(readMask))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			httpRsp, err := c.httpClient.Do(httpReq)
+			if err != nil {
+				return err
+			}
+			defer httpRsp.Body.Close()
+
+			if err = googleapi.CheckResponse(httpRsp); err != nil {
+				return err
+			}
+
+			buf, err := ioutil.ReadAll(httpRsp.Body)
+			if err != nil {
+				return err
+			}
+
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return maybeUnknownEnum(err)
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetNasJobs(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// DeleteNasJob deletes a NasJob.
+func (c *jobRESTClient) DeleteNasJob(ctx context.Context, req *aiplatformpb.DeleteNasJobRequest, opts ...gax.CallOption) (*DeleteNasJobOperation, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/ui/%s", resp.GetName())
+	return &DeleteNasJobOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// CancelNasJob cancels a NasJob.
+// Starts asynchronous cancellation on the NasJob. The server
+// makes a best effort to cancel the job, but success is not
+// guaranteed. Clients can use
+// JobService.GetNasJob
+// or other methods to check whether the cancellation succeeded or whether the
+// job completed despite cancellation. On successful cancellation,
+// the NasJob is not deleted; instead it becomes a job with
+// a NasJob.error value with a
+// google.rpc.Status.code of 1, corresponding to
+// Code.CANCELLED, and
+// NasJob.state is set to
+// CANCELLED.
+func (c *jobRESTClient) CancelNasJob(ctx context.Context, req *aiplatformpb.CancelNasJobRequest, opts ...gax.CallOption) error {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:cancel", req.GetName())
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		// Returns nil if there is no error, otherwise wraps
+		// the response code and body into a non-nil error
+		return googleapi.CheckResponse(httpRsp)
+	}, opts...)
+}
+
+// GetNasTrialDetail gets a NasTrialDetail.
+func (c *jobRESTClient) GetNasTrialDetail(ctx context.Context, req *aiplatformpb.GetNasTrialDetailRequest, opts ...gax.CallOption) (*aiplatformpb.NasTrialDetail, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).GetNasTrialDetail[0:len((*c.CallOptions).GetNasTrialDetail):len((*c.CallOptions).GetNasTrialDetail)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &aiplatformpb.NasTrialDetail{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// ListNasTrialDetails list top NasTrialDetails of a NasJob.
+func (c *jobRESTClient) ListNasTrialDetails(ctx context.Context, req *aiplatformpb.ListNasTrialDetailsRequest, opts ...gax.CallOption) *NasTrialDetailIterator {
+	it := &NasTrialDetailIterator{}
+	req = proto.Clone(req).(*aiplatformpb.ListNasTrialDetailsRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*aiplatformpb.NasTrialDetail, string, error) {
+		resp := &aiplatformpb.ListNasTrialDetailsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/nasTrialDetails", req.GetParent())
+
+		params := url.Values{}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			httpRsp, err := c.httpClient.Do(httpReq)
+			if err != nil {
+				return err
+			}
+			defer httpRsp.Body.Close()
+
+			if err = googleapi.CheckResponse(httpRsp); err != nil {
+				return err
+			}
+
+			buf, err := ioutil.ReadAll(httpRsp.Body)
+			if err != nil {
+				return err
+			}
+
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return maybeUnknownEnum(err)
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetNasTrialDetails(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
 }
 
 // CreateBatchPredictionJob creates a BatchPredictionJob. A BatchPredictionJob once created will
@@ -2918,12 +3650,14 @@ func (c *jobRESTClient) DeleteBatchPredictionJob(ctx context.Context, req *aipla
 //
 // Starts asynchronous cancellation on the BatchPredictionJob. The server
 // makes the best effort to cancel the job, but success is not
-// guaranteed. Clients can use JobService.GetBatchPredictionJob or
-// other methods to check whether the cancellation succeeded or whether the
+// guaranteed. Clients can use
+// JobService.GetBatchPredictionJob
+// or other methods to check whether the cancellation succeeded or whether the
 // job completed despite cancellation. On a successful cancellation,
 // the BatchPredictionJob is not deleted;instead its
-// BatchPredictionJob.state is set to CANCELLED. Any files already
-// outputted by the job are not deleted.
+// BatchPredictionJob.state
+// is set to CANCELLED. Any files already outputted by the job are not
+// deleted.
 func (c *jobRESTClient) CancelBatchPredictionJob(ctx context.Context, req *aiplatformpb.CancelBatchPredictionJobRequest, opts ...gax.CallOption) error {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -3392,7 +4126,8 @@ func (c *jobRESTClient) DeleteModelDeploymentMonitoringJob(ctx context.Context, 
 
 // PauseModelDeploymentMonitoringJob pauses a ModelDeploymentMonitoringJob. If the job is running, the server
 // makes a best effort to cancel the job. Will mark
-// ModelDeploymentMonitoringJob.state to ‘PAUSED’.
+// ModelDeploymentMonitoringJob.state
+// to ‘PAUSED’.
 func (c *jobRESTClient) PauseModelDeploymentMonitoringJob(ctx context.Context, req *aiplatformpb.PauseModelDeploymentMonitoringJobRequest, opts ...gax.CallOption) error {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -4439,6 +5174,77 @@ func (op *DeleteModelDeploymentMonitoringJobOperation) Name() string {
 	return op.lro.Name()
 }
 
+// DeleteNasJobOperation manages a long-running operation from DeleteNasJob.
+type DeleteNasJobOperation struct {
+	lro      *longrunning.Operation
+	pollPath string
+}
+
+// DeleteNasJobOperation returns a new DeleteNasJobOperation from a given name.
+// The name must be that of a previously created DeleteNasJobOperation, possibly from a different process.
+func (c *jobGRPCClient) DeleteNasJobOperation(name string) *DeleteNasJobOperation {
+	return &DeleteNasJobOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// DeleteNasJobOperation returns a new DeleteNasJobOperation from a given name.
+// The name must be that of a previously created DeleteNasJobOperation, possibly from a different process.
+func (c *jobRESTClient) DeleteNasJobOperation(name string) *DeleteNasJobOperation {
+	override := fmt.Sprintf("/ui/%s", name)
+	return &DeleteNasJobOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *DeleteNasJobOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *DeleteNasJobOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	return op.lro.Poll(ctx, nil, opts...)
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *DeleteNasJobOperation) Metadata() (*aiplatformpb.DeleteOperationMetadata, error) {
+	var meta aiplatformpb.DeleteOperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *DeleteNasJobOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *DeleteNasJobOperation) Name() string {
+	return op.lro.Name()
+}
+
 // UpdateModelDeploymentMonitoringJobOperation manages a long-running operation from UpdateModelDeploymentMonitoringJob.
 type UpdateModelDeploymentMonitoringJobOperation struct {
 	lro      *longrunning.Operation
@@ -4798,6 +5604,100 @@ func (it *ModelMonitoringStatsAnomaliesIterator) bufLen() int {
 }
 
 func (it *ModelMonitoringStatsAnomaliesIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// NasJobIterator manages a stream of *aiplatformpb.NasJob.
+type NasJobIterator struct {
+	items    []*aiplatformpb.NasJob
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*aiplatformpb.NasJob, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *NasJobIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *NasJobIterator) Next() (*aiplatformpb.NasJob, error) {
+	var item *aiplatformpb.NasJob
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *NasJobIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *NasJobIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// NasTrialDetailIterator manages a stream of *aiplatformpb.NasTrialDetail.
+type NasTrialDetailIterator struct {
+	items    []*aiplatformpb.NasTrialDetail
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*aiplatformpb.NasTrialDetail, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *NasTrialDetailIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *NasTrialDetailIterator) Next() (*aiplatformpb.NasTrialDetail, error) {
+	var item *aiplatformpb.NasTrialDetail
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *NasTrialDetailIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *NasTrialDetailIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b

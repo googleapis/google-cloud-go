@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,10 @@
 // Accesses the schemaless NoSQL database to provide fully managed, robust,
 // scalable storage for your application.
 //
-//	NOTE: This package is in alpha. It is not stable, and is likely to change.
+// # General documentation
+//
+// For information about setting deadlines, reusing contexts, and more
+// please visit https://pkg.go.dev/cloud.google.com/go.
 //
 // # Example usage
 //
@@ -60,7 +63,7 @@
 //
 //	req := &adminpb.ExportEntitiesRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/datastore/admin/v1#ExportEntitiesRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/datastore/admin/apiv1/adminpb#ExportEntitiesRequest.
 //	}
 //	op, err := c.ExportEntities(ctx, req)
 //	if err != nil {
@@ -81,13 +84,12 @@
 // Individual methods on the client use the ctx given to them.
 //
 // To close the open connection, use the Close() method.
-//
-// For information about setting deadlines, reusing contexts, and more
-// please visit https://pkg.go.dev/cloud.google.com/go.
 package admin // import "cloud.google.com/go/datastore/admin/apiv1"
 
 import (
 	"context"
+	"fmt"
+	"net/http"
 	"os"
 	"runtime"
 	"strconv"
@@ -176,4 +178,23 @@ func versionGo() string {
 		return s
 	}
 	return "UNKNOWN"
+}
+
+// maybeUnknownEnum wraps the given proto-JSON parsing error if it is the result
+// of receiving an unknown enum value.
+func maybeUnknownEnum(err error) error {
+	if strings.Contains(err.Error(), "invalid value for enum type") {
+		err = fmt.Errorf("received an unknown enum value; a later version of the library may support it: %w", err)
+	}
+	return err
+}
+
+// buildHeaders extracts metadata from the outgoing context, joins it with any other
+// given metadata, and converts them into a http.Header.
+func buildHeaders(ctx context.Context, mds ...metadata.MD) http.Header {
+	if cmd, ok := metadata.FromOutgoingContext(ctx); ok {
+		mds = append(mds, cmd)
+	}
+	md := metadata.Join(mds...)
+	return http.Header(md)
 }

@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -1027,6 +1027,11 @@ func (c *grafeasV1Beta1RESTClient) GetOccurrence(ctx context.Context, req *grafe
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
@@ -1094,6 +1099,7 @@ func (c *grafeasV1Beta1RESTClient) ListOccurrences(ctx context.Context, req *gra
 		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/occurrences", req.GetParent())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -1172,6 +1178,11 @@ func (c *grafeasV1Beta1RESTClient) DeleteOccurrence(ctx context.Context, req *gr
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
@@ -1213,6 +1224,11 @@ func (c *grafeasV1Beta1RESTClient) CreateOccurrence(ctx context.Context, req *gr
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/occurrences", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
@@ -1272,6 +1288,11 @@ func (c *grafeasV1Beta1RESTClient) BatchCreateOccurrences(ctx context.Context, r
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/occurrences:batchCreate", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
@@ -1334,6 +1355,7 @@ func (c *grafeasV1Beta1RESTClient) UpdateOccurrence(ctx context.Context, req *gr
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
 		updateMask, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
@@ -1398,6 +1420,11 @@ func (c *grafeasV1Beta1RESTClient) GetOccurrenceNote(ctx context.Context, req *g
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/notes", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
@@ -1450,6 +1477,11 @@ func (c *grafeasV1Beta1RESTClient) GetNote(ctx context.Context, req *grafeaspb.G
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
@@ -1518,6 +1550,7 @@ func (c *grafeasV1Beta1RESTClient) ListNotes(ctx context.Context, req *grafeaspb
 		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/notes", req.GetParent())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -1594,6 +1627,11 @@ func (c *grafeasV1Beta1RESTClient) DeleteNote(ctx context.Context, req *grafeasp
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
@@ -1637,6 +1675,7 @@ func (c *grafeasV1Beta1RESTClient) CreateNote(ctx context.Context, req *grafeasp
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/notes", req.GetParent())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetNoteId() != "" {
 		params.Add("noteId", fmt.Sprintf("%v", req.GetNoteId()))
 	}
@@ -1702,6 +1741,11 @@ func (c *grafeasV1Beta1RESTClient) BatchCreateNotes(ctx context.Context, req *gr
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/notes:batchCreate", req.GetParent())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
@@ -1763,6 +1807,7 @@ func (c *grafeasV1Beta1RESTClient) UpdateNote(ctx context.Context, req *grafeasp
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
 		updateMask, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
@@ -1842,6 +1887,7 @@ func (c *grafeasV1Beta1RESTClient) ListNoteOccurrences(ctx context.Context, req 
 		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/occurrences", req.GetName())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -1919,6 +1965,7 @@ func (c *grafeasV1Beta1RESTClient) GetVulnerabilityOccurrencesSummary(ctx contex
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/occurrences:vulnerabilitySummary", req.GetParent())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetFilter() != "" {
 		params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 	}

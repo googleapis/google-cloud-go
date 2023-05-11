@@ -1,6 +1,48 @@
 # Changes
 
 
+## [1.8.0](https://github.com/googleapis/google-cloud-go/compare/datastream/v1.7.1...datastream/v1.8.0) (2023-05-10)
+
+
+### Features
+
+* **datastream:** Max concurrent backfill tasks ([31c3766](https://github.com/googleapis/google-cloud-go/commit/31c3766c9c4cab411669c14fc1a30bd6d2e3f2dd))
+
+## [1.7.1](https://github.com/googleapis/google-cloud-go/compare/datastream/v1.7.0...datastream/v1.7.1) (2023-05-08)
+
+
+### Bug Fixes
+
+* **datastream:** Update grpc to v1.55.0 ([1147ce0](https://github.com/googleapis/google-cloud-go/commit/1147ce02a990276ca4f8ab7a1ab65c14da4450ef))
+
+## [1.7.0](https://github.com/googleapis/google-cloud-go/compare/datastream/v1.6.0...datastream/v1.7.0) (2023-03-15)
+
+
+### Features
+
+* **datastream:** Update iam and longrunning deps ([91a1f78](https://github.com/googleapis/google-cloud-go/commit/91a1f784a109da70f63b96414bba8a9b4254cddd))
+
+## [1.6.0](https://github.com/googleapis/google-cloud-go/compare/datastream/v1.5.0...datastream/v1.6.0) (2023-01-04)
+
+
+### Features
+
+* **datastream:** Add REST client ([06a54a1](https://github.com/googleapis/google-cloud-go/commit/06a54a16a5866cce966547c51e203b9e09a25bc0))
+
+## [1.5.0](https://github.com/googleapis/google-cloud-go/compare/datastream/v1.4.0...datastream/v1.5.0) (2022-11-03)
+
+
+### Features
+
+* **datastream:** rewrite signatures in terms of new location ([3c4b2b3](https://github.com/googleapis/google-cloud-go/commit/3c4b2b34565795537aac1661e6af2442437e34ad))
+
+## [1.4.0](https://github.com/googleapis/google-cloud-go/compare/datastream/v1.3.0...datastream/v1.4.0) (2022-10-25)
+
+
+### Features
+
+* **datastream:** start generating stubs dir ([de2d180](https://github.com/googleapis/google-cloud-go/commit/de2d18066dc613b72f6f8db93ca60146dabcfdcc))
+
 ## [1.3.0](https://github.com/googleapis/google-cloud-go/compare/datastream/v1.2.0...datastream/v1.3.0) (2022-09-21)
 
 

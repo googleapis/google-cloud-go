@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -26,9 +26,10 @@ import (
 	"net/url"
 	"time"
 
+	dialogflowpb "cloud.google.com/go/dialogflow/apiv2beta1/dialogflowpb"
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
-	structpb "github.com/golang/protobuf/ptypes/struct"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
@@ -36,14 +37,13 @@ import (
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
-	dialogflowpb "google.golang.org/genproto/googleapis/cloud/dialogflow/v2beta1"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
+	structpb "google.golang.org/protobuf/types/known/structpb"
 )
 
 var newIntentsClientHook clientHook
@@ -350,7 +350,8 @@ func (c *IntentsClient) DeleteIntent(ctx context.Context, req *dialogflowpb.Dele
 //	metadata: An empty Struct
 //	message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
 //
-//	response: BatchUpdateIntentsResponse
+//	response:
+//	BatchUpdateIntentsResponse
 //
 // Note: You should always train an agent prior to sending it queries. See the
 // training
@@ -937,6 +938,7 @@ func (c *intentsRESTClient) ListIntents(ctx context.Context, req *dialogflowpb.L
 		baseUrl.Path += fmt.Sprintf("/v2beta1/%v/intents", req.GetParent())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetIntentView() != 0 {
 			params.Add("intentView", fmt.Sprintf("%v", req.GetIntentView()))
 		}
@@ -1017,6 +1019,7 @@ func (c *intentsRESTClient) GetIntent(ctx context.Context, req *dialogflowpb.Get
 	baseUrl.Path += fmt.Sprintf("/v2beta1/%v", req.GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetIntentView() != 0 {
 		params.Add("intentView", fmt.Sprintf("%v", req.GetIntentView()))
 	}
@@ -1091,6 +1094,7 @@ func (c *intentsRESTClient) CreateIntent(ctx context.Context, req *dialogflowpb.
 	baseUrl.Path += fmt.Sprintf("/v2beta1/%v/intents", req.GetParent())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetIntentView() != 0 {
 		params.Add("intentView", fmt.Sprintf("%v", req.GetIntentView()))
 	}
@@ -1165,6 +1169,7 @@ func (c *intentsRESTClient) UpdateIntent(ctx context.Context, req *dialogflowpb.
 	baseUrl.Path += fmt.Sprintf("/v2beta1/%v", req.GetIntent().GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetIntentView() != 0 {
 		params.Add("intentView", fmt.Sprintf("%v", req.GetIntentView()))
 	}
@@ -1238,6 +1243,11 @@ func (c *intentsRESTClient) DeleteIntent(ctx context.Context, req *dialogflowpb.
 	}
 	baseUrl.Path += fmt.Sprintf("/v2beta1/%v", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
@@ -1274,7 +1284,8 @@ func (c *intentsRESTClient) DeleteIntent(ctx context.Context, req *dialogflowpb.
 //	metadata: An empty Struct
 //	message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
 //
-//	response: BatchUpdateIntentsResponse
+//	response:
+//	BatchUpdateIntentsResponse
 //
 // Note: You should always train an agent prior to sending it queries. See the
 // training
@@ -1291,6 +1302,11 @@ func (c *intentsRESTClient) BatchUpdateIntents(ctx context.Context, req *dialogf
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2beta1/%v/intents:batchUpdate", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
@@ -1369,6 +1385,11 @@ func (c *intentsRESTClient) BatchDeleteIntents(ctx context.Context, req *dialogf
 	}
 	baseUrl.Path += fmt.Sprintf("/v2beta1/%v/intents:batchDelete", req.GetParent())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
@@ -1425,6 +1446,11 @@ func (c *intentsRESTClient) GetLocation(ctx context.Context, req *locationpb.Get
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2beta1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
@@ -1493,6 +1519,7 @@ func (c *intentsRESTClient) ListLocations(ctx context.Context, req *locationpb.L
 		baseUrl.Path += fmt.Sprintf("/v2beta1/%v/locations", req.GetName())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -1569,6 +1596,11 @@ func (c *intentsRESTClient) CancelOperation(ctx context.Context, req *longrunnin
 	}
 	baseUrl.Path += fmt.Sprintf("/v2beta1/%v:cancel", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
@@ -1603,6 +1635,11 @@ func (c *intentsRESTClient) GetOperation(ctx context.Context, req *longrunningpb
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2beta1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
@@ -1671,6 +1708,7 @@ func (c *intentsRESTClient) ListOperations(ctx context.Context, req *longrunning
 		baseUrl.Path += fmt.Sprintf("/v2beta1/%v/operations", req.GetName())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}

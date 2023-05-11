@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -21,11 +21,11 @@ import (
 	"math"
 	"time"
 
+	agentendpointpb "cloud.google.com/go/osconfig/agentendpoint/apiv1/agentendpointpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
-	agentendpointpb "google.golang.org/genproto/googleapis/cloud/osconfig/agentendpoint/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -292,6 +292,7 @@ func (c *gRPCClient) Close() error {
 
 func (c *gRPCClient) ReceiveTaskNotification(ctx context.Context, req *agentendpointpb.ReceiveTaskNotificationRequest, opts ...gax.CallOption) (agentendpointpb.AgentEndpointService_ReceiveTaskNotificationClient, error) {
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	opts = append((*c.CallOptions).ReceiveTaskNotification[0:len((*c.CallOptions).ReceiveTaskNotification):len((*c.CallOptions).ReceiveTaskNotification)], opts...)
 	var resp agentendpointpb.AgentEndpointService_ReceiveTaskNotificationClient
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error

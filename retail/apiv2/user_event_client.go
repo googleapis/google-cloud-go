@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -25,14 +25,14 @@ import (
 
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	retailpb "cloud.google.com/go/retail/apiv2/retailpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	httpbodypb "google.golang.org/genproto/googleapis/api/httpbody"
-	retailpb "google.golang.org/genproto/googleapis/cloud/retail/v2"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -244,14 +244,14 @@ func (c *UserEventClient) ImportUserEventsOperation(name string) *ImportUserEven
 	return c.internalClient.ImportUserEventsOperation(name)
 }
 
-// RejoinUserEvents starts a user event rejoin operation with latest product catalog. Events
-// will not be annotated with detailed product information if product is
-// missing from the catalog at the time the user event is ingested, and these
-// events are stored as unjoined events with a limited usage on training and
-// serving. This method can be used to start a join operation on specified
-// events with latest version of product catalog. It can also be used to
-// correct events joined with the wrong product catalog. A rejoin operation
-// can take hours or days to complete.
+// RejoinUserEvents starts a user-event rejoin operation with latest product catalog. Events
+// are not annotated with detailed product information for products that are
+// missing from the catalog when the user event is ingested. These
+// events are stored as unjoined events with limited usage on training and
+// serving. You can use this method to start a join operation on specified
+// events with the latest version of product catalog. You can also use this
+// method to correct events joined with the wrong product catalog. A rejoin
+// operation can take hours or days to complete.
 func (c *UserEventClient) RejoinUserEvents(ctx context.Context, req *retailpb.RejoinUserEventsRequest, opts ...gax.CallOption) (*RejoinUserEventsOperation, error) {
 	return c.internalClient.RejoinUserEvents(ctx, req, opts...)
 }

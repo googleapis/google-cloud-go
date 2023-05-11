@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -23,15 +23,15 @@ import (
 	"net/url"
 	"time"
 
+	gkemulticloudpb "cloud.google.com/go/gkemulticloud/apiv1/gkemulticloudpb"
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
-	gkemulticloudpb "google.golang.org/genproto/googleapis/cloud/gkemulticloud/v1"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -58,6 +58,10 @@ type AzureClustersCallOptions struct {
 	ListAzureNodePools       []gax.CallOption
 	DeleteAzureNodePool      []gax.CallOption
 	GetAzureServerConfig     []gax.CallOption
+	CancelOperation          []gax.CallOption
+	DeleteOperation          []gax.CallOption
+	GetOperation             []gax.CallOption
+	ListOperations           []gax.CallOption
 }
 
 func defaultAzureClustersGRPCClientOptions() []option.ClientOption {
@@ -170,6 +174,10 @@ func defaultAzureClustersCallOptions() *AzureClustersCallOptions {
 				})
 			}),
 		},
+		CancelOperation: []gax.CallOption{},
+		DeleteOperation: []gax.CallOption{},
+		GetOperation:    []gax.CallOption{},
+		ListOperations:  []gax.CallOption{},
 	}
 }
 
@@ -202,6 +210,10 @@ type internalAzureClustersClient interface {
 	DeleteAzureNodePool(context.Context, *gkemulticloudpb.DeleteAzureNodePoolRequest, ...gax.CallOption) (*DeleteAzureNodePoolOperation, error)
 	DeleteAzureNodePoolOperation(name string) *DeleteAzureNodePoolOperation
 	GetAzureServerConfig(context.Context, *gkemulticloudpb.GetAzureServerConfigRequest, ...gax.CallOption) (*gkemulticloudpb.AzureServerConfig, error)
+	CancelOperation(context.Context, *longrunningpb.CancelOperationRequest, ...gax.CallOption) error
+	DeleteOperation(context.Context, *longrunningpb.DeleteOperationRequest, ...gax.CallOption) error
+	GetOperation(context.Context, *longrunningpb.GetOperationRequest, ...gax.CallOption) (*longrunningpb.Operation, error)
+	ListOperations(context.Context, *longrunningpb.ListOperationsRequest, ...gax.CallOption) *OperationIterator
 }
 
 // AzureClustersClient is a client for interacting with Anthos Multi-Cloud API.
@@ -245,8 +257,8 @@ func (c *AzureClustersClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// CreateAzureClient creates a new AzureClient resource on a given Google Cloud project
-// and region.
+// CreateAzureClient creates a new AzureClient
+// resource on a given Google Cloud project and region.
 //
 // AzureClient resources hold client authentication
 // information needed by the Anthos Multicloud API to manage Azure resources
@@ -265,18 +277,20 @@ func (c *AzureClustersClient) CreateAzureClientOperation(name string) *CreateAzu
 	return c.internalClient.CreateAzureClientOperation(name)
 }
 
-// GetAzureClient describes a specific AzureClient resource.
+// GetAzureClient describes a specific
+// AzureClient resource.
 func (c *AzureClustersClient) GetAzureClient(ctx context.Context, req *gkemulticloudpb.GetAzureClientRequest, opts ...gax.CallOption) (*gkemulticloudpb.AzureClient, error) {
 	return c.internalClient.GetAzureClient(ctx, req, opts...)
 }
 
-// ListAzureClients lists all AzureClient resources on a given Google Cloud project and
-// region.
+// ListAzureClients lists all AzureClient
+// resources on a given Google Cloud project and region.
 func (c *AzureClustersClient) ListAzureClients(ctx context.Context, req *gkemulticloudpb.ListAzureClientsRequest, opts ...gax.CallOption) *AzureClientIterator {
 	return c.internalClient.ListAzureClients(ctx, req, opts...)
 }
 
-// DeleteAzureClient deletes a specific AzureClient resource.
+// DeleteAzureClient deletes a specific AzureClient
+// resource.
 //
 // If the client is used by one or more clusters, deletion will
 // fail and a FAILED_PRECONDITION error will be returned.
@@ -294,7 +308,8 @@ func (c *AzureClustersClient) DeleteAzureClientOperation(name string) *DeleteAzu
 	return c.internalClient.DeleteAzureClientOperation(name)
 }
 
-// CreateAzureCluster creates a new AzureCluster resource on a given GCP project and region.
+// CreateAzureCluster creates a new AzureCluster
+// resource on a given Google Cloud Platform project and region.
 //
 // If successful, the response contains a newly created
 // Operation resource that can be
@@ -320,21 +335,23 @@ func (c *AzureClustersClient) UpdateAzureClusterOperation(name string) *UpdateAz
 	return c.internalClient.UpdateAzureClusterOperation(name)
 }
 
-// GetAzureCluster describes a specific AzureCluster resource.
+// GetAzureCluster describes a specific
+// AzureCluster resource.
 func (c *AzureClustersClient) GetAzureCluster(ctx context.Context, req *gkemulticloudpb.GetAzureClusterRequest, opts ...gax.CallOption) (*gkemulticloudpb.AzureCluster, error) {
 	return c.internalClient.GetAzureCluster(ctx, req, opts...)
 }
 
-// ListAzureClusters lists all AzureCluster resources on a given Google Cloud project and
-// region.
+// ListAzureClusters lists all AzureCluster
+// resources on a given Google Cloud project and region.
 func (c *AzureClustersClient) ListAzureClusters(ctx context.Context, req *gkemulticloudpb.ListAzureClustersRequest, opts ...gax.CallOption) *AzureClusterIterator {
 	return c.internalClient.ListAzureClusters(ctx, req, opts...)
 }
 
-// DeleteAzureCluster deletes a specific AzureCluster resource.
+// DeleteAzureCluster deletes a specific
+// AzureCluster resource.
 //
-// Fails if the cluster has one or more associated AzureNodePool
-// resources.
+// Fails if the cluster has one or more associated
+// AzureNodePool resources.
 //
 // If successful, the response contains a newly created
 // Operation resource that can be
@@ -355,7 +372,9 @@ func (c *AzureClustersClient) GenerateAzureAccessToken(ctx context.Context, req 
 	return c.internalClient.GenerateAzureAccessToken(ctx, req, opts...)
 }
 
-// CreateAzureNodePool creates a new AzureNodePool, attached to a given AzureCluster.
+// CreateAzureNodePool creates a new AzureNodePool,
+// attached to a given
+// AzureCluster.
 //
 // If successful, the response contains a newly created
 // Operation resource that can be
@@ -381,17 +400,21 @@ func (c *AzureClustersClient) UpdateAzureNodePoolOperation(name string) *UpdateA
 	return c.internalClient.UpdateAzureNodePoolOperation(name)
 }
 
-// GetAzureNodePool describes a specific AzureNodePool resource.
+// GetAzureNodePool describes a specific
+// AzureNodePool resource.
 func (c *AzureClustersClient) GetAzureNodePool(ctx context.Context, req *gkemulticloudpb.GetAzureNodePoolRequest, opts ...gax.CallOption) (*gkemulticloudpb.AzureNodePool, error) {
 	return c.internalClient.GetAzureNodePool(ctx, req, opts...)
 }
 
-// ListAzureNodePools lists all AzureNodePool resources on a given AzureCluster.
+// ListAzureNodePools lists all AzureNodePool
+// resources on a given
+// AzureCluster.
 func (c *AzureClustersClient) ListAzureNodePools(ctx context.Context, req *gkemulticloudpb.ListAzureNodePoolsRequest, opts ...gax.CallOption) *AzureNodePoolIterator {
 	return c.internalClient.ListAzureNodePools(ctx, req, opts...)
 }
 
-// DeleteAzureNodePool deletes a specific AzureNodePool resource.
+// DeleteAzureNodePool deletes a specific
+// AzureNodePool resource.
 //
 // If successful, the response contains a newly created
 // Operation resource that can be
@@ -410,6 +433,26 @@ func (c *AzureClustersClient) DeleteAzureNodePoolOperation(name string) *DeleteA
 // versions, on a given Google Cloud location.
 func (c *AzureClustersClient) GetAzureServerConfig(ctx context.Context, req *gkemulticloudpb.GetAzureServerConfigRequest, opts ...gax.CallOption) (*gkemulticloudpb.AzureServerConfig, error) {
 	return c.internalClient.GetAzureServerConfig(ctx, req, opts...)
+}
+
+// CancelOperation is a utility method from google.longrunning.Operations.
+func (c *AzureClustersClient) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
+	return c.internalClient.CancelOperation(ctx, req, opts...)
+}
+
+// DeleteOperation is a utility method from google.longrunning.Operations.
+func (c *AzureClustersClient) DeleteOperation(ctx context.Context, req *longrunningpb.DeleteOperationRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteOperation(ctx, req, opts...)
+}
+
+// GetOperation is a utility method from google.longrunning.Operations.
+func (c *AzureClustersClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+	return c.internalClient.GetOperation(ctx, req, opts...)
+}
+
+// ListOperations is a utility method from google.longrunning.Operations.
+func (c *AzureClustersClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
+	return c.internalClient.ListOperations(ctx, req, opts...)
 }
 
 // azureClustersGRPCClient is a client for interacting with Anthos Multi-Cloud API over gRPC transport.
@@ -432,6 +475,8 @@ type azureClustersGRPCClient struct {
 	// It is exposed so that its CallOptions can be modified if required.
 	// Users should not Close this client.
 	LROClient **lroauto.OperationsClient
+
+	operationsClient longrunningpb.OperationsClient
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
@@ -468,6 +513,7 @@ func NewAzureClustersClient(ctx context.Context, opts ...option.ClientOption) (*
 		disableDeadlines:    disableDeadlines,
 		azureClustersClient: gkemulticloudpb.NewAzureClustersClient(connPool),
 		CallOptions:         &client.CallOptions,
+		operationsClient:    longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
 
@@ -945,6 +991,94 @@ func (c *azureClustersGRPCClient) GetAzureServerConfig(ctx context.Context, req 
 		return nil, err
 	}
 	return resp, nil
+}
+
+func (c *azureClustersGRPCClient) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = c.operationsClient.CancelOperation(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	return err
+}
+
+func (c *azureClustersGRPCClient) DeleteOperation(ctx context.Context, req *longrunningpb.DeleteOperationRequest, opts ...gax.CallOption) error {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = c.operationsClient.DeleteOperation(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	return err
+}
+
+func (c *azureClustersGRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *azureClustersGRPCClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
+	it := &OperationIterator{}
+	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
+		resp := &longrunningpb.ListOperationsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetOperations(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
 }
 
 // CreateAzureClientOperation manages a long-running operation from CreateAzureClient.

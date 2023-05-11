@@ -1,5 +1,48 @@
 # Changes
 
+## [1.11.1](https://github.com/googleapis/google-cloud-go/compare/eventarc/v1.11.0...eventarc/v1.11.1) (2023-05-08)
+
+
+### Bug Fixes
+
+* **eventarc:** Update grpc to v1.55.0 ([1147ce0](https://github.com/googleapis/google-cloud-go/commit/1147ce02a990276ca4f8ab7a1ab65c14da4450ef))
+
+## [1.11.0](https://github.com/googleapis/google-cloud-go/compare/eventarc/v1.10.0...eventarc/v1.11.0) (2023-03-15)
+
+
+### Features
+
+* **eventarc:** Update iam and longrunning deps ([91a1f78](https://github.com/googleapis/google-cloud-go/commit/91a1f784a109da70f63b96414bba8a9b4254cddd))
+
+## [1.10.0](https://github.com/googleapis/google-cloud-go/compare/eventarc/v1.9.0...eventarc/v1.10.0) (2023-01-04)
+
+
+### Features
+
+* **eventarc:** Add REST client ([06a54a1](https://github.com/googleapis/google-cloud-go/commit/06a54a16a5866cce966547c51e203b9e09a25bc0))
+
+## [1.9.0](https://github.com/googleapis/google-cloud-go/compare/eventarc/v1.8.0...eventarc/v1.9.0) (2022-11-09)
+
+
+### Features
+
+* **eventarc/publishing:** Introduce the event publishing using JSON representation of CloudEvents ([9c5d6c8](https://github.com/googleapis/google-cloud-go/commit/9c5d6c857b9deece4663d37fc6c834fd758b98ca))
+* **eventarc:** Add CMEK support to Eventarc client library ([9c5d6c8](https://github.com/googleapis/google-cloud-go/commit/9c5d6c857b9deece4663d37fc6c834fd758b98ca))
+
+## [1.8.0](https://github.com/googleapis/google-cloud-go/compare/eventarc/v1.7.0...eventarc/v1.8.0) (2022-11-03)
+
+
+### Features
+
+* **eventarc:** rewrite signatures in terms of new location ([3c4b2b3](https://github.com/googleapis/google-cloud-go/commit/3c4b2b34565795537aac1661e6af2442437e34ad))
+
+## [1.7.0](https://github.com/googleapis/google-cloud-go/compare/eventarc/v1.6.0...eventarc/v1.7.0) (2022-10-25)
+
+
+### Features
+
+* **eventarc:** start generating stubs dir ([de2d180](https://github.com/googleapis/google-cloud-go/commit/de2d18066dc613b72f6f8db93ca60146dabcfdcc))
+
 ## [1.6.0](https://github.com/googleapis/google-cloud-go/compare/eventarc/v1.5.0...eventarc/v1.6.0) (2022-05-24)
 
 

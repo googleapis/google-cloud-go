@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,10 +20,10 @@ import (
 	"context"
 
 	dialogflow "cloud.google.com/go/dialogflow/apiv2beta1"
+	dialogflowpb "cloud.google.com/go/dialogflow/apiv2beta1/dialogflowpb"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	"google.golang.org/api/iterator"
-	dialogflowpb "google.golang.org/genproto/googleapis/cloud/dialogflow/v2beta1"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 )
 
 func ExampleNewEntityTypesClient() {
@@ -75,7 +75,7 @@ func ExampleEntityTypesClient_ListEntityTypes() {
 
 	req := &dialogflowpb.ListEntityTypesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2beta1#ListEntityTypesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/apiv2beta1/dialogflowpb#ListEntityTypesRequest.
 	}
 	it := c.ListEntityTypes(ctx, req)
 	for {
@@ -106,7 +106,7 @@ func ExampleEntityTypesClient_GetEntityType() {
 
 	req := &dialogflowpb.GetEntityTypeRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2beta1#GetEntityTypeRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/apiv2beta1/dialogflowpb#GetEntityTypeRequest.
 	}
 	resp, err := c.GetEntityType(ctx, req)
 	if err != nil {
@@ -131,7 +131,7 @@ func ExampleEntityTypesClient_CreateEntityType() {
 
 	req := &dialogflowpb.CreateEntityTypeRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2beta1#CreateEntityTypeRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/apiv2beta1/dialogflowpb#CreateEntityTypeRequest.
 	}
 	resp, err := c.CreateEntityType(ctx, req)
 	if err != nil {
@@ -156,7 +156,7 @@ func ExampleEntityTypesClient_UpdateEntityType() {
 
 	req := &dialogflowpb.UpdateEntityTypeRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2beta1#UpdateEntityTypeRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/apiv2beta1/dialogflowpb#UpdateEntityTypeRequest.
 	}
 	resp, err := c.UpdateEntityType(ctx, req)
 	if err != nil {
@@ -181,7 +181,7 @@ func ExampleEntityTypesClient_DeleteEntityType() {
 
 	req := &dialogflowpb.DeleteEntityTypeRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2beta1#DeleteEntityTypeRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/apiv2beta1/dialogflowpb#DeleteEntityTypeRequest.
 	}
 	err = c.DeleteEntityType(ctx, req)
 	if err != nil {
@@ -204,7 +204,7 @@ func ExampleEntityTypesClient_BatchUpdateEntityTypes() {
 
 	req := &dialogflowpb.BatchUpdateEntityTypesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2beta1#BatchUpdateEntityTypesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/apiv2beta1/dialogflowpb#BatchUpdateEntityTypesRequest.
 	}
 	op, err := c.BatchUpdateEntityTypes(ctx, req)
 	if err != nil {
@@ -234,7 +234,7 @@ func ExampleEntityTypesClient_BatchDeleteEntityTypes() {
 
 	req := &dialogflowpb.BatchDeleteEntityTypesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2beta1#BatchDeleteEntityTypesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/apiv2beta1/dialogflowpb#BatchDeleteEntityTypesRequest.
 	}
 	op, err := c.BatchDeleteEntityTypes(ctx, req)
 	if err != nil {
@@ -262,7 +262,7 @@ func ExampleEntityTypesClient_BatchCreateEntities() {
 
 	req := &dialogflowpb.BatchCreateEntitiesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2beta1#BatchCreateEntitiesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/apiv2beta1/dialogflowpb#BatchCreateEntitiesRequest.
 	}
 	op, err := c.BatchCreateEntities(ctx, req)
 	if err != nil {
@@ -290,7 +290,7 @@ func ExampleEntityTypesClient_BatchUpdateEntities() {
 
 	req := &dialogflowpb.BatchUpdateEntitiesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2beta1#BatchUpdateEntitiesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/apiv2beta1/dialogflowpb#BatchUpdateEntitiesRequest.
 	}
 	op, err := c.BatchUpdateEntities(ctx, req)
 	if err != nil {
@@ -318,7 +318,7 @@ func ExampleEntityTypesClient_BatchDeleteEntities() {
 
 	req := &dialogflowpb.BatchDeleteEntitiesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2beta1#BatchDeleteEntitiesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/apiv2beta1/dialogflowpb#BatchDeleteEntitiesRequest.
 	}
 	op, err := c.BatchDeleteEntities(ctx, req)
 	if err != nil {
@@ -402,7 +402,7 @@ func ExampleEntityTypesClient_CancelOperation() {
 
 	req := &longrunningpb.CancelOperationRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/longrunning#CancelOperationRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/longrunning/autogen/longrunningpb#CancelOperationRequest.
 	}
 	err = c.CancelOperation(ctx, req)
 	if err != nil {
@@ -425,7 +425,7 @@ func ExampleEntityTypesClient_GetOperation() {
 
 	req := &longrunningpb.GetOperationRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/longrunning#GetOperationRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/longrunning/autogen/longrunningpb#GetOperationRequest.
 	}
 	resp, err := c.GetOperation(ctx, req)
 	if err != nil {
@@ -450,7 +450,7 @@ func ExampleEntityTypesClient_ListOperations() {
 
 	req := &longrunningpb.ListOperationsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/longrunning#ListOperationsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/longrunning/autogen/longrunningpb#ListOperationsRequest.
 	}
 	it := c.ListOperations(ctx, req)
 	for {

@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,11 +19,11 @@ package database_test
 import (
 	"context"
 
+	iampb "cloud.google.com/go/iam/apiv1/iampb"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	database "cloud.google.com/go/spanner/admin/database/apiv1"
+	databasepb "cloud.google.com/go/spanner/admin/database/apiv1/databasepb"
 	"google.golang.org/api/iterator"
-	iampb "google.golang.org/genproto/googleapis/iam/v1"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
-	databasepb "google.golang.org/genproto/googleapis/spanner/admin/database/v1"
 )
 
 func ExampleNewDatabaseAdminClient() {
@@ -34,6 +34,23 @@ func ExampleNewDatabaseAdminClient() {
 	// - It may require specifying regional endpoints when creating the service client as shown in:
 	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := database.NewDatabaseAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
+func ExampleNewDatabaseAdminRESTClient() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := database.NewDatabaseAdminRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -58,7 +75,7 @@ func ExampleDatabaseAdminClient_ListDatabases() {
 
 	req := &databasepb.ListDatabasesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/spanner/admin/database/v1#ListDatabasesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/spanner/admin/database/apiv1/databasepb#ListDatabasesRequest.
 	}
 	it := c.ListDatabases(ctx, req)
 	for {
@@ -89,7 +106,7 @@ func ExampleDatabaseAdminClient_CreateDatabase() {
 
 	req := &databasepb.CreateDatabaseRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/spanner/admin/database/v1#CreateDatabaseRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/spanner/admin/database/apiv1/databasepb#CreateDatabaseRequest.
 	}
 	op, err := c.CreateDatabase(ctx, req)
 	if err != nil {
@@ -119,7 +136,7 @@ func ExampleDatabaseAdminClient_GetDatabase() {
 
 	req := &databasepb.GetDatabaseRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/spanner/admin/database/v1#GetDatabaseRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/spanner/admin/database/apiv1/databasepb#GetDatabaseRequest.
 	}
 	resp, err := c.GetDatabase(ctx, req)
 	if err != nil {
@@ -144,7 +161,7 @@ func ExampleDatabaseAdminClient_UpdateDatabaseDdl() {
 
 	req := &databasepb.UpdateDatabaseDdlRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/spanner/admin/database/v1#UpdateDatabaseDdlRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/spanner/admin/database/apiv1/databasepb#UpdateDatabaseDdlRequest.
 	}
 	op, err := c.UpdateDatabaseDdl(ctx, req)
 	if err != nil {
@@ -172,7 +189,7 @@ func ExampleDatabaseAdminClient_DropDatabase() {
 
 	req := &databasepb.DropDatabaseRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/spanner/admin/database/v1#DropDatabaseRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/spanner/admin/database/apiv1/databasepb#DropDatabaseRequest.
 	}
 	err = c.DropDatabase(ctx, req)
 	if err != nil {
@@ -195,7 +212,7 @@ func ExampleDatabaseAdminClient_GetDatabaseDdl() {
 
 	req := &databasepb.GetDatabaseDdlRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/spanner/admin/database/v1#GetDatabaseDdlRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/spanner/admin/database/apiv1/databasepb#GetDatabaseDdlRequest.
 	}
 	resp, err := c.GetDatabaseDdl(ctx, req)
 	if err != nil {
@@ -220,7 +237,7 @@ func ExampleDatabaseAdminClient_SetIamPolicy() {
 
 	req := &iampb.SetIamPolicyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/iam/v1#SetIamPolicyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/iam/apiv1/iampb#SetIamPolicyRequest.
 	}
 	resp, err := c.SetIamPolicy(ctx, req)
 	if err != nil {
@@ -245,7 +262,7 @@ func ExampleDatabaseAdminClient_GetIamPolicy() {
 
 	req := &iampb.GetIamPolicyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/iam/v1#GetIamPolicyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/iam/apiv1/iampb#GetIamPolicyRequest.
 	}
 	resp, err := c.GetIamPolicy(ctx, req)
 	if err != nil {
@@ -270,7 +287,7 @@ func ExampleDatabaseAdminClient_TestIamPermissions() {
 
 	req := &iampb.TestIamPermissionsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/iam/v1#TestIamPermissionsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/iam/apiv1/iampb#TestIamPermissionsRequest.
 	}
 	resp, err := c.TestIamPermissions(ctx, req)
 	if err != nil {
@@ -295,7 +312,7 @@ func ExampleDatabaseAdminClient_CreateBackup() {
 
 	req := &databasepb.CreateBackupRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/spanner/admin/database/v1#CreateBackupRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/spanner/admin/database/apiv1/databasepb#CreateBackupRequest.
 	}
 	op, err := c.CreateBackup(ctx, req)
 	if err != nil {
@@ -325,7 +342,7 @@ func ExampleDatabaseAdminClient_CopyBackup() {
 
 	req := &databasepb.CopyBackupRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/spanner/admin/database/v1#CopyBackupRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/spanner/admin/database/apiv1/databasepb#CopyBackupRequest.
 	}
 	op, err := c.CopyBackup(ctx, req)
 	if err != nil {
@@ -355,7 +372,7 @@ func ExampleDatabaseAdminClient_GetBackup() {
 
 	req := &databasepb.GetBackupRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/spanner/admin/database/v1#GetBackupRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/spanner/admin/database/apiv1/databasepb#GetBackupRequest.
 	}
 	resp, err := c.GetBackup(ctx, req)
 	if err != nil {
@@ -380,7 +397,7 @@ func ExampleDatabaseAdminClient_UpdateBackup() {
 
 	req := &databasepb.UpdateBackupRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/spanner/admin/database/v1#UpdateBackupRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/spanner/admin/database/apiv1/databasepb#UpdateBackupRequest.
 	}
 	resp, err := c.UpdateBackup(ctx, req)
 	if err != nil {
@@ -405,7 +422,7 @@ func ExampleDatabaseAdminClient_DeleteBackup() {
 
 	req := &databasepb.DeleteBackupRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/spanner/admin/database/v1#DeleteBackupRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/spanner/admin/database/apiv1/databasepb#DeleteBackupRequest.
 	}
 	err = c.DeleteBackup(ctx, req)
 	if err != nil {
@@ -428,7 +445,7 @@ func ExampleDatabaseAdminClient_ListBackups() {
 
 	req := &databasepb.ListBackupsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/spanner/admin/database/v1#ListBackupsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/spanner/admin/database/apiv1/databasepb#ListBackupsRequest.
 	}
 	it := c.ListBackups(ctx, req)
 	for {
@@ -459,7 +476,7 @@ func ExampleDatabaseAdminClient_RestoreDatabase() {
 
 	req := &databasepb.RestoreDatabaseRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/spanner/admin/database/v1#RestoreDatabaseRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/spanner/admin/database/apiv1/databasepb#RestoreDatabaseRequest.
 	}
 	op, err := c.RestoreDatabase(ctx, req)
 	if err != nil {
@@ -489,7 +506,7 @@ func ExampleDatabaseAdminClient_ListDatabaseOperations() {
 
 	req := &databasepb.ListDatabaseOperationsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/spanner/admin/database/v1#ListDatabaseOperationsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/spanner/admin/database/apiv1/databasepb#ListDatabaseOperationsRequest.
 	}
 	it := c.ListDatabaseOperations(ctx, req)
 	for {
@@ -520,7 +537,7 @@ func ExampleDatabaseAdminClient_ListBackupOperations() {
 
 	req := &databasepb.ListBackupOperationsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/spanner/admin/database/v1#ListBackupOperationsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/spanner/admin/database/apiv1/databasepb#ListBackupOperationsRequest.
 	}
 	it := c.ListBackupOperations(ctx, req)
 	for {
@@ -551,7 +568,7 @@ func ExampleDatabaseAdminClient_ListDatabaseRoles() {
 
 	req := &databasepb.ListDatabaseRolesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/spanner/admin/database/v1#ListDatabaseRolesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/spanner/admin/database/apiv1/databasepb#ListDatabaseRolesRequest.
 	}
 	it := c.ListDatabaseRoles(ctx, req)
 	for {
@@ -582,7 +599,7 @@ func ExampleDatabaseAdminClient_CancelOperation() {
 
 	req := &longrunningpb.CancelOperationRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/longrunning#CancelOperationRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/longrunning/autogen/longrunningpb#CancelOperationRequest.
 	}
 	err = c.CancelOperation(ctx, req)
 	if err != nil {
@@ -605,7 +622,7 @@ func ExampleDatabaseAdminClient_DeleteOperation() {
 
 	req := &longrunningpb.DeleteOperationRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/longrunning#DeleteOperationRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/longrunning/autogen/longrunningpb#DeleteOperationRequest.
 	}
 	err = c.DeleteOperation(ctx, req)
 	if err != nil {
@@ -628,7 +645,7 @@ func ExampleDatabaseAdminClient_GetOperation() {
 
 	req := &longrunningpb.GetOperationRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/longrunning#GetOperationRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/longrunning/autogen/longrunningpb#GetOperationRequest.
 	}
 	resp, err := c.GetOperation(ctx, req)
 	if err != nil {
@@ -653,7 +670,7 @@ func ExampleDatabaseAdminClient_ListOperations() {
 
 	req := &longrunningpb.ListOperationsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/longrunning#ListOperationsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/longrunning/autogen/longrunningpb#ListOperationsRequest.
 	}
 	it := c.ListOperations(ctx, req)
 	for {

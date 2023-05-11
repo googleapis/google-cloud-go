@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,22 +17,28 @@
 package appengine
 
 import (
+	"bytes"
 	"context"
 	"fmt"
+	"io/ioutil"
 	"math"
+	"net/http"
 	"net/url"
 	"time"
 
+	appenginepb "cloud.google.com/go/appengine/apiv1/appenginepb"
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"google.golang.org/api/googleapi"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
-	appenginepb "google.golang.org/genproto/googleapis/appengine/v1"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
+	httptransport "google.golang.org/api/transport/http"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/protobuf/encoding/protojson"
 )
 
 var newApplicationsClientHook clientHook
@@ -58,6 +64,15 @@ func defaultApplicationsGRPCClientOptions() []option.ClientOption {
 }
 
 func defaultApplicationsCallOptions() *ApplicationsCallOptions {
+	return &ApplicationsCallOptions{
+		GetApplication:    []gax.CallOption{},
+		CreateApplication: []gax.CallOption{},
+		UpdateApplication: []gax.CallOption{},
+		RepairApplication: []gax.CallOption{},
+	}
+}
+
+func defaultApplicationsRESTCallOptions() *ApplicationsCallOptions {
 	return &ApplicationsCallOptions{
 		GetApplication:    []gax.CallOption{},
 		CreateApplication: []gax.CallOption{},
@@ -278,7 +293,95 @@ func (c *applicationsGRPCClient) Close() error {
 	return c.connPool.Close()
 }
 
+// Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
+type applicationsRESTClient struct {
+	// The http endpoint to connect to.
+	endpoint string
+
+	// The http client.
+	httpClient *http.Client
+
+	// LROClient is used internally to handle long-running operations.
+	// It is exposed so that its CallOptions can be modified if required.
+	// Users should not Close this client.
+	LROClient **lroauto.OperationsClient
+
+	// The x-goog-* metadata to be sent with each request.
+	xGoogMetadata metadata.MD
+
+	// Points back to the CallOptions field of the containing ApplicationsClient
+	CallOptions **ApplicationsCallOptions
+}
+
+// NewApplicationsRESTClient creates a new applications rest client.
+//
+// Manages App Engine applications.
+func NewApplicationsRESTClient(ctx context.Context, opts ...option.ClientOption) (*ApplicationsClient, error) {
+	clientOpts := append(defaultApplicationsRESTClientOptions(), opts...)
+	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
+	if err != nil {
+		return nil, err
+	}
+
+	callOpts := defaultApplicationsRESTCallOptions()
+	c := &applicationsRESTClient{
+		endpoint:    endpoint,
+		httpClient:  httpClient,
+		CallOptions: &callOpts,
+	}
+	c.setGoogleClientInfo()
+
+	lroOpts := []option.ClientOption{
+		option.WithHTTPClient(httpClient),
+		option.WithEndpoint(endpoint),
+	}
+	opClient, err := lroauto.NewOperationsRESTClient(ctx, lroOpts...)
+	if err != nil {
+		return nil, err
+	}
+	c.LROClient = &opClient
+
+	return &ApplicationsClient{internalClient: c, CallOptions: callOpts}, nil
+}
+
+func defaultApplicationsRESTClientOptions() []option.ClientOption {
+	return []option.ClientOption{
+		internaloption.WithDefaultEndpoint("https://appengine.googleapis.com"),
+		internaloption.WithDefaultMTLSEndpoint("https://appengine.mtls.googleapis.com"),
+		internaloption.WithDefaultAudience("https://appengine.googleapis.com/"),
+		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+	}
+}
+
+// setGoogleClientInfo sets the name and version of the application in
+// the `x-goog-api-client` header passed on each request. Intended for
+// use by Google-written clients.
+func (c *applicationsRESTClient) setGoogleClientInfo(keyval ...string) {
+	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
+	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+}
+
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *applicationsRESTClient) Close() error {
+	// Replace httpClient with nil to force cleanup.
+	c.httpClient = nil
+	return nil
+}
+
+// Connection returns a connection to the API service.
+//
+// Deprecated: This method always returns nil.
+func (c *applicationsRESTClient) Connection() *grpc.ClientConn {
+	return nil
+}
 func (c *applicationsGRPCClient) GetApplication(ctx context.Context, req *appenginepb.GetApplicationRequest, opts ...gax.CallOption) (*appenginepb.Application, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -296,6 +399,11 @@ func (c *applicationsGRPCClient) GetApplication(ctx context.Context, req *appeng
 }
 
 func (c *applicationsGRPCClient) CreateApplication(ctx context.Context, req *appenginepb.CreateApplicationRequest, opts ...gax.CallOption) (*CreateApplicationOperation, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
 	opts = append((*c.CallOptions).CreateApplication[0:len((*c.CallOptions).CreateApplication):len((*c.CallOptions).CreateApplication)], opts...)
 	var resp *longrunningpb.Operation
@@ -313,6 +421,11 @@ func (c *applicationsGRPCClient) CreateApplication(ctx context.Context, req *app
 }
 
 func (c *applicationsGRPCClient) UpdateApplication(ctx context.Context, req *appenginepb.UpdateApplicationRequest, opts ...gax.CallOption) (*UpdateApplicationOperation, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -332,6 +445,11 @@ func (c *applicationsGRPCClient) UpdateApplication(ctx context.Context, req *app
 }
 
 func (c *applicationsGRPCClient) RepairApplication(ctx context.Context, req *appenginepb.RepairApplicationRequest, opts ...gax.CallOption) (*RepairApplicationOperation, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -350,9 +468,302 @@ func (c *applicationsGRPCClient) RepairApplication(ctx context.Context, req *app
 	}, nil
 }
 
+// GetApplication gets information about an application.
+func (c *applicationsRESTClient) GetApplication(ctx context.Context, req *appenginepb.GetApplicationRequest, opts ...gax.CallOption) (*appenginepb.Application, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).GetApplication[0:len((*c.CallOptions).GetApplication):len((*c.CallOptions).GetApplication)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &appenginepb.Application{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// CreateApplication creates an App Engine application for a Google Cloud Platform project.
+// Required fields:
+//
+//	id - The ID of the target Cloud Platform project.
+//
+//	location - The region (at https://cloud.google.com/appengine/docs/locations) where you want the App Engine application located.
+//
+// For more information about App Engine applications, see Managing Projects, Applications, and Billing (at https://cloud.google.com/appengine/docs/standard/python/console/).
+func (c *applicationsRESTClient) CreateApplication(ctx context.Context, req *appenginepb.CreateApplicationRequest, opts ...gax.CallOption) (*CreateApplicationOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetApplication()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/apps")
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &CreateApplicationOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// UpdateApplication updates the specified Application resource.
+// You can update the following fields:
+//
+//	auth_domain - Google authentication domain for controlling user access to the application.
+//
+//	default_cookie_expiration - Cookie expiration policy for the application.
+//
+//	iap - Identity-Aware Proxy properties for the application.
+func (c *applicationsRESTClient) UpdateApplication(ctx context.Context, req *appenginepb.UpdateApplicationRequest, opts ...gax.CallOption) (*UpdateApplicationOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetApplication()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetUpdateMask() != nil {
+		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(updateMask))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &UpdateApplicationOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// RepairApplication recreates the required App Engine features for the specified App Engine
+// application, for example a Cloud Storage bucket or App Engine service
+// account.
+// Use this method if you receive an error message about a missing feature,
+// for example, Error retrieving the App Engine service account.
+// If you have deleted your App Engine service account, this will
+// not be able to recreate it. Instead, you should attempt to use the
+// IAM undelete API if possible at https://cloud.google.com/iam/reference/rest/v1/projects.serviceAccounts/undelete?apix_params={ (at https://cloud.google.com/iam/reference/rest/v1/projects.serviceAccounts/undelete?apix_params=%7B)“name”%3A"projects%2F-%2FserviceAccounts%2Funique_id"%2C"resource"%3A%7B%7D%7D .
+// If the deletion was recent, the numeric ID can be found in the Cloud
+// Console Activity Log.
+func (c *applicationsRESTClient) RepairApplication(ctx context.Context, req *appenginepb.RepairApplicationRequest, opts ...gax.CallOption) (*RepairApplicationOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:repair", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &RepairApplicationOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
 // CreateApplicationOperation manages a long-running operation from CreateApplication.
 type CreateApplicationOperation struct {
-	lro *longrunning.Operation
+	lro      *longrunning.Operation
+	pollPath string
 }
 
 // CreateApplicationOperation returns a new CreateApplicationOperation from a given name.
@@ -363,10 +774,21 @@ func (c *applicationsGRPCClient) CreateApplicationOperation(name string) *Create
 	}
 }
 
+// CreateApplicationOperation returns a new CreateApplicationOperation from a given name.
+// The name must be that of a previously created CreateApplicationOperation, possibly from a different process.
+func (c *applicationsRESTClient) CreateApplicationOperation(name string) *CreateApplicationOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &CreateApplicationOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
 // Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
 //
 // See documentation of Poll for error-handling information.
 func (op *CreateApplicationOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*appenginepb.Application, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
 	var resp appenginepb.Application
 	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
 		return nil, err
@@ -384,6 +806,7 @@ func (op *CreateApplicationOperation) Wait(ctx context.Context, opts ...gax.Call
 // op.Done will return true, and the response of the operation is returned.
 // If Poll succeeds and the operation has not completed, the returned response and error are both nil.
 func (op *CreateApplicationOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*appenginepb.Application, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
 	var resp appenginepb.Application
 	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
 		return nil, err
@@ -421,7 +844,8 @@ func (op *CreateApplicationOperation) Name() string {
 
 // RepairApplicationOperation manages a long-running operation from RepairApplication.
 type RepairApplicationOperation struct {
-	lro *longrunning.Operation
+	lro      *longrunning.Operation
+	pollPath string
 }
 
 // RepairApplicationOperation returns a new RepairApplicationOperation from a given name.
@@ -432,10 +856,21 @@ func (c *applicationsGRPCClient) RepairApplicationOperation(name string) *Repair
 	}
 }
 
+// RepairApplicationOperation returns a new RepairApplicationOperation from a given name.
+// The name must be that of a previously created RepairApplicationOperation, possibly from a different process.
+func (c *applicationsRESTClient) RepairApplicationOperation(name string) *RepairApplicationOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &RepairApplicationOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
 // Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
 //
 // See documentation of Poll for error-handling information.
 func (op *RepairApplicationOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*appenginepb.Application, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
 	var resp appenginepb.Application
 	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
 		return nil, err
@@ -453,6 +888,7 @@ func (op *RepairApplicationOperation) Wait(ctx context.Context, opts ...gax.Call
 // op.Done will return true, and the response of the operation is returned.
 // If Poll succeeds and the operation has not completed, the returned response and error are both nil.
 func (op *RepairApplicationOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*appenginepb.Application, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
 	var resp appenginepb.Application
 	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
 		return nil, err
@@ -490,7 +926,8 @@ func (op *RepairApplicationOperation) Name() string {
 
 // UpdateApplicationOperation manages a long-running operation from UpdateApplication.
 type UpdateApplicationOperation struct {
-	lro *longrunning.Operation
+	lro      *longrunning.Operation
+	pollPath string
 }
 
 // UpdateApplicationOperation returns a new UpdateApplicationOperation from a given name.
@@ -501,10 +938,21 @@ func (c *applicationsGRPCClient) UpdateApplicationOperation(name string) *Update
 	}
 }
 
+// UpdateApplicationOperation returns a new UpdateApplicationOperation from a given name.
+// The name must be that of a previously created UpdateApplicationOperation, possibly from a different process.
+func (c *applicationsRESTClient) UpdateApplicationOperation(name string) *UpdateApplicationOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &UpdateApplicationOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
 // Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
 //
 // See documentation of Poll for error-handling information.
 func (op *UpdateApplicationOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*appenginepb.Application, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
 	var resp appenginepb.Application
 	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
 		return nil, err
@@ -522,6 +970,7 @@ func (op *UpdateApplicationOperation) Wait(ctx context.Context, opts ...gax.Call
 // op.Done will return true, and the response of the operation is returned.
 // If Poll succeeds and the operation has not completed, the returned response and error are both nil.
 func (op *UpdateApplicationOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*appenginepb.Application, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
 	var resp appenginepb.Application
 	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
 		return nil, err

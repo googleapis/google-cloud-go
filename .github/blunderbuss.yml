@@ -4,7 +4,7 @@ assign_issues_by:
   - 'api: datastore'
   - 'api: firestore'
   to:
-  - telpirion
+  - bhshkh
 - labels:
   - 'api: storage'
   to:
@@ -17,6 +17,10 @@ assign_issues_by:
   - 'api: pubsub'
   to:
   - hongalex
+- labels:
+  - 'api: pubsublite'
+  to:
+  - tmdiep
 - labels:
   - 'api: spanner'
   to:

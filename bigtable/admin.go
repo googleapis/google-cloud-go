@@ -211,18 +211,35 @@ func (ac *AdminClient) Tables(ctx context.Context) ([]string, error) {
 	return names, nil
 }
 
+// DeletionProtection indicates whether the table is protected against data loss
+// i.e. when set to protected, deleting the table, the column families in the table,
+// and the instance containing the table would be prohibited.
+type DeletionProtection int
+
+// None indicates that deletion protection is unset
+// Protected indicates that deletion protection is enabled
+// Unprotected indicates that deletion protection is disabled
+const (
+	None DeletionProtection = iota
+	Protected
+	Unprotected
+)
+
 // TableConf contains all of the information necessary to create a table with column families.
 type TableConf struct {
 	TableID   string
 	SplitKeys []string
 	// Families is a map from family name to GCPolicy
 	Families map[string]GCPolicy
+	// DeletionProtection can be none, protected or unprotected
+	// set to protected to make the table protected against data loss
+	DeletionProtection DeletionProtection
 }
 
 // CreateTable creates a new table in the instance.
 // This method may return before the table's creation is complete.
 func (ac *AdminClient) CreateTable(ctx context.Context, table string) error {
-	return ac.CreateTableFromConf(ctx, &TableConf{TableID: table})
+	return ac.CreateTableFromConf(ctx, &TableConf{TableID: table, DeletionProtection: None})
 }
 
 // CreatePresplitTable creates a new table in the instance.
@@ -231,17 +248,27 @@ func (ac *AdminClient) CreateTable(ctx context.Context, table string) error {
 // spanning the key ranges: [, s1), [s1, s2), [s2, ).
 // This method may return before the table's creation is complete.
 func (ac *AdminClient) CreatePresplitTable(ctx context.Context, table string, splitKeys []string) error {
-	return ac.CreateTableFromConf(ctx, &TableConf{TableID: table, SplitKeys: splitKeys})
+	return ac.CreateTableFromConf(ctx, &TableConf{TableID: table, SplitKeys: splitKeys, DeletionProtection: None})
 }
 
 // CreateTableFromConf creates a new table in the instance from the given configuration.
 func (ac *AdminClient) CreateTableFromConf(ctx context.Context, conf *TableConf) error {
+	if conf.TableID == "" {
+		return errors.New("TableID is required")
+	}
 	ctx = mergeOutgoingMetadata(ctx, ac.md)
 	var reqSplits []*btapb.CreateTableRequest_Split
 	for _, split := range conf.SplitKeys {
 		reqSplits = append(reqSplits, &btapb.CreateTableRequest_Split{Key: []byte(split)})
 	}
 	var tbl btapb.Table
+	// we'd rather not set anything explicitly if users don't specify a value and let the server set the default value.
+	// if DeletionProtection is not set, currently the API will default it to false.
+	if conf.DeletionProtection == Protected {
+		tbl.DeletionProtection = true
+	} else if conf.DeletionProtection == Unprotected {
+		tbl.DeletionProtection = false
+	}
 	if conf.Families != nil {
 		tbl.ColumnFamilies = make(map[string]*btapb.ColumnFamily)
 		for fam, policy := range conf.Families {
@@ -275,6 +302,64 @@ func (ac *AdminClient) CreateColumnFamily(ctx context.Context, table, family str
 	return err
 }
 
+// UpdateTableConf contains all of the information necessary to update a table with column families.
+type UpdateTableConf struct {
+	tableID string
+	// deletionProtection can be unset, true or false
+	// set to true to make the table protected against data loss
+	deletionProtection DeletionProtection
+}
+
+// UpdateTableWithDeletionProtection updates a table with the given table ID and deletion protection parameter.
+func (ac *AdminClient) UpdateTableWithDeletionProtection(ctx context.Context, tableID string, deletionProtection DeletionProtection) error {
+	return ac.updateTableWithConf(ctx, &UpdateTableConf{tableID, deletionProtection})
+}
+
+// updateTableWithConf updates a table in the instance from the given configuration.
+// only deletion protection can be updated at this period.
+// table ID is required.
+func (ac *AdminClient) updateTableWithConf(ctx context.Context, conf *UpdateTableConf) error {
+	if conf.tableID == "" {
+		return errors.New("TableID is required")
+	}
+
+	if conf.deletionProtection == None {
+		return errors.New("deletion protection is required")
+	}
+
+	ctx = mergeOutgoingMetadata(ctx, ac.md)
+
+	updateMask := &field_mask.FieldMask{
+		Paths: []string{
+			"deletion_protection",
+		},
+	}
+
+	deletionProtection := true
+	if conf.deletionProtection == Unprotected {
+		deletionProtection = false
+	}
+	prefix := ac.instancePrefix()
+	req := &btapb.UpdateTableRequest{
+		Table: &btapb.Table{
+			Name:               prefix + "/tables/" + conf.tableID,
+			DeletionProtection: deletionProtection,
+		},
+		UpdateMask: updateMask,
+	}
+	lro, err := ac.tClient.UpdateTable(ctx, req)
+	if err != nil {
+		return fmt.Errorf("error from update: %w", err)
+	}
+	var tbl btapb.Table
+	op := longrunning.InternalNewOperation(ac.lroClient, lro)
+	err = op.Wait(ctx, &tbl)
+	if err != nil {
+		return fmt.Errorf("error from operation: %v", err)
+	}
+	return nil
+}
+
 // DeleteTable deletes a table and all of its data.
 func (ac *AdminClient) DeleteTable(ctx context.Context, table string) error {
 	ctx = mergeOutgoingMetadata(ctx, ac.md)
@@ -306,6 +391,10 @@ type TableInfo struct {
 	// DEPRECATED - This field is deprecated. Please use FamilyInfos instead.
 	Families    []string
 	FamilyInfos []FamilyInfo
+	// DeletionProtection indicates whether the table is protected against data loss
+	// DeletionProtection could be None depending on the table view
+	// for example when using NAME_ONLY, the response does not contain DeletionProtection and the value should be None
+	DeletionProtection DeletionProtection
 }
 
 // FamilyInfo represents information about a column family.
@@ -353,6 +442,13 @@ func (ac *AdminClient) TableInfo(ctx context.Context, table string) (*TableInfo,
 			GCPolicy:     GCRuleToString(fam.GcRule),
 			FullGCPolicy: gcRuleToPolicy(fam.GcRule),
 		})
+	}
+	// we expect DeletionProtection to be in the response because Table_SCHEMA_VIEW is being used in this function
+	// but when using NAME_ONLY, the response does not contain DeletionProtection and it could be nil
+	if res.DeletionProtection == true {
+		ti.DeletionProtection = Protected
+	} else {
+		ti.DeletionProtection = Unprotected
 	}
 	return ti, nil
 }

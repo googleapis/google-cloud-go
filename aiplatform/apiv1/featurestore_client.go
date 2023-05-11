@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -23,17 +23,17 @@ import (
 	"net/url"
 	"time"
 
+	aiplatformpb "cloud.google.com/go/aiplatform/apiv1/aiplatformpb"
+	iampb "cloud.google.com/go/iam/apiv1/iampb"
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
-	aiplatformpb "google.golang.org/genproto/googleapis/cloud/aiplatform/v1"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
-	iampb "google.golang.org/genproto/googleapis/iam/v1"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/proto"
@@ -62,6 +62,7 @@ type FeaturestoreCallOptions struct {
 	ImportFeatureValues    []gax.CallOption
 	BatchReadFeatureValues []gax.CallOption
 	ExportFeatureValues    []gax.CallOption
+	DeleteFeatureValues    []gax.CallOption
 	SearchFeatures         []gax.CallOption
 	GetLocation            []gax.CallOption
 	ListLocations          []gax.CallOption
@@ -108,6 +109,7 @@ func defaultFeaturestoreCallOptions() *FeaturestoreCallOptions {
 		ImportFeatureValues:    []gax.CallOption{},
 		BatchReadFeatureValues: []gax.CallOption{},
 		ExportFeatureValues:    []gax.CallOption{},
+		DeleteFeatureValues:    []gax.CallOption{},
 		SearchFeatures:         []gax.CallOption{},
 		GetLocation:            []gax.CallOption{},
 		ListLocations:          []gax.CallOption{},
@@ -157,6 +159,8 @@ type internalFeaturestoreClient interface {
 	BatchReadFeatureValuesOperation(name string) *BatchReadFeatureValuesOperation
 	ExportFeatureValues(context.Context, *aiplatformpb.ExportFeatureValuesRequest, ...gax.CallOption) (*ExportFeatureValuesOperation, error)
 	ExportFeatureValuesOperation(name string) *ExportFeatureValuesOperation
+	DeleteFeatureValues(context.Context, *aiplatformpb.DeleteFeatureValuesRequest, ...gax.CallOption) (*DeleteFeatureValuesOperation, error)
+	DeleteFeatureValuesOperation(name string) *DeleteFeatureValuesOperation
 	SearchFeatures(context.Context, *aiplatformpb.SearchFeaturesRequest, ...gax.CallOption) *FeatureIterator
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
 	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
@@ -397,6 +401,26 @@ func (c *FeaturestoreClient) ExportFeatureValues(ctx context.Context, req *aipla
 // The name must be that of a previously created ExportFeatureValuesOperation, possibly from a different process.
 func (c *FeaturestoreClient) ExportFeatureValuesOperation(name string) *ExportFeatureValuesOperation {
 	return c.internalClient.ExportFeatureValuesOperation(name)
+}
+
+// DeleteFeatureValues delete Feature values from Featurestore.
+//
+// The progress of the deletion is tracked by the returned operation. The
+// deleted feature values are guaranteed to be invisible to subsequent read
+// operations after the operation is marked as successfully done.
+//
+// If a delete feature values operation fails, the feature values
+// returned from reads and exports may be inconsistent. If consistency is
+// required, the caller must retry the same delete request again and wait till
+// the new operation returned is marked as successfully done.
+func (c *FeaturestoreClient) DeleteFeatureValues(ctx context.Context, req *aiplatformpb.DeleteFeatureValuesRequest, opts ...gax.CallOption) (*DeleteFeatureValuesOperation, error) {
+	return c.internalClient.DeleteFeatureValues(ctx, req, opts...)
+}
+
+// DeleteFeatureValuesOperation returns a new DeleteFeatureValuesOperation from a given name.
+// The name must be that of a previously created DeleteFeatureValuesOperation, possibly from a different process.
+func (c *FeaturestoreClient) DeleteFeatureValuesOperation(name string) *DeleteFeatureValuesOperation {
+	return c.internalClient.DeleteFeatureValuesOperation(name)
 }
 
 // SearchFeatures searches Features matching a query in a given project.
@@ -996,6 +1020,25 @@ func (c *featurestoreGRPCClient) ExportFeatureValues(ctx context.Context, req *a
 		return nil, err
 	}
 	return &ExportFeatureValuesOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *featurestoreGRPCClient) DeleteFeatureValues(ctx context.Context, req *aiplatformpb.DeleteFeatureValuesRequest, opts ...gax.CallOption) (*DeleteFeatureValuesOperation, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "entity_type", url.QueryEscape(req.GetEntityType())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).DeleteFeatureValues[0:len((*c.CallOptions).DeleteFeatureValues):len((*c.CallOptions).DeleteFeatureValues)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.featurestoreClient.DeleteFeatureValues(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &DeleteFeatureValuesOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
@@ -1721,6 +1764,75 @@ func (op *DeleteFeatureOperation) Done() bool {
 // Name returns the name of the long-running operation.
 // The name is assigned by the server and is unique within the service from which the operation is created.
 func (op *DeleteFeatureOperation) Name() string {
+	return op.lro.Name()
+}
+
+// DeleteFeatureValuesOperation manages a long-running operation from DeleteFeatureValues.
+type DeleteFeatureValuesOperation struct {
+	lro *longrunning.Operation
+}
+
+// DeleteFeatureValuesOperation returns a new DeleteFeatureValuesOperation from a given name.
+// The name must be that of a previously created DeleteFeatureValuesOperation, possibly from a different process.
+func (c *featurestoreGRPCClient) DeleteFeatureValuesOperation(name string) *DeleteFeatureValuesOperation {
+	return &DeleteFeatureValuesOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *DeleteFeatureValuesOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*aiplatformpb.DeleteFeatureValuesResponse, error) {
+	var resp aiplatformpb.DeleteFeatureValuesResponse
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *DeleteFeatureValuesOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*aiplatformpb.DeleteFeatureValuesResponse, error) {
+	var resp aiplatformpb.DeleteFeatureValuesResponse
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *DeleteFeatureValuesOperation) Metadata() (*aiplatformpb.DeleteFeatureValuesOperationMetadata, error) {
+	var meta aiplatformpb.DeleteFeatureValuesOperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *DeleteFeatureValuesOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *DeleteFeatureValuesOperation) Name() string {
 	return op.lro.Name()
 }
 

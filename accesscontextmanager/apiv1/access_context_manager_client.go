@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,23 +17,30 @@
 package accesscontextmanager
 
 import (
+	"bytes"
 	"context"
 	"fmt"
+	"io/ioutil"
 	"math"
+	"net/http"
 	"net/url"
 	"time"
 
+	accesscontextmanagerpb "cloud.google.com/go/accesscontextmanager/apiv1/accesscontextmanagerpb"
+	iampb "cloud.google.com/go/iam/apiv1/iampb"
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
-	accesscontextmanagerpb "google.golang.org/genproto/googleapis/identity/accesscontextmanager/v1"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
+	httptransport "google.golang.org/api/transport/http"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -64,6 +71,10 @@ type CallOptions struct {
 	CreateGcpUserAccessBinding []gax.CallOption
 	UpdateGcpUserAccessBinding []gax.CallOption
 	DeleteGcpUserAccessBinding []gax.CallOption
+	SetIamPolicy               []gax.CallOption
+	GetIamPolicy               []gax.CallOption
+	TestIamPermissions         []gax.CallOption
+	GetOperation               []gax.CallOption
 }
 
 func defaultGRPCClientOptions() []option.ClientOption {
@@ -103,6 +114,42 @@ func defaultCallOptions() *CallOptions {
 		CreateGcpUserAccessBinding: []gax.CallOption{},
 		UpdateGcpUserAccessBinding: []gax.CallOption{},
 		DeleteGcpUserAccessBinding: []gax.CallOption{},
+		SetIamPolicy:               []gax.CallOption{},
+		GetIamPolicy:               []gax.CallOption{},
+		TestIamPermissions:         []gax.CallOption{},
+		GetOperation:               []gax.CallOption{},
+	}
+}
+
+func defaultRESTCallOptions() *CallOptions {
+	return &CallOptions{
+		ListAccessPolicies:         []gax.CallOption{},
+		GetAccessPolicy:            []gax.CallOption{},
+		CreateAccessPolicy:         []gax.CallOption{},
+		UpdateAccessPolicy:         []gax.CallOption{},
+		DeleteAccessPolicy:         []gax.CallOption{},
+		ListAccessLevels:           []gax.CallOption{},
+		GetAccessLevel:             []gax.CallOption{},
+		CreateAccessLevel:          []gax.CallOption{},
+		UpdateAccessLevel:          []gax.CallOption{},
+		DeleteAccessLevel:          []gax.CallOption{},
+		ReplaceAccessLevels:        []gax.CallOption{},
+		ListServicePerimeters:      []gax.CallOption{},
+		GetServicePerimeter:        []gax.CallOption{},
+		CreateServicePerimeter:     []gax.CallOption{},
+		UpdateServicePerimeter:     []gax.CallOption{},
+		DeleteServicePerimeter:     []gax.CallOption{},
+		ReplaceServicePerimeters:   []gax.CallOption{},
+		CommitServicePerimeters:    []gax.CallOption{},
+		ListGcpUserAccessBindings:  []gax.CallOption{},
+		GetGcpUserAccessBinding:    []gax.CallOption{},
+		CreateGcpUserAccessBinding: []gax.CallOption{},
+		UpdateGcpUserAccessBinding: []gax.CallOption{},
+		DeleteGcpUserAccessBinding: []gax.CallOption{},
+		SetIamPolicy:               []gax.CallOption{},
+		GetIamPolicy:               []gax.CallOption{},
+		TestIamPermissions:         []gax.CallOption{},
+		GetOperation:               []gax.CallOption{},
 	}
 }
 
@@ -149,20 +196,24 @@ type internalClient interface {
 	UpdateGcpUserAccessBindingOperation(name string) *UpdateGcpUserAccessBindingOperation
 	DeleteGcpUserAccessBinding(context.Context, *accesscontextmanagerpb.DeleteGcpUserAccessBindingRequest, ...gax.CallOption) (*DeleteGcpUserAccessBindingOperation, error)
 	DeleteGcpUserAccessBindingOperation(name string) *DeleteGcpUserAccessBindingOperation
+	SetIamPolicy(context.Context, *iampb.SetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
+	GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
+	TestIamPermissions(context.Context, *iampb.TestIamPermissionsRequest, ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error)
+	GetOperation(context.Context, *longrunningpb.GetOperationRequest, ...gax.CallOption) (*longrunningpb.Operation, error)
 }
 
 // Client is a client for interacting with Access Context Manager API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
-// API for setting [Access Levels]
-// [google.identity.accesscontextmanager.v1.AccessLevel] and [Service
-// Perimeters] [google.identity.accesscontextmanager.v1.ServicePerimeter]
-// for Google Cloud Projects. Each organization has one [AccessPolicy]
-// [google.identity.accesscontextmanager.v1.AccessPolicy] containing the
-// [Access Levels] [google.identity.accesscontextmanager.v1.AccessLevel]
-// and [Service Perimeters]
+// API for setting [access levels]
+// [google.identity.accesscontextmanager.v1.AccessLevel] and [service
+// perimeters] [google.identity.accesscontextmanager.v1.ServicePerimeter]
+// for Google Cloud projects. Each organization has one [access policy]
+// [google.identity.accesscontextmanager.v1.AccessPolicy] that contains the
+// [access levels] [google.identity.accesscontextmanager.v1.AccessLevel]
+// and [service perimeters]
 // [google.identity.accesscontextmanager.v1.ServicePerimeter]. This
-// [AccessPolicy] [google.identity.accesscontextmanager.v1.AccessPolicy] is
+// [access policy] [google.identity.accesscontextmanager.v1.AccessPolicy] is
 // applicable to all resources in the organization.
 // AccessPolicies
 type Client struct {
@@ -201,23 +252,23 @@ func (c *Client) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// ListAccessPolicies list all [AccessPolicies]
-// [google.identity.accesscontextmanager.v1.AccessPolicy] under a
-// container.
+// ListAccessPolicies lists all [access policies]
+// [google.identity.accesscontextmanager.v1.AccessPolicy] in an
+// organization.
 func (c *Client) ListAccessPolicies(ctx context.Context, req *accesscontextmanagerpb.ListAccessPoliciesRequest, opts ...gax.CallOption) *AccessPolicyIterator {
 	return c.internalClient.ListAccessPolicies(ctx, req, opts...)
 }
 
-// GetAccessPolicy get an [AccessPolicy]
-// [google.identity.accesscontextmanager.v1.AccessPolicy] by name.
+// GetAccessPolicy returns an [access policy]
+// [google.identity.accesscontextmanager.v1.AccessPolicy] based on the name.
 func (c *Client) GetAccessPolicy(ctx context.Context, req *accesscontextmanagerpb.GetAccessPolicyRequest, opts ...gax.CallOption) (*accesscontextmanagerpb.AccessPolicy, error) {
 	return c.internalClient.GetAccessPolicy(ctx, req, opts...)
 }
 
-// CreateAccessPolicy create an AccessPolicy. Fails if this organization already has a
-// AccessPolicy. The longrunning Operation will have a successful status
-// once the AccessPolicy has propagated to long-lasting storage.
-// Syntactic and basic semantic errors will be returned in metadata as a
+// CreateAccessPolicy creates an access policy. This method fails if the organization already has
+// an access policy. The long-running operation has a successful status
+// after the access policy propagates to long-lasting storage.
+// Syntactic and basic semantic errors are returned in metadata as a
 // BadRequest proto.
 func (c *Client) CreateAccessPolicy(ctx context.Context, req *accesscontextmanagerpb.AccessPolicy, opts ...gax.CallOption) (*CreateAccessPolicyOperation, error) {
 	return c.internalClient.CreateAccessPolicy(ctx, req, opts...)
@@ -229,13 +280,12 @@ func (c *Client) CreateAccessPolicyOperation(name string) *CreateAccessPolicyOpe
 	return c.internalClient.CreateAccessPolicyOperation(name)
 }
 
-// UpdateAccessPolicy update an [AccessPolicy]
+// UpdateAccessPolicy updates an [access policy]
 // [google.identity.accesscontextmanager.v1.AccessPolicy]. The
-// longrunning Operation from this RPC will have a successful status once the
-// changes to the [AccessPolicy]
-// [google.identity.accesscontextmanager.v1.AccessPolicy] have propagated
-// to long-lasting storage. Syntactic and basic semantic errors will be
-// returned in metadata as a BadRequest proto.
+// long-running operation from this RPC has a successful status after the
+// changes to the [access policy]
+// [google.identity.accesscontextmanager.v1.AccessPolicy] propagate
+// to long-lasting storage.
 func (c *Client) UpdateAccessPolicy(ctx context.Context, req *accesscontextmanagerpb.UpdateAccessPolicyRequest, opts ...gax.CallOption) (*UpdateAccessPolicyOperation, error) {
 	return c.internalClient.UpdateAccessPolicy(ctx, req, opts...)
 }
@@ -246,11 +296,11 @@ func (c *Client) UpdateAccessPolicyOperation(name string) *UpdateAccessPolicyOpe
 	return c.internalClient.UpdateAccessPolicyOperation(name)
 }
 
-// DeleteAccessPolicy delete an [AccessPolicy]
-// [google.identity.accesscontextmanager.v1.AccessPolicy] by resource
-// name. The longrunning Operation will have a successful status once the
-// [AccessPolicy] [google.identity.accesscontextmanager.v1.AccessPolicy]
-// has been removed from long-lasting storage.
+// DeleteAccessPolicy deletes an [access policy]
+// [google.identity.accesscontextmanager.v1.AccessPolicy] based on the
+// resource name. The long-running operation has a successful status after the
+// [access policy] [google.identity.accesscontextmanager.v1.AccessPolicy]
+// is removed from long-lasting storage.
 func (c *Client) DeleteAccessPolicy(ctx context.Context, req *accesscontextmanagerpb.DeleteAccessPolicyRequest, opts ...gax.CallOption) (*DeleteAccessPolicyOperation, error) {
 	return c.internalClient.DeleteAccessPolicy(ctx, req, opts...)
 }
@@ -261,27 +311,27 @@ func (c *Client) DeleteAccessPolicyOperation(name string) *DeleteAccessPolicyOpe
 	return c.internalClient.DeleteAccessPolicyOperation(name)
 }
 
-// ListAccessLevels list all [Access Levels]
+// ListAccessLevels lists all [access levels]
 // [google.identity.accesscontextmanager.v1.AccessLevel] for an access
 // policy.
 func (c *Client) ListAccessLevels(ctx context.Context, req *accesscontextmanagerpb.ListAccessLevelsRequest, opts ...gax.CallOption) *AccessLevelIterator {
 	return c.internalClient.ListAccessLevels(ctx, req, opts...)
 }
 
-// GetAccessLevel get an [Access Level]
-// [google.identity.accesscontextmanager.v1.AccessLevel] by resource
+// GetAccessLevel gets an [access level]
+// [google.identity.accesscontextmanager.v1.AccessLevel] based on the resource
 // name.
 func (c *Client) GetAccessLevel(ctx context.Context, req *accesscontextmanagerpb.GetAccessLevelRequest, opts ...gax.CallOption) (*accesscontextmanagerpb.AccessLevel, error) {
 	return c.internalClient.GetAccessLevel(ctx, req, opts...)
 }
 
-// CreateAccessLevel create an [Access Level]
-// [google.identity.accesscontextmanager.v1.AccessLevel]. The longrunning
-// operation from this RPC will have a successful status once the [Access
-// Level] [google.identity.accesscontextmanager.v1.AccessLevel] has
-// propagated to long-lasting storage. [Access Levels]
-// [google.identity.accesscontextmanager.v1.AccessLevel] containing
-// errors will result in an error response for the first error encountered.
+// CreateAccessLevel creates an [access level]
+// [google.identity.accesscontextmanager.v1.AccessLevel]. The long-running
+// operation from this RPC has a successful status after the [access
+// level] [google.identity.accesscontextmanager.v1.AccessLevel]
+// propagates to long-lasting storage. If [access levels]
+// [google.identity.accesscontextmanager.v1.AccessLevel] contain
+// errors, an error response is returned for the first error encountered.
 func (c *Client) CreateAccessLevel(ctx context.Context, req *accesscontextmanagerpb.CreateAccessLevelRequest, opts ...gax.CallOption) (*CreateAccessLevelOperation, error) {
 	return c.internalClient.CreateAccessLevel(ctx, req, opts...)
 }
@@ -292,14 +342,14 @@ func (c *Client) CreateAccessLevelOperation(name string) *CreateAccessLevelOpera
 	return c.internalClient.CreateAccessLevelOperation(name)
 }
 
-// UpdateAccessLevel update an [Access Level]
-// [google.identity.accesscontextmanager.v1.AccessLevel]. The longrunning
-// operation from this RPC will have a successful status once the changes to
-// the [Access Level]
-// [google.identity.accesscontextmanager.v1.AccessLevel] have propagated
-// to long-lasting storage. [Access Levels]
-// [google.identity.accesscontextmanager.v1.AccessLevel] containing
-// errors will result in an error response for the first error encountered.
+// UpdateAccessLevel updates an [access level]
+// [google.identity.accesscontextmanager.v1.AccessLevel]. The long-running
+// operation from this RPC has a successful status after the changes to
+// the [access level]
+// [google.identity.accesscontextmanager.v1.AccessLevel] propagate
+// to long-lasting storage. If [access levels]
+// [google.identity.accesscontextmanager.v1.AccessLevel] contain
+// errors, an error response is returned for the first error encountered.
 func (c *Client) UpdateAccessLevel(ctx context.Context, req *accesscontextmanagerpb.UpdateAccessLevelRequest, opts ...gax.CallOption) (*UpdateAccessLevelOperation, error) {
 	return c.internalClient.UpdateAccessLevel(ctx, req, opts...)
 }
@@ -310,10 +360,10 @@ func (c *Client) UpdateAccessLevelOperation(name string) *UpdateAccessLevelOpera
 	return c.internalClient.UpdateAccessLevelOperation(name)
 }
 
-// DeleteAccessLevel delete an [Access Level]
-// [google.identity.accesscontextmanager.v1.AccessLevel] by resource
-// name. The longrunning operation from this RPC will have a successful status
-// once the [Access Level]
+// DeleteAccessLevel deletes an [access level]
+// [google.identity.accesscontextmanager.v1.AccessLevel] based on the resource
+// name. The long-running operation from this RPC has a successful status
+// after the [access level]
 // [google.identity.accesscontextmanager.v1.AccessLevel] has been removed
 // from long-lasting storage.
 func (c *Client) DeleteAccessLevel(ctx context.Context, req *accesscontextmanagerpb.DeleteAccessLevelRequest, opts ...gax.CallOption) (*DeleteAccessLevelOperation, error) {
@@ -326,22 +376,22 @@ func (c *Client) DeleteAccessLevelOperation(name string) *DeleteAccessLevelOpera
 	return c.internalClient.DeleteAccessLevelOperation(name)
 }
 
-// ReplaceAccessLevels replace all existing [Access Levels]
-// [google.identity.accesscontextmanager.v1.AccessLevel] in an [Access
-// Policy] [google.identity.accesscontextmanager.v1.AccessPolicy] with
-// the [Access Levels]
+// ReplaceAccessLevels replaces all existing [access levels]
+// [google.identity.accesscontextmanager.v1.AccessLevel] in an [access
+// policy] [google.identity.accesscontextmanager.v1.AccessPolicy] with
+// the [access levels]
 // [google.identity.accesscontextmanager.v1.AccessLevel] provided. This
-// is done atomically. The longrunning operation from this RPC will have a
-// successful status once all replacements have propagated to long-lasting
-// storage. Replacements containing errors will result in an error response
-// for the first error encountered.  Replacement will be cancelled on error,
-// existing [Access Levels]
-// [google.identity.accesscontextmanager.v1.AccessLevel] will not be
-// affected. Operation.response field will contain
-// ReplaceAccessLevelsResponse. Removing [Access Levels]
+// is done atomically. The long-running operation from this RPC has a
+// successful status after all replacements propagate to long-lasting
+// storage. If the replacement contains errors, an error response is returned
+// for the first error encountered.  Upon error, the replacement is cancelled,
+// and existing [access levels]
+// [google.identity.accesscontextmanager.v1.AccessLevel] are not
+// affected. The Operation.response field contains
+// ReplaceAccessLevelsResponse. Removing [access levels]
 // [google.identity.accesscontextmanager.v1.AccessLevel] contained in existing
-// [Service Perimeters]
-// [google.identity.accesscontextmanager.v1.ServicePerimeter] will result in
+// [service perimeters]
+// [google.identity.accesscontextmanager.v1.ServicePerimeter] result in an
 // error.
 func (c *Client) ReplaceAccessLevels(ctx context.Context, req *accesscontextmanagerpb.ReplaceAccessLevelsRequest, opts ...gax.CallOption) (*ReplaceAccessLevelsOperation, error) {
 	return c.internalClient.ReplaceAccessLevels(ctx, req, opts...)
@@ -353,28 +403,28 @@ func (c *Client) ReplaceAccessLevelsOperation(name string) *ReplaceAccessLevelsO
 	return c.internalClient.ReplaceAccessLevelsOperation(name)
 }
 
-// ListServicePerimeters list all [Service Perimeters]
+// ListServicePerimeters lists all [service perimeters]
 // [google.identity.accesscontextmanager.v1.ServicePerimeter] for an
 // access policy.
 func (c *Client) ListServicePerimeters(ctx context.Context, req *accesscontextmanagerpb.ListServicePerimetersRequest, opts ...gax.CallOption) *ServicePerimeterIterator {
 	return c.internalClient.ListServicePerimeters(ctx, req, opts...)
 }
 
-// GetServicePerimeter get a [Service Perimeter]
-// [google.identity.accesscontextmanager.v1.ServicePerimeter] by resource
-// name.
+// GetServicePerimeter gets a [service perimeter]
+// [google.identity.accesscontextmanager.v1.ServicePerimeter] based on the
+// resource name.
 func (c *Client) GetServicePerimeter(ctx context.Context, req *accesscontextmanagerpb.GetServicePerimeterRequest, opts ...gax.CallOption) (*accesscontextmanagerpb.ServicePerimeter, error) {
 	return c.internalClient.GetServicePerimeter(ctx, req, opts...)
 }
 
-// CreateServicePerimeter create a [Service Perimeter]
+// CreateServicePerimeter creates a [service perimeter]
 // [google.identity.accesscontextmanager.v1.ServicePerimeter]. The
-// longrunning operation from this RPC will have a successful status once the
-// [Service Perimeter]
-// [google.identity.accesscontextmanager.v1.ServicePerimeter] has
-// propagated to long-lasting storage. [Service Perimeters]
-// [google.identity.accesscontextmanager.v1.ServicePerimeter] containing
-// errors will result in an error response for the first error encountered.
+// long-running operation from this RPC has a successful status after the
+// [service perimeter]
+// [google.identity.accesscontextmanager.v1.ServicePerimeter]
+// propagates to long-lasting storage. If a [service perimeter]
+// [google.identity.accesscontextmanager.v1.ServicePerimeter] contains
+// errors, an error response is returned for the first error encountered.
 func (c *Client) CreateServicePerimeter(ctx context.Context, req *accesscontextmanagerpb.CreateServicePerimeterRequest, opts ...gax.CallOption) (*CreateServicePerimeterOperation, error) {
 	return c.internalClient.CreateServicePerimeter(ctx, req, opts...)
 }
@@ -385,14 +435,14 @@ func (c *Client) CreateServicePerimeterOperation(name string) *CreateServicePeri
 	return c.internalClient.CreateServicePerimeterOperation(name)
 }
 
-// UpdateServicePerimeter update a [Service Perimeter]
+// UpdateServicePerimeter updates a [service perimeter]
 // [google.identity.accesscontextmanager.v1.ServicePerimeter]. The
-// longrunning operation from this RPC will have a successful status once the
-// changes to the [Service Perimeter]
-// [google.identity.accesscontextmanager.v1.ServicePerimeter] have
-// propagated to long-lasting storage. [Service Perimeter]
-// [google.identity.accesscontextmanager.v1.ServicePerimeter] containing
-// errors will result in an error response for the first error encountered.
+// long-running operation from this RPC has a successful status after the
+// [service perimeter]
+// [google.identity.accesscontextmanager.v1.ServicePerimeter]
+// propagates to long-lasting storage. If a [service perimeter]
+// [google.identity.accesscontextmanager.v1.ServicePerimeter] contains
+// errors, an error response is returned for the first error encountered.
 func (c *Client) UpdateServicePerimeter(ctx context.Context, req *accesscontextmanagerpb.UpdateServicePerimeterRequest, opts ...gax.CallOption) (*UpdateServicePerimeterOperation, error) {
 	return c.internalClient.UpdateServicePerimeter(ctx, req, opts...)
 }
@@ -403,12 +453,12 @@ func (c *Client) UpdateServicePerimeterOperation(name string) *UpdateServicePeri
 	return c.internalClient.UpdateServicePerimeterOperation(name)
 }
 
-// DeleteServicePerimeter delete a [Service Perimeter]
-// [google.identity.accesscontextmanager.v1.ServicePerimeter] by resource
-// name. The longrunning operation from this RPC will have a successful status
-// once the [Service Perimeter]
-// [google.identity.accesscontextmanager.v1.ServicePerimeter] has been
-// removed from long-lasting storage.
+// DeleteServicePerimeter deletes a [service perimeter]
+// [google.identity.accesscontextmanager.v1.ServicePerimeter] based on the
+// resource name. The long-running operation from this RPC has a successful
+// status after the [service perimeter]
+// [google.identity.accesscontextmanager.v1.ServicePerimeter] is removed from
+// long-lasting storage.
 func (c *Client) DeleteServicePerimeter(ctx context.Context, req *accesscontextmanagerpb.DeleteServicePerimeterRequest, opts ...gax.CallOption) (*DeleteServicePerimeterOperation, error) {
 	return c.internalClient.DeleteServicePerimeter(ctx, req, opts...)
 }
@@ -419,18 +469,18 @@ func (c *Client) DeleteServicePerimeterOperation(name string) *DeleteServicePeri
 	return c.internalClient.DeleteServicePerimeterOperation(name)
 }
 
-// ReplaceServicePerimeters replace all existing [Service Perimeters]
-// [google.identity.accesscontextmanager.v1.ServicePerimeter] in an
-// [Access Policy] [google.identity.accesscontextmanager.v1.AccessPolicy]
-// with the [Service Perimeters]
-// [google.identity.accesscontextmanager.v1.ServicePerimeter] provided.
-// This is done atomically. The longrunning operation from this
-// RPC will have a successful status once all replacements have propagated to
-// long-lasting storage. Replacements containing errors will result in an
-// error response for the first error encountered. Replacement will be
-// cancelled on error, existing [Service Perimeters]
-// [google.identity.accesscontextmanager.v1.ServicePerimeter] will not be
-// affected. Operation.response field will contain
+// ReplaceServicePerimeters replace all existing [service perimeters]
+// [google.identity.accesscontextmanager.v1.ServicePerimeter] in an [access
+// policy] [google.identity.accesscontextmanager.v1.AccessPolicy] with the
+// [service perimeters]
+// [google.identity.accesscontextmanager.v1.ServicePerimeter] provided. This
+// is done atomically. The long-running operation from this RPC has a
+// successful status after all replacements propagate to long-lasting storage.
+// Replacements containing errors result in an error response for the first
+// error encountered. Upon an error, replacement are cancelled and existing
+// [service perimeters]
+// [google.identity.accesscontextmanager.v1.ServicePerimeter] are not
+// affected. The Operation.response field contains
 // ReplaceServicePerimetersResponse.
 func (c *Client) ReplaceServicePerimeters(ctx context.Context, req *accesscontextmanagerpb.ReplaceServicePerimetersRequest, opts ...gax.CallOption) (*ReplaceServicePerimetersOperation, error) {
 	return c.internalClient.ReplaceServicePerimeters(ctx, req, opts...)
@@ -442,21 +492,21 @@ func (c *Client) ReplaceServicePerimetersOperation(name string) *ReplaceServiceP
 	return c.internalClient.ReplaceServicePerimetersOperation(name)
 }
 
-// CommitServicePerimeters commit the dry-run spec for all the [Service Perimeters]
+// CommitServicePerimeters commits the dry-run specification for all the [service perimeters]
 // [google.identity.accesscontextmanager.v1.ServicePerimeter] in an
-// [Access Policy][google.identity.accesscontextmanager.v1.AccessPolicy].
-// A commit operation on a Service Perimeter involves copying its spec field
-// to that Service Perimeter’s status field. Only [Service Perimeters]
+// [access policy][google.identity.accesscontextmanager.v1.AccessPolicy].
+// A commit operation on a service perimeter involves copying its spec field
+// to the status field of the service perimeter. Only [service perimeters]
 // [google.identity.accesscontextmanager.v1.ServicePerimeter] with
 // use_explicit_dry_run_spec field set to true are affected by a commit
-// operation. The longrunning operation from this RPC will have a successful
-// status once the dry-run specs for all the [Service Perimeters]
+// operation. The long-running operation from this RPC has a successful
+// status after the dry-run specifications for all the [service perimeters]
 // [google.identity.accesscontextmanager.v1.ServicePerimeter] have been
-// committed. If a commit fails, it will cause the longrunning operation to
-// return an error response and the entire commit operation will be cancelled.
-// When successful, Operation.response field will contain
-// CommitServicePerimetersResponse. The dry_run and the spec fields will
-// be cleared after a successful commit operation.
+// committed. If a commit fails, it causes the long-running operation to
+// return an error response and the entire commit operation is cancelled.
+// When successful, the Operation.response field contains
+// CommitServicePerimetersResponse. The dry_run and the spec fields are
+// cleared after a successful commit operation.
 func (c *Client) CommitServicePerimeters(ctx context.Context, req *accesscontextmanagerpb.CommitServicePerimetersRequest, opts ...gax.CallOption) (*CommitServicePerimetersOperation, error) {
 	return c.internalClient.CommitServicePerimeters(ctx, req, opts...)
 }
@@ -485,7 +535,7 @@ func (c *Client) GetGcpUserAccessBinding(ctx context.Context, req *accesscontext
 // [google.identity.accesscontextmanager.v1.GcpUserAccessBinding]. If the
 // client specifies a [name]
 // [google.identity.accesscontextmanager.v1.GcpUserAccessBinding.name (at http://google.identity.accesscontextmanager.v1.GcpUserAccessBinding.name)],
-// the server will ignore it. Fails if a resource already exists with the same
+// the server ignores it. Fails if a resource already exists with the same
 // [group_key]
 // [google.identity.accesscontextmanager.v1.GcpUserAccessBinding.group_key].
 // Completion of this long-running operation does not necessarily signify that
@@ -531,6 +581,37 @@ func (c *Client) DeleteGcpUserAccessBindingOperation(name string) *DeleteGcpUser
 	return c.internalClient.DeleteGcpUserAccessBindingOperation(name)
 }
 
+// SetIamPolicy sets the IAM policy for the specified Access Context Manager
+// [access policy][google.identity.accesscontextmanager.v1.AccessPolicy].
+// This method replaces the existing IAM policy on the access policy. The IAM
+// policy controls the set of users who can perform specific operations on the
+// Access Context Manager [access
+// policy][google.identity.accesscontextmanager.v1.AccessPolicy].
+func (c *Client) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
+	return c.internalClient.SetIamPolicy(ctx, req, opts...)
+}
+
+// GetIamPolicy gets the IAM policy for the specified Access Context Manager
+// [access policy][google.identity.accesscontextmanager.v1.AccessPolicy].
+func (c *Client) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
+	return c.internalClient.GetIamPolicy(ctx, req, opts...)
+}
+
+// TestIamPermissions returns the IAM permissions that the caller has on the specified Access
+// Context Manager resource. The resource can be an
+// AccessPolicy,
+// AccessLevel, or
+// [ServicePerimeter][google.identity.accesscontextmanager.v1.ServicePerimeter
+// ]. This method does not support other resources.
+func (c *Client) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermissionsRequest, opts ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error) {
+	return c.internalClient.TestIamPermissions(ctx, req, opts...)
+}
+
+// GetOperation is a utility method from google.longrunning.Operations.
+func (c *Client) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+	return c.internalClient.GetOperation(ctx, req, opts...)
+}
+
 // gRPCClient is a client for interacting with Access Context Manager API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
@@ -552,6 +633,8 @@ type gRPCClient struct {
 	// Users should not Close this client.
 	LROClient **lroauto.OperationsClient
 
+	operationsClient longrunningpb.OperationsClient
+
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
 }
@@ -559,15 +642,15 @@ type gRPCClient struct {
 // NewClient creates a new access context manager client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
-// API for setting [Access Levels]
-// [google.identity.accesscontextmanager.v1.AccessLevel] and [Service
-// Perimeters] [google.identity.accesscontextmanager.v1.ServicePerimeter]
-// for Google Cloud Projects. Each organization has one [AccessPolicy]
-// [google.identity.accesscontextmanager.v1.AccessPolicy] containing the
-// [Access Levels] [google.identity.accesscontextmanager.v1.AccessLevel]
-// and [Service Perimeters]
+// API for setting [access levels]
+// [google.identity.accesscontextmanager.v1.AccessLevel] and [service
+// perimeters] [google.identity.accesscontextmanager.v1.ServicePerimeter]
+// for Google Cloud projects. Each organization has one [access policy]
+// [google.identity.accesscontextmanager.v1.AccessPolicy] that contains the
+// [access levels] [google.identity.accesscontextmanager.v1.AccessLevel]
+// and [service perimeters]
 // [google.identity.accesscontextmanager.v1.ServicePerimeter]. This
-// [AccessPolicy] [google.identity.accesscontextmanager.v1.AccessPolicy] is
+// [access policy] [google.identity.accesscontextmanager.v1.AccessPolicy] is
 // applicable to all resources in the organization.
 // AccessPolicies
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
@@ -596,6 +679,7 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		disableDeadlines: disableDeadlines,
 		client:           accesscontextmanagerpb.NewAccessContextManagerClient(connPool),
 		CallOptions:      &client.CallOptions,
+		operationsClient: longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
 
@@ -638,6 +722,99 @@ func (c *gRPCClient) Close() error {
 	return c.connPool.Close()
 }
 
+// Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
+type restClient struct {
+	// The http endpoint to connect to.
+	endpoint string
+
+	// The http client.
+	httpClient *http.Client
+
+	// LROClient is used internally to handle long-running operations.
+	// It is exposed so that its CallOptions can be modified if required.
+	// Users should not Close this client.
+	LROClient **lroauto.OperationsClient
+
+	// The x-goog-* metadata to be sent with each request.
+	xGoogMetadata metadata.MD
+
+	// Points back to the CallOptions field of the containing Client
+	CallOptions **CallOptions
+}
+
+// NewRESTClient creates a new access context manager rest client.
+//
+// API for setting [access levels]
+// [google.identity.accesscontextmanager.v1.AccessLevel] and [service
+// perimeters] [google.identity.accesscontextmanager.v1.ServicePerimeter]
+// for Google Cloud projects. Each organization has one [access policy]
+// [google.identity.accesscontextmanager.v1.AccessPolicy] that contains the
+// [access levels] [google.identity.accesscontextmanager.v1.AccessLevel]
+// and [service perimeters]
+// [google.identity.accesscontextmanager.v1.ServicePerimeter]. This
+// [access policy] [google.identity.accesscontextmanager.v1.AccessPolicy] is
+// applicable to all resources in the organization.
+// AccessPolicies
+func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
+	clientOpts := append(defaultRESTClientOptions(), opts...)
+	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
+	if err != nil {
+		return nil, err
+	}
+
+	callOpts := defaultRESTCallOptions()
+	c := &restClient{
+		endpoint:    endpoint,
+		httpClient:  httpClient,
+		CallOptions: &callOpts,
+	}
+	c.setGoogleClientInfo()
+
+	lroOpts := []option.ClientOption{
+		option.WithHTTPClient(httpClient),
+		option.WithEndpoint(endpoint),
+	}
+	opClient, err := lroauto.NewOperationsRESTClient(ctx, lroOpts...)
+	if err != nil {
+		return nil, err
+	}
+	c.LROClient = &opClient
+
+	return &Client{internalClient: c, CallOptions: callOpts}, nil
+}
+
+func defaultRESTClientOptions() []option.ClientOption {
+	return []option.ClientOption{
+		internaloption.WithDefaultEndpoint("https://accesscontextmanager.googleapis.com"),
+		internaloption.WithDefaultMTLSEndpoint("https://accesscontextmanager.mtls.googleapis.com"),
+		internaloption.WithDefaultAudience("https://accesscontextmanager.googleapis.com/"),
+		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+	}
+}
+
+// setGoogleClientInfo sets the name and version of the application in
+// the `x-goog-api-client` header passed on each request. Intended for
+// use by Google-written clients.
+func (c *restClient) setGoogleClientInfo(keyval ...string) {
+	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
+	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+}
+
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *restClient) Close() error {
+	// Replace httpClient with nil to force cleanup.
+	c.httpClient = nil
+	return nil
+}
+
+// Connection returns a connection to the API service.
+//
+// Deprecated: This method always returns nil.
+func (c *restClient) Connection() *grpc.ClientConn {
+	return nil
+}
 func (c *gRPCClient) ListAccessPolicies(ctx context.Context, req *accesscontextmanagerpb.ListAccessPoliciesRequest, opts ...gax.CallOption) *AccessPolicyIterator {
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
 	opts = append((*c.CallOptions).ListAccessPolicies[0:len((*c.CallOptions).ListAccessPolicies):len((*c.CallOptions).ListAccessPolicies)], opts...)
@@ -1262,9 +1439,2098 @@ func (c *gRPCClient) DeleteGcpUserAccessBinding(ctx context.Context, req *access
 	}, nil
 }
 
+func (c *gRPCClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).SetIamPolicy[0:len((*c.CallOptions).SetIamPolicy):len((*c.CallOptions).SetIamPolicy)], opts...)
+	var resp *iampb.Policy
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.SetIamPolicy(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).GetIamPolicy[0:len((*c.CallOptions).GetIamPolicy):len((*c.CallOptions).GetIamPolicy)], opts...)
+	var resp *iampb.Policy
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.GetIamPolicy(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermissionsRequest, opts ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).TestIamPermissions[0:len((*c.CallOptions).TestIamPermissions):len((*c.CallOptions).TestIamPermissions)], opts...)
+	var resp *iampb.TestIamPermissionsResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.TestIamPermissions(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+// ListAccessPolicies lists all [access policies]
+// [google.identity.accesscontextmanager.v1.AccessPolicy] in an
+// organization.
+func (c *restClient) ListAccessPolicies(ctx context.Context, req *accesscontextmanagerpb.ListAccessPoliciesRequest, opts ...gax.CallOption) *AccessPolicyIterator {
+	it := &AccessPolicyIterator{}
+	req = proto.Clone(req).(*accesscontextmanagerpb.ListAccessPoliciesRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*accesscontextmanagerpb.AccessPolicy, string, error) {
+		resp := &accesscontextmanagerpb.ListAccessPoliciesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/accessPolicies")
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+		params.Add("parent", fmt.Sprintf("%v", req.GetParent()))
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			httpRsp, err := c.httpClient.Do(httpReq)
+			if err != nil {
+				return err
+			}
+			defer httpRsp.Body.Close()
+
+			if err = googleapi.CheckResponse(httpRsp); err != nil {
+				return err
+			}
+
+			buf, err := ioutil.ReadAll(httpRsp.Body)
+			if err != nil {
+				return err
+			}
+
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return maybeUnknownEnum(err)
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetAccessPolicies(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// GetAccessPolicy returns an [access policy]
+// [google.identity.accesscontextmanager.v1.AccessPolicy] based on the name.
+func (c *restClient) GetAccessPolicy(ctx context.Context, req *accesscontextmanagerpb.GetAccessPolicyRequest, opts ...gax.CallOption) (*accesscontextmanagerpb.AccessPolicy, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).GetAccessPolicy[0:len((*c.CallOptions).GetAccessPolicy):len((*c.CallOptions).GetAccessPolicy)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &accesscontextmanagerpb.AccessPolicy{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// CreateAccessPolicy creates an access policy. This method fails if the organization already has
+// an access policy. The long-running operation has a successful status
+// after the access policy propagates to long-lasting storage.
+// Syntactic and basic semantic errors are returned in metadata as a
+// BadRequest proto.
+func (c *restClient) CreateAccessPolicy(ctx context.Context, req *accesscontextmanagerpb.AccessPolicy, opts ...gax.CallOption) (*CreateAccessPolicyOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/accessPolicies")
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &CreateAccessPolicyOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// UpdateAccessPolicy updates an [access policy]
+// [google.identity.accesscontextmanager.v1.AccessPolicy]. The
+// long-running operation from this RPC has a successful status after the
+// changes to the [access policy]
+// [google.identity.accesscontextmanager.v1.AccessPolicy] propagate
+// to long-lasting storage.
+func (c *restClient) UpdateAccessPolicy(ctx context.Context, req *accesscontextmanagerpb.UpdateAccessPolicyRequest, opts ...gax.CallOption) (*UpdateAccessPolicyOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetPolicy()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetPolicy().GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetUpdateMask() != nil {
+		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(updateMask))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "policy.name", url.QueryEscape(req.GetPolicy().GetName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &UpdateAccessPolicyOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// DeleteAccessPolicy deletes an [access policy]
+// [google.identity.accesscontextmanager.v1.AccessPolicy] based on the
+// resource name. The long-running operation has a successful status after the
+// [access policy] [google.identity.accesscontextmanager.v1.AccessPolicy]
+// is removed from long-lasting storage.
+func (c *restClient) DeleteAccessPolicy(ctx context.Context, req *accesscontextmanagerpb.DeleteAccessPolicyRequest, opts ...gax.CallOption) (*DeleteAccessPolicyOperation, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &DeleteAccessPolicyOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// ListAccessLevels lists all [access levels]
+// [google.identity.accesscontextmanager.v1.AccessLevel] for an access
+// policy.
+func (c *restClient) ListAccessLevels(ctx context.Context, req *accesscontextmanagerpb.ListAccessLevelsRequest, opts ...gax.CallOption) *AccessLevelIterator {
+	it := &AccessLevelIterator{}
+	req = proto.Clone(req).(*accesscontextmanagerpb.ListAccessLevelsRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*accesscontextmanagerpb.AccessLevel, string, error) {
+		resp := &accesscontextmanagerpb.ListAccessLevelsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v/accessLevels", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetAccessLevelFormat() != 0 {
+			params.Add("accessLevelFormat", fmt.Sprintf("%v", req.GetAccessLevelFormat()))
+		}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			httpRsp, err := c.httpClient.Do(httpReq)
+			if err != nil {
+				return err
+			}
+			defer httpRsp.Body.Close()
+
+			if err = googleapi.CheckResponse(httpRsp); err != nil {
+				return err
+			}
+
+			buf, err := ioutil.ReadAll(httpRsp.Body)
+			if err != nil {
+				return err
+			}
+
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return maybeUnknownEnum(err)
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetAccessLevels(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// GetAccessLevel gets an [access level]
+// [google.identity.accesscontextmanager.v1.AccessLevel] based on the resource
+// name.
+func (c *restClient) GetAccessLevel(ctx context.Context, req *accesscontextmanagerpb.GetAccessLevelRequest, opts ...gax.CallOption) (*accesscontextmanagerpb.AccessLevel, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetAccessLevelFormat() != 0 {
+		params.Add("accessLevelFormat", fmt.Sprintf("%v", req.GetAccessLevelFormat()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).GetAccessLevel[0:len((*c.CallOptions).GetAccessLevel):len((*c.CallOptions).GetAccessLevel)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &accesscontextmanagerpb.AccessLevel{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// CreateAccessLevel creates an [access level]
+// [google.identity.accesscontextmanager.v1.AccessLevel]. The long-running
+// operation from this RPC has a successful status after the [access
+// level] [google.identity.accesscontextmanager.v1.AccessLevel]
+// propagates to long-lasting storage. If [access levels]
+// [google.identity.accesscontextmanager.v1.AccessLevel] contain
+// errors, an error response is returned for the first error encountered.
+func (c *restClient) CreateAccessLevel(ctx context.Context, req *accesscontextmanagerpb.CreateAccessLevelRequest, opts ...gax.CallOption) (*CreateAccessLevelOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetAccessLevel()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v/accessLevels", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &CreateAccessLevelOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// UpdateAccessLevel updates an [access level]
+// [google.identity.accesscontextmanager.v1.AccessLevel]. The long-running
+// operation from this RPC has a successful status after the changes to
+// the [access level]
+// [google.identity.accesscontextmanager.v1.AccessLevel] propagate
+// to long-lasting storage. If [access levels]
+// [google.identity.accesscontextmanager.v1.AccessLevel] contain
+// errors, an error response is returned for the first error encountered.
+func (c *restClient) UpdateAccessLevel(ctx context.Context, req *accesscontextmanagerpb.UpdateAccessLevelRequest, opts ...gax.CallOption) (*UpdateAccessLevelOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetAccessLevel()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetAccessLevel().GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetUpdateMask() != nil {
+		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(updateMask))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "access_level.name", url.QueryEscape(req.GetAccessLevel().GetName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &UpdateAccessLevelOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// DeleteAccessLevel deletes an [access level]
+// [google.identity.accesscontextmanager.v1.AccessLevel] based on the resource
+// name. The long-running operation from this RPC has a successful status
+// after the [access level]
+// [google.identity.accesscontextmanager.v1.AccessLevel] has been removed
+// from long-lasting storage.
+func (c *restClient) DeleteAccessLevel(ctx context.Context, req *accesscontextmanagerpb.DeleteAccessLevelRequest, opts ...gax.CallOption) (*DeleteAccessLevelOperation, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &DeleteAccessLevelOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// ReplaceAccessLevels replaces all existing [access levels]
+// [google.identity.accesscontextmanager.v1.AccessLevel] in an [access
+// policy] [google.identity.accesscontextmanager.v1.AccessPolicy] with
+// the [access levels]
+// [google.identity.accesscontextmanager.v1.AccessLevel] provided. This
+// is done atomically. The long-running operation from this RPC has a
+// successful status after all replacements propagate to long-lasting
+// storage. If the replacement contains errors, an error response is returned
+// for the first error encountered.  Upon error, the replacement is cancelled,
+// and existing [access levels]
+// [google.identity.accesscontextmanager.v1.AccessLevel] are not
+// affected. The Operation.response field contains
+// ReplaceAccessLevelsResponse. Removing [access levels]
+// [google.identity.accesscontextmanager.v1.AccessLevel] contained in existing
+// [service perimeters]
+// [google.identity.accesscontextmanager.v1.ServicePerimeter] result in an
+// error.
+func (c *restClient) ReplaceAccessLevels(ctx context.Context, req *accesscontextmanagerpb.ReplaceAccessLevelsRequest, opts ...gax.CallOption) (*ReplaceAccessLevelsOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v/accessLevels:replaceAll", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &ReplaceAccessLevelsOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// ListServicePerimeters lists all [service perimeters]
+// [google.identity.accesscontextmanager.v1.ServicePerimeter] for an
+// access policy.
+func (c *restClient) ListServicePerimeters(ctx context.Context, req *accesscontextmanagerpb.ListServicePerimetersRequest, opts ...gax.CallOption) *ServicePerimeterIterator {
+	it := &ServicePerimeterIterator{}
+	req = proto.Clone(req).(*accesscontextmanagerpb.ListServicePerimetersRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*accesscontextmanagerpb.ServicePerimeter, string, error) {
+		resp := &accesscontextmanagerpb.ListServicePerimetersResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v/servicePerimeters", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			httpRsp, err := c.httpClient.Do(httpReq)
+			if err != nil {
+				return err
+			}
+			defer httpRsp.Body.Close()
+
+			if err = googleapi.CheckResponse(httpRsp); err != nil {
+				return err
+			}
+
+			buf, err := ioutil.ReadAll(httpRsp.Body)
+			if err != nil {
+				return err
+			}
+
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return maybeUnknownEnum(err)
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetServicePerimeters(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// GetServicePerimeter gets a [service perimeter]
+// [google.identity.accesscontextmanager.v1.ServicePerimeter] based on the
+// resource name.
+func (c *restClient) GetServicePerimeter(ctx context.Context, req *accesscontextmanagerpb.GetServicePerimeterRequest, opts ...gax.CallOption) (*accesscontextmanagerpb.ServicePerimeter, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).GetServicePerimeter[0:len((*c.CallOptions).GetServicePerimeter):len((*c.CallOptions).GetServicePerimeter)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &accesscontextmanagerpb.ServicePerimeter{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// CreateServicePerimeter creates a [service perimeter]
+// [google.identity.accesscontextmanager.v1.ServicePerimeter]. The
+// long-running operation from this RPC has a successful status after the
+// [service perimeter]
+// [google.identity.accesscontextmanager.v1.ServicePerimeter]
+// propagates to long-lasting storage. If a [service perimeter]
+// [google.identity.accesscontextmanager.v1.ServicePerimeter] contains
+// errors, an error response is returned for the first error encountered.
+func (c *restClient) CreateServicePerimeter(ctx context.Context, req *accesscontextmanagerpb.CreateServicePerimeterRequest, opts ...gax.CallOption) (*CreateServicePerimeterOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetServicePerimeter()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v/servicePerimeters", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &CreateServicePerimeterOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// UpdateServicePerimeter updates a [service perimeter]
+// [google.identity.accesscontextmanager.v1.ServicePerimeter]. The
+// long-running operation from this RPC has a successful status after the
+// [service perimeter]
+// [google.identity.accesscontextmanager.v1.ServicePerimeter]
+// propagates to long-lasting storage. If a [service perimeter]
+// [google.identity.accesscontextmanager.v1.ServicePerimeter] contains
+// errors, an error response is returned for the first error encountered.
+func (c *restClient) UpdateServicePerimeter(ctx context.Context, req *accesscontextmanagerpb.UpdateServicePerimeterRequest, opts ...gax.CallOption) (*UpdateServicePerimeterOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetServicePerimeter()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetServicePerimeter().GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetUpdateMask() != nil {
+		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(updateMask))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "service_perimeter.name", url.QueryEscape(req.GetServicePerimeter().GetName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &UpdateServicePerimeterOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// DeleteServicePerimeter deletes a [service perimeter]
+// [google.identity.accesscontextmanager.v1.ServicePerimeter] based on the
+// resource name. The long-running operation from this RPC has a successful
+// status after the [service perimeter]
+// [google.identity.accesscontextmanager.v1.ServicePerimeter] is removed from
+// long-lasting storage.
+func (c *restClient) DeleteServicePerimeter(ctx context.Context, req *accesscontextmanagerpb.DeleteServicePerimeterRequest, opts ...gax.CallOption) (*DeleteServicePerimeterOperation, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &DeleteServicePerimeterOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// ReplaceServicePerimeters replace all existing [service perimeters]
+// [google.identity.accesscontextmanager.v1.ServicePerimeter] in an [access
+// policy] [google.identity.accesscontextmanager.v1.AccessPolicy] with the
+// [service perimeters]
+// [google.identity.accesscontextmanager.v1.ServicePerimeter] provided. This
+// is done atomically. The long-running operation from this RPC has a
+// successful status after all replacements propagate to long-lasting storage.
+// Replacements containing errors result in an error response for the first
+// error encountered. Upon an error, replacement are cancelled and existing
+// [service perimeters]
+// [google.identity.accesscontextmanager.v1.ServicePerimeter] are not
+// affected. The Operation.response field contains
+// ReplaceServicePerimetersResponse.
+func (c *restClient) ReplaceServicePerimeters(ctx context.Context, req *accesscontextmanagerpb.ReplaceServicePerimetersRequest, opts ...gax.CallOption) (*ReplaceServicePerimetersOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v/servicePerimeters:replaceAll", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &ReplaceServicePerimetersOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// CommitServicePerimeters commits the dry-run specification for all the [service perimeters]
+// [google.identity.accesscontextmanager.v1.ServicePerimeter] in an
+// [access policy][google.identity.accesscontextmanager.v1.AccessPolicy].
+// A commit operation on a service perimeter involves copying its spec field
+// to the status field of the service perimeter. Only [service perimeters]
+// [google.identity.accesscontextmanager.v1.ServicePerimeter] with
+// use_explicit_dry_run_spec field set to true are affected by a commit
+// operation. The long-running operation from this RPC has a successful
+// status after the dry-run specifications for all the [service perimeters]
+// [google.identity.accesscontextmanager.v1.ServicePerimeter] have been
+// committed. If a commit fails, it causes the long-running operation to
+// return an error response and the entire commit operation is cancelled.
+// When successful, the Operation.response field contains
+// CommitServicePerimetersResponse. The dry_run and the spec fields are
+// cleared after a successful commit operation.
+func (c *restClient) CommitServicePerimeters(ctx context.Context, req *accesscontextmanagerpb.CommitServicePerimetersRequest, opts ...gax.CallOption) (*CommitServicePerimetersOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v/servicePerimeters:commit", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &CommitServicePerimetersOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// ListGcpUserAccessBindings lists all [GcpUserAccessBindings]
+// [google.identity.accesscontextmanager.v1.GcpUserAccessBinding] for a
+// Google Cloud organization.
+func (c *restClient) ListGcpUserAccessBindings(ctx context.Context, req *accesscontextmanagerpb.ListGcpUserAccessBindingsRequest, opts ...gax.CallOption) *GcpUserAccessBindingIterator {
+	it := &GcpUserAccessBindingIterator{}
+	req = proto.Clone(req).(*accesscontextmanagerpb.ListGcpUserAccessBindingsRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*accesscontextmanagerpb.GcpUserAccessBinding, string, error) {
+		resp := &accesscontextmanagerpb.ListGcpUserAccessBindingsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v/gcpUserAccessBindings", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			httpRsp, err := c.httpClient.Do(httpReq)
+			if err != nil {
+				return err
+			}
+			defer httpRsp.Body.Close()
+
+			if err = googleapi.CheckResponse(httpRsp); err != nil {
+				return err
+			}
+
+			buf, err := ioutil.ReadAll(httpRsp.Body)
+			if err != nil {
+				return err
+			}
+
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return maybeUnknownEnum(err)
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetGcpUserAccessBindings(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// GetGcpUserAccessBinding gets the [GcpUserAccessBinding]
+// [google.identity.accesscontextmanager.v1.GcpUserAccessBinding] with
+// the given name.
+func (c *restClient) GetGcpUserAccessBinding(ctx context.Context, req *accesscontextmanagerpb.GetGcpUserAccessBindingRequest, opts ...gax.CallOption) (*accesscontextmanagerpb.GcpUserAccessBinding, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).GetGcpUserAccessBinding[0:len((*c.CallOptions).GetGcpUserAccessBinding):len((*c.CallOptions).GetGcpUserAccessBinding)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &accesscontextmanagerpb.GcpUserAccessBinding{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// CreateGcpUserAccessBinding creates a [GcpUserAccessBinding]
+// [google.identity.accesscontextmanager.v1.GcpUserAccessBinding]. If the
+// client specifies a [name]
+// [google.identity.accesscontextmanager.v1.GcpUserAccessBinding.name (at http://google.identity.accesscontextmanager.v1.GcpUserAccessBinding.name)],
+// the server ignores it. Fails if a resource already exists with the same
+// [group_key]
+// [google.identity.accesscontextmanager.v1.GcpUserAccessBinding.group_key].
+// Completion of this long-running operation does not necessarily signify that
+// the new binding is deployed onto all affected users, which may take more
+// time.
+func (c *restClient) CreateGcpUserAccessBinding(ctx context.Context, req *accesscontextmanagerpb.CreateGcpUserAccessBindingRequest, opts ...gax.CallOption) (*CreateGcpUserAccessBindingOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetGcpUserAccessBinding()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v/gcpUserAccessBindings", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &CreateGcpUserAccessBindingOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// UpdateGcpUserAccessBinding updates a [GcpUserAccessBinding]
+// [google.identity.accesscontextmanager.v1.GcpUserAccessBinding].
+// Completion of this long-running operation does not necessarily signify that
+// the changed binding is deployed onto all affected users, which may take
+// more time.
+func (c *restClient) UpdateGcpUserAccessBinding(ctx context.Context, req *accesscontextmanagerpb.UpdateGcpUserAccessBindingRequest, opts ...gax.CallOption) (*UpdateGcpUserAccessBindingOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetGcpUserAccessBinding()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetGcpUserAccessBinding().GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetUpdateMask() != nil {
+		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(updateMask))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "gcp_user_access_binding.name", url.QueryEscape(req.GetGcpUserAccessBinding().GetName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &UpdateGcpUserAccessBindingOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// DeleteGcpUserAccessBinding deletes a [GcpUserAccessBinding]
+// [google.identity.accesscontextmanager.v1.GcpUserAccessBinding].
+// Completion of this long-running operation does not necessarily signify that
+// the binding deletion is deployed onto all affected users, which may take
+// more time.
+func (c *restClient) DeleteGcpUserAccessBinding(ctx context.Context, req *accesscontextmanagerpb.DeleteGcpUserAccessBindingRequest, opts ...gax.CallOption) (*DeleteGcpUserAccessBindingOperation, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &DeleteGcpUserAccessBindingOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// SetIamPolicy sets the IAM policy for the specified Access Context Manager
+// [access policy][google.identity.accesscontextmanager.v1.AccessPolicy].
+// This method replaces the existing IAM policy on the access policy. The IAM
+// policy controls the set of users who can perform specific operations on the
+// Access Context Manager [access
+// policy][google.identity.accesscontextmanager.v1.AccessPolicy].
+func (c *restClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:setIamPolicy", req.GetResource())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).SetIamPolicy[0:len((*c.CallOptions).SetIamPolicy):len((*c.CallOptions).SetIamPolicy)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &iampb.Policy{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// GetIamPolicy gets the IAM policy for the specified Access Context Manager
+// [access policy][google.identity.accesscontextmanager.v1.AccessPolicy].
+func (c *restClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:getIamPolicy", req.GetResource())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).GetIamPolicy[0:len((*c.CallOptions).GetIamPolicy):len((*c.CallOptions).GetIamPolicy)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &iampb.Policy{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// TestIamPermissions returns the IAM permissions that the caller has on the specified Access
+// Context Manager resource. The resource can be an
+// AccessPolicy,
+// AccessLevel, or
+// [ServicePerimeter][google.identity.accesscontextmanager.v1.ServicePerimeter
+// ]. This method does not support other resources.
+func (c *restClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermissionsRequest, opts ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:testIamPermissions", req.GetResource())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).TestIamPermissions[0:len((*c.CallOptions).TestIamPermissions):len((*c.CallOptions).TestIamPermissions)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &iampb.TestIamPermissionsResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// GetOperation is a utility method from google.longrunning.Operations.
+func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
 // CommitServicePerimetersOperation manages a long-running operation from CommitServicePerimeters.
 type CommitServicePerimetersOperation struct {
-	lro *longrunning.Operation
+	lro      *longrunning.Operation
+	pollPath string
 }
 
 // CommitServicePerimetersOperation returns a new CommitServicePerimetersOperation from a given name.
@@ -1275,10 +3541,21 @@ func (c *gRPCClient) CommitServicePerimetersOperation(name string) *CommitServic
 	}
 }
 
+// CommitServicePerimetersOperation returns a new CommitServicePerimetersOperation from a given name.
+// The name must be that of a previously created CommitServicePerimetersOperation, possibly from a different process.
+func (c *restClient) CommitServicePerimetersOperation(name string) *CommitServicePerimetersOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &CommitServicePerimetersOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
 // Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
 //
 // See documentation of Poll for error-handling information.
 func (op *CommitServicePerimetersOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*accesscontextmanagerpb.CommitServicePerimetersResponse, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
 	var resp accesscontextmanagerpb.CommitServicePerimetersResponse
 	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
 		return nil, err
@@ -1296,6 +3573,7 @@ func (op *CommitServicePerimetersOperation) Wait(ctx context.Context, opts ...ga
 // op.Done will return true, and the response of the operation is returned.
 // If Poll succeeds and the operation has not completed, the returned response and error are both nil.
 func (op *CommitServicePerimetersOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*accesscontextmanagerpb.CommitServicePerimetersResponse, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
 	var resp accesscontextmanagerpb.CommitServicePerimetersResponse
 	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
 		return nil, err
@@ -1333,7 +3611,8 @@ func (op *CommitServicePerimetersOperation) Name() string {
 
 // CreateAccessLevelOperation manages a long-running operation from CreateAccessLevel.
 type CreateAccessLevelOperation struct {
-	lro *longrunning.Operation
+	lro      *longrunning.Operation
+	pollPath string
 }
 
 // CreateAccessLevelOperation returns a new CreateAccessLevelOperation from a given name.
@@ -1344,10 +3623,21 @@ func (c *gRPCClient) CreateAccessLevelOperation(name string) *CreateAccessLevelO
 	}
 }
 
+// CreateAccessLevelOperation returns a new CreateAccessLevelOperation from a given name.
+// The name must be that of a previously created CreateAccessLevelOperation, possibly from a different process.
+func (c *restClient) CreateAccessLevelOperation(name string) *CreateAccessLevelOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &CreateAccessLevelOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
 // Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
 //
 // See documentation of Poll for error-handling information.
 func (op *CreateAccessLevelOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*accesscontextmanagerpb.AccessLevel, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
 	var resp accesscontextmanagerpb.AccessLevel
 	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
 		return nil, err
@@ -1365,6 +3655,7 @@ func (op *CreateAccessLevelOperation) Wait(ctx context.Context, opts ...gax.Call
 // op.Done will return true, and the response of the operation is returned.
 // If Poll succeeds and the operation has not completed, the returned response and error are both nil.
 func (op *CreateAccessLevelOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*accesscontextmanagerpb.AccessLevel, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
 	var resp accesscontextmanagerpb.AccessLevel
 	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
 		return nil, err
@@ -1402,7 +3693,8 @@ func (op *CreateAccessLevelOperation) Name() string {
 
 // CreateAccessPolicyOperation manages a long-running operation from CreateAccessPolicy.
 type CreateAccessPolicyOperation struct {
-	lro *longrunning.Operation
+	lro      *longrunning.Operation
+	pollPath string
 }
 
 // CreateAccessPolicyOperation returns a new CreateAccessPolicyOperation from a given name.
@@ -1413,10 +3705,21 @@ func (c *gRPCClient) CreateAccessPolicyOperation(name string) *CreateAccessPolic
 	}
 }
 
+// CreateAccessPolicyOperation returns a new CreateAccessPolicyOperation from a given name.
+// The name must be that of a previously created CreateAccessPolicyOperation, possibly from a different process.
+func (c *restClient) CreateAccessPolicyOperation(name string) *CreateAccessPolicyOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &CreateAccessPolicyOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
 // Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
 //
 // See documentation of Poll for error-handling information.
 func (op *CreateAccessPolicyOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*accesscontextmanagerpb.AccessPolicy, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
 	var resp accesscontextmanagerpb.AccessPolicy
 	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
 		return nil, err
@@ -1434,6 +3737,7 @@ func (op *CreateAccessPolicyOperation) Wait(ctx context.Context, opts ...gax.Cal
 // op.Done will return true, and the response of the operation is returned.
 // If Poll succeeds and the operation has not completed, the returned response and error are both nil.
 func (op *CreateAccessPolicyOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*accesscontextmanagerpb.AccessPolicy, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
 	var resp accesscontextmanagerpb.AccessPolicy
 	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
 		return nil, err
@@ -1471,7 +3775,8 @@ func (op *CreateAccessPolicyOperation) Name() string {
 
 // CreateGcpUserAccessBindingOperation manages a long-running operation from CreateGcpUserAccessBinding.
 type CreateGcpUserAccessBindingOperation struct {
-	lro *longrunning.Operation
+	lro      *longrunning.Operation
+	pollPath string
 }
 
 // CreateGcpUserAccessBindingOperation returns a new CreateGcpUserAccessBindingOperation from a given name.
@@ -1482,10 +3787,21 @@ func (c *gRPCClient) CreateGcpUserAccessBindingOperation(name string) *CreateGcp
 	}
 }
 
+// CreateGcpUserAccessBindingOperation returns a new CreateGcpUserAccessBindingOperation from a given name.
+// The name must be that of a previously created CreateGcpUserAccessBindingOperation, possibly from a different process.
+func (c *restClient) CreateGcpUserAccessBindingOperation(name string) *CreateGcpUserAccessBindingOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &CreateGcpUserAccessBindingOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
 // Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
 //
 // See documentation of Poll for error-handling information.
 func (op *CreateGcpUserAccessBindingOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*accesscontextmanagerpb.GcpUserAccessBinding, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
 	var resp accesscontextmanagerpb.GcpUserAccessBinding
 	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
 		return nil, err
@@ -1503,6 +3819,7 @@ func (op *CreateGcpUserAccessBindingOperation) Wait(ctx context.Context, opts ..
 // op.Done will return true, and the response of the operation is returned.
 // If Poll succeeds and the operation has not completed, the returned response and error are both nil.
 func (op *CreateGcpUserAccessBindingOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*accesscontextmanagerpb.GcpUserAccessBinding, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
 	var resp accesscontextmanagerpb.GcpUserAccessBinding
 	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
 		return nil, err
@@ -1540,7 +3857,8 @@ func (op *CreateGcpUserAccessBindingOperation) Name() string {
 
 // CreateServicePerimeterOperation manages a long-running operation from CreateServicePerimeter.
 type CreateServicePerimeterOperation struct {
-	lro *longrunning.Operation
+	lro      *longrunning.Operation
+	pollPath string
 }
 
 // CreateServicePerimeterOperation returns a new CreateServicePerimeterOperation from a given name.
@@ -1551,10 +3869,21 @@ func (c *gRPCClient) CreateServicePerimeterOperation(name string) *CreateService
 	}
 }
 
+// CreateServicePerimeterOperation returns a new CreateServicePerimeterOperation from a given name.
+// The name must be that of a previously created CreateServicePerimeterOperation, possibly from a different process.
+func (c *restClient) CreateServicePerimeterOperation(name string) *CreateServicePerimeterOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &CreateServicePerimeterOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
 // Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
 //
 // See documentation of Poll for error-handling information.
 func (op *CreateServicePerimeterOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*accesscontextmanagerpb.ServicePerimeter, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
 	var resp accesscontextmanagerpb.ServicePerimeter
 	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
 		return nil, err
@@ -1572,6 +3901,7 @@ func (op *CreateServicePerimeterOperation) Wait(ctx context.Context, opts ...gax
 // op.Done will return true, and the response of the operation is returned.
 // If Poll succeeds and the operation has not completed, the returned response and error are both nil.
 func (op *CreateServicePerimeterOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*accesscontextmanagerpb.ServicePerimeter, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
 	var resp accesscontextmanagerpb.ServicePerimeter
 	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
 		return nil, err
@@ -1609,7 +3939,8 @@ func (op *CreateServicePerimeterOperation) Name() string {
 
 // DeleteAccessLevelOperation manages a long-running operation from DeleteAccessLevel.
 type DeleteAccessLevelOperation struct {
-	lro *longrunning.Operation
+	lro      *longrunning.Operation
+	pollPath string
 }
 
 // DeleteAccessLevelOperation returns a new DeleteAccessLevelOperation from a given name.
@@ -1620,10 +3951,21 @@ func (c *gRPCClient) DeleteAccessLevelOperation(name string) *DeleteAccessLevelO
 	}
 }
 
+// DeleteAccessLevelOperation returns a new DeleteAccessLevelOperation from a given name.
+// The name must be that of a previously created DeleteAccessLevelOperation, possibly from a different process.
+func (c *restClient) DeleteAccessLevelOperation(name string) *DeleteAccessLevelOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &DeleteAccessLevelOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
 // Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
 //
 // See documentation of Poll for error-handling information.
 func (op *DeleteAccessLevelOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
 	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
 }
 
@@ -1637,6 +3979,7 @@ func (op *DeleteAccessLevelOperation) Wait(ctx context.Context, opts ...gax.Call
 // op.Done will return true, and the response of the operation is returned.
 // If Poll succeeds and the operation has not completed, the returned response and error are both nil.
 func (op *DeleteAccessLevelOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
 	return op.lro.Poll(ctx, nil, opts...)
 }
 
@@ -1667,7 +4010,8 @@ func (op *DeleteAccessLevelOperation) Name() string {
 
 // DeleteAccessPolicyOperation manages a long-running operation from DeleteAccessPolicy.
 type DeleteAccessPolicyOperation struct {
-	lro *longrunning.Operation
+	lro      *longrunning.Operation
+	pollPath string
 }
 
 // DeleteAccessPolicyOperation returns a new DeleteAccessPolicyOperation from a given name.
@@ -1678,10 +4022,21 @@ func (c *gRPCClient) DeleteAccessPolicyOperation(name string) *DeleteAccessPolic
 	}
 }
 
+// DeleteAccessPolicyOperation returns a new DeleteAccessPolicyOperation from a given name.
+// The name must be that of a previously created DeleteAccessPolicyOperation, possibly from a different process.
+func (c *restClient) DeleteAccessPolicyOperation(name string) *DeleteAccessPolicyOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &DeleteAccessPolicyOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
 // Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
 //
 // See documentation of Poll for error-handling information.
 func (op *DeleteAccessPolicyOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
 	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
 }
 
@@ -1695,6 +4050,7 @@ func (op *DeleteAccessPolicyOperation) Wait(ctx context.Context, opts ...gax.Cal
 // op.Done will return true, and the response of the operation is returned.
 // If Poll succeeds and the operation has not completed, the returned response and error are both nil.
 func (op *DeleteAccessPolicyOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
 	return op.lro.Poll(ctx, nil, opts...)
 }
 
@@ -1725,7 +4081,8 @@ func (op *DeleteAccessPolicyOperation) Name() string {
 
 // DeleteGcpUserAccessBindingOperation manages a long-running operation from DeleteGcpUserAccessBinding.
 type DeleteGcpUserAccessBindingOperation struct {
-	lro *longrunning.Operation
+	lro      *longrunning.Operation
+	pollPath string
 }
 
 // DeleteGcpUserAccessBindingOperation returns a new DeleteGcpUserAccessBindingOperation from a given name.
@@ -1736,10 +4093,21 @@ func (c *gRPCClient) DeleteGcpUserAccessBindingOperation(name string) *DeleteGcp
 	}
 }
 
+// DeleteGcpUserAccessBindingOperation returns a new DeleteGcpUserAccessBindingOperation from a given name.
+// The name must be that of a previously created DeleteGcpUserAccessBindingOperation, possibly from a different process.
+func (c *restClient) DeleteGcpUserAccessBindingOperation(name string) *DeleteGcpUserAccessBindingOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &DeleteGcpUserAccessBindingOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
 // Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
 //
 // See documentation of Poll for error-handling information.
 func (op *DeleteGcpUserAccessBindingOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
 	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
 }
 
@@ -1753,6 +4121,7 @@ func (op *DeleteGcpUserAccessBindingOperation) Wait(ctx context.Context, opts ..
 // op.Done will return true, and the response of the operation is returned.
 // If Poll succeeds and the operation has not completed, the returned response and error are both nil.
 func (op *DeleteGcpUserAccessBindingOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
 	return op.lro.Poll(ctx, nil, opts...)
 }
 
@@ -1783,7 +4152,8 @@ func (op *DeleteGcpUserAccessBindingOperation) Name() string {
 
 // DeleteServicePerimeterOperation manages a long-running operation from DeleteServicePerimeter.
 type DeleteServicePerimeterOperation struct {
-	lro *longrunning.Operation
+	lro      *longrunning.Operation
+	pollPath string
 }
 
 // DeleteServicePerimeterOperation returns a new DeleteServicePerimeterOperation from a given name.
@@ -1794,10 +4164,21 @@ func (c *gRPCClient) DeleteServicePerimeterOperation(name string) *DeleteService
 	}
 }
 
+// DeleteServicePerimeterOperation returns a new DeleteServicePerimeterOperation from a given name.
+// The name must be that of a previously created DeleteServicePerimeterOperation, possibly from a different process.
+func (c *restClient) DeleteServicePerimeterOperation(name string) *DeleteServicePerimeterOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &DeleteServicePerimeterOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
 // Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
 //
 // See documentation of Poll for error-handling information.
 func (op *DeleteServicePerimeterOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
 	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
 }
 
@@ -1811,6 +4192,7 @@ func (op *DeleteServicePerimeterOperation) Wait(ctx context.Context, opts ...gax
 // op.Done will return true, and the response of the operation is returned.
 // If Poll succeeds and the operation has not completed, the returned response and error are both nil.
 func (op *DeleteServicePerimeterOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
 	return op.lro.Poll(ctx, nil, opts...)
 }
 
@@ -1841,7 +4223,8 @@ func (op *DeleteServicePerimeterOperation) Name() string {
 
 // ReplaceAccessLevelsOperation manages a long-running operation from ReplaceAccessLevels.
 type ReplaceAccessLevelsOperation struct {
-	lro *longrunning.Operation
+	lro      *longrunning.Operation
+	pollPath string
 }
 
 // ReplaceAccessLevelsOperation returns a new ReplaceAccessLevelsOperation from a given name.
@@ -1852,10 +4235,21 @@ func (c *gRPCClient) ReplaceAccessLevelsOperation(name string) *ReplaceAccessLev
 	}
 }
 
+// ReplaceAccessLevelsOperation returns a new ReplaceAccessLevelsOperation from a given name.
+// The name must be that of a previously created ReplaceAccessLevelsOperation, possibly from a different process.
+func (c *restClient) ReplaceAccessLevelsOperation(name string) *ReplaceAccessLevelsOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &ReplaceAccessLevelsOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
 // Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
 //
 // See documentation of Poll for error-handling information.
 func (op *ReplaceAccessLevelsOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*accesscontextmanagerpb.ReplaceAccessLevelsResponse, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
 	var resp accesscontextmanagerpb.ReplaceAccessLevelsResponse
 	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
 		return nil, err
@@ -1873,6 +4267,7 @@ func (op *ReplaceAccessLevelsOperation) Wait(ctx context.Context, opts ...gax.Ca
 // op.Done will return true, and the response of the operation is returned.
 // If Poll succeeds and the operation has not completed, the returned response and error are both nil.
 func (op *ReplaceAccessLevelsOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*accesscontextmanagerpb.ReplaceAccessLevelsResponse, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
 	var resp accesscontextmanagerpb.ReplaceAccessLevelsResponse
 	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
 		return nil, err
@@ -1910,7 +4305,8 @@ func (op *ReplaceAccessLevelsOperation) Name() string {
 
 // ReplaceServicePerimetersOperation manages a long-running operation from ReplaceServicePerimeters.
 type ReplaceServicePerimetersOperation struct {
-	lro *longrunning.Operation
+	lro      *longrunning.Operation
+	pollPath string
 }
 
 // ReplaceServicePerimetersOperation returns a new ReplaceServicePerimetersOperation from a given name.
@@ -1921,10 +4317,21 @@ func (c *gRPCClient) ReplaceServicePerimetersOperation(name string) *ReplaceServ
 	}
 }
 
+// ReplaceServicePerimetersOperation returns a new ReplaceServicePerimetersOperation from a given name.
+// The name must be that of a previously created ReplaceServicePerimetersOperation, possibly from a different process.
+func (c *restClient) ReplaceServicePerimetersOperation(name string) *ReplaceServicePerimetersOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &ReplaceServicePerimetersOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
 // Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
 //
 // See documentation of Poll for error-handling information.
 func (op *ReplaceServicePerimetersOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*accesscontextmanagerpb.ReplaceServicePerimetersResponse, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
 	var resp accesscontextmanagerpb.ReplaceServicePerimetersResponse
 	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
 		return nil, err
@@ -1942,6 +4349,7 @@ func (op *ReplaceServicePerimetersOperation) Wait(ctx context.Context, opts ...g
 // op.Done will return true, and the response of the operation is returned.
 // If Poll succeeds and the operation has not completed, the returned response and error are both nil.
 func (op *ReplaceServicePerimetersOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*accesscontextmanagerpb.ReplaceServicePerimetersResponse, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
 	var resp accesscontextmanagerpb.ReplaceServicePerimetersResponse
 	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
 		return nil, err
@@ -1979,7 +4387,8 @@ func (op *ReplaceServicePerimetersOperation) Name() string {
 
 // UpdateAccessLevelOperation manages a long-running operation from UpdateAccessLevel.
 type UpdateAccessLevelOperation struct {
-	lro *longrunning.Operation
+	lro      *longrunning.Operation
+	pollPath string
 }
 
 // UpdateAccessLevelOperation returns a new UpdateAccessLevelOperation from a given name.
@@ -1990,10 +4399,21 @@ func (c *gRPCClient) UpdateAccessLevelOperation(name string) *UpdateAccessLevelO
 	}
 }
 
+// UpdateAccessLevelOperation returns a new UpdateAccessLevelOperation from a given name.
+// The name must be that of a previously created UpdateAccessLevelOperation, possibly from a different process.
+func (c *restClient) UpdateAccessLevelOperation(name string) *UpdateAccessLevelOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &UpdateAccessLevelOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
 // Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
 //
 // See documentation of Poll for error-handling information.
 func (op *UpdateAccessLevelOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*accesscontextmanagerpb.AccessLevel, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
 	var resp accesscontextmanagerpb.AccessLevel
 	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
 		return nil, err
@@ -2011,6 +4431,7 @@ func (op *UpdateAccessLevelOperation) Wait(ctx context.Context, opts ...gax.Call
 // op.Done will return true, and the response of the operation is returned.
 // If Poll succeeds and the operation has not completed, the returned response and error are both nil.
 func (op *UpdateAccessLevelOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*accesscontextmanagerpb.AccessLevel, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
 	var resp accesscontextmanagerpb.AccessLevel
 	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
 		return nil, err
@@ -2048,7 +4469,8 @@ func (op *UpdateAccessLevelOperation) Name() string {
 
 // UpdateAccessPolicyOperation manages a long-running operation from UpdateAccessPolicy.
 type UpdateAccessPolicyOperation struct {
-	lro *longrunning.Operation
+	lro      *longrunning.Operation
+	pollPath string
 }
 
 // UpdateAccessPolicyOperation returns a new UpdateAccessPolicyOperation from a given name.
@@ -2059,10 +4481,21 @@ func (c *gRPCClient) UpdateAccessPolicyOperation(name string) *UpdateAccessPolic
 	}
 }
 
+// UpdateAccessPolicyOperation returns a new UpdateAccessPolicyOperation from a given name.
+// The name must be that of a previously created UpdateAccessPolicyOperation, possibly from a different process.
+func (c *restClient) UpdateAccessPolicyOperation(name string) *UpdateAccessPolicyOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &UpdateAccessPolicyOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
 // Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
 //
 // See documentation of Poll for error-handling information.
 func (op *UpdateAccessPolicyOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*accesscontextmanagerpb.AccessPolicy, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
 	var resp accesscontextmanagerpb.AccessPolicy
 	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
 		return nil, err
@@ -2080,6 +4513,7 @@ func (op *UpdateAccessPolicyOperation) Wait(ctx context.Context, opts ...gax.Cal
 // op.Done will return true, and the response of the operation is returned.
 // If Poll succeeds and the operation has not completed, the returned response and error are both nil.
 func (op *UpdateAccessPolicyOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*accesscontextmanagerpb.AccessPolicy, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
 	var resp accesscontextmanagerpb.AccessPolicy
 	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
 		return nil, err
@@ -2117,7 +4551,8 @@ func (op *UpdateAccessPolicyOperation) Name() string {
 
 // UpdateGcpUserAccessBindingOperation manages a long-running operation from UpdateGcpUserAccessBinding.
 type UpdateGcpUserAccessBindingOperation struct {
-	lro *longrunning.Operation
+	lro      *longrunning.Operation
+	pollPath string
 }
 
 // UpdateGcpUserAccessBindingOperation returns a new UpdateGcpUserAccessBindingOperation from a given name.
@@ -2128,10 +4563,21 @@ func (c *gRPCClient) UpdateGcpUserAccessBindingOperation(name string) *UpdateGcp
 	}
 }
 
+// UpdateGcpUserAccessBindingOperation returns a new UpdateGcpUserAccessBindingOperation from a given name.
+// The name must be that of a previously created UpdateGcpUserAccessBindingOperation, possibly from a different process.
+func (c *restClient) UpdateGcpUserAccessBindingOperation(name string) *UpdateGcpUserAccessBindingOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &UpdateGcpUserAccessBindingOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
 // Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
 //
 // See documentation of Poll for error-handling information.
 func (op *UpdateGcpUserAccessBindingOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*accesscontextmanagerpb.GcpUserAccessBinding, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
 	var resp accesscontextmanagerpb.GcpUserAccessBinding
 	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
 		return nil, err
@@ -2149,6 +4595,7 @@ func (op *UpdateGcpUserAccessBindingOperation) Wait(ctx context.Context, opts ..
 // op.Done will return true, and the response of the operation is returned.
 // If Poll succeeds and the operation has not completed, the returned response and error are both nil.
 func (op *UpdateGcpUserAccessBindingOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*accesscontextmanagerpb.GcpUserAccessBinding, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
 	var resp accesscontextmanagerpb.GcpUserAccessBinding
 	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
 		return nil, err
@@ -2186,7 +4633,8 @@ func (op *UpdateGcpUserAccessBindingOperation) Name() string {
 
 // UpdateServicePerimeterOperation manages a long-running operation from UpdateServicePerimeter.
 type UpdateServicePerimeterOperation struct {
-	lro *longrunning.Operation
+	lro      *longrunning.Operation
+	pollPath string
 }
 
 // UpdateServicePerimeterOperation returns a new UpdateServicePerimeterOperation from a given name.
@@ -2197,10 +4645,21 @@ func (c *gRPCClient) UpdateServicePerimeterOperation(name string) *UpdateService
 	}
 }
 
+// UpdateServicePerimeterOperation returns a new UpdateServicePerimeterOperation from a given name.
+// The name must be that of a previously created UpdateServicePerimeterOperation, possibly from a different process.
+func (c *restClient) UpdateServicePerimeterOperation(name string) *UpdateServicePerimeterOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &UpdateServicePerimeterOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
 // Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
 //
 // See documentation of Poll for error-handling information.
 func (op *UpdateServicePerimeterOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*accesscontextmanagerpb.ServicePerimeter, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
 	var resp accesscontextmanagerpb.ServicePerimeter
 	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
 		return nil, err
@@ -2218,6 +4677,7 @@ func (op *UpdateServicePerimeterOperation) Wait(ctx context.Context, opts ...gax
 // op.Done will return true, and the response of the operation is returned.
 // If Poll succeeds and the operation has not completed, the returned response and error are both nil.
 func (op *UpdateServicePerimeterOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*accesscontextmanagerpb.ServicePerimeter, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
 	var resp accesscontextmanagerpb.ServicePerimeter
 	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
 		return nil, err

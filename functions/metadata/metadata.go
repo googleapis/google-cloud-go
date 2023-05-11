@@ -129,7 +129,7 @@ func FromContext(ctx context.Context) (*Metadata, error) {
 	}
 	meta := &Metadata{}
 	if err := json.Unmarshal(b, meta); err != nil {
-		return nil, fmt.Errorf("json.Unmarshal: %v", err)
+		return nil, fmt.Errorf("json.Unmarshal: %w", err)
 	}
 	return meta, nil
 }

@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -23,17 +23,17 @@ import (
 	"net/url"
 	"time"
 
+	clientconnectorservicespb "cloud.google.com/go/beyondcorp/clientconnectorservices/apiv1/clientconnectorservicespb"
+	iampb "cloud.google.com/go/iam/apiv1/iampb"
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
-	clientconnectorservicespb "google.golang.org/genproto/googleapis/cloud/beyondcorp/clientconnectorservices/v1"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
-	iampb "google.golang.org/genproto/googleapis/iam/v1"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/proto"
@@ -117,10 +117,14 @@ type internalClient interface {
 // Client is a client for interacting with BeyondCorp API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
-// API OverviewThe beyondcorp.googleapis.com service implements the Google Cloud
+// API Overview:
+//
+// The beyondcorp.googleapis.com service implements the Google Cloud
 // BeyondCorp API.
 //
-// Data ModelThe ClientConnectorServicesService exposes the following resources:
+// Data Model:
+//
+// The ClientConnectorServicesService exposes the following resources:
 //
 //	Client Connector Services, named as follows:
 //	projects/{project_id}/locations/{location_id}/client_connector_services/{client_connector_service_id}.
@@ -293,10 +297,14 @@ type gRPCClient struct {
 // NewClient creates a new client connector services service client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
-// API OverviewThe beyondcorp.googleapis.com service implements the Google Cloud
+// API Overview:
+//
+// The beyondcorp.googleapis.com service implements the Google Cloud
 // BeyondCorp API.
 //
-// Data ModelThe ClientConnectorServicesService exposes the following resources:
+// Data Model:
+//
+// The ClientConnectorServicesService exposes the following resources:
 //
 //	Client Connector Services, named as follows:
 //	projects/{project_id}/locations/{location_id}/client_connector_services/{client_connector_service_id}.

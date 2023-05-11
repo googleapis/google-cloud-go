@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -25,13 +25,13 @@ import (
 
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	retailpb "cloud.google.com/go/retail/apiv2/retailpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
-	retailpb "google.golang.org/genproto/googleapis/cloud/retail/v2"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -117,10 +117,10 @@ type internalCompletionClient interface {
 // CompletionClient is a client for interacting with Retail API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
-// Auto-completion service for retail.
+// Autocomplete service for retail.
 //
 // This feature is only available for users who have Retail Search enabled.
-// Please enable Retail Search on Cloud Console before using this feature.
+// Enable Retail Search on Cloud Console before using this feature.
 type CompletionClient struct {
 	// The internal transport-dependent client.
 	internalClient internalCompletionClient
@@ -160,7 +160,7 @@ func (c *CompletionClient) Connection() *grpc.ClientConn {
 // CompleteQuery completes the specified prefix with keyword suggestions.
 //
 // This feature is only available for users who have Retail Search enabled.
-// Please enable Retail Search on Cloud Console before using this feature.
+// Enable Retail Search on Cloud Console before using this feature.
 func (c *CompletionClient) CompleteQuery(ctx context.Context, req *retailpb.CompleteQueryRequest, opts ...gax.CallOption) (*retailpb.CompleteQueryResponse, error) {
 	return c.internalClient.CompleteQuery(ctx, req, opts...)
 }
@@ -173,7 +173,7 @@ func (c *CompletionClient) CompleteQuery(ctx context.Context, req *retailpb.Comp
 // are indexed successfully and ready for serving. The process takes hours.
 //
 // This feature is only available for users who have Retail Search enabled.
-// Please enable Retail Search on Cloud Console before using this feature.
+// Enable Retail Search on Cloud Console before using this feature.
 func (c *CompletionClient) ImportCompletionData(ctx context.Context, req *retailpb.ImportCompletionDataRequest, opts ...gax.CallOption) (*ImportCompletionDataOperation, error) {
 	return c.internalClient.ImportCompletionData(ctx, req, opts...)
 }
@@ -224,10 +224,10 @@ type completionGRPCClient struct {
 // NewCompletionClient creates a new completion service client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
-// Auto-completion service for retail.
+// Autocomplete service for retail.
 //
 // This feature is only available for users who have Retail Search enabled.
-// Please enable Retail Search on Cloud Console before using this feature.
+// Enable Retail Search on Cloud Console before using this feature.
 func NewCompletionClient(ctx context.Context, opts ...option.ClientOption) (*CompletionClient, error) {
 	clientOpts := defaultCompletionGRPCClientOptions()
 	if newCompletionClientHook != nil {

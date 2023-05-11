@@ -86,7 +86,7 @@ func TestRetryableErrors(t *testing.T) {
 			&googleapi.Error{
 				Code: http.StatusInternalServerError,
 			},
-			false,
+			true,
 		},
 		{
 			"internal w/backend reason",

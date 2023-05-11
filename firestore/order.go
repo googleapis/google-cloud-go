@@ -21,9 +21,9 @@ import (
 	"sort"
 	"strings"
 
+	"cloud.google.com/go/firestore/apiv1/firestorepb"
+	pb "cloud.google.com/go/firestore/apiv1/firestorepb"
 	tspb "github.com/golang/protobuf/ptypes/timestamp"
-	firestorepb "google.golang.org/genproto/googleapis/firestore/v1"
-	pb "google.golang.org/genproto/googleapis/firestore/v1"
 )
 
 // Returns a negative number, zero, or a positive number depending on whether a is

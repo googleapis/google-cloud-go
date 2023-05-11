@@ -43,8 +43,8 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	dbadminpb "google.golang.org/genproto/googleapis/spanner/admin/database/v1"
-	spannerpb "google.golang.org/genproto/googleapis/spanner/v1"
+	dbadminpb "cloud.google.com/go/spanner/admin/database/apiv1/databasepb"
+	"cloud.google.com/go/spanner/apiv1/spannerpb"
 	structpb "google.golang.org/protobuf/types/known/structpb"
 )
 
@@ -1283,6 +1283,23 @@ func TestIntegration_ReadsAndQueries(t *testing.T) {
 	}
 	if failures > 0 {
 		t.Logf("%d queries failed", failures)
+	}
+
+	// Check that doing a query that matches no rows returns response
+	// metadata that contains the implicitly-opened transaction id.
+	if _, err := client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *spanner.ReadWriteTransaction) error {
+		stmt := spanner.NewStatement("SELECT * FROM Staff WHERE Name='missing'")
+		iter := tx.Query(ctx, stmt)
+		if _, err := iter.Next(); err != iterator.Done {
+			return fmt.Errorf("unexpected error: %w", err)
+		}
+		iter.Stop()
+		// If the transaction id isn't known to the client then a
+		// BufferWrite will fail (this is simply a direct way of
+		// checking this).
+		return tx.BufferWrite(nil)
+	}); err != nil {
+		t.Fatal(err)
 	}
 }
 

@@ -15,6 +15,11 @@
                 "AddCatalogAttribute"
               ]
             },
+            "BatchRemoveCatalogAttributes": {
+              "methods": [
+                "BatchRemoveCatalogAttributes"
+              ]
+            },
             "GetAttributesConfig": {
               "methods": [
                 "GetAttributesConfig"
@@ -83,6 +88,11 @@
             "AddCatalogAttribute": {
               "methods": [
                 "AddCatalogAttribute"
+              ]
+            },
+            "BatchRemoveCatalogAttributes": {
+              "methods": [
+                "BatchRemoveCatalogAttributes"
               ]
             },
             "GetAttributesConfig": {
@@ -287,6 +297,70 @@
         }
       }
     },
+    "MerchantCenterAccountLinkService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "MerchantCenterAccountLinkClient",
+          "rpcs": {
+            "CreateMerchantCenterAccountLink": {
+              "methods": [
+                "CreateMerchantCenterAccountLink"
+              ]
+            },
+            "DeleteMerchantCenterAccountLink": {
+              "methods": [
+                "DeleteMerchantCenterAccountLink"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListMerchantCenterAccountLinks": {
+              "methods": [
+                "ListMerchantCenterAccountLinks"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "MerchantCenterAccountLinkClient",
+          "rpcs": {
+            "CreateMerchantCenterAccountLink": {
+              "methods": [
+                "CreateMerchantCenterAccountLink"
+              ]
+            },
+            "DeleteMerchantCenterAccountLink": {
+              "methods": [
+                "DeleteMerchantCenterAccountLink"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListMerchantCenterAccountLinks": {
+              "methods": [
+                "ListMerchantCenterAccountLinks"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            }
+          }
+        }
+      }
+    },
     "ModelService": {
       "clients": {
         "grpc": {
@@ -300,6 +374,11 @@
             "DeleteModel": {
               "methods": [
                 "DeleteModel"
+              ]
+            },
+            "GetModel": {
+              "methods": [
+                "GetModel"
               ]
             },
             "GetOperation": {
@@ -350,6 +429,11 @@
             "DeleteModel": {
               "methods": [
                 "DeleteModel"
+              ]
+            },
+            "GetModel": {
+              "methods": [
+                "GetModel"
               ]
             },
             "GetOperation": {

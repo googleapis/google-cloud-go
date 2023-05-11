@@ -536,6 +536,11 @@
                 "CreateConversation"
               ]
             },
+            "GenerateStatelessSummary": {
+              "methods": [
+                "GenerateStatelessSummary"
+              ]
+            },
             "GetConversation": {
               "methods": [
                 "GetConversation"
@@ -569,6 +574,11 @@
             "ListOperations": {
               "methods": [
                 "ListOperations"
+              ]
+            },
+            "SuggestConversationSummary": {
+              "methods": [
+                "SuggestConversationSummary"
               ]
             }
           }
@@ -596,6 +606,11 @@
                 "CreateConversation"
               ]
             },
+            "GenerateStatelessSummary": {
+              "methods": [
+                "GenerateStatelessSummary"
+              ]
+            },
             "GetConversation": {
               "methods": [
                 "GetConversation"
@@ -629,6 +644,11 @@
             "ListOperations": {
               "methods": [
                 "ListOperations"
+              ]
+            },
+            "SuggestConversationSummary": {
+              "methods": [
+                "SuggestConversationSummary"
               ]
             }
           }

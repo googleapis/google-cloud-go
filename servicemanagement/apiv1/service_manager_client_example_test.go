@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,8 +20,8 @@ import (
 	"context"
 
 	servicemanagement "cloud.google.com/go/servicemanagement/apiv1"
+	servicemanagementpb "cloud.google.com/go/servicemanagement/apiv1/servicemanagementpb"
 	"google.golang.org/api/iterator"
-	servicemanagementpb "google.golang.org/genproto/googleapis/api/servicemanagement/v1"
 )
 
 func ExampleNewServiceManagerClient() {
@@ -32,6 +32,23 @@ func ExampleNewServiceManagerClient() {
 	// - It may require specifying regional endpoints when creating the service client as shown in:
 	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := servicemanagement.NewServiceManagerClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
+func ExampleNewServiceManagerRESTClient() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := servicemanagement.NewServiceManagerRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -56,7 +73,7 @@ func ExampleServiceManagerClient_ListServices() {
 
 	req := &servicemanagementpb.ListServicesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/api/servicemanagement/v1#ListServicesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/servicemanagement/apiv1/servicemanagementpb#ListServicesRequest.
 	}
 	it := c.ListServices(ctx, req)
 	for {
@@ -87,7 +104,7 @@ func ExampleServiceManagerClient_GetService() {
 
 	req := &servicemanagementpb.GetServiceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/api/servicemanagement/v1#GetServiceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/servicemanagement/apiv1/servicemanagementpb#GetServiceRequest.
 	}
 	resp, err := c.GetService(ctx, req)
 	if err != nil {
@@ -112,7 +129,7 @@ func ExampleServiceManagerClient_CreateService() {
 
 	req := &servicemanagementpb.CreateServiceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/api/servicemanagement/v1#CreateServiceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/servicemanagement/apiv1/servicemanagementpb#CreateServiceRequest.
 	}
 	op, err := c.CreateService(ctx, req)
 	if err != nil {
@@ -142,7 +159,7 @@ func ExampleServiceManagerClient_DeleteService() {
 
 	req := &servicemanagementpb.DeleteServiceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/api/servicemanagement/v1#DeleteServiceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/servicemanagement/apiv1/servicemanagementpb#DeleteServiceRequest.
 	}
 	op, err := c.DeleteService(ctx, req)
 	if err != nil {
@@ -170,7 +187,7 @@ func ExampleServiceManagerClient_UndeleteService() {
 
 	req := &servicemanagementpb.UndeleteServiceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/api/servicemanagement/v1#UndeleteServiceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/servicemanagement/apiv1/servicemanagementpb#UndeleteServiceRequest.
 	}
 	op, err := c.UndeleteService(ctx, req)
 	if err != nil {
@@ -200,7 +217,7 @@ func ExampleServiceManagerClient_ListServiceConfigs() {
 
 	req := &servicemanagementpb.ListServiceConfigsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/api/servicemanagement/v1#ListServiceConfigsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/servicemanagement/apiv1/servicemanagementpb#ListServiceConfigsRequest.
 	}
 	it := c.ListServiceConfigs(ctx, req)
 	for {
@@ -231,7 +248,7 @@ func ExampleServiceManagerClient_GetServiceConfig() {
 
 	req := &servicemanagementpb.GetServiceConfigRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/api/servicemanagement/v1#GetServiceConfigRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/servicemanagement/apiv1/servicemanagementpb#GetServiceConfigRequest.
 	}
 	resp, err := c.GetServiceConfig(ctx, req)
 	if err != nil {
@@ -256,7 +273,7 @@ func ExampleServiceManagerClient_CreateServiceConfig() {
 
 	req := &servicemanagementpb.CreateServiceConfigRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/api/servicemanagement/v1#CreateServiceConfigRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/servicemanagement/apiv1/servicemanagementpb#CreateServiceConfigRequest.
 	}
 	resp, err := c.CreateServiceConfig(ctx, req)
 	if err != nil {
@@ -281,7 +298,7 @@ func ExampleServiceManagerClient_SubmitConfigSource() {
 
 	req := &servicemanagementpb.SubmitConfigSourceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/api/servicemanagement/v1#SubmitConfigSourceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/servicemanagement/apiv1/servicemanagementpb#SubmitConfigSourceRequest.
 	}
 	op, err := c.SubmitConfigSource(ctx, req)
 	if err != nil {
@@ -311,7 +328,7 @@ func ExampleServiceManagerClient_ListServiceRollouts() {
 
 	req := &servicemanagementpb.ListServiceRolloutsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/api/servicemanagement/v1#ListServiceRolloutsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/servicemanagement/apiv1/servicemanagementpb#ListServiceRolloutsRequest.
 	}
 	it := c.ListServiceRollouts(ctx, req)
 	for {
@@ -342,7 +359,7 @@ func ExampleServiceManagerClient_GetServiceRollout() {
 
 	req := &servicemanagementpb.GetServiceRolloutRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/api/servicemanagement/v1#GetServiceRolloutRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/servicemanagement/apiv1/servicemanagementpb#GetServiceRolloutRequest.
 	}
 	resp, err := c.GetServiceRollout(ctx, req)
 	if err != nil {
@@ -367,7 +384,7 @@ func ExampleServiceManagerClient_CreateServiceRollout() {
 
 	req := &servicemanagementpb.CreateServiceRolloutRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/api/servicemanagement/v1#CreateServiceRolloutRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/servicemanagement/apiv1/servicemanagementpb#CreateServiceRolloutRequest.
 	}
 	op, err := c.CreateServiceRollout(ctx, req)
 	if err != nil {
@@ -397,7 +414,7 @@ func ExampleServiceManagerClient_GenerateConfigReport() {
 
 	req := &servicemanagementpb.GenerateConfigReportRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/api/servicemanagement/v1#GenerateConfigReportRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/servicemanagement/apiv1/servicemanagementpb#GenerateConfigReportRequest.
 	}
 	resp, err := c.GenerateConfigReport(ctx, req)
 	if err != nil {

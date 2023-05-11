@@ -1,5 +1,34 @@
 # Changes
 
+## [1.9.0](https://github.com/googleapis/google-cloud-go/compare/firestore/v1.8.0...firestore/v1.9.0) (2022-11-29)
+
+
+### Features
+
+* **firestore:** start generating proto stubs ([eed371e](https://github.com/googleapis/google-cloud-go/commit/eed371e9b1639c81663c6858db119fb87a126454))
+
+
+### Documentation
+
+* **firestore:** Adds emulator snippet ([#6926](https://github.com/googleapis/google-cloud-go/issues/6926)) ([456afab](https://github.com/googleapis/google-cloud-go/commit/456afab76f078ef58b7e5b3409acc6b3f71c5b79))
+
+## [1.8.0](https://github.com/googleapis/google-cloud-go/compare/firestore/v1.7.0...firestore/v1.8.0) (2022-10-17)
+
+
+### Features
+
+* **firestore:** Adds COUNT aggregation query ([#6692](https://github.com/googleapis/google-cloud-go/issues/6692)) ([31ac692](https://github.com/googleapis/google-cloud-go/commit/31ac692d925065981a695266d1e4e22e5374725e))
+* **firestore:** Adds snapshot reads impl. ([#6718](https://github.com/googleapis/google-cloud-go/issues/6718)) ([43cc5bc](https://github.com/googleapis/google-cloud-go/commit/43cc5bc068d2f3abdde6c65beaac349218fc1a02))
+
+## [1.7.0](https://github.com/googleapis/google-cloud-go/compare/firestore/v1.6.1...firestore/v1.7.0) (2022-10-06)
+
+
+### Features
+
+* **firestore/apiv1:** add firestore aggregation query apis to the stable googleapis branch ([ec1a190](https://github.com/googleapis/google-cloud-go/commit/ec1a190abbc4436fcaeaa1421c7d9df624042752))
+* **firestore:** Adds Bulkwriter support to Firestore client ([#5946](https://github.com/googleapis/google-cloud-go/issues/5946)) ([20b6c1b](https://github.com/googleapis/google-cloud-go/commit/20b6c1bbbc28311f4388e163cd9358d1ac0e94d4))
+* **firestore:** expose read_time fields in Firestore PartitionQuery and ListCollectionIds, currently only available in private preview ([90489b1](https://github.com/googleapis/google-cloud-go/commit/90489b10fd7da4cfafe326e00d1f4d81570147f7))
+
 ### [1.6.1](https://www.github.com/googleapis/google-cloud-go/compare/firestore/v1.6.0...firestore/v1.6.1) (2021-10-29)
 
 

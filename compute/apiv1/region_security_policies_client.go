@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -24,14 +24,15 @@ import (
 	"math"
 	"net/http"
 	"net/url"
+	"time"
 
+	computepb "cloud.google.com/go/compute/apiv1/computepb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	httptransport "google.golang.org/api/transport/http"
-	computepb "google.golang.org/genproto/googleapis/cloud/compute/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/encoding/protojson"
@@ -52,10 +53,30 @@ type RegionSecurityPoliciesCallOptions struct {
 func defaultRegionSecurityPoliciesRESTCallOptions() *RegionSecurityPoliciesCallOptions {
 	return &RegionSecurityPoliciesCallOptions{
 		Delete: []gax.CallOption{},
-		Get:    []gax.CallOption{},
+		Get: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
 		Insert: []gax.CallOption{},
-		List:   []gax.CallOption{},
-		Patch:  []gax.CallOption{},
+		List: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
+		Patch: []gax.CallOption{},
 	}
 }
 
@@ -126,7 +147,7 @@ func (c *RegionSecurityPoliciesClient) List(ctx context.Context, req *computepb.
 	return c.internalClient.List(ctx, req, opts...)
 }
 
-// Patch patches the specified policy with the data included in the request.
+// Patch patches the specified policy with the data included in the request. To clear fields in the rule, leave the fields empty and specify them in the updateMask. This cannot be used to be update the rules in the policy. Please use the per rule methods like addRule, patchRule, and removeRule instead.
 func (c *RegionSecurityPoliciesClient) Patch(ctx context.Context, req *computepb.PatchRegionSecurityPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Patch(ctx, req, opts...)
 }
@@ -511,7 +532,7 @@ func (c *regionSecurityPoliciesRESTClient) List(ctx context.Context, req *comput
 	return it
 }
 
-// Patch patches the specified policy with the data included in the request.
+// Patch patches the specified policy with the data included in the request. To clear fields in the rule, leave the fields empty and specify them in the updateMask. This cannot be used to be update the rules in the policy. Please use the per rule methods like addRule, patchRule, and removeRule instead.
 func (c *regionSecurityPoliciesRESTClient) Patch(ctx context.Context, req *computepb.PatchRegionSecurityPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetSecurityPolicyResource()

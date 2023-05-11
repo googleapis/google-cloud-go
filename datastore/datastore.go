@@ -21,6 +21,7 @@ import (
 	"log"
 	"os"
 	"reflect"
+	"time"
 
 	"cloud.google.com/go/internal/trace"
 	"google.golang.org/api/option"
@@ -28,6 +29,7 @@ import (
 	gtransport "google.golang.org/api/transport/grpc"
 	pb "google.golang.org/genproto/googleapis/datastore/v1"
 	"google.golang.org/grpc"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 const (
@@ -53,9 +55,10 @@ const resourcePrefixHeader = "google-cloud-resource-prefix"
 
 // Client is a client for reading and writing data in a datastore dataset.
 type Client struct {
-	connPool gtransport.ConnPool
-	client   pb.DatastoreClient
-	dataset  string // Called dataset by the datastore API, synonym for project ID.
+	connPool     gtransport.ConnPool
+	client       pb.DatastoreClient
+	dataset      string // Called dataset by the datastore API, synonym for project ID.
+	readSettings *readSettings
 }
 
 // NewClient creates a new Client for a given dataset.  If the project ID is
@@ -115,19 +118,20 @@ func NewClient(ctx context.Context, projectID string, opts ...option.ClientOptio
 	}
 	connPool, err := gtransport.DialPool(ctx, o...)
 	if err != nil {
-		return nil, fmt.Errorf("dialing: %v", err)
+		return nil, fmt.Errorf("dialing: %w", err)
 	}
 	return &Client{
-		connPool: connPool,
-		client:   newDatastoreClient(connPool, projectID),
-		dataset:  projectID,
+		connPool:     connPool,
+		client:       newDatastoreClient(connPool, projectID),
+		dataset:      projectID,
+		readSettings: &readSettings{},
 	}, nil
 }
 
 func detectProjectID(ctx context.Context, opts ...option.ClientOption) (string, error) {
 	creds, err := transport.Creds(ctx, opts...)
 	if err != nil {
-		return "", fmt.Errorf("fetching creds: %v", err)
+		return "", fmt.Errorf("fetching creds: %w", err)
 	}
 	if creds.ProjectID == "" {
 		return "", errors.New("datastore: see the docs on DetectProjectID")
@@ -143,6 +147,8 @@ var (
 	ErrInvalidKey = errors.New("datastore: invalid key")
 	// ErrNoSuchEntity is returned when no entity was found for a given key.
 	ErrNoSuchEntity = errors.New("datastore: no such entity")
+	// ErrDifferentKeyAndDstLength is returned when the length of dst and key are different.
+	ErrDifferentKeyAndDstLength = errors.New("datastore: keys and dst slices have different length")
 )
 
 type multiArgType int
@@ -346,9 +352,20 @@ func (c *Client) Get(ctx context.Context, key *Key, dst interface{}) (err error)
 	defer func() { trace.EndSpan(ctx, err) }()
 
 	if dst == nil { // get catches nil interfaces; we need to catch nil ptr here
-		return ErrInvalidEntityType
+		return fmt.Errorf("%w: dst cannot be nil", ErrInvalidEntityType)
 	}
-	err = c.get(ctx, []*Key{key}, []interface{}{dst}, nil)
+
+	var opts *pb.ReadOptions
+	if !c.readSettings.readTime.IsZero() {
+		opts = &pb.ReadOptions{
+			ConsistencyType: &pb.ReadOptions_ReadTime{
+				// Timestamp cannot be less than microseconds accuracy. See #6938
+				ReadTime: &timestamppb.Timestamp{Seconds: c.readSettings.readTime.Unix()},
+			},
+		}
+	}
+
+	err = c.get(ctx, []*Key{key}, []interface{}{dst}, opts)
 	if me, ok := err.(MultiError); ok {
 		return me[0]
 	}
@@ -371,20 +388,57 @@ func (c *Client) GetMulti(ctx context.Context, keys []*Key, dst interface{}) (er
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/datastore.GetMulti")
 	defer func() { trace.EndSpan(ctx, err) }()
 
-	return c.get(ctx, keys, dst, nil)
+	var opts *pb.ReadOptions
+	if c.readSettings != nil && !c.readSettings.readTime.IsZero() {
+		opts = &pb.ReadOptions{
+			ConsistencyType: &pb.ReadOptions_ReadTime{
+				// Timestamp cannot be less than microseconds accuracy. See #6938
+				ReadTime: &timestamppb.Timestamp{Seconds: c.readSettings.readTime.Unix()},
+			},
+		}
+	}
+
+	return c.get(ctx, keys, dst, opts)
 }
 
 func (c *Client) get(ctx context.Context, keys []*Key, dst interface{}, opts *pb.ReadOptions) error {
 	v := reflect.ValueOf(dst)
-	multiArgType, _ := checkMultiArg(v)
 
-	// Confidence checks
-	if multiArgType == multiArgTypeInvalid {
-		return errors.New("datastore: dst has invalid type")
+	var multiArgType multiArgType
+
+	// If kind is of type slice, return error
+	if kind := v.Kind(); kind != reflect.Slice {
+		return fmt.Errorf("%w: dst: expected slice got %v", ErrInvalidEntityType, kind.String())
 	}
-	if len(keys) != v.Len() {
-		return errors.New("datastore: keys and dst slices have different length")
+
+	// if type is a type which implements PropertyList, return error
+	if argType := v.Type(); argType == typeOfPropertyList {
+		return fmt.Errorf("%w: dst: cannot be PropertyListType", ErrInvalidEntityType)
 	}
+
+	elemType := v.Type().Elem()
+	if reflect.PtrTo(elemType).Implements(typeOfPropertyLoadSaver) {
+		multiArgType = multiArgTypePropertyLoadSaver
+	}
+
+	switch elemType.Kind() {
+	case reflect.Struct:
+		multiArgType = multiArgTypeStruct
+	case reflect.Interface:
+		multiArgType = multiArgTypeInterface
+	case reflect.Ptr:
+		elemType = elemType.Elem()
+		if elemType.Kind() == reflect.Struct {
+			multiArgType = multiArgTypeStructPtr
+		}
+	}
+
+	dstLen := v.Len()
+
+	if keysLen := len(keys); keysLen != dstLen {
+		return fmt.Errorf("%w: key length = %d, dst length = %d", ErrDifferentKeyAndDstLength, keysLen, v.Len())
+	}
+
 	if len(keys) == 0 {
 		return nil
 	}
@@ -538,13 +592,43 @@ func (c *Client) PutMulti(ctx context.Context, keys []*Key, src interface{}) (re
 
 func putMutations(keys []*Key, src interface{}) ([]*pb.Mutation, error) {
 	v := reflect.ValueOf(src)
-	multiArgType, _ := checkMultiArg(v)
+	var multiArgType multiArgType
+
+	// If kind is of type slice, return error
+	if kind := v.Kind(); kind != reflect.Slice {
+		return nil, fmt.Errorf("%w: dst: expected slice got %v", ErrInvalidEntityType, kind.String())
+	}
+
+	// if type is a type which implements PropertyList, return error
+	if argType := v.Type(); argType == typeOfPropertyList {
+		return nil, fmt.Errorf("%w: dst: cannot be PropertyListType", ErrInvalidEntityType)
+	}
+
+	elemType := v.Type().Elem()
+	if reflect.PtrTo(elemType).Implements(typeOfPropertyLoadSaver) {
+		multiArgType = multiArgTypePropertyLoadSaver
+	}
+
+	switch elemType.Kind() {
+	case reflect.Struct:
+		multiArgType = multiArgTypeStruct
+	case reflect.Interface:
+		multiArgType = multiArgTypeInterface
+	case reflect.Ptr:
+		elemType = elemType.Elem()
+		if elemType.Kind() == reflect.Struct {
+			multiArgType = multiArgTypeStructPtr
+		}
+	}
 	if multiArgType == multiArgTypeInvalid {
-		return nil, errors.New("datastore: src has invalid type")
+		return nil, fmt.Errorf("datastore: src has invalid type")
 	}
-	if len(keys) != v.Len() {
-		return nil, errors.New("datastore: key and src slices have different length")
+	dstLen := v.Len()
+
+	if keysLen := len(keys); keysLen != dstLen {
+		return nil, fmt.Errorf("%w: key length = %d, dst length = %d", ErrDifferentKeyAndDstLength, keysLen, v.Len())
 	}
+
 	if len(keys) == 0 {
 		return nil, nil
 	}
@@ -678,4 +762,36 @@ func (c *Client) Mutate(ctx context.Context, muts ...*Mutation) (ret []*Key, err
 		}
 	}
 	return ret, nil
+}
+
+// ReadTime specifies a snapshot (time) of the database to read.
+func ReadTime(t time.Time) ReadOption {
+	return docReadTime(t)
+}
+
+type docReadTime time.Time
+
+func (drt docReadTime) apply(rs *readSettings) {
+	rs.readTime = time.Time(drt)
+}
+
+// ReadOption provides specific instructions for how to access documents in the database.
+// Currently, only ReadTime is supported.
+type ReadOption interface {
+	apply(*readSettings)
+}
+
+type readSettings struct {
+	readTime time.Time
+}
+
+// WithReadOptions specifies constraints for accessing documents from the database,
+// e.g. at what time snapshot to read the documents.
+// The client uses this value for subsequent reads, unless additional ReadOptions
+// are provided.
+func (c *Client) WithReadOptions(ro ...ReadOption) *Client {
+	for _, r := range ro {
+		r.apply(c.readSettings)
+	}
+	return c
 }

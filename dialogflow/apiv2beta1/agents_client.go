@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -26,9 +26,10 @@ import (
 	"net/url"
 	"time"
 
+	dialogflowpb "cloud.google.com/go/dialogflow/apiv2beta1/dialogflowpb"
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
-	structpb "github.com/golang/protobuf/ptypes/struct"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
@@ -36,14 +37,13 @@ import (
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
-	dialogflowpb "google.golang.org/genproto/googleapis/cloud/dialogflow/v2beta1"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
+	structpb "google.golang.org/protobuf/types/known/structpb"
 )
 
 var newAgentsClientHook clientHook
@@ -415,7 +415,8 @@ func (c *AgentsClient) TrainAgentOperation(name string) *TrainAgentOperation {
 //	metadata: An empty Struct
 //	message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
 //
-//	response: ExportAgentResponse
+//	response:
+//	ExportAgentResponse
 func (c *AgentsClient) ExportAgent(ctx context.Context, req *dialogflowpb.ExportAgentRequest, opts ...gax.CallOption) (*ExportAgentOperation, error) {
 	return c.internalClient.ExportAgent(ctx, req, opts...)
 }
@@ -430,11 +431,13 @@ func (c *AgentsClient) ExportAgentOperation(name string) *ExportAgentOperation {
 //
 // Uploads new intents and entity types without deleting the existing ones.
 // Intents and entity types with the same name are replaced with the new
-// versions from ImportAgentRequest. After the import, the imported draft
-// agent will be trained automatically (unless disabled in agent settings).
-// However, once the import is done, training may not be completed yet. Please
-// call TrainAgent and wait for the operation it returns in order to train
-// explicitly.
+// versions from
+// ImportAgentRequest.
+// After the import, the imported draft agent will be trained automatically
+// (unless disabled in agent settings). However, once the import is done,
+// training may not be completed yet. Please call
+// TrainAgent and wait
+// for the operation it returns in order to train explicitly.
 //
 // This method is a long-running
 // operation (at https://cloud.google.com/dialogflow/es/docs/how/long-running-operations).
@@ -468,8 +471,9 @@ func (c *AgentsClient) ImportAgentOperation(name string) *ImportAgentOperation {
 // entity types in the older version are deleted. After the restore, the
 // restored draft agent will be trained automatically (unless disabled in
 // agent settings). However, once the restore is done, training may not be
-// completed yet. Please call TrainAgent and wait for the operation it
-// returns in order to train explicitly.
+// completed yet. Please call
+// TrainAgent and wait
+// for the operation it returns in order to train explicitly.
 //
 // This method is a long-running
 // operation (at https://cloud.google.com/dialogflow/es/docs/how/long-running-operations).
@@ -1084,6 +1088,11 @@ func (c *agentsRESTClient) GetAgent(ctx context.Context, req *dialogflowpb.GetAg
 	}
 	baseUrl.Path += fmt.Sprintf("/v2beta1/%v/agent", req.GetParent())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
@@ -1149,6 +1158,7 @@ func (c *agentsRESTClient) SetAgent(ctx context.Context, req *dialogflowpb.SetAg
 	baseUrl.Path += fmt.Sprintf("/v2beta1/%v/agent", req.GetAgent().GetParent())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
 		updateMask, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
@@ -1212,6 +1222,11 @@ func (c *agentsRESTClient) DeleteAgent(ctx context.Context, req *dialogflowpb.De
 	}
 	baseUrl.Path += fmt.Sprintf("/v2beta1/%v/agent", req.GetParent())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
@@ -1266,6 +1281,7 @@ func (c *agentsRESTClient) SearchAgents(ctx context.Context, req *dialogflowpb.S
 		baseUrl.Path += fmt.Sprintf("/v2beta1/%v/agent:search", req.GetParent())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetPageSize() != 0 {
 			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
 		}
@@ -1359,6 +1375,11 @@ func (c *agentsRESTClient) TrainAgent(ctx context.Context, req *dialogflowpb.Tra
 	}
 	baseUrl.Path += fmt.Sprintf("/v2beta1/%v/agent:train", req.GetParent())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
@@ -1417,7 +1438,8 @@ func (c *agentsRESTClient) TrainAgent(ctx context.Context, req *dialogflowpb.Tra
 //	metadata: An empty Struct
 //	message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
 //
-//	response: ExportAgentResponse
+//	response:
+//	ExportAgentResponse
 func (c *agentsRESTClient) ExportAgent(ctx context.Context, req *dialogflowpb.ExportAgentRequest, opts ...gax.CallOption) (*ExportAgentOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -1430,6 +1452,11 @@ func (c *agentsRESTClient) ExportAgent(ctx context.Context, req *dialogflowpb.Ex
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2beta1/%v/agent:export", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
@@ -1484,11 +1511,13 @@ func (c *agentsRESTClient) ExportAgent(ctx context.Context, req *dialogflowpb.Ex
 //
 // Uploads new intents and entity types without deleting the existing ones.
 // Intents and entity types with the same name are replaced with the new
-// versions from ImportAgentRequest. After the import, the imported draft
-// agent will be trained automatically (unless disabled in agent settings).
-// However, once the import is done, training may not be completed yet. Please
-// call TrainAgent and wait for the operation it returns in order to train
-// explicitly.
+// versions from
+// ImportAgentRequest.
+// After the import, the imported draft agent will be trained automatically
+// (unless disabled in agent settings). However, once the import is done,
+// training may not be completed yet. Please call
+// TrainAgent and wait
+// for the operation it returns in order to train explicitly.
 //
 // This method is a long-running
 // operation (at https://cloud.google.com/dialogflow/es/docs/how/long-running-operations).
@@ -1518,6 +1547,11 @@ func (c *agentsRESTClient) ImportAgent(ctx context.Context, req *dialogflowpb.Im
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2beta1/%v/agent:import", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
@@ -1574,8 +1608,9 @@ func (c *agentsRESTClient) ImportAgent(ctx context.Context, req *dialogflowpb.Im
 // entity types in the older version are deleted. After the restore, the
 // restored draft agent will be trained automatically (unless disabled in
 // agent settings). However, once the restore is done, training may not be
-// completed yet. Please call TrainAgent and wait for the operation it
-// returns in order to train explicitly.
+// completed yet. Please call
+// TrainAgent and wait
+// for the operation it returns in order to train explicitly.
 //
 // This method is a long-running
 // operation (at https://cloud.google.com/dialogflow/es/docs/how/long-running-operations).
@@ -1605,6 +1640,11 @@ func (c *agentsRESTClient) RestoreAgent(ctx context.Context, req *dialogflowpb.R
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2beta1/%v/agent:restore", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
@@ -1665,6 +1705,7 @@ func (c *agentsRESTClient) GetValidationResult(ctx context.Context, req *dialogf
 	baseUrl.Path += fmt.Sprintf("/v2beta1/%v/agent/validationResult", req.GetParent())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetLanguageCode() != "" {
 		params.Add("languageCode", fmt.Sprintf("%v", req.GetLanguageCode()))
 	}
@@ -1723,6 +1764,11 @@ func (c *agentsRESTClient) GetLocation(ctx context.Context, req *locationpb.GetL
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2beta1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
@@ -1791,6 +1837,7 @@ func (c *agentsRESTClient) ListLocations(ctx context.Context, req *locationpb.Li
 		baseUrl.Path += fmt.Sprintf("/v2beta1/%v/locations", req.GetName())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -1867,6 +1914,11 @@ func (c *agentsRESTClient) CancelOperation(ctx context.Context, req *longrunning
 	}
 	baseUrl.Path += fmt.Sprintf("/v2beta1/%v:cancel", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
@@ -1901,6 +1953,11 @@ func (c *agentsRESTClient) GetOperation(ctx context.Context, req *longrunningpb.
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2beta1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
@@ -1969,6 +2026,7 @@ func (c *agentsRESTClient) ListOperations(ctx context.Context, req *longrunningp
 		baseUrl.Path += fmt.Sprintf("/v2beta1/%v/operations", req.GetName())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}

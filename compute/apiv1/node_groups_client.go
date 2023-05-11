@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -25,14 +25,15 @@ import (
 	"net/http"
 	"net/url"
 	"sort"
+	"time"
 
+	computepb "cloud.google.com/go/compute/apiv1/computepb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	httptransport "google.golang.org/api/transport/http"
-	computepb "google.golang.org/genproto/googleapis/cloud/compute/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/encoding/protojson"
@@ -43,36 +44,78 @@ var newNodeGroupsClientHook clientHook
 
 // NodeGroupsCallOptions contains the retry settings for each method of NodeGroupsClient.
 type NodeGroupsCallOptions struct {
-	AddNodes           []gax.CallOption
-	AggregatedList     []gax.CallOption
-	Delete             []gax.CallOption
-	DeleteNodes        []gax.CallOption
-	Get                []gax.CallOption
-	GetIamPolicy       []gax.CallOption
-	Insert             []gax.CallOption
-	List               []gax.CallOption
-	ListNodes          []gax.CallOption
-	Patch              []gax.CallOption
-	SetIamPolicy       []gax.CallOption
-	SetNodeTemplate    []gax.CallOption
-	TestIamPermissions []gax.CallOption
+	AddNodes                 []gax.CallOption
+	AggregatedList           []gax.CallOption
+	Delete                   []gax.CallOption
+	DeleteNodes              []gax.CallOption
+	Get                      []gax.CallOption
+	GetIamPolicy             []gax.CallOption
+	Insert                   []gax.CallOption
+	List                     []gax.CallOption
+	ListNodes                []gax.CallOption
+	Patch                    []gax.CallOption
+	SetIamPolicy             []gax.CallOption
+	SetNodeTemplate          []gax.CallOption
+	SimulateMaintenanceEvent []gax.CallOption
+	TestIamPermissions       []gax.CallOption
 }
 
 func defaultNodeGroupsRESTCallOptions() *NodeGroupsCallOptions {
 	return &NodeGroupsCallOptions{
-		AddNodes:           []gax.CallOption{},
-		AggregatedList:     []gax.CallOption{},
-		Delete:             []gax.CallOption{},
-		DeleteNodes:        []gax.CallOption{},
-		Get:                []gax.CallOption{},
-		GetIamPolicy:       []gax.CallOption{},
-		Insert:             []gax.CallOption{},
-		List:               []gax.CallOption{},
-		ListNodes:          []gax.CallOption{},
-		Patch:              []gax.CallOption{},
-		SetIamPolicy:       []gax.CallOption{},
-		SetNodeTemplate:    []gax.CallOption{},
-		TestIamPermissions: []gax.CallOption{},
+		AddNodes: []gax.CallOption{},
+		AggregatedList: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
+		Delete:      []gax.CallOption{},
+		DeleteNodes: []gax.CallOption{},
+		Get: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
+		GetIamPolicy: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
+		Insert: []gax.CallOption{},
+		List: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
+		ListNodes:                []gax.CallOption{},
+		Patch:                    []gax.CallOption{},
+		SetIamPolicy:             []gax.CallOption{},
+		SetNodeTemplate:          []gax.CallOption{},
+		SimulateMaintenanceEvent: []gax.CallOption{},
+		TestIamPermissions:       []gax.CallOption{},
 	}
 }
 
@@ -93,6 +136,7 @@ type internalNodeGroupsClient interface {
 	Patch(context.Context, *computepb.PatchNodeGroupRequest, ...gax.CallOption) (*Operation, error)
 	SetIamPolicy(context.Context, *computepb.SetIamPolicyNodeGroupRequest, ...gax.CallOption) (*computepb.Policy, error)
 	SetNodeTemplate(context.Context, *computepb.SetNodeTemplateNodeGroupRequest, ...gax.CallOption) (*Operation, error)
+	SimulateMaintenanceEvent(context.Context, *computepb.SimulateMaintenanceEventNodeGroupRequest, ...gax.CallOption) (*Operation, error)
 	TestIamPermissions(context.Context, *computepb.TestIamPermissionsNodeGroupRequest, ...gax.CallOption) (*computepb.TestPermissionsResponse, error)
 }
 
@@ -189,6 +233,11 @@ func (c *NodeGroupsClient) SetIamPolicy(ctx context.Context, req *computepb.SetI
 // SetNodeTemplate updates the node template of the node group.
 func (c *NodeGroupsClient) SetNodeTemplate(ctx context.Context, req *computepb.SetNodeTemplateNodeGroupRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.SetNodeTemplate(ctx, req, opts...)
+}
+
+// SimulateMaintenanceEvent simulates maintenance event on specified nodes from the node group.
+func (c *NodeGroupsClient) SimulateMaintenanceEvent(ctx context.Context, req *computepb.SimulateMaintenanceEventNodeGroupRequest, opts ...gax.CallOption) (*Operation, error) {
+	return c.internalClient.SimulateMaintenanceEvent(ctx, req, opts...)
 }
 
 // TestIamPermissions returns permissions that a caller has on the specified resource.
@@ -1148,6 +1197,81 @@ func (c *nodeGroupsRESTClient) SetNodeTemplate(ctx context.Context, req *compute
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
 	opts = append((*c.CallOptions).SetNodeTemplate[0:len((*c.CallOptions).SetNodeTemplate):len((*c.CallOptions).SetNodeTemplate)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &computepb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	op := &Operation{
+		&zoneOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+			zone:    req.GetZone(),
+		},
+	}
+	return op, nil
+}
+
+// SimulateMaintenanceEvent simulates maintenance event on specified nodes from the node group.
+func (c *nodeGroupsRESTClient) SimulateMaintenanceEvent(ctx context.Context, req *computepb.SimulateMaintenanceEventNodeGroupRequest, opts ...gax.CallOption) (*Operation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true}
+	body := req.GetNodeGroupsSimulateMaintenanceEventRequestResource()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/nodeGroups/%v/simulateMaintenanceEvent", req.GetProject(), req.GetZone(), req.GetNodeGroup())
+
+	params := url.Values{}
+	if req != nil && req.RequestId != nil {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "zone", url.QueryEscape(req.GetZone()), "node_group", url.QueryEscape(req.GetNodeGroup())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).SimulateMaintenanceEvent[0:len((*c.CallOptions).SimulateMaintenanceEvent):len((*c.CallOptions).SimulateMaintenanceEvent)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {

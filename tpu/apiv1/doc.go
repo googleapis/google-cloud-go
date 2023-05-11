@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,6 +18,11 @@
 // Cloud TPU API.
 //
 // TPU API provides customers with access to Google TPU technology.
+//
+// # General documentation
+//
+// For information about setting deadlines, reusing contexts, and more
+// please visit https://pkg.go.dev/cloud.google.com/go.
 //
 // # Example usage
 //
@@ -57,7 +62,7 @@
 //
 //	req := &tpupb.ListNodesRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/tpu/v1#ListNodesRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/tpu/apiv1/tpupb#ListNodesRequest.
 //	}
 //	it := c.ListNodes(ctx, req)
 //	for {
@@ -79,9 +84,6 @@
 // Individual methods on the client use the ctx given to them.
 //
 // To close the open connection, use the Close() method.
-//
-// For information about setting deadlines, reusing contexts, and more
-// please visit https://pkg.go.dev/cloud.google.com/go.
 package tpu // import "cloud.google.com/go/tpu/apiv1"
 
 import (

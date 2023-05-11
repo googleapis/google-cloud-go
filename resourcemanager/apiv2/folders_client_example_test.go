@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,10 +19,10 @@ package resourcemanager_test
 import (
 	"context"
 
+	iampb "cloud.google.com/go/iam/apiv1/iampb"
 	resourcemanager "cloud.google.com/go/resourcemanager/apiv2"
+	resourcemanagerpb "cloud.google.com/go/resourcemanager/apiv2/resourcemanagerpb"
 	"google.golang.org/api/iterator"
-	resourcemanagerpb "google.golang.org/genproto/googleapis/cloud/resourcemanager/v2"
-	iampb "google.golang.org/genproto/googleapis/iam/v1"
 )
 
 func ExampleNewFoldersClient() {
@@ -33,6 +33,23 @@ func ExampleNewFoldersClient() {
 	// - It may require specifying regional endpoints when creating the service client as shown in:
 	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := resourcemanager.NewFoldersClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
+func ExampleNewFoldersRESTClient() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := resourcemanager.NewFoldersRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -57,7 +74,7 @@ func ExampleFoldersClient_ListFolders() {
 
 	req := &resourcemanagerpb.ListFoldersRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/resourcemanager/v2#ListFoldersRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/resourcemanager/apiv2/resourcemanagerpb#ListFoldersRequest.
 	}
 	it := c.ListFolders(ctx, req)
 	for {
@@ -88,7 +105,7 @@ func ExampleFoldersClient_SearchFolders() {
 
 	req := &resourcemanagerpb.SearchFoldersRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/resourcemanager/v2#SearchFoldersRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/resourcemanager/apiv2/resourcemanagerpb#SearchFoldersRequest.
 	}
 	it := c.SearchFolders(ctx, req)
 	for {
@@ -119,7 +136,7 @@ func ExampleFoldersClient_GetFolder() {
 
 	req := &resourcemanagerpb.GetFolderRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/resourcemanager/v2#GetFolderRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/resourcemanager/apiv2/resourcemanagerpb#GetFolderRequest.
 	}
 	resp, err := c.GetFolder(ctx, req)
 	if err != nil {
@@ -144,7 +161,7 @@ func ExampleFoldersClient_CreateFolder() {
 
 	req := &resourcemanagerpb.CreateFolderRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/resourcemanager/v2#CreateFolderRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/resourcemanager/apiv2/resourcemanagerpb#CreateFolderRequest.
 	}
 	op, err := c.CreateFolder(ctx, req)
 	if err != nil {
@@ -174,7 +191,7 @@ func ExampleFoldersClient_UpdateFolder() {
 
 	req := &resourcemanagerpb.UpdateFolderRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/resourcemanager/v2#UpdateFolderRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/resourcemanager/apiv2/resourcemanagerpb#UpdateFolderRequest.
 	}
 	resp, err := c.UpdateFolder(ctx, req)
 	if err != nil {
@@ -199,7 +216,7 @@ func ExampleFoldersClient_MoveFolder() {
 
 	req := &resourcemanagerpb.MoveFolderRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/resourcemanager/v2#MoveFolderRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/resourcemanager/apiv2/resourcemanagerpb#MoveFolderRequest.
 	}
 	op, err := c.MoveFolder(ctx, req)
 	if err != nil {
@@ -229,7 +246,7 @@ func ExampleFoldersClient_DeleteFolder() {
 
 	req := &resourcemanagerpb.DeleteFolderRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/resourcemanager/v2#DeleteFolderRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/resourcemanager/apiv2/resourcemanagerpb#DeleteFolderRequest.
 	}
 	resp, err := c.DeleteFolder(ctx, req)
 	if err != nil {
@@ -254,7 +271,7 @@ func ExampleFoldersClient_UndeleteFolder() {
 
 	req := &resourcemanagerpb.UndeleteFolderRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/resourcemanager/v2#UndeleteFolderRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/resourcemanager/apiv2/resourcemanagerpb#UndeleteFolderRequest.
 	}
 	resp, err := c.UndeleteFolder(ctx, req)
 	if err != nil {
@@ -279,7 +296,7 @@ func ExampleFoldersClient_GetIamPolicy() {
 
 	req := &iampb.GetIamPolicyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/iam/v1#GetIamPolicyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/iam/apiv1/iampb#GetIamPolicyRequest.
 	}
 	resp, err := c.GetIamPolicy(ctx, req)
 	if err != nil {
@@ -304,7 +321,7 @@ func ExampleFoldersClient_SetIamPolicy() {
 
 	req := &iampb.SetIamPolicyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/iam/v1#SetIamPolicyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/iam/apiv1/iampb#SetIamPolicyRequest.
 	}
 	resp, err := c.SetIamPolicy(ctx, req)
 	if err != nil {
@@ -329,7 +346,7 @@ func ExampleFoldersClient_TestIamPermissions() {
 
 	req := &iampb.TestIamPermissionsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/iam/v1#TestIamPermissionsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/iam/apiv1/iampb#TestIamPermissionsRequest.
 	}
 	resp, err := c.TestIamPermissions(ctx, req)
 	if err != nil {

@@ -27,10 +27,10 @@ import (
 
 	"cloud.google.com/go/civil"
 	"cloud.google.com/go/internal/testutil"
+	sppb "cloud.google.com/go/spanner/apiv1/spannerpb"
 	proto "github.com/golang/protobuf/proto"
 	proto3 "github.com/golang/protobuf/ptypes/struct"
 	"github.com/google/go-cmp/cmp"
-	sppb "google.golang.org/genproto/googleapis/spanner/v1"
 )
 
 var (

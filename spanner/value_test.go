@@ -22,15 +22,17 @@ import (
 	"math"
 	"math/big"
 	"reflect"
+	"strconv"
 	"testing"
 	"time"
 
 	"cloud.google.com/go/civil"
 	"cloud.google.com/go/internal/testutil"
+	sppb "cloud.google.com/go/spanner/apiv1/spannerpb"
 	"github.com/golang/protobuf/proto"
 	proto3 "github.com/golang/protobuf/ptypes/struct"
+	structpb "github.com/golang/protobuf/ptypes/struct"
 	"github.com/google/go-cmp/cmp"
-	sppb "google.golang.org/genproto/googleapis/spanner/v1"
 )
 
 var (
@@ -194,6 +196,30 @@ func (c *customStructToNull) DecodeSpanner(val interface{}) (err error) {
 	return fmt.Errorf("val mismatch: expected nil, got %v", val)
 }
 
+// e.g. a clock face time HH:MM
+type customArray [4]uint8
+
+// Convert to customArray from structpb.ListValue<structpb.StringValue>
+func (c *customArray) DecodeSpanner(val interface{}) error {
+	listVal, ok := val.(*structpb.ListValue)
+	if !ok {
+		return fmt.Errorf("failed to decode customArray: unexpected type of %v", val)
+	}
+	asSlice := listVal.AsSlice()
+	if len(asSlice) != 4 {
+		return fmt.Errorf("failed to decode customArray: expected array of length 4")
+	}
+	for i, vI := range asSlice {
+		vStr, ok := vI.(string)
+		if !ok {
+			return fmt.Errorf("failed to decode customArray: got non string value: %v", vI)
+		}
+		vInt, _ := strconv.Atoi(vStr)
+		c[i] = uint8(vInt)
+	}
+	return nil
+}
+
 // Test encoding Values.
 func TestEncodeValue(t *testing.T) {
 	type CustomString string
@@ -205,6 +231,7 @@ func TestEncodeValue(t *testing.T) {
 	type CustomDate civil.Date
 	type CustomNumeric big.Rat
 	type CustomPGNumeric PGNumeric
+	type CustomPGJSONB PGJsonB
 
 	type CustomNullString NullString
 	type CustomNullInt64 NullInt64
@@ -258,6 +285,7 @@ func TestEncodeValue(t *testing.T) {
 		tNumeric   = numericType()
 		tJSON      = jsonType()
 		tPGNumeric = pgNumericType()
+		tPGJsonb   = pgJsonbType()
 	)
 	for i, test := range []struct {
 		in       interface{}
@@ -333,6 +361,13 @@ func TestEncodeValue(t *testing.T) {
 		{[]NullJSON{{msg, true}, {msg, false}}, listProto(stringProto(jsonStr), nullProto()), listType(tJSON), "[]NullJSON"},
 		{NullJSON{[]Message{}, true}, stringProto(emptyArrayJSONStr), tJSON, "a json string with empty array to NullJSON"},
 		{NullJSON{ptrMsg, true}, stringProto(nullValueJSONStr), tJSON, "a json string with null value to NullJSON"},
+		// PG JSONB
+		{PGJsonB{Value: msg, Valid: true}, stringProto(jsonStr), tPGJsonb, "PGJsonB with value"},
+		{PGJsonB{Value: msg, Valid: false}, nullProto(), tPGJsonb, "PGJsonB with null"},
+		{[]PGJsonB(nil), nullProto(), listType(tPGJsonb), "null []PGJsonB"},
+		{[]PGJsonB{{Value: msg, Valid: true}, {Value: msg, Valid: false}}, listProto(stringProto(jsonStr), nullProto()), listType(tPGJsonb), "[]PGJsonB"},
+		{PGJsonB{Value: []Message{}, Valid: true}, stringProto(emptyArrayJSONStr), tPGJsonb, "a json string with empty array to PGJsonB"},
+		{PGJsonB{Value: ptrMsg, Valid: true}, stringProto(nullValueJSONStr), tPGJsonb, "a json string with null value to PGJsonB"},
 		// PG NUMERIC
 		{PGNumeric{"123.456", true}, stringProto("123.456"), tPGNumeric, "PG Numeric"},
 		{PGNumeric{Valid: false}, nullProto(), tPGNumeric, "PG Numeric with a null value"},
@@ -459,6 +494,11 @@ func TestEncodeValue(t *testing.T) {
 		{CustomPGNumeric{Valid: false}, nullProto(), tPGNumeric, "PG Numeric with a null value"},
 		{[]CustomPGNumeric(nil), nullProto(), listType(tPGNumeric), "null []PGNumeric"},
 		{[]CustomPGNumeric{{"123.456", true}, {Valid: false}}, listProto(stringProto("123.456"), nullProto()), listType(tPGNumeric), "[]PGNumeric"},
+		// CUSTOM PG JSONB
+		{CustomPGJSONB{Value: msg, Valid: true}, stringProto(jsonStr), tPGJsonb, "CustomPGJSONB with value"},
+		{CustomPGJSONB{Value: msg, Valid: false}, nullProto(), tPGJsonb, "CustomPGJSONB with null"},
+		{[]CustomPGJSONB(nil), nullProto(), listType(tPGJsonb), "null []CustomPGJSONB"},
+		{[]CustomPGJSONB{{Value: msg, Valid: true}, {Value: msg, Valid: false}}, listProto(stringProto(jsonStr), nullProto()), listType(tPGJsonb), "[]CustomPGJSONB"},
 	} {
 		got, gotType, err := encodeValue(test.in)
 		if err != nil {
@@ -1787,6 +1827,8 @@ func TestDecodeValue(t *testing.T) {
 		{desc: "decode NULL array of bool to CustomStructToNull", proto: nullProto(), protoType: listType(boolType()), want: customStructToNull{}},
 		{desc: "decode NULL array of float to CustomStructToNull", proto: nullProto(), protoType: listType(floatType()), want: customStructToNull{}},
 		{desc: "decode NULL array of string to CustomStructToNull", proto: nullProto(), protoType: listType(stringType()), want: customStructToNull{}},
+		// CUSTOM ARRAY
+		{desc: "decode ARRAY<INT64> to CustomArray", proto: listProto(intProto(0), intProto(6), intProto(3), intProto(5)), protoType: listType(intType()), want: customArray([4]uint8{0, 6, 3, 5})},
 	} {
 		gotp := reflect.New(reflect.TypeOf(test.want))
 		v := gotp.Interface()

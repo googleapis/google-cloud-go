@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@ import (
 	"net/url"
 	"time"
 
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	retailpb "cloud.google.com/go/retail/apiv2beta/retailpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
@@ -34,7 +35,6 @@ import (
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -1096,6 +1096,7 @@ func (c *catalogRESTClient) ListCatalogs(ctx context.Context, req *retailpb.List
 		baseUrl.Path += fmt.Sprintf("/v2beta/%v/catalogs", req.GetParent())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetPageSize() != 0 {
 			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
 		}
@@ -1177,6 +1178,7 @@ func (c *catalogRESTClient) UpdateCatalog(ctx context.Context, req *retailpb.Upd
 	baseUrl.Path += fmt.Sprintf("/v2beta/%v", req.GetCatalog().GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
 		updateMask, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
@@ -1280,6 +1282,11 @@ func (c *catalogRESTClient) SetDefaultBranch(ctx context.Context, req *retailpb.
 	}
 	baseUrl.Path += fmt.Sprintf("/v2beta/%v:setDefaultBranch", req.GetCatalog())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "catalog", url.QueryEscape(req.GetCatalog())))
 
@@ -1316,6 +1323,11 @@ func (c *catalogRESTClient) GetDefaultBranch(ctx context.Context, req *retailpb.
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2beta/%v:getDefaultBranch", req.GetCatalog())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "catalog", url.QueryEscape(req.GetCatalog())))
@@ -1369,6 +1381,11 @@ func (c *catalogRESTClient) GetCompletionConfig(ctx context.Context, req *retail
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2beta/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
@@ -1432,6 +1449,7 @@ func (c *catalogRESTClient) UpdateCompletionConfig(ctx context.Context, req *ret
 	baseUrl.Path += fmt.Sprintf("/v2beta/%v", req.GetCompletionConfig().GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
 		updateMask, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
@@ -1494,6 +1512,11 @@ func (c *catalogRESTClient) GetAttributesConfig(ctx context.Context, req *retail
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2beta/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
@@ -1564,6 +1587,7 @@ func (c *catalogRESTClient) UpdateAttributesConfig(ctx context.Context, req *ret
 	baseUrl.Path += fmt.Sprintf("/v2beta/%v", req.GetAttributesConfig().GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
 		updateMask, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
@@ -1638,6 +1662,11 @@ func (c *catalogRESTClient) AddCatalogAttribute(ctx context.Context, req *retail
 	}
 	baseUrl.Path += fmt.Sprintf("/v2beta/%v:addCatalogAttribute", req.GetAttributesConfig())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "attributes_config", url.QueryEscape(req.GetAttributesConfig())))
 
@@ -1702,6 +1731,11 @@ func (c *catalogRESTClient) RemoveCatalogAttribute(ctx context.Context, req *ret
 	}
 	baseUrl.Path += fmt.Sprintf("/v2beta/%v:removeCatalogAttribute", req.GetAttributesConfig())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "attributes_config", url.QueryEscape(req.GetAttributesConfig())))
 
@@ -1762,6 +1796,11 @@ func (c *catalogRESTClient) BatchRemoveCatalogAttributes(ctx context.Context, re
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2beta/%v:batchRemoveCatalogAttributes", req.GetAttributesConfig())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "attributes_config", url.QueryEscape(req.GetAttributesConfig())))
@@ -1829,6 +1868,11 @@ func (c *catalogRESTClient) ReplaceCatalogAttribute(ctx context.Context, req *re
 	}
 	baseUrl.Path += fmt.Sprintf("/v2beta/%v:replaceCatalogAttribute", req.GetAttributesConfig())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "attributes_config", url.QueryEscape(req.GetAttributesConfig())))
 
@@ -1881,6 +1925,11 @@ func (c *catalogRESTClient) GetOperation(ctx context.Context, req *longrunningpb
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2beta/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
@@ -1949,6 +1998,7 @@ func (c *catalogRESTClient) ListOperations(ctx context.Context, req *longrunning
 		baseUrl.Path += fmt.Sprintf("/v2beta/%v/operations", req.GetName())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}

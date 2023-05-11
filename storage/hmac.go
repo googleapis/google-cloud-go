@@ -20,7 +20,7 @@ import (
 	"fmt"
 	"time"
 
-	storagepb "cloud.google.com/go/storage/internal/apiv2/stubs"
+	"cloud.google.com/go/storage/internal/apiv2/storagepb"
 	"google.golang.org/api/iterator"
 	raw "google.golang.org/api/storage/v1"
 )
@@ -147,11 +147,11 @@ func toHMACKeyFromRaw(hk *raw.HmacKey, updatedTimeCanBeNil bool) (*HMACKey, erro
 	}
 	createdTime, err := time.Parse(time.RFC3339, hkmd.TimeCreated)
 	if err != nil {
-		return nil, fmt.Errorf("field CreatedTime: %v", err)
+		return nil, fmt.Errorf("field CreatedTime: %w", err)
 	}
 	updatedTime, err := time.Parse(time.RFC3339, hkmd.Updated)
 	if err != nil && !updatedTimeCanBeNil {
-		return nil, fmt.Errorf("field UpdatedTime: %v", err)
+		return nil, fmt.Errorf("field UpdatedTime: %w", err)
 	}
 
 	hmKey := &HMACKey{

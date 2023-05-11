@@ -20,10 +20,10 @@ import (
 	"reflect"
 	"time"
 
+	pb "cloud.google.com/go/firestore/apiv1/firestorepb"
 	"cloud.google.com/go/internal/fields"
 	"github.com/golang/protobuf/ptypes"
 	ts "github.com/golang/protobuf/ptypes/timestamp"
-	pb "google.golang.org/genproto/googleapis/firestore/v1"
 	"google.golang.org/genproto/googleapis/type/latlng"
 )
 
@@ -258,7 +258,7 @@ type tagOptions struct {
 func parseTag(t reflect.StructTag) (name string, keep bool, other interface{}, err error) {
 	name, keep, opts, err := fields.ParseStandardTag("firestore", t)
 	if err != nil {
-		return "", false, nil, fmt.Errorf("firestore: %v", err)
+		return "", false, nil, fmt.Errorf("firestore: %w", err)
 	}
 	tagOpts := tagOptions{}
 	for _, opt := range opts {

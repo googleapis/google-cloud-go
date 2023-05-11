@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,10 +19,11 @@ package resourcemanager_test
 import (
 	"context"
 
+	iampb "cloud.google.com/go/iam/apiv1/iampb"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	resourcemanager "cloud.google.com/go/resourcemanager/apiv3"
+	resourcemanagerpb "cloud.google.com/go/resourcemanager/apiv3/resourcemanagerpb"
 	"google.golang.org/api/iterator"
-	resourcemanagerpb "google.golang.org/genproto/googleapis/cloud/resourcemanager/v3"
-	iampb "google.golang.org/genproto/googleapis/iam/v1"
 )
 
 func ExampleNewTagKeysClient() {
@@ -33,6 +34,23 @@ func ExampleNewTagKeysClient() {
 	// - It may require specifying regional endpoints when creating the service client as shown in:
 	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := resourcemanager.NewTagKeysClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
+func ExampleNewTagKeysRESTClient() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := resourcemanager.NewTagKeysRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -57,7 +75,7 @@ func ExampleTagKeysClient_ListTagKeys() {
 
 	req := &resourcemanagerpb.ListTagKeysRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/resourcemanager/v3#ListTagKeysRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/resourcemanager/apiv3/resourcemanagerpb#ListTagKeysRequest.
 	}
 	it := c.ListTagKeys(ctx, req)
 	for {
@@ -88,9 +106,34 @@ func ExampleTagKeysClient_GetTagKey() {
 
 	req := &resourcemanagerpb.GetTagKeyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/resourcemanager/v3#GetTagKeyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/resourcemanager/apiv3/resourcemanagerpb#GetTagKeyRequest.
 	}
 	resp, err := c.GetTagKey(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleTagKeysClient_GetNamespacedTagKey() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := resourcemanager.NewTagKeysClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &resourcemanagerpb.GetNamespacedTagKeyRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/resourcemanager/apiv3/resourcemanagerpb#GetNamespacedTagKeyRequest.
+	}
+	resp, err := c.GetNamespacedTagKey(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -113,7 +156,7 @@ func ExampleTagKeysClient_CreateTagKey() {
 
 	req := &resourcemanagerpb.CreateTagKeyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/resourcemanager/v3#CreateTagKeyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/resourcemanager/apiv3/resourcemanagerpb#CreateTagKeyRequest.
 	}
 	op, err := c.CreateTagKey(ctx, req)
 	if err != nil {
@@ -143,7 +186,7 @@ func ExampleTagKeysClient_UpdateTagKey() {
 
 	req := &resourcemanagerpb.UpdateTagKeyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/resourcemanager/v3#UpdateTagKeyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/resourcemanager/apiv3/resourcemanagerpb#UpdateTagKeyRequest.
 	}
 	op, err := c.UpdateTagKey(ctx, req)
 	if err != nil {
@@ -173,7 +216,7 @@ func ExampleTagKeysClient_DeleteTagKey() {
 
 	req := &resourcemanagerpb.DeleteTagKeyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/resourcemanager/v3#DeleteTagKeyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/resourcemanager/apiv3/resourcemanagerpb#DeleteTagKeyRequest.
 	}
 	op, err := c.DeleteTagKey(ctx, req)
 	if err != nil {
@@ -203,7 +246,7 @@ func ExampleTagKeysClient_GetIamPolicy() {
 
 	req := &iampb.GetIamPolicyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/iam/v1#GetIamPolicyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/iam/apiv1/iampb#GetIamPolicyRequest.
 	}
 	resp, err := c.GetIamPolicy(ctx, req)
 	if err != nil {
@@ -228,7 +271,7 @@ func ExampleTagKeysClient_SetIamPolicy() {
 
 	req := &iampb.SetIamPolicyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/iam/v1#SetIamPolicyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/iam/apiv1/iampb#SetIamPolicyRequest.
 	}
 	resp, err := c.SetIamPolicy(ctx, req)
 	if err != nil {
@@ -253,9 +296,34 @@ func ExampleTagKeysClient_TestIamPermissions() {
 
 	req := &iampb.TestIamPermissionsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/iam/v1#TestIamPermissionsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/iam/apiv1/iampb#TestIamPermissionsRequest.
 	}
 	resp, err := c.TestIamPermissions(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleTagKeysClient_GetOperation() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := resourcemanager.NewTagKeysClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &longrunningpb.GetOperationRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/longrunning/autogen/longrunningpb#GetOperationRequest.
+	}
+	resp, err := c.GetOperation(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}

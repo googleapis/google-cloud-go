@@ -24,9 +24,9 @@ import (
 	"time"
 
 	"cloud.google.com/go/internal/trace"
+	sppb "cloud.google.com/go/spanner/apiv1/spannerpb"
 	"github.com/golang/protobuf/proto"
 	"github.com/googleapis/gax-go/v2"
-	sppb "google.golang.org/genproto/googleapis/spanner/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 )
@@ -133,7 +133,7 @@ func (t *BatchReadOnlyTransaction) PartitionReadUsingIndexWithOptions(ctx contex
 		return nil, err
 	}
 	var md metadata.MD
-	resp, err = client.PartitionRead(contextWithOutgoingMetadata(ctx, sh.getMetadata()), &sppb.PartitionReadRequest{
+	resp, err = client.PartitionRead(contextWithOutgoingMetadata(ctx, sh.getMetadata(), t.disableRouteToLeader), &sppb.PartitionReadRequest{
 		Session:          sid,
 		Transaction:      ts,
 		Table:            table,
@@ -202,7 +202,7 @@ func (t *BatchReadOnlyTransaction) partitionQuery(ctx context.Context, statement
 		Params:           params,
 		ParamTypes:       paramTypes,
 	}
-	resp, err := client.PartitionQuery(contextWithOutgoingMetadata(ctx, sh.getMetadata()), req, gax.WithGRPCOptions(grpc.Header(&md)))
+	resp, err := client.PartitionQuery(contextWithOutgoingMetadata(ctx, sh.getMetadata(), t.disableRouteToLeader), req, gax.WithGRPCOptions(grpc.Header(&md)))
 
 	if getGFELatencyMetricsFlag() && md != nil && t.ct != nil {
 		if err := createContextAndCaptureGFELatencyMetrics(ctx, t.ct, md, "partitionQuery"); err != nil {
@@ -271,7 +271,7 @@ func (t *BatchReadOnlyTransaction) Cleanup(ctx context.Context) {
 	sid, client := sh.getID(), sh.getClient()
 
 	var md metadata.MD
-	err := client.DeleteSession(contextWithOutgoingMetadata(ctx, sh.getMetadata()), &sppb.DeleteSessionRequest{Name: sid}, gax.WithGRPCOptions(grpc.Header(&md)))
+	err := client.DeleteSession(contextWithOutgoingMetadata(ctx, sh.getMetadata(), true), &sppb.DeleteSessionRequest{Name: sid}, gax.WithGRPCOptions(grpc.Header(&md)))
 
 	if getGFELatencyMetricsFlag() && md != nil && t.ct != nil {
 		if err := createContextAndCaptureGFELatencyMetrics(ctx, t.ct, md, "Cleanup"); err != nil {
@@ -356,7 +356,7 @@ func (t *BatchReadOnlyTransaction) Execute(ctx context.Context, p *Partition) *R
 		}
 	}
 	return stream(
-		contextWithOutgoingMetadata(ctx, sh.getMetadata()),
+		contextWithOutgoingMetadata(ctx, sh.getMetadata(), t.disableRouteToLeader),
 		sh.session.logger,
 		rpc,
 		t.setTimestamp,

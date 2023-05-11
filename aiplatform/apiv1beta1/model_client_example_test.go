@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,11 +20,11 @@ import (
 	"context"
 
 	aiplatform "cloud.google.com/go/aiplatform/apiv1beta1"
+	aiplatformpb "cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb"
+	iampb "cloud.google.com/go/iam/apiv1/iampb"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	"google.golang.org/api/iterator"
-	aiplatformpb "google.golang.org/genproto/googleapis/cloud/aiplatform/v1beta1"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
-	iampb "google.golang.org/genproto/googleapis/iam/v1"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 )
 
 func ExampleNewModelClient() {
@@ -76,7 +76,7 @@ func ExampleModelClient_UploadModel() {
 
 	req := &aiplatformpb.UploadModelRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1beta1#UploadModelRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#UploadModelRequest.
 	}
 	op, err := c.UploadModel(ctx, req)
 	if err != nil {
@@ -106,7 +106,7 @@ func ExampleModelClient_GetModel() {
 
 	req := &aiplatformpb.GetModelRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1beta1#GetModelRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#GetModelRequest.
 	}
 	resp, err := c.GetModel(ctx, req)
 	if err != nil {
@@ -131,7 +131,7 @@ func ExampleModelClient_ListModels() {
 
 	req := &aiplatformpb.ListModelsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1beta1#ListModelsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#ListModelsRequest.
 	}
 	it := c.ListModels(ctx, req)
 	for {
@@ -162,7 +162,7 @@ func ExampleModelClient_ListModelVersions() {
 
 	req := &aiplatformpb.ListModelVersionsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1beta1#ListModelVersionsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#ListModelVersionsRequest.
 	}
 	it := c.ListModelVersions(ctx, req)
 	for {
@@ -193,7 +193,7 @@ func ExampleModelClient_UpdateModel() {
 
 	req := &aiplatformpb.UpdateModelRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1beta1#UpdateModelRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#UpdateModelRequest.
 	}
 	resp, err := c.UpdateModel(ctx, req)
 	if err != nil {
@@ -218,7 +218,7 @@ func ExampleModelClient_UpdateExplanationDataset() {
 
 	req := &aiplatformpb.UpdateExplanationDatasetRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1beta1#UpdateExplanationDatasetRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#UpdateExplanationDatasetRequest.
 	}
 	op, err := c.UpdateExplanationDataset(ctx, req)
 	if err != nil {
@@ -248,7 +248,7 @@ func ExampleModelClient_DeleteModel() {
 
 	req := &aiplatformpb.DeleteModelRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1beta1#DeleteModelRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#DeleteModelRequest.
 	}
 	op, err := c.DeleteModel(ctx, req)
 	if err != nil {
@@ -276,7 +276,7 @@ func ExampleModelClient_DeleteModelVersion() {
 
 	req := &aiplatformpb.DeleteModelVersionRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1beta1#DeleteModelVersionRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#DeleteModelVersionRequest.
 	}
 	op, err := c.DeleteModelVersion(ctx, req)
 	if err != nil {
@@ -304,7 +304,7 @@ func ExampleModelClient_MergeVersionAliases() {
 
 	req := &aiplatformpb.MergeVersionAliasesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1beta1#MergeVersionAliasesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#MergeVersionAliasesRequest.
 	}
 	resp, err := c.MergeVersionAliases(ctx, req)
 	if err != nil {
@@ -329,9 +329,39 @@ func ExampleModelClient_ExportModel() {
 
 	req := &aiplatformpb.ExportModelRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1beta1#ExportModelRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#ExportModelRequest.
 	}
 	op, err := c.ExportModel(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleModelClient_CopyModel() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := aiplatform.NewModelClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &aiplatformpb.CopyModelRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#CopyModelRequest.
+	}
+	op, err := c.CopyModel(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -359,7 +389,7 @@ func ExampleModelClient_ImportModelEvaluation() {
 
 	req := &aiplatformpb.ImportModelEvaluationRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1beta1#ImportModelEvaluationRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#ImportModelEvaluationRequest.
 	}
 	resp, err := c.ImportModelEvaluation(ctx, req)
 	if err != nil {
@@ -384,9 +414,34 @@ func ExampleModelClient_BatchImportModelEvaluationSlices() {
 
 	req := &aiplatformpb.BatchImportModelEvaluationSlicesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1beta1#BatchImportModelEvaluationSlicesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#BatchImportModelEvaluationSlicesRequest.
 	}
 	resp, err := c.BatchImportModelEvaluationSlices(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleModelClient_BatchImportEvaluatedAnnotations() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := aiplatform.NewModelClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &aiplatformpb.BatchImportEvaluatedAnnotationsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#BatchImportEvaluatedAnnotationsRequest.
+	}
+	resp, err := c.BatchImportEvaluatedAnnotations(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -409,7 +464,7 @@ func ExampleModelClient_GetModelEvaluation() {
 
 	req := &aiplatformpb.GetModelEvaluationRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1beta1#GetModelEvaluationRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#GetModelEvaluationRequest.
 	}
 	resp, err := c.GetModelEvaluation(ctx, req)
 	if err != nil {
@@ -434,7 +489,7 @@ func ExampleModelClient_ListModelEvaluations() {
 
 	req := &aiplatformpb.ListModelEvaluationsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1beta1#ListModelEvaluationsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#ListModelEvaluationsRequest.
 	}
 	it := c.ListModelEvaluations(ctx, req)
 	for {
@@ -465,7 +520,7 @@ func ExampleModelClient_GetModelEvaluationSlice() {
 
 	req := &aiplatformpb.GetModelEvaluationSliceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1beta1#GetModelEvaluationSliceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#GetModelEvaluationSliceRequest.
 	}
 	resp, err := c.GetModelEvaluationSlice(ctx, req)
 	if err != nil {
@@ -490,7 +545,7 @@ func ExampleModelClient_ListModelEvaluationSlices() {
 
 	req := &aiplatformpb.ListModelEvaluationSlicesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1beta1#ListModelEvaluationSlicesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#ListModelEvaluationSlicesRequest.
 	}
 	it := c.ListModelEvaluationSlices(ctx, req)
 	for {
@@ -577,7 +632,7 @@ func ExampleModelClient_GetIamPolicy() {
 
 	req := &iampb.GetIamPolicyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/iam/v1#GetIamPolicyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/iam/apiv1/iampb#GetIamPolicyRequest.
 	}
 	resp, err := c.GetIamPolicy(ctx, req)
 	if err != nil {
@@ -602,7 +657,7 @@ func ExampleModelClient_SetIamPolicy() {
 
 	req := &iampb.SetIamPolicyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/iam/v1#SetIamPolicyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/iam/apiv1/iampb#SetIamPolicyRequest.
 	}
 	resp, err := c.SetIamPolicy(ctx, req)
 	if err != nil {
@@ -627,7 +682,7 @@ func ExampleModelClient_TestIamPermissions() {
 
 	req := &iampb.TestIamPermissionsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/iam/v1#TestIamPermissionsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/iam/apiv1/iampb#TestIamPermissionsRequest.
 	}
 	resp, err := c.TestIamPermissions(ctx, req)
 	if err != nil {
@@ -652,7 +707,7 @@ func ExampleModelClient_CancelOperation() {
 
 	req := &longrunningpb.CancelOperationRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/longrunning#CancelOperationRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/longrunning/autogen/longrunningpb#CancelOperationRequest.
 	}
 	err = c.CancelOperation(ctx, req)
 	if err != nil {
@@ -675,7 +730,7 @@ func ExampleModelClient_DeleteOperation() {
 
 	req := &longrunningpb.DeleteOperationRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/longrunning#DeleteOperationRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/longrunning/autogen/longrunningpb#DeleteOperationRequest.
 	}
 	err = c.DeleteOperation(ctx, req)
 	if err != nil {
@@ -698,7 +753,7 @@ func ExampleModelClient_GetOperation() {
 
 	req := &longrunningpb.GetOperationRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/longrunning#GetOperationRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/longrunning/autogen/longrunningpb#GetOperationRequest.
 	}
 	resp, err := c.GetOperation(ctx, req)
 	if err != nil {
@@ -723,7 +778,7 @@ func ExampleModelClient_ListOperations() {
 
 	req := &longrunningpb.ListOperationsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/longrunning#ListOperationsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/longrunning/autogen/longrunningpb#ListOperationsRequest.
 	}
 	it := c.ListOperations(ctx, req)
 	for {
@@ -754,7 +809,7 @@ func ExampleModelClient_WaitOperation() {
 
 	req := &longrunningpb.WaitOperationRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/longrunning#WaitOperationRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/longrunning/autogen/longrunningpb#WaitOperationRequest.
 	}
 	resp, err := c.WaitOperation(ctx, req)
 	if err != nil {

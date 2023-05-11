@@ -24,13 +24,13 @@ import (
 	"time"
 
 	"cloud.google.com/go/internal/testutil"
+	"cloud.google.com/go/pubsub/apiv1/pubsubpb"
+	pb "cloud.google.com/go/pubsub/apiv1/pubsubpb"
 	"cloud.google.com/go/pubsub/pstest"
 	"github.com/google/go-cmp/cmp/cmpopts"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/support/bundler"
-	pb "google.golang.org/genproto/googleapis/pubsub/v1"
-	pubsubpb "google.golang.org/genproto/googleapis/pubsub/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -301,6 +301,48 @@ func TestUpdateTopic_MessageStoragePolicy(t *testing.T) {
 	}
 	if !testutil.Equal(config2, want, opt) {
 		t.Errorf("\ngot  %+v\nwant %+v", config2, want)
+	}
+}
+
+func TestUpdateTopic_SchemaSettings(t *testing.T) {
+	ctx := context.Background()
+	client, srv := newFake(t)
+	defer client.Close()
+	defer srv.Close()
+
+	topic := mustCreateTopic(t, client, "T")
+	config, err := topic.Config(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	want := TopicConfig{}
+	opt := cmpopts.IgnoreUnexported(TopicConfig{})
+	if !testutil.Equal(config, want, opt) {
+		t.Errorf("\ngot  %+v\nwant %+v", config, want)
+	}
+
+	// Update schema settings.
+	settings := &SchemaSettings{
+		Schema:          "some-schema",
+		Encoding:        EncodingJSON,
+		FirstRevisionID: "1234",
+	}
+	config2, err := topic.Update(ctx, TopicConfigToUpdate{SchemaSettings: settings})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !testutil.Equal(config2.SchemaSettings, settings, opt) {
+		t.Errorf("\ngot  %+v\nwant %+v", config2.SchemaSettings, settings)
+	}
+
+	// Clear schema settings.
+	settings = &SchemaSettings{}
+	config3, err := topic.Update(ctx, TopicConfigToUpdate{SchemaSettings: settings})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !testutil.Equal(config3.SchemaSettings, settings, opt) {
+		t.Errorf("\ngot  %+v\nwant %+v", config3.SchemaSettings, settings)
 	}
 }
 

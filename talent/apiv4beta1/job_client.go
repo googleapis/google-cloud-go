@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@ import (
 
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	talentpb "cloud.google.com/go/talent/apiv4beta1/talentpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
@@ -36,7 +37,6 @@ import (
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -290,25 +290,29 @@ func (c *JobClient) ListJobs(ctx context.Context, req *talentpb.ListJobsRequest,
 	return c.internalClient.ListJobs(ctx, req, opts...)
 }
 
-// SearchJobs searches for jobs using the provided SearchJobsRequest.
+// SearchJobs searches for jobs using the provided
+// SearchJobsRequest.
 //
-// This call constrains the visibility of jobs
-// present in the database, and only returns jobs that the caller has
-// permission to search against.
+// This call constrains the
+// visibility of jobs present in
+// the database, and only returns jobs that the caller has permission to
+// search against.
 func (c *JobClient) SearchJobs(ctx context.Context, req *talentpb.SearchJobsRequest, opts ...gax.CallOption) (*talentpb.SearchJobsResponse, error) {
 	return c.internalClient.SearchJobs(ctx, req, opts...)
 }
 
-// SearchJobsForAlert searches for jobs using the provided SearchJobsRequest.
+// SearchJobsForAlert searches for jobs using the provided
+// SearchJobsRequest.
 //
 // This API call is intended for the use case of targeting passive job
 // seekers (for example, job seekers who have signed up to receive email
 // alerts about potential job opportunities), and has different algorithmic
 // adjustments that are targeted to passive job seekers.
 //
-// This call constrains the visibility of jobs
-// present in the database, and only returns jobs the caller has
-// permission to search against.
+// This call constrains the
+// visibility of jobs present in
+// the database, and only returns jobs the caller has permission to search
+// against.
 func (c *JobClient) SearchJobsForAlert(ctx context.Context, req *talentpb.SearchJobsRequest, opts ...gax.CallOption) *SearchJobsResponse_MatchingJobIterator {
 	return c.internalClient.SearchJobsForAlert(ctx, req, opts...)
 }
@@ -797,6 +801,11 @@ func (c *jobRESTClient) CreateJob(ctx context.Context, req *talentpb.CreateJobRe
 	}
 	baseUrl.Path += fmt.Sprintf("/v4beta1/%v/jobs", req.GetParent())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
@@ -856,6 +865,11 @@ func (c *jobRESTClient) BatchCreateJobs(ctx context.Context, req *talentpb.Batch
 	}
 	baseUrl.Path += fmt.Sprintf("/v4beta1/%v/jobs:batchCreate", req.GetParent())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
@@ -913,6 +927,11 @@ func (c *jobRESTClient) GetJob(ctx context.Context, req *talentpb.GetJobRequest,
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v4beta1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
@@ -976,6 +995,11 @@ func (c *jobRESTClient) UpdateJob(ctx context.Context, req *talentpb.UpdateJobRe
 	}
 	baseUrl.Path += fmt.Sprintf("/v4beta1/%v", req.GetJob().GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "job.name", url.QueryEscape(req.GetJob().GetName())))
 
@@ -1034,6 +1058,11 @@ func (c *jobRESTClient) BatchUpdateJobs(ctx context.Context, req *talentpb.Batch
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v4beta1/%v/jobs:batchUpdate", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
@@ -1095,6 +1124,11 @@ func (c *jobRESTClient) DeleteJob(ctx context.Context, req *talentpb.DeleteJobRe
 	}
 	baseUrl.Path += fmt.Sprintf("/v4beta1/%v", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
@@ -1135,6 +1169,11 @@ func (c *jobRESTClient) BatchDeleteJobs(ctx context.Context, req *talentpb.Batch
 		return err
 	}
 	baseUrl.Path += fmt.Sprintf("/v4beta1/%v/jobs:batchDelete", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
@@ -1185,6 +1224,7 @@ func (c *jobRESTClient) ListJobs(ctx context.Context, req *talentpb.ListJobsRequ
 		baseUrl.Path += fmt.Sprintf("/v4beta1/%v/jobs", req.GetParent())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		if req.GetJobView() != 0 {
 			params.Add("jobView", fmt.Sprintf("%v", req.GetJobView()))
@@ -1254,11 +1294,13 @@ func (c *jobRESTClient) ListJobs(ctx context.Context, req *talentpb.ListJobsRequ
 	return it
 }
 
-// SearchJobs searches for jobs using the provided SearchJobsRequest.
+// SearchJobs searches for jobs using the provided
+// SearchJobsRequest.
 //
-// This call constrains the visibility of jobs
-// present in the database, and only returns jobs that the caller has
-// permission to search against.
+// This call constrains the
+// visibility of jobs present in
+// the database, and only returns jobs that the caller has permission to
+// search against.
 func (c *jobRESTClient) SearchJobs(ctx context.Context, req *talentpb.SearchJobsRequest, opts ...gax.CallOption) (*talentpb.SearchJobsResponse, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -1271,6 +1313,11 @@ func (c *jobRESTClient) SearchJobs(ctx context.Context, req *talentpb.SearchJobs
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v4beta1/%v/jobs:search", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
@@ -1317,16 +1364,18 @@ func (c *jobRESTClient) SearchJobs(ctx context.Context, req *talentpb.SearchJobs
 	return resp, nil
 }
 
-// SearchJobsForAlert searches for jobs using the provided SearchJobsRequest.
+// SearchJobsForAlert searches for jobs using the provided
+// SearchJobsRequest.
 //
 // This API call is intended for the use case of targeting passive job
 // seekers (for example, job seekers who have signed up to receive email
 // alerts about potential job opportunities), and has different algorithmic
 // adjustments that are targeted to passive job seekers.
 //
-// This call constrains the visibility of jobs
-// present in the database, and only returns jobs the caller has
-// permission to search against.
+// This call constrains the
+// visibility of jobs present in
+// the database, and only returns jobs the caller has permission to search
+// against.
 func (c *jobRESTClient) SearchJobsForAlert(ctx context.Context, req *talentpb.SearchJobsRequest, opts ...gax.CallOption) *SearchJobsResponse_MatchingJobIterator {
 	it := &SearchJobsResponse_MatchingJobIterator{}
 	req = proto.Clone(req).(*talentpb.SearchJobsRequest)
@@ -1352,6 +1401,11 @@ func (c *jobRESTClient) SearchJobsForAlert(ctx context.Context, req *talentpb.Se
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v4beta1/%v/jobs:searchForAlert", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+
+		baseUrl.RawQuery = params.Encode()
 
 		// Build HTTP headers from client and context metadata.
 		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
@@ -1416,6 +1470,11 @@ func (c *jobRESTClient) GetOperation(ctx context.Context, req *longrunningpb.Get
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v4beta1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))

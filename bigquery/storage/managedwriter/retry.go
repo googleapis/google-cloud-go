@@ -15,9 +15,9 @@
 package managedwriter
 
 import (
-	"context"
 	"errors"
 	"io"
+	"math/rand"
 	"strings"
 	"time"
 
@@ -27,64 +27,98 @@ import (
 )
 
 var (
-	defaultAppendRetries = 3
+	defaultRetryAttempts = 4
 )
 
-func newDefaultRetryer() *defaultRetryer {
-	return &defaultRetryer{
-		bigBo: gax.Backoff{
-			Initial:    2 * time.Second,
-			Multiplier: 5,
-			Max:        5 * time.Minute,
-		},
+// This retry predicate is used for higher level retries, enqueing appends onto to a bidi
+// channel and evaluating whether an append should be retried (re-enqueued).
+func retryPredicate(err error) (shouldRetry, aggressiveBackoff bool) {
+	if err == nil {
+		return
 	}
-}
 
-type defaultRetryer struct {
-	bo    gax.Backoff
-	bigBo gax.Backoff // For more aggressive backoff, such as throughput quota
-}
-
-func (r *defaultRetryer) Retry(err error) (pause time.Duration, shouldRetry bool) {
-	// This predicate evaluates errors for both enqueuing and reconnection.
-	// See RetryAppend for retry that bounds attempts to a fixed number.
 	s, ok := status.FromError(err)
+	// non-status based error conditions.
 	if !ok {
-		// Treat context errors as non-retriable.
-		if errors.Is(err, context.Canceled) || errors.Is(err, context.DeadlineExceeded) {
-			return r.bo.Pause(), false
-		}
 		// EOF can happen in the case of connection close.
 		if errors.Is(err, io.EOF) {
-			return r.bo.Pause(), true
+			shouldRetry = true
+			return
 		}
-		// Any other non-status based errors treated as retryable.
-		return r.bo.Pause(), true
+		// All other non-status errors are treated as non-retryable (including context errors).
+		return
 	}
 	switch s.Code() {
 	case codes.Aborted,
 		codes.Canceled,
 		codes.DeadlineExceeded,
+		codes.FailedPrecondition,
 		codes.Internal,
 		codes.Unavailable:
-		return r.bo.Pause(), true
+		shouldRetry = true
+		return
 	case codes.ResourceExhausted:
 		if strings.HasPrefix(s.Message(), "Exceeds 'AppendRows throughput' quota") {
 			// Note: internal b/246031522 opened to give this a structured error
 			// and avoid string parsing.  Should be a QuotaFailure or similar.
-			return r.bigBo.Pause(), true // more aggressive backoff
+			shouldRetry = true
+			return
 		}
 	}
-	return 0, false
+	return
 }
 
-// RetryAppend is a variation of the retry predicate that also bounds retries to a finite number of attempts.
-func (r *defaultRetryer) RetryAppend(err error, attemptCount int) (pause time.Duration, shouldRetry bool) {
+// unaryRetryer is for retrying a unary-style operation, like (re)-opening the bidi connection.
+type unaryRetryer struct {
+	bo gax.Backoff
+}
 
-	if attemptCount > defaultAppendRetries {
-		return 0, false // exceeded maximum retries.
+func (ur *unaryRetryer) Retry(err error) (time.Duration, bool) {
+	shouldRetry, _ := retryPredicate(err)
+	return ur.bo.Pause(), shouldRetry
+}
+
+// statelessRetryer is used for backing off within a continuous process, like processing the responses
+// from the receive side of the bidi stream.  An individual item in that process has a notion of an attempt
+// count, and we use maximum retries as a way of evicting bad items.
+type statelessRetryer struct {
+	r                *rand.Rand
+	minBackoff       time.Duration
+	jitter           time.Duration
+	aggressiveFactor int
+	maxAttempts      int
+}
+
+func newStatelessRetryer() *statelessRetryer {
+	return &statelessRetryer{
+		r:           rand.New(rand.NewSource(time.Now().UnixNano())),
+		minBackoff:  50 * time.Millisecond,
+		jitter:      time.Second,
+		maxAttempts: defaultRetryAttempts,
 	}
-	return r.Retry(err)
+}
+
+func (sr *statelessRetryer) pause(aggressiveBackoff bool) time.Duration {
+	jitter := sr.jitter.Nanoseconds()
+	if jitter > 0 {
+		jitter = sr.r.Int63n(jitter)
+	}
+	pause := sr.minBackoff.Nanoseconds() + jitter
+	if aggressiveBackoff {
+		pause = pause * int64(sr.aggressiveFactor)
+	}
+	return time.Duration(pause)
+}
+
+func (sr *statelessRetryer) Retry(err error, attemptCount int) (time.Duration, bool) {
+	if attemptCount >= sr.maxAttempts {
+		return 0, false
+	}
+	shouldRetry, aggressive := retryPredicate(err)
+	if shouldRetry {
+		return sr.pause(aggressive), true
+	}
+	return 0, false
 }
 
 // shouldReconnect is akin to a retry predicate, in that it evaluates whether we should force

@@ -19,7 +19,7 @@ import (
 	"fmt"
 	"strings"
 
-	storagepb "google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1"
+	"cloud.google.com/go/bigquery/storage/apiv1/storagepb"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/reflect/protodesc"
 	"google.golang.org/protobuf/reflect/protoreflect"
@@ -286,46 +286,68 @@ func storageSchemaToDescriptorInternal(inSchema *storagepb.TableSchema, scope st
 //
 // Messages are always nullable, and repeated fields are as well.
 func tableFieldSchemaToFieldDescriptorProto(field *storagepb.TableFieldSchema, idx int32, scope string, useProto3 bool) (*descriptorpb.FieldDescriptorProto, error) {
+
 	name := strings.ToLower(field.GetName())
+	var fdp *descriptorpb.FieldDescriptorProto
+
 	if field.GetType() == storagepb.TableFieldSchema_STRUCT {
-		return &descriptorpb.FieldDescriptorProto{
+		fdp = &descriptorpb.FieldDescriptorProto{
 			Name:     proto.String(name),
 			Number:   proto.Int32(idx),
 			TypeName: proto.String(scope),
 			Label:    convertModeToLabel(field.GetMode(), useProto3),
-		}, nil
-	}
-
-	// For (REQUIRED||REPEATED) fields for proto3, or all cases for proto2, we can use the expected scalar types.
-	if field.GetMode() != storagepb.TableFieldSchema_NULLABLE || !useProto3 {
-		outType := bqTypeToFieldTypeMap[field.GetType()]
-		fdp := &descriptorpb.FieldDescriptorProto{
-			Name:   proto.String(name),
-			Number: proto.Int32(idx),
-			Type:   outType.Enum(),
-			Label:  convertModeToLabel(field.GetMode(), useProto3),
 		}
-		// Special case: proto2 repeated fields may benefit from using packed annotation.
-		if field.GetMode() == storagepb.TableFieldSchema_REPEATED && !useProto3 {
-			for _, v := range packedTypes {
-				if outType == v {
-					fdp.Options = &descriptorpb.FieldOptions{
-						Packed: proto.Bool(true),
+	} else {
+		// For (REQUIRED||REPEATED) fields for proto3, or all cases for proto2, we can use the expected scalar types.
+		if field.GetMode() != storagepb.TableFieldSchema_NULLABLE || !useProto3 {
+			outType := bqTypeToFieldTypeMap[field.GetType()]
+			fdp = &descriptorpb.FieldDescriptorProto{
+				Name:   proto.String(name),
+				Number: proto.Int32(idx),
+				Type:   outType.Enum(),
+				Label:  convertModeToLabel(field.GetMode(), useProto3),
+			}
+
+			// Special case: proto2 repeated fields may benefit from using packed annotation.
+			if field.GetMode() == storagepb.TableFieldSchema_REPEATED && !useProto3 {
+				for _, v := range packedTypes {
+					if outType == v {
+						fdp.Options = &descriptorpb.FieldOptions{
+							Packed: proto.Bool(true),
+						}
+						break
 					}
-					break
 				}
 			}
+		} else {
+			// For NULLABLE proto3 fields, use a wrapper type.
+			fdp = &descriptorpb.FieldDescriptorProto{
+				Name:     proto.String(name),
+				Number:   proto.Int32(idx),
+				Type:     descriptorpb.FieldDescriptorProto_TYPE_MESSAGE.Enum(),
+				TypeName: proto.String(bqTypeToWrapperMap[field.GetType()]),
+				Label:    descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum(),
+			}
 		}
-		return fdp, nil
 	}
-	// For NULLABLE proto3 fields, use a wrapper type.
-	return &descriptorpb.FieldDescriptorProto{
-		Name:     proto.String(name),
-		Number:   proto.Int32(idx),
-		Type:     descriptorpb.FieldDescriptorProto_TYPE_MESSAGE.Enum(),
-		TypeName: proto.String(bqTypeToWrapperMap[field.GetType()]),
-		Label:    descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum(),
-	}, nil
+	if nameRequiresAnnotation(name) {
+		// Use a prefix + base64 encoded name when annotations bear the actual name.
+		// Base 64 standard encoding may also contain certain characters (+,/,=) which
+		// we remove from the generated name.
+		encoded := strings.Trim(base64.StdEncoding.EncodeToString([]byte(name)), "+/=")
+		fdp.Name = proto.String(fmt.Sprintf("col_%s", encoded))
+		opts := fdp.GetOptions()
+		if opts == nil {
+			fdp.Options = &descriptorpb.FieldOptions{}
+		}
+		proto.SetExtension(fdp.Options, storagepb.E_ColumnName, name)
+	}
+	return fdp, nil
+}
+
+// nameRequiresAnnotation determines whether a field name requires unicode-annotation.
+func nameRequiresAnnotation(in string) bool {
+	return !protoreflect.Name(in).IsValid()
 }
 
 // NormalizeDescriptor builds a self-contained DescriptorProto suitable for communicating schema
@@ -362,34 +384,30 @@ func normalizeDescriptorInternal(in protoreflect.MessageDescriptor, visitedTypes
 	for i := 0; i < in.Fields().Len(); i++ {
 		inField := in.Fields().Get(i)
 		resultFDP := protodesc.ToFieldDescriptorProto(inField)
-		// For proto3 messages without presence, use proto2 default values to match proto3
-		// behavior in default values.
-		if inField.Syntax() == protoreflect.Proto3 && inField.Cardinality() != protoreflect.Repeated {
-			// Only set default value if there's no field presence.
-			if resultFDP.Proto3Optional == nil || !resultFDP.GetProto3Optional() {
-				switch resultFDP.GetType() {
-				case descriptorpb.FieldDescriptorProto_TYPE_BOOL:
-					resultFDP.DefaultValue = proto.String("false")
-				case descriptorpb.FieldDescriptorProto_TYPE_BYTES, descriptorpb.FieldDescriptorProto_TYPE_STRING:
-					resultFDP.DefaultValue = proto.String("")
-				case descriptorpb.FieldDescriptorProto_TYPE_ENUM:
-					// Resolve the proto3 default value.  The default value should be the value name.
-					defValue := inField.Enum().Values().ByNumber(inField.Default().Enum())
-					resultFDP.DefaultValue = proto.String(string(defValue.Name()))
-				case descriptorpb.FieldDescriptorProto_TYPE_DOUBLE,
-					descriptorpb.FieldDescriptorProto_TYPE_FLOAT,
-					descriptorpb.FieldDescriptorProto_TYPE_INT64,
-					descriptorpb.FieldDescriptorProto_TYPE_UINT64,
-					descriptorpb.FieldDescriptorProto_TYPE_INT32,
-					descriptorpb.FieldDescriptorProto_TYPE_FIXED64,
-					descriptorpb.FieldDescriptorProto_TYPE_FIXED32,
-					descriptorpb.FieldDescriptorProto_TYPE_UINT32,
-					descriptorpb.FieldDescriptorProto_TYPE_SFIXED32,
-					descriptorpb.FieldDescriptorProto_TYPE_SFIXED64,
-					descriptorpb.FieldDescriptorProto_TYPE_SINT32,
-					descriptorpb.FieldDescriptorProto_TYPE_SINT64:
-					resultFDP.DefaultValue = proto.String("0")
-				}
+		// For messages without explicit presence, use default values to match implicit presence behavior.
+		if !inField.HasPresence() && inField.Cardinality() != protoreflect.Repeated {
+			switch resultFDP.GetType() {
+			case descriptorpb.FieldDescriptorProto_TYPE_BOOL:
+				resultFDP.DefaultValue = proto.String("false")
+			case descriptorpb.FieldDescriptorProto_TYPE_BYTES, descriptorpb.FieldDescriptorProto_TYPE_STRING:
+				resultFDP.DefaultValue = proto.String("")
+			case descriptorpb.FieldDescriptorProto_TYPE_ENUM:
+				// Resolve the proto3 default value.  The default value should be the value name.
+				defValue := inField.Enum().Values().ByNumber(inField.Default().Enum())
+				resultFDP.DefaultValue = proto.String(string(defValue.Name()))
+			case descriptorpb.FieldDescriptorProto_TYPE_DOUBLE,
+				descriptorpb.FieldDescriptorProto_TYPE_FLOAT,
+				descriptorpb.FieldDescriptorProto_TYPE_INT64,
+				descriptorpb.FieldDescriptorProto_TYPE_UINT64,
+				descriptorpb.FieldDescriptorProto_TYPE_INT32,
+				descriptorpb.FieldDescriptorProto_TYPE_FIXED64,
+				descriptorpb.FieldDescriptorProto_TYPE_FIXED32,
+				descriptorpb.FieldDescriptorProto_TYPE_UINT32,
+				descriptorpb.FieldDescriptorProto_TYPE_SFIXED32,
+				descriptorpb.FieldDescriptorProto_TYPE_SFIXED64,
+				descriptorpb.FieldDescriptorProto_TYPE_SINT32,
+				descriptorpb.FieldDescriptorProto_TYPE_SINT64:
+				resultFDP.DefaultValue = proto.String("0")
 			}
 		}
 		// Clear proto3 optional annotation, as the backend converter can
@@ -411,7 +429,7 @@ func normalizeDescriptorInternal(in protoreflect.MessageDescriptor, visitedTypes
 					resultFDP.TypeName = proto.String(normName)
 				} else {
 					if visitedTypes.contains(msgFullName) {
-						return nil, fmt.Errorf("recursize type not supported: %s", inField.FullName())
+						return nil, fmt.Errorf("recursive type not supported: %s", inField.FullName())
 					}
 					visitedTypes.add(msgFullName)
 					dp, err := normalizeDescriptorInternal(inField.Message(), visitedTypes, enumTypes, structTypes, root)

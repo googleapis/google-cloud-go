@@ -131,7 +131,7 @@ func newProxy(filename string) (*Proxy, error) {
 }
 
 func (p *Proxy) start(port int) error {
-	l, err := net.Listen("tcp", fmt.Sprintf(":%d", port))
+	l, err := net.Listen("tcp", fmt.Sprintf("127.0.0.1:%d", port))
 	if err != nil {
 		return err
 	}

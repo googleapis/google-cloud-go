@@ -236,7 +236,7 @@ func (tr *GCETestRunner) StartInstance(ctx context.Context, inst *InstanceConfig
 	}
 	img, err := tr.ComputeService.Images.GetFromFamily(imageProject, imageFamily).Context(ctx).Do()
 	if err != nil {
-		return fmt.Errorf("failed to get image from family %q in project %q: %v", imageFamily, imageProject, err)
+		return fmt.Errorf("failed to get image from family %q in project %q: %w", imageFamily, imageProject, err)
 	}
 
 	op, err := tr.ComputeService.Instances.Insert(inst.ProjectID, inst.Zone, &compute.Instance{
@@ -271,14 +271,14 @@ func (tr *GCETestRunner) StartInstance(ctx context.Context, inst *InstanceConfig
 	}).Do()
 
 	if err != nil {
-		return fmt.Errorf("failed to create instance: %v", err)
+		return fmt.Errorf("failed to create instance: %w", err)
 	}
 
 	// Poll status of the operation to create the instance.
 	getOpCall := tr.ComputeService.ZoneOperations.Get(inst.ProjectID, inst.Zone, op.Name)
 	for {
 		if err := checkOpErrors(op); err != nil {
-			return fmt.Errorf("failed to create instance: %v", err)
+			return fmt.Errorf("failed to create instance: %w", err)
 		}
 		if op.Status == "DONE" {
 			return nil
@@ -290,7 +290,7 @@ func (tr *GCETestRunner) StartInstance(ctx context.Context, inst *InstanceConfig
 
 		op, err = getOpCall.Do()
 		if err != nil {
-			return fmt.Errorf("failed to get operation: %v", err)
+			return fmt.Errorf("failed to get operation: %w", err)
 		}
 	}
 }
@@ -317,7 +317,7 @@ func checkOpErrors(op *compute.Operation) error {
 // by inst.
 func (tr *GCETestRunner) DeleteInstance(ctx context.Context, inst *InstanceConfig) error {
 	if _, err := tr.ComputeService.Instances.Delete(inst.ProjectID, inst.Zone, inst.Name).Context(ctx).Do(); err != nil {
-		return fmt.Errorf("Instances.Delete(%s) got error: %v", inst.Name, err)
+		return fmt.Errorf("Instances.Delete(%s) got error: %w", inst.Name, err)
 	}
 	return nil
 }
@@ -327,7 +327,7 @@ func (tr *GCETestRunner) DeleteInstance(ctx context.Context, inst *InstanceConfi
 func CheckSerialOutputForBackoffs(output string, numBenchmarks int, serverBackoffSubstring, createProfileSubstring, benchmarkNumPrefix string) error {
 	benchmarkNumRE, err := regexp.Compile(fmt.Sprintf("%s (\\d+):", benchmarkNumPrefix))
 	if err != nil {
-		return fmt.Errorf("could not compile regexp to determine benchmark number: %v", err)
+		return fmt.Errorf("could not compile regexp to determine benchmark number: %w", err)
 	}
 
 	// Each CreateProfile request after a backoff should occur within
@@ -355,7 +355,7 @@ func CheckSerialOutputForBackoffs(output string, numBenchmarks int, serverBackof
 		// Find the time at which log statement was logged.
 		logTime, err = parseLogTime(line)
 		if err != nil {
-			return fmt.Errorf("failed to parse timestamp for log statement: %v", err)
+			return fmt.Errorf("failed to parse timestamp for log statement: %w", err)
 		}
 
 		switch {
@@ -433,7 +433,7 @@ func parseBenchmarkNumber(line string, numBenchmarks int, benchmarkNumRE *regexp
 	}
 	benchNum, err := strconv.Atoi(m[1])
 	if err != nil {
-		return 0, fmt.Errorf("line %q has invalid benchmark number %q: %v", line, benchNum, err)
+		return 0, fmt.Errorf("line %q has invalid benchmark number %q: %w", line, benchNum, err)
 	}
 	if benchNum < 0 || benchNum >= numBenchmarks {
 		return 0, fmt.Errorf("line %q had invalid benchmark number %d: benchmark number must be between 0 and %d", line, benchNum, numBenchmarks-1)
@@ -532,12 +532,12 @@ func (tr *TestRunner) QueryProfilesWithZone(projectID, service, startTime, endTi
 
 	queryJSON, err := json.Marshal(qpr)
 	if err != nil {
-		return ProfileResponse{}, fmt.Errorf("failed to marshall request to JSON: %v", err)
+		return ProfileResponse{}, fmt.Errorf("failed to marshall request to JSON: %w", err)
 	}
 
 	req, err := http.NewRequest("POST", queryURL, bytes.NewReader(queryJSON))
 	if err != nil {
-		return ProfileResponse{}, fmt.Errorf("failed to create an API request: %v", err)
+		return ProfileResponse{}, fmt.Errorf("failed to create an API request: %w", err)
 	}
 	req.Header = map[string][]string{
 		"X-Goog-User-Project": {projectID},
@@ -545,13 +545,13 @@ func (tr *TestRunner) QueryProfilesWithZone(projectID, service, startTime, endTi
 
 	resp, err := tr.Client.Do(req)
 	if err != nil {
-		return ProfileResponse{}, fmt.Errorf("failed to query API: %v", err)
+		return ProfileResponse{}, fmt.Errorf("failed to query API: %w", err)
 	}
 	defer resp.Body.Close()
 
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		return ProfileResponse{}, fmt.Errorf("failed to read response body: %v", err)
+		return ProfileResponse{}, fmt.Errorf("failed to read response body: %w", err)
 	}
 
 	if resp.StatusCode != 200 {
@@ -577,7 +577,7 @@ func (tr *GKETestRunner) deleteDockerImage(ctx context.Context, ImageName string
 	queryImageURL := fmt.Sprintf("https://gcr.io/v2/%s/tags/list", ImageName)
 	resp, err := tr.Client.Get(queryImageURL)
 	if err != nil {
-		return []error{fmt.Errorf("failed to list tags: %v", err)}
+		return []error{fmt.Errorf("failed to list tags: %w", err)}
 	}
 	defer resp.Body.Close()
 
@@ -594,13 +594,13 @@ func (tr *GKETestRunner) deleteDockerImage(ctx context.Context, ImageName string
 	var errs []error
 	for _, tag := range ir.Tags {
 		if err := deleteDockerImageResource(tr.Client, fmt.Sprintf(deleteImageURLFmt, ImageName, tag)); err != nil {
-			errs = append(errs, fmt.Errorf("failed to delete tag %s: %v", tag, err))
+			errs = append(errs, fmt.Errorf("failed to delete tag %s: %w", tag, err))
 		}
 	}
 
 	for manifest := range ir.Manifest {
 		if err := deleteDockerImageResource(tr.Client, fmt.Sprintf(deleteImageURLFmt, ImageName, manifest)); err != nil {
-			errs = append(errs, fmt.Errorf("failed to delete manifest %s: %v", manifest, err))
+			errs = append(errs, fmt.Errorf("failed to delete manifest %s: %w", manifest, err))
 		}
 	}
 	return errs
@@ -609,11 +609,11 @@ func (tr *GKETestRunner) deleteDockerImage(ctx context.Context, ImageName string
 func deleteDockerImageResource(client *http.Client, url string) error {
 	req, err := http.NewRequest("DELETE", url, nil)
 	if err != nil {
-		return fmt.Errorf("failed to get request: %v", err)
+		return fmt.Errorf("failed to get request: %w", err)
 	}
 	resp, err := client.Do(req)
 	if err != nil {
-		return fmt.Errorf("failed to delete resource: %v", err)
+		return fmt.Errorf("failed to delete resource: %w", err)
 	}
 	defer resp.Body.Close()
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusAccepted {
@@ -626,13 +626,13 @@ func deleteDockerImageResource(client *http.Client, url string) error {
 func (tr *GKETestRunner) DeleteClusterAndImage(ctx context.Context, cfg *ClusterConfig) []error {
 	var errs []error
 	if err := tr.StorageClient.Bucket(cfg.Bucket).Object(cfg.ImageSourceName).Delete(ctx); err != nil {
-		errs = append(errs, fmt.Errorf("failed to delete storage client: %v", err))
+		errs = append(errs, fmt.Errorf("failed to delete storage client: %w", err))
 	}
 	for _, err := range tr.deleteDockerImage(ctx, cfg.ImageName) {
-		errs = append(errs, fmt.Errorf("failed to delete docker image: %v", err))
+		errs = append(errs, fmt.Errorf("failed to delete docker image: %w", err))
 	}
 	if _, err := tr.ContainerService.Projects.Zones.Clusters.Delete(cfg.ProjectID, cfg.Zone, cfg.ClusterName).Context(ctx).Do(); err != nil {
-		errs = append(errs, fmt.Errorf("failed to delete cluster %s: %v", cfg.ClusterName, err))
+		errs = append(errs, fmt.Errorf("failed to delete cluster %s: %w", cfg.ClusterName, err))
 	}
 
 	return errs
