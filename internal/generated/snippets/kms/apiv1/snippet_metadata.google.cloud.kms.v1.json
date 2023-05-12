@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/kms/apiv1",
-    "version": "1.10.2",
+    "version": "$VERSION",
     "language": "GO",
     "apis": [
       {
@@ -502,6 +502,52 @@
         "method": {
           "shortName": "UpdateEkmConnection",
           "fullName": "google.cloud.kms.v1.EkmService.UpdateEkmConnection",
+          "service": {
+            "shortName": "EkmService",
+            "fullName": "google.cloud.kms.v1.EkmService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudkms_v1_generated_EkmService_VerifyConnectivity_sync",
+      "title": "cloudkms VerifyConnectivity Sample",
+      "description": "VerifyConnectivity verifies that Cloud KMS can successfully connect to the external key\nmanager specified by an [EkmConnection][google.cloud.kms.v1.EkmConnection].\nIf there is an error connecting to the EKM, this method returns a\nFAILED_PRECONDITION status containing structured information as described\nat https: //cloud.google.com/kms/docs/reference/ekm_errors.",
+      "file": "EkmClient/VerifyConnectivity/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "VerifyConnectivity",
+        "fullName": "google.cloud.kms.v1.EkmClient.VerifyConnectivity",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "kmspb.VerifyConnectivityRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*kmspb.VerifyConnectivityResponse",
+        "client": {
+          "shortName": "EkmClient",
+          "fullName": "google.cloud.kms.v1.EkmClient"
+        },
+        "method": {
+          "shortName": "VerifyConnectivity",
+          "fullName": "google.cloud.kms.v1.EkmService.VerifyConnectivity",
           "service": {
             "shortName": "EkmService",
             "fullName": "google.cloud.kms.v1.EkmService"
