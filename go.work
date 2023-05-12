@@ -77,7 +77,6 @@ use (
 	./internal/examples/mock
 	./internal/gapicgen
 	./internal/generated/snippets
-	./internal/gensnippets
 	./internal/godocfx
 	./internal/postprocessor
 	./iot
