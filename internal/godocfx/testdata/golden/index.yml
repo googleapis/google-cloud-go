@@ -3614,7 +3614,7 @@ items:
       slow or unreliable\n\t// internet connection.\n\t//\n\t// To set a deadline
       on the entire upload, use context timeout or\n\t// cancellation.\n\tChunkRetryDeadline
       <a href=\"https://pkg.go.dev/time\">time</a>.<a href=\"https://pkg.go.dev/time#Duration\">Duration</a>\n\n\t//
-      ProgressFunc can be used to monitor the progress of a large write.\n\t// operation.
+      ProgressFunc can be used to monitor the progress of a large write\n\t// operation.
       If ProgressFunc is not nil and writing requires multiple\n\t// calls to the
       underlying service (see\n\t// https://cloud.google.com/storage/docs/json_api/v1/how-tos/resumable-upload),\n\t//
       then ProgressFunc will be invoked after each call with the number of bytes of\n\t//
@@ -3794,7 +3794,7 @@ items:
   id: WithXMLReads
   summary: |
     WithXMLReads is an option that may be passed to a Storage Client on creation.
-    It sets the client to use the JSON API for object reads.
+    It sets the client to use the XML API for object reads.
 
     This is the current default.
   parent: cloud.google.com/go/storage
