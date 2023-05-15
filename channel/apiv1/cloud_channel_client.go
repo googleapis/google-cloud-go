@@ -1862,7 +1862,7 @@ func (c *CloudChannelClient) GetCustomerRepricingConfig(ctx context.Context, req
 // resources. The data for each resource is displayed in the ascending order
 // of:
 //
-//	customer ID
+//	Customer ID
 //
 //	RepricingConfig.EntitlementGranularity.entitlement
 //
@@ -2034,7 +2034,7 @@ func (c *CloudChannelClient) GetChannelPartnerRepricingConfig(ctx context.Contex
 // resources. The data for each resource is displayed in the ascending order
 // of:
 //
-//	channel partner ID
+//	Channel Partner ID
 //
 //	RepricingConfig.effective_invoice_month
 //
@@ -6521,7 +6521,7 @@ func (c *cloudChannelRESTClient) GetCustomerRepricingConfig(ctx context.Context,
 // resources. The data for each resource is displayed in the ascending order
 // of:
 //
-//	customer ID
+//	Customer ID
 //
 //	RepricingConfig.EntitlementGranularity.entitlement
 //
@@ -6987,7 +6987,7 @@ func (c *cloudChannelRESTClient) GetChannelPartnerRepricingConfig(ctx context.Co
 // resources. The data for each resource is displayed in the ascending order
 // of:
 //
-//	channel partner ID
+//	Channel Partner ID
 //
 //	RepricingConfig.effective_invoice_month
 //

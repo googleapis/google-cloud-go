@@ -514,8 +514,10 @@ type ListModelVersionsRequest struct {
 	PageSize int32 `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
 	// The standard list page token.
 	// Typically obtained via
-	// [ListModelVersionsResponse.next_page_token][google.cloud.aiplatform.v1.ListModelVersionsResponse.next_page_token]
-	// of the previous [ModelService.ListModelversions][] call.
+	// [next_page_token][google.cloud.aiplatform.v1.ListModelVersionsResponse.next_page_token]
+	// of the previous
+	// [ListModelVersions][google.cloud.aiplatform.v1.ModelService.ListModelVersions]
+	// call.
 	PageToken string `protobuf:"bytes,3,opt,name=page_token,json=pageToken,proto3" json:"page_token,omitempty"`
 	// An expression for filtering the results of the request. For field names
 	// both snake_case and camelCase are supported.

@@ -76,7 +76,17 @@ func defaultRecommendationCallOptions() *RecommendationCallOptions {
 				})
 			}),
 		},
-		GetOperation: []gax.CallOption{},
+		GetOperation: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 		ListOperations: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
@@ -103,7 +113,16 @@ func defaultRecommendationRESTCallOptions() *RecommendationCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
-		GetOperation: []gax.CallOption{},
+		GetOperation: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
 		ListOperations: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
@@ -172,8 +191,7 @@ func (c *RecommendationClient) GetOperation(ctx context.Context, req *longrunnin
 	return c.internalClient.GetOperation(ctx, req, opts...)
 }
 
-// ListOperations lists operations that match the specified filter in the request. If
-// the server doesn’t support this method, it returns UNIMPLEMENTED.
+// ListOperations is a utility method from google.longrunning.Operations.
 func (c *RecommendationClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	return c.internalClient.ListOperations(ctx, req, opts...)
 }
@@ -353,6 +371,11 @@ func (c *recommendationGRPCClient) Recommend(ctx context.Context, req *discovery
 }
 
 func (c *recommendationGRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -536,8 +559,7 @@ func (c *recommendationRESTClient) GetOperation(ctx context.Context, req *longru
 	return resp, nil
 }
 
-// ListOperations lists operations that match the specified filter in the request. If
-// the server doesn’t support this method, it returns UNIMPLEMENTED.
+// ListOperations is a utility method from google.longrunning.Operations.
 func (c *recommendationRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
 	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)

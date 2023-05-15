@@ -1,5 +1,12 @@
 # Changes
 
+## [1.11.2](https://github.com/googleapis/google-cloud-go/compare/servicecontrol/v1.11.1...servicecontrol/v1.11.2) (2023-05-08)
+
+
+### Bug Fixes
+
+* **servicecontrol:** Update grpc to v1.55.0 ([1147ce0](https://github.com/googleapis/google-cloud-go/commit/1147ce02a990276ca4f8ab7a1ab65c14da4450ef))
+
 ## [1.11.1](https://github.com/googleapis/google-cloud-go/compare/servicecontrol/v1.11.0...servicecontrol/v1.11.1) (2023-03-22)
 
 

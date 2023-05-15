@@ -87,6 +87,9 @@
         "compute/metadata": {
             "component": "compute/metadata"
         },
+        "confidentialcomputing": {
+            "component": "confidentialcomputing"
+        },
         "contactcenterinsights": {
             "component": "contactcenterinsights"
         },
@@ -309,11 +312,17 @@
         "speech": {
             "component": "speech"
         },
+        "storageinsights": {
+            "component": "storageinsights"
+        },
         "storagetransfer": {
             "component": "storagetransfer"
         },
         "talent": {
             "component": "talent"
+        },
+        "support": {
+            "component": "support"
         },
         "texttospeech": {
             "component": "texttospeech"

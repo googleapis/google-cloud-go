@@ -730,7 +730,7 @@ type ReadFeatureValuesResponse_Header struct {
 	// `projects/{project}/locations/{location}/featurestores/{featurestore}/entityTypes/{entityType}`.
 	EntityType string `protobuf:"bytes,1,opt,name=entity_type,json=entityType,proto3" json:"entity_type,omitempty"`
 	// List of Feature metadata corresponding to each piece of
-	// [ReadFeatureValuesResponse.data][].
+	// [ReadFeatureValuesResponse.EntityView.data][google.cloud.aiplatform.v1beta1.ReadFeatureValuesResponse.EntityView.data].
 	FeatureDescriptors []*ReadFeatureValuesResponse_FeatureDescriptor `protobuf:"bytes,2,rep,name=feature_descriptors,json=featureDescriptors,proto3" json:"feature_descriptors,omitempty"`
 }
 

@@ -109,7 +109,9 @@ require (
 	cloud.google.com/go/shell v1.6.0
 	cloud.google.com/go/spanner v1.45.0
 	cloud.google.com/go/speech v1.15.0
+	cloud.google.com/go/storageinsights v0.0.0
 	cloud.google.com/go/storagetransfer v1.8.0
+	cloud.google.com/go/support v0.0.0
 	cloud.google.com/go/talent v1.5.0
 	cloud.google.com/go/texttospeech v1.6.0
 	cloud.google.com/go/tpu v1.5.0
@@ -124,7 +126,7 @@ require (
 	cloud.google.com/go/websecurityscanner v1.5.0
 	cloud.google.com/go/workflows v1.10.0
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
-	google.golang.org/api v0.118.0
+	google.golang.org/api v0.120.0
 	google.golang.org/genproto v0.0.0-20230410155749-daa745c078e1
 )
 
@@ -134,6 +136,7 @@ require (
 	cloud.google.com/go/discoveryengine v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/maps v0.7.0
 	cloud.google.com/go/recaptchaenterprise/v2 v2.7.0
+	cloud.google.com/go/storage v1.29.0
 	cloud.google.com/go/vision/v2 v2.7.0
 	cloud.google.com/go/vmwareengine v0.3.0
 	cloud.google.com/go/workstations v0.0.0-00010101000000-000000000000
@@ -144,19 +147,21 @@ require (
 	cloud.google.com/go/dataproc v1.12.0 // indirect
 	github.com/golang/protobuf v1.5.3 // indirect
 	github.com/google/go-cmp v0.5.9 // indirect
-	github.com/google/s2a-go v0.1.0 // indirect
+	github.com/google/s2a-go v0.1.2 // indirect
 	github.com/googleapis/enterprise-certificate-proxy v0.2.3 // indirect
 	github.com/googleapis/gax-go/v2 v2.8.0 // indirect
 	go.opencensus.io v0.24.0 // indirect
-	golang.org/x/crypto v0.1.0 // indirect
+	golang.org/x/crypto v0.7.0 // indirect
 	golang.org/x/net v0.9.0 // indirect
 	golang.org/x/oauth2 v0.7.0 // indirect
 	golang.org/x/sys v0.7.0 // indirect
 	golang.org/x/text v0.9.0 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
-	google.golang.org/grpc v1.54.0 // indirect
+	google.golang.org/grpc v1.55.0 // indirect
 	google.golang.org/protobuf v1.30.0 // indirect
 )
+
+replace cloud.google.com/go/storageinsights => ../../../storageinsights
 
 replace cloud.google.com/go/storagetransfer => ../../../storagetransfer
 
@@ -423,3 +428,5 @@ replace cloud.google.com/go/alloydb => ../../../alloydb
 replace cloud.google.com/go/workstations => ../../../workstations
 
 replace cloud.google.com/go/confidentialcomputing => ../../../confidentialcomputing
+
+replace cloud.google.com/go/support => ../../../support

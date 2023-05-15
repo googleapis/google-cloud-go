@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/securitycenter/apiv1",
-    "version": "1.19.0",
+    "version": "1.20.1",
     "language": "GO",
     "apis": [
       {
@@ -2078,7 +2078,7 @@
     {
       "regionTag": "securitycenter_v1_generated_SecurityCenter_UpdateSecurityHealthAnalyticsCustomModule_sync",
       "title": "securitycenter UpdateSecurityHealthAnalyticsCustomModule Sample",
-      "description": "UpdateSecurityHealthAnalyticsCustomModule updates the SecurityHealthAnalyticsCustomModule under the given name based\non the given update mask. Updating the enablement state is supported on\nboth resident and inherited modules (though resident modules cannot have an\nenablement state of “inherited”). Updating the display name and custom\nconfig of a module is supported on resident modules only.",
+      "description": "UpdateSecurityHealthAnalyticsCustomModule updates the SecurityHealthAnalyticsCustomModule under the given name based\non the given update mask. Updating the enablement state is supported on\nboth resident and inherited modules (though resident modules cannot have an\nenablement state of \"inherited\"). Updating the display name and custom\nconfig of a module is supported on resident modules only.",
       "file": "Client/UpdateSecurityHealthAnalyticsCustomModule/main.go",
       "language": "GO",
       "clientMethod": {

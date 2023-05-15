@@ -37,6 +37,7 @@ import (
 
 	vkit "cloud.google.com/go/pubsublite/apiv1"
 	pb "cloud.google.com/go/pubsublite/apiv1/pubsublitepb"
+	tspb "github.com/golang/protobuf/ptypes/timestamp"
 )
 
 const (
@@ -367,12 +368,20 @@ func TestIntegration_PublishSubscribeSinglePartition(t *testing.T) {
 
 	// Sets all fields for a message and ensures it is correctly received.
 	t.Run("AllFieldsRoundTrip", func(t *testing.T) {
+		eventTime, err := EncodeEventTimeAttribute(&tspb.Timestamp{
+			Seconds: 1672531200,
+			Nanos:   500000000,
+		})
+		if err != nil {
+			t.Errorf("EncodeEventTimeAttribute() got err: %v", err)
+		}
 		msg := &pubsub.Message{
 			Data:        []byte("round_trip"),
 			OrderingKey: "ordering_key",
 			Attributes: map[string]string{
-				"attr1": "value1",
-				"attr2": "value2",
+				"attr1":               "value1",
+				"attr2":               "value2",
+				EventTimeAttributeKey: eventTime,
 			},
 		}
 		publishMessages(t, DefaultPublishSettings, topicPath, msg)

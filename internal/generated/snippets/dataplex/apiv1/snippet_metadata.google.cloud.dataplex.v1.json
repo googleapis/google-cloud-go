@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/dataplex/apiv1",
-    "version": "1.6.0",
+    "version": "1.7.1",
     "language": "GO",
     "apis": [
       {
@@ -2805,6 +2805,52 @@
         {
           "start": 18,
           "end": 60,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_DataplexService_RunTask_sync",
+      "title": "dataplex RunTask Sample",
+      "description": "RunTask run an on demand execution of a Task.",
+      "file": "Client/RunTask/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "RunTask",
+        "fullName": "google.cloud.dataplex.v1.Client.RunTask",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataplexpb.RunTaskRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*dataplexpb.RunTaskResponse",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.dataplex.v1.Client"
+        },
+        "method": {
+          "shortName": "RunTask",
+          "fullName": "google.cloud.dataplex.v1.DataplexService.RunTask",
+          "service": {
+            "shortName": "DataplexService",
+            "fullName": "google.cloud.dataplex.v1.DataplexService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
           "type": "FULL"
         }
       ]

@@ -288,6 +288,9 @@ func (s *Server) ClearMessages() {
 	s.GServer.mu.Lock()
 	s.GServer.msgs = nil
 	s.GServer.msgsByID = make(map[string]*Message)
+	for _, sub := range s.GServer.subs {
+		sub.msgs = map[string]*message{}
+	}
 	s.GServer.mu.Unlock()
 }
 
@@ -1037,10 +1040,10 @@ func (s *subscription) pull(max int) []*pb.ReceivedMessage {
 			s.publishToDeadLetter(m)
 			continue
 		}
+		(*m.deliveries)++
 		if s.proto.DeadLetterPolicy != nil {
 			m.proto.DeliveryAttempt = int32(*m.deliveries)
 		}
-		(*m.deliveries)++
 		m.ackDeadline = now.Add(s.ackTimeout)
 		msgs = append(msgs, m.proto)
 		if len(msgs) >= max {
@@ -1122,6 +1125,13 @@ func (s *subscription) deliver() {
 //
 // Must be called with the lock held.
 func (s *subscription) tryDeliverMessage(m *message, start int, now time.Time) (int, bool) {
+	// Optimistically increment DeliveryAttempt assuming we'll be able to deliver the message.  This is
+	// safe since the lock is held for the duration of this function, and the channel receiver does not
+	// modify the message.
+	if s.proto.DeadLetterPolicy != nil {
+		m.proto.DeliveryAttempt = int32(*m.deliveries) + 1
+	}
+
 	for i := 0; i < len(s.streams); i++ {
 		idx := (i + start) % len(s.streams)
 
@@ -1138,6 +1148,10 @@ func (s *subscription) tryDeliverMessage(m *message, start int, now time.Time) (
 
 		default:
 		}
+	}
+	// Restore the correct value of DeliveryAttempt if we were not able to deliver the message.
+	if s.proto.DeadLetterPolicy != nil {
+		m.proto.DeliveryAttempt = int32(*m.deliveries)
 	}
 	return 0, false
 }

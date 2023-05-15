@@ -68,6 +68,9 @@ func TestIntegration_RecordAndReplay(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	rec.RemoveRequestHeaders("X-Goog-Api-Client")
+	rec.RemoveRequestHeaders("X-Goog-Gcs-Idempotency-Token")
+
 	hc, err := rec.Client(ctx, option.WithTokenSource(
 		testutil.TokenSource(ctx, storage.ScopeFullControl)))
 	if err != nil {
@@ -84,6 +87,8 @@ func TestIntegration_RecordAndReplay(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	rep.IgnoreHeader("X-Goog-Api-Client")
+	rep.IgnoreHeader("X-Goog-Gcs-Idempotency-Token")
 	defer rep.Close()
 	hc, err = rep.Client(ctx)
 	if err != nil {
@@ -153,7 +158,9 @@ func setup(ctx context.Context) (cleanup func(), err error) {
 // TODO(jba): test errors
 
 func run(t *testing.T, hc *http.Client) (*storage.BucketAttrs, []byte) {
-	ctx := context.Background()
+	ctx, cc := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cc()
+
 	client, err := storage.NewClient(ctx, option.WithHTTPClient(hc))
 	if err != nil {
 		t.Fatal(err)
@@ -188,7 +195,9 @@ func run(t *testing.T, hc *http.Client) (*storage.BucketAttrs, []byte) {
 }
 
 func testReadCRC(t *testing.T, hc *http.Client, mode string) {
-	ctx := context.Background()
+	ctx, cc := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cc()
+
 	client, err := storage.NewClient(ctx, option.WithHTTPClient(hc))
 	if err != nil {
 		t.Fatalf("%s: %v", mode, err)
