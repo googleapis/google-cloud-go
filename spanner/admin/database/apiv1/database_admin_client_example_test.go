@@ -146,36 +146,6 @@ func ExampleDatabaseAdminClient_GetDatabase() {
 	_ = resp
 }
 
-func ExampleDatabaseAdminClient_UpdateDatabase() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := database.NewDatabaseAdminClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &databasepb.UpdateDatabaseRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/spanner/admin/database/apiv1/databasepb#UpdateDatabaseRequest.
-	}
-	op, err := c.UpdateDatabase(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-
-	resp, err := op.Wait(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
 func ExampleDatabaseAdminClient_UpdateDatabaseDdl() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.

@@ -120,11 +120,6 @@
                 "UpdateBackup"
               ]
             },
-            "UpdateDatabase": {
-              "methods": [
-                "UpdateDatabase"
-              ]
-            },
             "UpdateDatabaseDdl": {
               "methods": [
                 "UpdateDatabaseDdl"
@@ -243,11 +238,6 @@
             "UpdateBackup": {
               "methods": [
                 "UpdateBackup"
-              ]
-            },
-            "UpdateDatabase": {
-              "methods": [
-                "UpdateDatabase"
               ]
             },
             "UpdateDatabaseDdl": {
