@@ -686,7 +686,7 @@ func TestPublishOrderingNotEnabled(t *testing.T) {
 		t.Fatal(err)
 	}
 	res := publishSingleMessageWithKey(ctx, topic, "test", "non-existent-key")
-	if _, err := res.Get(ctx); !errors.Is(err, ErrTopicOrderingNotEnabled) {
-		t.Errorf("got %v, want ErrTopicOrderingNotEnabled", err)
+	if _, err := res.Get(ctx); !errors.Is(err, errTopicOrderingNotEnabled) {
+		t.Errorf("got %v, want errTopicOrderingNotEnabled", err)
 	}
 }

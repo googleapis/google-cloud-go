@@ -1348,7 +1348,7 @@ func TestIntegration_OrderedKeys_ResumePublish(t *testing.T) {
 		Data:        []byte("should fail"),
 		OrderingKey: orderingKey,
 	})
-	if _, err := r.Get(ctx); err == nil || !errors.Is(err, ErrPublishingPaused) {
+	if _, err := r.Get(ctx); err == nil || !errors.As(err, &ErrPublishingPaused{}) {
 		t.Fatalf("expected ordering keys publish error, got %v", err)
 	}
 
