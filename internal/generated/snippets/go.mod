@@ -70,7 +70,7 @@ require (
 	cloud.google.com/go/language v1.9.0
 	cloud.google.com/go/lifesciences v0.8.0
 	cloud.google.com/go/logging v1.7.0
-	cloud.google.com/go/longrunning v0.4.1
+	cloud.google.com/go/longrunning v0.4.2
 	cloud.google.com/go/managedidentities v1.5.0
 	cloud.google.com/go/mediatranslation v0.7.0
 	cloud.google.com/go/memcache v1.9.0
@@ -119,14 +119,13 @@ require (
 	cloud.google.com/go/translate v1.7.0
 	cloud.google.com/go/video v1.15.0
 	cloud.google.com/go/videointelligence v1.10.0
-	cloud.google.com/go/vision v1.2.0
 	cloud.google.com/go/vmmigration v1.6.0
 	cloud.google.com/go/vpcaccess v1.6.0
 	cloud.google.com/go/webrisk v1.8.0
 	cloud.google.com/go/websecurityscanner v1.5.0
 	cloud.google.com/go/workflows v1.10.0
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
-	google.golang.org/api v0.120.0
+	google.golang.org/api v0.122.0
 	google.golang.org/genproto v0.0.0-20230410155749-daa745c078e1
 )
 
@@ -137,6 +136,7 @@ require (
 	cloud.google.com/go/maps v0.7.0
 	cloud.google.com/go/recaptchaenterprise/v2 v2.7.0
 	cloud.google.com/go/storage v1.29.0
+	cloud.google.com/go/vision v1.2.0
 	cloud.google.com/go/vision/v2 v2.7.0
 	cloud.google.com/go/vmwareengine v0.3.0
 	cloud.google.com/go/workstations v0.0.0-00010101000000-000000000000
@@ -147,7 +147,7 @@ require (
 	cloud.google.com/go/dataproc v1.12.0 // indirect
 	github.com/golang/protobuf v1.5.3 // indirect
 	github.com/google/go-cmp v0.5.9 // indirect
-	github.com/google/s2a-go v0.1.2 // indirect
+	github.com/google/s2a-go v0.1.3 // indirect
 	github.com/googleapis/enterprise-certificate-proxy v0.2.3 // indirect
 	github.com/googleapis/gax-go/v2 v2.8.0 // indirect
 	go.opencensus.io v0.24.0 // indirect
@@ -311,7 +311,7 @@ replace cloud.google.com/go/translate => ../../../translate
 
 replace cloud.google.com/go/videointelligence => ../../../videointelligence
 
-replace cloud.google.com/go/vision => ../../../vision
+replace cloud.google.com/go/vision/v2 => ../../../vision
 
 replace cloud.google.com/go/vpcaccess => ../../../vpcaccess
 
@@ -394,8 +394,6 @@ replace cloud.google.com/go/gkebackup => ../../../gkebackup
 replace cloud.google.com/go/gkemulticloud => ../../../gkemulticloud
 
 replace cloud.google.com/go/recaptchaenterprise/v2 => ../../../recaptchaenterprise/v2
-
-replace cloud.google.com/go/vision/v2 => ../../../vision/v2
 
 replace cloud.google.com/go/baremetalsolution => ../../../baremetalsolution
 
