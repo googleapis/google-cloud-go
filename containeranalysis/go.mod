@@ -5,7 +5,7 @@ go 1.19
 require (
 	cloud.google.com/go v0.110.2
 	cloud.google.com/go/grafeas v0.2.1
-	cloud.google.com/go/iam v0.13.0
+	cloud.google.com/go/iam v1.0.1
 	github.com/googleapis/gax-go/v2 v2.8.0
 	google.golang.org/api v0.122.0
 	google.golang.org/genproto v0.0.0-20230410155749-daa745c078e1

@@ -4,7 +4,7 @@ go 1.19
 
 require (
 	cloud.google.com/go/accesscontextmanager v1.7.1
-	cloud.google.com/go/iam v0.13.0
+	cloud.google.com/go/iam v1.0.1
 	cloud.google.com/go/longrunning v0.4.2
 	cloud.google.com/go/orgpolicy v1.10.1
 	cloud.google.com/go/osconfig v1.11.1
