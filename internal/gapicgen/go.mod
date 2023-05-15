@@ -4,7 +4,7 @@ go 1.20
 
 require (
 	github.com/go-git/go-git/v5 v5.6.1
-	github.com/google/go-github/v50 v50.2.0
+	github.com/google/go-github/v52 v52.0.0
 	github.com/google/go-github/v52 v52.0.0
 	golang.org/x/oauth2 v0.8.0
 	golang.org/x/sync v0.2.0

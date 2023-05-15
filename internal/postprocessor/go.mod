@@ -5,7 +5,7 @@ go 1.20
 require (
 	github.com/go-git/go-git/v5 v5.6.1
 	github.com/google/go-cmp v0.5.9
-	github.com/google/go-github/v50 v50.2.0
+	github.com/google/go-github/v52 v52.0.0
 	github.com/google/go-github/v52 v52.0.0
 	gopkg.in/yaml.v3 v3.0.1
 )
