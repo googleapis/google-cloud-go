@@ -535,7 +535,7 @@ func (t *Topic) Subscriptions(ctx context.Context) *SubscriptionIterator {
 	}
 }
 
-var errTopicStopped = errors.New("pubsub: Stop has been called for this topic")
+var ErrTopicStopped = errors.New("pubsub: Stop has been called for this topic")
 
 // A PublishResult holds the result from a call to Publish.
 //
@@ -547,6 +547,8 @@ var errTopicStopped = errors.New("pubsub: Stop has been called for this topic")
 //	    // TODO: Handle error.
 //	}
 type PublishResult = ipubsub.PublishResult
+
+var ErrTopicOrderingNotEnabled = errors.New("Topic.EnableMessageOrdering=false, but an OrderingKey was set in Message. Please remove the OrderingKey or turn on Topic.EnableMessageOrdering")
 
 // Publish publishes msg to the topic asynchronously. Messages are batched and
 // sent according to the topic's PublishSettings. Publish never blocks.
@@ -565,7 +567,7 @@ func (t *Topic) Publish(ctx context.Context, msg *Message) *PublishResult {
 
 	r := ipubsub.NewPublishResult()
 	if !t.EnableMessageOrdering && msg.OrderingKey != "" {
-		ipubsub.SetPublishResult(r, "", errors.New("Topic.EnableMessageOrdering=false, but an OrderingKey was set in Message. Please remove the OrderingKey or turn on Topic.EnableMessageOrdering"))
+		ipubsub.SetPublishResult(r, "", ErrTopicOrderingNotEnabled)
 		return r
 	}
 
@@ -582,7 +584,7 @@ func (t *Topic) Publish(ctx context.Context, msg *Message) *PublishResult {
 	defer t.mu.RUnlock()
 	// TODO(aboulhosn) [from bcmills] consider changing the semantics of bundler to perform this logic so we don't have to do it here
 	if t.stopped {
-		ipubsub.SetPublishResult(r, "", errTopicStopped)
+		ipubsub.SetPublishResult(r, "", ErrTopicStopped)
 		return r
 	}
 
@@ -697,6 +699,10 @@ func (t *Topic) initBundler() {
 	t.scheduler.BundleByteLimit = MaxPublishRequestBytes - calcFieldSizeString(t.name) - 5
 }
 
+// ErrPublishingPaused will be wrapped as part of the error returned when publishing with an
+// ordering key that has errored.
+var ErrPublishingPaused = errors.New("Call topic.ResumePublish(orderingKey) before resuming publishing")
+
 func (t *Topic) publishMessageBundle(ctx context.Context, bms []*bundledMessage) {
 	ctx, err := tag.New(ctx, tag.Insert(keyStatus, "OK"), tag.Upsert(keyTopic, t.name))
 	if err != nil {
@@ -716,7 +722,7 @@ func (t *Topic) publishMessageBundle(ctx context.Context, bms []*bundledMessage)
 	var res *pb.PublishResponse
 	start := time.Now()
 	if orderingKey != "" && t.scheduler.IsPaused(orderingKey) {
-		err = fmt.Errorf("pubsub: Publishing for ordering key, %s, paused due to previous error. Call topic.ResumePublish(orderingKey) before resuming publishing", orderingKey)
+		err = fmt.Errorf("pubsub: Publishing for ordering key, %s, paused due to previous error. %w", orderingKey, ErrPublishingPaused)
 	} else {
 		// Apply custom publish retryer on top of user specified retryer and
 		// default retryer.
