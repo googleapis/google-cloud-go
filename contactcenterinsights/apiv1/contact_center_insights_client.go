@@ -29,6 +29,7 @@ import (
 	contactcenterinsightspb "cloud.google.com/go/contactcenterinsights/apiv1/contactcenterinsightspb"
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
@@ -36,7 +37,6 @@ import (
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -49,6 +49,7 @@ var newClientHook clientHook
 // CallOptions contains the retry settings for each method of Client.
 type CallOptions struct {
 	CreateConversation       []gax.CallOption
+	UploadConversation       []gax.CallOption
 	UpdateConversation       []gax.CallOption
 	GetConversation          []gax.CallOption
 	ListConversations        []gax.CallOption
@@ -105,6 +106,17 @@ func defaultGRPCClientOptions() []option.ClientOption {
 func defaultCallOptions() *CallOptions {
 	return &CallOptions{
 		CreateConversation: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		UploadConversation: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -559,6 +571,16 @@ func defaultRESTCallOptions() *CallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
+		UploadConversation: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
 		UpdateConversation: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
@@ -958,6 +980,8 @@ type internalClient interface {
 	setGoogleClientInfo(...string)
 	Connection() *grpc.ClientConn
 	CreateConversation(context.Context, *contactcenterinsightspb.CreateConversationRequest, ...gax.CallOption) (*contactcenterinsightspb.Conversation, error)
+	UploadConversation(context.Context, *contactcenterinsightspb.UploadConversationRequest, ...gax.CallOption) (*UploadConversationOperation, error)
+	UploadConversationOperation(name string) *UploadConversationOperation
 	UpdateConversation(context.Context, *contactcenterinsightspb.UpdateConversationRequest, ...gax.CallOption) (*contactcenterinsightspb.Conversation, error)
 	GetConversation(context.Context, *contactcenterinsightspb.GetConversationRequest, ...gax.CallOption) (*contactcenterinsightspb.Conversation, error)
 	ListConversations(context.Context, *contactcenterinsightspb.ListConversationsRequest, ...gax.CallOption) *ConversationIterator
@@ -1050,6 +1074,19 @@ func (c *Client) Connection() *grpc.ClientConn {
 // CreateConversation creates a conversation.
 func (c *Client) CreateConversation(ctx context.Context, req *contactcenterinsightspb.CreateConversationRequest, opts ...gax.CallOption) (*contactcenterinsightspb.Conversation, error) {
 	return c.internalClient.CreateConversation(ctx, req, opts...)
+}
+
+// UploadConversation create a longrunning conversation upload operation. This method differs
+// from CreateConversation by allowing audio transcription and optional DLP
+// redaction.
+func (c *Client) UploadConversation(ctx context.Context, req *contactcenterinsightspb.UploadConversationRequest, opts ...gax.CallOption) (*UploadConversationOperation, error) {
+	return c.internalClient.UploadConversation(ctx, req, opts...)
+}
+
+// UploadConversationOperation returns a new UploadConversationOperation from a given name.
+// The name must be that of a previously created UploadConversationOperation, possibly from a different process.
+func (c *Client) UploadConversationOperation(name string) *UploadConversationOperation {
+	return c.internalClient.UploadConversationOperation(name)
 }
 
 // UpdateConversation updates a conversation.
@@ -1502,6 +1539,30 @@ func (c *gRPCClient) CreateConversation(ctx context.Context, req *contactcenteri
 		return nil, err
 	}
 	return resp, nil
+}
+
+func (c *gRPCClient) UploadConversation(ctx context.Context, req *contactcenterinsightspb.UploadConversationRequest, opts ...gax.CallOption) (*UploadConversationOperation, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).UploadConversation[0:len((*c.CallOptions).UploadConversation):len((*c.CallOptions).UploadConversation)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.UploadConversation(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &UploadConversationOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
 }
 
 func (c *gRPCClient) UpdateConversation(ctx context.Context, req *contactcenterinsightspb.UpdateConversationRequest, opts ...gax.CallOption) (*contactcenterinsightspb.Conversation, error) {
@@ -2535,6 +2596,76 @@ func (c *restClient) CreateConversation(ctx context.Context, req *contactcenteri
 		return nil, e
 	}
 	return resp, nil
+}
+
+// UploadConversation create a longrunning conversation upload operation. This method differs
+// from CreateConversation by allowing audio transcription and optional DLP
+// redaction.
+func (c *restClient) UploadConversation(ctx context.Context, req *contactcenterinsightspb.UploadConversationRequest, opts ...gax.CallOption) (*UploadConversationOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v/conversations:upload", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &UploadConversationOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
 }
 
 // UpdateConversation updates a conversation.
@@ -5685,6 +5816,88 @@ func (op *UndeployIssueModelOperation) Done() bool {
 // Name returns the name of the long-running operation.
 // The name is assigned by the server and is unique within the service from which the operation is created.
 func (op *UndeployIssueModelOperation) Name() string {
+	return op.lro.Name()
+}
+
+// UploadConversationOperation manages a long-running operation from UploadConversation.
+type UploadConversationOperation struct {
+	lro      *longrunning.Operation
+	pollPath string
+}
+
+// UploadConversationOperation returns a new UploadConversationOperation from a given name.
+// The name must be that of a previously created UploadConversationOperation, possibly from a different process.
+func (c *gRPCClient) UploadConversationOperation(name string) *UploadConversationOperation {
+	return &UploadConversationOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// UploadConversationOperation returns a new UploadConversationOperation from a given name.
+// The name must be that of a previously created UploadConversationOperation, possibly from a different process.
+func (c *restClient) UploadConversationOperation(name string) *UploadConversationOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &UploadConversationOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *UploadConversationOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*contactcenterinsightspb.Conversation, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp contactcenterinsightspb.Conversation
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *UploadConversationOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*contactcenterinsightspb.Conversation, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp contactcenterinsightspb.Conversation
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *UploadConversationOperation) Metadata() (*contactcenterinsightspb.UploadConversationMetadata, error) {
+	var meta contactcenterinsightspb.UploadConversationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *UploadConversationOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *UploadConversationOperation) Name() string {
 	return op.lro.Name()
 }
 

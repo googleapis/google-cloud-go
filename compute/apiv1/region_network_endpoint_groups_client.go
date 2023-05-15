@@ -24,6 +24,7 @@ import (
 	"math"
 	"net/http"
 	"net/url"
+	"time"
 
 	computepb "cloud.google.com/go/compute/apiv1/computepb"
 	gax "github.com/googleapis/gax-go/v2"
@@ -51,9 +52,29 @@ type RegionNetworkEndpointGroupsCallOptions struct {
 func defaultRegionNetworkEndpointGroupsRESTCallOptions() *RegionNetworkEndpointGroupsCallOptions {
 	return &RegionNetworkEndpointGroupsCallOptions{
 		Delete: []gax.CallOption{},
-		Get:    []gax.CallOption{},
+		Get: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
 		Insert: []gax.CallOption{},
-		List:   []gax.CallOption{},
+		List: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
 	}
 }
 
@@ -108,7 +129,7 @@ func (c *RegionNetworkEndpointGroupsClient) Delete(ctx context.Context, req *com
 	return c.internalClient.Delete(ctx, req, opts...)
 }
 
-// Get returns the specified network endpoint group. Gets a list of available network endpoint groups by making a list() request.
+// Get returns the specified network endpoint group.
 func (c *RegionNetworkEndpointGroupsClient) Get(ctx context.Context, req *computepb.GetRegionNetworkEndpointGroupRequest, opts ...gax.CallOption) (*computepb.NetworkEndpointGroup, error) {
 	return c.internalClient.Get(ctx, req, opts...)
 }
@@ -276,7 +297,7 @@ func (c *regionNetworkEndpointGroupsRESTClient) Delete(ctx context.Context, req 
 	return op, nil
 }
 
-// Get returns the specified network endpoint group. Gets a list of available network endpoint groups by making a list() request.
+// Get returns the specified network endpoint group.
 func (c *regionNetworkEndpointGroupsRESTClient) Get(ctx context.Context, req *computepb.GetRegionNetworkEndpointGroupRequest, opts ...gax.CallOption) (*computepb.NetworkEndpointGroup, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {

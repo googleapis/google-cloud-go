@@ -27,6 +27,10 @@ import (
 	"time"
 
 	datacatalogpb "cloud.google.com/go/datacatalog/apiv1/datacatalogpb"
+	iampb "cloud.google.com/go/iam/apiv1/iampb"
+	"cloud.google.com/go/longrunning"
+	lroauto "cloud.google.com/go/longrunning/autogen"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
@@ -34,7 +38,6 @@ import (
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
-	iampb "google.golang.org/genproto/googleapis/iam/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -73,11 +76,17 @@ type CallOptions struct {
 	UpdateTag                       []gax.CallOption
 	DeleteTag                       []gax.CallOption
 	ListTags                        []gax.CallOption
+	ReconcileTags                   []gax.CallOption
 	StarEntry                       []gax.CallOption
 	UnstarEntry                     []gax.CallOption
 	SetIamPolicy                    []gax.CallOption
 	GetIamPolicy                    []gax.CallOption
 	TestIamPermissions              []gax.CallOption
+	ImportEntries                   []gax.CallOption
+	CancelOperation                 []gax.CallOption
+	DeleteOperation                 []gax.CallOption
+	GetOperation                    []gax.CallOption
+	ListOperations                  []gax.CallOption
 }
 
 func defaultGRPCClientOptions() []option.ClientOption {
@@ -191,9 +200,10 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
-		StarEntry:    []gax.CallOption{},
-		UnstarEntry:  []gax.CallOption{},
-		SetIamPolicy: []gax.CallOption{},
+		ReconcileTags: []gax.CallOption{},
+		StarEntry:     []gax.CallOption{},
+		UnstarEntry:   []gax.CallOption{},
+		SetIamPolicy:  []gax.CallOption{},
 		GetIamPolicy: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
@@ -206,6 +216,21 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		TestIamPermissions: []gax.CallOption{},
+		ImportEntries: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		CancelOperation: []gax.CallOption{},
+		DeleteOperation: []gax.CallOption{},
+		GetOperation:    []gax.CallOption{},
+		ListOperations:  []gax.CallOption{},
 	}
 }
 
@@ -301,9 +326,10 @@ func defaultRESTCallOptions() *CallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
-		StarEntry:    []gax.CallOption{},
-		UnstarEntry:  []gax.CallOption{},
-		SetIamPolicy: []gax.CallOption{},
+		ReconcileTags: []gax.CallOption{},
+		StarEntry:     []gax.CallOption{},
+		UnstarEntry:   []gax.CallOption{},
+		SetIamPolicy:  []gax.CallOption{},
 		GetIamPolicy: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
@@ -315,6 +341,20 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		TestIamPermissions: []gax.CallOption{},
+		ImportEntries: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		CancelOperation: []gax.CallOption{},
+		DeleteOperation: []gax.CallOption{},
+		GetOperation:    []gax.CallOption{},
+		ListOperations:  []gax.CallOption{},
 	}
 }
 
@@ -350,11 +390,19 @@ type internalClient interface {
 	UpdateTag(context.Context, *datacatalogpb.UpdateTagRequest, ...gax.CallOption) (*datacatalogpb.Tag, error)
 	DeleteTag(context.Context, *datacatalogpb.DeleteTagRequest, ...gax.CallOption) error
 	ListTags(context.Context, *datacatalogpb.ListTagsRequest, ...gax.CallOption) *TagIterator
+	ReconcileTags(context.Context, *datacatalogpb.ReconcileTagsRequest, ...gax.CallOption) (*ReconcileTagsOperation, error)
+	ReconcileTagsOperation(name string) *ReconcileTagsOperation
 	StarEntry(context.Context, *datacatalogpb.StarEntryRequest, ...gax.CallOption) (*datacatalogpb.StarEntryResponse, error)
 	UnstarEntry(context.Context, *datacatalogpb.UnstarEntryRequest, ...gax.CallOption) (*datacatalogpb.UnstarEntryResponse, error)
 	SetIamPolicy(context.Context, *iampb.SetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
 	GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
 	TestIamPermissions(context.Context, *iampb.TestIamPermissionsRequest, ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error)
+	ImportEntries(context.Context, *datacatalogpb.ImportEntriesRequest, ...gax.CallOption) (*ImportEntriesOperation, error)
+	ImportEntriesOperation(name string) *ImportEntriesOperation
+	CancelOperation(context.Context, *longrunningpb.CancelOperationRequest, ...gax.CallOption) error
+	DeleteOperation(context.Context, *longrunningpb.DeleteOperationRequest, ...gax.CallOption) error
+	GetOperation(context.Context, *longrunningpb.GetOperationRequest, ...gax.CallOption) (*longrunningpb.Operation, error)
+	ListOperations(context.Context, *longrunningpb.ListOperationsRequest, ...gax.CallOption) *OperationIterator
 }
 
 // Client is a client for interacting with Google Cloud Data Catalog API.
@@ -368,6 +416,11 @@ type Client struct {
 
 	// The call options for this service.
 	CallOptions *CallOptions
+
+	// LROClient is used internally to handle long-running operations.
+	// It is exposed so that its CallOptions can be modified if required.
+	// Users should not Close this client.
+	LROClient *lroauto.OperationsClient
 }
 
 // Wrapper methods routed to the internal client.
@@ -671,6 +724,29 @@ func (c *Client) ListTags(ctx context.Context, req *datacatalogpb.ListTagsReques
 	return c.internalClient.ListTags(ctx, req, opts...)
 }
 
+// ReconcileTags ReconcileTags creates or updates a list of tags on the entry.
+// If the
+// ReconcileTagsRequest.force_delete_missing
+// parameter is set, the operation deletes tags not included in the input tag
+// list.
+//
+// ReconcileTags returns a [long-running operation]
+// [google.longrunning.Operation] resource that can be queried with
+// Operations.GetOperation
+// to return [ReconcileTagsMetadata]
+// [google.cloud.datacatalog.v1.ReconcileTagsMetadata] and
+// a [ReconcileTagsResponse]
+// [google.cloud.datacatalog.v1.ReconcileTagsResponse] message.
+func (c *Client) ReconcileTags(ctx context.Context, req *datacatalogpb.ReconcileTagsRequest, opts ...gax.CallOption) (*ReconcileTagsOperation, error) {
+	return c.internalClient.ReconcileTags(ctx, req, opts...)
+}
+
+// ReconcileTagsOperation returns a new ReconcileTagsOperation from a given name.
+// The name must be that of a previously created ReconcileTagsOperation, possibly from a different process.
+func (c *Client) ReconcileTagsOperation(name string) *ReconcileTagsOperation {
+	return c.internalClient.ReconcileTagsOperation(name)
+}
+
 // StarEntry marks an Entry as starred by
 // the current user. Starring information is private to each user.
 func (c *Client) StarEntry(ctx context.Context, req *datacatalogpb.StarEntryRequest, opts ...gax.CallOption) (*datacatalogpb.StarEntryResponse, error) {
@@ -753,6 +829,54 @@ func (c *Client) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermi
 	return c.internalClient.TestIamPermissions(ctx, req, opts...)
 }
 
+// ImportEntries imports entries from a source, such as data previously dumped into a
+// Cloud Storage bucket, into Data Catalog. Import of entries
+// is a sync operation that reconciles the state of the third-party system
+// with the Data Catalog.
+//
+// ImportEntries accepts source data snapshots of a third-party system.
+// Snapshot should be delivered as a .wire or base65-encoded .txt file
+// containing a sequence of Protocol Buffer messages of
+// DumpItem type.
+//
+// ImportEntries returns a [long-running operation]
+// [google.longrunning.Operation] resource that can be queried with
+// Operations.GetOperation
+// to return
+// ImportEntriesMetadata
+// and an
+// ImportEntriesResponse
+// message.
+func (c *Client) ImportEntries(ctx context.Context, req *datacatalogpb.ImportEntriesRequest, opts ...gax.CallOption) (*ImportEntriesOperation, error) {
+	return c.internalClient.ImportEntries(ctx, req, opts...)
+}
+
+// ImportEntriesOperation returns a new ImportEntriesOperation from a given name.
+// The name must be that of a previously created ImportEntriesOperation, possibly from a different process.
+func (c *Client) ImportEntriesOperation(name string) *ImportEntriesOperation {
+	return c.internalClient.ImportEntriesOperation(name)
+}
+
+// CancelOperation is a utility method from google.longrunning.Operations.
+func (c *Client) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
+	return c.internalClient.CancelOperation(ctx, req, opts...)
+}
+
+// DeleteOperation is a utility method from google.longrunning.Operations.
+func (c *Client) DeleteOperation(ctx context.Context, req *longrunningpb.DeleteOperationRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteOperation(ctx, req, opts...)
+}
+
+// GetOperation is a utility method from google.longrunning.Operations.
+func (c *Client) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+	return c.internalClient.GetOperation(ctx, req, opts...)
+}
+
+// ListOperations is a utility method from google.longrunning.Operations.
+func (c *Client) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
+	return c.internalClient.ListOperations(ctx, req, opts...)
+}
+
 // gRPCClient is a client for interacting with Google Cloud Data Catalog API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
@@ -768,6 +892,13 @@ type gRPCClient struct {
 
 	// The gRPC API client.
 	client datacatalogpb.DataCatalogClient
+
+	// LROClient is used internally to handle long-running operations.
+	// It is exposed so that its CallOptions can be modified if required.
+	// Users should not Close this client.
+	LROClient **lroauto.OperationsClient
+
+	operationsClient longrunningpb.OperationsClient
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
@@ -804,11 +935,23 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		disableDeadlines: disableDeadlines,
 		client:           datacatalogpb.NewDataCatalogClient(connPool),
 		CallOptions:      &client.CallOptions,
+		operationsClient: longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
 
 	client.internalClient = c
 
+	client.LROClient, err = lroauto.NewOperationsClient(ctx, gtransport.WithConnPool(connPool))
+	if err != nil {
+		// This error "should not happen", since we are just reusing old connection pool
+		// and never actually need to dial.
+		// If this does happen, we could leak connp. However, we cannot close conn:
+		// If the user invoked the constructor with option.WithGRPCConn,
+		// we would close a connection that's still in use.
+		// TODO: investigate error conditions.
+		return nil, err
+	}
+	c.LROClient = &client.LROClient
 	return &client, nil
 }
 
@@ -843,6 +986,11 @@ type restClient struct {
 	// The http client.
 	httpClient *http.Client
 
+	// LROClient is used internally to handle long-running operations.
+	// It is exposed so that its CallOptions can be modified if required.
+	// Users should not Close this client.
+	LROClient **lroauto.OperationsClient
+
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
 
@@ -868,6 +1016,16 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		CallOptions: &callOpts,
 	}
 	c.setGoogleClientInfo()
+
+	lroOpts := []option.ClientOption{
+		option.WithHTTPClient(httpClient),
+		option.WithEndpoint(endpoint),
+	}
+	opClient, err := lroauto.NewOperationsRESTClient(ctx, lroOpts...)
+	if err != nil {
+		return nil, err
+	}
+	c.LROClient = &opClient
 
 	return &Client{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -1566,6 +1724,30 @@ func (c *gRPCClient) ListTags(ctx context.Context, req *datacatalogpb.ListTagsRe
 	return it
 }
 
+func (c *gRPCClient) ReconcileTags(ctx context.Context, req *datacatalogpb.ReconcileTagsRequest, opts ...gax.CallOption) (*ReconcileTagsOperation, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).ReconcileTags[0:len((*c.CallOptions).ReconcileTags):len((*c.CallOptions).ReconcileTags)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.ReconcileTags(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &ReconcileTagsOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
 func (c *gRPCClient) StarEntry(ctx context.Context, req *datacatalogpb.StarEntryRequest, opts ...gax.CallOption) (*datacatalogpb.StarEntryResponse, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
@@ -1676,6 +1858,118 @@ func (c *gRPCClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamP
 	return resp, nil
 }
 
+func (c *gRPCClient) ImportEntries(ctx context.Context, req *datacatalogpb.ImportEntriesRequest, opts ...gax.CallOption) (*ImportEntriesOperation, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).ImportEntries[0:len((*c.CallOptions).ImportEntries):len((*c.CallOptions).ImportEntries)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.ImportEntries(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &ImportEntriesOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = c.operationsClient.CancelOperation(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	return err
+}
+
+func (c *gRPCClient) DeleteOperation(ctx context.Context, req *longrunningpb.DeleteOperationRequest, opts ...gax.CallOption) error {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = c.operationsClient.DeleteOperation(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	return err
+}
+
+func (c *gRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
+	it := &OperationIterator{}
+	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
+		resp := &longrunningpb.ListOperationsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetOperations(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
 // SearchCatalog searches Data Catalog for multiple resources like entries and tags that
 // match a query.
 //
@@ -1716,11 +2010,6 @@ func (c *restClient) SearchCatalog(ctx context.Context, req *datacatalogpb.Searc
 			return nil, "", err
 		}
 		baseUrl.Path += fmt.Sprintf("/v1/catalog:search")
-
-		params := url.Values{}
-		params.Add("$alt", "json;enum-encoding=int")
-
-		baseUrl.RawQuery = params.Encode()
 
 		// Build HTTP headers from client and context metadata.
 		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
@@ -1822,7 +2111,6 @@ func (c *restClient) CreateEntryGroup(ctx context.Context, req *datacatalogpb.Cr
 	baseUrl.Path += fmt.Sprintf("/v1/%v/entryGroups", req.GetParent())
 
 	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
 	params.Add("entryGroupId", fmt.Sprintf("%v", req.GetEntryGroupId()))
 
 	baseUrl.RawQuery = params.Encode()
@@ -1881,7 +2169,6 @@ func (c *restClient) GetEntryGroup(ctx context.Context, req *datacatalogpb.GetEn
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetReadMask() != nil {
 		readMask, err := protojson.Marshal(req.GetReadMask())
 		if err != nil {
@@ -1958,7 +2245,6 @@ func (c *restClient) UpdateEntryGroup(ctx context.Context, req *datacatalogpb.Up
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetEntryGroup().GetName())
 
 	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
 		updateMask, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
@@ -2028,7 +2314,6 @@ func (c *restClient) DeleteEntryGroup(ctx context.Context, req *datacatalogpb.De
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetForce() {
 		params.Add("force", fmt.Sprintf("%v", req.GetForce()))
 	}
@@ -2084,7 +2369,6 @@ func (c *restClient) ListEntryGroups(ctx context.Context, req *datacatalogpb.Lis
 		baseUrl.Path += fmt.Sprintf("/v1/%v/entryGroups", req.GetParent())
 
 		params := url.Values{}
-		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetPageSize() != 0 {
 			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
 		}
@@ -2176,7 +2460,6 @@ func (c *restClient) CreateEntry(ctx context.Context, req *datacatalogpb.CreateE
 	baseUrl.Path += fmt.Sprintf("/v1/%v/entries", req.GetParent())
 
 	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
 	params.Add("entryId", fmt.Sprintf("%v", req.GetEntryId()))
 
 	baseUrl.RawQuery = params.Encode()
@@ -2247,7 +2530,6 @@ func (c *restClient) UpdateEntry(ctx context.Context, req *datacatalogpb.UpdateE
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetEntry().GetName())
 
 	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
 		updateMask, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
@@ -2320,11 +2602,6 @@ func (c *restClient) DeleteEntry(ctx context.Context, req *datacatalogpb.DeleteE
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
-	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
-
-	baseUrl.RawQuery = params.Encode()
-
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
@@ -2359,11 +2636,6 @@ func (c *restClient) GetEntry(ctx context.Context, req *datacatalogpb.GetEntryRe
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
-
-	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
-
-	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
@@ -2421,7 +2693,6 @@ func (c *restClient) LookupEntry(ctx context.Context, req *datacatalogpb.LookupE
 	baseUrl.Path += fmt.Sprintf("/v1/entries:lookup")
 
 	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetFullyQualifiedName() != "" {
 		params.Add("fullyQualifiedName", fmt.Sprintf("%v", req.GetFullyQualifiedName()))
 	}
@@ -2503,7 +2774,6 @@ func (c *restClient) ListEntries(ctx context.Context, req *datacatalogpb.ListEnt
 		baseUrl.Path += fmt.Sprintf("/v1/%v/entries", req.GetParent())
 
 		params := url.Values{}
-		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetPageSize() != 0 {
 			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
 		}
@@ -2594,11 +2864,6 @@ func (c *restClient) ModifyEntryOverview(ctx context.Context, req *datacatalogpb
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:modifyEntryOverview", req.GetName())
 
-	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
-
-	baseUrl.RawQuery = params.Encode()
-
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
@@ -2661,11 +2926,6 @@ func (c *restClient) ModifyEntryContacts(ctx context.Context, req *datacatalogpb
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:modifyEntryContacts", req.GetName())
-
-	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
-
-	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
@@ -2733,7 +2993,6 @@ func (c *restClient) CreateTagTemplate(ctx context.Context, req *datacatalogpb.C
 	baseUrl.Path += fmt.Sprintf("/v1/%v/tagTemplates", req.GetParent())
 
 	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
 	params.Add("tagTemplateId", fmt.Sprintf("%v", req.GetTagTemplateId()))
 
 	baseUrl.RawQuery = params.Encode()
@@ -2790,11 +3049,6 @@ func (c *restClient) GetTagTemplate(ctx context.Context, req *datacatalogpb.GetT
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
-
-	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
-
-	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
@@ -2865,7 +3119,6 @@ func (c *restClient) UpdateTagTemplate(ctx context.Context, req *datacatalogpb.U
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetTagTemplate().GetName())
 
 	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
 		updateMask, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
@@ -2934,7 +3187,6 @@ func (c *restClient) DeleteTagTemplate(ctx context.Context, req *datacatalogpb.D
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
 	params.Add("force", fmt.Sprintf("%v", req.GetForce()))
 
 	baseUrl.RawQuery = params.Encode()
@@ -2986,7 +3238,6 @@ func (c *restClient) CreateTagTemplateField(ctx context.Context, req *datacatalo
 	baseUrl.Path += fmt.Sprintf("/v1/%v/fields", req.GetParent())
 
 	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
 	params.Add("tagTemplateFieldId", fmt.Sprintf("%v", req.GetTagTemplateFieldId()))
 
 	baseUrl.RawQuery = params.Encode()
@@ -3059,7 +3310,6 @@ func (c *restClient) UpdateTagTemplateField(ctx context.Context, req *datacatalo
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
 		updateMask, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
@@ -3133,11 +3383,6 @@ func (c *restClient) RenameTagTemplateField(ctx context.Context, req *datacatalo
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:rename", req.GetName())
 
-	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
-
-	baseUrl.RawQuery = params.Encode()
-
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
@@ -3199,11 +3444,6 @@ func (c *restClient) RenameTagTemplateFieldEnumValue(ctx context.Context, req *d
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:rename", req.GetName())
 
-	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
-
-	baseUrl.RawQuery = params.Encode()
-
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
@@ -3263,7 +3503,6 @@ func (c *restClient) DeleteTagTemplateField(ctx context.Context, req *datacatalo
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
 	params.Add("force", fmt.Sprintf("%v", req.GetForce()))
 
 	baseUrl.RawQuery = params.Encode()
@@ -3321,11 +3560,6 @@ func (c *restClient) CreateTag(ctx context.Context, req *datacatalogpb.CreateTag
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/tags", req.GetParent())
-
-	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
-
-	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
@@ -3388,7 +3622,6 @@ func (c *restClient) UpdateTag(ctx context.Context, req *datacatalogpb.UpdateTag
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetTag().GetName())
 
 	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
 		updateMask, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
@@ -3452,11 +3685,6 @@ func (c *restClient) DeleteTag(ctx context.Context, req *datacatalogpb.DeleteTag
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
-	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
-
-	baseUrl.RawQuery = params.Encode()
-
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
@@ -3508,7 +3736,6 @@ func (c *restClient) ListTags(ctx context.Context, req *datacatalogpb.ListTagsRe
 		baseUrl.Path += fmt.Sprintf("/v1/%v/tags", req.GetParent())
 
 		params := url.Values{}
-		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetPageSize() != 0 {
 			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
 		}
@@ -3574,6 +3801,81 @@ func (c *restClient) ListTags(ctx context.Context, req *datacatalogpb.ListTagsRe
 	return it
 }
 
+// ReconcileTags ReconcileTags creates or updates a list of tags on the entry.
+// If the
+// ReconcileTagsRequest.force_delete_missing
+// parameter is set, the operation deletes tags not included in the input tag
+// list.
+//
+// ReconcileTags returns a [long-running operation]
+// [google.longrunning.Operation] resource that can be queried with
+// Operations.GetOperation
+// to return [ReconcileTagsMetadata]
+// [google.cloud.datacatalog.v1.ReconcileTagsMetadata] and
+// a [ReconcileTagsResponse]
+// [google.cloud.datacatalog.v1.ReconcileTagsResponse] message.
+func (c *restClient) ReconcileTags(ctx context.Context, req *datacatalogpb.ReconcileTagsRequest, opts ...gax.CallOption) (*ReconcileTagsOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v/tags:reconcile", req.GetParent())
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &ReconcileTagsOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
 // StarEntry marks an Entry as starred by
 // the current user. Starring information is private to each user.
 func (c *restClient) StarEntry(ctx context.Context, req *datacatalogpb.StarEntryRequest, opts ...gax.CallOption) (*datacatalogpb.StarEntryResponse, error) {
@@ -3588,11 +3890,6 @@ func (c *restClient) StarEntry(ctx context.Context, req *datacatalogpb.StarEntry
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:star", req.GetName())
-
-	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
-
-	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
@@ -3653,11 +3950,6 @@ func (c *restClient) UnstarEntry(ctx context.Context, req *datacatalogpb.UnstarE
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:unstar", req.GetName())
-
-	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
-
-	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
@@ -3735,11 +4027,6 @@ func (c *restClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRe
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:setIamPolicy", req.GetResource())
-
-	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
-
-	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
@@ -3823,11 +4110,6 @@ func (c *restClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRe
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:getIamPolicy", req.GetResource())
 
-	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
-
-	baseUrl.RawQuery = params.Encode()
-
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
 
@@ -3901,11 +4183,6 @@ func (c *restClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamP
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:testIamPermissions", req.GetResource())
 
-	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
-
-	baseUrl.RawQuery = params.Encode()
-
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
 
@@ -3949,6 +4226,463 @@ func (c *restClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamP
 		return nil, e
 	}
 	return resp, nil
+}
+
+// ImportEntries imports entries from a source, such as data previously dumped into a
+// Cloud Storage bucket, into Data Catalog. Import of entries
+// is a sync operation that reconciles the state of the third-party system
+// with the Data Catalog.
+//
+// ImportEntries accepts source data snapshots of a third-party system.
+// Snapshot should be delivered as a .wire or base65-encoded .txt file
+// containing a sequence of Protocol Buffer messages of
+// DumpItem type.
+//
+// ImportEntries returns a [long-running operation]
+// [google.longrunning.Operation] resource that can be queried with
+// Operations.GetOperation
+// to return
+// ImportEntriesMetadata
+// and an
+// ImportEntriesResponse
+// message.
+func (c *restClient) ImportEntries(ctx context.Context, req *datacatalogpb.ImportEntriesRequest, opts ...gax.CallOption) (*ImportEntriesOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v/entries:import", req.GetParent())
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &ImportEntriesOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// CancelOperation is a utility method from google.longrunning.Operations.
+func (c *restClient) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:cancel", req.GetName())
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		// Returns nil if there is no error, otherwise wraps
+		// the response code and body into a non-nil error
+		return googleapi.CheckResponse(httpRsp)
+	}, opts...)
+}
+
+// DeleteOperation is a utility method from google.longrunning.Operations.
+func (c *restClient) DeleteOperation(ctx context.Context, req *longrunningpb.DeleteOperationRequest, opts ...gax.CallOption) error {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		// Returns nil if there is no error, otherwise wraps
+		// the response code and body into a non-nil error
+		return googleapi.CheckResponse(httpRsp)
+	}, opts...)
+}
+
+// GetOperation is a utility method from google.longrunning.Operations.
+func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// ListOperations is a utility method from google.longrunning.Operations.
+func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
+	it := &OperationIterator{}
+	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
+		resp := &longrunningpb.ListOperationsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v/operations", req.GetName())
+
+		params := url.Values{}
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			httpRsp, err := c.httpClient.Do(httpReq)
+			if err != nil {
+				return err
+			}
+			defer httpRsp.Body.Close()
+
+			if err = googleapi.CheckResponse(httpRsp); err != nil {
+				return err
+			}
+
+			buf, err := ioutil.ReadAll(httpRsp.Body)
+			if err != nil {
+				return err
+			}
+
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return maybeUnknownEnum(err)
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetOperations(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// ImportEntriesOperation manages a long-running operation from ImportEntries.
+type ImportEntriesOperation struct {
+	lro      *longrunning.Operation
+	pollPath string
+}
+
+// ImportEntriesOperation returns a new ImportEntriesOperation from a given name.
+// The name must be that of a previously created ImportEntriesOperation, possibly from a different process.
+func (c *gRPCClient) ImportEntriesOperation(name string) *ImportEntriesOperation {
+	return &ImportEntriesOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// ImportEntriesOperation returns a new ImportEntriesOperation from a given name.
+// The name must be that of a previously created ImportEntriesOperation, possibly from a different process.
+func (c *restClient) ImportEntriesOperation(name string) *ImportEntriesOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &ImportEntriesOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *ImportEntriesOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*datacatalogpb.ImportEntriesResponse, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp datacatalogpb.ImportEntriesResponse
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *ImportEntriesOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*datacatalogpb.ImportEntriesResponse, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp datacatalogpb.ImportEntriesResponse
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *ImportEntriesOperation) Metadata() (*datacatalogpb.ImportEntriesMetadata, error) {
+	var meta datacatalogpb.ImportEntriesMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *ImportEntriesOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *ImportEntriesOperation) Name() string {
+	return op.lro.Name()
+}
+
+// ReconcileTagsOperation manages a long-running operation from ReconcileTags.
+type ReconcileTagsOperation struct {
+	lro      *longrunning.Operation
+	pollPath string
+}
+
+// ReconcileTagsOperation returns a new ReconcileTagsOperation from a given name.
+// The name must be that of a previously created ReconcileTagsOperation, possibly from a different process.
+func (c *gRPCClient) ReconcileTagsOperation(name string) *ReconcileTagsOperation {
+	return &ReconcileTagsOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// ReconcileTagsOperation returns a new ReconcileTagsOperation from a given name.
+// The name must be that of a previously created ReconcileTagsOperation, possibly from a different process.
+func (c *restClient) ReconcileTagsOperation(name string) *ReconcileTagsOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &ReconcileTagsOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *ReconcileTagsOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*datacatalogpb.ReconcileTagsResponse, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp datacatalogpb.ReconcileTagsResponse
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *ReconcileTagsOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*datacatalogpb.ReconcileTagsResponse, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp datacatalogpb.ReconcileTagsResponse
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *ReconcileTagsOperation) Metadata() (*datacatalogpb.ReconcileTagsMetadata, error) {
+	var meta datacatalogpb.ReconcileTagsMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *ReconcileTagsOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *ReconcileTagsOperation) Name() string {
+	return op.lro.Name()
 }
 
 // EntryGroupIterator manages a stream of *datacatalogpb.EntryGroup.
@@ -4040,6 +4774,53 @@ func (it *EntryIterator) bufLen() int {
 }
 
 func (it *EntryIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// OperationIterator manages a stream of *longrunningpb.Operation.
+type OperationIterator struct {
+	items    []*longrunningpb.Operation
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*longrunningpb.Operation, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *OperationIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *OperationIterator) Next() (*longrunningpb.Operation, error) {
+	var item *longrunningpb.Operation
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *OperationIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *OperationIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b

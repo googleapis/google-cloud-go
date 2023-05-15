@@ -27,8 +27,10 @@ import (
 	"time"
 
 	aiplatformpb "cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb"
+	iampb "cloud.google.com/go/iam/apiv1/iampb"
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
@@ -37,8 +39,6 @@ import (
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
-	iampb "google.golang.org/genproto/googleapis/iam/v1"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/encoding/protojson"
@@ -49,23 +49,24 @@ var newEndpointClientHook clientHook
 
 // EndpointCallOptions contains the retry settings for each method of EndpointClient.
 type EndpointCallOptions struct {
-	CreateEndpoint     []gax.CallOption
-	GetEndpoint        []gax.CallOption
-	ListEndpoints      []gax.CallOption
-	UpdateEndpoint     []gax.CallOption
-	DeleteEndpoint     []gax.CallOption
-	DeployModel        []gax.CallOption
-	UndeployModel      []gax.CallOption
-	GetLocation        []gax.CallOption
-	ListLocations      []gax.CallOption
-	GetIamPolicy       []gax.CallOption
-	SetIamPolicy       []gax.CallOption
-	TestIamPermissions []gax.CallOption
-	CancelOperation    []gax.CallOption
-	DeleteOperation    []gax.CallOption
-	GetOperation       []gax.CallOption
-	ListOperations     []gax.CallOption
-	WaitOperation      []gax.CallOption
+	CreateEndpoint      []gax.CallOption
+	GetEndpoint         []gax.CallOption
+	ListEndpoints       []gax.CallOption
+	UpdateEndpoint      []gax.CallOption
+	DeleteEndpoint      []gax.CallOption
+	DeployModel         []gax.CallOption
+	UndeployModel       []gax.CallOption
+	MutateDeployedModel []gax.CallOption
+	GetLocation         []gax.CallOption
+	ListLocations       []gax.CallOption
+	GetIamPolicy        []gax.CallOption
+	SetIamPolicy        []gax.CallOption
+	TestIamPermissions  []gax.CallOption
+	CancelOperation     []gax.CallOption
+	DeleteOperation     []gax.CallOption
+	GetOperation        []gax.CallOption
+	ListOperations      []gax.CallOption
+	WaitOperation       []gax.CallOption
 }
 
 func defaultEndpointGRPCClientOptions() []option.ClientOption {
@@ -82,45 +83,47 @@ func defaultEndpointGRPCClientOptions() []option.ClientOption {
 
 func defaultEndpointCallOptions() *EndpointCallOptions {
 	return &EndpointCallOptions{
-		CreateEndpoint:     []gax.CallOption{},
-		GetEndpoint:        []gax.CallOption{},
-		ListEndpoints:      []gax.CallOption{},
-		UpdateEndpoint:     []gax.CallOption{},
-		DeleteEndpoint:     []gax.CallOption{},
-		DeployModel:        []gax.CallOption{},
-		UndeployModel:      []gax.CallOption{},
-		GetLocation:        []gax.CallOption{},
-		ListLocations:      []gax.CallOption{},
-		GetIamPolicy:       []gax.CallOption{},
-		SetIamPolicy:       []gax.CallOption{},
-		TestIamPermissions: []gax.CallOption{},
-		CancelOperation:    []gax.CallOption{},
-		DeleteOperation:    []gax.CallOption{},
-		GetOperation:       []gax.CallOption{},
-		ListOperations:     []gax.CallOption{},
-		WaitOperation:      []gax.CallOption{},
+		CreateEndpoint:      []gax.CallOption{},
+		GetEndpoint:         []gax.CallOption{},
+		ListEndpoints:       []gax.CallOption{},
+		UpdateEndpoint:      []gax.CallOption{},
+		DeleteEndpoint:      []gax.CallOption{},
+		DeployModel:         []gax.CallOption{},
+		UndeployModel:       []gax.CallOption{},
+		MutateDeployedModel: []gax.CallOption{},
+		GetLocation:         []gax.CallOption{},
+		ListLocations:       []gax.CallOption{},
+		GetIamPolicy:        []gax.CallOption{},
+		SetIamPolicy:        []gax.CallOption{},
+		TestIamPermissions:  []gax.CallOption{},
+		CancelOperation:     []gax.CallOption{},
+		DeleteOperation:     []gax.CallOption{},
+		GetOperation:        []gax.CallOption{},
+		ListOperations:      []gax.CallOption{},
+		WaitOperation:       []gax.CallOption{},
 	}
 }
 
 func defaultEndpointRESTCallOptions() *EndpointCallOptions {
 	return &EndpointCallOptions{
-		CreateEndpoint:     []gax.CallOption{},
-		GetEndpoint:        []gax.CallOption{},
-		ListEndpoints:      []gax.CallOption{},
-		UpdateEndpoint:     []gax.CallOption{},
-		DeleteEndpoint:     []gax.CallOption{},
-		DeployModel:        []gax.CallOption{},
-		UndeployModel:      []gax.CallOption{},
-		GetLocation:        []gax.CallOption{},
-		ListLocations:      []gax.CallOption{},
-		GetIamPolicy:       []gax.CallOption{},
-		SetIamPolicy:       []gax.CallOption{},
-		TestIamPermissions: []gax.CallOption{},
-		CancelOperation:    []gax.CallOption{},
-		DeleteOperation:    []gax.CallOption{},
-		GetOperation:       []gax.CallOption{},
-		ListOperations:     []gax.CallOption{},
-		WaitOperation:      []gax.CallOption{},
+		CreateEndpoint:      []gax.CallOption{},
+		GetEndpoint:         []gax.CallOption{},
+		ListEndpoints:       []gax.CallOption{},
+		UpdateEndpoint:      []gax.CallOption{},
+		DeleteEndpoint:      []gax.CallOption{},
+		DeployModel:         []gax.CallOption{},
+		UndeployModel:       []gax.CallOption{},
+		MutateDeployedModel: []gax.CallOption{},
+		GetLocation:         []gax.CallOption{},
+		ListLocations:       []gax.CallOption{},
+		GetIamPolicy:        []gax.CallOption{},
+		SetIamPolicy:        []gax.CallOption{},
+		TestIamPermissions:  []gax.CallOption{},
+		CancelOperation:     []gax.CallOption{},
+		DeleteOperation:     []gax.CallOption{},
+		GetOperation:        []gax.CallOption{},
+		ListOperations:      []gax.CallOption{},
+		WaitOperation:       []gax.CallOption{},
 	}
 }
 
@@ -140,6 +143,8 @@ type internalEndpointClient interface {
 	DeployModelOperation(name string) *DeployModelOperation
 	UndeployModel(context.Context, *aiplatformpb.UndeployModelRequest, ...gax.CallOption) (*UndeployModelOperation, error)
 	UndeployModelOperation(name string) *UndeployModelOperation
+	MutateDeployedModel(context.Context, *aiplatformpb.MutateDeployedModelRequest, ...gax.CallOption) (*MutateDeployedModelOperation, error)
+	MutateDeployedModelOperation(name string) *MutateDeployedModelOperation
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
 	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
 	GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
@@ -250,6 +255,20 @@ func (c *EndpointClient) UndeployModel(ctx context.Context, req *aiplatformpb.Un
 // The name must be that of a previously created UndeployModelOperation, possibly from a different process.
 func (c *EndpointClient) UndeployModelOperation(name string) *UndeployModelOperation {
 	return c.internalClient.UndeployModelOperation(name)
+}
+
+// MutateDeployedModel updates an existing deployed model. Updatable fields include
+// min_replica_count, max_replica_count, autoscaling_metric_specs,
+// disable_container_logging (v1 only), and enable_container_logging
+// (v1beta1 only).
+func (c *EndpointClient) MutateDeployedModel(ctx context.Context, req *aiplatformpb.MutateDeployedModelRequest, opts ...gax.CallOption) (*MutateDeployedModelOperation, error) {
+	return c.internalClient.MutateDeployedModel(ctx, req, opts...)
+}
+
+// MutateDeployedModelOperation returns a new MutateDeployedModelOperation from a given name.
+// The name must be that of a previously created MutateDeployedModelOperation, possibly from a different process.
+func (c *EndpointClient) MutateDeployedModelOperation(name string) *MutateDeployedModelOperation {
+	return c.internalClient.MutateDeployedModelOperation(name)
 }
 
 // GetLocation gets information about a location.
@@ -683,6 +702,25 @@ func (c *endpointGRPCClient) UndeployModel(ctx context.Context, req *aiplatformp
 		return nil, err
 	}
 	return &UndeployModelOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *endpointGRPCClient) MutateDeployedModel(ctx context.Context, req *aiplatformpb.MutateDeployedModelRequest, opts ...gax.CallOption) (*MutateDeployedModelOperation, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "endpoint", url.QueryEscape(req.GetEndpoint())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).MutateDeployedModel[0:len((*c.CallOptions).MutateDeployedModel):len((*c.CallOptions).MutateDeployedModel)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.endpointClient.MutateDeployedModel(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &MutateDeployedModelOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
@@ -1376,6 +1414,72 @@ func (c *endpointRESTClient) UndeployModel(ctx context.Context, req *aiplatformp
 
 	override := fmt.Sprintf("/ui/%s", resp.GetName())
 	return &UndeployModelOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// MutateDeployedModel updates an existing deployed model. Updatable fields include
+// min_replica_count, max_replica_count, autoscaling_metric_specs,
+// disable_container_logging (v1 only), and enable_container_logging
+// (v1beta1 only).
+func (c *endpointRESTClient) MutateDeployedModel(ctx context.Context, req *aiplatformpb.MutateDeployedModelRequest, opts ...gax.CallOption) (*MutateDeployedModelOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:mutateDeployedModel", req.GetEndpoint())
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "endpoint", url.QueryEscape(req.GetEndpoint())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/ui/%s", resp.GetName())
+	return &MutateDeployedModelOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
@@ -2221,6 +2325,88 @@ func (op *DeployModelOperation) Done() bool {
 // Name returns the name of the long-running operation.
 // The name is assigned by the server and is unique within the service from which the operation is created.
 func (op *DeployModelOperation) Name() string {
+	return op.lro.Name()
+}
+
+// MutateDeployedModelOperation manages a long-running operation from MutateDeployedModel.
+type MutateDeployedModelOperation struct {
+	lro      *longrunning.Operation
+	pollPath string
+}
+
+// MutateDeployedModelOperation returns a new MutateDeployedModelOperation from a given name.
+// The name must be that of a previously created MutateDeployedModelOperation, possibly from a different process.
+func (c *endpointGRPCClient) MutateDeployedModelOperation(name string) *MutateDeployedModelOperation {
+	return &MutateDeployedModelOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// MutateDeployedModelOperation returns a new MutateDeployedModelOperation from a given name.
+// The name must be that of a previously created MutateDeployedModelOperation, possibly from a different process.
+func (c *endpointRESTClient) MutateDeployedModelOperation(name string) *MutateDeployedModelOperation {
+	override := fmt.Sprintf("/ui/%s", name)
+	return &MutateDeployedModelOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *MutateDeployedModelOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*aiplatformpb.MutateDeployedModelResponse, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp aiplatformpb.MutateDeployedModelResponse
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *MutateDeployedModelOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*aiplatformpb.MutateDeployedModelResponse, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp aiplatformpb.MutateDeployedModelResponse
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *MutateDeployedModelOperation) Metadata() (*aiplatformpb.MutateDeployedModelOperationMetadata, error) {
+	var meta aiplatformpb.MutateDeployedModelOperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *MutateDeployedModelOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *MutateDeployedModelOperation) Name() string {
 	return op.lro.Name()
 }
 

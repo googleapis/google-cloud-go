@@ -50,7 +50,7 @@ func mustTimestampProto(t time.Time) *tspb.Timestamp {
 
 var cmpOpts = []cmp.Option{
 	cmp.AllowUnexported(DocumentSnapshot{},
-		Query{}, filter{}, order{}, fpv{}, DocumentRef{}, CollectionRef{}, Query{}),
+		Query{}, OrFilter{}, AndFilter{}, PropertyPathFilter{}, PropertyFilter{}, order{}, fpv{}, DocumentRef{}, CollectionRef{}, Query{}),
 	cmpopts.IgnoreTypes(Client{}, &Client{}),
 	cmp.Comparer(func(*readSettings, *readSettings) bool {
 		return true // Don't try to compare two readSettings pointer types

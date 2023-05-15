@@ -143,7 +143,15 @@ func start(modeFlag, filename string) (*exec.Cmd, *http.Transport, string, error
 	if err != nil {
 		return nil, nil, "", err
 	}
-	cmd := exec.Command("./httpr", "-port", pport, "-control-port", cport, modeFlag, filename, "-debug-headers")
+	cmd := exec.Command("./httpr",
+		"-port", pport,
+		"-control-port", cport,
+		modeFlag,
+		filename,
+		"-debug-headers",
+		"-ignore-header", "X-Goog-Api-Client",
+		"-ignore-header", "X-Goog-Gcs-Idempotency-Token",
+	)
 	if err := cmd.Start(); err != nil {
 		return nil, nil, "", err
 	}
@@ -204,6 +212,9 @@ func proxyTransport(pport, cport string) (*http.Transport, error) {
 }
 
 func getBucketInfo(ctx context.Context, hc *http.Client) (string, error) {
+	ctx, cc := context.WithTimeout(ctx, 10*time.Second)
+	defer cc()
+
 	client, err := storage.NewClient(ctx, option.WithHTTPClient(hc))
 	if err != nil {
 		return "", err

@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/maps/addressvalidation/apiv1",
-    "version": "0.2.0",
+    "version": "1.0.1",
     "language": "GO",
     "apis": [
       {
@@ -14,7 +14,7 @@
     {
       "regionTag": "addressvalidation_v1_generated_AddressValidation_ProvideValidationFeedback_sync",
       "title": "addressvalidation ProvideValidationFeedback Sample",
-      "description": "ProvideValidationFeedback feedback about the outcome of the sequence of validation attempts. This\nshould be the last call made after a sequence of validation calls for the\nsame address, and should be called once the transaction is concluded. This\nshould only be sent once for the sequence of ValidateAddress requests\nneeded to validate an address fully.",
+      "description": "ProvideValidationFeedback feedback about the outcome of the sequence of validation attempts. This\nshould be the last call made after a sequence of validation calls for the\nsame address, and should be called once the transaction is concluded. This\nshould only be sent once for the sequence of `ValidateAddress` requests\nneeded to validate an address fully.",
       "file": "Client/ProvideValidationFeedback/main.go",
       "language": "GO",
       "clientMethod": {
@@ -34,7 +34,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "addressvalidationpb.ProvideValidationFeedbackResponse",
+        "resultType": "*addressvalidationpb.ProvideValidationFeedbackResponse",
         "client": {
           "shortName": "Client",
           "fullName": "google.maps.addressvalidation.v1.Client"
@@ -80,7 +80,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "addressvalidationpb.ValidateAddressResponse",
+        "resultType": "*addressvalidationpb.ValidateAddressResponse",
         "client": {
           "shortName": "Client",
           "fullName": "google.maps.addressvalidation.v1.Client"

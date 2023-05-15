@@ -1649,7 +1649,9 @@ func TestIntegration_CreateDBRetry(t *testing.T) {
 		return err
 	}
 
-	dbAdmin, err := database.NewDatabaseAdminClient(ctx, option.WithGRPCDialOption(grpc.WithUnaryInterceptor(interceptor)))
+	// Pass spanner host as options for running builds against different environments
+	opts := []option.ClientOption{option.WithEndpoint(spannerHost), option.WithGRPCDialOption(grpc.WithUnaryInterceptor(interceptor))}
+	dbAdmin, err := database.NewDatabaseAdminClient(ctx, opts...)
 	if err != nil {
 		log.Fatalf("cannot create dbAdmin client: %v", err)
 	}

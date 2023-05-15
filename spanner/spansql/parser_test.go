@@ -668,6 +668,26 @@ func TestParseDDL(t *testing.T) {
 		ALTER TABLE DefaultCol ALTER COLUMN Age SET DEFAULT (0);
 		ALTER TABLE DefaultCol ALTER COLUMN Age STRING(MAX) DEFAULT ("0");
 
+		CREATE ROLE TestRole;
+
+		GRANT SELECT ON TABLE employees TO ROLE hr_rep;
+		GRANT SELECT(name, address, phone) ON TABLE contractors TO ROLE hr_rep;
+		GRANT SELECT, UPDATE(location), DELETE ON TABLE employees TO ROLE hr_manager;
+		GRANT SELECT(name, level, location), UPDATE(location) ON TABLE employees, contractors TO ROLE hr_manager;
+		GRANT ROLE pii_access, pii_update TO ROLE hr_manager, hr_director;
+		GRANT EXECUTE ON TABLE FUNCTION tvf_name_one, tvf_name_two TO ROLE hr_manager, hr_director;
+		GRANT SELECT ON VIEW view_name_one, view_name_two TO ROLE hr_manager, hr_director;
+		GRANT SELECT ON CHANGE STREAM cs_name_one, cs_name_two TO ROLE hr_manager, hr_director;
+
+		REVOKE SELECT ON TABLE employees FROM ROLE hr_rep;
+		REVOKE SELECT(name, address, phone) ON TABLE contractors FROM ROLE hr_rep;
+		REVOKE SELECT, UPDATE(location), DELETE ON TABLE employees FROM ROLE hr_manager;
+		REVOKE SELECT(name, level, location), UPDATE(location) ON TABLE employees, contractors FROM ROLE hr_manager;
+		REVOKE ROLE pii_access, pii_update FROM ROLE hr_manager, hr_director;
+		REVOKE EXECUTE ON TABLE FUNCTION tvf_name_one, tvf_name_two FROM ROLE hr_manager, hr_director;
+		REVOKE SELECT ON VIEW view_name_one, view_name_two FROM ROLE hr_manager, hr_director;
+		REVOKE SELECT ON CHANGE STREAM cs_name_one, cs_name_two FROM ROLE hr_manager, hr_director;
+
 		ALTER INDEX MyFirstIndex ADD STORED COLUMN UpdatedAt;
 		ALTER INDEX MyFirstIndex DROP STORED COLUMN UpdatedAt;
 
@@ -957,15 +977,145 @@ func TestParseDDL(t *testing.T) {
 				},
 				Position: line(83),
 			},
+			&CreateRole{
+				Name:     "TestRole",
+				Position: line(85),
+			},
+			&GrantRole{
+				ToRoleNames: []ID{"hr_rep"},
+				Privileges: []Privilege{
+					{Type: PrivilegeTypeSelect},
+				},
+				TableNames: []ID{"employees"},
+
+				Position: line(87),
+			},
+			&GrantRole{
+				ToRoleNames: []ID{"hr_rep"},
+				Privileges: []Privilege{
+					{Type: PrivilegeTypeSelect, Columns: []ID{"name", "address", "phone"}},
+				},
+				TableNames: []ID{"contractors"},
+
+				Position: line(88),
+			},
+			&GrantRole{
+				ToRoleNames: []ID{"hr_manager"},
+				Privileges: []Privilege{
+					{Type: PrivilegeTypeSelect},
+					{Type: PrivilegeTypeUpdate, Columns: []ID{"location"}},
+					{Type: PrivilegeTypeDelete},
+				},
+				TableNames: []ID{"employees"},
+
+				Position: line(89),
+			},
+			&GrantRole{
+				ToRoleNames: []ID{"hr_manager"},
+				Privileges: []Privilege{
+					{Type: PrivilegeTypeSelect, Columns: []ID{"name", "level", "location"}},
+					{Type: PrivilegeTypeUpdate, Columns: []ID{"location"}},
+				},
+				TableNames: []ID{"employees", "contractors"},
+
+				Position: line(90),
+			},
+			&GrantRole{
+				ToRoleNames:    []ID{"hr_manager", "hr_director"},
+				GrantRoleNames: []ID{"pii_access", "pii_update"},
+
+				Position: line(91),
+			},
+			&GrantRole{
+				ToRoleNames: []ID{"hr_manager", "hr_director"},
+				TvfNames:    []ID{"tvf_name_one", "tvf_name_two"},
+
+				Position: line(92),
+			},
+			&GrantRole{
+				ToRoleNames: []ID{"hr_manager", "hr_director"},
+				ViewNames:   []ID{"view_name_one", "view_name_two"},
+
+				Position: line(93),
+			},
+			&GrantRole{
+				ToRoleNames:       []ID{"hr_manager", "hr_director"},
+				ChangeStreamNames: []ID{"cs_name_one", "cs_name_two"},
+
+				Position: line(94),
+			},
+			&RevokeRole{
+				FromRoleNames: []ID{"hr_rep"},
+				Privileges: []Privilege{
+					{Type: PrivilegeTypeSelect},
+				},
+				TableNames: []ID{"employees"},
+
+				Position: line(96),
+			},
+			&RevokeRole{
+				FromRoleNames: []ID{"hr_rep"},
+				Privileges: []Privilege{
+					{Type: PrivilegeTypeSelect, Columns: []ID{"name", "address", "phone"}},
+				},
+				TableNames: []ID{"contractors"},
+
+				Position: line(97),
+			},
+			&RevokeRole{
+				FromRoleNames: []ID{"hr_manager"},
+				Privileges: []Privilege{
+					{Type: PrivilegeTypeSelect},
+					{Type: PrivilegeTypeUpdate, Columns: []ID{"location"}},
+					{Type: PrivilegeTypeDelete},
+				},
+				TableNames: []ID{"employees"},
+
+				Position: line(98),
+			},
+			&RevokeRole{
+				FromRoleNames: []ID{"hr_manager"},
+				Privileges: []Privilege{
+					{Type: PrivilegeTypeSelect, Columns: []ID{"name", "level", "location"}},
+					{Type: PrivilegeTypeUpdate, Columns: []ID{"location"}},
+				},
+				TableNames: []ID{"employees", "contractors"},
+
+				Position: line(99),
+			},
+			&RevokeRole{
+				FromRoleNames:   []ID{"hr_manager", "hr_director"},
+				RevokeRoleNames: []ID{"pii_access", "pii_update"},
+
+				Position: line(100),
+			},
+			&RevokeRole{
+				FromRoleNames: []ID{"hr_manager", "hr_director"},
+				TvfNames:      []ID{"tvf_name_one", "tvf_name_two"},
+
+				Position: line(101),
+			},
+			&RevokeRole{
+				FromRoleNames: []ID{"hr_manager", "hr_director"},
+				ViewNames:     []ID{"view_name_one", "view_name_two"},
+
+				Position: line(102),
+			},
+			&RevokeRole{
+				FromRoleNames:     []ID{"hr_manager", "hr_director"},
+				ChangeStreamNames: []ID{"cs_name_one", "cs_name_two"},
+
+				Position: line(103),
+			},
 			&AlterIndex{
 				Name:       "MyFirstIndex",
 				Alteration: AddStoredColumn{Name: "UpdatedAt"},
-				Position:   line(85),
+				Position:   line(105),
 			},
 			&AlterIndex{
 				Name:       "MyFirstIndex",
 				Alteration: DropStoredColumn{Name: "UpdatedAt"},
-				Position:   line(86),
+				Position:   line(106),
 			},
 		}, Comments: []*Comment{
 			{
@@ -1002,7 +1152,7 @@ func TestParseDDL(t *testing.T) {
 			{Marker: "--", Isolated: true, Start: line(75), End: line(75), Text: []string{"Table has a column with a default value."}},
 
 			// Comment after everything else.
-			{Marker: "--", Isolated: true, Start: line(88), End: line(88), Text: []string{"Trailing comment at end of file."}},
+			{Marker: "--", Isolated: true, Start: line(108), End: line(108), Text: []string{"Trailing comment at end of file."}},
 		}}},
 		// No trailing comma:
 		{`ALTER TABLE T ADD COLUMN C2 INT64`, &DDL{Filename: "filename", List: []DDLStmt{
@@ -1159,6 +1309,175 @@ func TestParseDDL(t *testing.T) {
 								AllowGC: func(b bool) *bool { return &b }(false),
 							},
 						},
+						Position: line(1),
+					},
+				},
+			},
+		},
+		{
+			"DROP ROLE `TestRole`",
+			&DDL{
+				Filename: "filename", List: []DDLStmt{
+					&DropRole{
+						Name:     "TestRole",
+						Position: line(1),
+					},
+				},
+			},
+		},
+		{
+			"GRANT SELECT(`name`, `level`, `location`), UPDATE(`location`) ON TABLE `employees`, `contractors` TO ROLE `hr_manager`;",
+			&DDL{
+				Filename: "filename", List: []DDLStmt{
+					&GrantRole{
+						ToRoleNames: []ID{"hr_manager"},
+						Privileges: []Privilege{
+							{Type: PrivilegeTypeSelect, Columns: []ID{"name", "level", "location"}},
+							{Type: PrivilegeTypeUpdate, Columns: []ID{"location"}},
+						},
+						TableNames: []ID{"employees", "contractors"},
+						Position:   line(1),
+					},
+				},
+			},
+		},
+		{
+			"GRANT ROLE `pii_access`, `pii_update` TO ROLE `hr_manager`, `hr_director`;",
+			&DDL{
+				Filename: "filename", List: []DDLStmt{
+					&GrantRole{
+						ToRoleNames:    []ID{"hr_manager", "hr_director"},
+						GrantRoleNames: []ID{"pii_access", "pii_update"},
+
+						Position: line(1),
+					},
+				},
+			},
+		},
+		{
+			"REVOKE SELECT(`name`, `level`, `location`), UPDATE(`location`) ON TABLE `employees`, `contractors` FROM ROLE `hr_manager`;",
+			&DDL{
+				Filename: "filename", List: []DDLStmt{
+					&RevokeRole{
+						FromRoleNames: []ID{"hr_manager"},
+						Privileges: []Privilege{
+							{Type: PrivilegeTypeSelect, Columns: []ID{"name", "level", "location"}},
+							{Type: PrivilegeTypeUpdate, Columns: []ID{"location"}},
+						},
+						TableNames: []ID{"employees", "contractors"},
+
+						Position: line(1),
+					},
+				},
+			},
+		},
+		{
+			"REVOKE ROLE `pii_access`, `pii_update` FROM ROLE `hr_manager`, `hr_director`;",
+			&DDL{
+				Filename: "filename", List: []DDLStmt{
+					&RevokeRole{
+						FromRoleNames:   []ID{"hr_manager", "hr_director"},
+						RevokeRoleNames: []ID{"pii_access", "pii_update"},
+						Position:        line(1),
+					},
+				},
+			},
+		},
+		{
+			`CREATE CHANGE STREAM csname;
+			CREATE CHANGE STREAM csname FOR ALL;
+			CREATE CHANGE STREAM csname FOR tname, tname2(cname);
+			CREATE CHANGE STREAM csname FOR ALL OPTIONS (retention_period = '36h', value_capture_type = 'NEW_VALUES');`,
+			&DDL{
+				Filename: "filename",
+				List: []DDLStmt{
+					&CreateChangeStream{
+						Name:     "csname",
+						Position: line(1),
+					},
+					&CreateChangeStream{
+						Name:           "csname",
+						WatchAllTables: true,
+						Position:       line(2),
+					},
+					&CreateChangeStream{
+						Name: "csname",
+						Watch: []WatchDef{
+							{Table: "tname", WatchAllCols: true, Position: line(3)},
+							{Table: "tname2", Columns: []ID{ID("cname")}, Position: line(3)},
+						},
+						Position: line(3),
+					},
+					&CreateChangeStream{
+						Name:           "csname",
+						WatchAllTables: true,
+						Position:       line(4),
+						Options: ChangeStreamOptions{
+							RetentionPeriod:  func(b string) *string { return &b }("36h"),
+							ValueCaptureType: func(b string) *string { return &b }("NEW_VALUES"),
+						},
+					},
+				},
+			},
+		},
+		{
+			`ALTER CHANGE STREAM csname SET FOR ALL;
+			ALTER CHANGE STREAM csname SET FOR tname, tname2(cname);
+			ALTER CHANGE STREAM csname DROP FOR ALL;
+			ALTER CHANGE STREAM csname SET OPTIONS (retention_period = '36h', value_capture_type = 'NEW_VALUES');`,
+			&DDL{
+				Filename: "filename",
+				List: []DDLStmt{
+					&AlterChangeStream{
+						Name: "csname",
+						Alteration: AlterWatch{
+							WatchAllTables: true,
+						},
+						Position: line(1),
+					},
+					&AlterChangeStream{
+						Name: "csname",
+						Alteration: AlterWatch{
+							Watch: []WatchDef{
+								{
+									Table:        "tname",
+									WatchAllCols: true,
+									Position:     Position{Line: 2, Offset: 78},
+								},
+								{
+									Table:    "tname2",
+									Columns:  []ID{"cname"},
+									Position: Position{Line: 2, Offset: 85},
+								},
+							},
+						},
+						Position: line(2),
+					},
+					&AlterChangeStream{
+						Name:       "csname",
+						Alteration: DropChangeStreamWatch{},
+						Position:   line(3),
+					},
+					&AlterChangeStream{
+						Name: "csname",
+						Alteration: AlterChangeStreamOptions{
+							Options: ChangeStreamOptions{
+								RetentionPeriod:  func(b string) *string { return &b }("36h"),
+								ValueCaptureType: func(b string) *string { return &b }("NEW_VALUES"),
+							},
+						},
+						Position: line(4),
+					},
+				},
+			},
+		},
+		{
+			`DROP CHANGE STREAM csname`,
+			&DDL{
+				Filename: "filename",
+				List: []DDLStmt{
+					&DropChangeStream{
+						Name:     "csname",
 						Position: line(1),
 					},
 				},

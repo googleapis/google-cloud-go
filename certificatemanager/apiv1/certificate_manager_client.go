@@ -29,6 +29,7 @@ import (
 	certificatemanagerpb "cloud.google.com/go/certificatemanager/apiv1/certificatemanagerpb"
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
@@ -37,7 +38,6 @@ import (
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -800,17 +800,17 @@ type internalClient interface {
 //
 // The Certificates Manager service exposes the following resources:
 //
-//	Certificate which describes a single TLS certificate.
+//	Certificate that describes a single TLS certificate.
 //
-//	CertificateMap which describes a collection of certificates that can be
+//	CertificateMap that describes a collection of certificates that can be
 //	attached to a target resource.
 //
-//	CertificateMapEntry which describes a single configuration entry that
+//	CertificateMapEntry that describes a single configuration entry that
 //	consists of a SNI and a group of certificates. It’s a subresource of
 //	CertificateMap.
 //
 // Certificate, CertificateMap and CertificateMapEntry IDs
-// have to match “^[a-z0-9-]{1,63}$” regexp, which means that
+// have to fully match the regexp [a-z0-9-]{1,63}. In other words,
 //
 //	only lower case letters, digits, and hyphen are allowed
 //
@@ -1134,17 +1134,17 @@ type gRPCClient struct {
 //
 // The Certificates Manager service exposes the following resources:
 //
-//	Certificate which describes a single TLS certificate.
+//	Certificate that describes a single TLS certificate.
 //
-//	CertificateMap which describes a collection of certificates that can be
+//	CertificateMap that describes a collection of certificates that can be
 //	attached to a target resource.
 //
-//	CertificateMapEntry which describes a single configuration entry that
+//	CertificateMapEntry that describes a single configuration entry that
 //	consists of a SNI and a group of certificates. It’s a subresource of
 //	CertificateMap.
 //
 // Certificate, CertificateMap and CertificateMapEntry IDs
-// have to match “^[a-z0-9-]{1,63}$” regexp, which means that
+// have to fully match the regexp [a-z0-9-]{1,63}. In other words,
 //
 //	only lower case letters, digits, and hyphen are allowed
 //
@@ -1256,17 +1256,17 @@ type restClient struct {
 //
 // The Certificates Manager service exposes the following resources:
 //
-//	Certificate which describes a single TLS certificate.
+//	Certificate that describes a single TLS certificate.
 //
-//	CertificateMap which describes a collection of certificates that can be
+//	CertificateMap that describes a collection of certificates that can be
 //	attached to a target resource.
 //
-//	CertificateMapEntry which describes a single configuration entry that
+//	CertificateMapEntry that describes a single configuration entry that
 //	consists of a SNI and a group of certificates. It’s a subresource of
 //	CertificateMap.
 //
 // Certificate, CertificateMap and CertificateMapEntry IDs
-// have to match “^[a-z0-9-]{1,63}$” regexp, which means that
+// have to fully match the regexp [a-z0-9-]{1,63}. In other words,
 //
 //	only lower case letters, digits, and hyphen are allowed
 //

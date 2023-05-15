@@ -25,6 +25,7 @@ import (
 	"net/http"
 	"net/url"
 	"sort"
+	"time"
 
 	computepb "cloud.google.com/go/compute/apiv1/computepb"
 	gax "github.com/googleapis/gax-go/v2"
@@ -58,11 +59,41 @@ type TargetHttpsProxiesCallOptions struct {
 
 func defaultTargetHttpsProxiesRESTCallOptions() *TargetHttpsProxiesCallOptions {
 	return &TargetHttpsProxiesCallOptions{
-		AggregatedList:     []gax.CallOption{},
-		Delete:             []gax.CallOption{},
-		Get:                []gax.CallOption{},
-		Insert:             []gax.CallOption{},
-		List:               []gax.CallOption{},
+		AggregatedList: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
+		Delete: []gax.CallOption{},
+		Get: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
+		Insert: []gax.CallOption{},
+		List: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
 		Patch:              []gax.CallOption{},
 		SetCertificateMap:  []gax.CallOption{},
 		SetQuicOverride:    []gax.CallOption{},
@@ -135,7 +166,7 @@ func (c *TargetHttpsProxiesClient) Delete(ctx context.Context, req *computepb.De
 	return c.internalClient.Delete(ctx, req, opts...)
 }
 
-// Get returns the specified TargetHttpsProxy resource. Gets a list of available target HTTPS proxies by making a list() request.
+// Get returns the specified TargetHttpsProxy resource.
 func (c *TargetHttpsProxiesClient) Get(ctx context.Context, req *computepb.GetTargetHttpsProxyRequest, opts ...gax.CallOption) (*computepb.TargetHttpsProxy, error) {
 	return c.internalClient.Get(ctx, req, opts...)
 }
@@ -438,7 +469,7 @@ func (c *targetHttpsProxiesRESTClient) Delete(ctx context.Context, req *computep
 	return op, nil
 }
 
-// Get returns the specified TargetHttpsProxy resource. Gets a list of available target HTTPS proxies by making a list() request.
+// Get returns the specified TargetHttpsProxy resource.
 func (c *targetHttpsProxiesRESTClient) Get(ctx context.Context, req *computepb.GetTargetHttpsProxyRequest, opts ...gax.CallOption) (*computepb.TargetHttpsProxy, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {

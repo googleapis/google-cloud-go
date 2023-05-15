@@ -25,6 +25,7 @@ import (
 	"net/http"
 	"net/url"
 	"sort"
+	"time"
 
 	computepb "cloud.google.com/go/compute/apiv1/computepb"
 	gax "github.com/googleapis/gax-go/v2"
@@ -58,14 +59,44 @@ type TargetPoolsCallOptions struct {
 
 func defaultTargetPoolsRESTCallOptions() *TargetPoolsCallOptions {
 	return &TargetPoolsCallOptions{
-		AddHealthCheck:    []gax.CallOption{},
-		AddInstance:       []gax.CallOption{},
-		AggregatedList:    []gax.CallOption{},
-		Delete:            []gax.CallOption{},
-		Get:               []gax.CallOption{},
-		GetHealth:         []gax.CallOption{},
-		Insert:            []gax.CallOption{},
-		List:              []gax.CallOption{},
+		AddHealthCheck: []gax.CallOption{},
+		AddInstance:    []gax.CallOption{},
+		AggregatedList: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
+		Delete: []gax.CallOption{},
+		Get: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
+		GetHealth: []gax.CallOption{},
+		Insert:    []gax.CallOption{},
+		List: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
 		RemoveHealthCheck: []gax.CallOption{},
 		RemoveInstance:    []gax.CallOption{},
 		SetBackup:         []gax.CallOption{},
@@ -145,7 +176,7 @@ func (c *TargetPoolsClient) Delete(ctx context.Context, req *computepb.DeleteTar
 	return c.internalClient.Delete(ctx, req, opts...)
 }
 
-// Get returns the specified target pool. Gets a list of available target pools by making a list() request.
+// Get returns the specified target pool.
 func (c *TargetPoolsClient) Get(ctx context.Context, req *computepb.GetTargetPoolRequest, opts ...gax.CallOption) (*computepb.TargetPool, error) {
 	return c.internalClient.Get(ctx, req, opts...)
 }
@@ -589,7 +620,7 @@ func (c *targetPoolsRESTClient) Delete(ctx context.Context, req *computepb.Delet
 	return op, nil
 }
 
-// Get returns the specified target pool. Gets a list of available target pools by making a list() request.
+// Get returns the specified target pool.
 func (c *targetPoolsRESTClient) Get(ctx context.Context, req *computepb.GetTargetPoolRequest, opts ...gax.CallOption) (*computepb.TargetPool, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {

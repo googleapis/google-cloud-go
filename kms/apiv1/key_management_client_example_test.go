@@ -19,11 +19,11 @@ package kms_test
 import (
 	"context"
 
+	iampb "cloud.google.com/go/iam/apiv1/iampb"
 	kms "cloud.google.com/go/kms/apiv1"
 	kmspb "cloud.google.com/go/kms/apiv1/kmspb"
 	"google.golang.org/api/iterator"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
-	iampb "google.golang.org/genproto/googleapis/iam/v1"
 )
 
 func ExampleNewKeyManagementClient() {
@@ -805,7 +805,7 @@ func ExampleKeyManagementClient_GetIamPolicy() {
 
 	req := &iampb.GetIamPolicyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/iam/v1#GetIamPolicyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/iam/apiv1/iampb#GetIamPolicyRequest.
 	}
 	resp, err := c.GetIamPolicy(ctx, req)
 	if err != nil {
@@ -830,7 +830,7 @@ func ExampleKeyManagementClient_SetIamPolicy() {
 
 	req := &iampb.SetIamPolicyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/iam/v1#SetIamPolicyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/iam/apiv1/iampb#SetIamPolicyRequest.
 	}
 	resp, err := c.SetIamPolicy(ctx, req)
 	if err != nil {
@@ -855,7 +855,7 @@ func ExampleKeyManagementClient_TestIamPermissions() {
 
 	req := &iampb.TestIamPermissionsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/iam/v1#TestIamPermissionsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/iam/apiv1/iampb#TestIamPermissionsRequest.
 	}
 	resp, err := c.TestIamPermissions(ctx, req)
 	if err != nil {

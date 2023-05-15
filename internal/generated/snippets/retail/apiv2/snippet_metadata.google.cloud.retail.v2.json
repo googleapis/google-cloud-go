@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/retail/apiv2",
-    "version": "1.12.0",
+    "version": "1.13.1",
     "language": "GO",
     "apis": [
       {
@@ -14,7 +14,7 @@
     {
       "regionTag": "retail_v2_generated_CatalogService_AddCatalogAttribute_sync",
       "title": "retail AddCatalogAttribute Sample",
-      "description": "AddCatalogAttribute adds the specified\nCatalogAttribute to the\nAttributesConfig.\n\nIf the CatalogAttribute to add\nalready exists, an ALREADY_EXISTS error is returned.",
+      "description": "AddCatalogAttribute adds the specified\n[CatalogAttribute][google.cloud.retail.v2.CatalogAttribute] to the\n[AttributesConfig][google.cloud.retail.v2.AttributesConfig].\n\nIf the [CatalogAttribute][google.cloud.retail.v2.CatalogAttribute] to add\nalready exists, an ALREADY_EXISTS error is returned.",
       "file": "CatalogClient/AddCatalogAttribute/main.go",
       "language": "GO",
       "clientMethod": {
@@ -34,7 +34,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "retailpb.AttributesConfig",
+        "resultType": "*retailpb.AttributesConfig",
         "client": {
           "shortName": "CatalogClient",
           "fullName": "google.cloud.retail.v2.CatalogClient"
@@ -60,7 +60,7 @@
     {
       "regionTag": "retail_v2_generated_CatalogService_GetAttributesConfig_sync",
       "title": "retail GetAttributesConfig Sample",
-      "description": "GetAttributesConfig gets an AttributesConfig.",
+      "description": "GetAttributesConfig gets an [AttributesConfig][google.cloud.retail.v2.AttributesConfig].",
       "file": "CatalogClient/GetAttributesConfig/main.go",
       "language": "GO",
       "clientMethod": {
@@ -80,7 +80,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "retailpb.AttributesConfig",
+        "resultType": "*retailpb.AttributesConfig",
         "client": {
           "shortName": "CatalogClient",
           "fullName": "google.cloud.retail.v2.CatalogClient"
@@ -106,7 +106,7 @@
     {
       "regionTag": "retail_v2_generated_CatalogService_GetCompletionConfig_sync",
       "title": "retail GetCompletionConfig Sample",
-      "description": "GetCompletionConfig gets a CompletionConfig.",
+      "description": "GetCompletionConfig gets a [CompletionConfig][google.cloud.retail.v2.CompletionConfig].",
       "file": "CatalogClient/GetCompletionConfig/main.go",
       "language": "GO",
       "clientMethod": {
@@ -126,7 +126,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "retailpb.CompletionConfig",
+        "resultType": "*retailpb.CompletionConfig",
         "client": {
           "shortName": "CatalogClient",
           "fullName": "google.cloud.retail.v2.CatalogClient"
@@ -152,7 +152,7 @@
     {
       "regionTag": "retail_v2_generated_CatalogService_GetDefaultBranch_sync",
       "title": "retail GetDefaultBranch Sample",
-      "description": "GetDefaultBranch get which branch is currently default branch set by\nCatalogService.SetDefaultBranch\nmethod under a specified parent catalog.",
+      "description": "GetDefaultBranch get which branch is currently default branch set by\n[CatalogService.SetDefaultBranch][google.cloud.retail.v2.CatalogService.SetDefaultBranch]\nmethod under a specified parent catalog.",
       "file": "CatalogClient/GetDefaultBranch/main.go",
       "language": "GO",
       "clientMethod": {
@@ -172,7 +172,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "retailpb.GetDefaultBranchResponse",
+        "resultType": "*retailpb.GetDefaultBranchResponse",
         "client": {
           "shortName": "CatalogClient",
           "fullName": "google.cloud.retail.v2.CatalogClient"
@@ -218,17 +218,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "longrunningpb.Operation",
+        "resultType": "*longrunningpb.Operation",
         "client": {
           "shortName": "CatalogClient",
           "fullName": "google.cloud.retail.v2.CatalogClient"
         },
         "method": {
           "shortName": "GetOperation",
-          "fullName": "google.cloud.retail.v2.CatalogService.GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
           "service": {
-            "shortName": "CatalogService",
-            "fullName": "google.cloud.retail.v2.CatalogService"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -236,7 +236,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -244,7 +244,7 @@
     {
       "regionTag": "retail_v2_generated_CatalogService_ListCatalogs_sync",
       "title": "retail ListCatalogs Sample",
-      "description": "ListCatalogs lists all the Catalogs associated with\nthe project.",
+      "description": "ListCatalogs lists all the [Catalog][google.cloud.retail.v2.Catalog]s associated with\nthe project.",
       "file": "CatalogClient/ListCatalogs/main.go",
       "language": "GO",
       "clientMethod": {
@@ -317,10 +317,10 @@
         },
         "method": {
           "shortName": "ListOperations",
-          "fullName": "google.cloud.retail.v2.CatalogService.ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
           "service": {
-            "shortName": "CatalogService",
-            "fullName": "google.cloud.retail.v2.CatalogService"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -328,7 +328,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 61,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -336,7 +336,7 @@
     {
       "regionTag": "retail_v2_generated_CatalogService_RemoveCatalogAttribute_sync",
       "title": "retail RemoveCatalogAttribute Sample",
-      "description": "RemoveCatalogAttribute removes the specified\nCatalogAttribute from the\nAttributesConfig.\n\nIf the CatalogAttribute to\nremove does not exist, a NOT_FOUND error is returned.",
+      "description": "RemoveCatalogAttribute removes the specified\n[CatalogAttribute][google.cloud.retail.v2.CatalogAttribute] from the\n[AttributesConfig][google.cloud.retail.v2.AttributesConfig].\n\nIf the [CatalogAttribute][google.cloud.retail.v2.CatalogAttribute] to\nremove does not exist, a NOT_FOUND error is returned.",
       "file": "CatalogClient/RemoveCatalogAttribute/main.go",
       "language": "GO",
       "clientMethod": {
@@ -356,7 +356,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "retailpb.AttributesConfig",
+        "resultType": "*retailpb.AttributesConfig",
         "client": {
           "shortName": "CatalogClient",
           "fullName": "google.cloud.retail.v2.CatalogClient"
@@ -382,7 +382,7 @@
     {
       "regionTag": "retail_v2_generated_CatalogService_ReplaceCatalogAttribute_sync",
       "title": "retail ReplaceCatalogAttribute Sample",
-      "description": "ReplaceCatalogAttribute replaces the specified\nCatalogAttribute in the\nAttributesConfig by updating the\ncatalog attribute with the same\nCatalogAttribute.key.\n\nIf the CatalogAttribute to\nreplace does not exist, a NOT_FOUND error is returned.",
+      "description": "ReplaceCatalogAttribute replaces the specified\n[CatalogAttribute][google.cloud.retail.v2.CatalogAttribute] in the\n[AttributesConfig][google.cloud.retail.v2.AttributesConfig] by updating the\ncatalog attribute with the same\n[CatalogAttribute.key][google.cloud.retail.v2.CatalogAttribute.key].\n\nIf the [CatalogAttribute][google.cloud.retail.v2.CatalogAttribute] to\nreplace does not exist, a NOT_FOUND error is returned.",
       "file": "CatalogClient/ReplaceCatalogAttribute/main.go",
       "language": "GO",
       "clientMethod": {
@@ -402,7 +402,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "retailpb.AttributesConfig",
+        "resultType": "*retailpb.AttributesConfig",
         "client": {
           "shortName": "CatalogClient",
           "fullName": "google.cloud.retail.v2.CatalogClient"
@@ -428,7 +428,7 @@
     {
       "regionTag": "retail_v2_generated_CatalogService_SetDefaultBranch_sync",
       "title": "retail SetDefaultBranch Sample",
-      "description": "SetDefaultBranch set a specified branch id as default branch. API methods such as\nSearchService.Search,\nProductService.GetProduct,\nProductService.ListProducts\nwill treat requests using “default_branch” to the actual branch id set as\ndefault.\n\nFor example, if projects/*/locations/*/catalogs/*/branches/1 is set as\ndefault, setting\nSearchRequest.branch to\nprojects/*/locations/*/catalogs/*/branches/default_branch is equivalent\nto setting\nSearchRequest.branch to\nprojects/*/locations/*/catalogs/*/branches/1.\n\nUsing multiple branches can be useful when developers would like\nto have a staging branch to test and verify for future usage. When it\nbecomes ready, developers switch on the staging branch using this API while\nkeeping using projects/*/locations/*/catalogs/*/branches/default_branch\nas SearchRequest.branch to\nroute the traffic to this staging branch.\n\nCAUTION: If you have live predict/search traffic, switching the default\nbranch could potentially cause outages if the ID space of the new branch is\nvery different from the old one.\n\nMore specifically: \n\n\tPredictionService will only return product IDs from branch {newBranch}.\n\n\tSearchService will only return product IDs from branch {newBranch}\n\t(if branch is not explicitly set).\n\n\tUserEventService will only join events with products from branch\n\t{newBranch}.",
+      "description": "SetDefaultBranch set a specified branch id as default branch. API methods such as\n[SearchService.Search][google.cloud.retail.v2.SearchService.Search],\n[ProductService.GetProduct][google.cloud.retail.v2.ProductService.GetProduct],\n[ProductService.ListProducts][google.cloud.retail.v2.ProductService.ListProducts]\nwill treat requests using \"default_branch\" to the actual branch id set as\ndefault.\n\nFor example, if `projects/*/locations/*/catalogs/*/branches/1` is set as\ndefault, setting\n[SearchRequest.branch][google.cloud.retail.v2.SearchRequest.branch] to\n`projects/*/locations/*/catalogs/*/branches/default_branch` is equivalent\nto setting\n[SearchRequest.branch][google.cloud.retail.v2.SearchRequest.branch] to\n`projects/*/locations/*/catalogs/*/branches/1`.\n\nUsing multiple branches can be useful when developers would like\nto have a staging branch to test and verify for future usage. When it\nbecomes ready, developers switch on the staging branch using this API while\nkeeping using `projects/*/locations/*/catalogs/*/branches/default_branch`\nas [SearchRequest.branch][google.cloud.retail.v2.SearchRequest.branch] to\nroute the traffic to this staging branch.\n\nCAUTION: If you have live predict/search traffic, switching the default\nbranch could potentially cause outages if the ID space of the new branch is\nvery different from the old one.\n\nMore specifically: \n\n* PredictionService will only return product IDs from branch {newBranch}.\n* SearchService will only return product IDs from branch {newBranch}\n(if branch is not explicitly set).\n* UserEventService will only join events with products from branch\n{newBranch}.",
       "file": "CatalogClient/SetDefaultBranch/main.go",
       "language": "GO",
       "clientMethod": {
@@ -473,7 +473,7 @@
     {
       "regionTag": "retail_v2_generated_CatalogService_UpdateAttributesConfig_sync",
       "title": "retail UpdateAttributesConfig Sample",
-      "description": "UpdateAttributesConfig updates the AttributesConfig.\n\nThe catalog attributes in the request will be updated in the catalog, or\ninserted if they do not exist. Existing catalog attributes not included in\nthe request will remain unchanged. Attributes that are assigned to\nproducts, but do not exist at the catalog level, are always included in the\nresponse. The product attribute is assigned default values for missing\ncatalog attribute fields, e.g., searchable and dynamic facetable options.",
+      "description": "UpdateAttributesConfig updates the [AttributesConfig][google.cloud.retail.v2.AttributesConfig].\n\nThe catalog attributes in the request will be updated in the catalog, or\ninserted if they do not exist. Existing catalog attributes not included in\nthe request will remain unchanged. Attributes that are assigned to\nproducts, but do not exist at the catalog level, are always included in the\nresponse. The product attribute is assigned default values for missing\ncatalog attribute fields, e.g., searchable and dynamic facetable options.",
       "file": "CatalogClient/UpdateAttributesConfig/main.go",
       "language": "GO",
       "clientMethod": {
@@ -493,7 +493,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "retailpb.AttributesConfig",
+        "resultType": "*retailpb.AttributesConfig",
         "client": {
           "shortName": "CatalogClient",
           "fullName": "google.cloud.retail.v2.CatalogClient"
@@ -519,7 +519,7 @@
     {
       "regionTag": "retail_v2_generated_CatalogService_UpdateCatalog_sync",
       "title": "retail UpdateCatalog Sample",
-      "description": "UpdateCatalog updates the Catalogs.",
+      "description": "UpdateCatalog updates the [Catalog][google.cloud.retail.v2.Catalog]s.",
       "file": "CatalogClient/UpdateCatalog/main.go",
       "language": "GO",
       "clientMethod": {
@@ -539,7 +539,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "retailpb.Catalog",
+        "resultType": "*retailpb.Catalog",
         "client": {
           "shortName": "CatalogClient",
           "fullName": "google.cloud.retail.v2.CatalogClient"
@@ -565,7 +565,7 @@
     {
       "regionTag": "retail_v2_generated_CatalogService_UpdateCompletionConfig_sync",
       "title": "retail UpdateCompletionConfig Sample",
-      "description": "UpdateCompletionConfig updates the CompletionConfigs.",
+      "description": "UpdateCompletionConfig updates the [CompletionConfig][google.cloud.retail.v2.CompletionConfig]s.",
       "file": "CatalogClient/UpdateCompletionConfig/main.go",
       "language": "GO",
       "clientMethod": {
@@ -585,7 +585,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "retailpb.CompletionConfig",
+        "resultType": "*retailpb.CompletionConfig",
         "client": {
           "shortName": "CatalogClient",
           "fullName": "google.cloud.retail.v2.CatalogClient"
@@ -631,7 +631,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "retailpb.CompleteQueryResponse",
+        "resultType": "*retailpb.CompleteQueryResponse",
         "client": {
           "shortName": "CompletionClient",
           "fullName": "google.cloud.retail.v2.CompletionClient"
@@ -677,17 +677,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "longrunningpb.Operation",
+        "resultType": "*longrunningpb.Operation",
         "client": {
           "shortName": "CompletionClient",
           "fullName": "google.cloud.retail.v2.CompletionClient"
         },
         "method": {
           "shortName": "GetOperation",
-          "fullName": "google.cloud.retail.v2.CompletionService.GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
           "service": {
-            "shortName": "CompletionService",
-            "fullName": "google.cloud.retail.v2.CompletionService"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -695,7 +695,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -776,10 +776,10 @@
         },
         "method": {
           "shortName": "ListOperations",
-          "fullName": "google.cloud.retail.v2.CompletionService.ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
           "service": {
-            "shortName": "CompletionService",
-            "fullName": "google.cloud.retail.v2.CompletionService"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -787,7 +787,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 61,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -795,7 +795,7 @@
     {
       "regionTag": "retail_v2_generated_ControlService_CreateControl_sync",
       "title": "retail CreateControl Sample",
-      "description": "CreateControl creates a Control.\n\nIf the Control to create already exists,\nan ALREADY_EXISTS error is returned.",
+      "description": "CreateControl creates a Control.\n\nIf the [Control][google.cloud.retail.v2.Control] to create already exists,\nan ALREADY_EXISTS error is returned.",
       "file": "ControlClient/CreateControl/main.go",
       "language": "GO",
       "clientMethod": {
@@ -815,7 +815,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "retailpb.Control",
+        "resultType": "*retailpb.Control",
         "client": {
           "shortName": "ControlClient",
           "fullName": "google.cloud.retail.v2.ControlClient"
@@ -841,7 +841,7 @@
     {
       "regionTag": "retail_v2_generated_ControlService_DeleteControl_sync",
       "title": "retail DeleteControl Sample",
-      "description": "DeleteControl deletes a Control.\n\nIf the Control to delete does not exist,\na NOT_FOUND error is returned.",
+      "description": "DeleteControl deletes a Control.\n\nIf the [Control][google.cloud.retail.v2.Control] to delete does not exist,\na NOT_FOUND error is returned.",
       "file": "ControlClient/DeleteControl/main.go",
       "language": "GO",
       "clientMethod": {
@@ -906,7 +906,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "retailpb.Control",
+        "resultType": "*retailpb.Control",
         "client": {
           "shortName": "ControlClient",
           "fullName": "google.cloud.retail.v2.ControlClient"
@@ -952,17 +952,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "longrunningpb.Operation",
+        "resultType": "*longrunningpb.Operation",
         "client": {
           "shortName": "ControlClient",
           "fullName": "google.cloud.retail.v2.ControlClient"
         },
         "method": {
           "shortName": "GetOperation",
-          "fullName": "google.cloud.retail.v2.ControlService.GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
           "service": {
-            "shortName": "ControlService",
-            "fullName": "google.cloud.retail.v2.ControlService"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -970,7 +970,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -978,7 +978,7 @@
     {
       "regionTag": "retail_v2_generated_ControlService_ListControls_sync",
       "title": "retail ListControls Sample",
-      "description": "ListControls lists all Controls by their parent\nCatalog.",
+      "description": "ListControls lists all Controls by their parent\n[Catalog][google.cloud.retail.v2.Catalog].",
       "file": "ControlClient/ListControls/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1051,10 +1051,10 @@
         },
         "method": {
           "shortName": "ListOperations",
-          "fullName": "google.cloud.retail.v2.ControlService.ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
           "service": {
-            "shortName": "ControlService",
-            "fullName": "google.cloud.retail.v2.ControlService"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -1062,7 +1062,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 61,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -1070,7 +1070,7 @@
     {
       "regionTag": "retail_v2_generated_ControlService_UpdateControl_sync",
       "title": "retail UpdateControl Sample",
-      "description": "UpdateControl updates a Control.\n\nControl cannot be set to a different\noneof field, if so an INVALID_ARGUMENT is returned. If the\nControl to update does not exist, a\nNOT_FOUND error is returned.",
+      "description": "UpdateControl updates a Control.\n\n[Control][google.cloud.retail.v2.Control] cannot be set to a different\noneof field, if so an INVALID_ARGUMENT is returned. If the\n[Control][google.cloud.retail.v2.Control] to update does not exist, a\nNOT_FOUND error is returned.",
       "file": "ControlClient/UpdateControl/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1090,7 +1090,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "retailpb.Control",
+        "resultType": "*retailpb.Control",
         "client": {
           "shortName": "ControlClient",
           "fullName": "google.cloud.retail.v2.ControlClient"
@@ -1101,6 +1101,465 @@
           "service": {
             "shortName": "ControlService",
             "fullName": "google.cloud.retail.v2.ControlService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "retail_v2_generated_ModelService_CreateModel_sync",
+      "title": "retail CreateModel Sample",
+      "description": "CreateModel creates a new model.",
+      "file": "ModelClient/CreateModel/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateModel",
+        "fullName": "google.cloud.retail.v2.ModelClient.CreateModel",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "retailpb.CreateModelRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateModelOperation",
+        "client": {
+          "shortName": "ModelClient",
+          "fullName": "google.cloud.retail.v2.ModelClient"
+        },
+        "method": {
+          "shortName": "CreateModel",
+          "fullName": "google.cloud.retail.v2.ModelService.CreateModel",
+          "service": {
+            "shortName": "ModelService",
+            "fullName": "google.cloud.retail.v2.ModelService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "retail_v2_generated_ModelService_DeleteModel_sync",
+      "title": "retail DeleteModel Sample",
+      "description": "DeleteModel deletes an existing model.",
+      "file": "ModelClient/DeleteModel/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteModel",
+        "fullName": "google.cloud.retail.v2.ModelClient.DeleteModel",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "retailpb.DeleteModelRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "ModelClient",
+          "fullName": "google.cloud.retail.v2.ModelClient"
+        },
+        "method": {
+          "shortName": "DeleteModel",
+          "fullName": "google.cloud.retail.v2.ModelService.DeleteModel",
+          "service": {
+            "shortName": "ModelService",
+            "fullName": "google.cloud.retail.v2.ModelService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "retail_v2_generated_ModelService_GetModel_sync",
+      "title": "retail GetModel Sample",
+      "description": "GetModel gets a model.",
+      "file": "ModelClient/GetModel/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetModel",
+        "fullName": "google.cloud.retail.v2.ModelClient.GetModel",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "retailpb.GetModelRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*retailpb.Model",
+        "client": {
+          "shortName": "ModelClient",
+          "fullName": "google.cloud.retail.v2.ModelClient"
+        },
+        "method": {
+          "shortName": "GetModel",
+          "fullName": "google.cloud.retail.v2.ModelService.GetModel",
+          "service": {
+            "shortName": "ModelService",
+            "fullName": "google.cloud.retail.v2.ModelService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "retail_v2_generated_ModelService_GetOperation_sync",
+      "title": "retail GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "ModelClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.retail.v2.ModelClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "ModelClient",
+          "fullName": "google.cloud.retail.v2.ModelClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "retail_v2_generated_ModelService_ListModels_sync",
+      "title": "retail ListModels Sample",
+      "description": "ListModels lists all the models linked to this event store.",
+      "file": "ModelClient/ListModels/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListModels",
+        "fullName": "google.cloud.retail.v2.ModelClient.ListModels",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "retailpb.ListModelsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ModelIterator",
+        "client": {
+          "shortName": "ModelClient",
+          "fullName": "google.cloud.retail.v2.ModelClient"
+        },
+        "method": {
+          "shortName": "ListModels",
+          "fullName": "google.cloud.retail.v2.ModelService.ListModels",
+          "service": {
+            "shortName": "ModelService",
+            "fullName": "google.cloud.retail.v2.ModelService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 60,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "retail_v2_generated_ModelService_ListOperations_sync",
+      "title": "retail ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "ModelClient/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.cloud.retail.v2.ModelClient.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "ModelClient",
+          "fullName": "google.cloud.retail.v2.ModelClient"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 60,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "retail_v2_generated_ModelService_PauseModel_sync",
+      "title": "retail PauseModel Sample",
+      "description": "PauseModel pauses the training of an existing model.",
+      "file": "ModelClient/PauseModel/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "PauseModel",
+        "fullName": "google.cloud.retail.v2.ModelClient.PauseModel",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "retailpb.PauseModelRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*retailpb.Model",
+        "client": {
+          "shortName": "ModelClient",
+          "fullName": "google.cloud.retail.v2.ModelClient"
+        },
+        "method": {
+          "shortName": "PauseModel",
+          "fullName": "google.cloud.retail.v2.ModelService.PauseModel",
+          "service": {
+            "shortName": "ModelService",
+            "fullName": "google.cloud.retail.v2.ModelService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "retail_v2_generated_ModelService_ResumeModel_sync",
+      "title": "retail ResumeModel Sample",
+      "description": "ResumeModel resumes the training of an existing model.",
+      "file": "ModelClient/ResumeModel/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ResumeModel",
+        "fullName": "google.cloud.retail.v2.ModelClient.ResumeModel",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "retailpb.ResumeModelRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*retailpb.Model",
+        "client": {
+          "shortName": "ModelClient",
+          "fullName": "google.cloud.retail.v2.ModelClient"
+        },
+        "method": {
+          "shortName": "ResumeModel",
+          "fullName": "google.cloud.retail.v2.ModelService.ResumeModel",
+          "service": {
+            "shortName": "ModelService",
+            "fullName": "google.cloud.retail.v2.ModelService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "retail_v2_generated_ModelService_TuneModel_sync",
+      "title": "retail TuneModel Sample",
+      "description": "TuneModel tunes an existing model.",
+      "file": "ModelClient/TuneModel/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "TuneModel",
+        "fullName": "google.cloud.retail.v2.ModelClient.TuneModel",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "retailpb.TuneModelRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "TuneModelOperation",
+        "client": {
+          "shortName": "ModelClient",
+          "fullName": "google.cloud.retail.v2.ModelClient"
+        },
+        "method": {
+          "shortName": "TuneModel",
+          "fullName": "google.cloud.retail.v2.ModelService.TuneModel",
+          "service": {
+            "shortName": "ModelService",
+            "fullName": "google.cloud.retail.v2.ModelService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "retail_v2_generated_ModelService_UpdateModel_sync",
+      "title": "retail UpdateModel Sample",
+      "description": "UpdateModel update of model metadata. Only fields that\ncurrently can be updated are: `filtering_option` and\n`periodic_tuning_state`.\nIf other values are provided, this API method ignores them.",
+      "file": "ModelClient/UpdateModel/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateModel",
+        "fullName": "google.cloud.retail.v2.ModelClient.UpdateModel",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "retailpb.UpdateModelRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*retailpb.Model",
+        "client": {
+          "shortName": "ModelClient",
+          "fullName": "google.cloud.retail.v2.ModelClient"
+        },
+        "method": {
+          "shortName": "UpdateModel",
+          "fullName": "google.cloud.retail.v2.ModelService.UpdateModel",
+          "service": {
+            "shortName": "ModelService",
+            "fullName": "google.cloud.retail.v2.ModelService"
           }
         }
       },
@@ -1136,17 +1595,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "longrunningpb.Operation",
+        "resultType": "*longrunningpb.Operation",
         "client": {
           "shortName": "PredictionClient",
           "fullName": "google.cloud.retail.v2.PredictionClient"
         },
         "method": {
           "shortName": "GetOperation",
-          "fullName": "google.cloud.retail.v2.PredictionService.GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
           "service": {
-            "shortName": "PredictionService",
-            "fullName": "google.cloud.retail.v2.PredictionService"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -1154,7 +1613,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -1189,10 +1648,10 @@
         },
         "method": {
           "shortName": "ListOperations",
-          "fullName": "google.cloud.retail.v2.PredictionService.ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
           "service": {
-            "shortName": "PredictionService",
-            "fullName": "google.cloud.retail.v2.PredictionService"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -1200,7 +1659,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 61,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -1228,7 +1687,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "retailpb.PredictResponse",
+        "resultType": "*retailpb.PredictResponse",
         "client": {
           "shortName": "PredictionClient",
           "fullName": "google.cloud.retail.v2.PredictionClient"
@@ -1254,7 +1713,7 @@
     {
       "regionTag": "retail_v2_generated_ProductService_AddFulfillmentPlaces_sync",
       "title": "retail AddFulfillmentPlaces Sample",
-      "description": "AddFulfillmentPlaces incrementally adds place IDs to\nProduct.fulfillment_info.place_ids.\n\nThis process is asynchronous and does not require the\nProduct to exist before updating\nfulfillment information. If the request is valid, the update will be\nenqueued and processed downstream. As a consequence, when a response is\nreturned, the added place IDs are not immediately manifested in the\nProduct queried by\nProductService.GetProduct\nor\nProductService.ListProducts.\n\nThe returned Operations will be obsolete\nafter 1 day, and GetOperation\nAPI will return NOT_FOUND afterwards.\n\nIf conflicting updates are issued, the\nOperations associated with the stale\nupdates will not be marked as done\nuntil being obsolete.\n\nThis feature is only available for users who have Retail Search enabled.\nEnable Retail Search on Cloud Console before using this feature.",
+      "description": "AddFulfillmentPlaces it is recommended to use the\n[ProductService.AddLocalInventories][google.cloud.retail.v2.ProductService.AddLocalInventories]\nmethod instead of\n[ProductService.AddFulfillmentPlaces][google.cloud.retail.v2.ProductService.AddFulfillmentPlaces].\n[ProductService.AddLocalInventories][google.cloud.retail.v2.ProductService.AddLocalInventories]\nachieves the same results but provides more fine-grained control over\ningesting local inventory data.\n\nIncrementally adds place IDs to\n[Product.fulfillment_info.place_ids][google.cloud.retail.v2.FulfillmentInfo.place_ids].\n\nThis process is asynchronous and does not require the\n[Product][google.cloud.retail.v2.Product] to exist before updating\nfulfillment information. If the request is valid, the update will be\nenqueued and processed downstream. As a consequence, when a response is\nreturned, the added place IDs are not immediately manifested in the\n[Product][google.cloud.retail.v2.Product] queried by\n[ProductService.GetProduct][google.cloud.retail.v2.ProductService.GetProduct]\nor\n[ProductService.ListProducts][google.cloud.retail.v2.ProductService.ListProducts].\n\nThe returned [Operation][google.longrunning.Operation]s will be obsolete\nafter 1 day, and [GetOperation][google.longrunning.Operations.GetOperation]\nAPI will return NOT_FOUND afterwards.\n\nIf conflicting updates are issued, the\n[Operation][google.longrunning.Operation]s associated with the stale\nupdates will not be marked as [done][google.longrunning.Operation.done]\nuntil being obsolete.",
       "file": "ProductClient/AddFulfillmentPlaces/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1300,7 +1759,7 @@
     {
       "regionTag": "retail_v2_generated_ProductService_AddLocalInventories_sync",
       "title": "retail AddLocalInventories Sample",
-      "description": "AddLocalInventories updates local inventory information for a\nProduct at a list of places, while\nrespecting the last update timestamps of each inventory field.\n\nThis process is asynchronous and does not require the\nProduct to exist before updating\ninventory information. If the request is valid, the update will be enqueued\nand processed downstream. As a consequence, when a response is returned,\nupdates are not immediately manifested in the\nProduct queried by\nProductService.GetProduct\nor\nProductService.ListProducts.\n\nLocal inventory information can only be modified using this method.\nProductService.CreateProduct\nand\nProductService.UpdateProduct\nhas no effect on local inventories.\n\nThe returned Operations will be obsolete\nafter 1 day, and GetOperation\nAPI will return NOT_FOUND afterwards.\n\nIf conflicting updates are issued, the\nOperations associated with the stale\nupdates will not be marked as done\nuntil being obsolete.\n\nThis feature is only available for users who have Retail Search enabled.\nEnable Retail Search on Cloud Console before using this feature.",
+      "description": "AddLocalInventories updates local inventory information for a\n[Product][google.cloud.retail.v2.Product] at a list of places, while\nrespecting the last update timestamps of each inventory field.\n\nThis process is asynchronous and does not require the\n[Product][google.cloud.retail.v2.Product] to exist before updating\ninventory information. If the request is valid, the update will be enqueued\nand processed downstream. As a consequence, when a response is returned,\nupdates are not immediately manifested in the\n[Product][google.cloud.retail.v2.Product] queried by\n[ProductService.GetProduct][google.cloud.retail.v2.ProductService.GetProduct]\nor\n[ProductService.ListProducts][google.cloud.retail.v2.ProductService.ListProducts].\n\nLocal inventory information can only be modified using this method.\n[ProductService.CreateProduct][google.cloud.retail.v2.ProductService.CreateProduct]\nand\n[ProductService.UpdateProduct][google.cloud.retail.v2.ProductService.UpdateProduct]\nhas no effect on local inventories.\n\nThe returned [Operation][google.longrunning.Operation]s will be obsolete\nafter 1 day, and [GetOperation][google.longrunning.Operations.GetOperation]\nAPI will return NOT_FOUND afterwards.\n\nIf conflicting updates are issued, the\n[Operation][google.longrunning.Operation]s associated with the stale\nupdates will not be marked as [done][google.longrunning.Operation.done]\nuntil being obsolete.",
       "file": "ProductClient/AddLocalInventories/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1346,7 +1805,7 @@
     {
       "regionTag": "retail_v2_generated_ProductService_CreateProduct_sync",
       "title": "retail CreateProduct Sample",
-      "description": "CreateProduct creates a Product.",
+      "description": "CreateProduct creates a [Product][google.cloud.retail.v2.Product].",
       "file": "ProductClient/CreateProduct/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1366,7 +1825,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "retailpb.Product",
+        "resultType": "*retailpb.Product",
         "client": {
           "shortName": "ProductClient",
           "fullName": "google.cloud.retail.v2.ProductClient"
@@ -1392,7 +1851,7 @@
     {
       "regionTag": "retail_v2_generated_ProductService_DeleteProduct_sync",
       "title": "retail DeleteProduct Sample",
-      "description": "DeleteProduct deletes a Product.",
+      "description": "DeleteProduct deletes a [Product][google.cloud.retail.v2.Product].",
       "file": "ProductClient/DeleteProduct/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1457,17 +1916,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "longrunningpb.Operation",
+        "resultType": "*longrunningpb.Operation",
         "client": {
           "shortName": "ProductClient",
           "fullName": "google.cloud.retail.v2.ProductClient"
         },
         "method": {
           "shortName": "GetOperation",
-          "fullName": "google.cloud.retail.v2.ProductService.GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
           "service": {
-            "shortName": "ProductService",
-            "fullName": "google.cloud.retail.v2.ProductService"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -1475,7 +1934,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -1483,7 +1942,7 @@
     {
       "regionTag": "retail_v2_generated_ProductService_GetProduct_sync",
       "title": "retail GetProduct Sample",
-      "description": "GetProduct gets a Product.",
+      "description": "GetProduct gets a [Product][google.cloud.retail.v2.Product].",
       "file": "ProductClient/GetProduct/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1503,7 +1962,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "retailpb.Product",
+        "resultType": "*retailpb.Product",
         "client": {
           "shortName": "ProductClient",
           "fullName": "google.cloud.retail.v2.ProductClient"
@@ -1529,7 +1988,7 @@
     {
       "regionTag": "retail_v2_generated_ProductService_ImportProducts_sync",
       "title": "retail ImportProducts Sample",
-      "description": "ImportProducts bulk import of multiple Products.\n\nRequest processing may be synchronous.\nNon-existing items are created.\n\nNote that it is possible for a subset of the\nProducts to be successfully updated.",
+      "description": "ImportProducts bulk import of multiple [Product][google.cloud.retail.v2.Product]s.\n\nRequest processing may be synchronous.\nNon-existing items are created.\n\nNote that it is possible for a subset of the\n[Product][google.cloud.retail.v2.Product]s to be successfully updated.",
       "file": "ProductClient/ImportProducts/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1602,10 +2061,10 @@
         },
         "method": {
           "shortName": "ListOperations",
-          "fullName": "google.cloud.retail.v2.ProductService.ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
           "service": {
-            "shortName": "ProductService",
-            "fullName": "google.cloud.retail.v2.ProductService"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -1613,7 +2072,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 61,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -1621,7 +2080,7 @@
     {
       "regionTag": "retail_v2_generated_ProductService_ListProducts_sync",
       "title": "retail ListProducts Sample",
-      "description": "ListProducts gets a list of Products.",
+      "description": "ListProducts gets a list of [Product][google.cloud.retail.v2.Product]s.",
       "file": "ProductClient/ListProducts/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1667,7 +2126,7 @@
     {
       "regionTag": "retail_v2_generated_ProductService_RemoveFulfillmentPlaces_sync",
       "title": "retail RemoveFulfillmentPlaces Sample",
-      "description": "RemoveFulfillmentPlaces incrementally removes place IDs from a\nProduct.fulfillment_info.place_ids.\n\nThis process is asynchronous and does not require the\nProduct to exist before updating\nfulfillment information. If the request is valid, the update will be\nenqueued and processed downstream. As a consequence, when a response is\nreturned, the removed place IDs are not immediately manifested in the\nProduct queried by\nProductService.GetProduct\nor\nProductService.ListProducts.\n\nThe returned Operations will be obsolete\nafter 1 day, and GetOperation\nAPI will return NOT_FOUND afterwards.\n\nIf conflicting updates are issued, the\nOperations associated with the stale\nupdates will not be marked as done\nuntil being obsolete.\n\nThis feature is only available for users who have Retail Search enabled.\nEnable Retail Search on Cloud Console before using this feature.",
+      "description": "RemoveFulfillmentPlaces it is recommended to use the\n[ProductService.RemoveLocalInventories][google.cloud.retail.v2.ProductService.RemoveLocalInventories]\nmethod instead of\n[ProductService.RemoveFulfillmentPlaces][google.cloud.retail.v2.ProductService.RemoveFulfillmentPlaces].\n[ProductService.RemoveLocalInventories][google.cloud.retail.v2.ProductService.RemoveLocalInventories]\nachieves the same results but provides more fine-grained control over\ningesting local inventory data.\n\nIncrementally removes place IDs from a\n[Product.fulfillment_info.place_ids][google.cloud.retail.v2.FulfillmentInfo.place_ids].\n\nThis process is asynchronous and does not require the\n[Product][google.cloud.retail.v2.Product] to exist before updating\nfulfillment information. If the request is valid, the update will be\nenqueued and processed downstream. As a consequence, when a response is\nreturned, the removed place IDs are not immediately manifested in the\n[Product][google.cloud.retail.v2.Product] queried by\n[ProductService.GetProduct][google.cloud.retail.v2.ProductService.GetProduct]\nor\n[ProductService.ListProducts][google.cloud.retail.v2.ProductService.ListProducts].\n\nThe returned [Operation][google.longrunning.Operation]s will be obsolete\nafter 1 day, and [GetOperation][google.longrunning.Operations.GetOperation]\nAPI will return NOT_FOUND afterwards.\n\nIf conflicting updates are issued, the\n[Operation][google.longrunning.Operation]s associated with the stale\nupdates will not be marked as [done][google.longrunning.Operation.done]\nuntil being obsolete.",
       "file": "ProductClient/RemoveFulfillmentPlaces/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1713,7 +2172,7 @@
     {
       "regionTag": "retail_v2_generated_ProductService_RemoveLocalInventories_sync",
       "title": "retail RemoveLocalInventories Sample",
-      "description": "RemoveLocalInventories remove local inventory information for a\nProduct at a list of places at a removal\ntimestamp.\n\nThis process is asynchronous. If the request is valid, the removal will be\nenqueued and processed downstream. As a consequence, when a response is\nreturned, removals are not immediately manifested in the\nProduct queried by\nProductService.GetProduct\nor\nProductService.ListProducts.\n\nLocal inventory information can only be removed using this method.\nProductService.CreateProduct\nand\nProductService.UpdateProduct\nhas no effect on local inventories.\n\nThe returned Operations will be obsolete\nafter 1 day, and GetOperation\nAPI will return NOT_FOUND afterwards.\n\nIf conflicting updates are issued, the\nOperations associated with the stale\nupdates will not be marked as done\nuntil being obsolete.\n\nThis feature is only available for users who have Retail Search enabled.\nEnable Retail Search on Cloud Console before using this feature.",
+      "description": "RemoveLocalInventories remove local inventory information for a\n[Product][google.cloud.retail.v2.Product] at a list of places at a removal\ntimestamp.\n\nThis process is asynchronous. If the request is valid, the removal will be\nenqueued and processed downstream. As a consequence, when a response is\nreturned, removals are not immediately manifested in the\n[Product][google.cloud.retail.v2.Product] queried by\n[ProductService.GetProduct][google.cloud.retail.v2.ProductService.GetProduct]\nor\n[ProductService.ListProducts][google.cloud.retail.v2.ProductService.ListProducts].\n\nLocal inventory information can only be removed using this method.\n[ProductService.CreateProduct][google.cloud.retail.v2.ProductService.CreateProduct]\nand\n[ProductService.UpdateProduct][google.cloud.retail.v2.ProductService.UpdateProduct]\nhas no effect on local inventories.\n\nThe returned [Operation][google.longrunning.Operation]s will be obsolete\nafter 1 day, and [GetOperation][google.longrunning.Operations.GetOperation]\nAPI will return NOT_FOUND afterwards.\n\nIf conflicting updates are issued, the\n[Operation][google.longrunning.Operation]s associated with the stale\nupdates will not be marked as [done][google.longrunning.Operation.done]\nuntil being obsolete.",
       "file": "ProductClient/RemoveLocalInventories/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1759,7 +2218,7 @@
     {
       "regionTag": "retail_v2_generated_ProductService_SetInventory_sync",
       "title": "retail SetInventory Sample",
-      "description": "SetInventory updates inventory information for a\nProduct while respecting the last update\ntimestamps of each inventory field.\n\nThis process is asynchronous and does not require the\nProduct to exist before updating\nfulfillment information. If the request is valid, the update is enqueued\nand processed downstream. As a consequence, when a response is returned,\nupdates are not immediately manifested in the\nProduct queried by\nProductService.GetProduct\nor\nProductService.ListProducts.\n\nWhen inventory is updated with\nProductService.CreateProduct\nand\nProductService.UpdateProduct,\nthe specified inventory field value(s) overwrite any existing value(s)\nwhile ignoring the last update time for this field. Furthermore, the last\nupdate times for the specified inventory fields are overwritten by the\ntimes of the\nProductService.CreateProduct\nor\nProductService.UpdateProduct\nrequest.\n\nIf no inventory fields are set in\nCreateProductRequest.product,\nthen any pre-existing inventory information for this product is used.\n\nIf no inventory fields are set in\nSetInventoryRequest.set_mask,\nthen any existing inventory information is preserved.\n\nPre-existing inventory information can only be updated with\nProductService.SetInventory,\nProductService.AddFulfillmentPlaces,\nand\nProductService.RemoveFulfillmentPlaces.\n\nThe returned Operations is obsolete after\none day, and the GetOperation\nAPI returns NOT_FOUND afterwards.\n\nIf conflicting updates are issued, the\nOperations associated with the stale\nupdates are not marked as done until\nthey are obsolete.\n\nThis feature is only available for users who have Retail Search enabled.\nEnable Retail Search on Cloud Console before using this feature.",
+      "description": "SetInventory updates inventory information for a\n[Product][google.cloud.retail.v2.Product] while respecting the last update\ntimestamps of each inventory field.\n\nThis process is asynchronous and does not require the\n[Product][google.cloud.retail.v2.Product] to exist before updating\nfulfillment information. If the request is valid, the update is enqueued\nand processed downstream. As a consequence, when a response is returned,\nupdates are not immediately manifested in the\n[Product][google.cloud.retail.v2.Product] queried by\n[ProductService.GetProduct][google.cloud.retail.v2.ProductService.GetProduct]\nor\n[ProductService.ListProducts][google.cloud.retail.v2.ProductService.ListProducts].\n\nWhen inventory is updated with\n[ProductService.CreateProduct][google.cloud.retail.v2.ProductService.CreateProduct]\nand\n[ProductService.UpdateProduct][google.cloud.retail.v2.ProductService.UpdateProduct],\nthe specified inventory field value(s) overwrite any existing value(s)\nwhile ignoring the last update time for this field. Furthermore, the last\nupdate times for the specified inventory fields are overwritten by the\ntimes of the\n[ProductService.CreateProduct][google.cloud.retail.v2.ProductService.CreateProduct]\nor\n[ProductService.UpdateProduct][google.cloud.retail.v2.ProductService.UpdateProduct]\nrequest.\n\nIf no inventory fields are set in\n[CreateProductRequest.product][google.cloud.retail.v2.CreateProductRequest.product],\nthen any pre-existing inventory information for this product is used.\n\nIf no inventory fields are set in\n[SetInventoryRequest.set_mask][google.cloud.retail.v2.SetInventoryRequest.set_mask],\nthen any existing inventory information is preserved.\n\nPre-existing inventory information can only be updated with\n[ProductService.SetInventory][google.cloud.retail.v2.ProductService.SetInventory],\n[ProductService.AddFulfillmentPlaces][google.cloud.retail.v2.ProductService.AddFulfillmentPlaces],\nand\n[ProductService.RemoveFulfillmentPlaces][google.cloud.retail.v2.ProductService.RemoveFulfillmentPlaces].\n\nThe returned [Operation][google.longrunning.Operation]s is obsolete after\none day, and the [GetOperation][google.longrunning.Operations.GetOperation]\nAPI returns `NOT_FOUND` afterwards.\n\nIf conflicting updates are issued, the\n[Operation][google.longrunning.Operation]s associated with the stale\nupdates are not marked as [done][google.longrunning.Operation.done] until\nthey are obsolete.",
       "file": "ProductClient/SetInventory/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1805,7 +2264,7 @@
     {
       "regionTag": "retail_v2_generated_ProductService_UpdateProduct_sync",
       "title": "retail UpdateProduct Sample",
-      "description": "UpdateProduct updates a Product.",
+      "description": "UpdateProduct updates a [Product][google.cloud.retail.v2.Product].",
       "file": "ProductClient/UpdateProduct/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1825,7 +2284,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "retailpb.Product",
+        "resultType": "*retailpb.Product",
         "client": {
           "shortName": "ProductClient",
           "fullName": "google.cloud.retail.v2.ProductClient"
@@ -1871,17 +2330,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "longrunningpb.Operation",
+        "resultType": "*longrunningpb.Operation",
         "client": {
           "shortName": "SearchClient",
           "fullName": "google.cloud.retail.v2.SearchClient"
         },
         "method": {
           "shortName": "GetOperation",
-          "fullName": "google.cloud.retail.v2.SearchService.GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
           "service": {
-            "shortName": "SearchService",
-            "fullName": "google.cloud.retail.v2.SearchService"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -1889,7 +2348,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -1924,10 +2383,10 @@
         },
         "method": {
           "shortName": "ListOperations",
-          "fullName": "google.cloud.retail.v2.SearchService.ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
           "service": {
-            "shortName": "SearchService",
-            "fullName": "google.cloud.retail.v2.SearchService"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -1935,7 +2394,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 61,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -1989,7 +2448,7 @@
     {
       "regionTag": "retail_v2_generated_ServingConfigService_AddControl_sync",
       "title": "retail AddControl Sample",
-      "description": "AddControl enables a Control on the specified ServingConfig.\nThe control is added in the last position of the list of controls\nit belongs to (e.g. if it’s a facet spec control it will be applied\nin the last position of servingConfig.facetSpecIds)\nReturns a ALREADY_EXISTS error if the control has already been applied.\nReturns a FAILED_PRECONDITION error if the addition could exceed maximum\nnumber of control allowed for that type of control.",
+      "description": "AddControl enables a Control on the specified ServingConfig.\nThe control is added in the last position of the list of controls\nit belongs to (e.g. if it's a facet spec control it will be applied\nin the last position of servingConfig.facetSpecIds)\nReturns a ALREADY_EXISTS error if the control has already been applied.\nReturns a FAILED_PRECONDITION error if the addition could exceed maximum\nnumber of control allowed for that type of control.",
       "file": "ServingConfigClient/AddControl/main.go",
       "language": "GO",
       "clientMethod": {
@@ -2009,7 +2468,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "retailpb.ServingConfig",
+        "resultType": "*retailpb.ServingConfig",
         "client": {
           "shortName": "ServingConfigClient",
           "fullName": "google.cloud.retail.v2.ServingConfigClient"
@@ -2035,7 +2494,7 @@
     {
       "regionTag": "retail_v2_generated_ServingConfigService_CreateServingConfig_sync",
       "title": "retail CreateServingConfig Sample",
-      "description": "CreateServingConfig creates a ServingConfig.\n\nA maximum of 100 ServingConfigs are\nallowed in a Catalog, otherwise a\nFAILED_PRECONDITION error is returned.",
+      "description": "CreateServingConfig creates a ServingConfig.\n\nA maximum of 100 [ServingConfig][google.cloud.retail.v2.ServingConfig]s are\nallowed in a [Catalog][google.cloud.retail.v2.Catalog], otherwise a\nFAILED_PRECONDITION error is returned.",
       "file": "ServingConfigClient/CreateServingConfig/main.go",
       "language": "GO",
       "clientMethod": {
@@ -2055,7 +2514,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "retailpb.ServingConfig",
+        "resultType": "*retailpb.ServingConfig",
         "client": {
           "shortName": "ServingConfigClient",
           "fullName": "google.cloud.retail.v2.ServingConfigClient"
@@ -2146,17 +2605,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "longrunningpb.Operation",
+        "resultType": "*longrunningpb.Operation",
         "client": {
           "shortName": "ServingConfigClient",
           "fullName": "google.cloud.retail.v2.ServingConfigClient"
         },
         "method": {
           "shortName": "GetOperation",
-          "fullName": "google.cloud.retail.v2.ServingConfigService.GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
           "service": {
-            "shortName": "ServingConfigService",
-            "fullName": "google.cloud.retail.v2.ServingConfigService"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -2164,7 +2623,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -2192,7 +2651,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "retailpb.ServingConfig",
+        "resultType": "*retailpb.ServingConfig",
         "client": {
           "shortName": "ServingConfigClient",
           "fullName": "google.cloud.retail.v2.ServingConfigClient"
@@ -2245,10 +2704,10 @@
         },
         "method": {
           "shortName": "ListOperations",
-          "fullName": "google.cloud.retail.v2.ServingConfigService.ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
           "service": {
-            "shortName": "ServingConfigService",
-            "fullName": "google.cloud.retail.v2.ServingConfigService"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -2256,7 +2715,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 61,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -2330,7 +2789,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "retailpb.ServingConfig",
+        "resultType": "*retailpb.ServingConfig",
         "client": {
           "shortName": "ServingConfigClient",
           "fullName": "google.cloud.retail.v2.ServingConfigClient"
@@ -2376,7 +2835,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "retailpb.ServingConfig",
+        "resultType": "*retailpb.ServingConfig",
         "client": {
           "shortName": "ServingConfigClient",
           "fullName": "google.cloud.retail.v2.ServingConfigClient"
@@ -2422,7 +2881,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "httpbodypb.HttpBody",
+        "resultType": "*httpbodypb.HttpBody",
         "client": {
           "shortName": "UserEventClient",
           "fullName": "google.cloud.retail.v2.UserEventClient"
@@ -2468,17 +2927,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "longrunningpb.Operation",
+        "resultType": "*longrunningpb.Operation",
         "client": {
           "shortName": "UserEventClient",
           "fullName": "google.cloud.retail.v2.UserEventClient"
         },
         "method": {
           "shortName": "GetOperation",
-          "fullName": "google.cloud.retail.v2.UserEventService.GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
           "service": {
-            "shortName": "UserEventService",
-            "fullName": "google.cloud.retail.v2.UserEventService"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -2486,7 +2945,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -2494,7 +2953,7 @@
     {
       "regionTag": "retail_v2_generated_UserEventService_ImportUserEvents_sync",
       "title": "retail ImportUserEvents Sample",
-      "description": "ImportUserEvents bulk import of User events. Request processing might be\nsynchronous. Events that already exist are skipped.\nUse this method for backfilling historical user events.\n\nOperation.response is of type ImportResponse. Note that it is\npossible for a subset of the items to be successfully inserted.\nOperation.metadata is of type ImportMetadata.",
+      "description": "ImportUserEvents bulk import of User events. Request processing might be\nsynchronous. Events that already exist are skipped.\nUse this method for backfilling historical user events.\n\n`Operation.response` is of type `ImportResponse`. Note that it is\npossible for a subset of the items to be successfully inserted.\n`Operation.metadata` is of type `ImportMetadata`.",
       "file": "UserEventClient/ImportUserEvents/main.go",
       "language": "GO",
       "clientMethod": {
@@ -2567,10 +3026,10 @@
         },
         "method": {
           "shortName": "ListOperations",
-          "fullName": "google.cloud.retail.v2.UserEventService.ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
           "service": {
-            "shortName": "UserEventService",
-            "fullName": "google.cloud.retail.v2.UserEventService"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -2578,7 +3037,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 61,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -2698,7 +3157,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "retailpb.UserEvent",
+        "resultType": "*retailpb.UserEvent",
         "client": {
           "shortName": "UserEventClient",
           "fullName": "google.cloud.retail.v2.UserEventClient"

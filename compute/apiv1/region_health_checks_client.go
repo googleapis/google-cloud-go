@@ -24,6 +24,7 @@ import (
 	"math"
 	"net/http"
 	"net/url"
+	"time"
 
 	computepb "cloud.google.com/go/compute/apiv1/computepb"
 	gax "github.com/googleapis/gax-go/v2"
@@ -53,9 +54,29 @@ type RegionHealthChecksCallOptions struct {
 func defaultRegionHealthChecksRESTCallOptions() *RegionHealthChecksCallOptions {
 	return &RegionHealthChecksCallOptions{
 		Delete: []gax.CallOption{},
-		Get:    []gax.CallOption{},
+		Get: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
 		Insert: []gax.CallOption{},
-		List:   []gax.CallOption{},
+		List: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
 		Patch:  []gax.CallOption{},
 		Update: []gax.CallOption{},
 	}
@@ -114,7 +135,7 @@ func (c *RegionHealthChecksClient) Delete(ctx context.Context, req *computepb.De
 	return c.internalClient.Delete(ctx, req, opts...)
 }
 
-// Get returns the specified HealthCheck resource. Gets a list of available health checks by making a list() request.
+// Get returns the specified HealthCheck resource.
 func (c *RegionHealthChecksClient) Get(ctx context.Context, req *computepb.GetRegionHealthCheckRequest, opts ...gax.CallOption) (*computepb.HealthCheck, error) {
 	return c.internalClient.Get(ctx, req, opts...)
 }
@@ -292,7 +313,7 @@ func (c *regionHealthChecksRESTClient) Delete(ctx context.Context, req *computep
 	return op, nil
 }
 
-// Get returns the specified HealthCheck resource. Gets a list of available health checks by making a list() request.
+// Get returns the specified HealthCheck resource.
 func (c *regionHealthChecksRESTClient) Get(ctx context.Context, req *computepb.GetRegionHealthCheckRequest, opts ...gax.CallOption) (*computepb.HealthCheck, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {

@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/dataform/apiv1beta1",
-    "version": "0.6.0",
+    "version": "0.7.1",
     "language": "GO",
     "apis": [
       {
@@ -124,7 +124,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "dataformpb.CompilationResult",
+        "resultType": "*dataformpb.CompilationResult",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.dataform.v1beta1.Client"
@@ -170,7 +170,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "dataformpb.Repository",
+        "resultType": "*dataformpb.Repository",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.dataform.v1beta1.Client"
@@ -216,7 +216,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "dataformpb.WorkflowInvocation",
+        "resultType": "*dataformpb.WorkflowInvocation",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.dataform.v1beta1.Client"
@@ -262,7 +262,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "dataformpb.Workspace",
+        "resultType": "*dataformpb.Workspace",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.dataform.v1beta1.Client"
@@ -443,7 +443,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "dataformpb.FetchFileDiffResponse",
+        "resultType": "*dataformpb.FetchFileDiffResponse",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.dataform.v1beta1.Client"
@@ -489,7 +489,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "dataformpb.FetchFileGitStatusesResponse",
+        "resultType": "*dataformpb.FetchFileGitStatusesResponse",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.dataform.v1beta1.Client"
@@ -535,7 +535,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "dataformpb.FetchGitAheadBehindResponse",
+        "resultType": "*dataformpb.FetchGitAheadBehindResponse",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.dataform.v1beta1.Client"
@@ -561,7 +561,7 @@
     {
       "regionTag": "dataform_v1beta1_generated_Dataform_FetchRemoteBranches_sync",
       "title": "dataform FetchRemoteBranches Sample",
-      "description": "FetchRemoteBranches fetches a Repository’s remote branches.",
+      "description": "FetchRemoteBranches fetches a Repository's remote branches.",
       "file": "Client/FetchRemoteBranches/main.go",
       "language": "GO",
       "clientMethod": {
@@ -581,7 +581,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "dataformpb.FetchRemoteBranchesResponse",
+        "resultType": "*dataformpb.FetchRemoteBranchesResponse",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.dataform.v1beta1.Client"
@@ -627,7 +627,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "dataformpb.CompilationResult",
+        "resultType": "*dataformpb.CompilationResult",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.dataform.v1beta1.Client"
@@ -673,17 +673,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "locationpb.Location",
+        "resultType": "*locationpb.Location",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.dataform.v1beta1.Client"
         },
         "method": {
           "shortName": "GetLocation",
-          "fullName": "google.cloud.dataform.v1beta1.Dataform.GetLocation",
+          "fullName": "google.cloud.location.Locations.GetLocation",
           "service": {
-            "shortName": "Dataform",
-            "fullName": "google.cloud.dataform.v1beta1.Dataform"
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
           }
         }
       },
@@ -691,7 +691,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -719,7 +719,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "dataformpb.Repository",
+        "resultType": "*dataformpb.Repository",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.dataform.v1beta1.Client"
@@ -765,7 +765,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "dataformpb.WorkflowInvocation",
+        "resultType": "*dataformpb.WorkflowInvocation",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.dataform.v1beta1.Client"
@@ -811,7 +811,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "dataformpb.Workspace",
+        "resultType": "*dataformpb.Workspace",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.dataform.v1beta1.Client"
@@ -857,7 +857,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "dataformpb.InstallNpmPackagesResponse",
+        "resultType": "*dataformpb.InstallNpmPackagesResponse",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.dataform.v1beta1.Client"
@@ -956,10 +956,10 @@
         },
         "method": {
           "shortName": "ListLocations",
-          "fullName": "google.cloud.dataform.v1beta1.Dataform.ListLocations",
+          "fullName": "google.cloud.location.Locations.ListLocations",
           "service": {
-            "shortName": "Dataform",
-            "fullName": "google.cloud.dataform.v1beta1.Dataform"
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
           }
         }
       },
@@ -967,7 +967,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 61,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -1133,7 +1133,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "dataformpb.MakeDirectoryResponse",
+        "resultType": "*dataformpb.MakeDirectoryResponse",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.dataform.v1beta1.Client"
@@ -1179,7 +1179,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "dataformpb.MoveDirectoryResponse",
+        "resultType": "*dataformpb.MoveDirectoryResponse",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.dataform.v1beta1.Client"
@@ -1225,7 +1225,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "dataformpb.MoveFileResponse",
+        "resultType": "*dataformpb.MoveFileResponse",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.dataform.v1beta1.Client"
@@ -1251,7 +1251,7 @@
     {
       "regionTag": "dataform_v1beta1_generated_Dataform_PullGitCommits_sync",
       "title": "dataform PullGitCommits Sample",
-      "description": "PullGitCommits pulls Git commits from the Repository’s remote into a Workspace.",
+      "description": "PullGitCommits pulls Git commits from the Repository's remote into a Workspace.",
       "file": "Client/PullGitCommits/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1296,7 +1296,7 @@
     {
       "regionTag": "dataform_v1beta1_generated_Dataform_PushGitCommits_sync",
       "title": "dataform PushGitCommits Sample",
-      "description": "PushGitCommits pushes Git commits from a Workspace to the Repository’s remote.",
+      "description": "PushGitCommits pushes Git commits from a Workspace to the Repository's remote.",
       "file": "Client/PushGitCommits/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1499,7 +1499,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "dataformpb.ReadFileResponse",
+        "resultType": "*dataformpb.ReadFileResponse",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.dataform.v1beta1.Client"
@@ -1680,7 +1680,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "dataformpb.Repository",
+        "resultType": "*dataformpb.Repository",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.dataform.v1beta1.Client"
@@ -1726,7 +1726,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "dataformpb.WriteFileResponse",
+        "resultType": "*dataformpb.WriteFileResponse",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.dataform.v1beta1.Client"

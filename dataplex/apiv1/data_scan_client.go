@@ -26,13 +26,13 @@ import (
 	dataplexpb "cloud.google.com/go/dataplex/apiv1/dataplexpb"
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/proto"
@@ -115,6 +115,10 @@ type internalDataScanClient interface {
 
 // DataScanClient is a client for interacting with Cloud Dataplex API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
+//
+// DataScanService manages DataScan resources which can be configured to run
+// various types of data scanning workload and generate enriched metadata (e.g.
+// Data Profile, Data Quality) for the data source.
 type DataScanClient struct {
 	// The internal transport-dependent client.
 	internalClient internalDataScanClient
@@ -151,7 +155,7 @@ func (c *DataScanClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// CreateDataScan creates a dataScan resource.
+// CreateDataScan creates a DataScan resource.
 func (c *DataScanClient) CreateDataScan(ctx context.Context, req *dataplexpb.CreateDataScanRequest, opts ...gax.CallOption) (*CreateDataScanOperation, error) {
 	return c.internalClient.CreateDataScan(ctx, req, opts...)
 }
@@ -162,7 +166,7 @@ func (c *DataScanClient) CreateDataScanOperation(name string) *CreateDataScanOpe
 	return c.internalClient.CreateDataScanOperation(name)
 }
 
-// UpdateDataScan update the dataScan resource.
+// UpdateDataScan updates a DataScan resource.
 func (c *DataScanClient) UpdateDataScan(ctx context.Context, req *dataplexpb.UpdateDataScanRequest, opts ...gax.CallOption) (*UpdateDataScanOperation, error) {
 	return c.internalClient.UpdateDataScan(ctx, req, opts...)
 }
@@ -173,7 +177,7 @@ func (c *DataScanClient) UpdateDataScanOperation(name string) *UpdateDataScanOpe
 	return c.internalClient.UpdateDataScanOperation(name)
 }
 
-// DeleteDataScan delete the dataScan resource.
+// DeleteDataScan deletes a DataScan resource.
 func (c *DataScanClient) DeleteDataScan(ctx context.Context, req *dataplexpb.DeleteDataScanRequest, opts ...gax.CallOption) (*DeleteDataScanOperation, error) {
 	return c.internalClient.DeleteDataScan(ctx, req, opts...)
 }
@@ -184,27 +188,27 @@ func (c *DataScanClient) DeleteDataScanOperation(name string) *DeleteDataScanOpe
 	return c.internalClient.DeleteDataScanOperation(name)
 }
 
-// GetDataScan get dataScan resource.
+// GetDataScan gets a DataScan resource.
 func (c *DataScanClient) GetDataScan(ctx context.Context, req *dataplexpb.GetDataScanRequest, opts ...gax.CallOption) (*dataplexpb.DataScan, error) {
 	return c.internalClient.GetDataScan(ctx, req, opts...)
 }
 
-// ListDataScans lists dataScans.
+// ListDataScans lists DataScans.
 func (c *DataScanClient) ListDataScans(ctx context.Context, req *dataplexpb.ListDataScansRequest, opts ...gax.CallOption) *DataScanIterator {
 	return c.internalClient.ListDataScans(ctx, req, opts...)
 }
 
-// RunDataScan run an on demand execution of a DataScan.
+// RunDataScan runs an on-demand execution of a DataScan
 func (c *DataScanClient) RunDataScan(ctx context.Context, req *dataplexpb.RunDataScanRequest, opts ...gax.CallOption) (*dataplexpb.RunDataScanResponse, error) {
 	return c.internalClient.RunDataScan(ctx, req, opts...)
 }
 
-// GetDataScanJob get DataScanJob resource.
+// GetDataScanJob gets a DataScanJob resource.
 func (c *DataScanClient) GetDataScanJob(ctx context.Context, req *dataplexpb.GetDataScanJobRequest, opts ...gax.CallOption) (*dataplexpb.DataScanJob, error) {
 	return c.internalClient.GetDataScanJob(ctx, req, opts...)
 }
 
-// ListDataScanJobs lists DataScanJobs under the given dataScan.
+// ListDataScanJobs lists DataScanJobs under the given DataScan.
 func (c *DataScanClient) ListDataScanJobs(ctx context.Context, req *dataplexpb.ListDataScanJobsRequest, opts ...gax.CallOption) *DataScanJobIterator {
 	return c.internalClient.ListDataScanJobs(ctx, req, opts...)
 }
@@ -270,6 +274,10 @@ type dataScanGRPCClient struct {
 
 // NewDataScanClient creates a new data scan service client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
+//
+// DataScanService manages DataScan resources which can be configured to run
+// various types of data scanning workload and generate enriched metadata (e.g.
+// Data Profile, Data Quality) for the data source.
 func NewDataScanClient(ctx context.Context, opts ...option.ClientOption) (*DataScanClient, error) {
 	clientOpts := defaultDataScanGRPCClientOptions()
 	if newDataScanClientHook != nil {

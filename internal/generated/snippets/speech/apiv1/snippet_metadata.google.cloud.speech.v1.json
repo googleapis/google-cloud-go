@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/speech/apiv1",
-    "version": "1.12.0",
+    "version": "1.15.1",
     "language": "GO",
     "apis": [
       {
@@ -34,7 +34,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "speechpb.CustomClass",
+        "resultType": "*speechpb.CustomClass",
         "client": {
           "shortName": "AdaptationClient",
           "fullName": "google.cloud.speech.v1.AdaptationClient"
@@ -80,7 +80,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "speechpb.PhraseSet",
+        "resultType": "*speechpb.PhraseSet",
         "client": {
           "shortName": "AdaptationClient",
           "fullName": "google.cloud.speech.v1.AdaptationClient"
@@ -216,7 +216,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "speechpb.CustomClass",
+        "resultType": "*speechpb.CustomClass",
         "client": {
           "shortName": "AdaptationClient",
           "fullName": "google.cloud.speech.v1.AdaptationClient"
@@ -262,17 +262,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "longrunningpb.Operation",
+        "resultType": "*longrunningpb.Operation",
         "client": {
           "shortName": "AdaptationClient",
           "fullName": "google.cloud.speech.v1.AdaptationClient"
         },
         "method": {
           "shortName": "GetOperation",
-          "fullName": "google.cloud.speech.v1.Adaptation.GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
           "service": {
-            "shortName": "Adaptation",
-            "fullName": "google.cloud.speech.v1.Adaptation"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -280,7 +280,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -308,7 +308,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "speechpb.PhraseSet",
+        "resultType": "*speechpb.PhraseSet",
         "client": {
           "shortName": "AdaptationClient",
           "fullName": "google.cloud.speech.v1.AdaptationClient"
@@ -407,10 +407,10 @@
         },
         "method": {
           "shortName": "ListOperations",
-          "fullName": "google.cloud.speech.v1.Adaptation.ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
           "service": {
-            "shortName": "Adaptation",
-            "fullName": "google.cloud.speech.v1.Adaptation"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -418,7 +418,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 61,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -492,7 +492,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "speechpb.CustomClass",
+        "resultType": "*speechpb.CustomClass",
         "client": {
           "shortName": "AdaptationClient",
           "fullName": "google.cloud.speech.v1.AdaptationClient"
@@ -538,7 +538,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "speechpb.PhraseSet",
+        "resultType": "*speechpb.PhraseSet",
         "client": {
           "shortName": "AdaptationClient",
           "fullName": "google.cloud.speech.v1.AdaptationClient"
@@ -584,17 +584,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "longrunningpb.Operation",
+        "resultType": "*longrunningpb.Operation",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.speech.v1.Client"
         },
         "method": {
           "shortName": "GetOperation",
-          "fullName": "google.cloud.speech.v1.Speech.GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
           "service": {
-            "shortName": "Speech",
-            "fullName": "google.cloud.speech.v1.Speech"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -602,7 +602,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -637,10 +637,10 @@
         },
         "method": {
           "shortName": "ListOperations",
-          "fullName": "google.cloud.speech.v1.Speech.ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
           "service": {
-            "shortName": "Speech",
-            "fullName": "google.cloud.speech.v1.Speech"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -648,7 +648,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 61,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -656,7 +656,7 @@
     {
       "regionTag": "speech_v1_generated_Speech_LongRunningRecognize_sync",
       "title": "speech LongRunningRecognize Sample",
-      "description": "LongRunningRecognize performs asynchronous speech recognition: receive results via the\ngoogle.longrunning.Operations interface. Returns either an\nOperation.error or an Operation.response which contains\na LongRunningRecognizeResponse message.\nFor more information on asynchronous speech recognition, see the\nhow-to (at https: //cloud.google.com/speech-to-text/docs/async-recognize).",
+      "description": "LongRunningRecognize performs asynchronous speech recognition: receive results via the\ngoogle.longrunning.Operations interface. Returns either an\n`Operation.error` or an `Operation.response` which contains\na `LongRunningRecognizeResponse` message.\nFor more information on asynchronous speech recognition, see the\n[how-to](https: //cloud.google.com/speech-to-text/docs/async-recognize).",
       "file": "Client/LongRunningRecognize/main.go",
       "language": "GO",
       "clientMethod": {
@@ -722,7 +722,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "speechpb.RecognizeResponse",
+        "resultType": "*speechpb.RecognizeResponse",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.speech.v1.Client"
@@ -748,7 +748,7 @@
     {
       "regionTag": "speech_v1_generated_Speech_StreamingRecognize_sync",
       "title": "speech StreamingRecognize Sample",
-      "description": "StreamingRecognize performs bidirectional streaming speech recognition: receive results while\nsending audio. This method is only available via the gRPC API (not REST).\n\nThis method is not supported for the REST transport.",
+      "description": "StreamingRecognize performs bidirectional streaming speech recognition: receive results while\nsending audio. This method is only available via the gRPC API (not REST).\n\n\nThis method is not supported for the REST transport.",
       "file": "Client/StreamingRecognize/main.go",
       "language": "GO",
       "clientMethod": {
@@ -764,6 +764,7 @@
             "name": "opts"
           }
         ],
+        "resultType": "speechpb.Speech_StreamingRecognizeClient",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.speech.v1.Client"

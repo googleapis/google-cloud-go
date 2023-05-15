@@ -248,10 +248,13 @@
           "instructions": ["return-reset-connection", "return-503"]
         },
         {
+          "instructions": ["return-408"]
+        },
+        {
           "instructions": ["return-503-after-256K"]
         },
         {
-          "instructions": ["return-503-after-8192K"]
+          "instructions": ["return-503-after-8192K", "return-408"]
         }
       ],
       "methods": [

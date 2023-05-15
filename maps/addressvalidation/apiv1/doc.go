@@ -22,8 +22,6 @@
 // of the components of the parsed address, a geocode, and a verdict on the
 // deliverability of the parsed address.
 //
-//	NOTE: This package is in beta. It is not stable, and may be subject to changes.
-//
 // # General documentation
 //
 // For information about setting deadlines, reusing contexts, and more

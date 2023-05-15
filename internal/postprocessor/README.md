@@ -13,44 +13,71 @@ fork instead of the repo.
 After following these steps the generated code will have replaced corresponding
 files in the `google-cloud-go` repo.
 
-## Docker container
+## Running the post-processor docker container locally
 
-The Docker container needs to be built with the context of the entire
-`google-cloud-go/internal` directory. When building the container, do so from
-the `google-cloud-go/internal` directory
+You can verify the name of the docker container name can be found in the
+`.github/OwlBot.yaml` and `github/OwlBot.lock.yaml` files.
 
-## Running the post-processor locally
-
-The Docker container name needed will be found in the `.github/OwlBot.yaml` and
-`github/OwlBot.lock.yaml` files.
-To run post-processor run:
+In the `google-cloud-go` root directory:
 
 ```bash
-docker pull <container-name>
-docker run --user $(id -u):$(id -g) --rm -v $(pwd):/repo -w /repo <container-name>
+docker pull gcr.io/cloud-devrel-public-resources/owlbot-go:latest
+docker run --user $(id -u):$(id -g) --rm -v $(pwd):/repo -w /repo gcr.io/cloud-devrel-public-resources/owlbot-go:latest
 ```
 
-## Testing the post-processor locally
+## Making changes, rebuilding the docker container and updating the OwlBot SHA
 
-You can run the post-processor locally on selected directories or on all of the
-clients in the root directory.
+After making changes to the post-processor, you need to publish a new version
+of the post-processor docker container and manually update the which version of
+the post-processor is used by OwlBot. To do this you need to update the SHA in
+the OwlBot lock file.
 
-### Run post-processor on all clients
+1. In your `google-cloud-go` repo, create a branch.
+2. Make changes to the post-processor.
+3. Test your changes. You can run the post-processor locally on selected
+   clients or on all of the clients in the root directory. If the `branch`
+   flag is not set to a non-empty value, the post-processor will exit early
+   without changes. In the `google-cloud-go/internal/postprocessor` directory:
 
-From the `google-cloud-go/internal/postprocessor` directory run:
+   ```bash
+   go run . -client-root="../.." -googleapis-dir="/path/to/local/googleapis" -branch="my-branch"
+   ```
 
-```bash
-go run main.go -stage-dir="../../owl-bot-staging/src/" -client-root="../.." -googleapis-dir="/path/to/local/googleapis"
-```
+   To test only selected clients:
 
-### Run post-processor on select clients
+   ```bash
+   go run . -client-root="../.." -googleapis-dir="/path/to/local/googleapis" -branch="my-branch" -dirs="accessapproval,asset"
+   ```
+4. Clean up any changes made by post-processor test runs in the previous step.
+5. Commit your changes.
+6. Open your PR and respond to feedback.
+7. Once your PR is complete (but before merging it!), rebuild the post-processor
+   docker image from your local branch using the
+   `google-cloud-go/internal/cloudbuild.yaml` Cloud Build configuration. In the
+   `google-cloud-go` root directory:
 
-From the `google-cloud-go/internal/postprocessor` directory run the same
-command, but with an added `dirs` flag containing a comma-separated list of the
-names of the clients on which to run the post-processor. The example below shows
-the command for running the post-processor on the `accessapproval` and `asset`
-libraries:
+   ```bash
+   gcloud builds submit --project=cloud-devrel-kokoro-resources --config=internal/cloudbuild.yaml
+   ```
+8. Read the SHA of the latest post-processor docker image. In any location:
 
-```bash
-go run main.go -stage-dir="../../owl-bot-staging/src/" -client-root="../.." -googleapis-dir="/path/to/local/googleapis" -dirs="accessapproval,asset"
-```
+   ```bash
+   docker pull gcr.io/cloud-devrel-public-resources/owlbot-go:latest
+   docker inspect --format='{{index .RepoDigests 0}}' gcr.io/cloud-devrel-public-resources/owlbot-go:latest
+   ```
+9. In your branch, update the SHA of the post-processor docker image in
+   `google-cloud-go/.github/.OwlBot.lock.yaml`. Commit and push the change to
+   your PR.
+
+   *Note*: OwlBot will eventually open a pull request to update the SHA if it
+   discovers a new version of the container.
+10. After your PR is approved and CI is green, merge your changes.
+
+## Initializing new modules
+
+The post-processor initializes new modules by generating the required files
+`internal/version.go`, `go.mod`, `README.md` and `CHANGES.md`.
+
+To add a new module, add the directory name of the module to `modules` in
+`google-cloud-go/internal/postprocessor/config.yaml`. Please maintain
+alphabetical ordering of the module names.

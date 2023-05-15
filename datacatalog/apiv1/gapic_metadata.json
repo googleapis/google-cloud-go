@@ -10,6 +10,11 @@
         "grpc": {
           "libraryClient": "Client",
           "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
             "CreateEntry": {
               "methods": [
                 "CreateEntry"
@@ -45,6 +50,11 @@
                 "DeleteEntryGroup"
               ]
             },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
             "DeleteTag": {
               "methods": [
                 "DeleteTag"
@@ -75,9 +85,19 @@
                 "GetIamPolicy"
               ]
             },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
             "GetTagTemplate": {
               "methods": [
                 "GetTagTemplate"
+              ]
+            },
+            "ImportEntries": {
+              "methods": [
+                "ImportEntries"
               ]
             },
             "ListEntries": {
@@ -88,6 +108,11 @@
             "ListEntryGroups": {
               "methods": [
                 "ListEntryGroups"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
               ]
             },
             "ListTags": {
@@ -108,6 +133,11 @@
             "ModifyEntryOverview": {
               "methods": [
                 "ModifyEntryOverview"
+              ]
+            },
+            "ReconcileTags": {
+              "methods": [
+                "ReconcileTags"
               ]
             },
             "RenameTagTemplateField": {
@@ -175,6 +205,11 @@
         "rest": {
           "libraryClient": "Client",
           "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
             "CreateEntry": {
               "methods": [
                 "CreateEntry"
@@ -210,6 +245,11 @@
                 "DeleteEntryGroup"
               ]
             },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
             "DeleteTag": {
               "methods": [
                 "DeleteTag"
@@ -240,9 +280,19 @@
                 "GetIamPolicy"
               ]
             },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
             "GetTagTemplate": {
               "methods": [
                 "GetTagTemplate"
+              ]
+            },
+            "ImportEntries": {
+              "methods": [
+                "ImportEntries"
               ]
             },
             "ListEntries": {
@@ -253,6 +303,11 @@
             "ListEntryGroups": {
               "methods": [
                 "ListEntryGroups"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
               ]
             },
             "ListTags": {
@@ -273,6 +328,11 @@
             "ModifyEntryOverview": {
               "methods": [
                 "ModifyEntryOverview"
+              ]
+            },
+            "ReconcileTags": {
+              "methods": [
+                "ReconcileTags"
               ]
             },
             "RenameTagTemplateField": {
@@ -344,6 +404,11 @@
         "grpc": {
           "libraryClient": "PolicyTagManagerClient",
           "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
             "CreatePolicyTag": {
               "methods": [
                 "CreatePolicyTag"
@@ -352,6 +417,11 @@
             "CreateTaxonomy": {
               "methods": [
                 "CreateTaxonomy"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
               ]
             },
             "DeletePolicyTag": {
@@ -369,6 +439,11 @@
                 "GetIamPolicy"
               ]
             },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
             "GetPolicyTag": {
               "methods": [
                 "GetPolicyTag"
@@ -377,6 +452,11 @@
             "GetTaxonomy": {
               "methods": [
                 "GetTaxonomy"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
               ]
             },
             "ListPolicyTags": {
@@ -414,6 +494,11 @@
         "rest": {
           "libraryClient": "PolicyTagManagerClient",
           "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
             "CreatePolicyTag": {
               "methods": [
                 "CreatePolicyTag"
@@ -422,6 +507,11 @@
             "CreateTaxonomy": {
               "methods": [
                 "CreateTaxonomy"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
               ]
             },
             "DeletePolicyTag": {
@@ -439,6 +529,11 @@
                 "GetIamPolicy"
               ]
             },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
             "GetPolicyTag": {
               "methods": [
                 "GetPolicyTag"
@@ -447,6 +542,11 @@
             "GetTaxonomy": {
               "methods": [
                 "GetTaxonomy"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
               ]
             },
             "ListPolicyTags": {
@@ -488,14 +588,34 @@
         "grpc": {
           "libraryClient": "PolicyTagManagerSerializationClient",
           "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
             "ExportTaxonomies": {
               "methods": [
                 "ExportTaxonomies"
               ]
             },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
             "ImportTaxonomies": {
               "methods": [
                 "ImportTaxonomies"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
               ]
             },
             "ReplaceTaxonomy": {
@@ -508,14 +628,34 @@
         "rest": {
           "libraryClient": "PolicyTagManagerSerializationClient",
           "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
             "ExportTaxonomies": {
               "methods": [
                 "ExportTaxonomies"
               ]
             },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
             "ImportTaxonomies": {
               "methods": [
                 "ImportTaxonomies"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
               ]
             },
             "ReplaceTaxonomy": {

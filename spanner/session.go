@@ -236,7 +236,7 @@ func (s *session) ping() error {
 	defer span.End()
 
 	// s.getID is safe even when s is invalid.
-	_, err := s.client.ExecuteSql(contextWithOutgoingMetadata(ctx, s.md), &sppb.ExecuteSqlRequest{
+	_, err := s.client.ExecuteSql(contextWithOutgoingMetadata(ctx, s.md, true), &sppb.ExecuteSqlRequest{
 		Session: s.getID(),
 		Sql:     "SELECT 1",
 	})
@@ -320,13 +320,15 @@ func (s *session) getNextCheck() time.Time {
 func (s *session) recycle() {
 	s.setTransactionID(nil)
 	s.pool.mu.Lock()
-	defer s.pool.mu.Unlock()
 	if !s.pool.recycleLocked(s) {
 		// s is rejected by its home session pool because it expired and the
 		// session pool currently has enough open sessions.
+		s.pool.mu.Unlock()
 		s.destroy(false)
+		s.pool.mu.Lock()
 	}
 	s.pool.decNumInUseLocked(context.Background())
+	s.pool.mu.Unlock()
 }
 
 // destroy removes the session from its home session pool, healthcheck queue
@@ -350,7 +352,7 @@ func (s *session) destroyWithContext(ctx context.Context, isExpire bool) bool {
 func (s *session) delete(ctx context.Context) {
 	// Ignore the error because even if we fail to explicitly destroy the
 	// session, it will be eventually garbage collected by Cloud Spanner.
-	err := s.client.DeleteSession(contextWithOutgoingMetadata(ctx, s.md), &sppb.DeleteSessionRequest{Name: s.getID()})
+	err := s.client.DeleteSession(contextWithOutgoingMetadata(ctx, s.md, true), &sppb.DeleteSessionRequest{Name: s.getID()})
 	// Do not log DeadlineExceeded errors when deleting sessions, as these do
 	// not indicate anything the user can or should act upon.
 	if err != nil && ErrCode(err) != codes.DeadlineExceeded {

@@ -15,16 +15,117 @@
 package managedwriter
 
 import (
-	"fmt"
 	"sync"
 	"testing"
 
-	"cloud.google.com/go/bigquery/internal"
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
 	"github.com/googleapis/gax-go/v2"
+	"google.golang.org/api/option"
 	"google.golang.org/grpc"
 )
+
+func TestCustomClientOptions(t *testing.T) {
+	testCases := []struct {
+		desc    string
+		options []option.ClientOption
+		want    *writerClientConfig
+	}{
+		{
+			desc: "no options",
+			want: &writerClientConfig{},
+		},
+		{
+			desc: "multiplex enable",
+			options: []option.ClientOption{
+				WithMultiplexing(),
+			},
+			want: &writerClientConfig{
+				useMultiplex:         true,
+				maxMultiplexPoolSize: 1,
+			},
+		},
+		{
+			desc: "multiplex max",
+			options: []option.ClientOption{
+				WithMultiplexPoolLimit(99),
+			},
+			want: &writerClientConfig{
+				maxMultiplexPoolSize: 99,
+			},
+		},
+		{
+			desc: "default requests",
+			options: []option.ClientOption{
+				WithDefaultInflightRequests(42),
+			},
+			want: &writerClientConfig{
+				defaultInflightRequests: 42,
+			},
+		},
+		{
+			desc: "default bytes",
+			options: []option.ClientOption{
+				WithDefaultInflightBytes(123),
+			},
+			want: &writerClientConfig{
+				defaultInflightBytes: 123,
+			},
+		},
+		{
+			desc: "default call options",
+			options: []option.ClientOption{
+				WithDefaultAppendRowsCallOption(gax.WithGRPCOptions(grpc.MaxCallSendMsgSize(1))),
+			},
+			want: &writerClientConfig{
+				defaultAppendRowsCallOptions: []gax.CallOption{
+					gax.WithGRPCOptions(grpc.MaxCallSendMsgSize(1)),
+				},
+			},
+		},
+		{
+			desc: "unusual values",
+			options: []option.ClientOption{
+				WithMultiplexing(),
+				WithMultiplexPoolLimit(-8),
+				WithDefaultInflightBytes(-1),
+				WithDefaultInflightRequests(-99),
+			},
+			want: &writerClientConfig{
+				useMultiplex:            true,
+				maxMultiplexPoolSize:    1,
+				defaultInflightRequests: 0,
+				defaultInflightBytes:    0,
+			},
+		},
+		{
+			desc: "multiple options",
+			options: []option.ClientOption{
+				WithMultiplexing(),
+				WithMultiplexPoolLimit(10),
+				WithDefaultInflightRequests(99),
+				WithDefaultInflightBytes(12345),
+				WithDefaultAppendRowsCallOption(gax.WithGRPCOptions(grpc.MaxCallSendMsgSize(1))),
+			},
+			want: &writerClientConfig{
+				useMultiplex:            true,
+				maxMultiplexPoolSize:    10,
+				defaultInflightRequests: 99,
+				defaultInflightBytes:    12345,
+				defaultAppendRowsCallOptions: []gax.CallOption{
+					gax.WithGRPCOptions(grpc.MaxCallSendMsgSize(1)),
+				},
+			},
+		},
+	}
+	for _, tc := range testCases {
+		gotCfg := newWriterClientConfig(tc.options...)
+
+		if diff := cmp.Diff(gotCfg, tc.want, cmp.AllowUnexported(writerClientConfig{})); diff != "" {
+			t.Errorf("diff in case (%s):\n%v", tc.desc, diff)
+		}
+	}
+}
 
 func TestWriterOptions(t *testing.T) {
 
@@ -73,18 +174,7 @@ func TestWriterOptions(t *testing.T) {
 				ms := &ManagedStream{
 					streamSettings: defaultStreamSettings(),
 				}
-				ms.streamSettings.TraceID = fmt.Sprintf("go-managedwriter:%s foo", internal.Version)
-				return ms
-			}(),
-		},
-		{
-			desc:    "WithoutTraceID",
-			options: []WriterOption{},
-			want: func() *ManagedStream {
-				ms := &ManagedStream{
-					streamSettings: defaultStreamSettings(),
-				}
-				ms.streamSettings.TraceID = fmt.Sprintf("go-managedwriter:%s", internal.Version)
+				ms.streamSettings.TraceID = "foo"
 				return ms
 			}(),
 		},
@@ -116,10 +206,9 @@ func TestWriterOptions(t *testing.T) {
 			want: func() *ManagedStream {
 				ms := &ManagedStream{
 					streamSettings: defaultStreamSettings(),
-					callOptions: []gax.CallOption{
-						gax.WithGRPCOptions(grpc.MaxCallSendMsgSize(1)),
-					},
 				}
+				ms.streamSettings.appendCallOptions = append(ms.streamSettings.appendCallOptions,
+					gax.WithGRPCOptions(grpc.MaxCallSendMsgSize(1)))
 				return ms
 			}(),
 		},
@@ -148,7 +237,7 @@ func TestWriterOptions(t *testing.T) {
 				}
 				ms.streamSettings.MaxInflightBytes = 5
 				ms.streamSettings.streamType = PendingStream
-				ms.streamSettings.TraceID = fmt.Sprintf("go-managedwriter:%s traceid", internal.Version)
+				ms.streamSettings.TraceID = "traceid"
 				ms.retry = newStatelessRetryer()
 				return ms
 			}(),

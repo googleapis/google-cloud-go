@@ -1,6 +1,34 @@
 # Changes
 
 
+## [1.7.1](https://github.com/googleapis/google-cloud-go/compare/dataplex/v1.7.0...dataplex/v1.7.1) (2023-05-08)
+
+
+### Bug Fixes
+
+* **dataplex:** Update grpc to v1.55.0 ([1147ce0](https://github.com/googleapis/google-cloud-go/commit/1147ce02a990276ca4f8ab7a1ab65c14da4450ef))
+
+## [1.7.0](https://github.com/googleapis/google-cloud-go/compare/dataplex/v1.6.0...dataplex/v1.7.0) (2023-05-03)
+
+
+### Features
+
+* **dataplex:** Added new Dataplex APIs and new features for existing APIs (e.g. DataScans) ([d5d1fe9](https://github.com/googleapis/google-cloud-go/commit/d5d1fe96c9cf3cc3bb0e05fb75297a68bbbd8e41))
+
+## [1.6.0](https://github.com/googleapis/google-cloud-go/compare/dataplex/v1.5.2...dataplex/v1.6.0) (2023-03-15)
+
+
+### Features
+
+* **dataplex:** Update iam and longrunning deps ([91a1f78](https://github.com/googleapis/google-cloud-go/commit/91a1f784a109da70f63b96414bba8a9b4254cddd))
+
+## [1.5.2](https://github.com/googleapis/google-cloud-go/compare/dataplex/v1.5.1...dataplex/v1.5.2) (2023-02-14)
+
+
+### Documentation
+
+* **dataplex:** Improvements to DataScan API documentation ([f1c3ec7](https://github.com/googleapis/google-cloud-go/commit/f1c3ec753259c5c5d083f1f06960f77327b7ca61))
+
 ## [1.5.1](https://github.com/googleapis/google-cloud-go/compare/dataplex/v1.5.0...dataplex/v1.5.1) (2023-01-10)
 
 

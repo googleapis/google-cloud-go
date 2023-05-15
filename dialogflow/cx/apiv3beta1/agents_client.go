@@ -29,6 +29,7 @@ import (
 	cxpb "cloud.google.com/go/dialogflow/cx/apiv3beta1/cxpb"
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
@@ -37,7 +38,6 @@ import (
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -725,7 +725,7 @@ func (c *agentsGRPCClient) GetAgent(ctx context.Context, req *cxpb.GetAgentReque
 
 func (c *agentsGRPCClient) CreateAgent(ctx context.Context, req *cxpb.CreateAgentRequest, opts ...gax.CallOption) (*cxpb.Agent, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		cctx, cancel := context.WithTimeout(ctx, 180000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}

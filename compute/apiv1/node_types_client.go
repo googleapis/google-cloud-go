@@ -24,6 +24,7 @@ import (
 	"net/http"
 	"net/url"
 	"sort"
+	"time"
 
 	computepb "cloud.google.com/go/compute/apiv1/computepb"
 	gax "github.com/googleapis/gax-go/v2"
@@ -49,9 +50,39 @@ type NodeTypesCallOptions struct {
 
 func defaultNodeTypesRESTCallOptions() *NodeTypesCallOptions {
 	return &NodeTypesCallOptions{
-		AggregatedList: []gax.CallOption{},
-		Get:            []gax.CallOption{},
-		List:           []gax.CallOption{},
+		AggregatedList: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
+		Get: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
+		List: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
 	}
 }
 
@@ -105,7 +136,7 @@ func (c *NodeTypesClient) AggregatedList(ctx context.Context, req *computepb.Agg
 	return c.internalClient.AggregatedList(ctx, req, opts...)
 }
 
-// Get returns the specified node type. Gets a list of available node types by making a list() request.
+// Get returns the specified node type.
 func (c *NodeTypesClient) Get(ctx context.Context, req *computepb.GetNodeTypeRequest, opts ...gax.CallOption) (*computepb.NodeType, error) {
 	return c.internalClient.Get(ctx, req, opts...)
 }
@@ -290,7 +321,7 @@ func (c *nodeTypesRESTClient) AggregatedList(ctx context.Context, req *computepb
 	return it
 }
 
-// Get returns the specified node type. Gets a list of available node types by making a list() request.
+// Get returns the specified node type.
 func (c *nodeTypesRESTClient) Get(ctx context.Context, req *computepb.GetNodeTypeRequest, opts ...gax.CallOption) (*computepb.NodeType, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {

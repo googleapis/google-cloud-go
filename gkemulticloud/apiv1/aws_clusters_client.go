@@ -26,12 +26,12 @@ import (
 	gkemulticloudpb "cloud.google.com/go/gkemulticloud/apiv1/gkemulticloudpb"
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -224,7 +224,7 @@ func (c *AwsClustersClient) Connection() *grpc.ClientConn {
 }
 
 // CreateAwsCluster creates a new AwsCluster
-// resource on a given GCP project and region.
+// resource on a given Google Cloud Platform project and region.
 //
 // If successful, the response contains a newly created
 // Operation resource that can be

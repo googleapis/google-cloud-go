@@ -25,6 +25,7 @@ import (
 	"net/http"
 	"net/url"
 	"sort"
+	"time"
 
 	computepb "cloud.google.com/go/compute/apiv1/computepb"
 	gax "github.com/googleapis/gax-go/v2"
@@ -52,11 +53,41 @@ type TargetInstancesCallOptions struct {
 
 func defaultTargetInstancesRESTCallOptions() *TargetInstancesCallOptions {
 	return &TargetInstancesCallOptions{
-		AggregatedList: []gax.CallOption{},
-		Delete:         []gax.CallOption{},
-		Get:            []gax.CallOption{},
-		Insert:         []gax.CallOption{},
-		List:           []gax.CallOption{},
+		AggregatedList: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
+		Delete: []gax.CallOption{},
+		Get: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
+		Insert: []gax.CallOption{},
+		List: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
 	}
 }
 
@@ -117,7 +148,7 @@ func (c *TargetInstancesClient) Delete(ctx context.Context, req *computepb.Delet
 	return c.internalClient.Delete(ctx, req, opts...)
 }
 
-// Get returns the specified TargetInstance resource. Gets a list of available target instances by making a list() request.
+// Get returns the specified TargetInstance resource.
 func (c *TargetInstancesClient) Get(ctx context.Context, req *computepb.GetTargetInstanceRequest, opts ...gax.CallOption) (*computepb.TargetInstance, error) {
 	return c.internalClient.Get(ctx, req, opts...)
 }
@@ -391,7 +422,7 @@ func (c *targetInstancesRESTClient) Delete(ctx context.Context, req *computepb.D
 	return op, nil
 }
 
-// Get returns the specified TargetInstance resource. Gets a list of available target instances by making a list() request.
+// Get returns the specified TargetInstance resource.
 func (c *targetInstancesRESTClient) Get(ctx context.Context, req *computepb.GetTargetInstanceRequest, opts ...gax.CallOption) (*computepb.TargetInstance, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {

@@ -1,13 +1,13 @@
 # Default owner for all directories not owned by others
 *                       @googleapis/yoshi-go-admins
 
-/bigtable/              @telpirion @googleapis/api-bigtable @googleapis/yoshi-go-admins
-/bigtable/cmd/cbt       @igorbernstein2 @telpirion @googleapis/api-bigtable @googleapis/yoshi-go-admins
-/bigtable/cmd/emulator  @igorbernstein2 @telpirion @googleapis/api-bigtable @googleapis/yoshi-go-admins
-/bigtable/bttest        @igorbernstein2 @telpirion @googleapis/api-bigtable @googleapis/yoshi-go-admins
+/bigtable/              @bhshkh @googleapis/api-bigtable @googleapis/yoshi-go-admins
+/bigtable/cmd/cbt       @igorbernstein2 @bhshkh @googleapis/api-bigtable @googleapis/yoshi-go-admins
+/bigtable/cmd/emulator  @igorbernstein2 @bhshkh @googleapis/api-bigtable @googleapis/yoshi-go-admins
+/bigtable/bttest        @igorbernstein2 @bhshkh @googleapis/api-bigtable @googleapis/yoshi-go-admins
 /bigquery/              @googleapis/api-bigquery @googleapis/yoshi-go-admins
-/datastore/             @telpirion @googleapis/cloud-native-db-dpes @googleapis/yoshi-go-admins
-/firestore/             @telpirion @googleapis/cloud-native-db-dpes @googleapis/yoshi-go-admins
+/datastore/             @bhshkh @googleapis/cloud-native-db-dpes @googleapis/yoshi-go-admins
+/firestore/             @bhshkh @googleapis/cloud-native-db-dpes @googleapis/yoshi-go-admins
 /pubsub/                @googleapis/api-pubsub @googleapis/yoshi-go-admins @shollyman
 /pubsublite/            @googleapis/api-pubsub @googleapis/yoshi-go-admins @shollyman
 /spanner/               @googleapis/api-spanner-go @googleapis/yoshi-go-admins

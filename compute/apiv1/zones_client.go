@@ -23,6 +23,7 @@ import (
 	"math"
 	"net/http"
 	"net/url"
+	"time"
 
 	computepb "cloud.google.com/go/compute/apiv1/computepb"
 	gax "github.com/googleapis/gax-go/v2"
@@ -47,8 +48,28 @@ type ZonesCallOptions struct {
 
 func defaultZonesRESTCallOptions() *ZonesCallOptions {
 	return &ZonesCallOptions{
-		Get:  []gax.CallOption{},
-		List: []gax.CallOption{},
+		Get: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
+		List: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
 	}
 }
 
@@ -96,7 +117,7 @@ func (c *ZonesClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// Get returns the specified Zone resource. Gets a list of available zones by making a list() request.
+// Get returns the specified Zone resource.
 func (c *ZonesClient) Get(ctx context.Context, req *computepb.GetZoneRequest, opts ...gax.CallOption) (*computepb.Zone, error) {
 	return c.internalClient.Get(ctx, req, opts...)
 }
@@ -175,7 +196,7 @@ func (c *zonesRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 
-// Get returns the specified Zone resource. Gets a list of available zones by making a list() request.
+// Get returns the specified Zone resource.
 func (c *zonesRESTClient) Get(ctx context.Context, req *computepb.GetZoneRequest, opts ...gax.CallOption) (*computepb.Zone, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {

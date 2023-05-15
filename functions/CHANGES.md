@@ -1,5 +1,34 @@
 # Changes
 
+
+## [1.13.1](https://github.com/googleapis/google-cloud-go/compare/functions/v1.13.0...functions/v1.13.1) (2023-05-08)
+
+
+### Bug Fixes
+
+* **functions:** Update grpc to v1.55.0 ([1147ce0](https://github.com/googleapis/google-cloud-go/commit/1147ce02a990276ca4f8ab7a1ab65c14da4450ef))
+
+## [1.13.0](https://github.com/googleapis/google-cloud-go/compare/functions/v1.12.0...functions/v1.13.0) (2023-04-04)
+
+
+### Features
+
+* **functions:** Promote v2 to GA ([#7642](https://github.com/googleapis/google-cloud-go/issues/7642)) ([e68abb2](https://github.com/googleapis/google-cloud-go/commit/e68abb2236a4f653ec3723ae2f83e8ccf2dff8ae))
+
+## [1.12.0](https://github.com/googleapis/google-cloud-go/compare/functions/v1.11.0...functions/v1.12.0) (2023-03-22)
+
+
+### Features
+
+* **functions:** Add `available_cpu ` field ([499b489](https://github.com/googleapis/google-cloud-go/commit/499b489d8d6bc8db203c864db97f1462bbeff3d2))
+
+## [1.11.0](https://github.com/googleapis/google-cloud-go/compare/functions/v1.10.0...functions/v1.11.0) (2023-03-15)
+
+
+### Features
+
+* **functions:** Update iam and longrunning deps ([91a1f78](https://github.com/googleapis/google-cloud-go/commit/91a1f784a109da70f63b96414bba8a9b4254cddd))
+
 ## [1.10.0](https://github.com/googleapis/google-cloud-go/compare/functions/v1.9.0...functions/v1.10.0) (2023-01-04)
 
 

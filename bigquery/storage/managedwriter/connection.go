@@ -16,7 +16,9 @@ package managedwriter
 
 import (
 	"context"
+	"errors"
 	"fmt"
+	"io"
 	"sync"
 
 	"cloud.google.com/go/bigquery/storage/apiv1/storagepb"
@@ -24,7 +26,6 @@ import (
 	"go.opencensus.io/tag"
 	"google.golang.org/grpc/codes"
 	grpcstatus "google.golang.org/grpc/status"
-	"google.golang.org/protobuf/proto"
 )
 
 const (
@@ -33,14 +34,17 @@ const (
 	writerIDPrefix string = "writer"
 )
 
+var (
+	errNoRouterForPool = errors.New("no router for connection pool")
+)
+
 // connectionPool represents a pooled set of connections.
 //
 // The pool retains references to connections, and maintains the mapping between writers
 // and connections.
-//
-// TODO: connection and writer mappings will be added in a subsequent PR.
 type connectionPool struct {
-	id string
+	id       string
+	location string // BQ region associated with this pool.
 
 	// the pool retains the long-lived context responsible for opening/maintaining bidi connections.
 	ctx    context.Context
@@ -52,8 +56,8 @@ type connectionPool struct {
 	// connection.  Opening the connection is a stateless operation.
 	open func(opts ...gax.CallOption) (storagepb.BigQueryWrite_AppendRowsClient, error)
 
-	// We specify one set of calloptions for the pool.
-	// All connections in the pool open with the same call options.
+	// We specify default calloptions for the pool.
+	// Explicit connections may have their own calloptions as well.
 	callOptions []gax.CallOption
 
 	router poolRouter // poolManager makes the decisions about connections and routing.
@@ -61,14 +65,68 @@ type connectionPool struct {
 	retry *statelessRetryer // default retryer for the pool.
 }
 
-// processWrite is responsible for routing a write request to an appropriate connection.  It's used by ManagedStream instances
-// to send writes without awareness of individual connections.
-func (pool *connectionPool) processWrite(pw *pendingWrite) error {
-	conn, err := pool.router.pickConnection(pw)
-	if err != nil {
+// activateRouter handles wiring up a connection pool and it's router.
+func (pool *connectionPool) activateRouter(rtr poolRouter) error {
+	if pool.router != nil {
+		return fmt.Errorf("router already activated")
+	}
+	if err := rtr.poolAttach(pool); err != nil {
+		return fmt.Errorf("router rejected attach: %w", err)
+	}
+	pool.router = rtr
+	return nil
+}
+
+func (pool *connectionPool) Close() error {
+	// Signal router and cancel context, which should propagate to all writers.
+	var err error
+	if pool.router != nil {
+		err = pool.router.poolDetach()
+	}
+	if cancel := pool.cancel; cancel != nil {
+		cancel()
+	}
+	return err
+}
+
+// pickConnection is used by writers to select a connection.
+func (pool *connectionPool) selectConn(pw *pendingWrite) (*connection, error) {
+	if pool.router == nil {
+		return nil, errNoRouterForPool
+	}
+	return pool.router.pickConnection(pw)
+}
+
+func (pool *connectionPool) addWriter(writer *ManagedStream) error {
+	if p := writer.pool; p != nil {
+		return fmt.Errorf("writer already attached to pool %q", p.id)
+	}
+	if pool.router == nil {
+		return errNoRouterForPool
+	}
+	if err := pool.router.writerAttach(writer); err != nil {
 		return err
 	}
-	return conn.appendWithRetry(pw)
+	writer.pool = pool
+	return nil
+}
+
+func (pool *connectionPool) removeWriter(writer *ManagedStream) error {
+	if pool.router == nil {
+		return errNoRouterForPool
+	}
+	detachErr := pool.router.writerDetach(writer)
+	return detachErr
+}
+
+func (cp *connectionPool) mergeCallOptions(co *connection) []gax.CallOption {
+	if co == nil {
+		return cp.callOptions
+	}
+	var mergedOpts []gax.CallOption
+	mergedOpts = append(mergedOpts, cp.callOptions...)
+	mergedOpts = append(mergedOpts, co.callOptions...)
+	return mergedOpts
 }
 
 // openWithRetry establishes a new bidi stream and channel pair.  It is used by connection objects
@@ -79,28 +137,30 @@ func (cp *connectionPool) openWithRetry(co *connection) (storagepb.BigQueryWrite
 	r := &unaryRetryer{}
 	for {
 		recordStat(cp.ctx, AppendClientOpenCount, 1)
-		arc, err := cp.open(cp.callOptions...)
-		bo, shouldRetry := r.Retry(err)
-		if err != nil && shouldRetry {
-			recordStat(cp.ctx, AppendClientOpenRetryCount, 1)
-			if err := gax.Sleep(cp.ctx, bo); err != nil {
+		arc, err := cp.open(cp.mergeCallOptions(co)...)
+		if err != nil {
+			bo, shouldRetry := r.Retry(err)
+			if shouldRetry {
+				recordStat(cp.ctx, AppendClientOpenRetryCount, 1)
+				if err := gax.Sleep(cp.ctx, bo); err != nil {
+					return nil, nil, err
+				}
+				continue
+			} else {
+				// non-retriable error while opening
 				return nil, nil, err
 			}
-			continue
 		}
-		if err == nil {
-			// The channel relationship with its ARC is 1:1.  If we get a new ARC, create a new pending
-			// write channel and fire up the associated receive processor.  The channel ensures that
-			// responses for a connection are processed in the same order that appends were sent.
-			depth := 1000 // default backend queue limit
-			if d := co.fc.maxInsertCount; d > 0 {
-				depth = d
-			}
-			ch := make(chan *pendingWrite, depth)
-			go connRecvProcessor(co, arc, ch)
-			return arc, ch, nil
+		// The channel relationship with its ARC is 1:1.  If we get a new ARC, create a new pending
+		// write channel and fire up the associated receive processor.  The channel ensures that
+		// responses for a connection are processed in the same order that appends were sent.
+		depth := 1000 // default backend queue limit
+		if d := co.fc.maxInsertCount; d > 0 {
+			depth = d
 		}
-		return arc, nil, err
+		ch := make(chan *pendingWrite, depth)
+		go connRecvProcessor(co, arc, ch)
+		return arc, ch, nil
 	}
 }
 
@@ -122,32 +182,152 @@ type connection struct {
 	id   string
 	pool *connectionPool // each connection retains a reference to its owning pool.
 
-	fc     *flowController // each connection has it's own flow controller.
-	ctx    context.Context // retained context for maintaining the connection, derived from the owning pool.
-	cancel context.CancelFunc
+	fc          *flowController  // each connection has it's own flow controller.
+	callOptions []gax.CallOption // custom calloptions for this connection.
+	ctx         context.Context  // retained context for maintaining the connection, derived from the owning pool.
+	cancel      context.CancelFunc
 
-	retry *statelessRetryer
+	retry     *statelessRetryer
+	optimizer sendOptimizer
 
 	mu        sync.Mutex
 	arc       *storagepb.BigQueryWrite_AppendRowsClient // reference to the grpc connection (send, recv, close)
 	reconnect bool                                      //
 	err       error                                     // terminal connection error
 	pending   chan *pendingWrite
+
+	loadBytesThreshold int
+	loadCountThreshold int
 }
 
-func newConnection(ctx context.Context, pool *connectionPool) *connection {
-	// create and retain a cancellable context.
-	connCtx, cancel := context.WithCancel(ctx)
-	fc := newFlowController(0, 0)
-	if pool != nil {
-		fc = copyFlowController(pool.baseFlowController)
+type connectionMode string
+
+const (
+	multiplexConnectionMode connectionMode = "MULTIPLEX"
+	simplexConnectionMode   connectionMode = "SIMPLEX"
+	verboseConnectionMode   connectionMode = "VERBOSE"
+)
+
+func newConnection(pool *connectionPool, mode connectionMode, settings *streamSettings) *connection {
+	if pool == nil {
+		return nil
 	}
+	// create and retain a cancellable context.
+	connCtx, cancel := context.WithCancel(pool.ctx)
+
+	// Resolve local overrides for flow control and call options
+	fcRequests := 0
+	fcBytes := 0
+	var opts []gax.CallOption
+
+	if pool.baseFlowController != nil {
+		fcRequests = pool.baseFlowController.maxInsertCount
+		fcBytes = pool.baseFlowController.maxInsertBytes
+	}
+	if settings != nil {
+		if settings.MaxInflightRequests > 0 {
+			fcRequests = settings.MaxInflightRequests
+		}
+		if settings.MaxInflightBytes > 0 {
+			fcBytes = settings.MaxInflightBytes
+		}
+		opts = settings.appendCallOptions
+	}
+	fc := newFlowController(fcRequests, fcBytes)
+	countLimit, byteLimit := computeLoadThresholds(fc)
+
 	return &connection{
-		id:     newUUID(connIDPrefix),
-		pool:   pool,
-		fc:     fc,
-		ctx:    connCtx,
-		cancel: cancel,
+		id:                 newUUID(connIDPrefix),
+		pool:               pool,
+		fc:                 fc,
+		ctx:                connCtx,
+		cancel:             cancel,
+		optimizer:          optimizer(mode),
+		loadBytesThreshold: byteLimit,
+		loadCountThreshold: countLimit,
+		callOptions:        opts,
+	}
+}
+
+func computeLoadThresholds(fc *flowController) (countLimit, byteLimit int) {
+	countLimit = 1000
+	byteLimit = 0
+	if fc != nil {
+		if fc.maxInsertBytes > 0 {
+			// 20% of byte limit
+			byteLimit = int(float64(fc.maxInsertBytes) * 0.2)
+		}
+		if fc.maxInsertCount > 0 {
+			// MIN(1, 20% of insert limit)
+			countLimit = int(float64(fc.maxInsertCount) * 0.2)
+			if countLimit < 1 {
+				countLimit = 1
+			}
+		}
+	}
+	return
+}
+
+func optimizer(mode connectionMode) sendOptimizer {
+	switch mode {
+	case multiplexConnectionMode:
+		return &multiplexOptimizer{}
+	case verboseConnectionMode:
+		return &verboseOptimizer{}
+	case simplexConnectionMode:
+		return &simplexOptimizer{}
+	}
+	return nil
+}
+
+// release is used to signal flow control release when a write is no longer in flight.
+func (co *connection) release(pw *pendingWrite) {
+	co.fc.release(pw.reqSize)
+}
+
+// signal indicating that multiplex traffic level is high enough to warrant adding more connections.
+func (co *connection) isLoaded() bool {
+	if co.loadCountThreshold > 0 && co.fc.count() > co.loadCountThreshold {
+		return true
+	}
+	if co.loadBytesThreshold > 0 && co.fc.bytes() > co.loadBytesThreshold {
+		return true
+	}
+	return false
+}
+
+// curLoad is a representation of connection load.
+// Its primary purpose is comparing the load of different connections.
+func (co *connection) curLoad() float64 {
+	load := float64(co.fc.count()) / float64(co.loadCountThreshold+1)
+	if co.fc.maxInsertBytes > 0 {
+		load += (float64(co.fc.bytes()) / float64(co.loadBytesThreshold+1))
+		load = load / 2
+	}
+	return load
+}
+
+// close closes a connection.
+func (co *connection) close() {
+	co.mu.Lock()
+	defer co.mu.Unlock()
+	// first, cancel the retained context.
+	if co.cancel != nil {
+		co.cancel()
+		co.cancel = nil
+	}
+	// close sending if we have a real ARC.
+	if co.arc != nil && (*co.arc) != (storagepb.BigQueryWrite_AppendRowsClient)(nil) {
+		(*co.arc).CloseSend()
+		co.arc = nil
+	}
+	// mark terminal error if not already set.
+	if co.err != nil {
+		co.err = io.EOF
+	}
+	// signal pending channel close.
+	if co.pending != nil {
+		close(co.pending)
 	}
 }
 
@@ -155,6 +335,11 @@ func newConnection(ctx context.Context, pool *connectionPool) *connection {
 func (co *connection) lockingAppend(pw *pendingWrite) error {
 	// Don't both calling/retrying if this append's context is already expired.
 	if err := pw.reqCtx.Err(); err != nil {
+		return err
+	}
+
+	if err := co.fc.acquire(pw.reqCtx, pw.reqSize); err != nil {
+		// We've failed to acquire.  This may get retried on a different connection, so marking the write done is incorrect.
 		return err
 	}
 
@@ -177,21 +362,34 @@ func (co *connection) lockingAppend(pw *pendingWrite) error {
 	var ch chan *pendingWrite
 	var err error
 
-	arc, ch, err = co.getStream(arc, false)
+	// Handle promotion of per-request schema to default schema in the case of updates.
+	// Additionally, we check multiplex status as schema changes for explicit streams
+	// require reconnect, whereas multiplex does not.
+	forceReconnect := false
+	if pw.writer != nil && pw.descVersion != nil && pw.descVersion.isNewer(pw.writer.curDescVersion) {
+		pw.writer.curDescVersion = pw.descVersion
+		if !canMultiplex(pw.writeStreamID) {
+			forceReconnect = true
+		}
+	}
+
+	arc, ch, err = co.getStream(arc, forceReconnect)
 	if err != nil {
 		return err
 	}
 
-	// TODO: optimization logic here
-	// Here, we need to compare values for the previous append and compare them to the pending write.
-	// If they are matches, we can clear fields in the request that aren't needed (e.g. not resending descriptor,
-	// stream ID, etc.)
-	//
-	// Current implementation just clones the request.
-	req := proto.Clone(pw.request).(*storagepb.AppendRowsRequest)
-
 	pw.attemptCount = pw.attemptCount + 1
-	if err = (*arc).Send(req); err != nil {
+	if co.optimizer != nil {
+		err = co.optimizer.optimizeSend((*arc), pw)
+		if err != nil {
+			// Reset optimizer state on error.
+			co.optimizer.signalReset()
+		}
+	} else {
+		// No optimizer present, send a fully populated request.
+		err = (*arc).Send(pw.constructFullRequest(true))
+	}
+	if err != nil {
 		if shouldReconnect(err) {
 			// if we think this connection is unhealthy, force a reconnect on the next send.
 			co.reconnect = true
@@ -201,7 +399,12 @@ func (co *connection) lockingAppend(pw *pendingWrite) error {
 
 	// Compute numRows, once we pass ownership to the channel the request may be
 	// cleared.
-	numRows := int64(len(pw.request.GetProtoRows().Rows.GetSerializedRows()))
+	var numRows int64
+	if r := pw.req.GetProtoRows(); r != nil {
+		if pr := r.GetRows(); pr != nil {
+			numRows = int64(len(pr.GetSerializedRows()))
+		}
+	}
 	statsOnExit = func() {
 		// these will get recorded once we exit the critical section.
 		// TODO: resolve open questions around what labels should be attached (connection, streamID, etc)
@@ -235,7 +438,7 @@ func (co *connection) getStream(arc *storagepb.BigQueryWrite_AppendRowsClient, f
 		return co.arc, co.pending, nil
 	}
 	// We need to (re)open a connection.  Cleanup previous connection and channel if they are present.
-	if co.arc != nil {
+	if co.arc != nil && (*co.arc) != (storagepb.BigQueryWrite_AppendRowsClient)(nil) {
 		(*co.arc).CloseSend()
 	}
 	if co.pending != nil {
@@ -243,38 +446,16 @@ func (co *connection) getStream(arc *storagepb.BigQueryWrite_AppendRowsClient, f
 	}
 
 	co.arc = new(storagepb.BigQueryWrite_AppendRowsClient)
+	// We're going to (re)open the connection, so clear any optimizer state.
+	if co.optimizer != nil {
+		co.optimizer.signalReset()
+	}
 	*co.arc, co.pending, co.err = co.pool.openWithRetry(co)
 	return co.arc, co.pending, co.err
 }
 
-// appendWithRetry handles the details of adding sending an append request on a connection.  Retries here address
-// problems with sending the request.  The processor on the connection is responsible for retrying based on the
-// response received from the service.
-func (co *connection) appendWithRetry(pw *pendingWrite) error {
-	appendRetryer := resolveRetry(pw, co.pool)
-	for {
-		appendErr := co.lockingAppend(pw)
-		if appendErr != nil {
-			// Append yielded an error.  Retry by continuing or return.
-			status := grpcstatus.Convert(appendErr)
-			if status != nil {
-				ctx, _ := tag.New(co.ctx, tag.Insert(keyError, status.Code().String()))
-				recordStat(ctx, AppendRequestErrors, 1)
-			}
-			bo, shouldRetry := appendRetryer.Retry(appendErr, pw.attemptCount)
-			if shouldRetry {
-				if err := gax.Sleep(co.ctx, bo); err != nil {
-					return err
-				}
-				continue
-			}
-			// Mark the pending write done.  This will not be returned to the user, they'll receive the returned error.
-			pw.markDone(nil, appendErr, co.fc)
-			return appendErr
-		}
-		return nil
-	}
-}
+// enables testing
+type streamClientFunc func(context.Context, ...gax.CallOption) (storagepb.BigQueryWrite_AppendRowsClient, error)
 
 // connRecvProcessor is used to propagate append responses back up with the originating write requests.  It
 // It runs as a goroutine.  A connection object allows for reconnection, and each reconnection establishes a new
@@ -290,7 +471,10 @@ func connRecvProcessor(co *connection, arc storagepb.BigQueryWrite_AppendRowsCli
 				if !ok {
 					return
 				}
-				pw.markDone(nil, co.ctx.Err(), co.fc)
+				// It's unlikely this connection will recover here, but for correctness keep the flow controller
+				// state correct by releasing.
+				co.release(pw)
+				pw.markDone(nil, co.ctx.Err())
 			}
 		case nextWrite, ok := <-ch:
 			if !ok {
@@ -299,10 +483,9 @@ func connRecvProcessor(co *connection, arc storagepb.BigQueryWrite_AppendRowsCli
 			}
 			// block until we get a corresponding response or err from stream.
 			resp, err := arc.Recv()
+			co.release(nextWrite)
 			if err != nil {
-				// TODO: wire in retryer in a later refactor.
-				// For now, we go back to old behavior of simply marking with error.
-				nextWrite.markDone(resp, err, co.fc)
+				nextWrite.writer.processRetry(nextWrite, co, nil, err)
 				continue
 			}
 			// Record that we did in fact get a response from the backend.
@@ -315,40 +498,13 @@ func connRecvProcessor(co *connection, arc storagepb.BigQueryWrite_AppendRowsCli
 					recordStat(tagCtx, AppendResponseErrors, 1)
 				}
 				respErr := grpcstatus.ErrorProto(status)
-				// TODO: wire in retryer for backend response here in a future refactor.
-				// For now, go back to old behavior of marking with terminal error.
-				nextWrite.markDone(resp, respErr, co.fc)
+
+				nextWrite.writer.processRetry(nextWrite, co, resp, respErr)
+
 				continue
 			}
 			// We had no error in the receive or in the response.  Mark the write done.
-			nextWrite.markDone(resp, nil, co.fc)
+			nextWrite.markDone(resp, nil)
 		}
-	}
-}
-
-type poolRouter interface {
-	pickConnection(pw *pendingWrite) (*connection, error)
-}
-
-// simpleRouter is a primitive traffic router that routes all traffic to its single connection instance.
-//
-// This router is appropriate for our migration case, where an single ManagedStream writer implicitly has
-// a connection pool and a connection for its explicit use.
-type simpleRouter struct {
-	pool *connectionPool
-	conn *connection
-}
-
-func (rtr *simpleRouter) pickConnection(pw *pendingWrite) (*connection, error) {
-	if rtr.conn != nil {
-		return rtr.conn, nil
-	}
-	return nil, fmt.Errorf("no connection available")
-}
-
-func newSimpleRouter(pool *connectionPool) *simpleRouter {
-	return &simpleRouter{
-		pool: pool,
-		conn: newConnection(pool.ctx, pool),
 	}
 }

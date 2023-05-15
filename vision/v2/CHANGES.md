@@ -1,5 +1,20 @@
 # Changes
 
+## [2.7.1](https://github.com/googleapis/google-cloud-go/compare/vision/v2.7.0...vision/v2.7.1) (2023-05-08)
+
+
+### Bug Fixes
+
+* **vision/v2:** Update grpc to v1.55.0 ([1147ce0](https://github.com/googleapis/google-cloud-go/commit/1147ce02a990276ca4f8ab7a1ab65c14da4450ef))
+* **vision:** Update grpc to v1.55.0 ([1147ce0](https://github.com/googleapis/google-cloud-go/commit/1147ce02a990276ca4f8ab7a1ab65c14da4450ef))
+
+## [2.7.0](https://github.com/googleapis/google-cloud-go/compare/vision/v2.6.0...vision/v2.7.0) (2023-03-15)
+
+
+### Features
+
+* **vision:** Update iam and longrunning deps ([91a1f78](https://github.com/googleapis/google-cloud-go/commit/91a1f784a109da70f63b96414bba8a9b4254cddd))
+
 ## [2.6.0](https://github.com/googleapis/google-cloud-go/compare/vision/v2.5.0...vision/v2.6.0) (2023-01-04)
 
 

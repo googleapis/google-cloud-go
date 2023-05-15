@@ -25,10 +25,13 @@ import (
 )
 
 type downloadOpts struct {
-	client     *storage.Client
-	objectSize int64
-	bucket     string
-	object     string
+	client              *storage.Client
+	objectSize          int64
+	bucket              string
+	object              string
+	rangeStart          int64
+	rangeLength         int64
+	downloadToDirectory string
 }
 
 func downloadBenchmark(ctx context.Context, dopts downloadOpts) (elapsedTime time.Duration, rerr error) {
@@ -41,31 +44,26 @@ func downloadBenchmark(ctx context.Context, dopts downloadOpts) (elapsedTime tim
 	defer func() { elapsedTime = time.Since(start) }()
 
 	// Set additional timeout
-	ctx, cancel := context.WithTimeout(ctx, time.Minute)
+	ctx, cancel := context.WithTimeout(ctx, time.Minute*2)
 	defer cancel()
 
 	// Create file to download to
-	f, err := os.CreateTemp("", objectPrefix)
+	f, err := os.CreateTemp(dopts.downloadToDirectory, objectPrefix)
 	if err != nil {
 		rerr = fmt.Errorf("os.Create: %w", err)
 		return
 	}
 	defer func() {
 		closeErr := f.Close()
-		removeErr := os.Remove(f.Name())
 		// if we don't have another error to return, return error for closing file
-		// if that error is also nil, return removeErr
 		if rerr == nil {
-			rerr = removeErr
-			if closeErr != nil {
-				rerr = closeErr
-			}
+			rerr = closeErr
 		}
 	}()
 
 	// Get reader from object
 	o := dopts.client.Bucket(dopts.bucket).Object(dopts.object)
-	objectReader, err := o.NewReader(ctx)
+	objectReader, err := o.NewRangeReader(ctx, dopts.rangeStart, dopts.rangeLength)
 	if err != nil {
 		rerr = fmt.Errorf("Object(%q).NewReader: %w", o.ObjectName(), err)
 		return
@@ -78,14 +76,19 @@ func downloadBenchmark(ctx context.Context, dopts downloadOpts) (elapsedTime tim
 	}()
 
 	// Download
-	written, err := io.Copy(f, objectReader)
+	read, err := io.Copy(f, objectReader)
 	if err != nil {
 		rerr = fmt.Errorf("io.Copy: %w", err)
 		return
 	}
 
-	if written != dopts.objectSize {
-		rerr = fmt.Errorf("did not read all bytes; read: %d, expected to read: %d", written, dopts.objectSize)
+	expectedReadBytes := dopts.objectSize
+	if dopts.rangeLength > 0 {
+		expectedReadBytes = dopts.rangeLength
+	}
+
+	if read != expectedReadBytes {
+		rerr = fmt.Errorf("did not read all bytes; read: %d, expected to read: %d", read, dopts.objectSize)
 		return
 	}
 

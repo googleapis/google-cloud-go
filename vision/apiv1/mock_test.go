@@ -27,12 +27,12 @@ import (
 	"strings"
 	"testing"
 
+	"cloud.google.com/go/longrunning/autogen/longrunningpb"
+	"cloud.google.com/go/vision/v2/apiv1/visionpb"
 	"github.com/golang/protobuf/proto"
 	"github.com/golang/protobuf/ptypes"
 	emptypb "github.com/golang/protobuf/ptypes/empty"
 	"google.golang.org/api/option"
-	visionpb "google.golang.org/genproto/googleapis/cloud/vision/v1"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	"google.golang.org/grpc"

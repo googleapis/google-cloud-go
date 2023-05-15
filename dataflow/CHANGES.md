@@ -1,5 +1,12 @@
 # Changes
 
+## [0.8.1](https://github.com/googleapis/google-cloud-go/compare/dataflow/v0.8.0...dataflow/v0.8.1) (2023-05-08)
+
+
+### Bug Fixes
+
+* **dataflow:** Update grpc to v1.55.0 ([1147ce0](https://github.com/googleapis/google-cloud-go/commit/1147ce02a990276ca4f8ab7a1ab65c14da4450ef))
+
 ## [0.8.0](https://github.com/googleapis/google-cloud-go/compare/dataflow/v0.7.0...dataflow/v0.8.0) (2023-01-04)
 
 

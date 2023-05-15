@@ -26,8 +26,10 @@ import (
 	"net/url"
 	"time"
 
+	iampb "cloud.google.com/go/iam/apiv1/iampb"
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	resourcemanagerpb "cloud.google.com/go/resourcemanager/apiv3/resourcemanagerpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
@@ -36,8 +38,6 @@ import (
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
-	iampb "google.golang.org/genproto/googleapis/iam/v1"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -60,6 +60,7 @@ type ProjectsCallOptions struct {
 	GetIamPolicy       []gax.CallOption
 	SetIamPolicy       []gax.CallOption
 	TestIamPermissions []gax.CallOption
+	GetOperation       []gax.CallOption
 }
 
 func defaultProjectsGRPCClientOptions() []option.ClientOption {
@@ -117,6 +118,7 @@ func defaultProjectsCallOptions() *ProjectsCallOptions {
 		},
 		SetIamPolicy:       []gax.CallOption{},
 		TestIamPermissions: []gax.CallOption{},
+		GetOperation:       []gax.CallOption{},
 	}
 }
 
@@ -160,6 +162,7 @@ func defaultProjectsRESTCallOptions() *ProjectsCallOptions {
 		},
 		SetIamPolicy:       []gax.CallOption{},
 		TestIamPermissions: []gax.CallOption{},
+		GetOperation:       []gax.CallOption{},
 	}
 }
 
@@ -184,6 +187,7 @@ type internalProjectsClient interface {
 	GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
 	SetIamPolicy(context.Context, *iampb.SetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
 	TestIamPermissions(context.Context, *iampb.TestIamPermissionsRequest, ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error)
+	GetOperation(context.Context, *longrunningpb.GetOperationRequest, ...gax.CallOption) (*longrunningpb.Operation, error)
 }
 
 // ProjectsClient is a client for interacting with Cloud Resource Manager API.
@@ -298,9 +302,12 @@ func (c *ProjectsClient) UpdateProjectOperation(name string) *UpdateProjectOpera
 // Upon success, the Operation.response field will be populated with the
 // moved project.
 //
-// The caller must have resourcemanager.projects.update permission on the
-// project and have resourcemanager.projects.move permission on the
-// project’s current and proposed new parent.
+// The caller must have resourcemanager.projects.move permission on the
+// project, on the project’s current and proposed new parent.
+//
+// If project has no current parent, or it currently does not have an
+// associated organization resource, you will also need the
+// resourcemanager.projects.setIamPolicy permission in the project.
 func (c *ProjectsClient) MoveProject(ctx context.Context, req *resourcemanagerpb.MoveProjectRequest, opts ...gax.CallOption) (*MoveProjectOperation, error) {
 	return c.internalClient.MoveProject(ctx, req, opts...)
 }
@@ -319,7 +326,8 @@ func (c *ProjectsClient) MoveProjectOperation(name string) *MoveProjectOperation
 //
 // This method changes the Project’s lifecycle state from
 // [ACTIVE][google.cloud.resourcemanager.v3.Project.State.ACTIVE (at http://google.cloud.resourcemanager.v3.Project.State.ACTIVE)]
-// to DELETE_REQUESTED.
+// to
+// DELETE_REQUESTED.
 // The deletion starts at an unspecified time,
 // at which point the Project is no longer accessible.
 //
@@ -372,13 +380,15 @@ func (c *ProjectsClient) UndeleteProjectOperation(name string) *UndeleteProjectO
 	return c.internalClient.UndeleteProjectOperation(name)
 }
 
-// GetIamPolicy returns the IAM access control policy for the specified project.
+// GetIamPolicy returns the IAM access control policy for the specified project, in the
+// format projects/{ProjectIdOrNumber} e.g. projects/123.
 // Permission is denied if the policy or the resource do not exist.
 func (c *ProjectsClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
 	return c.internalClient.GetIamPolicy(ctx, req, opts...)
 }
 
-// SetIamPolicy sets the IAM access control policy for the specified project.
+// SetIamPolicy sets the IAM access control policy for the specified project, in the
+// format projects/{ProjectIdOrNumber} e.g. projects/123.
 //
 // CAUTION: This method will replace the existing policy, and cannot be used
 // to append additional IAM settings.
@@ -410,25 +420,27 @@ func (c *ProjectsClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPoli
 //	setIamPolicy();
 //	they must be sent only using the Cloud Platform Console.
 //
-//	Membership changes that leave the project without any owners that have
-//	accepted the Terms of Service (ToS) will be rejected.
-//
 //	If the project is not part of an organization, there must be at least
 //	one owner who has accepted the Terms of Service (ToS) agreement in the
 //	policy. Calling setIamPolicy() to remove the last ToS-accepted owner
 //	from the policy will fail. This restriction also applies to legacy
 //	projects that no longer have owners who have accepted the ToS. Edits to
 //	IAM policies will be rejected until the lack of a ToS-accepting owner is
-//	rectified.
-//
-//	Calling this method requires enabling the App Engine Admin API.
+//	rectified. If the project is part of an organization, you can remove all
+//	owners, potentially making the organization inaccessible.
 func (c *ProjectsClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
 	return c.internalClient.SetIamPolicy(ctx, req, opts...)
 }
 
-// TestIamPermissions returns permissions that a caller has on the specified project.
+// TestIamPermissions returns permissions that a caller has on the specified project, in the
+// format projects/{ProjectIdOrNumber} e.g. projects/123…
 func (c *ProjectsClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermissionsRequest, opts ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error) {
 	return c.internalClient.TestIamPermissions(ctx, req, opts...)
+}
+
+// GetOperation is a utility method from google.longrunning.Operations.
+func (c *ProjectsClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+	return c.internalClient.GetOperation(ctx, req, opts...)
 }
 
 // projectsGRPCClient is a client for interacting with Cloud Resource Manager API over gRPC transport.
@@ -451,6 +463,8 @@ type projectsGRPCClient struct {
 	// It is exposed so that its CallOptions can be modified if required.
 	// Users should not Close this client.
 	LROClient **lroauto.OperationsClient
+
+	operationsClient longrunningpb.OperationsClient
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
@@ -486,6 +500,7 @@ func NewProjectsClient(ctx context.Context, opts ...option.ClientOption) (*Proje
 		disableDeadlines: disableDeadlines,
 		projectsClient:   resourcemanagerpb.NewProjectsClient(connPool),
 		CallOptions:      &client.CallOptions,
+		operationsClient: longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
 
@@ -890,6 +905,23 @@ func (c *projectsGRPCClient) TestIamPermissions(ctx context.Context, req *iampb.
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.projectsClient.TestIamPermissions(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *projectsGRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
 		return err
 	}, opts...)
 	if err != nil {
@@ -1317,9 +1349,12 @@ func (c *projectsRESTClient) UpdateProject(ctx context.Context, req *resourceman
 // Upon success, the Operation.response field will be populated with the
 // moved project.
 //
-// The caller must have resourcemanager.projects.update permission on the
-// project and have resourcemanager.projects.move permission on the
-// project’s current and proposed new parent.
+// The caller must have resourcemanager.projects.move permission on the
+// project, on the project’s current and proposed new parent.
+//
+// If project has no current parent, or it currently does not have an
+// associated organization resource, you will also need the
+// resourcemanager.projects.setIamPolicy permission in the project.
 func (c *projectsRESTClient) MoveProject(ctx context.Context, req *resourcemanagerpb.MoveProjectRequest, opts ...gax.CallOption) (*MoveProjectOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -1395,7 +1430,8 @@ func (c *projectsRESTClient) MoveProject(ctx context.Context, req *resourcemanag
 //
 // This method changes the Project’s lifecycle state from
 // [ACTIVE][google.cloud.resourcemanager.v3.Project.State.ACTIVE (at http://google.cloud.resourcemanager.v3.Project.State.ACTIVE)]
-// to DELETE_REQUESTED.
+// to
+// DELETE_REQUESTED.
 // The deletion starts at an unspecified time,
 // at which point the Project is no longer accessible.
 //
@@ -1556,7 +1592,8 @@ func (c *projectsRESTClient) UndeleteProject(ctx context.Context, req *resourcem
 	}, nil
 }
 
-// GetIamPolicy returns the IAM access control policy for the specified project.
+// GetIamPolicy returns the IAM access control policy for the specified project, in the
+// format projects/{ProjectIdOrNumber} e.g. projects/123.
 // Permission is denied if the policy or the resource do not exist.
 func (c *projectsRESTClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
@@ -1621,7 +1658,8 @@ func (c *projectsRESTClient) GetIamPolicy(ctx context.Context, req *iampb.GetIam
 	return resp, nil
 }
 
-// SetIamPolicy sets the IAM access control policy for the specified project.
+// SetIamPolicy sets the IAM access control policy for the specified project, in the
+// format projects/{ProjectIdOrNumber} e.g. projects/123.
 //
 // CAUTION: This method will replace the existing policy, and cannot be used
 // to append additional IAM settings.
@@ -1653,18 +1691,14 @@ func (c *projectsRESTClient) GetIamPolicy(ctx context.Context, req *iampb.GetIam
 //	setIamPolicy();
 //	they must be sent only using the Cloud Platform Console.
 //
-//	Membership changes that leave the project without any owners that have
-//	accepted the Terms of Service (ToS) will be rejected.
-//
 //	If the project is not part of an organization, there must be at least
 //	one owner who has accepted the Terms of Service (ToS) agreement in the
 //	policy. Calling setIamPolicy() to remove the last ToS-accepted owner
 //	from the policy will fail. This restriction also applies to legacy
 //	projects that no longer have owners who have accepted the ToS. Edits to
 //	IAM policies will be rejected until the lack of a ToS-accepting owner is
-//	rectified.
-//
-//	Calling this method requires enabling the App Engine Admin API.
+//	rectified. If the project is part of an organization, you can remove all
+//	owners, potentially making the organization inaccessible.
 func (c *projectsRESTClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -1728,7 +1762,8 @@ func (c *projectsRESTClient) SetIamPolicy(ctx context.Context, req *iampb.SetIam
 	return resp, nil
 }
 
-// TestIamPermissions returns permissions that a caller has on the specified project.
+// TestIamPermissions returns permissions that a caller has on the specified project, in the
+// format projects/{ProjectIdOrNumber} e.g. projects/123…
 func (c *projectsRESTClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermissionsRequest, opts ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -1759,6 +1794,64 @@ func (c *projectsRESTClient) TestIamPermissions(ctx context.Context, req *iampb.
 			baseUrl.Path = settings.Path
 		}
 		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// GetOperation is a utility method from google.longrunning.Operations.
+func (c *projectsRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v3/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 		if err != nil {
 			return err
 		}

@@ -1,6 +1,20 @@
 # Changes
 
 
+## [1.6.1](https://github.com/googleapis/google-cloud-go/compare/vmmigration/v1.6.0...vmmigration/v1.6.1) (2023-05-08)
+
+
+### Bug Fixes
+
+* **vmmigration:** Update grpc to v1.55.0 ([1147ce0](https://github.com/googleapis/google-cloud-go/commit/1147ce02a990276ca4f8ab7a1ab65c14da4450ef))
+
+## [1.6.0](https://github.com/googleapis/google-cloud-go/compare/vmmigration/v1.5.0...vmmigration/v1.6.0) (2023-03-15)
+
+
+### Features
+
+* **vmmigration:** Update iam and longrunning deps ([91a1f78](https://github.com/googleapis/google-cloud-go/commit/91a1f784a109da70f63b96414bba8a9b4254cddd))
+
 ## [1.5.0](https://github.com/googleapis/google-cloud-go/compare/vmmigration/v1.4.0...vmmigration/v1.5.0) (2023-01-18)
 
 

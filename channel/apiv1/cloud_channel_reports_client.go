@@ -29,6 +29,7 @@ import (
 	channelpb "cloud.google.com/go/channel/apiv1/channelpb"
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
@@ -36,7 +37,6 @@ import (
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/encoding/protojson"
@@ -216,7 +216,8 @@ func (c *CloudChannelReportsClient) GetOperation(ctx context.Context, req *longr
 	return c.internalClient.GetOperation(ctx, req, opts...)
 }
 
-// ListOperations is a utility method from google.longrunning.Operations.
+// ListOperations lists operations that match the specified filter in the request. If
+// the server doesn’t support this method, it returns UNIMPLEMENTED.
 func (c *CloudChannelReportsClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	return c.internalClient.ListOperations(ctx, req, opts...)
 }
@@ -1028,7 +1029,8 @@ func (c *cloudChannelReportsRESTClient) GetOperation(ctx context.Context, req *l
 	return resp, nil
 }
 
-// ListOperations is a utility method from google.longrunning.Operations.
+// ListOperations lists operations that match the specified filter in the request. If
+// the server doesn’t support this method, it returns UNIMPLEMENTED.
 func (c *cloudChannelReportsRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
 	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)

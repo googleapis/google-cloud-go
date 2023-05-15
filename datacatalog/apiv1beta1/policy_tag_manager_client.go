@@ -26,6 +26,7 @@ import (
 	"net/url"
 
 	datacatalogpb "cloud.google.com/go/datacatalog/apiv1beta1/datacatalogpb"
+	iampb "cloud.google.com/go/iam/apiv1/iampb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
@@ -33,7 +34,6 @@ import (
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
-	iampb "google.golang.org/genproto/googleapis/iam/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/encoding/protojson"
@@ -666,11 +666,6 @@ func (c *policyTagManagerRESTClient) CreateTaxonomy(ctx context.Context, req *da
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/taxonomies", req.GetParent())
 
-	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
-
-	baseUrl.RawQuery = params.Encode()
-
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
@@ -725,11 +720,6 @@ func (c *policyTagManagerRESTClient) DeleteTaxonomy(ctx context.Context, req *da
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
-	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
-
-	baseUrl.RawQuery = params.Encode()
-
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
@@ -773,7 +763,6 @@ func (c *policyTagManagerRESTClient) UpdateTaxonomy(ctx context.Context, req *da
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetTaxonomy().GetName())
 
 	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
 		updateMask, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
@@ -852,7 +841,6 @@ func (c *policyTagManagerRESTClient) ListTaxonomies(ctx context.Context, req *da
 		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/taxonomies", req.GetParent())
 
 		params := url.Values{}
-		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetPageSize() != 0 {
 			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
 		}
@@ -926,11 +914,6 @@ func (c *policyTagManagerRESTClient) GetTaxonomy(ctx context.Context, req *datac
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
-	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
-
-	baseUrl.RawQuery = params.Encode()
-
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
@@ -991,11 +974,6 @@ func (c *policyTagManagerRESTClient) CreatePolicyTag(ctx context.Context, req *d
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/policyTags", req.GetParent())
 
-	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
-
-	baseUrl.RawQuery = params.Encode()
-
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
@@ -1049,11 +1027,6 @@ func (c *policyTagManagerRESTClient) DeletePolicyTag(ctx context.Context, req *d
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
-	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
-
-	baseUrl.RawQuery = params.Encode()
-
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
@@ -1097,7 +1070,6 @@ func (c *policyTagManagerRESTClient) UpdatePolicyTag(ctx context.Context, req *d
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetPolicyTag().GetName())
 
 	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
 		updateMask, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
@@ -1175,7 +1147,6 @@ func (c *policyTagManagerRESTClient) ListPolicyTags(ctx context.Context, req *da
 		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/policyTags", req.GetParent())
 
 		params := url.Values{}
-		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetPageSize() != 0 {
 			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
 		}
@@ -1249,11 +1220,6 @@ func (c *policyTagManagerRESTClient) GetPolicyTag(ctx context.Context, req *data
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
-	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
-
-	baseUrl.RawQuery = params.Encode()
-
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
@@ -1312,11 +1278,6 @@ func (c *policyTagManagerRESTClient) GetIamPolicy(ctx context.Context, req *iamp
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:getIamPolicy", req.GetResource())
-
-	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
-
-	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
@@ -1377,11 +1338,6 @@ func (c *policyTagManagerRESTClient) SetIamPolicy(ctx context.Context, req *iamp
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:setIamPolicy", req.GetResource())
 
-	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
-
-	baseUrl.RawQuery = params.Encode()
-
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
 
@@ -1441,11 +1397,6 @@ func (c *policyTagManagerRESTClient) TestIamPermissions(ctx context.Context, req
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:testIamPermissions", req.GetResource())
-
-	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
-
-	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))

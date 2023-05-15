@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/vmmigration/apiv1",
-    "version": "1.5.0",
+    "version": "1.6.1",
     "language": "GO",
     "apis": [
       {
@@ -178,10 +178,10 @@
         },
         "method": {
           "shortName": "CancelOperation",
-          "fullName": "google.cloud.vmmigration.v1.VmMigration.CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
           "service": {
-            "shortName": "VmMigration",
-            "fullName": "google.cloud.vmmigration.v1.VmMigration"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -189,7 +189,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -473,7 +473,7 @@
     {
       "regionTag": "vmmigration_v1_generated_VmMigration_CreateTargetProject_sync",
       "title": "vmmigration CreateTargetProject Sample",
-      "description": "CreateTargetProject creates a new TargetProject in a given project.\n\nNOTE: TargetProject is a global resource; hence the only supported value\nfor location is global.",
+      "description": "CreateTargetProject creates a new TargetProject in a given project.\n\nNOTE: TargetProject is a global resource; hence the only supported value\nfor location is `global`.",
       "file": "Client/CreateTargetProject/main.go",
       "language": "GO",
       "clientMethod": {
@@ -729,10 +729,10 @@
         },
         "method": {
           "shortName": "DeleteOperation",
-          "fullName": "google.cloud.vmmigration.v1.VmMigration.DeleteOperation",
+          "fullName": "google.longrunning.Operations.DeleteOperation",
           "service": {
-            "shortName": "VmMigration",
-            "fullName": "google.cloud.vmmigration.v1.VmMigration"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -740,7 +740,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -794,7 +794,7 @@
     {
       "regionTag": "vmmigration_v1_generated_VmMigration_DeleteTargetProject_sync",
       "title": "vmmigration DeleteTargetProject Sample",
-      "description": "DeleteTargetProject deletes a single TargetProject.\n\nNOTE: TargetProject is a global resource; hence the only supported value\nfor location is global.",
+      "description": "DeleteTargetProject deletes a single TargetProject.\n\nNOTE: TargetProject is a global resource; hence the only supported value\nfor location is `global`.",
       "file": "Client/DeleteTargetProject/main.go",
       "language": "GO",
       "clientMethod": {
@@ -886,7 +886,7 @@
     {
       "regionTag": "vmmigration_v1_generated_VmMigration_FetchInventory_sync",
       "title": "vmmigration FetchInventory Sample",
-      "description": "FetchInventory list remote source’s inventory of VMs.\nThe remote source is the onprem vCenter (remote in the sense it’s not in\nCompute Engine). The inventory describes the list of existing VMs in that\nsource. Note that this operation lists the VMs on the remote source, as\nopposed to listing the MigratingVms resources in the vmmigration service.",
+      "description": "FetchInventory list remote source's inventory of VMs.\nThe remote source is the onprem vCenter (remote in the sense it's not in\nCompute Engine). The inventory describes the list of existing VMs in that\nsource. Note that this operation lists the VMs on the remote source, as\nopposed to listing the MigratingVms resources in the vmmigration service.",
       "file": "Client/FetchInventory/main.go",
       "language": "GO",
       "clientMethod": {
@@ -906,7 +906,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "vmmigrationpb.FetchInventoryResponse",
+        "resultType": "*vmmigrationpb.FetchInventoryResponse",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.vmmigration.v1.Client"
@@ -998,7 +998,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "vmmigrationpb.CloneJob",
+        "resultType": "*vmmigrationpb.CloneJob",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.vmmigration.v1.Client"
@@ -1044,7 +1044,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "vmmigrationpb.CutoverJob",
+        "resultType": "*vmmigrationpb.CutoverJob",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.vmmigration.v1.Client"
@@ -1090,7 +1090,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "vmmigrationpb.DatacenterConnector",
+        "resultType": "*vmmigrationpb.DatacenterConnector",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.vmmigration.v1.Client"
@@ -1136,7 +1136,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "vmmigrationpb.Group",
+        "resultType": "*vmmigrationpb.Group",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.vmmigration.v1.Client"
@@ -1182,17 +1182,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "locationpb.Location",
+        "resultType": "*locationpb.Location",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.vmmigration.v1.Client"
         },
         "method": {
           "shortName": "GetLocation",
-          "fullName": "google.cloud.vmmigration.v1.VmMigration.GetLocation",
+          "fullName": "google.cloud.location.Locations.GetLocation",
           "service": {
-            "shortName": "VmMigration",
-            "fullName": "google.cloud.vmmigration.v1.VmMigration"
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
           }
         }
       },
@@ -1200,7 +1200,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -1228,7 +1228,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "vmmigrationpb.MigratingVm",
+        "resultType": "*vmmigrationpb.MigratingVm",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.vmmigration.v1.Client"
@@ -1274,17 +1274,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "longrunningpb.Operation",
+        "resultType": "*longrunningpb.Operation",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.vmmigration.v1.Client"
         },
         "method": {
           "shortName": "GetOperation",
-          "fullName": "google.cloud.vmmigration.v1.VmMigration.GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
           "service": {
-            "shortName": "VmMigration",
-            "fullName": "google.cloud.vmmigration.v1.VmMigration"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -1292,7 +1292,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -1320,7 +1320,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "vmmigrationpb.ReplicationCycle",
+        "resultType": "*vmmigrationpb.ReplicationCycle",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.vmmigration.v1.Client"
@@ -1366,7 +1366,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "vmmigrationpb.Source",
+        "resultType": "*vmmigrationpb.Source",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.vmmigration.v1.Client"
@@ -1392,7 +1392,7 @@
     {
       "regionTag": "vmmigration_v1_generated_VmMigration_GetTargetProject_sync",
       "title": "vmmigration GetTargetProject Sample",
-      "description": "GetTargetProject gets details of a single TargetProject.\n\nNOTE: TargetProject is a global resource; hence the only supported value\nfor location is global.",
+      "description": "GetTargetProject gets details of a single TargetProject.\n\nNOTE: TargetProject is a global resource; hence the only supported value\nfor location is `global`.",
       "file": "Client/GetTargetProject/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1412,7 +1412,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "vmmigrationpb.TargetProject",
+        "resultType": "*vmmigrationpb.TargetProject",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.vmmigration.v1.Client"
@@ -1458,7 +1458,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "vmmigrationpb.UtilizationReport",
+        "resultType": "*vmmigrationpb.UtilizationReport",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.vmmigration.v1.Client"
@@ -1695,10 +1695,10 @@
         },
         "method": {
           "shortName": "ListLocations",
-          "fullName": "google.cloud.vmmigration.v1.VmMigration.ListLocations",
+          "fullName": "google.cloud.location.Locations.ListLocations",
           "service": {
-            "shortName": "VmMigration",
-            "fullName": "google.cloud.vmmigration.v1.VmMigration"
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
           }
         }
       },
@@ -1706,7 +1706,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 61,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -1787,10 +1787,10 @@
         },
         "method": {
           "shortName": "ListOperations",
-          "fullName": "google.cloud.vmmigration.v1.VmMigration.ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
           "service": {
-            "shortName": "VmMigration",
-            "fullName": "google.cloud.vmmigration.v1.VmMigration"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -1798,7 +1798,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 61,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -1898,7 +1898,7 @@
     {
       "regionTag": "vmmigration_v1_generated_VmMigration_ListTargetProjects_sync",
       "title": "vmmigration ListTargetProjects Sample",
-      "description": "ListTargetProjects lists TargetProjects in a given project.\n\nNOTE: TargetProject is a global resource; hence the only supported value\nfor location is global.",
+      "description": "ListTargetProjects lists TargetProjects in a given project.\n\nNOTE: TargetProject is a global resource; hence the only supported value\nfor location is `global`.",
       "file": "Client/ListTargetProjects/main.go",
       "language": "GO",
       "clientMethod": {
@@ -2312,7 +2312,7 @@
     {
       "regionTag": "vmmigration_v1_generated_VmMigration_UpdateTargetProject_sync",
       "title": "vmmigration UpdateTargetProject Sample",
-      "description": "UpdateTargetProject updates the parameters of a single TargetProject.\n\nNOTE: TargetProject is a global resource; hence the only supported value\nfor location is global.",
+      "description": "UpdateTargetProject updates the parameters of a single TargetProject.\n\nNOTE: TargetProject is a global resource; hence the only supported value\nfor location is `global`.",
       "file": "Client/UpdateTargetProject/main.go",
       "language": "GO",
       "clientMethod": {

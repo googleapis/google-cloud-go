@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/webrisk/apiv1",
-    "version": "1.8.0",
+    "version": "1.8.1",
     "language": "GO",
     "apis": [
       {
@@ -34,7 +34,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "webriskpb.ComputeThreatListDiffResponse",
+        "resultType": "*webriskpb.ComputeThreatListDiffResponse",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.webrisk.v1.Client"
@@ -60,7 +60,7 @@
     {
       "regionTag": "webrisk_v1_generated_WebRiskService_CreateSubmission_sync",
       "title": "webrisk CreateSubmission Sample",
-      "description": "CreateSubmission creates a Submission of a URI suspected of containing phishing content to\nbe reviewed. If the result verifies the existence of malicious phishing\ncontent, the site will be added to the Google’s Social Engineering\nlists (at https: //support.google.com/webmasters/answer/6350487/) in order to\nprotect users that could get exposed to this threat in the future. Only\nallowlisted projects can use this method during Early Access. Please reach\nout to Sales or your customer engineer to obtain access.",
+      "description": "CreateSubmission creates a Submission of a URI suspected of containing phishing content to\nbe reviewed. If the result verifies the existence of malicious phishing\ncontent, the site will be added to the [Google's Social Engineering\nlists](https: //support.google.com/webmasters/answer/6350487/) in order to\nprotect users that could get exposed to this threat in the future. Only\nallowlisted projects can use this method during Early Access. Please reach\nout to Sales or your customer engineer to obtain access.",
       "file": "Client/CreateSubmission/main.go",
       "language": "GO",
       "clientMethod": {
@@ -80,7 +80,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "webriskpb.Submission",
+        "resultType": "*webriskpb.Submission",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.webrisk.v1.Client"
@@ -126,7 +126,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "webriskpb.SearchHashesResponse",
+        "resultType": "*webriskpb.SearchHashesResponse",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.webrisk.v1.Client"
@@ -172,7 +172,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "webriskpb.SearchUrisResponse",
+        "resultType": "*webriskpb.SearchUrisResponse",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.webrisk.v1.Client"

@@ -1,5 +1,20 @@
 # Changelog
 
+
+## [1.0.1](https://github.com/googleapis/google-cloud-go/compare/gkebackup/v1.0.0...gkebackup/v1.0.1) (2023-05-08)
+
+
+### Bug Fixes
+
+* **gkebackup:** Update grpc to v1.55.0 ([1147ce0](https://github.com/googleapis/google-cloud-go/commit/1147ce02a990276ca4f8ab7a1ab65c14da4450ef))
+
+## [1.0.0](https://github.com/googleapis/google-cloud-go/compare/gkebackup/v0.4.0...gkebackup/v1.0.0) (2023-04-04)
+
+
+### Features
+
+* **gkebackup:** Promote to GA ([#7643](https://github.com/googleapis/google-cloud-go/issues/7643)) ([60b6610](https://github.com/googleapis/google-cloud-go/commit/60b66105582f142d4cd2d45beeed9b6dbb2ca0ff))
+
 ## [0.4.0](https://github.com/googleapis/google-cloud-go/compare/gkebackup/v0.3.0...gkebackup/v0.4.0) (2023-01-04)
 
 

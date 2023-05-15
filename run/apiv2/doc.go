@@ -23,8 +23,6 @@
 // API standards, as described in https://google.aip.dev/ (at
 // https://google.aip.dev/).
 //
-//	NOTE: This package is in beta. It is not stable, and may be subject to changes.
-//
 // # General documentation
 //
 // For information about setting deadlines, reusing contexts, and more

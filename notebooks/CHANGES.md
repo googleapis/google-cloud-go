@@ -1,6 +1,20 @@
 # Changes
 
 
+## [1.8.1](https://github.com/googleapis/google-cloud-go/compare/notebooks/v1.8.0...notebooks/v1.8.1) (2023-05-08)
+
+
+### Bug Fixes
+
+* **notebooks:** Update grpc to v1.55.0 ([1147ce0](https://github.com/googleapis/google-cloud-go/commit/1147ce02a990276ca4f8ab7a1ab65c14da4450ef))
+
+## [1.8.0](https://github.com/googleapis/google-cloud-go/compare/notebooks/v1.7.0...notebooks/v1.8.0) (2023-03-15)
+
+
+### Features
+
+* **notebooks:** Update iam and longrunning deps ([91a1f78](https://github.com/googleapis/google-cloud-go/commit/91a1f784a109da70f63b96414bba8a9b4254cddd))
+
 ## [1.7.0](https://github.com/googleapis/google-cloud-go/compare/notebooks/v1.6.0...notebooks/v1.7.0) (2023-01-04)
 
 

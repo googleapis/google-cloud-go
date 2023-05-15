@@ -50,7 +50,7 @@ func uploadBenchmark(ctx context.Context, uopts uploadOpts) (elapsedTime time.Du
 	defer func() { elapsedTime = time.Since(start) }()
 
 	// Set additional timeout
-	ctx, cancel := context.WithTimeout(ctx, time.Minute)
+	ctx, cancel := context.WithTimeout(ctx, time.Minute*2)
 	defer cancel()
 
 	// Open file

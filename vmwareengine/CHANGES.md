@@ -1,5 +1,26 @@
 # Changelog
 
+## [0.3.1](https://github.com/googleapis/google-cloud-go/compare/vmwareengine/v0.3.0...vmwareengine/v0.3.1) (2023-05-08)
+
+
+### Bug Fixes
+
+* **vmwareengine:** Update grpc to v1.55.0 ([1147ce0](https://github.com/googleapis/google-cloud-go/commit/1147ce02a990276ca4f8ab7a1ab65c14da4450ef))
+
+## [0.3.0](https://github.com/googleapis/google-cloud-go/compare/vmwareengine/v0.2.2...vmwareengine/v0.3.0) (2023-03-15)
+
+
+### Features
+
+* **vmwareengine:** Update iam and longrunning deps ([91a1f78](https://github.com/googleapis/google-cloud-go/commit/91a1f784a109da70f63b96414bba8a9b4254cddd))
+
+## [0.2.2](https://github.com/googleapis/google-cloud-go/compare/vmwareengine/v0.2.1...vmwareengine/v0.2.2) (2023-02-14)
+
+
+### Documentation
+
+* **vmwareengine:** Resource proto messages moved to new file ([3f118f9](https://github.com/googleapis/google-cloud-go/commit/3f118f9a4fb8ccbd96c81e6044ccb05addc78ded))
+
 ## [0.2.1](https://github.com/googleapis/google-cloud-go/compare/vmwareengine/v0.2.0...vmwareengine/v0.2.1) (2023-01-18)
 
 

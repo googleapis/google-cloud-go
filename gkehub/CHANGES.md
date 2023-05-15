@@ -1,5 +1,26 @@
 # Changes
 
+## [0.13.1](https://github.com/googleapis/google-cloud-go/compare/gkehub/v0.13.0...gkehub/v0.13.1) (2023-05-08)
+
+
+### Bug Fixes
+
+* **gkehub:** Update grpc to v1.55.0 ([1147ce0](https://github.com/googleapis/google-cloud-go/commit/1147ce02a990276ca4f8ab7a1ab65c14da4450ef))
+
+## [0.13.0](https://github.com/googleapis/google-cloud-go/compare/gkehub/v0.12.0...gkehub/v0.13.0) (2023-04-25)
+
+
+### Features
+
+* **gkehub:** Add `monitoring_config` field ([#7806](https://github.com/googleapis/google-cloud-go/issues/7806)) ([e1e8ba9](https://github.com/googleapis/google-cloud-go/commit/e1e8ba9f4d427c52c4a2bc949479055824124ba0))
+
+## [0.12.0](https://github.com/googleapis/google-cloud-go/compare/gkehub/v0.11.0...gkehub/v0.12.0) (2023-03-15)
+
+
+### Features
+
+* **gkehub:** Update iam and longrunning deps ([91a1f78](https://github.com/googleapis/google-cloud-go/commit/91a1f784a109da70f63b96414bba8a9b4254cddd))
+
 ## [0.11.0](https://github.com/googleapis/google-cloud-go/compare/gkehub/v0.10.0...gkehub/v0.11.0) (2023-01-04)
 
 

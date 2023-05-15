@@ -29,6 +29,7 @@ import (
 	filestorepb "cloud.google.com/go/filestore/apiv1/filestorepb"
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
@@ -37,7 +38,6 @@ import (
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
 	commonpb "google.golang.org/genproto/googleapis/cloud/common"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -55,6 +55,11 @@ type CloudFilestoreManagerCallOptions struct {
 	UpdateInstance  []gax.CallOption
 	RestoreInstance []gax.CallOption
 	DeleteInstance  []gax.CallOption
+	ListSnapshots   []gax.CallOption
+	GetSnapshot     []gax.CallOption
+	CreateSnapshot  []gax.CallOption
+	DeleteSnapshot  []gax.CallOption
+	UpdateSnapshot  []gax.CallOption
 	ListBackups     []gax.CallOption
 	GetBackup       []gax.CallOption
 	CreateBackup    []gax.CallOption
@@ -102,6 +107,11 @@ func defaultCloudFilestoreManagerCallOptions() *CloudFilestoreManagerCallOptions
 		UpdateInstance:  []gax.CallOption{},
 		RestoreInstance: []gax.CallOption{},
 		DeleteInstance:  []gax.CallOption{},
+		ListSnapshots:   []gax.CallOption{},
+		GetSnapshot:     []gax.CallOption{},
+		CreateSnapshot:  []gax.CallOption{},
+		DeleteSnapshot:  []gax.CallOption{},
+		UpdateSnapshot:  []gax.CallOption{},
 		ListBackups: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
@@ -156,6 +166,11 @@ func defaultCloudFilestoreManagerRESTCallOptions() *CloudFilestoreManagerCallOpt
 		UpdateInstance:  []gax.CallOption{},
 		RestoreInstance: []gax.CallOption{},
 		DeleteInstance:  []gax.CallOption{},
+		ListSnapshots:   []gax.CallOption{},
+		GetSnapshot:     []gax.CallOption{},
+		CreateSnapshot:  []gax.CallOption{},
+		DeleteSnapshot:  []gax.CallOption{},
+		UpdateSnapshot:  []gax.CallOption{},
 		ListBackups: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
@@ -197,6 +212,14 @@ type internalCloudFilestoreManagerClient interface {
 	RestoreInstanceOperation(name string) *RestoreInstanceOperation
 	DeleteInstance(context.Context, *filestorepb.DeleteInstanceRequest, ...gax.CallOption) (*DeleteInstanceOperation, error)
 	DeleteInstanceOperation(name string) *DeleteInstanceOperation
+	ListSnapshots(context.Context, *filestorepb.ListSnapshotsRequest, ...gax.CallOption) *SnapshotIterator
+	GetSnapshot(context.Context, *filestorepb.GetSnapshotRequest, ...gax.CallOption) (*filestorepb.Snapshot, error)
+	CreateSnapshot(context.Context, *filestorepb.CreateSnapshotRequest, ...gax.CallOption) (*CreateSnapshotOperation, error)
+	CreateSnapshotOperation(name string) *CreateSnapshotOperation
+	DeleteSnapshot(context.Context, *filestorepb.DeleteSnapshotRequest, ...gax.CallOption) (*DeleteSnapshotOperation, error)
+	DeleteSnapshotOperation(name string) *DeleteSnapshotOperation
+	UpdateSnapshot(context.Context, *filestorepb.UpdateSnapshotRequest, ...gax.CallOption) (*UpdateSnapshotOperation, error)
+	UpdateSnapshotOperation(name string) *UpdateSnapshotOperation
 	ListBackups(context.Context, *filestorepb.ListBackupsRequest, ...gax.CallOption) *BackupIterator
 	GetBackup(context.Context, *filestorepb.GetBackupRequest, ...gax.CallOption) (*filestorepb.Backup, error)
 	CreateBackup(context.Context, *filestorepb.CreateBackupRequest, ...gax.CallOption) (*CreateBackupOperation, error)
@@ -210,11 +233,11 @@ type internalCloudFilestoreManagerClient interface {
 // CloudFilestoreManagerClient is a client for interacting with Cloud Filestore API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
-// Configures and manages Cloud Filestore resources.
+// Configures and manages Filestore resources.
 //
-// Cloud Filestore Manager v1.
+// Filestore Manager v1.
 //
-// The file.googleapis.com service implements the Cloud Filestore API and
+// The file.googleapis.com service implements the Filestore API and
 // defines the following resource model for managing instances:
 //
 //	The service works with a collection of cloud projects, named: /projects/*
@@ -224,13 +247,13 @@ type internalCloudFilestoreManagerClient interface {
 //	Each location has a collection of instances and backups, named:
 //	/instances/* and /backups/* respectively.
 //
-//	As such, Cloud Filestore instances are resources of the form:
+//	As such, Filestore instances are resources of the form:
 //	/projects/{project_number}/locations/{location_id}/instances/{instance_id}
 //	and backups are resources of the form:
 //	/projects/{project_number}/locations/{location_id}/backup/{backup_id}
 //
-// Note that location_id must be a GCP zone for instances and but to a GCP
-// region for backups; for example:
+// Note that location_id must be a Google Cloud zone for instances, but
+// a Google Cloud region for backups; for example:
 //
 //	projects/12345/locations/us-central1-c/instances/my-filestore
 //
@@ -333,6 +356,50 @@ func (c *CloudFilestoreManagerClient) DeleteInstanceOperation(name string) *Dele
 	return c.internalClient.DeleteInstanceOperation(name)
 }
 
+// ListSnapshots lists all snapshots in a project for either a specified location
+// or for all locations.
+func (c *CloudFilestoreManagerClient) ListSnapshots(ctx context.Context, req *filestorepb.ListSnapshotsRequest, opts ...gax.CallOption) *SnapshotIterator {
+	return c.internalClient.ListSnapshots(ctx, req, opts...)
+}
+
+// GetSnapshot gets the details of a specific snapshot.
+func (c *CloudFilestoreManagerClient) GetSnapshot(ctx context.Context, req *filestorepb.GetSnapshotRequest, opts ...gax.CallOption) (*filestorepb.Snapshot, error) {
+	return c.internalClient.GetSnapshot(ctx, req, opts...)
+}
+
+// CreateSnapshot creates a snapshot.
+func (c *CloudFilestoreManagerClient) CreateSnapshot(ctx context.Context, req *filestorepb.CreateSnapshotRequest, opts ...gax.CallOption) (*CreateSnapshotOperation, error) {
+	return c.internalClient.CreateSnapshot(ctx, req, opts...)
+}
+
+// CreateSnapshotOperation returns a new CreateSnapshotOperation from a given name.
+// The name must be that of a previously created CreateSnapshotOperation, possibly from a different process.
+func (c *CloudFilestoreManagerClient) CreateSnapshotOperation(name string) *CreateSnapshotOperation {
+	return c.internalClient.CreateSnapshotOperation(name)
+}
+
+// DeleteSnapshot deletes a snapshot.
+func (c *CloudFilestoreManagerClient) DeleteSnapshot(ctx context.Context, req *filestorepb.DeleteSnapshotRequest, opts ...gax.CallOption) (*DeleteSnapshotOperation, error) {
+	return c.internalClient.DeleteSnapshot(ctx, req, opts...)
+}
+
+// DeleteSnapshotOperation returns a new DeleteSnapshotOperation from a given name.
+// The name must be that of a previously created DeleteSnapshotOperation, possibly from a different process.
+func (c *CloudFilestoreManagerClient) DeleteSnapshotOperation(name string) *DeleteSnapshotOperation {
+	return c.internalClient.DeleteSnapshotOperation(name)
+}
+
+// UpdateSnapshot updates the settings of a specific snapshot.
+func (c *CloudFilestoreManagerClient) UpdateSnapshot(ctx context.Context, req *filestorepb.UpdateSnapshotRequest, opts ...gax.CallOption) (*UpdateSnapshotOperation, error) {
+	return c.internalClient.UpdateSnapshot(ctx, req, opts...)
+}
+
+// UpdateSnapshotOperation returns a new UpdateSnapshotOperation from a given name.
+// The name must be that of a previously created UpdateSnapshotOperation, possibly from a different process.
+func (c *CloudFilestoreManagerClient) UpdateSnapshotOperation(name string) *UpdateSnapshotOperation {
+	return c.internalClient.UpdateSnapshotOperation(name)
+}
+
 // ListBackups lists all backups in a project for either a specified location or for all
 // locations.
 func (c *CloudFilestoreManagerClient) ListBackups(ctx context.Context, req *filestorepb.ListBackupsRequest, opts ...gax.CallOption) *BackupIterator {
@@ -405,11 +472,11 @@ type cloudFilestoreManagerGRPCClient struct {
 // NewCloudFilestoreManagerClient creates a new cloud filestore manager client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
-// Configures and manages Cloud Filestore resources.
+// Configures and manages Filestore resources.
 //
-// Cloud Filestore Manager v1.
+// Filestore Manager v1.
 //
-// The file.googleapis.com service implements the Cloud Filestore API and
+// The file.googleapis.com service implements the Filestore API and
 // defines the following resource model for managing instances:
 //
 //	The service works with a collection of cloud projects, named: /projects/*
@@ -419,13 +486,13 @@ type cloudFilestoreManagerGRPCClient struct {
 //	Each location has a collection of instances and backups, named:
 //	/instances/* and /backups/* respectively.
 //
-//	As such, Cloud Filestore instances are resources of the form:
+//	As such, Filestore instances are resources of the form:
 //	/projects/{project_number}/locations/{location_id}/instances/{instance_id}
 //	and backups are resources of the form:
 //	/projects/{project_number}/locations/{location_id}/backup/{backup_id}
 //
-// Note that location_id must be a GCP zone for instances and but to a GCP
-// region for backups; for example:
+// Note that location_id must be a Google Cloud zone for instances, but
+// a Google Cloud region for backups; for example:
 //
 //	projects/12345/locations/us-central1-c/instances/my-filestore
 //
@@ -520,11 +587,11 @@ type cloudFilestoreManagerRESTClient struct {
 
 // NewCloudFilestoreManagerRESTClient creates a new cloud filestore manager rest client.
 //
-// Configures and manages Cloud Filestore resources.
+// Configures and manages Filestore resources.
 //
-// Cloud Filestore Manager v1.
+// Filestore Manager v1.
 //
-// The file.googleapis.com service implements the Cloud Filestore API and
+// The file.googleapis.com service implements the Filestore API and
 // defines the following resource model for managing instances:
 //
 //	The service works with a collection of cloud projects, named: /projects/*
@@ -534,13 +601,13 @@ type cloudFilestoreManagerRESTClient struct {
 //	Each location has a collection of instances and backups, named:
 //	/instances/* and /backups/* respectively.
 //
-//	As such, Cloud Filestore instances are resources of the form:
+//	As such, Filestore instances are resources of the form:
 //	/projects/{project_number}/locations/{location_id}/instances/{instance_id}
 //	and backups are resources of the form:
 //	/projects/{project_number}/locations/{location_id}/backup/{backup_id}
 //
-// Note that location_id must be a GCP zone for instances and but to a GCP
-// region for backups; for example:
+// Note that location_id must be a Google Cloud zone for instances, but
+// a Google Cloud region for backups; for example:
 //
 //	projects/12345/locations/us-central1-c/instances/my-filestore
 //
@@ -764,6 +831,125 @@ func (c *cloudFilestoreManagerGRPCClient) DeleteInstance(ctx context.Context, re
 		return nil, err
 	}
 	return &DeleteInstanceOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *cloudFilestoreManagerGRPCClient) ListSnapshots(ctx context.Context, req *filestorepb.ListSnapshotsRequest, opts ...gax.CallOption) *SnapshotIterator {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).ListSnapshots[0:len((*c.CallOptions).ListSnapshots):len((*c.CallOptions).ListSnapshots)], opts...)
+	it := &SnapshotIterator{}
+	req = proto.Clone(req).(*filestorepb.ListSnapshotsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*filestorepb.Snapshot, string, error) {
+		resp := &filestorepb.ListSnapshotsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.cloudFilestoreManagerClient.ListSnapshots(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetSnapshots(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *cloudFilestoreManagerGRPCClient) GetSnapshot(ctx context.Context, req *filestorepb.GetSnapshotRequest, opts ...gax.CallOption) (*filestorepb.Snapshot, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).GetSnapshot[0:len((*c.CallOptions).GetSnapshot):len((*c.CallOptions).GetSnapshot)], opts...)
+	var resp *filestorepb.Snapshot
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.cloudFilestoreManagerClient.GetSnapshot(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *cloudFilestoreManagerGRPCClient) CreateSnapshot(ctx context.Context, req *filestorepb.CreateSnapshotRequest, opts ...gax.CallOption) (*CreateSnapshotOperation, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).CreateSnapshot[0:len((*c.CallOptions).CreateSnapshot):len((*c.CallOptions).CreateSnapshot)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.cloudFilestoreManagerClient.CreateSnapshot(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &CreateSnapshotOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *cloudFilestoreManagerGRPCClient) DeleteSnapshot(ctx context.Context, req *filestorepb.DeleteSnapshotRequest, opts ...gax.CallOption) (*DeleteSnapshotOperation, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).DeleteSnapshot[0:len((*c.CallOptions).DeleteSnapshot):len((*c.CallOptions).DeleteSnapshot)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.cloudFilestoreManagerClient.DeleteSnapshot(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &DeleteSnapshotOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *cloudFilestoreManagerGRPCClient) UpdateSnapshot(ctx context.Context, req *filestorepb.UpdateSnapshotRequest, opts ...gax.CallOption) (*UpdateSnapshotOperation, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "snapshot.name", url.QueryEscape(req.GetSnapshot().GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).UpdateSnapshot[0:len((*c.CallOptions).UpdateSnapshot):len((*c.CallOptions).UpdateSnapshot)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.cloudFilestoreManagerClient.UpdateSnapshot(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &UpdateSnapshotOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
@@ -1291,6 +1477,9 @@ func (c *cloudFilestoreManagerRESTClient) DeleteInstance(ctx context.Context, re
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetForce() {
+		params.Add("force", fmt.Sprintf("%v", req.GetForce()))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 
@@ -1338,6 +1527,367 @@ func (c *cloudFilestoreManagerRESTClient) DeleteInstance(ctx context.Context, re
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
 	return &DeleteInstanceOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// ListSnapshots lists all snapshots in a project for either a specified location
+// or for all locations.
+func (c *cloudFilestoreManagerRESTClient) ListSnapshots(ctx context.Context, req *filestorepb.ListSnapshotsRequest, opts ...gax.CallOption) *SnapshotIterator {
+	it := &SnapshotIterator{}
+	req = proto.Clone(req).(*filestorepb.ListSnapshotsRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*filestorepb.Snapshot, string, error) {
+		resp := &filestorepb.ListSnapshotsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v/snapshots", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req.GetOrderBy() != "" {
+			params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))
+		}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			httpRsp, err := c.httpClient.Do(httpReq)
+			if err != nil {
+				return err
+			}
+			defer httpRsp.Body.Close()
+
+			if err = googleapi.CheckResponse(httpRsp); err != nil {
+				return err
+			}
+
+			buf, err := ioutil.ReadAll(httpRsp.Body)
+			if err != nil {
+				return err
+			}
+
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return maybeUnknownEnum(err)
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetSnapshots(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// GetSnapshot gets the details of a specific snapshot.
+func (c *cloudFilestoreManagerRESTClient) GetSnapshot(ctx context.Context, req *filestorepb.GetSnapshotRequest, opts ...gax.CallOption) (*filestorepb.Snapshot, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).GetSnapshot[0:len((*c.CallOptions).GetSnapshot):len((*c.CallOptions).GetSnapshot)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &filestorepb.Snapshot{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// CreateSnapshot creates a snapshot.
+func (c *cloudFilestoreManagerRESTClient) CreateSnapshot(ctx context.Context, req *filestorepb.CreateSnapshotRequest, opts ...gax.CallOption) (*CreateSnapshotOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetSnapshot()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v/snapshots", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	params.Add("snapshotId", fmt.Sprintf("%v", req.GetSnapshotId()))
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &CreateSnapshotOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// DeleteSnapshot deletes a snapshot.
+func (c *cloudFilestoreManagerRESTClient) DeleteSnapshot(ctx context.Context, req *filestorepb.DeleteSnapshotRequest, opts ...gax.CallOption) (*DeleteSnapshotOperation, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &DeleteSnapshotOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// UpdateSnapshot updates the settings of a specific snapshot.
+func (c *cloudFilestoreManagerRESTClient) UpdateSnapshot(ctx context.Context, req *filestorepb.UpdateSnapshotRequest, opts ...gax.CallOption) (*UpdateSnapshotOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetSnapshot()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetSnapshot().GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetUpdateMask() != nil {
+		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(updateMask))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "snapshot.name", url.QueryEscape(req.GetSnapshot().GetName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &UpdateSnapshotOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
@@ -1868,6 +2418,88 @@ func (op *CreateInstanceOperation) Name() string {
 	return op.lro.Name()
 }
 
+// CreateSnapshotOperation manages a long-running operation from CreateSnapshot.
+type CreateSnapshotOperation struct {
+	lro      *longrunning.Operation
+	pollPath string
+}
+
+// CreateSnapshotOperation returns a new CreateSnapshotOperation from a given name.
+// The name must be that of a previously created CreateSnapshotOperation, possibly from a different process.
+func (c *cloudFilestoreManagerGRPCClient) CreateSnapshotOperation(name string) *CreateSnapshotOperation {
+	return &CreateSnapshotOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// CreateSnapshotOperation returns a new CreateSnapshotOperation from a given name.
+// The name must be that of a previously created CreateSnapshotOperation, possibly from a different process.
+func (c *cloudFilestoreManagerRESTClient) CreateSnapshotOperation(name string) *CreateSnapshotOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &CreateSnapshotOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *CreateSnapshotOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*filestorepb.Snapshot, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp filestorepb.Snapshot
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *CreateSnapshotOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*filestorepb.Snapshot, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp filestorepb.Snapshot
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *CreateSnapshotOperation) Metadata() (*commonpb.OperationMetadata, error) {
+	var meta commonpb.OperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *CreateSnapshotOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *CreateSnapshotOperation) Name() string {
+	return op.lro.Name()
+}
+
 // DeleteBackupOperation manages a long-running operation from DeleteBackup.
 type DeleteBackupOperation struct {
 	lro      *longrunning.Operation
@@ -2007,6 +2639,77 @@ func (op *DeleteInstanceOperation) Done() bool {
 // Name returns the name of the long-running operation.
 // The name is assigned by the server and is unique within the service from which the operation is created.
 func (op *DeleteInstanceOperation) Name() string {
+	return op.lro.Name()
+}
+
+// DeleteSnapshotOperation manages a long-running operation from DeleteSnapshot.
+type DeleteSnapshotOperation struct {
+	lro      *longrunning.Operation
+	pollPath string
+}
+
+// DeleteSnapshotOperation returns a new DeleteSnapshotOperation from a given name.
+// The name must be that of a previously created DeleteSnapshotOperation, possibly from a different process.
+func (c *cloudFilestoreManagerGRPCClient) DeleteSnapshotOperation(name string) *DeleteSnapshotOperation {
+	return &DeleteSnapshotOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// DeleteSnapshotOperation returns a new DeleteSnapshotOperation from a given name.
+// The name must be that of a previously created DeleteSnapshotOperation, possibly from a different process.
+func (c *cloudFilestoreManagerRESTClient) DeleteSnapshotOperation(name string) *DeleteSnapshotOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &DeleteSnapshotOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *DeleteSnapshotOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *DeleteSnapshotOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	return op.lro.Poll(ctx, nil, opts...)
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *DeleteSnapshotOperation) Metadata() (*commonpb.OperationMetadata, error) {
+	var meta commonpb.OperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *DeleteSnapshotOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *DeleteSnapshotOperation) Name() string {
 	return op.lro.Name()
 }
 
@@ -2256,6 +2959,88 @@ func (op *UpdateInstanceOperation) Name() string {
 	return op.lro.Name()
 }
 
+// UpdateSnapshotOperation manages a long-running operation from UpdateSnapshot.
+type UpdateSnapshotOperation struct {
+	lro      *longrunning.Operation
+	pollPath string
+}
+
+// UpdateSnapshotOperation returns a new UpdateSnapshotOperation from a given name.
+// The name must be that of a previously created UpdateSnapshotOperation, possibly from a different process.
+func (c *cloudFilestoreManagerGRPCClient) UpdateSnapshotOperation(name string) *UpdateSnapshotOperation {
+	return &UpdateSnapshotOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// UpdateSnapshotOperation returns a new UpdateSnapshotOperation from a given name.
+// The name must be that of a previously created UpdateSnapshotOperation, possibly from a different process.
+func (c *cloudFilestoreManagerRESTClient) UpdateSnapshotOperation(name string) *UpdateSnapshotOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &UpdateSnapshotOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *UpdateSnapshotOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*filestorepb.Snapshot, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp filestorepb.Snapshot
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *UpdateSnapshotOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*filestorepb.Snapshot, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp filestorepb.Snapshot
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *UpdateSnapshotOperation) Metadata() (*commonpb.OperationMetadata, error) {
+	var meta commonpb.OperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *UpdateSnapshotOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *UpdateSnapshotOperation) Name() string {
+	return op.lro.Name()
+}
+
 // BackupIterator manages a stream of *filestorepb.Backup.
 type BackupIterator struct {
 	items    []*filestorepb.Backup
@@ -2345,6 +3130,53 @@ func (it *InstanceIterator) bufLen() int {
 }
 
 func (it *InstanceIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// SnapshotIterator manages a stream of *filestorepb.Snapshot.
+type SnapshotIterator struct {
+	items    []*filestorepb.Snapshot
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*filestorepb.Snapshot, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *SnapshotIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *SnapshotIterator) Next() (*filestorepb.Snapshot, error) {
+	var item *filestorepb.Snapshot
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *SnapshotIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *SnapshotIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b

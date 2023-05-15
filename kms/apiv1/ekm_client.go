@@ -26,6 +26,7 @@ import (
 	"net/url"
 	"time"
 
+	iampb "cloud.google.com/go/iam/apiv1/iampb"
 	kmspb "cloud.google.com/go/kms/apiv1/kmspb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
@@ -35,7 +36,6 @@ import (
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
-	iampb "google.golang.org/genproto/googleapis/iam/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -51,6 +51,9 @@ type EkmCallOptions struct {
 	GetEkmConnection    []gax.CallOption
 	CreateEkmConnection []gax.CallOption
 	UpdateEkmConnection []gax.CallOption
+	GetEkmConfig        []gax.CallOption
+	UpdateEkmConfig     []gax.CallOption
+	VerifyConnectivity  []gax.CallOption
 	GetLocation         []gax.CallOption
 	ListLocations       []gax.CallOption
 	GetIamPolicy        []gax.CallOption
@@ -120,6 +123,9 @@ func defaultEkmCallOptions() *EkmCallOptions {
 				})
 			}),
 		},
+		GetEkmConfig:       []gax.CallOption{},
+		UpdateEkmConfig:    []gax.CallOption{},
+		VerifyConnectivity: []gax.CallOption{},
 		GetLocation:        []gax.CallOption{},
 		ListLocations:      []gax.CallOption{},
 		GetIamPolicy:       []gax.CallOption{},
@@ -174,6 +180,9 @@ func defaultEkmRESTCallOptions() *EkmCallOptions {
 					http.StatusGatewayTimeout)
 			}),
 		},
+		GetEkmConfig:       []gax.CallOption{},
+		UpdateEkmConfig:    []gax.CallOption{},
+		VerifyConnectivity: []gax.CallOption{},
 		GetLocation:        []gax.CallOption{},
 		ListLocations:      []gax.CallOption{},
 		GetIamPolicy:       []gax.CallOption{},
@@ -191,6 +200,9 @@ type internalEkmClient interface {
 	GetEkmConnection(context.Context, *kmspb.GetEkmConnectionRequest, ...gax.CallOption) (*kmspb.EkmConnection, error)
 	CreateEkmConnection(context.Context, *kmspb.CreateEkmConnectionRequest, ...gax.CallOption) (*kmspb.EkmConnection, error)
 	UpdateEkmConnection(context.Context, *kmspb.UpdateEkmConnectionRequest, ...gax.CallOption) (*kmspb.EkmConnection, error)
+	GetEkmConfig(context.Context, *kmspb.GetEkmConfigRequest, ...gax.CallOption) (*kmspb.EkmConfig, error)
+	UpdateEkmConfig(context.Context, *kmspb.UpdateEkmConfigRequest, ...gax.CallOption) (*kmspb.EkmConfig, error)
+	VerifyConnectivity(context.Context, *kmspb.VerifyConnectivityRequest, ...gax.CallOption) (*kmspb.VerifyConnectivityResponse, error)
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
 	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
 	GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
@@ -258,6 +270,27 @@ func (c *EkmClient) CreateEkmConnection(ctx context.Context, req *kmspb.CreateEk
 // UpdateEkmConnection updates an EkmConnection's metadata.
 func (c *EkmClient) UpdateEkmConnection(ctx context.Context, req *kmspb.UpdateEkmConnectionRequest, opts ...gax.CallOption) (*kmspb.EkmConnection, error) {
 	return c.internalClient.UpdateEkmConnection(ctx, req, opts...)
+}
+
+// GetEkmConfig returns the EkmConfig singleton resource
+// for a given project and location.
+func (c *EkmClient) GetEkmConfig(ctx context.Context, req *kmspb.GetEkmConfigRequest, opts ...gax.CallOption) (*kmspb.EkmConfig, error) {
+	return c.internalClient.GetEkmConfig(ctx, req, opts...)
+}
+
+// UpdateEkmConfig updates the EkmConfig singleton resource
+// for a given project and location.
+func (c *EkmClient) UpdateEkmConfig(ctx context.Context, req *kmspb.UpdateEkmConfigRequest, opts ...gax.CallOption) (*kmspb.EkmConfig, error) {
+	return c.internalClient.UpdateEkmConfig(ctx, req, opts...)
+}
+
+// VerifyConnectivity verifies that Cloud KMS can successfully connect to the external key
+// manager specified by an EkmConnection.
+// If there is an error connecting to the EKM, this method returns a
+// FAILED_PRECONDITION status containing structured information as described
+// at https://cloud.google.com/kms/docs/reference/ekm_errors (at https://cloud.google.com/kms/docs/reference/ekm_errors).
+func (c *EkmClient) VerifyConnectivity(ctx context.Context, req *kmspb.VerifyConnectivityRequest, opts ...gax.CallOption) (*kmspb.VerifyConnectivityResponse, error) {
+	return c.internalClient.VerifyConnectivity(ctx, req, opts...)
 }
 
 // GetLocation gets information about a location.
@@ -564,6 +597,57 @@ func (c *ekmGRPCClient) UpdateEkmConnection(ctx context.Context, req *kmspb.Upda
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.ekmClient.UpdateEkmConnection(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *ekmGRPCClient) GetEkmConfig(ctx context.Context, req *kmspb.GetEkmConfigRequest, opts ...gax.CallOption) (*kmspb.EkmConfig, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).GetEkmConfig[0:len((*c.CallOptions).GetEkmConfig):len((*c.CallOptions).GetEkmConfig)], opts...)
+	var resp *kmspb.EkmConfig
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.ekmClient.GetEkmConfig(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *ekmGRPCClient) UpdateEkmConfig(ctx context.Context, req *kmspb.UpdateEkmConfigRequest, opts ...gax.CallOption) (*kmspb.EkmConfig, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "ekm_config.name", url.QueryEscape(req.GetEkmConfig().GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).UpdateEkmConfig[0:len((*c.CallOptions).UpdateEkmConfig):len((*c.CallOptions).UpdateEkmConfig)], opts...)
+	var resp *kmspb.EkmConfig
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.ekmClient.UpdateEkmConfig(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *ekmGRPCClient) VerifyConnectivity(ctx context.Context, req *kmspb.VerifyConnectivityRequest, opts ...gax.CallOption) (*kmspb.VerifyConnectivityResponse, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).VerifyConnectivity[0:len((*c.CallOptions).VerifyConnectivity):len((*c.CallOptions).VerifyConnectivity)], opts...)
+	var resp *kmspb.VerifyConnectivityResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.ekmClient.VerifyConnectivity(ctx, req, settings.GRPC...)
 		return err
 	}, opts...)
 	if err != nil {
@@ -944,6 +1028,200 @@ func (c *ekmRESTClient) UpdateEkmConnection(ctx context.Context, req *kmspb.Upda
 			baseUrl.Path = settings.Path
 		}
 		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// GetEkmConfig returns the EkmConfig singleton resource
+// for a given project and location.
+func (c *ekmRESTClient) GetEkmConfig(ctx context.Context, req *kmspb.GetEkmConfigRequest, opts ...gax.CallOption) (*kmspb.EkmConfig, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).GetEkmConfig[0:len((*c.CallOptions).GetEkmConfig):len((*c.CallOptions).GetEkmConfig)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &kmspb.EkmConfig{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// UpdateEkmConfig updates the EkmConfig singleton resource
+// for a given project and location.
+func (c *ekmRESTClient) UpdateEkmConfig(ctx context.Context, req *kmspb.UpdateEkmConfigRequest, opts ...gax.CallOption) (*kmspb.EkmConfig, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetEkmConfig()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetEkmConfig().GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetUpdateMask() != nil {
+		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(updateMask))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "ekm_config.name", url.QueryEscape(req.GetEkmConfig().GetName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).UpdateEkmConfig[0:len((*c.CallOptions).UpdateEkmConfig):len((*c.CallOptions).UpdateEkmConfig)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &kmspb.EkmConfig{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// VerifyConnectivity verifies that Cloud KMS can successfully connect to the external key
+// manager specified by an EkmConnection.
+// If there is an error connecting to the EKM, this method returns a
+// FAILED_PRECONDITION status containing structured information as described
+// at https://cloud.google.com/kms/docs/reference/ekm_errors (at https://cloud.google.com/kms/docs/reference/ekm_errors).
+func (c *ekmRESTClient) VerifyConnectivity(ctx context.Context, req *kmspb.VerifyConnectivityRequest, opts ...gax.CallOption) (*kmspb.VerifyConnectivityResponse, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:verifyConnectivity", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).VerifyConnectivity[0:len((*c.CallOptions).VerifyConnectivity):len((*c.CallOptions).VerifyConnectivity)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &kmspb.VerifyConnectivityResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 		if err != nil {
 			return err
 		}

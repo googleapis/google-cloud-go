@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/gaming/apiv1",
-    "version": "1.9.0",
+    "version": "1.9.1",
     "language": "GO",
     "apis": [
       {
@@ -126,7 +126,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "gamingpb.GameServerCluster",
+        "resultType": "*gamingpb.GameServerCluster",
         "client": {
           "shortName": "GameServerClustersClient",
           "fullName": "google.cloud.gaming.v1.GameServerClustersClient"
@@ -218,7 +218,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "gamingpb.PreviewCreateGameServerClusterResponse",
+        "resultType": "*gamingpb.PreviewCreateGameServerClusterResponse",
         "client": {
           "shortName": "GameServerClustersClient",
           "fullName": "google.cloud.gaming.v1.GameServerClustersClient"
@@ -264,7 +264,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "gamingpb.PreviewDeleteGameServerClusterResponse",
+        "resultType": "*gamingpb.PreviewDeleteGameServerClusterResponse",
         "client": {
           "shortName": "GameServerClustersClient",
           "fullName": "google.cloud.gaming.v1.GameServerClustersClient"
@@ -310,7 +310,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "gamingpb.PreviewUpdateGameServerClusterResponse",
+        "resultType": "*gamingpb.PreviewUpdateGameServerClusterResponse",
         "client": {
           "shortName": "GameServerClustersClient",
           "fullName": "google.cloud.gaming.v1.GameServerClustersClient"
@@ -494,7 +494,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "gamingpb.GameServerConfig",
+        "resultType": "*gamingpb.GameServerConfig",
         "client": {
           "shortName": "GameServerConfigsClient",
           "fullName": "google.cloud.gaming.v1.GameServerConfigsClient"
@@ -678,7 +678,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "gamingpb.FetchDeploymentStateResponse",
+        "resultType": "*gamingpb.FetchDeploymentStateResponse",
         "client": {
           "shortName": "GameServerDeploymentsClient",
           "fullName": "google.cloud.gaming.v1.GameServerDeploymentsClient"
@@ -724,7 +724,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "gamingpb.GameServerDeployment",
+        "resultType": "*gamingpb.GameServerDeployment",
         "client": {
           "shortName": "GameServerDeploymentsClient",
           "fullName": "google.cloud.gaming.v1.GameServerDeploymentsClient"
@@ -770,7 +770,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "gamingpb.GameServerDeploymentRollout",
+        "resultType": "*gamingpb.GameServerDeploymentRollout",
         "client": {
           "shortName": "GameServerDeploymentsClient",
           "fullName": "google.cloud.gaming.v1.GameServerDeploymentsClient"
@@ -862,7 +862,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "gamingpb.PreviewGameServerDeploymentRolloutResponse",
+        "resultType": "*gamingpb.PreviewGameServerDeploymentRolloutResponse",
         "client": {
           "shortName": "GameServerDeploymentsClient",
           "fullName": "google.cloud.gaming.v1.GameServerDeploymentsClient"
@@ -1092,7 +1092,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "gamingpb.Realm",
+        "resultType": "*gamingpb.Realm",
         "client": {
           "shortName": "RealmsClient",
           "fullName": "google.cloud.gaming.v1.RealmsClient"
@@ -1184,7 +1184,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "gamingpb.PreviewRealmUpdateResponse",
+        "resultType": "*gamingpb.PreviewRealmUpdateResponse",
         "client": {
           "shortName": "RealmsClient",
           "fullName": "google.cloud.gaming.v1.RealmsClient"

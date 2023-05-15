@@ -218,7 +218,7 @@ func initIntegrationTest() func() {
 		if err != nil {
 			log.Fatalf("NewClient: %v", err)
 		}
-		err = storageOptimizedClient.EnableStorageReadClient(ctx)
+		err = storageOptimizedClient.EnableStorageReadClient(ctx, bqOpts...)
 		if err != nil {
 			log.Fatalf("ConfigureStorageReadClient: %v", err)
 		}
@@ -355,6 +355,26 @@ func TestIntegration_JobFrom(t *testing.T) {
 		}
 	}
 
+}
+
+func TestIntegration_QueryContextTimeout(t *testing.T) {
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), 200*time.Millisecond)
+	defer cancel()
+
+	q := client.Query("select count(*) from unnest(generate_array(1,1000000)), unnest(generate_array(1, 1000)) as foo")
+	q.DisableQueryCache = true
+	before := time.Now()
+	_, err := q.Read(ctx)
+	if err != context.DeadlineExceeded {
+		t.Errorf("Read() error, wanted %v, got %v", context.DeadlineExceeded, err)
+	}
+	wantMaxDur := 500 * time.Millisecond
+	if d := time.Since(before); d > wantMaxDur {
+		t.Errorf("return duration too long, wanted max %v got %v", wantMaxDur, d)
+	}
 }
 
 func TestIntegration_SnapshotRestoreClone(t *testing.T) {
@@ -581,6 +601,7 @@ func TestIntegration_RangePartitioning(t *testing.T) {
 		t.Errorf("Range.Interval: got %v, wanted %v", gotInt64, wantedRange.Interval)
 	}
 }
+
 func TestIntegration_RemoveTimePartitioning(t *testing.T) {
 	if client == nil {
 		t.Skip("Integration tests skipped")
@@ -1421,7 +1442,88 @@ func TestIntegration_Load(t *testing.T) {
 		t.Fatal(err)
 	}
 	checkReadAndTotalRows(t, "reader load", table.Read(ctx), wantRows)
+}
 
+func TestIntegration_LoadWithSessionSupport(t *testing.T) {
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
+
+	ctx := context.Background()
+	sessionDataset := client.Dataset("_SESSION")
+	sessionTable := sessionDataset.Table("test_temp_destination_table")
+
+	schema := Schema{
+		{Name: "username", Type: StringFieldType, Required: false},
+		{Name: "tweet", Type: StringFieldType, Required: false},
+		{Name: "timestamp", Type: StringFieldType, Required: false},
+		{Name: "likes", Type: IntegerFieldType, Required: false},
+	}
+	sourceURIs := []string{
+		"gs://cloud-samples-data/bigquery/federated-formats-reference-file-schema/a-twitter.parquet",
+	}
+
+	source := NewGCSReference(sourceURIs...)
+	source.SourceFormat = Parquet
+	source.Schema = schema
+	loader := sessionTable.LoaderFrom(source)
+	loader.CreateSession = true
+	loader.CreateDisposition = CreateIfNeeded
+
+	job, err := loader.Run(ctx)
+	if err != nil {
+		t.Fatalf("loader.Run: %v", err)
+	}
+	err = wait(ctx, job)
+	if err != nil {
+		t.Fatalf("wait: %v", err)
+	}
+
+	sessionInfo := job.lastStatus.Statistics.SessionInfo
+	if sessionInfo == nil {
+		t.Fatalf("empty job.lastStatus.Statistics.SessionInfo: %v", sessionInfo)
+	}
+
+	sessionID := sessionInfo.SessionID
+	loaderWithSession := sessionTable.LoaderFrom(source)
+	loaderWithSession.CreateDisposition = CreateIfNeeded
+	loaderWithSession.ConnectionProperties = []*ConnectionProperty{
+		{
+			Key:   "session_id",
+			Value: sessionID,
+		},
+	}
+	jobWithSession, err := loaderWithSession.Run(ctx)
+	if err != nil {
+		t.Fatalf("loaderWithSession.Run: %v", err)
+	}
+	err = wait(ctx, jobWithSession)
+	if err != nil {
+		t.Fatalf("wait: %v", err)
+	}
+
+	sessionJobInfo := jobWithSession.lastStatus.Statistics.SessionInfo
+	if sessionJobInfo == nil {
+		t.Fatalf("empty jobWithSession.lastStatus.Statistics.SessionInfo: %v", sessionJobInfo)
+	}
+
+	if sessionID != sessionJobInfo.SessionID {
+		t.Fatalf("expected session ID %q, but found %q", sessionID, sessionJobInfo.SessionID)
+	}
+
+	sql := "SELECT * FROM _SESSION.test_temp_destination_table;"
+	q := client.Query(sql)
+	q.ConnectionProperties = []*ConnectionProperty{
+		{
+			Key:   "session_id",
+			Value: sessionID,
+		},
+	}
+	sessionQueryJob, err := q.Run(ctx)
+	err = wait(ctx, sessionQueryJob)
+	if err != nil {
+		t.Fatalf("wait: %v", err)
+	}
 }
 
 func TestIntegration_LoadWithReferenceSchemaFile(t *testing.T) {

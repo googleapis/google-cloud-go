@@ -17,6 +17,7 @@ package main
 import (
 	"context"
 	crand "crypto/rand"
+	"errors"
 	"fmt"
 	"io"
 	"log"
@@ -27,7 +28,8 @@ import (
 
 	"cloud.google.com/go/storage"
 	"github.com/google/uuid"
-	"google.golang.org/api/option"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 const (
@@ -35,10 +37,6 @@ const (
 	bucketPrefix = "golang-grpc-test-" // needs to be this for GRPC for now
 	objectPrefix = "benchmark-obj-"
 )
-
-func randomBool() bool {
-	return rand.Intn(2) == 0
-}
 
 // randomOf3 returns 2 negative and one positive bool, randomly assigning the
 // position of the positive return value.
@@ -78,7 +76,7 @@ func createBenchmarkBucket(bucketName string, opts *benchmarkOptions) func() {
 	ctx := context.Background()
 
 	// Create a bucket for the tests. We do not need to benchmark this.
-	c, err := storage.NewClient(ctx, option.WithCredentialsFile(credentialsFile))
+	c, err := storage.NewClient(ctx)
 	if err != nil {
 		log.Fatalf("NewClient: %v", err)
 	}
@@ -98,8 +96,8 @@ func createBenchmarkBucket(bucketName string, opts *benchmarkOptions) func() {
 }
 
 // generateRandomFile creates a temp file on disk and fills it with size random bytes.
-func generateRandomFile(size int64) (string, error) {
-	f, err := os.CreateTemp("", objectPrefix)
+func generateRandomFile(path string, size int64) (string, error) {
+	f, err := os.CreateTemp(path, objectPrefix)
 	if err != nil {
 		return "", fmt.Errorf("error creating file: %v", err)
 	}
@@ -131,4 +129,19 @@ func populateDependencyVersions() error {
 		}
 	}
 	return nil
+}
+
+// errorIsDeadLineExceeded functions like errors.Is(err, context.DeadlineExceeded)
+// Except, it unwraps the error to look for GRPC DeadlineExceeded errors.
+func errorIsDeadLineExceeded(err error) bool {
+	if errors.Is(err, context.DeadlineExceeded) {
+		return true
+	}
+
+	for err = errors.Unwrap(err); err != nil; {
+		if status.Code(err) == codes.DeadlineExceeded {
+			return true
+		}
+	}
+	return false
 }

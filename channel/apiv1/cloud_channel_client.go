@@ -29,6 +29,7 @@ import (
 	channelpb "cloud.google.com/go/channel/apiv1/channelpb"
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
@@ -36,7 +37,6 @@ import (
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -93,6 +93,7 @@ type CloudChannelCallOptions struct {
 	RegisterSubscriber                  []gax.CallOption
 	UnregisterSubscriber                []gax.CallOption
 	ListSubscribers                     []gax.CallOption
+	ListEntitlementChanges              []gax.CallOption
 	CancelOperation                     []gax.CallOption
 	DeleteOperation                     []gax.CallOption
 	GetOperation                        []gax.CallOption
@@ -498,6 +499,17 @@ func defaultCloudChannelCallOptions() *CloudChannelCallOptions {
 				})
 			}),
 		},
+		ListEntitlementChanges: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 		CancelOperation: []gax.CallOption{},
 		DeleteOperation: []gax.CallOption{},
 		GetOperation:    []gax.CallOption{},
@@ -858,6 +870,16 @@ func defaultCloudChannelRESTCallOptions() *CloudChannelCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
+		ListEntitlementChanges: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
 		CancelOperation: []gax.CallOption{},
 		DeleteOperation: []gax.CallOption{},
 		GetOperation:    []gax.CallOption{},
@@ -926,6 +948,7 @@ type internalCloudChannelClient interface {
 	RegisterSubscriber(context.Context, *channelpb.RegisterSubscriberRequest, ...gax.CallOption) (*channelpb.RegisterSubscriberResponse, error)
 	UnregisterSubscriber(context.Context, *channelpb.UnregisterSubscriberRequest, ...gax.CallOption) (*channelpb.UnregisterSubscriberResponse, error)
 	ListSubscribers(context.Context, *channelpb.ListSubscribersRequest, ...gax.CallOption) *StringIterator
+	ListEntitlementChanges(context.Context, *channelpb.ListEntitlementChangesRequest, ...gax.CallOption) *EntitlementChangeIterator
 	CancelOperation(context.Context, *longrunningpb.CancelOperationRequest, ...gax.CallOption) error
 	DeleteOperation(context.Context, *longrunningpb.DeleteOperationRequest, ...gax.CallOption) error
 	GetOperation(context.Context, *longrunningpb.GetOperationRequest, ...gax.CallOption) (*longrunningpb.Operation, error)
@@ -1839,7 +1862,7 @@ func (c *CloudChannelClient) GetCustomerRepricingConfig(ctx context.Context, req
 // resources. The data for each resource is displayed in the ascending order
 // of:
 //
-//	customer ID
+//	Customer ID
 //
 //	RepricingConfig.EntitlementGranularity.entitlement
 //
@@ -2011,7 +2034,7 @@ func (c *CloudChannelClient) GetChannelPartnerRepricingConfig(ctx context.Contex
 // resources. The data for each resource is displayed in the ascending order
 // of:
 //
-//	channel partner ID
+//	Channel Partner ID
 //
 //	RepricingConfig.effective_invoice_month
 //
@@ -2288,6 +2311,30 @@ func (c *CloudChannelClient) ListSubscribers(ctx context.Context, req *channelpb
 	return c.internalClient.ListSubscribers(ctx, req, opts...)
 }
 
+// ListEntitlementChanges list entitlement history.
+//
+// Possible error codes:
+//
+//	PERMISSION_DENIED: The reseller account making the request and the
+//	provided reseller account are different.
+//
+//	INVALID_ARGUMENT: Missing or invalid required fields in the request.
+//
+//	NOT_FOUND: The parent resource doesn’t exist. Usually the result of an
+//	invalid name parameter.
+//
+//	INTERNAL: Any non-user error related to a technical issue in the backend.
+//	In this case, contact CloudChannel support.
+//
+//	UNKNOWN: Any non-user error related to a technical issue in the backend.
+//	In this case, contact Cloud Channel support.
+//
+// Return value:
+// List of EntitlementChanges.
+func (c *CloudChannelClient) ListEntitlementChanges(ctx context.Context, req *channelpb.ListEntitlementChangesRequest, opts ...gax.CallOption) *EntitlementChangeIterator {
+	return c.internalClient.ListEntitlementChanges(ctx, req, opts...)
+}
+
 // CancelOperation is a utility method from google.longrunning.Operations.
 func (c *CloudChannelClient) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
 	return c.internalClient.CancelOperation(ctx, req, opts...)
@@ -2303,7 +2350,8 @@ func (c *CloudChannelClient) GetOperation(ctx context.Context, req *longrunningp
 	return c.internalClient.GetOperation(ctx, req, opts...)
 }
 
-// ListOperations is a utility method from google.longrunning.Operations.
+// ListOperations lists operations that match the specified filter in the request. If
+// the server doesn’t support this method, it returns UNIMPLEMENTED.
 func (c *CloudChannelClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	return c.internalClient.ListOperations(ctx, req, opts...)
 }
@@ -3817,6 +3865,51 @@ func (c *cloudChannelGRPCClient) ListSubscribers(ctx context.Context, req *chann
 
 		it.Response = resp
 		return resp.GetServiceAccounts(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *cloudChannelGRPCClient) ListEntitlementChanges(ctx context.Context, req *channelpb.ListEntitlementChangesRequest, opts ...gax.CallOption) *EntitlementChangeIterator {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).ListEntitlementChanges[0:len((*c.CallOptions).ListEntitlementChanges):len((*c.CallOptions).ListEntitlementChanges)], opts...)
+	it := &EntitlementChangeIterator{}
+	req = proto.Clone(req).(*channelpb.ListEntitlementChangesRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*channelpb.EntitlementChange, string, error) {
+		resp := &channelpb.ListEntitlementChangesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.cloudChannelClient.ListEntitlementChanges(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetEntitlementChanges(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -6428,7 +6521,7 @@ func (c *cloudChannelRESTClient) GetCustomerRepricingConfig(ctx context.Context,
 // resources. The data for each resource is displayed in the ascending order
 // of:
 //
-//	customer ID
+//	Customer ID
 //
 //	RepricingConfig.EntitlementGranularity.entitlement
 //
@@ -6894,7 +6987,7 @@ func (c *cloudChannelRESTClient) GetChannelPartnerRepricingConfig(ctx context.Co
 // resources. The data for each resource is displayed in the ascending order
 // of:
 //
-//	channel partner ID
+//	Channel Partner ID
 //
 //	RepricingConfig.effective_invoice_month
 //
@@ -7560,6 +7653,9 @@ func (c *cloudChannelRESTClient) ListOffers(ctx context.Context, req *channelpb.
 		if req.GetPageToken() != "" {
 			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
 		}
+		if req.GetShowFutureOffers() {
+			params.Add("showFutureOffers", fmt.Sprintf("%v", req.GetShowFutureOffers()))
+		}
 
 		baseUrl.RawQuery = params.Encode()
 
@@ -8109,6 +8205,116 @@ func (c *cloudChannelRESTClient) ListSubscribers(ctx context.Context, req *chann
 	return it
 }
 
+// ListEntitlementChanges list entitlement history.
+//
+// Possible error codes:
+//
+//	PERMISSION_DENIED: The reseller account making the request and the
+//	provided reseller account are different.
+//
+//	INVALID_ARGUMENT: Missing or invalid required fields in the request.
+//
+//	NOT_FOUND: The parent resource doesn’t exist. Usually the result of an
+//	invalid name parameter.
+//
+//	INTERNAL: Any non-user error related to a technical issue in the backend.
+//	In this case, contact CloudChannel support.
+//
+//	UNKNOWN: Any non-user error related to a technical issue in the backend.
+//	In this case, contact Cloud Channel support.
+//
+// Return value:
+// List of EntitlementChanges.
+func (c *cloudChannelRESTClient) ListEntitlementChanges(ctx context.Context, req *channelpb.ListEntitlementChangesRequest, opts ...gax.CallOption) *EntitlementChangeIterator {
+	it := &EntitlementChangeIterator{}
+	req = proto.Clone(req).(*channelpb.ListEntitlementChangesRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*channelpb.EntitlementChange, string, error) {
+		resp := &channelpb.ListEntitlementChangesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v:listEntitlementChanges", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			httpRsp, err := c.httpClient.Do(httpReq)
+			if err != nil {
+				return err
+			}
+			defer httpRsp.Body.Close()
+
+			if err = googleapi.CheckResponse(httpRsp); err != nil {
+				return err
+			}
+
+			buf, err := ioutil.ReadAll(httpRsp.Body)
+			if err != nil {
+				return err
+			}
+
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return maybeUnknownEnum(err)
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetEntitlementChanges(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
 // CancelOperation is a utility method from google.longrunning.Operations.
 func (c *cloudChannelRESTClient) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
@@ -8253,7 +8459,8 @@ func (c *cloudChannelRESTClient) GetOperation(ctx context.Context, req *longrunn
 	return resp, nil
 }
 
-// ListOperations is a utility method from google.longrunning.Operations.
+// ListOperations lists operations that match the specified filter in the request. If
+// the server doesn’t support this method, it returns UNIMPLEMENTED.
 func (c *cloudChannelRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
 	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
@@ -9407,6 +9614,53 @@ func (it *CustomerRepricingConfigIterator) bufLen() int {
 }
 
 func (it *CustomerRepricingConfigIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// EntitlementChangeIterator manages a stream of *channelpb.EntitlementChange.
+type EntitlementChangeIterator struct {
+	items    []*channelpb.EntitlementChange
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*channelpb.EntitlementChange, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *EntitlementChangeIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *EntitlementChangeIterator) Next() (*channelpb.EntitlementChange, error) {
+	var item *channelpb.EntitlementChange
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *EntitlementChangeIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *EntitlementChangeIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b

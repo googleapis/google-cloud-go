@@ -1,5 +1,19 @@
 # Changes
 
+## [1.9.1](https://github.com/googleapis/google-cloud-go/compare/scheduler/v1.9.0...scheduler/v1.9.1) (2023-05-08)
+
+
+### Bug Fixes
+
+* **scheduler:** Update grpc to v1.55.0 ([1147ce0](https://github.com/googleapis/google-cloud-go/commit/1147ce02a990276ca4f8ab7a1ab65c14da4450ef))
+
+## [1.9.0](https://github.com/googleapis/google-cloud-go/compare/scheduler/v1.8.0...scheduler/v1.9.0) (2023-03-15)
+
+
+### Features
+
+* **scheduler:** Location API methods ([8c98464](https://github.com/googleapis/google-cloud-go/commit/8c9846414f57620db198bad863cca38529d39e9e))
+
 ## [1.8.0](https://github.com/googleapis/google-cloud-go/compare/scheduler/v1.7.0...scheduler/v1.8.0) (2023-01-04)
 
 

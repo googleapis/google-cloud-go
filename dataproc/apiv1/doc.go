@@ -62,7 +62,7 @@
 //
 //	req := &dataprocpb.CreateAutoscalingPolicyRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/cloud.google.com/go/dataproc/apiv1/dataprocpb#CreateAutoscalingPolicyRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/dataproc/v2/apiv1/dataprocpb#CreateAutoscalingPolicyRequest.
 //	}
 //	resp, err := c.CreateAutoscalingPolicy(ctx, req)
 //	if err != nil {
@@ -78,7 +78,7 @@
 // Individual methods on the client use the ctx given to them.
 //
 // To close the open connection, use the Close() method.
-package dataproc // import "cloud.google.com/go/dataproc/apiv1"
+package dataproc // import "cloud.google.com/go/dataproc/v2/apiv1"
 
 import (
 	"context"

@@ -29,6 +29,7 @@ import (
 	appenginepb "cloud.google.com/go/appengine/apiv1/appenginepb"
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
@@ -36,7 +37,6 @@ import (
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/encoding/protojson"
@@ -417,6 +417,11 @@ func (c *domainMappingsGRPCClient) ListDomainMappings(ctx context.Context, req *
 }
 
 func (c *domainMappingsGRPCClient) GetDomainMapping(ctx context.Context, req *appenginepb.GetDomainMappingRequest, opts ...gax.CallOption) (*appenginepb.DomainMapping, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -434,6 +439,11 @@ func (c *domainMappingsGRPCClient) GetDomainMapping(ctx context.Context, req *ap
 }
 
 func (c *domainMappingsGRPCClient) CreateDomainMapping(ctx context.Context, req *appenginepb.CreateDomainMappingRequest, opts ...gax.CallOption) (*CreateDomainMappingOperation, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -453,6 +463,11 @@ func (c *domainMappingsGRPCClient) CreateDomainMapping(ctx context.Context, req 
 }
 
 func (c *domainMappingsGRPCClient) UpdateDomainMapping(ctx context.Context, req *appenginepb.UpdateDomainMappingRequest, opts ...gax.CallOption) (*UpdateDomainMappingOperation, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -472,6 +487,11 @@ func (c *domainMappingsGRPCClient) UpdateDomainMapping(ctx context.Context, req 
 }
 
 func (c *domainMappingsGRPCClient) DeleteDomainMapping(ctx context.Context, req *appenginepb.DeleteDomainMappingRequest, opts ...gax.CallOption) (*DeleteDomainMappingOperation, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)

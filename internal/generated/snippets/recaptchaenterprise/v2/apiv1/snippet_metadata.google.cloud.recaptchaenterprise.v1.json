@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/recaptchaenterprise/v2/apiv1",
-    "version": "2.6.0",
+    "version": "1.3.1",
     "language": "GO",
     "apis": [
       {
@@ -34,7 +34,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "recaptchaenterprisepb.AnnotateAssessmentResponse",
+        "resultType": "*recaptchaenterprisepb.AnnotateAssessmentResponse",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.recaptchaenterprise.v1.Client"
@@ -80,7 +80,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "recaptchaenterprisepb.Assessment",
+        "resultType": "*recaptchaenterprisepb.Assessment",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.recaptchaenterprise.v1.Client"
@@ -126,7 +126,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "recaptchaenterprisepb.Key",
+        "resultType": "*recaptchaenterprisepb.Key",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.recaptchaenterprise.v1.Client"
@@ -217,7 +217,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "recaptchaenterprisepb.Key",
+        "resultType": "*recaptchaenterprisepb.Key",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.recaptchaenterprise.v1.Client"
@@ -263,7 +263,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "recaptchaenterprisepb.Metrics",
+        "resultType": "*recaptchaenterprisepb.Metrics",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.recaptchaenterprise.v1.Client"
@@ -447,7 +447,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "recaptchaenterprisepb.Key",
+        "resultType": "*recaptchaenterprisepb.Key",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.recaptchaenterprise.v1.Client"
@@ -493,7 +493,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "recaptchaenterprisepb.RetrieveLegacySecretKeyResponse",
+        "resultType": "*recaptchaenterprisepb.RetrieveLegacySecretKeyResponse",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.recaptchaenterprise.v1.Client"
@@ -585,7 +585,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "recaptchaenterprisepb.Key",
+        "resultType": "*recaptchaenterprisepb.Key",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.recaptchaenterprise.v1.Client"

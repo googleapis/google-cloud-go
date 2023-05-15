@@ -133,3 +133,12 @@ message ValidationP2ColumnAnnotations {
     optional string second = 2 [(google.cloud.bigquery.storage.v1.column_name) = "特別コラム"];
     optional string third = 3 [(google.cloud.bigquery.storage.v1.column_name) = "second"];
 }
+
+message ExampleEmployeeCDC {
+    optional int64 id = 1;  // Primary Key (not enforced)
+    optional string username = 2;
+    optional string given_name = 3;
+    repeated string departments = 4;
+    optional int64 salary = 5;
+    optional string _CHANGE_TYPE = 999; // We give it a high tag number to avoid conflicts with normal evolution of the record.
+}

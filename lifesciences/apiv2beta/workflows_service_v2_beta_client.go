@@ -29,6 +29,7 @@ import (
 	lifesciencespb "cloud.google.com/go/lifesciences/apiv2beta/lifesciencespb"
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
@@ -37,7 +38,6 @@ import (
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/encoding/protojson"
@@ -147,11 +147,11 @@ func (c *WorkflowsServiceV2BetaClient) Connection() *grpc.ClientConn {
 
 // RunPipeline runs a pipeline.  The returned Operation’s [metadata]
 // [google.longrunning.Operation.metadata] field will contain a
-// google.cloud.lifesciences.v2beta.Metadata object describing the status
-// of the pipeline execution. The
+// google.cloud.lifesciences.v2beta.Metadata
+// object describing the status of the pipeline execution. The
 // response field will contain a
-// google.cloud.lifesciences.v2beta.RunPipelineResponse object if the
-// pipeline completes successfully.
+// google.cloud.lifesciences.v2beta.RunPipelineResponse
+// object if the pipeline completes successfully.
 //
 // Note: Before you can use this method, the Life Sciences Service Agent
 // must have access to your project. This is done automatically when the
@@ -568,11 +568,11 @@ func (c *workflowsServiceV2BetaGRPCClient) ListOperations(ctx context.Context, r
 
 // RunPipeline runs a pipeline.  The returned Operation’s [metadata]
 // [google.longrunning.Operation.metadata] field will contain a
-// google.cloud.lifesciences.v2beta.Metadata object describing the status
-// of the pipeline execution. The
+// google.cloud.lifesciences.v2beta.Metadata
+// object describing the status of the pipeline execution. The
 // response field will contain a
-// google.cloud.lifesciences.v2beta.RunPipelineResponse object if the
-// pipeline completes successfully.
+// google.cloud.lifesciences.v2beta.RunPipelineResponse
+// object if the pipeline completes successfully.
 //
 // Note: Before you can use this method, the Life Sciences Service Agent
 // must have access to your project. This is done automatically when the

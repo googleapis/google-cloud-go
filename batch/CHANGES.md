@@ -1,5 +1,28 @@
 # Changelog
 
+
+## [1.0.1](https://github.com/googleapis/google-cloud-go/compare/batch/v1.0.0...batch/v1.0.1) (2023-05-08)
+
+
+### Bug Fixes
+
+* **batch:** Update grpc to v1.55.0 ([1147ce0](https://github.com/googleapis/google-cloud-go/commit/1147ce02a990276ca4f8ab7a1ab65c14da4450ef))
+
+## [1.0.0](https://github.com/googleapis/google-cloud-go/compare/batch/v0.7.0...batch/v1.0.0) (2023-04-04)
+
+
+### Features
+
+* **batch:** Promote to GA ([597ea0f](https://github.com/googleapis/google-cloud-go/commit/597ea0fe09bcea04e884dffe78add850edb2120d))
+* **batch:** Promote to GA ([#7645](https://github.com/googleapis/google-cloud-go/issues/7645)) ([307e5ad](https://github.com/googleapis/google-cloud-go/commit/307e5adfe93b9f0b66f2f4312f127bb74c102011))
+
+## [0.7.0](https://github.com/googleapis/google-cloud-go/compare/batch/v0.6.0...batch/v0.7.0) (2023-02-14)
+
+
+### Features
+
+* **batch:** Support custom scopes for service account in v1 ([4623db8](https://github.com/googleapis/google-cloud-go/commit/4623db86fb70305278f6740999ecaee674506052))
+
 ## [0.6.0](https://github.com/googleapis/google-cloud-go/compare/batch/v0.5.0...batch/v0.6.0) (2023-01-04)
 
 

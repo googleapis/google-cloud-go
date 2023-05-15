@@ -89,6 +89,10 @@ type txReadOnly struct {
 
 	// commonTags for opencensus metrics
 	ct *commonTags
+
+	// disableRouteToLeader specifies if all the requests of type read-write and PDML
+	// need to be routed to the leader region.
+	disableRouteToLeader bool
 }
 
 // TransactionOptions provides options for a transaction.
@@ -103,6 +107,10 @@ type TransactionOptions struct {
 	// CommitPriority is the priority to use for the Commit RPC for the
 	// transaction.
 	CommitPriority sppb.RequestOptions_Priority
+
+	// the transaction lock mode is used to specify a concurrency mode for the
+	// read/query operations. It works for a read/write transaction only.
+	ReadLockMode sppb.TransactionOptions_ReadWrite_ReadLockMode
 }
 
 // merge combines two TransactionOptions that the input parameter will have higher
@@ -118,6 +126,9 @@ func (to TransactionOptions) merge(opts TransactionOptions) TransactionOptions {
 	}
 	if opts.CommitPriority != sppb.RequestOptions_PRIORITY_UNSPECIFIED {
 		merged.CommitPriority = opts.CommitPriority
+	}
+	if opts.ReadLockMode != sppb.TransactionOptions_ReadWrite_READ_LOCK_MODE_UNSPECIFIED {
+		merged.ReadLockMode = opts.ReadLockMode
 	}
 	return merged
 }
@@ -222,7 +233,7 @@ func (t *txReadOnly) ReadWithOptions(ctx context.Context, table string, keys Key
 		setTransactionID = nil
 	}
 	return streamWithReplaceSessionFunc(
-		contextWithOutgoingMetadata(ctx, sh.getMetadata()),
+		contextWithOutgoingMetadata(ctx, sh.getMetadata(), t.disableRouteToLeader),
 		sh.session.logger,
 		func(ctx context.Context, resumeToken []byte) (streamingReceiver, error) {
 			client, err := client.StreamingRead(ctx,
@@ -458,7 +469,7 @@ func (t *txReadOnly) query(ctx context.Context, statement Statement, options Que
 	}
 	client := sh.getClient()
 	return streamWithReplaceSessionFunc(
-		contextWithOutgoingMetadata(ctx, sh.getMetadata()),
+		contextWithOutgoingMetadata(ctx, sh.getMetadata(), t.disableRouteToLeader),
 		sh.session.logger,
 		func(ctx context.Context, resumeToken []byte) (streamingReceiver, error) {
 			req.ResumeToken = resumeToken
@@ -640,7 +651,7 @@ func (t *ReadOnlyTransaction) begin(ctx context.Context) error {
 			return err
 		}
 		var md metadata.MD
-		res, err = sh.getClient().BeginTransaction(contextWithOutgoingMetadata(ctx, sh.getMetadata()), &sppb.BeginTransactionRequest{
+		res, err = sh.getClient().BeginTransaction(contextWithOutgoingMetadata(ctx, sh.getMetadata(), t.disableRouteToLeader), &sppb.BeginTransactionRequest{
 			Session: sh.getID(),
 			Options: &sppb.TransactionOptions{
 				Mode: &sppb.TransactionOptions_ReadOnly_{
@@ -1028,7 +1039,7 @@ func (t *ReadWriteTransaction) update(ctx context.Context, stmt Statement, opts 
 	}
 
 	var md metadata.MD
-	resultSet, err := sh.getClient().ExecuteSql(contextWithOutgoingMetadata(ctx, sh.getMetadata()), req, gax.WithGRPCOptions(grpc.Header(&md)))
+	resultSet, err := sh.getClient().ExecuteSql(contextWithOutgoingMetadata(ctx, sh.getMetadata(), t.disableRouteToLeader), req, gax.WithGRPCOptions(grpc.Header(&md)))
 
 	if getGFELatencyMetricsFlag() && md != nil && t.ct != nil {
 		if err := createContextAndCaptureGFELatencyMetrics(ctx, t.ct, md, "update"); err != nil {
@@ -1117,7 +1128,7 @@ func (t *ReadWriteTransaction) batchUpdateWithOptions(ctx context.Context, stmts
 	}
 
 	var md metadata.MD
-	resp, err := sh.getClient().ExecuteBatchDml(contextWithOutgoingMetadata(ctx, sh.getMetadata()), &sppb.ExecuteBatchDmlRequest{
+	resp, err := sh.getClient().ExecuteBatchDml(contextWithOutgoingMetadata(ctx, sh.getMetadata(), t.disableRouteToLeader), &sppb.ExecuteBatchDmlRequest{
 		Session:        sh.getID(),
 		Transaction:    ts,
 		Statements:     sppbStmts,
@@ -1244,7 +1255,9 @@ func (t *ReadWriteTransaction) getTransactionSelector() *sppb.TransactionSelecto
 		Selector: &sppb.TransactionSelector_Begin{
 			Begin: &sppb.TransactionOptions{
 				Mode: &sppb.TransactionOptions_ReadWrite_{
-					ReadWrite: &sppb.TransactionOptions_ReadWrite{},
+					ReadWrite: &sppb.TransactionOptions_ReadWrite{
+						ReadLockMode: t.txOpts.ReadLockMode,
+					},
 				},
 			},
 		},
@@ -1272,18 +1285,25 @@ func (t *ReadWriteTransaction) setTransactionID(tx transactionID) {
 func (t *ReadWriteTransaction) release(err error) {
 	t.mu.Lock()
 	sh := t.sh
+	state := t.state
 	t.mu.Unlock()
 	if sh != nil && isSessionNotFoundError(err) {
 		sh.destroy()
 	}
+	// if transaction is released during initialization then do explicit begin transaction
+	if state == txInit {
+		t.setTransactionID(nil)
+	}
 }
 
-func beginTransaction(ctx context.Context, sid string, client *vkit.Client) (transactionID, error) {
+func beginTransaction(ctx context.Context, sid string, client *vkit.Client, opts TransactionOptions) (transactionID, error) {
 	res, err := client.BeginTransaction(ctx, &sppb.BeginTransactionRequest{
 		Session: sid,
 		Options: &sppb.TransactionOptions{
 			Mode: &sppb.TransactionOptions_ReadWrite_{
-				ReadWrite: &sppb.TransactionOptions_ReadWrite{},
+				ReadWrite: &sppb.TransactionOptions_ReadWrite{
+					ReadLockMode: opts.ReadLockMode,
+				},
 			},
 		},
 	})
@@ -1344,7 +1364,7 @@ func (t *ReadWriteTransaction) begin(ctx context.Context) error {
 				return err
 			}
 		}
-		tx, err = beginTransaction(contextWithOutgoingMetadata(ctx, sh.getMetadata()), sh.getID(), sh.getClient())
+		tx, err = beginTransaction(contextWithOutgoingMetadata(ctx, sh.getMetadata(), t.disableRouteToLeader), sh.getID(), sh.getClient(), t.txOpts)
 		if isSessionNotFoundError(err) {
 			sh.destroy()
 			continue
@@ -1420,7 +1440,7 @@ func (t *ReadWriteTransaction) commit(ctx context.Context, options CommitOptions
 	}
 
 	var md metadata.MD
-	res, e := client.Commit(contextWithOutgoingMetadata(ctx, t.sh.getMetadata()), &sppb.CommitRequest{
+	res, e := client.Commit(contextWithOutgoingMetadata(ctx, t.sh.getMetadata(), t.disableRouteToLeader), &sppb.CommitRequest{
 		Session: sid,
 		Transaction: &sppb.CommitRequest_TransactionId{
 			TransactionId: t.tx,
@@ -1466,7 +1486,7 @@ func (t *ReadWriteTransaction) rollback(ctx context.Context) {
 	if sid == "" || client == nil {
 		return
 	}
-	err := client.Rollback(contextWithOutgoingMetadata(ctx, t.sh.getMetadata()), &sppb.RollbackRequest{
+	err := client.Rollback(contextWithOutgoingMetadata(ctx, t.sh.getMetadata(), t.disableRouteToLeader), &sppb.RollbackRequest{
 		Session:       sid,
 		TransactionId: t.tx,
 	})
@@ -1573,6 +1593,7 @@ func NewReadWriteStmtBasedTransactionWithOptions(ctx context.Context, c *Client,
 	t.txReadOnly.txReadEnv = t
 	t.txReadOnly.qo = c.qo
 	t.txReadOnly.ro = c.ro
+	t.txReadOnly.disableRouteToLeader = c.disableRouteToLeader
 	t.txOpts = c.txo.merge(options)
 	t.ct = c.ct
 
@@ -1627,6 +1648,8 @@ type writeOnlyTransaction struct {
 	transactionTag string
 	// commitPriority is the RPC priority to use for the commit operation.
 	commitPriority sppb.RequestOptions_Priority
+	// disableRouteToLeader specifies if we want to disable RW/PDML requests to be routed to leader.
+	disableRouteToLeader bool
 }
 
 // applyAtLeastOnce commits a list of mutations to Cloud Spanner at least once,
@@ -1665,7 +1688,7 @@ func (t *writeOnlyTransaction) applyAtLeastOnce(ctx context.Context, ms ...*Muta
 					return ToSpannerError(err)
 				}
 			}
-			res, err := sh.getClient().Commit(contextWithOutgoingMetadata(ctx, sh.getMetadata()), &sppb.CommitRequest{
+			res, err := sh.getClient().Commit(contextWithOutgoingMetadata(ctx, sh.getMetadata(), t.disableRouteToLeader), &sppb.CommitRequest{
 				Session: sh.getID(),
 				Transaction: &sppb.CommitRequest_SingleUseTransaction{
 					SingleUseTransaction: &sppb.TransactionOptions{

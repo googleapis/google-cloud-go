@@ -1,5 +1,33 @@
 # Changes
 
+## [1.14.1](https://github.com/googleapis/google-cloud-go/compare/security/v1.14.0...security/v1.14.1) (2023-05-08)
+
+
+### Bug Fixes
+
+* **security:** Update grpc to v1.55.0 ([1147ce0](https://github.com/googleapis/google-cloud-go/commit/1147ce02a990276ca4f8ab7a1ab65c14da4450ef))
+
+## [1.14.0](https://github.com/googleapis/google-cloud-go/compare/security/v1.13.0...security/v1.14.0) (2023-04-11)
+
+
+### Features
+
+* **security/privateca:** Added ignore_dependent_resources to DeleteCaPoolRequest, DeleteCertificateAuthorityRequest, DisableCertificateAuthorityRequest ([fc90e54](https://github.com/googleapis/google-cloud-go/commit/fc90e54b25bda6b339266e3e5388174339ed6a44))
+
+## [1.13.0](https://github.com/googleapis/google-cloud-go/compare/security/v1.12.0...security/v1.13.0) (2023-03-15)
+
+
+### Features
+
+* **security/privateca:** Remove apiv1beta1 ([#7539](https://github.com/googleapis/google-cloud-go/issues/7539)) ([ae38ff1](https://github.com/googleapis/google-cloud-go/commit/ae38ff1eda235f6d8d9013c580d458f2f2ef451f)), refs [#7378](https://github.com/googleapis/google-cloud-go/issues/7378)
+
+## [1.12.0](https://github.com/googleapis/google-cloud-go/compare/security/v1.11.0...security/v1.12.0) (2023-02-14)
+
+
+### Features
+
+* **security/privateca:** Add X.509 Name Constraints support ([#7419](https://github.com/googleapis/google-cloud-go/issues/7419)) ([e316886](https://github.com/googleapis/google-cloud-go/commit/e316886d201ec125f8821c4849dbd0e8e714c2ed))
+
 ## [1.11.0](https://github.com/googleapis/google-cloud-go/compare/security/v1.10.0...security/v1.11.0) (2023-01-04)
 
 

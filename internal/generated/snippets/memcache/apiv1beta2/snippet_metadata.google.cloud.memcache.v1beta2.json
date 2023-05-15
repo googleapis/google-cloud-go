@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/memcache/apiv1beta2",
-    "version": "1.9.0",
+    "version": "1.9.1",
     "language": "GO",
     "apis": [
       {
@@ -14,7 +14,7 @@
     {
       "regionTag": "memcache_v1beta2_generated_CloudMemcache_ApplyParameters_sync",
       "title": "memcache ApplyParameters Sample",
-      "description": "ApplyParameters ApplyParameters restarts the set of specified nodes in order to update\nthem to the current set of parameters for the Memcached Instance.",
+      "description": "ApplyParameters `ApplyParameters` restarts the set of specified nodes in order to update\nthem to the current set of parameters for the Memcached Instance.",
       "file": "CloudMemcacheClient/ApplyParameters/main.go",
       "language": "GO",
       "clientMethod": {
@@ -132,10 +132,10 @@
         },
         "method": {
           "shortName": "CancelOperation",
-          "fullName": "google.cloud.memcache.v1beta2.CloudMemcache.CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
           "service": {
-            "shortName": "CloudMemcache",
-            "fullName": "google.cloud.memcache.v1beta2.CloudMemcache"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -143,7 +143,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -269,10 +269,10 @@
         },
         "method": {
           "shortName": "DeleteOperation",
-          "fullName": "google.cloud.memcache.v1beta2.CloudMemcache.DeleteOperation",
+          "fullName": "google.longrunning.Operations.DeleteOperation",
           "service": {
-            "shortName": "CloudMemcache",
-            "fullName": "google.cloud.memcache.v1beta2.CloudMemcache"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -280,7 +280,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -308,7 +308,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "memcachepb.Instance",
+        "resultType": "*memcachepb.Instance",
         "client": {
           "shortName": "CloudMemcacheClient",
           "fullName": "google.cloud.memcache.v1beta2.CloudMemcacheClient"
@@ -354,17 +354,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "locationpb.Location",
+        "resultType": "*locationpb.Location",
         "client": {
           "shortName": "CloudMemcacheClient",
           "fullName": "google.cloud.memcache.v1beta2.CloudMemcacheClient"
         },
         "method": {
           "shortName": "GetLocation",
-          "fullName": "google.cloud.memcache.v1beta2.CloudMemcache.GetLocation",
+          "fullName": "google.cloud.location.Locations.GetLocation",
           "service": {
-            "shortName": "CloudMemcache",
-            "fullName": "google.cloud.memcache.v1beta2.CloudMemcache"
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
           }
         }
       },
@@ -372,7 +372,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -400,17 +400,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "longrunningpb.Operation",
+        "resultType": "*longrunningpb.Operation",
         "client": {
           "shortName": "CloudMemcacheClient",
           "fullName": "google.cloud.memcache.v1beta2.CloudMemcacheClient"
         },
         "method": {
           "shortName": "GetOperation",
-          "fullName": "google.cloud.memcache.v1beta2.CloudMemcache.GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
           "service": {
-            "shortName": "CloudMemcache",
-            "fullName": "google.cloud.memcache.v1beta2.CloudMemcache"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -418,7 +418,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -499,10 +499,10 @@
         },
         "method": {
           "shortName": "ListLocations",
-          "fullName": "google.cloud.memcache.v1beta2.CloudMemcache.ListLocations",
+          "fullName": "google.cloud.location.Locations.ListLocations",
           "service": {
-            "shortName": "CloudMemcache",
-            "fullName": "google.cloud.memcache.v1beta2.CloudMemcache"
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
           }
         }
       },
@@ -510,7 +510,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 61,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -545,10 +545,10 @@
         },
         "method": {
           "shortName": "ListOperations",
-          "fullName": "google.cloud.memcache.v1beta2.CloudMemcache.ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
           "service": {
-            "shortName": "CloudMemcache",
-            "fullName": "google.cloud.memcache.v1beta2.CloudMemcache"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -556,7 +556,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 61,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -656,7 +656,7 @@
     {
       "regionTag": "memcache_v1beta2_generated_CloudMemcache_UpdateParameters_sync",
       "title": "memcache UpdateParameters Sample",
-      "description": "UpdateParameters updates the defined Memcached parameters for an existing instance.\nThis method only stages the parameters, it must be followed by\nApplyParameters to apply the parameters to nodes of the Memcached\ninstance.",
+      "description": "UpdateParameters updates the defined Memcached parameters for an existing instance.\nThis method only stages the parameters, it must be followed by\n`ApplyParameters` to apply the parameters to nodes of the Memcached\ninstance.",
       "file": "CloudMemcacheClient/UpdateParameters/main.go",
       "language": "GO",
       "clientMethod": {

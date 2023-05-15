@@ -30,11 +30,6 @@
                 "DeleteOperation"
               ]
             },
-            "GetIamPolicy": {
-              "methods": [
-                "GetIamPolicy"
-              ]
-            },
             "GetJob": {
               "methods": [
                 "GetJob"
@@ -73,16 +68,6 @@
             "ListTasks": {
               "methods": [
                 "ListTasks"
-              ]
-            },
-            "SetIamPolicy": {
-              "methods": [
-                "SetIamPolicy"
-              ]
-            },
-            "TestIamPermissions": {
-              "methods": [
-                "TestIamPermissions"
               ]
             }
           }
@@ -110,11 +95,6 @@
                 "DeleteOperation"
               ]
             },
-            "GetIamPolicy": {
-              "methods": [
-                "GetIamPolicy"
-              ]
-            },
             "GetJob": {
               "methods": [
                 "GetJob"
@@ -153,16 +133,6 @@
             "ListTasks": {
               "methods": [
                 "ListTasks"
-              ]
-            },
-            "SetIamPolicy": {
-              "methods": [
-                "SetIamPolicy"
-              ]
-            },
-            "TestIamPermissions": {
-              "methods": [
-                "TestIamPermissions"
               ]
             }
           }

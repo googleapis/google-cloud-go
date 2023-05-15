@@ -24,6 +24,7 @@ import (
 	"math"
 	"net/http"
 	"net/url"
+	"time"
 
 	computepb "cloud.google.com/go/compute/apiv1/computepb"
 	gax "github.com/googleapis/gax-go/v2"
@@ -55,10 +56,30 @@ type TargetSslProxiesCallOptions struct {
 
 func defaultTargetSslProxiesRESTCallOptions() *TargetSslProxiesCallOptions {
 	return &TargetSslProxiesCallOptions{
-		Delete:             []gax.CallOption{},
-		Get:                []gax.CallOption{},
-		Insert:             []gax.CallOption{},
-		List:               []gax.CallOption{},
+		Delete: []gax.CallOption{},
+		Get: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
+		Insert: []gax.CallOption{},
+		List: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
 		SetBackendService:  []gax.CallOption{},
 		SetCertificateMap:  []gax.CallOption{},
 		SetProxyHeader:     []gax.CallOption{},
@@ -123,7 +144,7 @@ func (c *TargetSslProxiesClient) Delete(ctx context.Context, req *computepb.Dele
 	return c.internalClient.Delete(ctx, req, opts...)
 }
 
-// Get returns the specified TargetSslProxy resource. Gets a list of available target SSL proxies by making a list() request.
+// Get returns the specified TargetSslProxy resource.
 func (c *TargetSslProxiesClient) Get(ctx context.Context, req *computepb.GetTargetSslProxyRequest, opts ...gax.CallOption) (*computepb.TargetSslProxy, error) {
 	return c.internalClient.Get(ctx, req, opts...)
 }
@@ -315,7 +336,7 @@ func (c *targetSslProxiesRESTClient) Delete(ctx context.Context, req *computepb.
 	return op, nil
 }
 
-// Get returns the specified TargetSslProxy resource. Gets a list of available target SSL proxies by making a list() request.
+// Get returns the specified TargetSslProxy resource.
 func (c *targetSslProxiesRESTClient) Get(ctx context.Context, req *computepb.GetTargetSslProxyRequest, opts ...gax.CallOption) (*computepb.TargetSslProxy, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {

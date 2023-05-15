@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/spanner/apiv1",
-    "version": "1.43.0",
+    "version": "1.45.1",
     "language": "GO",
     "apis": [
       {
@@ -14,7 +14,7 @@
     {
       "regionTag": "spanner_v1_generated_Spanner_BatchCreateSessions_sync",
       "title": "spanner BatchCreateSessions Sample",
-      "description": "BatchCreateSessions creates multiple new sessions.\n\nThis API can be used to initialize a session cache on the clients.\nSee https: //goo.gl/TgSFN2 (at https: //goo.gl/TgSFN2) for best practices on session cache management.",
+      "description": "BatchCreateSessions creates multiple new sessions.\n\nThis API can be used to initialize a session cache on the clients.\nSee https: //goo.gl/TgSFN2 for best practices on session cache management.",
       "file": "Client/BatchCreateSessions/main.go",
       "language": "GO",
       "clientMethod": {
@@ -34,7 +34,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "spannerpb.BatchCreateSessionsResponse",
+        "resultType": "*spannerpb.BatchCreateSessionsResponse",
         "client": {
           "shortName": "Client",
           "fullName": "google.spanner.v1.Client"
@@ -60,7 +60,7 @@
     {
       "regionTag": "spanner_v1_generated_Spanner_BeginTransaction_sync",
       "title": "spanner BeginTransaction Sample",
-      "description": "BeginTransaction begins a new transaction. This step can often be skipped: \nRead, ExecuteSql and\nCommit can begin a new transaction as a\nside-effect.",
+      "description": "BeginTransaction begins a new transaction. This step can often be skipped: \n[Read][google.spanner.v1.Spanner.Read], [ExecuteSql][google.spanner.v1.Spanner.ExecuteSql] and\n[Commit][google.spanner.v1.Spanner.Commit] can begin a new transaction as a\nside-effect.",
       "file": "Client/BeginTransaction/main.go",
       "language": "GO",
       "clientMethod": {
@@ -80,7 +80,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "spannerpb.Transaction",
+        "resultType": "*spannerpb.Transaction",
         "client": {
           "shortName": "Client",
           "fullName": "google.spanner.v1.Client"
@@ -106,7 +106,7 @@
     {
       "regionTag": "spanner_v1_generated_Spanner_Commit_sync",
       "title": "spanner Commit Sample",
-      "description": "Commit commits a transaction. The request includes the mutations to be\napplied to rows in the database.\n\nCommit might return an ABORTED error. This can occur at any time;\ncommonly, the cause is conflicts with concurrent\ntransactions. However, it can also happen for a variety of other\nreasons. If Commit returns ABORTED, the caller should re-attempt\nthe transaction from the beginning, re-using the same session.\n\nOn very rare occasions, Commit might return UNKNOWN. This can happen,\nfor example, if the client job experiences a 1+ hour networking failure.\nAt that point, Cloud Spanner has lost track of the transaction outcome and\nwe recommend that you perform another read from the database to see the\nstate of things as they are now.",
+      "description": "Commit commits a transaction. The request includes the mutations to be\napplied to rows in the database.\n\n`Commit` might return an `ABORTED` error. This can occur at any time;\ncommonly, the cause is conflicts with concurrent\ntransactions. However, it can also happen for a variety of other\nreasons. If `Commit` returns `ABORTED`, the caller should re-attempt\nthe transaction from the beginning, re-using the same session.\n\nOn very rare occasions, `Commit` might return `UNKNOWN`. This can happen,\nfor example, if the client job experiences a 1+ hour networking failure.\nAt that point, Cloud Spanner has lost track of the transaction outcome and\nwe recommend that you perform another read from the database to see the\nstate of things as they are now.",
       "file": "Client/Commit/main.go",
       "language": "GO",
       "clientMethod": {
@@ -126,7 +126,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "spannerpb.CommitResponse",
+        "resultType": "*spannerpb.CommitResponse",
         "client": {
           "shortName": "Client",
           "fullName": "google.spanner.v1.Client"
@@ -152,7 +152,7 @@
     {
       "regionTag": "spanner_v1_generated_Spanner_CreateSession_sync",
       "title": "spanner CreateSession Sample",
-      "description": "CreateSession creates a new session. A session can be used to perform\ntransactions that read and/or modify data in a Cloud Spanner database.\nSessions are meant to be reused for many consecutive\ntransactions.\n\nSessions can only execute one transaction at a time. To execute\nmultiple concurrent read-write/write-only transactions, create\nmultiple sessions. Note that standalone reads and queries use a\ntransaction internally, and count toward the one transaction\nlimit.\n\nActive sessions use additional server resources, so it is a good idea to\ndelete idle and unneeded sessions.\nAside from explicit deletes, Cloud Spanner may delete sessions for which no\noperations are sent for more than an hour. If a session is deleted,\nrequests to it return NOT_FOUND.\n\nIdle sessions can be kept alive by sending a trivial SQL query\nperiodically, e.g., \"SELECT 1\".",
+      "description": "CreateSession creates a new session. A session can be used to perform\ntransactions that read and/or modify data in a Cloud Spanner database.\nSessions are meant to be reused for many consecutive\ntransactions.\n\nSessions can only execute one transaction at a time. To execute\nmultiple concurrent read-write/write-only transactions, create\nmultiple sessions. Note that standalone reads and queries use a\ntransaction internally, and count toward the one transaction\nlimit.\n\nActive sessions use additional server resources, so it is a good idea to\ndelete idle and unneeded sessions.\nAside from explicit deletes, Cloud Spanner may delete sessions for which no\noperations are sent for more than an hour. If a session is deleted,\nrequests to it return `NOT_FOUND`.\n\nIdle sessions can be kept alive by sending a trivial SQL query\nperiodically, e.g., `\"SELECT 1\"`.",
       "file": "Client/CreateSession/main.go",
       "language": "GO",
       "clientMethod": {
@@ -172,7 +172,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "spannerpb.Session",
+        "resultType": "*spannerpb.Session",
         "client": {
           "shortName": "Client",
           "fullName": "google.spanner.v1.Client"
@@ -243,7 +243,7 @@
     {
       "regionTag": "spanner_v1_generated_Spanner_ExecuteBatchDml_sync",
       "title": "spanner ExecuteBatchDml Sample",
-      "description": "ExecuteBatchDml executes a batch of SQL DML statements. This method allows many statements\nto be run with lower latency than submitting them sequentially with\nExecuteSql.\n\nStatements are executed in sequential order. A request can succeed even if\na statement fails. The ExecuteBatchDmlResponse.status field in the\nresponse provides information about the statement that failed. Clients must\ninspect this field to determine whether an error occurred.\n\nExecution stops after the first failed statement; the remaining statements\nare not executed.",
+      "description": "ExecuteBatchDml executes a batch of SQL DML statements. This method allows many statements\nto be run with lower latency than submitting them sequentially with\n[ExecuteSql][google.spanner.v1.Spanner.ExecuteSql].\n\nStatements are executed in sequential order. A request can succeed even if\na statement fails. The [ExecuteBatchDmlResponse.status][google.spanner.v1.ExecuteBatchDmlResponse.status] field in the\nresponse provides information about the statement that failed. Clients must\ninspect this field to determine whether an error occurred.\n\nExecution stops after the first failed statement; the remaining statements\nare not executed.",
       "file": "Client/ExecuteBatchDml/main.go",
       "language": "GO",
       "clientMethod": {
@@ -263,7 +263,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "spannerpb.ExecuteBatchDmlResponse",
+        "resultType": "*spannerpb.ExecuteBatchDmlResponse",
         "client": {
           "shortName": "Client",
           "fullName": "google.spanner.v1.Client"
@@ -289,7 +289,7 @@
     {
       "regionTag": "spanner_v1_generated_Spanner_ExecuteSql_sync",
       "title": "spanner ExecuteSql Sample",
-      "description": "ExecuteSql executes an SQL statement, returning all results in a single reply. This\nmethod cannot be used to return a result set larger than 10 MiB;\nif the query yields more data than that, the query fails with\na FAILED_PRECONDITION error.\n\nOperations inside read-write transactions might return ABORTED. If\nthis occurs, the application should restart the transaction from\nthe beginning. See Transaction for more details.\n\nLarger result sets can be fetched in streaming fashion by calling\nExecuteStreamingSql instead.",
+      "description": "ExecuteSql executes an SQL statement, returning all results in a single reply. This\nmethod cannot be used to return a result set larger than 10 MiB;\nif the query yields more data than that, the query fails with\na `FAILED_PRECONDITION` error.\n\nOperations inside read-write transactions might return `ABORTED`. If\nthis occurs, the application should restart the transaction from\nthe beginning. See [Transaction][google.spanner.v1.Transaction] for more details.\n\nLarger result sets can be fetched in streaming fashion by calling\n[ExecuteStreamingSql][google.spanner.v1.Spanner.ExecuteStreamingSql] instead.",
       "file": "Client/ExecuteSql/main.go",
       "language": "GO",
       "clientMethod": {
@@ -309,7 +309,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "spannerpb.ResultSet",
+        "resultType": "*spannerpb.ResultSet",
         "client": {
           "shortName": "Client",
           "fullName": "google.spanner.v1.Client"
@@ -333,54 +333,9 @@
       ]
     },
     {
-      "regionTag": "spanner_v1_generated_Spanner_ExecuteStreamingSql_sync",
-      "title": "spanner ExecuteStreamingSql Sample",
-      "description": "ExecuteStreamingSql like ExecuteSql, except returns the result\nset as a stream. Unlike ExecuteSql, there\nis no limit on the size of the returned result set. However, no\nindividual row in the result set can exceed 100 MiB, and no\ncolumn value can exceed 10 MiB.",
-      "file": "Client/ExecuteStreamingSql/main.go",
-      "language": "GO",
-      "clientMethod": {
-        "shortName": "ExecuteStreamingSql",
-        "fullName": "google.spanner.v1.Client.ExecuteStreamingSql",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "spannerpb.ExecuteSqlRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.spanner.v1.Client"
-        },
-        "method": {
-          "shortName": "ExecuteStreamingSql",
-          "fullName": "google.spanner.v1.Spanner.ExecuteStreamingSql",
-          "service": {
-            "shortName": "Spanner",
-            "fullName": "google.spanner.v1.Spanner"
-          }
-        }
-      },
-      "origin": "API_DEFINITION",
-      "segments": [
-        {
-          "start": 1,
-          "end": -1,
-          "type": "FULL"
-        }
-      ]
-    },
-    {
       "regionTag": "spanner_v1_generated_Spanner_GetSession_sync",
       "title": "spanner GetSession Sample",
-      "description": "GetSession gets a session. Returns NOT_FOUND if the session does not exist.\nThis is mainly useful for determining whether a session is still\nalive.",
+      "description": "GetSession gets a session. Returns `NOT_FOUND` if the session does not exist.\nThis is mainly useful for determining whether a session is still\nalive.",
       "file": "Client/GetSession/main.go",
       "language": "GO",
       "clientMethod": {
@@ -400,7 +355,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "spannerpb.Session",
+        "resultType": "*spannerpb.Session",
         "client": {
           "shortName": "Client",
           "fullName": "google.spanner.v1.Client"
@@ -472,7 +427,7 @@
     {
       "regionTag": "spanner_v1_generated_Spanner_PartitionQuery_sync",
       "title": "spanner PartitionQuery Sample",
-      "description": "PartitionQuery creates a set of partition tokens that can be used to execute a query\noperation in parallel.  Each of the returned partition tokens can be used\nby ExecuteStreamingSql to specify a subset\nof the query result to read.  The same session and read-only transaction\nmust be used by the PartitionQueryRequest used to create the\npartition tokens and the ExecuteSqlRequests that use the partition tokens.\n\nPartition tokens become invalid when the session used to create them\nis deleted, is idle for too long, begins a new transaction, or becomes too\nold.  When any of these happen, it is not possible to resume the query, and\nthe whole operation must be restarted from the beginning.",
+      "description": "PartitionQuery creates a set of partition tokens that can be used to execute a query\noperation in parallel.  Each of the returned partition tokens can be used\nby [ExecuteStreamingSql][google.spanner.v1.Spanner.ExecuteStreamingSql] to specify a subset\nof the query result to read.  The same session and read-only transaction\nmust be used by the PartitionQueryRequest used to create the\npartition tokens and the ExecuteSqlRequests that use the partition tokens.\n\nPartition tokens become invalid when the session used to create them\nis deleted, is idle for too long, begins a new transaction, or becomes too\nold.  When any of these happen, it is not possible to resume the query, and\nthe whole operation must be restarted from the beginning.",
       "file": "Client/PartitionQuery/main.go",
       "language": "GO",
       "clientMethod": {
@@ -492,7 +447,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "spannerpb.PartitionResponse",
+        "resultType": "*spannerpb.PartitionResponse",
         "client": {
           "shortName": "Client",
           "fullName": "google.spanner.v1.Client"
@@ -518,7 +473,7 @@
     {
       "regionTag": "spanner_v1_generated_Spanner_PartitionRead_sync",
       "title": "spanner PartitionRead Sample",
-      "description": "PartitionRead creates a set of partition tokens that can be used to execute a read\noperation in parallel.  Each of the returned partition tokens can be used\nby StreamingRead to specify a subset of the read\nresult to read.  The same session and read-only transaction must be used by\nthe PartitionReadRequest used to create the partition tokens and the\nReadRequests that use the partition tokens.  There are no ordering\nguarantees on rows returned among the returned partition tokens, or even\nwithin each individual StreamingRead call issued with a partition_token.\n\nPartition tokens become invalid when the session used to create them\nis deleted, is idle for too long, begins a new transaction, or becomes too\nold.  When any of these happen, it is not possible to resume the read, and\nthe whole operation must be restarted from the beginning.",
+      "description": "PartitionRead creates a set of partition tokens that can be used to execute a read\noperation in parallel.  Each of the returned partition tokens can be used\nby [StreamingRead][google.spanner.v1.Spanner.StreamingRead] to specify a subset of the read\nresult to read.  The same session and read-only transaction must be used by\nthe PartitionReadRequest used to create the partition tokens and the\nReadRequests that use the partition tokens.  There are no ordering\nguarantees on rows returned among the returned partition tokens, or even\nwithin each individual StreamingRead call issued with a partition_token.\n\nPartition tokens become invalid when the session used to create them\nis deleted, is idle for too long, begins a new transaction, or becomes too\nold.  When any of these happen, it is not possible to resume the read, and\nthe whole operation must be restarted from the beginning.",
       "file": "Client/PartitionRead/main.go",
       "language": "GO",
       "clientMethod": {
@@ -538,7 +493,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "spannerpb.PartitionResponse",
+        "resultType": "*spannerpb.PartitionResponse",
         "client": {
           "shortName": "Client",
           "fullName": "google.spanner.v1.Client"
@@ -564,7 +519,7 @@
     {
       "regionTag": "spanner_v1_generated_Spanner_Read_sync",
       "title": "spanner Read Sample",
-      "description": "Read reads rows from the database using key lookups and scans, as a\nsimple key/value style alternative to\nExecuteSql.  This method cannot be used to\nreturn a result set larger than 10 MiB; if the read matches more\ndata than that, the read fails with a FAILED_PRECONDITION\nerror.\n\nReads inside read-write transactions might return ABORTED. If\nthis occurs, the application should restart the transaction from\nthe beginning. See Transaction for more details.\n\nLarger result sets can be yielded in streaming fashion by calling\nStreamingRead instead.",
+      "description": "Read reads rows from the database using key lookups and scans, as a\nsimple key/value style alternative to\n[ExecuteSql][google.spanner.v1.Spanner.ExecuteSql].  This method cannot be used to\nreturn a result set larger than 10 MiB; if the read matches more\ndata than that, the read fails with a `FAILED_PRECONDITION`\nerror.\n\nReads inside read-write transactions might return `ABORTED`. If\nthis occurs, the application should restart the transaction from\nthe beginning. See [Transaction][google.spanner.v1.Transaction] for more details.\n\nLarger result sets can be yielded in streaming fashion by calling\n[StreamingRead][google.spanner.v1.Spanner.StreamingRead] instead.",
       "file": "Client/Read/main.go",
       "language": "GO",
       "clientMethod": {
@@ -584,7 +539,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "spannerpb.ResultSet",
+        "resultType": "*spannerpb.ResultSet",
         "client": {
           "shortName": "Client",
           "fullName": "google.spanner.v1.Client"
@@ -610,7 +565,7 @@
     {
       "regionTag": "spanner_v1_generated_Spanner_Rollback_sync",
       "title": "spanner Rollback Sample",
-      "description": "Rollback rolls back a transaction, releasing any locks it holds. It is a good\nidea to call this for any transaction that includes one or more\nRead or ExecuteSql requests and\nultimately decides not to commit.\n\nRollback returns OK if it successfully aborts the transaction, the\ntransaction was already aborted, or the transaction is not\nfound. Rollback never returns ABORTED.",
+      "description": "Rollback rolls back a transaction, releasing any locks it holds. It is a good\nidea to call this for any transaction that includes one or more\n[Read][google.spanner.v1.Spanner.Read] or [ExecuteSql][google.spanner.v1.Spanner.ExecuteSql] requests and\nultimately decides not to commit.\n\n`Rollback` returns `OK` if it successfully aborts the transaction, the\ntransaction was already aborted, or the transaction is not\nfound. `Rollback` never returns `ABORTED`.",
       "file": "Client/Rollback/main.go",
       "language": "GO",
       "clientMethod": {
@@ -648,51 +603,6 @@
         {
           "start": 18,
           "end": 51,
-          "type": "FULL"
-        }
-      ]
-    },
-    {
-      "regionTag": "spanner_v1_generated_Spanner_StreamingRead_sync",
-      "title": "spanner StreamingRead Sample",
-      "description": "StreamingRead like Read, except returns the result set as a\nstream. Unlike Read, there is no limit on the\nsize of the returned result set. However, no individual row in\nthe result set can exceed 100 MiB, and no column value can exceed\n10 MiB.",
-      "file": "Client/StreamingRead/main.go",
-      "language": "GO",
-      "clientMethod": {
-        "shortName": "StreamingRead",
-        "fullName": "google.spanner.v1.Client.StreamingRead",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "spannerpb.ReadRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.spanner.v1.Client"
-        },
-        "method": {
-          "shortName": "StreamingRead",
-          "fullName": "google.spanner.v1.Spanner.StreamingRead",
-          "service": {
-            "shortName": "Spanner",
-            "fullName": "google.spanner.v1.Spanner"
-          }
-        }
-      },
-      "origin": "API_DEFINITION",
-      "segments": [
-        {
-          "start": 1,
-          "end": -1,
           "type": "FULL"
         }
       ]

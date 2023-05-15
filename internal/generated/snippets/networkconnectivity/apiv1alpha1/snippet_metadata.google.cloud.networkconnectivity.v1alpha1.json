@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/networkconnectivity/apiv1alpha1",
-    "version": "1.9.0",
+    "version": "1.11.1",
     "language": "GO",
     "apis": [
       {
@@ -218,7 +218,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "networkconnectivitypb.Hub",
+        "resultType": "*networkconnectivitypb.Hub",
         "client": {
           "shortName": "HubClient",
           "fullName": "google.cloud.networkconnectivity.v1alpha1.HubClient"
@@ -264,7 +264,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "networkconnectivitypb.Spoke",
+        "resultType": "*networkconnectivitypb.Spoke",
         "client": {
           "shortName": "HubClient",
           "fullName": "google.cloud.networkconnectivity.v1alpha1.HubClient"

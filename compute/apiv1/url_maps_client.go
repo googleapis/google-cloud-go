@@ -25,6 +25,7 @@ import (
 	"net/http"
 	"net/url"
 	"sort"
+	"time"
 
 	computepb "cloud.google.com/go/compute/apiv1/computepb"
 	gax "github.com/googleapis/gax-go/v2"
@@ -56,15 +57,45 @@ type UrlMapsCallOptions struct {
 
 func defaultUrlMapsRESTCallOptions() *UrlMapsCallOptions {
 	return &UrlMapsCallOptions{
-		AggregatedList:  []gax.CallOption{},
-		Delete:          []gax.CallOption{},
-		Get:             []gax.CallOption{},
+		AggregatedList: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
+		Delete: []gax.CallOption{},
+		Get: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
 		Insert:          []gax.CallOption{},
 		InvalidateCache: []gax.CallOption{},
-		List:            []gax.CallOption{},
-		Patch:           []gax.CallOption{},
-		Update:          []gax.CallOption{},
-		Validate:        []gax.CallOption{},
+		List: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
+		Patch:    []gax.CallOption{},
+		Update:   []gax.CallOption{},
+		Validate: []gax.CallOption{},
 	}
 }
 
@@ -129,7 +160,7 @@ func (c *UrlMapsClient) Delete(ctx context.Context, req *computepb.DeleteUrlMapR
 	return c.internalClient.Delete(ctx, req, opts...)
 }
 
-// Get returns the specified UrlMap resource. Gets a list of available URL maps by making a list() request.
+// Get returns the specified UrlMap resource.
 func (c *UrlMapsClient) Get(ctx context.Context, req *computepb.GetUrlMapRequest, opts ...gax.CallOption) (*computepb.UrlMap, error) {
 	return c.internalClient.Get(ctx, req, opts...)
 }
@@ -422,7 +453,7 @@ func (c *urlMapsRESTClient) Delete(ctx context.Context, req *computepb.DeleteUrl
 	return op, nil
 }
 
-// Get returns the specified UrlMap resource. Gets a list of available URL maps by making a list() request.
+// Get returns the specified UrlMap resource.
 func (c *urlMapsRESTClient) Get(ctx context.Context, req *computepb.GetUrlMapRequest, opts ...gax.CallOption) (*computepb.UrlMap, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {

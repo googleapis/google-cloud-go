@@ -26,6 +26,8 @@ import (
 	"net/url"
 	"time"
 
+	iampb "cloud.google.com/go/iam/apiv1/iampb"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	resourcemanagerpb "cloud.google.com/go/resourcemanager/apiv3/resourcemanagerpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
@@ -34,7 +36,6 @@ import (
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
-	iampb "google.golang.org/genproto/googleapis/iam/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -51,6 +52,7 @@ type OrganizationsCallOptions struct {
 	GetIamPolicy        []gax.CallOption
 	SetIamPolicy        []gax.CallOption
 	TestIamPermissions  []gax.CallOption
+	GetOperation        []gax.CallOption
 }
 
 func defaultOrganizationsGRPCClientOptions() []option.ClientOption {
@@ -92,6 +94,7 @@ func defaultOrganizationsCallOptions() *OrganizationsCallOptions {
 		},
 		SetIamPolicy:       []gax.CallOption{},
 		TestIamPermissions: []gax.CallOption{},
+		GetOperation:       []gax.CallOption{},
 	}
 }
 
@@ -120,6 +123,7 @@ func defaultOrganizationsRESTCallOptions() *OrganizationsCallOptions {
 		},
 		SetIamPolicy:       []gax.CallOption{},
 		TestIamPermissions: []gax.CallOption{},
+		GetOperation:       []gax.CallOption{},
 	}
 }
 
@@ -133,6 +137,7 @@ type internalOrganizationsClient interface {
 	GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
 	SetIamPolicy(context.Context, *iampb.SetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
 	TestIamPermissions(context.Context, *iampb.TestIamPermissionsRequest, ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error)
+	GetOperation(context.Context, *longrunningpb.GetOperationRequest, ...gax.CallOption) (*longrunningpb.Operation, error)
 }
 
 // OrganizationsClient is a client for interacting with Cloud Resource Manager API.
@@ -215,6 +220,11 @@ func (c *OrganizationsClient) TestIamPermissions(ctx context.Context, req *iampb
 	return c.internalClient.TestIamPermissions(ctx, req, opts...)
 }
 
+// GetOperation is a utility method from google.longrunning.Operations.
+func (c *OrganizationsClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+	return c.internalClient.GetOperation(ctx, req, opts...)
+}
+
 // organizationsGRPCClient is a client for interacting with Cloud Resource Manager API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
@@ -230,6 +240,8 @@ type organizationsGRPCClient struct {
 
 	// The gRPC API client.
 	organizationsClient resourcemanagerpb.OrganizationsClient
+
+	operationsClient longrunningpb.OperationsClient
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
@@ -265,6 +277,7 @@ func NewOrganizationsClient(ctx context.Context, opts ...option.ClientOption) (*
 		disableDeadlines:    disableDeadlines,
 		organizationsClient: resourcemanagerpb.NewOrganizationsClient(connPool),
 		CallOptions:         &client.CallOptions,
+		operationsClient:    longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
 
@@ -482,6 +495,23 @@ func (c *organizationsGRPCClient) TestIamPermissions(ctx context.Context, req *i
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.organizationsClient.TestIamPermissions(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *organizationsGRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
 		return err
 	}, opts...)
 	if err != nil {
@@ -818,6 +848,64 @@ func (c *organizationsRESTClient) TestIamPermissions(ctx context.Context, req *i
 			baseUrl.Path = settings.Path
 		}
 		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// GetOperation is a utility method from google.longrunning.Operations.
+func (c *organizationsRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v3/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 		if err != nil {
 			return err
 		}

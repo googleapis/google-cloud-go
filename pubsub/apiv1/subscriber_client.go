@@ -26,6 +26,7 @@ import (
 	"net/url"
 	"time"
 
+	iampb "cloud.google.com/go/iam/apiv1/iampb"
 	pubsubpb "cloud.google.com/go/pubsub/apiv1/pubsubpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
@@ -34,7 +35,6 @@ import (
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
-	iampb "google.golang.org/genproto/googleapis/iam/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -170,6 +170,7 @@ func defaultSubscriberCallOptions() *SubscriberCallOptions {
 					codes.Unknown,
 					codes.Aborted,
 					codes.Unavailable,
+					codes.Internal,
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
 					Max:        60000 * time.Millisecond,
@@ -368,7 +369,8 @@ func defaultSubscriberRESTCallOptions() *SubscriberCallOptions {
 				},
 					http.StatusInternalServerError,
 					http.StatusConflict,
-					http.StatusServiceUnavailable)
+					http.StatusServiceUnavailable,
+					http.StatusInternalServerError)
 			}),
 		},
 		StreamingPull: []gax.CallOption{
@@ -590,9 +592,7 @@ func (c *SubscriberClient) Acknowledge(ctx context.Context, req *pubsubpb.Acknow
 	return c.internalClient.Acknowledge(ctx, req, opts...)
 }
 
-// Pull pulls messages from the server. The server may return UNAVAILABLE if
-// there are too many concurrent pull requests pending for the given
-// subscription.
+// Pull pulls messages from the server.
 func (c *SubscriberClient) Pull(ctx context.Context, req *pubsubpb.PullRequest, opts ...gax.CallOption) (*pubsubpb.PullResponse, error) {
 	return c.internalClient.Pull(ctx, req, opts...)
 }
@@ -621,10 +621,10 @@ func (c *SubscriberClient) ModifyPushConfig(ctx context.Context, req *pubsubpb.M
 }
 
 // GetSnapshot gets the configuration details of a snapshot. Snapshots are used in
-// Seek (at https://cloud.google.com/pubsub/docs/replay-overview)
-// operations, which allow you to manage message acknowledgments in bulk. That
-// is, you can set the acknowledgment state of messages in an existing
-// subscription to the state captured by a snapshot.
+// Seek (at https://cloud.google.com/pubsub/docs/replay-overview) operations,
+// which allow you to manage message acknowledgments in bulk. That is, you can
+// set the acknowledgment state of messages in an existing subscription to the
+// state captured by a snapshot.
 func (c *SubscriberClient) GetSnapshot(ctx context.Context, req *pubsubpb.GetSnapshotRequest, opts ...gax.CallOption) (*pubsubpb.Snapshot, error) {
 	return c.internalClient.GetSnapshot(ctx, req, opts...)
 }
@@ -658,11 +658,10 @@ func (c *SubscriberClient) CreateSnapshot(ctx context.Context, req *pubsubpb.Cre
 }
 
 // UpdateSnapshot updates an existing snapshot. Snapshots are used in
-// Seek (at https://cloud.google.com/pubsub/docs/replay-overview)
-// operations, which allow
-// you to manage message acknowledgments in bulk. That is, you can set the
-// acknowledgment state of messages in an existing subscription to the state
-// captured by a snapshot.
+// Seek (at https://cloud.google.com/pubsub/docs/replay-overview) operations,
+// which allow you to manage message acknowledgments in bulk. That is, you can
+// set the acknowledgment state of messages in an existing subscription to the
+// state captured by a snapshot.
 func (c *SubscriberClient) UpdateSnapshot(ctx context.Context, req *pubsubpb.UpdateSnapshotRequest, opts ...gax.CallOption) (*pubsubpb.Snapshot, error) {
 	return c.internalClient.UpdateSnapshot(ctx, req, opts...)
 }
@@ -1726,9 +1725,7 @@ func (c *subscriberRESTClient) Acknowledge(ctx context.Context, req *pubsubpb.Ac
 	}, opts...)
 }
 
-// Pull pulls messages from the server. The server may return UNAVAILABLE if
-// there are too many concurrent pull requests pending for the given
-// subscription.
+// Pull pulls messages from the server.
 func (c *subscriberRESTClient) Pull(ctx context.Context, req *pubsubpb.PullRequest, opts ...gax.CallOption) (*pubsubpb.PullResponse, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -1857,10 +1854,10 @@ func (c *subscriberRESTClient) ModifyPushConfig(ctx context.Context, req *pubsub
 }
 
 // GetSnapshot gets the configuration details of a snapshot. Snapshots are used in
-// Seek (at https://cloud.google.com/pubsub/docs/replay-overview)
-// operations, which allow you to manage message acknowledgments in bulk. That
-// is, you can set the acknowledgment state of messages in an existing
-// subscription to the state captured by a snapshot.
+// Seek (at https://cloud.google.com/pubsub/docs/replay-overview) operations,
+// which allow you to manage message acknowledgments in bulk. That is, you can
+// set the acknowledgment state of messages in an existing subscription to the
+// state captured by a snapshot.
 func (c *subscriberRESTClient) GetSnapshot(ctx context.Context, req *pubsubpb.GetSnapshotRequest, opts ...gax.CallOption) (*pubsubpb.Snapshot, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -2089,11 +2086,10 @@ func (c *subscriberRESTClient) CreateSnapshot(ctx context.Context, req *pubsubpb
 }
 
 // UpdateSnapshot updates an existing snapshot. Snapshots are used in
-// Seek (at https://cloud.google.com/pubsub/docs/replay-overview)
-// operations, which allow
-// you to manage message acknowledgments in bulk. That is, you can set the
-// acknowledgment state of messages in an existing subscription to the state
-// captured by a snapshot.
+// Seek (at https://cloud.google.com/pubsub/docs/replay-overview) operations,
+// which allow you to manage message acknowledgments in bulk. That is, you can
+// set the acknowledgment state of messages in an existing subscription to the
+// state captured by a snapshot.
 func (c *subscriberRESTClient) UpdateSnapshot(ctx context.Context, req *pubsubpb.UpdateSnapshotRequest, opts ...gax.CallOption) (*pubsubpb.Snapshot, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)

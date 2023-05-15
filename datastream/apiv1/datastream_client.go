@@ -29,6 +29,7 @@ import (
 	datastreampb "cloud.google.com/go/datastream/apiv1/datastreampb"
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
@@ -37,7 +38,6 @@ import (
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -3080,6 +3080,9 @@ func (c *restClient) CreatePrivateConnection(ctx context.Context, req *datastrea
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetForce() {
+		params.Add("force", fmt.Sprintf("%v", req.GetForce()))
+	}
 	params.Add("privateConnectionId", fmt.Sprintf("%v", req.GetPrivateConnectionId()))
 	if req.GetRequestId() != "" {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))

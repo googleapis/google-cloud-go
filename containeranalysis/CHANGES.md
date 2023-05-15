@@ -1,5 +1,33 @@
 # Changes
 
+## [0.9.2](https://github.com/googleapis/google-cloud-go/compare/containeranalysis/v0.9.1...containeranalysis/v0.9.2) (2023-05-08)
+
+
+### Bug Fixes
+
+* **containeranalysis:** Update grpc to v1.55.0 ([1147ce0](https://github.com/googleapis/google-cloud-go/commit/1147ce02a990276ca4f8ab7a1ab65c14da4450ef))
+
+## [0.9.1](https://github.com/googleapis/google-cloud-go/compare/containeranalysis/v0.9.0...containeranalysis/v0.9.1) (2023-04-25)
+
+
+### Bug Fixes
+
+* **containeranalysis:** Scope GeneratePackagesSummary method to v1beta1 http path ([#7805](https://github.com/googleapis/google-cloud-go/issues/7805)) ([97ebb21](https://github.com/googleapis/google-cloud-go/commit/97ebb214c800a366c068dc7cab97d71e7150226d))
+
+## [0.9.0](https://github.com/googleapis/google-cloud-go/compare/containeranalysis/v0.8.0...containeranalysis/v0.9.0) (2023-03-22)
+
+
+### Features
+
+* **containeranalysis:** Remove the unimplemented ScanConfig API method and resources ([00fff3a](https://github.com/googleapis/google-cloud-go/commit/00fff3a58bed31274ab39af575876dab91d708c9))
+
+## [0.8.0](https://github.com/googleapis/google-cloud-go/compare/containeranalysis/v0.7.0...containeranalysis/v0.8.0) (2023-03-15)
+
+
+### Features
+
+* **containeranalysis:** Update iam and longrunning deps ([91a1f78](https://github.com/googleapis/google-cloud-go/commit/91a1f784a109da70f63b96414bba8a9b4254cddd))
+
 ## [0.7.0](https://github.com/googleapis/google-cloud-go/compare/containeranalysis/v0.6.0...containeranalysis/v0.7.0) (2023-01-04)
 
 

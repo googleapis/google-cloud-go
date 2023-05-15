@@ -98,22 +98,6 @@ func newStatelessRetryer() *statelessRetryer {
 	}
 }
 
-// resolveRetry handles fetching an appropriate retry policy.  If one isn't found,
-// it defaults to a policy that allows a single attempt (no retries).
-func resolveRetry(pw *pendingWrite, pool *connectionPool) *statelessRetryer {
-	if pw != nil {
-		if pw.writer != nil {
-			return pw.writer.statelessRetryer()
-		}
-	}
-	if pool != nil {
-		return pw.writer.pool.defaultRetryer()
-	}
-	return &statelessRetryer{
-		maxAttempts: 1,
-	}
-}
-
 func (sr *statelessRetryer) pause(aggressiveBackoff bool) time.Duration {
 	jitter := sr.jitter.Nanoseconds()
 	if jitter > 0 {

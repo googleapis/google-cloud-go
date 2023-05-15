@@ -25,6 +25,7 @@ import (
 	"net/http"
 	"net/url"
 	"sort"
+	"time"
 
 	computepb "cloud.google.com/go/compute/apiv1/computepb"
 	gax "github.com/googleapis/gax-go/v2"
@@ -53,12 +54,42 @@ type VpnTunnelsCallOptions struct {
 
 func defaultVpnTunnelsRESTCallOptions() *VpnTunnelsCallOptions {
 	return &VpnTunnelsCallOptions{
-		AggregatedList: []gax.CallOption{},
-		Delete:         []gax.CallOption{},
-		Get:            []gax.CallOption{},
-		Insert:         []gax.CallOption{},
-		List:           []gax.CallOption{},
-		SetLabels:      []gax.CallOption{},
+		AggregatedList: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
+		Delete: []gax.CallOption{},
+		Get: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
+		Insert: []gax.CallOption{},
+		List: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
+		SetLabels: []gax.CallOption{},
 	}
 }
 
@@ -120,7 +151,7 @@ func (c *VpnTunnelsClient) Delete(ctx context.Context, req *computepb.DeleteVpnT
 	return c.internalClient.Delete(ctx, req, opts...)
 }
 
-// Get returns the specified VpnTunnel resource. Gets a list of available VPN tunnels by making a list() request.
+// Get returns the specified VpnTunnel resource.
 func (c *VpnTunnelsClient) Get(ctx context.Context, req *computepb.GetVpnTunnelRequest, opts ...gax.CallOption) (*computepb.VpnTunnel, error) {
 	return c.internalClient.Get(ctx, req, opts...)
 }
@@ -399,7 +430,7 @@ func (c *vpnTunnelsRESTClient) Delete(ctx context.Context, req *computepb.Delete
 	return op, nil
 }
 
-// Get returns the specified VpnTunnel resource. Gets a list of available VPN tunnels by making a list() request.
+// Get returns the specified VpnTunnel resource.
 func (c *vpnTunnelsRESTClient) Get(ctx context.Context, req *computepb.GetVpnTunnelRequest, opts ...gax.CallOption) (*computepb.VpnTunnel, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {

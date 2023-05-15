@@ -26,6 +26,7 @@ import (
 	"net/url"
 	"time"
 
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	talentpb "cloud.google.com/go/talent/apiv4beta1/talentpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
@@ -34,7 +35,6 @@ import (
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"

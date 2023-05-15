@@ -25,6 +25,7 @@ import (
 	"net/http"
 	"net/url"
 	"sort"
+	"time"
 
 	computepb "cloud.google.com/go/compute/apiv1/computepb"
 	gax "github.com/googleapis/gax-go/v2"
@@ -55,12 +56,52 @@ type NodeTemplatesCallOptions struct {
 
 func defaultNodeTemplatesRESTCallOptions() *NodeTemplatesCallOptions {
 	return &NodeTemplatesCallOptions{
-		AggregatedList:     []gax.CallOption{},
-		Delete:             []gax.CallOption{},
-		Get:                []gax.CallOption{},
-		GetIamPolicy:       []gax.CallOption{},
-		Insert:             []gax.CallOption{},
-		List:               []gax.CallOption{},
+		AggregatedList: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
+		Delete: []gax.CallOption{},
+		Get: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
+		GetIamPolicy: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
+		Insert: []gax.CallOption{},
+		List: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
 		SetIamPolicy:       []gax.CallOption{},
 		TestIamPermissions: []gax.CallOption{},
 	}
@@ -126,7 +167,7 @@ func (c *NodeTemplatesClient) Delete(ctx context.Context, req *computepb.DeleteN
 	return c.internalClient.Delete(ctx, req, opts...)
 }
 
-// Get returns the specified node template. Gets a list of available node templates by making a list() request.
+// Get returns the specified node template.
 func (c *NodeTemplatesClient) Get(ctx context.Context, req *computepb.GetNodeTemplateRequest, opts ...gax.CallOption) (*computepb.NodeTemplate, error) {
 	return c.internalClient.Get(ctx, req, opts...)
 }
@@ -415,7 +456,7 @@ func (c *nodeTemplatesRESTClient) Delete(ctx context.Context, req *computepb.Del
 	return op, nil
 }
 
-// Get returns the specified node template. Gets a list of available node templates by making a list() request.
+// Get returns the specified node template.
 func (c *nodeTemplatesRESTClient) Get(ctx context.Context, req *computepb.GetNodeTemplateRequest, opts ...gax.CallOption) (*computepb.NodeTemplate, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {

@@ -28,10 +28,13 @@ import (
 	"github.com/golang/protobuf/ptypes"
 	"github.com/golang/protobuf/ptypes/duration"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/apierror"
+	"google.golang.org/genproto/googleapis/rpc/errdetails"
 	rpcstatus "google.golang.org/genproto/googleapis/rpc/status"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/types/known/anypb"
 )
 
 type getterService struct {
@@ -150,6 +153,11 @@ func TestPollErrorResult(t *testing.T) {
 		errCode = codes.NotFound
 		errMsg  = "my error"
 	)
+	details := &errdetails.ErrorInfo{Reason: "things happen"}
+	a, err := anypb.New(details)
+	if err != nil {
+		t.Fatalf("anypb.New() = %v", err)
+	}
 	op := &Operation{
 		proto: &pb.Operation{
 			Name: "foo",
@@ -158,11 +166,12 @@ func TestPollErrorResult(t *testing.T) {
 				Error: &rpcstatus.Status{
 					Code:    int32(errCode),
 					Message: errMsg,
+					Details: []*anypb.Any{a},
 				},
 			},
 		},
 	}
-	err := op.Poll(context.Background(), nil)
+	err = op.Poll(context.Background(), nil)
 	if got := status.Code(err); got != errCode {
 		t.Errorf("error code, want %s, got %s", errCode, got)
 	}
@@ -171,6 +180,11 @@ func TestPollErrorResult(t *testing.T) {
 	}
 	if !op.Done() {
 		t.Errorf("operation should have completed")
+	}
+	var ae *apierror.APIError
+	errors.As(err, &ae)
+	if got := ae.Details().ErrorInfo.Reason; got != details.Reason {
+		t.Errorf("got %q, want %q", got, details.Reason)
 	}
 }
 

@@ -28,6 +28,7 @@ import (
 
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	serviceusagepb "cloud.google.com/go/serviceusage/apiv1/serviceusagepb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
@@ -36,7 +37,6 @@ import (
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/encoding/protojson"
@@ -581,11 +581,6 @@ func (c *restClient) EnableService(ctx context.Context, req *serviceusagepb.Enab
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:enable", req.GetName())
 
-	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
-
-	baseUrl.RawQuery = params.Encode()
-
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
@@ -655,11 +650,6 @@ func (c *restClient) DisableService(ctx context.Context, req *serviceusagepb.Dis
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v:disable", req.GetName())
 
-	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
-
-	baseUrl.RawQuery = params.Encode()
-
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
@@ -716,11 +706,6 @@ func (c *restClient) GetService(ctx context.Context, req *serviceusagepb.GetServ
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
-
-	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
-
-	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
@@ -801,7 +786,6 @@ func (c *restClient) ListServices(ctx context.Context, req *serviceusagepb.ListS
 		baseUrl.Path += fmt.Sprintf("/v1/%v/services", req.GetParent())
 
 		params := url.Values{}
-		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -886,11 +870,6 @@ func (c *restClient) BatchEnableServices(ctx context.Context, req *serviceusagep
 	}
 	baseUrl.Path += fmt.Sprintf("/v1/%v/services:batchEnable", req.GetParent())
 
-	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
-
-	baseUrl.RawQuery = params.Encode()
-
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
@@ -950,7 +929,6 @@ func (c *restClient) BatchGetServices(ctx context.Context, req *serviceusagepb.B
 	baseUrl.Path += fmt.Sprintf("/v1/%v/services:batchGet", req.GetParent())
 
 	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
 	if items := req.GetNames(); len(items) > 0 {
 		for _, item := range items {
 			params.Add("names", fmt.Sprintf("%v", item))

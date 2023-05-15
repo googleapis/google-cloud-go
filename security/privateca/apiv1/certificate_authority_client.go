@@ -26,8 +26,10 @@ import (
 	"net/url"
 	"time"
 
+	iampb "cloud.google.com/go/iam/apiv1/iampb"
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	privatecapb "cloud.google.com/go/security/privateca/apiv1/privatecapb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
@@ -37,8 +39,6 @@ import (
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
-	iampb "google.golang.org/genproto/googleapis/iam/v1"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -84,6 +84,10 @@ type CertificateAuthorityCallOptions struct {
 	GetIamPolicy                    []gax.CallOption
 	SetIamPolicy                    []gax.CallOption
 	TestIamPermissions              []gax.CallOption
+	CancelOperation                 []gax.CallOption
+	DeleteOperation                 []gax.CallOption
+	GetOperation                    []gax.CallOption
+	ListOperations                  []gax.CallOption
 }
 
 func defaultCertificateAuthorityGRPCClientOptions() []option.ClientOption {
@@ -482,6 +486,10 @@ func defaultCertificateAuthorityCallOptions() *CertificateAuthorityCallOptions {
 		GetIamPolicy:       []gax.CallOption{},
 		SetIamPolicy:       []gax.CallOption{},
 		TestIamPermissions: []gax.CallOption{},
+		CancelOperation:    []gax.CallOption{},
+		DeleteOperation:    []gax.CallOption{},
+		GetOperation:       []gax.CallOption{},
+		ListOperations:     []gax.CallOption{},
 	}
 }
 
@@ -840,6 +848,10 @@ func defaultCertificateAuthorityRESTCallOptions() *CertificateAuthorityCallOptio
 		GetIamPolicy:       []gax.CallOption{},
 		SetIamPolicy:       []gax.CallOption{},
 		TestIamPermissions: []gax.CallOption{},
+		CancelOperation:    []gax.CallOption{},
+		DeleteOperation:    []gax.CallOption{},
+		GetOperation:       []gax.CallOption{},
+		ListOperations:     []gax.CallOption{},
 	}
 }
 
@@ -896,13 +908,18 @@ type internalCertificateAuthorityClient interface {
 	GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
 	SetIamPolicy(context.Context, *iampb.SetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
 	TestIamPermissions(context.Context, *iampb.TestIamPermissionsRequest, ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error)
+	CancelOperation(context.Context, *longrunningpb.CancelOperationRequest, ...gax.CallOption) error
+	DeleteOperation(context.Context, *longrunningpb.DeleteOperationRequest, ...gax.CallOption) error
+	GetOperation(context.Context, *longrunningpb.GetOperationRequest, ...gax.CallOption) (*longrunningpb.Operation, error)
+	ListOperations(context.Context, *longrunningpb.ListOperationsRequest, ...gax.CallOption) *OperationIterator
 }
 
 // CertificateAuthorityClient is a client for interacting with Certificate Authority API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
-// [Certificate Authority Service][google.cloud.security.privateca.v1.CertificateAuthorityService] manages private
-// certificate authorities and issued certificates.
+// [Certificate Authority
+// Service][google.cloud.security.privateca.v1.CertificateAuthorityService]
+// manages private certificate authorities and issued certificates.
 type CertificateAuthorityClient struct {
 	// The internal transport-dependent client.
 	internalClient internalCertificateAuthorityClient
@@ -939,7 +956,8 @@ func (c *CertificateAuthorityClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// CreateCertificate create a new Certificate in a given Project, Location from a particular
+// CreateCertificate create a new Certificate
+// in a given Project, Location from a particular
 // CaPool.
 func (c *CertificateAuthorityClient) CreateCertificate(ctx context.Context, req *privatecapb.CreateCertificateRequest, opts ...gax.CallOption) (*privatecapb.Certificate, error) {
 	return c.internalClient.CreateCertificate(ctx, req, opts...)
@@ -960,18 +978,23 @@ func (c *CertificateAuthorityClient) RevokeCertificate(ctx context.Context, req 
 	return c.internalClient.RevokeCertificate(ctx, req, opts...)
 }
 
-// UpdateCertificate update a Certificate. Currently, the only field you can update is the
+// UpdateCertificate update a Certificate.
+// Currently, the only field you can update is the
 // labels field.
 func (c *CertificateAuthorityClient) UpdateCertificate(ctx context.Context, req *privatecapb.UpdateCertificateRequest, opts ...gax.CallOption) (*privatecapb.Certificate, error) {
 	return c.internalClient.UpdateCertificate(ctx, req, opts...)
 }
 
-// ActivateCertificateAuthority activate a CertificateAuthority that is in state
+// ActivateCertificateAuthority activate a
+// CertificateAuthority
+// that is in state
 // AWAITING_USER_ACTIVATION
-// and is of type SUBORDINATE. After
-// the parent Certificate Authority signs a certificate signing request from
-// FetchCertificateAuthorityCsr, this method can complete the activation
-// process.
+// and is of type
+// SUBORDINATE.
+// After the parent Certificate Authority signs a certificate signing request
+// from
+// FetchCertificateAuthorityCsr,
+// this method can complete the activation process.
 func (c *CertificateAuthorityClient) ActivateCertificateAuthority(ctx context.Context, req *privatecapb.ActivateCertificateAuthorityRequest, opts ...gax.CallOption) (*ActivateCertificateAuthorityOperation, error) {
 	return c.internalClient.ActivateCertificateAuthority(ctx, req, opts...)
 }
@@ -982,7 +1005,9 @@ func (c *CertificateAuthorityClient) ActivateCertificateAuthorityOperation(name 
 	return c.internalClient.ActivateCertificateAuthorityOperation(name)
 }
 
-// CreateCertificateAuthority create a new CertificateAuthority in a given Project and Location.
+// CreateCertificateAuthority create a new
+// CertificateAuthority
+// in a given Project and Location.
 func (c *CertificateAuthorityClient) CreateCertificateAuthority(ctx context.Context, req *privatecapb.CreateCertificateAuthorityRequest, opts ...gax.CallOption) (*CreateCertificateAuthorityOperation, error) {
 	return c.internalClient.CreateCertificateAuthority(ctx, req, opts...)
 }
@@ -993,7 +1018,8 @@ func (c *CertificateAuthorityClient) CreateCertificateAuthorityOperation(name st
 	return c.internalClient.CreateCertificateAuthorityOperation(name)
 }
 
-// DisableCertificateAuthority disable a CertificateAuthority.
+// DisableCertificateAuthority disable a
+// CertificateAuthority.
 func (c *CertificateAuthorityClient) DisableCertificateAuthority(ctx context.Context, req *privatecapb.DisableCertificateAuthorityRequest, opts ...gax.CallOption) (*DisableCertificateAuthorityOperation, error) {
 	return c.internalClient.DisableCertificateAuthority(ctx, req, opts...)
 }
@@ -1004,7 +1030,8 @@ func (c *CertificateAuthorityClient) DisableCertificateAuthorityOperation(name s
 	return c.internalClient.DisableCertificateAuthorityOperation(name)
 }
 
-// EnableCertificateAuthority enable a CertificateAuthority.
+// EnableCertificateAuthority enable a
+// CertificateAuthority.
 func (c *CertificateAuthorityClient) EnableCertificateAuthority(ctx context.Context, req *privatecapb.EnableCertificateAuthorityRequest, opts ...gax.CallOption) (*EnableCertificateAuthorityOperation, error) {
 	return c.internalClient.EnableCertificateAuthority(ctx, req, opts...)
 }
@@ -1015,28 +1042,36 @@ func (c *CertificateAuthorityClient) EnableCertificateAuthorityOperation(name st
 	return c.internalClient.EnableCertificateAuthorityOperation(name)
 }
 
-// FetchCertificateAuthorityCsr fetch a certificate signing request (CSR) from a CertificateAuthority
+// FetchCertificateAuthorityCsr fetch a certificate signing request (CSR) from a
+// CertificateAuthority
 // that is in state
 // AWAITING_USER_ACTIVATION
-// and is of type SUBORDINATE. The
-// CSR must then be signed by the desired parent Certificate Authority, which
-// could be another CertificateAuthority resource, or could be an on-prem
-// certificate authority. See also ActivateCertificateAuthority.
+// and is of type
+// SUBORDINATE.
+// The CSR must then be signed by the desired parent Certificate Authority,
+// which could be another
+// CertificateAuthority
+// resource, or could be an on-prem certificate authority. See also
+// ActivateCertificateAuthority.
 func (c *CertificateAuthorityClient) FetchCertificateAuthorityCsr(ctx context.Context, req *privatecapb.FetchCertificateAuthorityCsrRequest, opts ...gax.CallOption) (*privatecapb.FetchCertificateAuthorityCsrResponse, error) {
 	return c.internalClient.FetchCertificateAuthorityCsr(ctx, req, opts...)
 }
 
-// GetCertificateAuthority returns a CertificateAuthority.
+// GetCertificateAuthority returns a
+// CertificateAuthority.
 func (c *CertificateAuthorityClient) GetCertificateAuthority(ctx context.Context, req *privatecapb.GetCertificateAuthorityRequest, opts ...gax.CallOption) (*privatecapb.CertificateAuthority, error) {
 	return c.internalClient.GetCertificateAuthority(ctx, req, opts...)
 }
 
-// ListCertificateAuthorities lists CertificateAuthorities.
+// ListCertificateAuthorities lists
+// CertificateAuthorities.
 func (c *CertificateAuthorityClient) ListCertificateAuthorities(ctx context.Context, req *privatecapb.ListCertificateAuthoritiesRequest, opts ...gax.CallOption) *CertificateAuthorityIterator {
 	return c.internalClient.ListCertificateAuthorities(ctx, req, opts...)
 }
 
-// UndeleteCertificateAuthority undelete a CertificateAuthority that has been deleted.
+// UndeleteCertificateAuthority undelete a
+// CertificateAuthority
+// that has been deleted.
 func (c *CertificateAuthorityClient) UndeleteCertificateAuthority(ctx context.Context, req *privatecapb.UndeleteCertificateAuthorityRequest, opts ...gax.CallOption) (*UndeleteCertificateAuthorityOperation, error) {
 	return c.internalClient.UndeleteCertificateAuthority(ctx, req, opts...)
 }
@@ -1047,7 +1082,8 @@ func (c *CertificateAuthorityClient) UndeleteCertificateAuthorityOperation(name 
 	return c.internalClient.UndeleteCertificateAuthorityOperation(name)
 }
 
-// DeleteCertificateAuthority delete a CertificateAuthority.
+// DeleteCertificateAuthority delete a
+// CertificateAuthority.
 func (c *CertificateAuthorityClient) DeleteCertificateAuthority(ctx context.Context, req *privatecapb.DeleteCertificateAuthorityRequest, opts ...gax.CallOption) (*DeleteCertificateAuthorityOperation, error) {
 	return c.internalClient.DeleteCertificateAuthority(ctx, req, opts...)
 }
@@ -1058,7 +1094,8 @@ func (c *CertificateAuthorityClient) DeleteCertificateAuthorityOperation(name st
 	return c.internalClient.DeleteCertificateAuthorityOperation(name)
 }
 
-// UpdateCertificateAuthority update a CertificateAuthority.
+// UpdateCertificateAuthority update a
+// CertificateAuthority.
 func (c *CertificateAuthorityClient) UpdateCertificateAuthority(ctx context.Context, req *privatecapb.UpdateCertificateAuthorityRequest, opts ...gax.CallOption) (*UpdateCertificateAuthorityOperation, error) {
 	return c.internalClient.UpdateCertificateAuthority(ctx, req, opts...)
 }
@@ -1112,24 +1149,29 @@ func (c *CertificateAuthorityClient) DeleteCaPoolOperation(name string) *DeleteC
 	return c.internalClient.DeleteCaPoolOperation(name)
 }
 
-// FetchCaCerts fetchCaCerts returns the current trust anchor for the CaPool. This will
-// include CA certificate chains for all ACTIVE CertificateAuthority
+// FetchCaCerts fetchCaCerts returns the current trust anchor for the
+// CaPool. This will include CA
+// certificate chains for all ACTIVE
+// CertificateAuthority
 // resources in the CaPool.
 func (c *CertificateAuthorityClient) FetchCaCerts(ctx context.Context, req *privatecapb.FetchCaCertsRequest, opts ...gax.CallOption) (*privatecapb.FetchCaCertsResponse, error) {
 	return c.internalClient.FetchCaCerts(ctx, req, opts...)
 }
 
-// GetCertificateRevocationList returns a CertificateRevocationList.
+// GetCertificateRevocationList returns a
+// CertificateRevocationList.
 func (c *CertificateAuthorityClient) GetCertificateRevocationList(ctx context.Context, req *privatecapb.GetCertificateRevocationListRequest, opts ...gax.CallOption) (*privatecapb.CertificateRevocationList, error) {
 	return c.internalClient.GetCertificateRevocationList(ctx, req, opts...)
 }
 
-// ListCertificateRevocationLists lists CertificateRevocationLists.
+// ListCertificateRevocationLists lists
+// CertificateRevocationLists.
 func (c *CertificateAuthorityClient) ListCertificateRevocationLists(ctx context.Context, req *privatecapb.ListCertificateRevocationListsRequest, opts ...gax.CallOption) *CertificateRevocationListIterator {
 	return c.internalClient.ListCertificateRevocationLists(ctx, req, opts...)
 }
 
-// UpdateCertificateRevocationList update a CertificateRevocationList.
+// UpdateCertificateRevocationList update a
+// CertificateRevocationList.
 func (c *CertificateAuthorityClient) UpdateCertificateRevocationList(ctx context.Context, req *privatecapb.UpdateCertificateRevocationListRequest, opts ...gax.CallOption) (*UpdateCertificateRevocationListOperation, error) {
 	return c.internalClient.UpdateCertificateRevocationList(ctx, req, opts...)
 }
@@ -1140,7 +1182,9 @@ func (c *CertificateAuthorityClient) UpdateCertificateRevocationListOperation(na
 	return c.internalClient.UpdateCertificateRevocationListOperation(name)
 }
 
-// CreateCertificateTemplate create a new CertificateTemplate in a given Project and Location.
+// CreateCertificateTemplate create a new
+// CertificateTemplate
+// in a given Project and Location.
 func (c *CertificateAuthorityClient) CreateCertificateTemplate(ctx context.Context, req *privatecapb.CreateCertificateTemplateRequest, opts ...gax.CallOption) (*CreateCertificateTemplateOperation, error) {
 	return c.internalClient.CreateCertificateTemplate(ctx, req, opts...)
 }
@@ -1151,7 +1195,8 @@ func (c *CertificateAuthorityClient) CreateCertificateTemplateOperation(name str
 	return c.internalClient.CreateCertificateTemplateOperation(name)
 }
 
-// DeleteCertificateTemplate deleteCertificateTemplate deletes a CertificateTemplate.
+// DeleteCertificateTemplate deleteCertificateTemplate deletes a
+// CertificateTemplate.
 func (c *CertificateAuthorityClient) DeleteCertificateTemplate(ctx context.Context, req *privatecapb.DeleteCertificateTemplateRequest, opts ...gax.CallOption) (*DeleteCertificateTemplateOperation, error) {
 	return c.internalClient.DeleteCertificateTemplate(ctx, req, opts...)
 }
@@ -1162,17 +1207,20 @@ func (c *CertificateAuthorityClient) DeleteCertificateTemplateOperation(name str
 	return c.internalClient.DeleteCertificateTemplateOperation(name)
 }
 
-// GetCertificateTemplate returns a CertificateTemplate.
+// GetCertificateTemplate returns a
+// CertificateTemplate.
 func (c *CertificateAuthorityClient) GetCertificateTemplate(ctx context.Context, req *privatecapb.GetCertificateTemplateRequest, opts ...gax.CallOption) (*privatecapb.CertificateTemplate, error) {
 	return c.internalClient.GetCertificateTemplate(ctx, req, opts...)
 }
 
-// ListCertificateTemplates lists CertificateTemplates.
+// ListCertificateTemplates lists
+// CertificateTemplates.
 func (c *CertificateAuthorityClient) ListCertificateTemplates(ctx context.Context, req *privatecapb.ListCertificateTemplatesRequest, opts ...gax.CallOption) *CertificateTemplateIterator {
 	return c.internalClient.ListCertificateTemplates(ctx, req, opts...)
 }
 
-// UpdateCertificateTemplate update a CertificateTemplate.
+// UpdateCertificateTemplate update a
+// CertificateTemplate.
 func (c *CertificateAuthorityClient) UpdateCertificateTemplate(ctx context.Context, req *privatecapb.UpdateCertificateTemplateRequest, opts ...gax.CallOption) (*UpdateCertificateTemplateOperation, error) {
 	return c.internalClient.UpdateCertificateTemplate(ctx, req, opts...)
 }
@@ -1219,6 +1267,26 @@ func (c *CertificateAuthorityClient) TestIamPermissions(ctx context.Context, req
 	return c.internalClient.TestIamPermissions(ctx, req, opts...)
 }
 
+// CancelOperation is a utility method from google.longrunning.Operations.
+func (c *CertificateAuthorityClient) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
+	return c.internalClient.CancelOperation(ctx, req, opts...)
+}
+
+// DeleteOperation is a utility method from google.longrunning.Operations.
+func (c *CertificateAuthorityClient) DeleteOperation(ctx context.Context, req *longrunningpb.DeleteOperationRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteOperation(ctx, req, opts...)
+}
+
+// GetOperation is a utility method from google.longrunning.Operations.
+func (c *CertificateAuthorityClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+	return c.internalClient.GetOperation(ctx, req, opts...)
+}
+
+// ListOperations is a utility method from google.longrunning.Operations.
+func (c *CertificateAuthorityClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
+	return c.internalClient.ListOperations(ctx, req, opts...)
+}
+
 // certificateAuthorityGRPCClient is a client for interacting with Certificate Authority API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
@@ -1240,6 +1308,8 @@ type certificateAuthorityGRPCClient struct {
 	// Users should not Close this client.
 	LROClient **lroauto.OperationsClient
 
+	operationsClient longrunningpb.OperationsClient
+
 	iamPolicyClient iampb.IAMPolicyClient
 
 	locationsClient locationpb.LocationsClient
@@ -1251,8 +1321,9 @@ type certificateAuthorityGRPCClient struct {
 // NewCertificateAuthorityClient creates a new certificate authority service client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
-// [Certificate Authority Service][google.cloud.security.privateca.v1.CertificateAuthorityService] manages private
-// certificate authorities and issued certificates.
+// [Certificate Authority
+// Service][google.cloud.security.privateca.v1.CertificateAuthorityService]
+// manages private certificate authorities and issued certificates.
 func NewCertificateAuthorityClient(ctx context.Context, opts ...option.ClientOption) (*CertificateAuthorityClient, error) {
 	clientOpts := defaultCertificateAuthorityGRPCClientOptions()
 	if newCertificateAuthorityClientHook != nil {
@@ -1279,6 +1350,7 @@ func NewCertificateAuthorityClient(ctx context.Context, opts ...option.ClientOpt
 		disableDeadlines:           disableDeadlines,
 		certificateAuthorityClient: privatecapb.NewCertificateAuthorityServiceClient(connPool),
 		CallOptions:                &client.CallOptions,
+		operationsClient:           longrunningpb.NewOperationsClient(connPool),
 		iamPolicyClient:            iampb.NewIAMPolicyClient(connPool),
 		locationsClient:            locationpb.NewLocationsClient(connPool),
 	}
@@ -1345,8 +1417,9 @@ type certificateAuthorityRESTClient struct {
 
 // NewCertificateAuthorityRESTClient creates a new certificate authority service rest client.
 //
-// [Certificate Authority Service][google.cloud.security.privateca.v1.CertificateAuthorityService] manages private
-// certificate authorities and issued certificates.
+// [Certificate Authority
+// Service][google.cloud.security.privateca.v1.CertificateAuthorityService]
+// manages private certificate authorities and issued certificates.
 func NewCertificateAuthorityRESTClient(ctx context.Context, opts ...option.ClientOption) (*CertificateAuthorityClient, error) {
 	clientOpts := append(defaultCertificateAuthorityRESTClientOptions(), opts...)
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
@@ -2301,7 +2374,96 @@ func (c *certificateAuthorityGRPCClient) TestIamPermissions(ctx context.Context,
 	return resp, nil
 }
 
-// CreateCertificate create a new Certificate in a given Project, Location from a particular
+func (c *certificateAuthorityGRPCClient) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = c.operationsClient.CancelOperation(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	return err
+}
+
+func (c *certificateAuthorityGRPCClient) DeleteOperation(ctx context.Context, req *longrunningpb.DeleteOperationRequest, opts ...gax.CallOption) error {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = c.operationsClient.DeleteOperation(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	return err
+}
+
+func (c *certificateAuthorityGRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *certificateAuthorityGRPCClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
+	it := &OperationIterator{}
+	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
+		resp := &longrunningpb.ListOperationsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetOperations(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// CreateCertificate create a new Certificate
+// in a given Project, Location from a particular
 // CaPool.
 func (c *certificateAuthorityRESTClient) CreateCertificate(ctx context.Context, req *privatecapb.CreateCertificateRequest, opts ...gax.CallOption) (*privatecapb.Certificate, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
@@ -2595,7 +2757,8 @@ func (c *certificateAuthorityRESTClient) RevokeCertificate(ctx context.Context, 
 	return resp, nil
 }
 
-// UpdateCertificate update a Certificate. Currently, the only field you can update is the
+// UpdateCertificate update a Certificate.
+// Currently, the only field you can update is the
 // labels field.
 func (c *certificateAuthorityRESTClient) UpdateCertificate(ctx context.Context, req *privatecapb.UpdateCertificateRequest, opts ...gax.CallOption) (*privatecapb.Certificate, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
@@ -2671,12 +2834,16 @@ func (c *certificateAuthorityRESTClient) UpdateCertificate(ctx context.Context, 
 	return resp, nil
 }
 
-// ActivateCertificateAuthority activate a CertificateAuthority that is in state
+// ActivateCertificateAuthority activate a
+// CertificateAuthority
+// that is in state
 // AWAITING_USER_ACTIVATION
-// and is of type SUBORDINATE. After
-// the parent Certificate Authority signs a certificate signing request from
-// FetchCertificateAuthorityCsr, this method can complete the activation
-// process.
+// and is of type
+// SUBORDINATE.
+// After the parent Certificate Authority signs a certificate signing request
+// from
+// FetchCertificateAuthorityCsr,
+// this method can complete the activation process.
 func (c *certificateAuthorityRESTClient) ActivateCertificateAuthority(ctx context.Context, req *privatecapb.ActivateCertificateAuthorityRequest, opts ...gax.CallOption) (*ActivateCertificateAuthorityOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -2744,7 +2911,9 @@ func (c *certificateAuthorityRESTClient) ActivateCertificateAuthority(ctx contex
 	}, nil
 }
 
-// CreateCertificateAuthority create a new CertificateAuthority in a given Project and Location.
+// CreateCertificateAuthority create a new
+// CertificateAuthority
+// in a given Project and Location.
 func (c *certificateAuthorityRESTClient) CreateCertificateAuthority(ctx context.Context, req *privatecapb.CreateCertificateAuthorityRequest, opts ...gax.CallOption) (*CreateCertificateAuthorityOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetCertificateAuthority()
@@ -2817,7 +2986,8 @@ func (c *certificateAuthorityRESTClient) CreateCertificateAuthority(ctx context.
 	}, nil
 }
 
-// DisableCertificateAuthority disable a CertificateAuthority.
+// DisableCertificateAuthority disable a
+// CertificateAuthority.
 func (c *certificateAuthorityRESTClient) DisableCertificateAuthority(ctx context.Context, req *privatecapb.DisableCertificateAuthorityRequest, opts ...gax.CallOption) (*DisableCertificateAuthorityOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -2885,7 +3055,8 @@ func (c *certificateAuthorityRESTClient) DisableCertificateAuthority(ctx context
 	}, nil
 }
 
-// EnableCertificateAuthority enable a CertificateAuthority.
+// EnableCertificateAuthority enable a
+// CertificateAuthority.
 func (c *certificateAuthorityRESTClient) EnableCertificateAuthority(ctx context.Context, req *privatecapb.EnableCertificateAuthorityRequest, opts ...gax.CallOption) (*EnableCertificateAuthorityOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -2953,13 +3124,17 @@ func (c *certificateAuthorityRESTClient) EnableCertificateAuthority(ctx context.
 	}, nil
 }
 
-// FetchCertificateAuthorityCsr fetch a certificate signing request (CSR) from a CertificateAuthority
+// FetchCertificateAuthorityCsr fetch a certificate signing request (CSR) from a
+// CertificateAuthority
 // that is in state
 // AWAITING_USER_ACTIVATION
-// and is of type SUBORDINATE. The
-// CSR must then be signed by the desired parent Certificate Authority, which
-// could be another CertificateAuthority resource, or could be an on-prem
-// certificate authority. See also ActivateCertificateAuthority.
+// and is of type
+// SUBORDINATE.
+// The CSR must then be signed by the desired parent Certificate Authority,
+// which could be another
+// CertificateAuthority
+// resource, or could be an on-prem certificate authority. See also
+// ActivateCertificateAuthority.
 func (c *certificateAuthorityRESTClient) FetchCertificateAuthorityCsr(ctx context.Context, req *privatecapb.FetchCertificateAuthorityCsrRequest, opts ...gax.CallOption) (*privatecapb.FetchCertificateAuthorityCsrResponse, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -3017,7 +3192,8 @@ func (c *certificateAuthorityRESTClient) FetchCertificateAuthorityCsr(ctx contex
 	return resp, nil
 }
 
-// GetCertificateAuthority returns a CertificateAuthority.
+// GetCertificateAuthority returns a
+// CertificateAuthority.
 func (c *certificateAuthorityRESTClient) GetCertificateAuthority(ctx context.Context, req *privatecapb.GetCertificateAuthorityRequest, opts ...gax.CallOption) (*privatecapb.CertificateAuthority, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -3075,7 +3251,8 @@ func (c *certificateAuthorityRESTClient) GetCertificateAuthority(ctx context.Con
 	return resp, nil
 }
 
-// ListCertificateAuthorities lists CertificateAuthorities.
+// ListCertificateAuthorities lists
+// CertificateAuthorities.
 func (c *certificateAuthorityRESTClient) ListCertificateAuthorities(ctx context.Context, req *privatecapb.ListCertificateAuthoritiesRequest, opts ...gax.CallOption) *CertificateAuthorityIterator {
 	it := &CertificateAuthorityIterator{}
 	req = proto.Clone(req).(*privatecapb.ListCertificateAuthoritiesRequest)
@@ -3169,7 +3346,9 @@ func (c *certificateAuthorityRESTClient) ListCertificateAuthorities(ctx context.
 	return it
 }
 
-// UndeleteCertificateAuthority undelete a CertificateAuthority that has been deleted.
+// UndeleteCertificateAuthority undelete a
+// CertificateAuthority
+// that has been deleted.
 func (c *certificateAuthorityRESTClient) UndeleteCertificateAuthority(ctx context.Context, req *privatecapb.UndeleteCertificateAuthorityRequest, opts ...gax.CallOption) (*UndeleteCertificateAuthorityOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -3237,7 +3416,8 @@ func (c *certificateAuthorityRESTClient) UndeleteCertificateAuthority(ctx contex
 	}, nil
 }
 
-// DeleteCertificateAuthority delete a CertificateAuthority.
+// DeleteCertificateAuthority delete a
+// CertificateAuthority.
 func (c *certificateAuthorityRESTClient) DeleteCertificateAuthority(ctx context.Context, req *privatecapb.DeleteCertificateAuthorityRequest, opts ...gax.CallOption) (*DeleteCertificateAuthorityOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -3249,6 +3429,9 @@ func (c *certificateAuthorityRESTClient) DeleteCertificateAuthority(ctx context.
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetIgnoreActiveCertificates() {
 		params.Add("ignoreActiveCertificates", fmt.Sprintf("%v", req.GetIgnoreActiveCertificates()))
+	}
+	if req.GetIgnoreDependentResources() {
+		params.Add("ignoreDependentResources", fmt.Sprintf("%v", req.GetIgnoreDependentResources()))
 	}
 	if req.GetRequestId() != "" {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
@@ -3308,7 +3491,8 @@ func (c *certificateAuthorityRESTClient) DeleteCertificateAuthority(ctx context.
 	}, nil
 }
 
-// UpdateCertificateAuthority update a CertificateAuthority.
+// UpdateCertificateAuthority update a
+// CertificateAuthority.
 func (c *certificateAuthorityRESTClient) UpdateCertificateAuthority(ctx context.Context, req *privatecapb.UpdateCertificateAuthorityRequest, opts ...gax.CallOption) (*UpdateCertificateAuthorityOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetCertificateAuthority()
@@ -3701,6 +3885,9 @@ func (c *certificateAuthorityRESTClient) DeleteCaPool(ctx context.Context, req *
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetIgnoreDependentResources() {
+		params.Add("ignoreDependentResources", fmt.Sprintf("%v", req.GetIgnoreDependentResources()))
+	}
 	if req.GetRequestId() != "" {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -3756,8 +3943,10 @@ func (c *certificateAuthorityRESTClient) DeleteCaPool(ctx context.Context, req *
 	}, nil
 }
 
-// FetchCaCerts fetchCaCerts returns the current trust anchor for the CaPool. This will
-// include CA certificate chains for all ACTIVE CertificateAuthority
+// FetchCaCerts fetchCaCerts returns the current trust anchor for the
+// CaPool. This will include CA
+// certificate chains for all ACTIVE
+// CertificateAuthority
 // resources in the CaPool.
 func (c *certificateAuthorityRESTClient) FetchCaCerts(ctx context.Context, req *privatecapb.FetchCaCertsRequest, opts ...gax.CallOption) (*privatecapb.FetchCaCertsResponse, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
@@ -3822,7 +4011,8 @@ func (c *certificateAuthorityRESTClient) FetchCaCerts(ctx context.Context, req *
 	return resp, nil
 }
 
-// GetCertificateRevocationList returns a CertificateRevocationList.
+// GetCertificateRevocationList returns a
+// CertificateRevocationList.
 func (c *certificateAuthorityRESTClient) GetCertificateRevocationList(ctx context.Context, req *privatecapb.GetCertificateRevocationListRequest, opts ...gax.CallOption) (*privatecapb.CertificateRevocationList, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -3880,7 +4070,8 @@ func (c *certificateAuthorityRESTClient) GetCertificateRevocationList(ctx contex
 	return resp, nil
 }
 
-// ListCertificateRevocationLists lists CertificateRevocationLists.
+// ListCertificateRevocationLists lists
+// CertificateRevocationLists.
 func (c *certificateAuthorityRESTClient) ListCertificateRevocationLists(ctx context.Context, req *privatecapb.ListCertificateRevocationListsRequest, opts ...gax.CallOption) *CertificateRevocationListIterator {
 	it := &CertificateRevocationListIterator{}
 	req = proto.Clone(req).(*privatecapb.ListCertificateRevocationListsRequest)
@@ -3974,7 +4165,8 @@ func (c *certificateAuthorityRESTClient) ListCertificateRevocationLists(ctx cont
 	return it
 }
 
-// UpdateCertificateRevocationList update a CertificateRevocationList.
+// UpdateCertificateRevocationList update a
+// CertificateRevocationList.
 func (c *certificateAuthorityRESTClient) UpdateCertificateRevocationList(ctx context.Context, req *privatecapb.UpdateCertificateRevocationListRequest, opts ...gax.CallOption) (*UpdateCertificateRevocationListOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetCertificateRevocationList()
@@ -4053,7 +4245,9 @@ func (c *certificateAuthorityRESTClient) UpdateCertificateRevocationList(ctx con
 	}, nil
 }
 
-// CreateCertificateTemplate create a new CertificateTemplate in a given Project and Location.
+// CreateCertificateTemplate create a new
+// CertificateTemplate
+// in a given Project and Location.
 func (c *certificateAuthorityRESTClient) CreateCertificateTemplate(ctx context.Context, req *privatecapb.CreateCertificateTemplateRequest, opts ...gax.CallOption) (*CreateCertificateTemplateOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetCertificateTemplate()
@@ -4126,7 +4320,8 @@ func (c *certificateAuthorityRESTClient) CreateCertificateTemplate(ctx context.C
 	}, nil
 }
 
-// DeleteCertificateTemplate deleteCertificateTemplate deletes a CertificateTemplate.
+// DeleteCertificateTemplate deleteCertificateTemplate deletes a
+// CertificateTemplate.
 func (c *certificateAuthorityRESTClient) DeleteCertificateTemplate(ctx context.Context, req *privatecapb.DeleteCertificateTemplateRequest, opts ...gax.CallOption) (*DeleteCertificateTemplateOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -4191,7 +4386,8 @@ func (c *certificateAuthorityRESTClient) DeleteCertificateTemplate(ctx context.C
 	}, nil
 }
 
-// GetCertificateTemplate returns a CertificateTemplate.
+// GetCertificateTemplate returns a
+// CertificateTemplate.
 func (c *certificateAuthorityRESTClient) GetCertificateTemplate(ctx context.Context, req *privatecapb.GetCertificateTemplateRequest, opts ...gax.CallOption) (*privatecapb.CertificateTemplate, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -4249,7 +4445,8 @@ func (c *certificateAuthorityRESTClient) GetCertificateTemplate(ctx context.Cont
 	return resp, nil
 }
 
-// ListCertificateTemplates lists CertificateTemplates.
+// ListCertificateTemplates lists
+// CertificateTemplates.
 func (c *certificateAuthorityRESTClient) ListCertificateTemplates(ctx context.Context, req *privatecapb.ListCertificateTemplatesRequest, opts ...gax.CallOption) *CertificateTemplateIterator {
 	it := &CertificateTemplateIterator{}
 	req = proto.Clone(req).(*privatecapb.ListCertificateTemplatesRequest)
@@ -4343,7 +4540,8 @@ func (c *certificateAuthorityRESTClient) ListCertificateTemplates(ctx context.Co
 	return it
 }
 
-// UpdateCertificateTemplate update a CertificateTemplate.
+// UpdateCertificateTemplate update a
+// CertificateTemplate.
 func (c *certificateAuthorityRESTClient) UpdateCertificateTemplate(ctx context.Context, req *privatecapb.UpdateCertificateTemplateRequest, opts ...gax.CallOption) (*UpdateCertificateTemplateOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetCertificateTemplate()
@@ -4769,6 +4967,241 @@ func (c *certificateAuthorityRESTClient) TestIamPermissions(ctx context.Context,
 		return nil, e
 	}
 	return resp, nil
+}
+
+// CancelOperation is a utility method from google.longrunning.Operations.
+func (c *certificateAuthorityRESTClient) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:cancel", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		// Returns nil if there is no error, otherwise wraps
+		// the response code and body into a non-nil error
+		return googleapi.CheckResponse(httpRsp)
+	}, opts...)
+}
+
+// DeleteOperation is a utility method from google.longrunning.Operations.
+func (c *certificateAuthorityRESTClient) DeleteOperation(ctx context.Context, req *longrunningpb.DeleteOperationRequest, opts ...gax.CallOption) error {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		// Returns nil if there is no error, otherwise wraps
+		// the response code and body into a non-nil error
+		return googleapi.CheckResponse(httpRsp)
+	}, opts...)
+}
+
+// GetOperation is a utility method from google.longrunning.Operations.
+func (c *certificateAuthorityRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// ListOperations is a utility method from google.longrunning.Operations.
+func (c *certificateAuthorityRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
+	it := &OperationIterator{}
+	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
+		resp := &longrunningpb.ListOperationsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v/operations", req.GetName())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			httpRsp, err := c.httpClient.Do(httpReq)
+			if err != nil {
+				return err
+			}
+			defer httpRsp.Body.Close()
+
+			if err = googleapi.CheckResponse(httpRsp); err != nil {
+				return err
+			}
+
+			buf, err := ioutil.ReadAll(httpRsp.Body)
+			if err != nil {
+				return err
+			}
+
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return maybeUnknownEnum(err)
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetOperations(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
 }
 
 // ActivateCertificateAuthorityOperation manages a long-running operation from ActivateCertificateAuthority.
@@ -6174,6 +6607,53 @@ func (it *LocationIterator) bufLen() int {
 }
 
 func (it *LocationIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// OperationIterator manages a stream of *longrunningpb.Operation.
+type OperationIterator struct {
+	items    []*longrunningpb.Operation
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*longrunningpb.Operation, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *OperationIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *OperationIterator) Next() (*longrunningpb.Operation, error) {
+	var item *longrunningpb.Operation
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *OperationIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *OperationIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
