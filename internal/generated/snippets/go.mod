@@ -3,9 +3,9 @@ module cloud.google.com/go/internal/generated
 go 1.19
 
 require (
-	cloud.google.com/go v0.110.0
+	cloud.google.com/go v0.110.2
 	cloud.google.com/go/accessapproval v1.6.0
-	cloud.google.com/go/accesscontextmanager v1.7.0
+	cloud.google.com/go/accesscontextmanager v1.7.1
 	cloud.google.com/go/aiplatform v1.37.0
 	cloud.google.com/go/analytics v0.19.0
 	cloud.google.com/go/apigateway v1.5.0
@@ -29,12 +29,12 @@ require (
 	cloud.google.com/go/cloudbuild v1.9.0
 	cloud.google.com/go/clouddms v1.5.0
 	cloud.google.com/go/cloudtasks v1.10.0
-	cloud.google.com/go/compute v1.19.0
+	cloud.google.com/go/compute v1.19.2
 	cloud.google.com/go/confidentialcomputing v0.1.0
 	cloud.google.com/go/contactcenterinsights v1.6.0
 	cloud.google.com/go/container v1.15.0
 	cloud.google.com/go/containeranalysis v0.9.0
-	cloud.google.com/go/datacatalog v1.13.0
+	cloud.google.com/go/datacatalog v1.13.1
 	cloud.google.com/go/dataflow v0.8.0
 	cloud.google.com/go/dataform v0.7.0
 	cloud.google.com/go/datafusion v1.6.0
@@ -62,15 +62,15 @@ require (
 	cloud.google.com/go/gkehub v0.12.0
 	cloud.google.com/go/gkemulticloud v0.5.0
 	cloud.google.com/go/gsuiteaddons v1.5.0
-	cloud.google.com/go/iam v0.13.0
+	cloud.google.com/go/iam v1.0.1
 	cloud.google.com/go/iap v1.7.1
 	cloud.google.com/go/ids v1.3.0
 	cloud.google.com/go/iot v1.6.0
-	cloud.google.com/go/kms v1.10.1
+	cloud.google.com/go/kms v1.10.2
 	cloud.google.com/go/language v1.9.0
 	cloud.google.com/go/lifesciences v0.8.0
 	cloud.google.com/go/logging v1.7.0
-	cloud.google.com/go/longrunning v0.4.1
+	cloud.google.com/go/longrunning v0.4.2
 	cloud.google.com/go/managedidentities v1.5.0
 	cloud.google.com/go/mediatranslation v0.7.0
 	cloud.google.com/go/memcache v1.9.0
@@ -82,13 +82,13 @@ require (
 	cloud.google.com/go/notebooks v1.8.0
 	cloud.google.com/go/optimization v1.3.1
 	cloud.google.com/go/orchestration v1.6.0
-	cloud.google.com/go/orgpolicy v1.10.0
-	cloud.google.com/go/osconfig v1.11.0
+	cloud.google.com/go/orgpolicy v1.10.1
+	cloud.google.com/go/osconfig v1.11.1
 	cloud.google.com/go/oslogin v1.9.0
 	cloud.google.com/go/phishingprotection v0.7.0
 	cloud.google.com/go/policytroubleshooter v1.6.0
 	cloud.google.com/go/privatecatalog v0.8.0
-	cloud.google.com/go/pubsub v1.30.0
+	cloud.google.com/go/pubsub v1.30.1
 	cloud.google.com/go/pubsublite v1.7.0
 	cloud.google.com/go/recaptchaenterprise v1.3.1
 	cloud.google.com/go/recommendationengine v0.7.0
@@ -126,7 +126,7 @@ require (
 	cloud.google.com/go/websecurityscanner v1.5.0
 	cloud.google.com/go/workflows v1.10.0
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
-	google.golang.org/api v0.120.0
+	google.golang.org/api v0.122.0
 	google.golang.org/genproto v0.0.0-20230410155749-daa745c078e1
 )
 
@@ -135,9 +135,9 @@ require (
 	cloud.google.com/go/alloydb v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/discoveryengine v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/maps v0.7.0
-	cloud.google.com/go/recaptchaenterprise/v2 v2.7.0
-	cloud.google.com/go/storage v1.29.0
-	cloud.google.com/go/vision/v2 v2.7.0
+	cloud.google.com/go/recaptchaenterprise/v2 v2.7.1
+	cloud.google.com/go/storage v1.30.1
+	cloud.google.com/go/vision/v2 v2.7.1
 	cloud.google.com/go/vmwareengine v0.3.0
 	cloud.google.com/go/workstations v0.0.0-00010101000000-000000000000
 )
@@ -147,14 +147,14 @@ require (
 	cloud.google.com/go/dataproc v1.12.0 // indirect
 	github.com/golang/protobuf v1.5.3 // indirect
 	github.com/google/go-cmp v0.5.9 // indirect
-	github.com/google/s2a-go v0.1.2 // indirect
+	github.com/google/s2a-go v0.1.3 // indirect
 	github.com/googleapis/enterprise-certificate-proxy v0.2.3 // indirect
 	github.com/googleapis/gax-go/v2 v2.8.0 // indirect
 	go.opencensus.io v0.24.0 // indirect
 	golang.org/x/crypto v0.7.0 // indirect
-	golang.org/x/net v0.9.0 // indirect
-	golang.org/x/oauth2 v0.7.0 // indirect
-	golang.org/x/sys v0.7.0 // indirect
+	golang.org/x/net v0.10.0 // indirect
+	golang.org/x/oauth2 v0.8.0 // indirect
+	golang.org/x/sys v0.8.0 // indirect
 	golang.org/x/text v0.9.0 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
 	google.golang.org/grpc v1.55.0 // indirect
