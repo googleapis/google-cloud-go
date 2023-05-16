@@ -231,13 +231,12 @@ const (
 	ResourceType_LICENSED_USER ResourceType = 4
 	// Voice usage.
 	ResourceType_MINUTES ResourceType = 5
-	// For IaaS SKUs like Google Cloud Platform, monetization is based on usage
-	// accrued on your billing account irrespective of the type of monetizable
-	// resource. This enum represents an aggregated resource/container for all
-	// usage SKUs on a billing account. Currently, only applicable to Google Cloud
-	// Platform.
+	// For IaaS SKUs like Google Cloud, monetization is based on usage accrued on
+	// your billing account irrespective of the type of monetizable resource. This
+	// enum represents an aggregated resource/container for all usage SKUs on a
+	// billing account. Currently, only applicable to Google Cloud.
 	ResourceType_IAAS_USAGE ResourceType = 6
-	// For Google Cloud Platform subscriptions like Anthos or SAP.
+	// For Google Cloud subscriptions like Anthos or SAP.
 	ResourceType_SUBSCRIPTION ResourceType = 7
 )
 
@@ -778,7 +777,7 @@ type Plan struct {
 	// of the trial period.
 	TrialPeriod *Period `protobuf:"bytes,4,opt,name=trial_period,json=trialPeriod,proto3" json:"trial_period,omitempty"`
 	// Reseller Billing account to charge after an offer transaction.
-	// Only present for Google Cloud Platform offers.
+	// Only present for Google Cloud offers.
 	BillingAccount string `protobuf:"bytes,5,opt,name=billing_account,json=billingAccount,proto3" json:"billing_account,omitempty"`
 }
 

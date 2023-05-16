@@ -39,7 +39,7 @@ jobs:
     strategy:
       matrix: ${{ fromJson(needs.scan_changes.outputs.changed_dirs) }}
     steps:
-    - uses: actions/setup-go@v3
+    - uses: actions/setup-go@v4
       with:
         go-version: '1.18.3'
     - name: Install latest apidiff

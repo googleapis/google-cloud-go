@@ -395,7 +395,12 @@ type AudienceDimensionOrMetricFilter struct {
 	//	*AudienceDimensionOrMetricFilter_NumericFilter_
 	//	*AudienceDimensionOrMetricFilter_BetweenFilter_
 	OneFilter isAudienceDimensionOrMetricFilter_OneFilter `protobuf_oneof:"one_filter"`
-	// Required. Immutable. The dimension name or metric name to filter.
+	// Required. Immutable. The dimension name or metric name to filter. If the
+	// field name refers to a custom dimension or metric, a scope prefix will be
+	// added to the front of the custom dimensions or metric name. For more on
+	// scope prefixes or custom dimensions/metrics, reference the [Google
+	// Analytics Data API documentation]
+	// (https://developers.google.com/analytics/devguides/reporting/data/v1/api-schema#custom_dimensions).
 	FieldName string `protobuf:"bytes,1,opt,name=field_name,json=fieldName,proto3" json:"field_name,omitempty"`
 	// Optional. Indicates whether this filter needs dynamic evaluation or not. If
 	// set to true, users join the Audience if they ever met the condition (static
@@ -407,7 +412,7 @@ type AudienceDimensionOrMetricFilter struct {
 	AtAnyPointInTime bool `protobuf:"varint,6,opt,name=at_any_point_in_time,json=atAnyPointInTime,proto3" json:"at_any_point_in_time,omitempty"`
 	// Optional. If set, specifies the time window for which to evaluate data in
 	// number of days. If not set, then audience data is evaluated against
-	// lifetime data (i.e., infinite time window).
+	// lifetime data (For example, infinite time window).
 	//
 	// For example, if set to 1 day, only the current day's data is evaluated. The
 	// reference point is the current day when at_any_point_in_time is unset or
@@ -554,7 +559,7 @@ type AudienceEventFilter struct {
 	EventName string `protobuf:"bytes,1,opt,name=event_name,json=eventName,proto3" json:"event_name,omitempty"`
 	// Optional. If specified, this filter matches events that match both the
 	// single event name and the parameter filter expressions. AudienceEventFilter
-	// inside the parameter filter expression cannot be set (i.e., nested
+	// inside the parameter filter expression cannot be set (For example, nested
 	// event filters are not supported). This should be a single and_group of
 	// dimension_or_metric_filter or not_expression; ANDs of ORs are not
 	// supported. Also, if it includes a filter for "eventCount", only that one
@@ -717,9 +722,9 @@ type AudienceFilterExpression_OrGroup struct {
 }
 
 type AudienceFilterExpression_NotExpression struct {
-	// A filter expression to be NOT'ed (i.e., inverted, complemented). It
-	// can only include a dimension_or_metric_filter. This cannot be set on the
-	// top level AudienceFilterExpression.
+	// A filter expression to be NOT'ed (For example, inverted, complemented).
+	// It can only include a dimension_or_metric_filter. This cannot be set on
+	// the top level AudienceFilterExpression.
 	NotExpression *AudienceFilterExpression `protobuf:"bytes,3,opt,name=not_expression,json=notExpression,proto3,oneof"`
 }
 
@@ -924,9 +929,9 @@ func (x *AudienceSequenceFilter) GetSequenceSteps() []*AudienceSequenceFilter_Au
 }
 
 // A clause for defining either a simple or sequence filter. A filter can be
-// inclusive (i.e., users satisfying the filter clause are included in the
-// Audience) or exclusive (i.e., users satisfying the filter clause are
-// excluded from the Audience).
+// inclusive (For example, users satisfying the filter clause are included in
+// the Audience) or exclusive (For example, users satisfying the filter clause
+// are excluded from the Audience).
 type AudienceFilterClause struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -1544,7 +1549,7 @@ type AudienceSequenceFilter_AudienceSequenceStep struct {
 	// first step.
 	ImmediatelyFollows bool `protobuf:"varint,2,opt,name=immediately_follows,json=immediatelyFollows,proto3" json:"immediately_follows,omitempty"`
 	// Optional. When set, this step must be satisfied within the
-	// constraint_duration of the previous step (i.e., t[i] - t[i-1] <=
+	// constraint_duration of the previous step (For example,  t[i] - t[i-1] <=
 	// constraint_duration). If not set, there is no duration requirement (the
 	// duration is effectively unlimited). It is ignored for the first step.
 	ConstraintDuration *durationpb.Duration `protobuf:"bytes,3,opt,name=constraint_duration,json=constraintDuration,proto3" json:"constraint_duration,omitempty"`
