@@ -81,3 +81,15 @@ The post-processor initializes new modules by generating the required files
 To add a new module, add the directory name of the module to `modules` in
 `google-cloud-go/internal/postprocessor/config.yaml`. Please maintain
 alphabetical ordering of the module names.
+
+## cloudbuild.yaml
+
+The `cloudbuild.yaml` Cloud Build configuration currently supports:
+
+* Building the `Dockerfile`.
+
+The build can be run locally in the `google-cloud-go` root directory:
+
+```bash
+gcloud builds submit --project=cloud-devrel-kokoro-resources --config=internal/postprocessor/cloudbuild.yaml
+``
