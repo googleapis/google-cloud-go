@@ -2,6 +2,13 @@
 
 
 
+## [1.1.0](https://github.com/googleapis/google-cloud-go/compare/maps/v1.0.1...maps/v1.1.0) (2023-05-16)
+
+
+### Features
+
+* **maps/places:** Start generating apiv1 ([#7919](https://github.com/googleapis/google-cloud-go/issues/7919)) ([ee10cfd](https://github.com/googleapis/google-cloud-go/commit/ee10cfd2e59a3d228af2dd8c56f5229cf6c577f0))
+
 ## [1.0.1](https://github.com/googleapis/google-cloud-go/compare/maps/v1.0.0...maps/v1.0.1) (2023-05-08)
 
 
