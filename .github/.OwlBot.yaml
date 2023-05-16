@@ -872,8 +872,8 @@ deep-copy-regex:
     dest: /
   - source: /google/cloud/speech/v2/cloud.google.com/go
     dest: /
-  - source: /google/storage/v2/cloud.google.com/go
-    dest: /
+  - source: /google/storage/v2/cloud.google.com/go/storage/internal/apiv2
+    dest: /storage/internal/apiv2
   - source: /google/cloud/storageinsights/v1/cloud.google.com/go
     dest: /
   - source: /google/storagetransfer/v1/cloud.google.com/go

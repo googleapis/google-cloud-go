@@ -1,5 +1,12 @@
 # Changes
 
+## [1.14.0](https://github.com/googleapis/google-cloud-go/compare/channel/v1.13.0...channel/v1.14.0) (2023-05-16)
+
+
+### Features
+
+* **channel:** Added partition_keys field to filter results from FetchReportResults ([7c2f642](https://github.com/googleapis/google-cloud-go/commit/7c2f642ac308fcdfcb41985aae425785afa27823))
+
 ## [1.13.0](https://github.com/googleapis/google-cloud-go/compare/channel/v1.12.1...channel/v1.13.0) (2023-05-10)
 
 
