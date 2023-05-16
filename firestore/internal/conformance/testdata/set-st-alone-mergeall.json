@@ -2,7 +2,7 @@
   "tests": [
     {
       "description": "set: ServerTimestamp alone with MergeAll",
-      "comment": "If the only values in the input are ServerTimestamps, then no\nupdate operation should be produced.",
+      "comment": "If the only values in the input are ServerTimestamps, then no\nupdate mask should be produced.",
       "set": {
         "docRefPath": "projects/projectID/databases/(default)/documents/C/d",
         "option": {
@@ -13,15 +13,16 @@
           "database": "projects/projectID/databases/(default)",
           "writes": [
             {
-              "transform": {
-                "document": "projects/projectID/databases/(default)/documents/C/d",
-                "fieldTransforms": [
-                  {
-                    "fieldPath": "a",
-                    "setToServerValue": "REQUEST_TIME"
-                  }
-                ]
-              }
+              "update": {
+                "name": "projects/projectID/databases/(default)/documents/C/d"
+              },
+              "updateMask": {},
+              "updateTransforms": [
+                {
+                  "fieldPath": "a",
+                  "setToServerValue": "REQUEST_TIME"
+                }
+              ]
             }
           ]
         }
