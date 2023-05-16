@@ -1,5 +1,12 @@
 # Changes
 
+## [1.16.0](https://github.com/googleapis/google-cloud-go/compare/speech/v1.15.1...speech/v1.16.0) (2023-05-16)
+
+
+### Features
+
+* **speech:** Add processing strategy to batch recognition requests ([#7900](https://github.com/googleapis/google-cloud-go/issues/7900)) ([31421d5](https://github.com/googleapis/google-cloud-go/commit/31421d52c3bf3b7baa235fb6cb18bb8a786398df))
+
 ## [1.15.1](https://github.com/googleapis/google-cloud-go/compare/speech/v1.15.0...speech/v1.15.1) (2023-05-08)
 
 

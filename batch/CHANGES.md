@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [1.1.0](https://github.com/googleapis/google-cloud-go/compare/batch/v1.0.1...batch/v1.1.0) (2023-05-16)
+
+
+### Features
+
+* **batch:** Add support for placement policies ([#7943](https://github.com/googleapis/google-cloud-go/issues/7943)) ([7c2f642](https://github.com/googleapis/google-cloud-go/commit/7c2f642ac308fcdfcb41985aae425785afa27823))
+
 ## [1.0.1](https://github.com/googleapis/google-cloud-go/compare/batch/v1.0.0...batch/v1.0.1) (2023-05-08)
 
 

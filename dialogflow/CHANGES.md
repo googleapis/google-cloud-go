@@ -1,5 +1,13 @@
 # Changes
 
+## [1.34.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.33.0...dialogflow/v1.34.0) (2023-05-16)
+
+
+### Features
+
+* **dialogflow:** Add baseline model configuration for conversation summarization ([31421d5](https://github.com/googleapis/google-cloud-go/commit/31421d52c3bf3b7baa235fb6cb18bb8a786398df))
+* **dialogflow:** Add baseline model configuration for conversation summarization ([31421d5](https://github.com/googleapis/google-cloud-go/commit/31421d52c3bf3b7baa235fb6cb18bb8a786398df))
+
 ## [1.33.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.32.1...dialogflow/v1.33.0) (2023-05-10)
 
 
