@@ -196,7 +196,7 @@
     {
       "regionTag": "cloudchannel_v1_generated_CloudChannelReportsService_ListOperations_sync",
       "title": "cloudchannel ListOperations Sample",
-      "description": "ListOperations lists operations that match the specified filter in the request. If\nthe server doesn't support this method, it returns `UNIMPLEMENTED`.",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
       "file": "CloudChannelReportsClient/ListOperations/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1709,7 +1709,7 @@
     {
       "regionTag": "cloudchannel_v1_generated_CloudChannelService_ListOperations_sync",
       "title": "cloudchannel ListOperations Sample",
-      "description": "ListOperations lists operations that match the specified filter in the request. If\nthe server doesn't support this method, it returns `UNIMPLEMENTED`.",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
       "file": "CloudChannelClient/ListOperations/main.go",
       "language": "GO",
       "clientMethod": {
