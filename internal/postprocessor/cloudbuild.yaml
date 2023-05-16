@@ -18,8 +18,8 @@
 timeout: 7200s  # 2 hours
 steps:
 - name: gcr.io/cloud-builders/docker
-  args: ['build', '-t', 'gcr.io/cloud-devrel-public-resources/owlbot-go', '-f', 'postprocessor/Dockerfile', '.']
-  dir: internal
+  args: ['build', '-t', 'gcr.io/cloud-devrel-public-resources/owlbot-go', '-f', 'Dockerfile', '.']
+  dir: internal/postprocessor
 
 images:
 - gcr.io/cloud-devrel-public-resources/owlbot-go:latest
