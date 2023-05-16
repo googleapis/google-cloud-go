@@ -21,13 +21,12 @@
 package channelpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -267,8 +266,8 @@ type Entitlement struct {
 	//
 	// - assigned_units: The number of licenses assigned to users.
 	//
-	// For GCP billing subaccounts, the following Parameter may be accepted as
-	// input:
+	// For Google Cloud billing subaccounts, the following Parameter may be
+	// accepted as input:
 	//
 	// - display_name: The display name of the billing subaccount.
 	Parameters []*Parameter `protobuf:"bytes,26,rep,name=parameters,proto3" json:"parameters,omitempty"`
@@ -525,8 +524,8 @@ type ProvisionedService struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Output only. Provisioning ID of the entitlement. For Google Workspace, this
-	// is the underlying Subscription ID. For Google Cloud Platform, this is the
-	// Billing Account ID of the billing subaccount."
+	// is the underlying Subscription ID. For Google Cloud, this is the Billing
+	// Account ID of the billing subaccount."
 	ProvisioningId string `protobuf:"bytes,1,opt,name=provisioning_id,json=provisioningId,proto3" json:"provisioning_id,omitempty"`
 	// Output only. The product pertaining to the provisioning resource as
 	// specified in the Offer.
