@@ -15,11 +15,21 @@
 # note: /workspace is a special directory in the docker image where all the files in this folder
 # get placed on your behalf
 
-timeout: 7200s  # 2 hours
+timeout: 7200s # 2 hours
 steps:
-- name: gcr.io/cloud-builders/docker
-  args: ['build', '-t', 'gcr.io/cloud-devrel-public-resources/owlbot-go', '-f', 'Dockerfile', '.']
-  dir: internal/postprocessor
+  - name: gcr.io/cloud-builders/docker
+    args:
+      [
+        "build",
+        "-t",
+        "gcr.io/cloud-devrel-public-resources/owlbot-go",
+        "-f",
+        "Dockerfile",
+        ".",
+      ]
+    dir: internal/postprocessor
+options:
+  logging: CLOUD_LOGGING_ONLY
 
 images:
-- gcr.io/cloud-devrel-public-resources/owlbot-go:latest
+  - gcr.io/cloud-devrel-public-resources/owlbot-go:latest
