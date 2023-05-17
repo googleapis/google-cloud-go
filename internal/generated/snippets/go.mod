@@ -94,7 +94,6 @@ require (
 	cloud.google.com/go/privatecatalog v0.8.0
 	cloud.google.com/go/pubsub v1.30.1
 	cloud.google.com/go/pubsublite v1.7.0
-	cloud.google.com/go/recaptchaenterprise v1.3.1
 	cloud.google.com/go/recaptchaenterprise/v2 v2.7.1
 	cloud.google.com/go/recommendationengine v0.7.0
 	cloud.google.com/go/recommender v1.9.0
@@ -137,6 +136,8 @@ require (
 	google.golang.org/api v0.122.0
 	google.golang.org/genproto v0.0.0-20230410155749-daa745c078e1
 )
+
+require cloud.google.com/go/recaptchaenterprise v1.3.1
 
 require (
 	cloud.google.com/go/compute/metadata v0.2.3 // indirect
@@ -265,8 +266,6 @@ replace cloud.google.com/go/privatecatalog => ../../../privatecatalog
 
 replace cloud.google.com/go/profiler => ../../../profiler
 
-replace cloud.google.com/go/recaptchaenterprise => ../../../recaptchaenterprise
-
 replace cloud.google.com/go/recommendationengine => ../../../recommendationengine
 
 replace cloud.google.com/go/recommender => ../../../recommender
@@ -389,7 +388,7 @@ replace cloud.google.com/go/gkebackup => ../../../gkebackup
 
 replace cloud.google.com/go/gkemulticloud => ../../../gkemulticloud
 
-replace cloud.google.com/go/recaptchaenterprise/v2 => ../../../recaptchaenterprise/v2
+replace cloud.google.com/go/recaptchaenterprise/v2 => ../../../recaptchaenterprise
 
 replace cloud.google.com/go/baremetalsolution => ../../../baremetalsolution
 
