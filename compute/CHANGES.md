@@ -1,5 +1,12 @@
 # Changes
 
+## [1.19.3](https://github.com/googleapis/google-cloud-go/compare/compute/v1.19.2...compute/v1.19.3) (2023-05-16)
+
+
+### Bug Fixes
+
+* **compute:** Emit errors found in Operations ([31421d5](https://github.com/googleapis/google-cloud-go/commit/31421d52c3bf3b7baa235fb6cb18bb8a786398df))
+
 ## [1.19.2](https://github.com/googleapis/google-cloud-go/compare/compute/v1.19.1...compute/v1.19.2) (2023-05-08)
 
 

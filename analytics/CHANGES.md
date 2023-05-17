@@ -1,5 +1,12 @@
 # Changes
 
+## [0.20.0](https://github.com/googleapis/google-cloud-go/compare/analytics/v0.19.1...analytics/v0.20.0) (2023-05-16)
+
+
+### Features
+
+* **analytics/admin:** Add `GetAdSenseLink`, `CreateAdSenseLink`, `DeleteAdSenseLink`, `ListAdSenseLinks` methods to the Admin API v1alpha ([8c479ac](https://github.com/googleapis/google-cloud-go/commit/8c479acd5ea710629b4b562a4654bc369e828c16))
+
 ## [0.19.1](https://github.com/googleapis/google-cloud-go/compare/analytics/v0.19.0...analytics/v0.19.1) (2023-05-08)
 
 
