@@ -114,7 +114,6 @@ require (
 	cloud.google.com/go/shell v1.6.0
 	cloud.google.com/go/spanner v1.45.0
 	cloud.google.com/go/speech v1.15.0
-	cloud.google.com/go/storage v1.30.1
 	cloud.google.com/go/storageinsights v0.0.0
 	cloud.google.com/go/storagetransfer v1.8.0
 	cloud.google.com/go/support v0.0.0
