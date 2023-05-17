@@ -112,7 +112,7 @@
   "translate": "1.7.1",
   "video": "1.16.1",
   "videointelligence": "1.10.1",
-  "vision/v2": "2.7.1",
+  "vision": "2.7.1",
   "vmmigration": "1.6.1",
   "vmwareengine": "0.3.1",
   "vpcaccess": "1.6.1",

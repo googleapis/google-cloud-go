@@ -124,7 +124,6 @@ modules:
   - video
   - videointelligence
   - vision
-  - vision/v2
   - vmmigration
   - vmwareengine
   - vpcaccess
