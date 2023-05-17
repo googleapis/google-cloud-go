@@ -432,8 +432,8 @@ deep-remove-regex:
   - /videointelligence/apiv1/
   - /videointelligence/apiv1beta2/
   - /videointelligence/apiv1p3beta1/
-  - /vision/v2/apiv1/
-  - /vision/v2/apiv1p1beta1/
+  - /vision/apiv1/
+  - /vision/apiv1p1beta1/
   - /vmmigration/apiv1/
   - /vmwareengine/apiv1/
   - /vpcaccess/apiv1/
@@ -872,8 +872,8 @@ deep-copy-regex:
     dest: /
   - source: /google/cloud/speech/v2/cloud.google.com/go
     dest: /
-  - source: /google/storage/v2/cloud.google.com/go
-    dest: /
+  - source: /google/storage/v2/cloud.google.com/go/storage/internal/apiv2
+    dest: /storage/internal/apiv2
   - source: /google/cloud/storageinsights/v1/cloud.google.com/go
     dest: /
   - source: /google/storagetransfer/v1/cloud.google.com/go
@@ -906,10 +906,14 @@ deep-copy-regex:
     dest: /
   - source: /google/cloud/videointelligence/v1p3beta1/cloud.google.com/go
     dest: /
-  - source: /google/cloud/vision/v1/cloud.google.com/go
-    dest: /
-  - source: /google/cloud/vision/v1p1beta1/cloud.google.com/go
-    dest: /
+  - source: /google/cloud/vision/v1/cloud.google.com/go/vision/v2/apiv1
+    dest: /vision/apiv1
+  - source: /google/cloud/vision/v1/cloud.google.com/go/internal/generated/snippets/vision/v2/apiv1
+    dest: /internal/generated/snippets/vision/apiv1
+  - source: /google/cloud/vision/v1p1beta1/cloud.google.com/go/vision/v2/apiv1p1beta1
+    dest: /vision/apiv1p1beta1
+  - source: /google/cloud/vision/v1p1beta1/cloud.google.com/go/internal/generated/snippets/vision/v2/apiv1p1beta1
+    dest: /internal/generated/snippets/vision/apiv1p1beta1
   - source: /google/cloud/vmmigration/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/vmwareengine/v1/cloud.google.com/go
