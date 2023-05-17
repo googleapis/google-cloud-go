@@ -175,11 +175,15 @@ func (p *postProcessor) InitializeNewModules(manifest map[string]ManifestEntry) 
 	log.Println("checking for new modules and clients")
 	for _, moduleName := range p.config.Modules {
 		modulePath := filepath.Join(p.googleCloudDir, moduleName)
-		importPath := filepath.Join("cloud.google.com/go", moduleName)
+		importPath, err := gocmd.ListModName(modulePath)
+		if err != nil {
+			return err
+		}
 
 		pathToModVersionFile := filepath.Join(modulePath, "internal/version.go")
 		// Check if <module>/internal/version.go file exists
 		if _, err := os.Stat(pathToModVersionFile); errors.Is(err, fs.ErrNotExist) {
+			log.Println("detected missing file: ", pathToModVersionFile)
 			var serviceImportPath string
 			for _, v := range p.config.GapicImportPaths() {
 				if strings.Contains(v, importPath) {
@@ -188,16 +192,19 @@ func (p *postProcessor) InitializeNewModules(manifest map[string]ManifestEntry) 
 				}
 			}
 			if serviceImportPath == "" {
-				return fmt.Errorf("no corresponding config found for module %s. Cannot generate min required files", moduleName)
+				return fmt.Errorf("no config found for module %s. Cannot generate min required files", importPath)
 			}
 			// serviceImportPath here should be a valid ImportPath from a MicrogenGapicConfigs
 			apiName := manifest[serviceImportPath].Description
 			if err := p.generateMinReqFilesNewMod(moduleName, modulePath, importPath, apiName); err != nil {
 				return err
 			}
+			if err := p.modEditReplaceInSnippets(modulePath, importPath); err != nil {
+				return err
+			}
 		}
 		// Check if version.go files exist for each client
-		err := filepath.WalkDir(modulePath, func(path string, d fs.DirEntry, err error) error {
+		err = filepath.WalkDir(modulePath, func(path string, d fs.DirEntry, err error) error {
 			if err != nil {
 				return err
 			}
@@ -211,7 +218,6 @@ func (p *postProcessor) InitializeNewModules(manifest map[string]ManifestEntry) 
 			}
 			pathToClientVersionFile := filepath.Join(path, "version.go")
 			if _, err = os.Stat(pathToClientVersionFile); errors.Is(err, fs.ErrNotExist) {
-				log.Println("generating version.go file in", path)
 				if err := p.generateVersionFile(moduleName, path); err != nil {
 					return err
 				}
@@ -253,6 +259,7 @@ func (p *postProcessor) generateVersionFile(moduleName, path string) error {
 	if strings.Contains(path, "debugger/apiv2") || strings.Contains(path, "orgpolicy/apiv1") {
 		return nil
 	}
+	log.Println("generating version.go file in", path)
 	pathSegments := strings.Split(filepath.Dir(path), "/")
 
 	rootModInternal := fmt.Sprintf("cloud.google.com/go/%s/internal", moduleName)
@@ -307,6 +314,16 @@ func (p *postProcessor) getDirs() []string {
 		dirs = append(dirs, filepath.Join(p.googleCloudDir, module))
 	}
 	return dirs
+}
+
+func (p *postProcessor) modEditReplaceInSnippets(modulePath, importPath string) error {
+	// Replace it. Use a relative path to avoid issues on different systems.
+	snippetsDir := filepath.Join(p.googleCloudDir, "internal", "generated", "snippets")
+	rel, err := filepath.Rel(snippetsDir, modulePath)
+	if err != nil {
+		return err
+	}
+	return gocmd.EditReplace(snippetsDir, importPath, rel)
 }
 
 func (p *postProcessor) UpdateSnippetsMetadata() error {

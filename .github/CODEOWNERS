@@ -18,3 +18,6 @@
 
 # individual release versions manifest is unowned (to avoid notifying every team)
 .release-please-manifest-individual.json
+# Owned by all
+go.work
+go.work.sum

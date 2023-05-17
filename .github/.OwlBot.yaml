@@ -236,6 +236,7 @@ deep-remove-regex:
   - /internal/generated/snippets/managedidentities/apiv1/
   - /internal/generated/snippets/maps/addressvalidation/apiv1/
   - /internal/generated/snippets/maps/mapsplatformdatasets/apiv1alpha/
+  - /internal/generated/snippets/maps/places/apiv1/
   - /internal/generated/snippets/maps/routing/apiv2/
   - /internal/generated/snippets/mediatranslation/apiv1beta1/
   - /internal/generated/snippets/memcache/apiv1/
@@ -345,6 +346,7 @@ deep-remove-regex:
   - /managedidentities/apiv1/
   - /maps/addressvalidation/apiv1/
   - /maps/mapsplatformdatasets/apiv1alpha/
+  - /maps/places/apiv1/
   - /maps/routing/apiv2/
   - /mediatranslation/apiv1beta1/
   - /memcache/apiv1/
@@ -430,8 +432,8 @@ deep-remove-regex:
   - /videointelligence/apiv1/
   - /videointelligence/apiv1beta2/
   - /videointelligence/apiv1p3beta1/
-  - /vision/v2/apiv1/
-  - /vision/v2/apiv1p1beta1/
+  - /vision/apiv1/
+  - /vision/apiv1p1beta1/
   - /vmmigration/apiv1/
   - /vmwareengine/apiv1/
   - /vpcaccess/apiv1/
@@ -483,6 +485,7 @@ deep-preserve-regex:
   - /datacatalog/apiv1/iam_policy_client.go
   - /run/apiv2/locations_client.go
   - /datacatalog/apiv1/iam_policy_client.go
+  - /compute/apiv1/smoke_test.go
 
 deep-copy-regex:
   - source: /google/cloud/accessapproval/v1/cloud.google.com/go
@@ -731,6 +734,8 @@ deep-copy-regex:
     dest: /
   - source: /google/maps/mapsplatformdatasets/v1alpha/cloud.google.com/go
     dest: /
+  - source: /google/maps/places/v1/cloud.google.com/go
+    dest: /
   - source: /google/maps/routing/v2/cloud.google.com/go
     dest: /
   - source: /google/cloud/mediatranslation/v1beta1/cloud.google.com/go
@@ -867,8 +872,8 @@ deep-copy-regex:
     dest: /
   - source: /google/cloud/speech/v2/cloud.google.com/go
     dest: /
-  - source: /google/storage/v2/cloud.google.com/go
-    dest: /
+  - source: /google/storage/v2/cloud.google.com/go/storage/internal/apiv2
+    dest: /storage/internal/apiv2
   - source: /google/cloud/storageinsights/v1/cloud.google.com/go
     dest: /
   - source: /google/storagetransfer/v1/cloud.google.com/go
@@ -901,10 +906,14 @@ deep-copy-regex:
     dest: /
   - source: /google/cloud/videointelligence/v1p3beta1/cloud.google.com/go
     dest: /
-  - source: /google/cloud/vision/v1/cloud.google.com/go
-    dest: /
-  - source: /google/cloud/vision/v1p1beta1/cloud.google.com/go
-    dest: /
+  - source: /google/cloud/vision/v1/cloud.google.com/go/vision/v2/apiv1
+    dest: /vision/apiv1
+  - source: /google/cloud/vision/v1/cloud.google.com/go/internal/generated/snippets/vision/v2/apiv1
+    dest: /internal/generated/snippets/vision/apiv1
+  - source: /google/cloud/vision/v1p1beta1/cloud.google.com/go/vision/v2/apiv1p1beta1
+    dest: /vision/apiv1p1beta1
+  - source: /google/cloud/vision/v1p1beta1/cloud.google.com/go/internal/generated/snippets/vision/v2/apiv1p1beta1
+    dest: /internal/generated/snippets/vision/apiv1p1beta1
   - source: /google/cloud/vmmigration/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/vmwareengine/v1/cloud.google.com/go

@@ -90,6 +90,11 @@
                 "CreateAccessBinding"
               ]
             },
+            "CreateAdSenseLink": {
+              "methods": [
+                "CreateAdSenseLink"
+              ]
+            },
             "CreateAudience": {
               "methods": [
                 "CreateAudience"
@@ -133,6 +138,11 @@
             "CreateDisplayVideo360AdvertiserLinkProposal": {
               "methods": [
                 "CreateDisplayVideo360AdvertiserLinkProposal"
+              ]
+            },
+            "CreateEventCreateRule": {
+              "methods": [
+                "CreateEventCreateRule"
               ]
             },
             "CreateExpandedDataSet": {
@@ -180,6 +190,11 @@
                 "DeleteAccount"
               ]
             },
+            "DeleteAdSenseLink": {
+              "methods": [
+                "DeleteAdSenseLink"
+              ]
+            },
             "DeleteChannelGroup": {
               "methods": [
                 "DeleteChannelGroup"
@@ -208,6 +223,11 @@
             "DeleteDisplayVideo360AdvertiserLinkProposal": {
               "methods": [
                 "DeleteDisplayVideo360AdvertiserLinkProposal"
+              ]
+            },
+            "DeleteEventCreateRule": {
+              "methods": [
+                "DeleteEventCreateRule"
               ]
             },
             "DeleteExpandedDataSet": {
@@ -263,6 +283,11 @@
             "GetAccount": {
               "methods": [
                 "GetAccount"
+              ]
+            },
+            "GetAdSenseLink": {
+              "methods": [
+                "GetAdSenseLink"
               ]
             },
             "GetAttributionSettings": {
@@ -330,6 +355,11 @@
                 "GetEnhancedMeasurementSettings"
               ]
             },
+            "GetEventCreateRule": {
+              "methods": [
+                "GetEventCreateRule"
+              ]
+            },
             "GetExpandedDataSet": {
               "methods": [
                 "GetExpandedDataSet"
@@ -380,6 +410,11 @@
                 "ListAccounts"
               ]
             },
+            "ListAdSenseLinks": {
+              "methods": [
+                "ListAdSenseLinks"
+              ]
+            },
             "ListAudiences": {
               "methods": [
                 "ListAudiences"
@@ -428,6 +463,11 @@
             "ListDisplayVideo360AdvertiserLinks": {
               "methods": [
                 "ListDisplayVideo360AdvertiserLinks"
+              ]
+            },
+            "ListEventCreateRules": {
+              "methods": [
+                "ListEventCreateRules"
               ]
             },
             "ListExpandedDataSets": {
@@ -538,6 +578,11 @@
             "UpdateEnhancedMeasurementSettings": {
               "methods": [
                 "UpdateEnhancedMeasurementSettings"
+              ]
+            },
+            "UpdateEventCreateRule": {
+              "methods": [
+                "UpdateEventCreateRule"
               ]
             },
             "UpdateExpandedDataSet": {
@@ -660,6 +705,11 @@
                 "CreateAccessBinding"
               ]
             },
+            "CreateAdSenseLink": {
+              "methods": [
+                "CreateAdSenseLink"
+              ]
+            },
             "CreateAudience": {
               "methods": [
                 "CreateAudience"
@@ -703,6 +753,11 @@
             "CreateDisplayVideo360AdvertiserLinkProposal": {
               "methods": [
                 "CreateDisplayVideo360AdvertiserLinkProposal"
+              ]
+            },
+            "CreateEventCreateRule": {
+              "methods": [
+                "CreateEventCreateRule"
               ]
             },
             "CreateExpandedDataSet": {
@@ -750,6 +805,11 @@
                 "DeleteAccount"
               ]
             },
+            "DeleteAdSenseLink": {
+              "methods": [
+                "DeleteAdSenseLink"
+              ]
+            },
             "DeleteChannelGroup": {
               "methods": [
                 "DeleteChannelGroup"
@@ -778,6 +838,11 @@
             "DeleteDisplayVideo360AdvertiserLinkProposal": {
               "methods": [
                 "DeleteDisplayVideo360AdvertiserLinkProposal"
+              ]
+            },
+            "DeleteEventCreateRule": {
+              "methods": [
+                "DeleteEventCreateRule"
               ]
             },
             "DeleteExpandedDataSet": {
@@ -833,6 +898,11 @@
             "GetAccount": {
               "methods": [
                 "GetAccount"
+              ]
+            },
+            "GetAdSenseLink": {
+              "methods": [
+                "GetAdSenseLink"
               ]
             },
             "GetAttributionSettings": {
@@ -900,6 +970,11 @@
                 "GetEnhancedMeasurementSettings"
               ]
             },
+            "GetEventCreateRule": {
+              "methods": [
+                "GetEventCreateRule"
+              ]
+            },
             "GetExpandedDataSet": {
               "methods": [
                 "GetExpandedDataSet"
@@ -950,6 +1025,11 @@
                 "ListAccounts"
               ]
             },
+            "ListAdSenseLinks": {
+              "methods": [
+                "ListAdSenseLinks"
+              ]
+            },
             "ListAudiences": {
               "methods": [
                 "ListAudiences"
@@ -998,6 +1078,11 @@
             "ListDisplayVideo360AdvertiserLinks": {
               "methods": [
                 "ListDisplayVideo360AdvertiserLinks"
+              ]
+            },
+            "ListEventCreateRules": {
+              "methods": [
+                "ListEventCreateRules"
               ]
             },
             "ListExpandedDataSets": {
@@ -1108,6 +1193,11 @@
             "UpdateEnhancedMeasurementSettings": {
               "methods": [
                 "UpdateEnhancedMeasurementSettings"
+              ]
+            },
+            "UpdateEventCreateRule": {
+              "methods": [
+                "UpdateEventCreateRule"
               ]
             },
             "UpdateExpandedDataSet": {
