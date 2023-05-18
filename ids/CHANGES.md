@@ -1,6 +1,20 @@
 # Changes
 
 
+## [1.3.1](https://github.com/googleapis/google-cloud-go/compare/ids/v1.3.0...ids/v1.3.1) (2023-05-08)
+
+
+### Bug Fixes
+
+* **ids:** Update grpc to v1.55.0 ([1147ce0](https://github.com/googleapis/google-cloud-go/commit/1147ce02a990276ca4f8ab7a1ab65c14da4450ef))
+
+## [1.3.0](https://github.com/googleapis/google-cloud-go/compare/ids/v1.2.0...ids/v1.3.0) (2023-01-04)
+
+
+### Features
+
+* **ids:** Add REST client ([06a54a1](https://github.com/googleapis/google-cloud-go/commit/06a54a16a5866cce966547c51e203b9e09a25bc0))
+
 ## [1.2.0](https://github.com/googleapis/google-cloud-go/compare/ids/v1.1.0...ids/v1.2.0) (2022-11-03)
 
 

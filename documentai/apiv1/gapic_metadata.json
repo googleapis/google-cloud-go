@@ -50,9 +50,19 @@
                 "EnableProcessor"
               ]
             },
+            "EvaluateProcessorVersion": {
+              "methods": [
+                "EvaluateProcessorVersion"
+              ]
+            },
             "FetchProcessorTypes": {
               "methods": [
                 "FetchProcessorTypes"
+              ]
+            },
+            "GetEvaluation": {
+              "methods": [
+                "GetEvaluation"
               ]
             },
             "GetLocation": {
@@ -70,9 +80,19 @@
                 "GetProcessor"
               ]
             },
+            "GetProcessorType": {
+              "methods": [
+                "GetProcessorType"
+              ]
+            },
             "GetProcessorVersion": {
               "methods": [
                 "GetProcessorVersion"
+              ]
+            },
+            "ListEvaluations": {
+              "methods": [
+                "ListEvaluations"
               ]
             },
             "ListLocations": {
@@ -113,6 +133,151 @@
             "SetDefaultProcessorVersion": {
               "methods": [
                 "SetDefaultProcessorVersion"
+              ]
+            },
+            "TrainProcessorVersion": {
+              "methods": [
+                "TrainProcessorVersion"
+              ]
+            },
+            "UndeployProcessorVersion": {
+              "methods": [
+                "UndeployProcessorVersion"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "DocumentProcessorClient",
+          "rpcs": {
+            "BatchProcessDocuments": {
+              "methods": [
+                "BatchProcessDocuments"
+              ]
+            },
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateProcessor": {
+              "methods": [
+                "CreateProcessor"
+              ]
+            },
+            "DeleteProcessor": {
+              "methods": [
+                "DeleteProcessor"
+              ]
+            },
+            "DeleteProcessorVersion": {
+              "methods": [
+                "DeleteProcessorVersion"
+              ]
+            },
+            "DeployProcessorVersion": {
+              "methods": [
+                "DeployProcessorVersion"
+              ]
+            },
+            "DisableProcessor": {
+              "methods": [
+                "DisableProcessor"
+              ]
+            },
+            "EnableProcessor": {
+              "methods": [
+                "EnableProcessor"
+              ]
+            },
+            "EvaluateProcessorVersion": {
+              "methods": [
+                "EvaluateProcessorVersion"
+              ]
+            },
+            "FetchProcessorTypes": {
+              "methods": [
+                "FetchProcessorTypes"
+              ]
+            },
+            "GetEvaluation": {
+              "methods": [
+                "GetEvaluation"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetProcessor": {
+              "methods": [
+                "GetProcessor"
+              ]
+            },
+            "GetProcessorType": {
+              "methods": [
+                "GetProcessorType"
+              ]
+            },
+            "GetProcessorVersion": {
+              "methods": [
+                "GetProcessorVersion"
+              ]
+            },
+            "ListEvaluations": {
+              "methods": [
+                "ListEvaluations"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListProcessorTypes": {
+              "methods": [
+                "ListProcessorTypes"
+              ]
+            },
+            "ListProcessorVersions": {
+              "methods": [
+                "ListProcessorVersions"
+              ]
+            },
+            "ListProcessors": {
+              "methods": [
+                "ListProcessors"
+              ]
+            },
+            "ProcessDocument": {
+              "methods": [
+                "ProcessDocument"
+              ]
+            },
+            "ReviewDocument": {
+              "methods": [
+                "ReviewDocument"
+              ]
+            },
+            "SetDefaultProcessorVersion": {
+              "methods": [
+                "SetDefaultProcessorVersion"
+              ]
+            },
+            "TrainProcessorVersion": {
+              "methods": [
+                "TrainProcessorVersion"
               ]
             },
             "UndeployProcessorVersion": {

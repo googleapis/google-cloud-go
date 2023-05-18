@@ -1,5 +1,54 @@
 # Changes
 
+## [1.10.1](https://github.com/googleapis/google-cloud-go/compare/orgpolicy/v1.10.0...orgpolicy/v1.10.1) (2023-05-08)
+
+
+### Bug Fixes
+
+* **orgpolicy:** Update grpc to v1.55.0 ([1147ce0](https://github.com/googleapis/google-cloud-go/commit/1147ce02a990276ca4f8ab7a1ab65c14da4450ef))
+
+## [1.10.0](https://github.com/googleapis/google-cloud-go/compare/orgpolicy/v1.9.0...orgpolicy/v1.10.0) (2023-02-14)
+
+
+### Features
+
+* **orgpolicy:** Add orgpolicy v1 assembly target for Go ([#7406](https://github.com/googleapis/google-cloud-go/issues/7406)) ([a12f91b](https://github.com/googleapis/google-cloud-go/commit/a12f91b361b9d89f33998ebd9b5a50a485f89ad8))
+* **orgpolicy:** Make custom constraint methods public, and update branding of "GCP" to "Google Cloud" ([4623db8](https://github.com/googleapis/google-cloud-go/commit/4623db86fb70305278f6740999ecaee674506052))
+
+## [1.9.0](https://github.com/googleapis/google-cloud-go/compare/orgpolicy-v1.8.0...orgpolicy/v1.9.0) (2023-01-26)
+
+
+### Features
+
+* **orgpolicy:** Add REST client ([06a54a1](https://github.com/googleapis/google-cloud-go/commit/06a54a16a5866cce966547c51e203b9e09a25bc0))
+* **orgpolicy:** Rewrite signatures in terms of new location ([3c4b2b3](https://github.com/googleapis/google-cloud-go/commit/3c4b2b34565795537aac1661e6af2442437e34ad))
+* **orgpolicy:** Start generating stubs dir ([de2d180](https://github.com/googleapis/google-cloud-go/commit/de2d18066dc613b72f6f8db93ca60146dabcfdcc))
+* **orgpolicy:** Support for OrgPolicy dry runs ([447afdd](https://github.com/googleapis/google-cloud-go/commit/447afddf34d59c599cabe5415b4f9265b228bb9a))
+
+## [1.8.0](https://github.com/googleapis/google-cloud-go/compare/orgpolicy-v1.7.0...orgpolicy/v1.8.0) (2023-01-26)
+
+
+### Features
+
+* **orgpolicy:** Add REST client ([06a54a1](https://github.com/googleapis/google-cloud-go/commit/06a54a16a5866cce966547c51e203b9e09a25bc0))
+* **orgpolicy:** Rewrite signatures in terms of new location ([3c4b2b3](https://github.com/googleapis/google-cloud-go/commit/3c4b2b34565795537aac1661e6af2442437e34ad))
+* **orgpolicy:** Start generating stubs dir ([de2d180](https://github.com/googleapis/google-cloud-go/commit/de2d18066dc613b72f6f8db93ca60146dabcfdcc))
+* **orgpolicy:** Support for OrgPolicy dry runs ([447afdd](https://github.com/googleapis/google-cloud-go/commit/447afddf34d59c599cabe5415b4f9265b228bb9a))
+
+## [1.7.0](https://github.com/googleapis/google-cloud-go/compare/orgpolicy/v1.6.0...orgpolicy/v1.7.0) (2023-01-26)
+
+
+### Features
+
+* **orgpolicy:** Support for OrgPolicy dry runs ([447afdd](https://github.com/googleapis/google-cloud-go/commit/447afddf34d59c599cabe5415b4f9265b228bb9a))
+
+## [1.6.0](https://github.com/googleapis/google-cloud-go/compare/orgpolicy/v1.5.0...orgpolicy/v1.6.0) (2023-01-04)
+
+
+### Features
+
+* **orgpolicy:** Add REST client ([06a54a1](https://github.com/googleapis/google-cloud-go/commit/06a54a16a5866cce966547c51e203b9e09a25bc0))
+
 ## [1.5.0](https://github.com/googleapis/google-cloud-go/compare/orgpolicy/v1.4.0...orgpolicy/v1.5.0) (2022-11-03)
 
 

@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/gkebackup/apiv1",
-    "version": "0.3.0",
+    "version": "1.0.1",
     "language": "GO",
     "apis": [
       {
@@ -402,7 +402,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "gkebackuppb.Backup",
+        "resultType": "*gkebackuppb.Backup",
         "client": {
           "shortName": "BackupForGKEClient",
           "fullName": "google.cloud.gkebackup.v1.BackupForGKEClient"
@@ -448,7 +448,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "gkebackuppb.BackupPlan",
+        "resultType": "*gkebackuppb.BackupPlan",
         "client": {
           "shortName": "BackupForGKEClient",
           "fullName": "google.cloud.gkebackup.v1.BackupForGKEClient"
@@ -494,7 +494,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "gkebackuppb.Restore",
+        "resultType": "*gkebackuppb.Restore",
         "client": {
           "shortName": "BackupForGKEClient",
           "fullName": "google.cloud.gkebackup.v1.BackupForGKEClient"
@@ -540,7 +540,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "gkebackuppb.RestorePlan",
+        "resultType": "*gkebackuppb.RestorePlan",
         "client": {
           "shortName": "BackupForGKEClient",
           "fullName": "google.cloud.gkebackup.v1.BackupForGKEClient"
@@ -586,7 +586,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "gkebackuppb.VolumeBackup",
+        "resultType": "*gkebackuppb.VolumeBackup",
         "client": {
           "shortName": "BackupForGKEClient",
           "fullName": "google.cloud.gkebackup.v1.BackupForGKEClient"
@@ -632,7 +632,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "gkebackuppb.VolumeRestore",
+        "resultType": "*gkebackuppb.VolumeRestore",
         "client": {
           "shortName": "BackupForGKEClient",
           "fullName": "google.cloud.gkebackup.v1.BackupForGKEClient"

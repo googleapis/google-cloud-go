@@ -46,10 +46,10 @@ func TestQueryConstruction(t *testing.T) {
 			q: NewQuery("Foo").Filter("foo >", 7),
 			exp: &Query{
 				kind: "Foo",
-				filter: []filter{
-					{
+				filter: []EntityFilter{
+					PropertyFilter{
 						FieldName: "foo",
-						Op:        greaterThan,
+						Operator:  string(greaterThan),
 						Value:     7,
 					},
 				},
@@ -61,10 +61,10 @@ func TestQueryConstruction(t *testing.T) {
 			q: NewQuery("Foo").Filter("foo=", 6),
 			exp: &Query{
 				kind: "Foo",
-				filter: []filter{
-					{
+				filter: []EntityFilter{
+					PropertyFilter{
 						FieldName: "foo",
-						Op:        equal,
+						Operator:  string(equal),
 						Value:     6,
 					},
 				},
@@ -76,10 +76,10 @@ func TestQueryConstruction(t *testing.T) {
 			q: NewQuery("Foo").Filter(" foo< ", 8),
 			exp: &Query{
 				kind: "Foo",
-				filter: []filter{
-					{
+				filter: []EntityFilter{
+					PropertyFilter{
 						FieldName: "foo",
-						Op:        lessThan,
+						Operator:  string(lessThan),
 						Value:     8,
 					},
 				},
@@ -91,10 +91,10 @@ func TestQueryConstruction(t *testing.T) {
 			q: NewQuery("Foo").Filter("foo >=", 9),
 			exp: &Query{
 				kind: "Foo",
-				filter: []filter{
-					{
+				filter: []EntityFilter{
+					PropertyFilter{
 						FieldName: "foo",
-						Op:        greaterEq,
+						Operator:  string(greaterEq),
 						Value:     9,
 					},
 				},
@@ -231,6 +231,20 @@ func TestPutMultiTypes(t *testing.T) {
 		{
 			desc:    "not a slice",
 			src:     S{1, "one"},
+			wantErr: true,
+		},
+		{
+			desc: "slice and key length is different",
+			src: []interface{}{
+				S{1, "one"},
+				S{2, "two"},
+				S{3, "three"},
+			},
+			wantErr: true,
+		},
+		{
+			desc:    "slice length is 0, return error",
+			src:     []interface{}{},
 			wantErr: true,
 		},
 	}

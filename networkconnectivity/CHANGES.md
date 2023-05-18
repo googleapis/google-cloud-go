@@ -1,5 +1,33 @@
 # Changes
 
+## [1.11.1](https://github.com/googleapis/google-cloud-go/compare/networkconnectivity/v1.11.0...networkconnectivity/v1.11.1) (2023-05-08)
+
+
+### Bug Fixes
+
+* **networkconnectivity:** Update grpc to v1.55.0 ([1147ce0](https://github.com/googleapis/google-cloud-go/commit/1147ce02a990276ca4f8ab7a1ab65c14da4450ef))
+
+## [1.11.0](https://github.com/googleapis/google-cloud-go/compare/networkconnectivity/v1.10.0...networkconnectivity/v1.11.0) (2023-03-15)
+
+
+### Features
+
+* **networkconnectivity:** Update iam and longrunning deps ([91a1f78](https://github.com/googleapis/google-cloud-go/commit/91a1f784a109da70f63b96414bba8a9b4254cddd))
+
+## [1.10.0](https://github.com/googleapis/google-cloud-go/compare/networkconnectivity/v1.9.0...networkconnectivity/v1.10.0) (2023-01-31)
+
+
+### Features
+
+* **networkconnectivity:** Update Hub API ([45c70e3](https://github.com/googleapis/google-cloud-go/commit/45c70e31e12ae5bb9ad9644648eb154ff5c033df))
+
+## [1.9.0](https://github.com/googleapis/google-cloud-go/compare/networkconnectivity/v1.8.0...networkconnectivity/v1.9.0) (2023-01-04)
+
+
+### Features
+
+* **networkconnectivity:** Add REST client ([06a54a1](https://github.com/googleapis/google-cloud-go/commit/06a54a16a5866cce966547c51e203b9e09a25bc0))
+
 ## [1.8.0](https://github.com/googleapis/google-cloud-go/compare/networkconnectivity/v1.7.0...networkconnectivity/v1.8.0) (2022-11-09)
 
 

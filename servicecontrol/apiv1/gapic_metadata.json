@@ -16,12 +16,37 @@
               ]
             }
           }
+        },
+        "rest": {
+          "libraryClient": "QuotaControllerClient",
+          "rpcs": {
+            "AllocateQuota": {
+              "methods": [
+                "AllocateQuota"
+              ]
+            }
+          }
         }
       }
     },
     "ServiceController": {
       "clients": {
         "grpc": {
+          "libraryClient": "ServiceControllerClient",
+          "rpcs": {
+            "Check": {
+              "methods": [
+                "Check"
+              ]
+            },
+            "Report": {
+              "methods": [
+                "Report"
+              ]
+            }
+          }
+        },
+        "rest": {
           "libraryClient": "ServiceControllerClient",
           "rpcs": {
             "Check": {

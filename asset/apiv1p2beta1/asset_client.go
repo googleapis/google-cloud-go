@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -488,6 +488,11 @@ func (c *restClient) CreateFeed(ctx context.Context, req *assetpb.CreateFeedRequ
 	}
 	baseUrl.Path += fmt.Sprintf("/v1p2beta1/%v/feeds", req.GetParent())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
@@ -541,6 +546,11 @@ func (c *restClient) GetFeed(ctx context.Context, req *assetpb.GetFeedRequest, o
 	}
 	baseUrl.Path += fmt.Sprintf("/v1p2beta1/%v", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
@@ -593,6 +603,11 @@ func (c *restClient) ListFeeds(ctx context.Context, req *assetpb.ListFeedsReques
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1p2beta1/%v/feeds", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
@@ -653,6 +668,11 @@ func (c *restClient) UpdateFeed(ctx context.Context, req *assetpb.UpdateFeedRequ
 	}
 	baseUrl.Path += fmt.Sprintf("/v1p2beta1/%v", req.GetFeed().GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "feed.name", url.QueryEscape(req.GetFeed().GetName())))
 
@@ -705,6 +725,11 @@ func (c *restClient) DeleteFeed(ctx context.Context, req *assetpb.DeleteFeedRequ
 		return err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1p2beta1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))

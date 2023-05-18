@@ -599,11 +599,11 @@ func TestCompositeServiceTree(t *testing.T) {
 		intermediate1.receiver.VerifyStatus(t, serviceTerminated)
 		intermediate2.receiver.VerifyStatus(t, serviceTerminated)
 		root.receiver.VerifyStatus(t, serviceTerminated)
-		root.VerifyClosed(t, true)
 
 		if gotErr := root.WaitStopped(); !test.ErrorEqual(gotErr, wantErr) {
 			t.Errorf("compositeService.WaitStopped() got err: (%v), want err: (%v)", gotErr, wantErr)
 		}
+		root.VerifyClosed(t, true)
 	})
 }
 

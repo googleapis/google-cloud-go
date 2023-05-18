@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -24,14 +24,15 @@ import (
 	"math"
 	"net/http"
 	"net/url"
+	"time"
 
+	computepb "cloud.google.com/go/compute/apiv1/computepb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	httptransport "google.golang.org/api/transport/http"
-	computepb "google.golang.org/genproto/googleapis/cloud/compute/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/encoding/protojson"
@@ -51,10 +52,30 @@ type RegionTargetHttpProxiesCallOptions struct {
 
 func defaultRegionTargetHttpProxiesRESTCallOptions() *RegionTargetHttpProxiesCallOptions {
 	return &RegionTargetHttpProxiesCallOptions{
-		Delete:    []gax.CallOption{},
-		Get:       []gax.CallOption{},
-		Insert:    []gax.CallOption{},
-		List:      []gax.CallOption{},
+		Delete: []gax.CallOption{},
+		Get: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
+		Insert: []gax.CallOption{},
+		List: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
 		SetUrlMap: []gax.CallOption{},
 	}
 }
@@ -111,7 +132,7 @@ func (c *RegionTargetHttpProxiesClient) Delete(ctx context.Context, req *compute
 	return c.internalClient.Delete(ctx, req, opts...)
 }
 
-// Get returns the specified TargetHttpProxy resource in the specified region. Gets a list of available target HTTP proxies by making a list() request.
+// Get returns the specified TargetHttpProxy resource in the specified region.
 func (c *RegionTargetHttpProxiesClient) Get(ctx context.Context, req *computepb.GetRegionTargetHttpProxyRequest, opts ...gax.CallOption) (*computepb.TargetHttpProxy, error) {
 	return c.internalClient.Get(ctx, req, opts...)
 }
@@ -284,7 +305,7 @@ func (c *regionTargetHttpProxiesRESTClient) Delete(ctx context.Context, req *com
 	return op, nil
 }
 
-// Get returns the specified TargetHttpProxy resource in the specified region. Gets a list of available target HTTP proxies by making a list() request.
+// Get returns the specified TargetHttpProxy resource in the specified region.
 func (c *regionTargetHttpProxiesRESTClient) Get(ctx context.Context, req *computepb.GetRegionTargetHttpProxyRequest, opts ...gax.CallOption) (*computepb.TargetHttpProxy, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {

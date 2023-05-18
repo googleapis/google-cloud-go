@@ -20,9 +20,9 @@ import (
 	"fmt"
 	"testing"
 
+	longrunning "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	"github.com/google/go-cmp/cmp"
 	btapb "google.golang.org/genproto/googleapis/bigtable/admin/v2"
-	"google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/protobuf/types/known/anypb"
 )

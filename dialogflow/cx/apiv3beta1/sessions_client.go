@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -27,6 +27,7 @@ import (
 	"time"
 
 	cxpb "cloud.google.com/go/dialogflow/cx/apiv3beta1/cxpb"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
@@ -35,7 +36,6 @@ import (
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -175,8 +175,9 @@ type internalSessionsClient interface {
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // A session represents an interaction with a user. You retrieve user input
-// and pass it to the DetectIntent method to determine
-// user intent and respond.
+// and pass it to the
+// DetectIntent
+// method to determine user intent and respond.
 type SessionsClient struct {
 	// The internal transport-dependent client.
 	internalClient internalSessionsClient
@@ -227,6 +228,8 @@ func (c *SessionsClient) DetectIntent(ctx context.Context, req *cxpb.DetectInten
 // Note: Always use agent versions for production traffic.
 // See Versions and
 // environments (at https://cloud.google.com/dialogflow/cx/docs/concept/version).
+//
+// This method is not supported for the REST transport.
 func (c *SessionsClient) StreamingDetectIntent(ctx context.Context, opts ...gax.CallOption) (cxpb.Sessions_StreamingDetectIntentClient, error) {
 	return c.internalClient.StreamingDetectIntent(ctx, opts...)
 }
@@ -237,9 +240,13 @@ func (c *SessionsClient) MatchIntent(ctx context.Context, req *cxpb.MatchIntentR
 	return c.internalClient.MatchIntent(ctx, req, opts...)
 }
 
-// FulfillIntent fulfills a matched intent returned by MatchIntent.
-// Must be called after MatchIntent, with input from
-// MatchIntentResponse. Otherwise, the behavior is undefined.
+// FulfillIntent fulfills a matched intent returned by
+// MatchIntent.
+// Must be called after
+// MatchIntent,
+// with input from
+// MatchIntentResponse.
+// Otherwise, the behavior is undefined.
 func (c *SessionsClient) FulfillIntent(ctx context.Context, req *cxpb.FulfillIntentRequest, opts ...gax.CallOption) (*cxpb.FulfillIntentResponse, error) {
 	return c.internalClient.FulfillIntent(ctx, req, opts...)
 }
@@ -297,8 +304,9 @@ type sessionsGRPCClient struct {
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
 // A session represents an interaction with a user. You retrieve user input
-// and pass it to the DetectIntent method to determine
-// user intent and respond.
+// and pass it to the
+// DetectIntent
+// method to determine user intent and respond.
 func NewSessionsClient(ctx context.Context, opts ...option.ClientOption) (*SessionsClient, error) {
 	clientOpts := defaultSessionsGRPCClientOptions()
 	if newSessionsClientHook != nil {
@@ -376,8 +384,9 @@ type sessionsRESTClient struct {
 // NewSessionsRESTClient creates a new sessions rest client.
 //
 // A session represents an interaction with a user. You retrieve user input
-// and pass it to the DetectIntent method to determine
-// user intent and respond.
+// and pass it to the
+// DetectIntent
+// method to determine user intent and respond.
 func NewSessionsRESTClient(ctx context.Context, opts ...option.ClientOption) (*SessionsClient, error) {
 	clientOpts := append(defaultSessionsRESTClientOptions(), opts...)
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
@@ -667,6 +676,11 @@ func (c *sessionsRESTClient) DetectIntent(ctx context.Context, req *cxpb.DetectI
 	}
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v:detectIntent", req.GetSession())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "session", url.QueryEscape(req.GetSession())))
 
@@ -719,6 +733,8 @@ func (c *sessionsRESTClient) DetectIntent(ctx context.Context, req *cxpb.DetectI
 // Note: Always use agent versions for production traffic.
 // See Versions and
 // environments (at https://cloud.google.com/dialogflow/cx/docs/concept/version).
+//
+// This method is not supported for the REST transport.
 func (c *sessionsRESTClient) StreamingDetectIntent(ctx context.Context, opts ...gax.CallOption) (cxpb.Sessions_StreamingDetectIntentClient, error) {
 	return nil, fmt.Errorf("StreamingDetectIntent not yet supported for REST clients")
 }
@@ -737,6 +753,11 @@ func (c *sessionsRESTClient) MatchIntent(ctx context.Context, req *cxpb.MatchInt
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v:matchIntent", req.GetSession())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "session", url.QueryEscape(req.GetSession())))
@@ -783,9 +804,13 @@ func (c *sessionsRESTClient) MatchIntent(ctx context.Context, req *cxpb.MatchInt
 	return resp, nil
 }
 
-// FulfillIntent fulfills a matched intent returned by MatchIntent.
-// Must be called after MatchIntent, with input from
-// MatchIntentResponse. Otherwise, the behavior is undefined.
+// FulfillIntent fulfills a matched intent returned by
+// MatchIntent.
+// Must be called after
+// MatchIntent,
+// with input from
+// MatchIntentResponse.
+// Otherwise, the behavior is undefined.
 func (c *sessionsRESTClient) FulfillIntent(ctx context.Context, req *cxpb.FulfillIntentRequest, opts ...gax.CallOption) (*cxpb.FulfillIntentResponse, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -798,6 +823,11 @@ func (c *sessionsRESTClient) FulfillIntent(ctx context.Context, req *cxpb.Fulfil
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v:fulfillIntent", req.GetMatchIntentRequest().GetSession())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "match_intent_request.session", url.QueryEscape(req.GetMatchIntentRequest().GetSession())))
@@ -851,6 +881,11 @@ func (c *sessionsRESTClient) GetLocation(ctx context.Context, req *locationpb.Ge
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
@@ -919,6 +954,7 @@ func (c *sessionsRESTClient) ListLocations(ctx context.Context, req *locationpb.
 		baseUrl.Path += fmt.Sprintf("/v3beta1/%v/locations", req.GetName())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -995,6 +1031,11 @@ func (c *sessionsRESTClient) CancelOperation(ctx context.Context, req *longrunni
 	}
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v:cancel", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
@@ -1029,6 +1070,11 @@ func (c *sessionsRESTClient) GetOperation(ctx context.Context, req *longrunningp
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
@@ -1097,6 +1143,7 @@ func (c *sessionsRESTClient) ListOperations(ctx context.Context, req *longrunnin
 		baseUrl.Path += fmt.Sprintf("/v3beta1/%v/operations", req.GetName())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}

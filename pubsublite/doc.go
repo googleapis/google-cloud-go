@@ -187,7 +187,7 @@ client that may be able to handle messages.
 See https://cloud.google.com/pubsub/lite/docs/subscribing for more information
 about receiving messages.
 
-gRPC Connection Pools
+# gRPC Connection Pools
 
 Pub/Sub Lite utilizes gRPC streams extensively. gRPC allows a maximum of 100
 streams per connection. Internally, the library uses a default connection pool

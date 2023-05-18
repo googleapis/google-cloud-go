@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -27,8 +27,10 @@ import (
 	"time"
 
 	aiplatformpb "cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb"
+	iampb "cloud.google.com/go/iam/apiv1/iampb"
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
@@ -37,8 +39,6 @@ import (
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
-	iampb "google.golang.org/genproto/googleapis/iam/v1"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/encoding/protojson"
@@ -51,6 +51,7 @@ var newTensorboardClientHook clientHook
 type TensorboardCallOptions struct {
 	CreateTensorboard                  []gax.CallOption
 	GetTensorboard                     []gax.CallOption
+	ReadTensorboardUsage               []gax.CallOption
 	UpdateTensorboard                  []gax.CallOption
 	ListTensorboards                   []gax.CallOption
 	DeleteTensorboard                  []gax.CallOption
@@ -105,6 +106,7 @@ func defaultTensorboardCallOptions() *TensorboardCallOptions {
 	return &TensorboardCallOptions{
 		CreateTensorboard:                  []gax.CallOption{},
 		GetTensorboard:                     []gax.CallOption{},
+		ReadTensorboardUsage:               []gax.CallOption{},
 		UpdateTensorboard:                  []gax.CallOption{},
 		ListTensorboards:                   []gax.CallOption{},
 		DeleteTensorboard:                  []gax.CallOption{},
@@ -148,6 +150,7 @@ func defaultTensorboardRESTCallOptions() *TensorboardCallOptions {
 	return &TensorboardCallOptions{
 		CreateTensorboard:                  []gax.CallOption{},
 		GetTensorboard:                     []gax.CallOption{},
+		ReadTensorboardUsage:               []gax.CallOption{},
 		UpdateTensorboard:                  []gax.CallOption{},
 		ListTensorboards:                   []gax.CallOption{},
 		DeleteTensorboard:                  []gax.CallOption{},
@@ -195,6 +198,7 @@ type internalTensorboardClient interface {
 	CreateTensorboard(context.Context, *aiplatformpb.CreateTensorboardRequest, ...gax.CallOption) (*CreateTensorboardOperation, error)
 	CreateTensorboardOperation(name string) *CreateTensorboardOperation
 	GetTensorboard(context.Context, *aiplatformpb.GetTensorboardRequest, ...gax.CallOption) (*aiplatformpb.Tensorboard, error)
+	ReadTensorboardUsage(context.Context, *aiplatformpb.ReadTensorboardUsageRequest, ...gax.CallOption) (*aiplatformpb.ReadTensorboardUsageResponse, error)
 	UpdateTensorboard(context.Context, *aiplatformpb.UpdateTensorboardRequest, ...gax.CallOption) (*UpdateTensorboardOperation, error)
 	UpdateTensorboardOperation(name string) *UpdateTensorboardOperation
 	ListTensorboards(context.Context, *aiplatformpb.ListTensorboardsRequest, ...gax.CallOption) *TensorboardIterator
@@ -292,6 +296,11 @@ func (c *TensorboardClient) CreateTensorboardOperation(name string) *CreateTenso
 // GetTensorboard gets a Tensorboard.
 func (c *TensorboardClient) GetTensorboard(ctx context.Context, req *aiplatformpb.GetTensorboardRequest, opts ...gax.CallOption) (*aiplatformpb.Tensorboard, error) {
 	return c.internalClient.GetTensorboard(ctx, req, opts...)
+}
+
+// ReadTensorboardUsage returns a list of monthly active users for a given TensorBoard instance.
+func (c *TensorboardClient) ReadTensorboardUsage(ctx context.Context, req *aiplatformpb.ReadTensorboardUsageRequest, opts ...gax.CallOption) (*aiplatformpb.ReadTensorboardUsageResponse, error) {
+	return c.internalClient.ReadTensorboardUsage(ctx, req, opts...)
 }
 
 // UpdateTensorboard updates a Tensorboard.
@@ -426,16 +435,16 @@ func (c *TensorboardClient) DeleteTensorboardTimeSeriesOperation(name string) *D
 
 // BatchReadTensorboardTimeSeriesData reads multiple TensorboardTimeSeries’ data. The data point number limit is
 // 1000 for scalars, 100 for tensors and blob references. If the number of
-// data points stored is less than the limit, all data will be returned.
-// Otherwise, that limit number of data points will be randomly selected from
+// data points stored is less than the limit, all data is returned.
+// Otherwise, the number limit of data points is randomly selected from
 // this time series and returned.
 func (c *TensorboardClient) BatchReadTensorboardTimeSeriesData(ctx context.Context, req *aiplatformpb.BatchReadTensorboardTimeSeriesDataRequest, opts ...gax.CallOption) (*aiplatformpb.BatchReadTensorboardTimeSeriesDataResponse, error) {
 	return c.internalClient.BatchReadTensorboardTimeSeriesData(ctx, req, opts...)
 }
 
 // ReadTensorboardTimeSeriesData reads a TensorboardTimeSeries’ data. By default, if the number of data
-// points stored is less than 1000, all data will be returned. Otherwise, 1000
-// data points will be randomly selected from this time series and returned.
+// points stored is less than 1000, all data is returned. Otherwise, 1000
+// data points is randomly selected from this time series and returned.
 // This value can be changed by changing max_data_points, which can’t be
 // greater than 10k.
 func (c *TensorboardClient) ReadTensorboardTimeSeriesData(ctx context.Context, req *aiplatformpb.ReadTensorboardTimeSeriesDataRequest, opts ...gax.CallOption) (*aiplatformpb.ReadTensorboardTimeSeriesDataResponse, error) {
@@ -451,15 +460,13 @@ func (c *TensorboardClient) ReadTensorboardBlobData(ctx context.Context, req *ai
 }
 
 // WriteTensorboardExperimentData write time series data points of multiple TensorboardTimeSeries in multiple
-// TensorboardRun’s. If any data fail to be ingested, an error will be
-// returned.
+// TensorboardRun’s. If any data fail to be ingested, an error is returned.
 func (c *TensorboardClient) WriteTensorboardExperimentData(ctx context.Context, req *aiplatformpb.WriteTensorboardExperimentDataRequest, opts ...gax.CallOption) (*aiplatformpb.WriteTensorboardExperimentDataResponse, error) {
 	return c.internalClient.WriteTensorboardExperimentData(ctx, req, opts...)
 }
 
 // WriteTensorboardRunData write time series data points into multiple TensorboardTimeSeries under
-// a TensorboardRun. If any data fail to be ingested, an error will be
-// returned.
+// a TensorboardRun. If any data fail to be ingested, an error is returned.
 func (c *TensorboardClient) WriteTensorboardRunData(ctx context.Context, req *aiplatformpb.WriteTensorboardRunDataRequest, opts ...gax.CallOption) (*aiplatformpb.WriteTensorboardRunDataResponse, error) {
 	return c.internalClient.WriteTensorboardRunData(ctx, req, opts...)
 }
@@ -748,6 +755,23 @@ func (c *tensorboardGRPCClient) GetTensorboard(ctx context.Context, req *aiplatf
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.tensorboardClient.GetTensorboard(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *tensorboardGRPCClient) ReadTensorboardUsage(ctx context.Context, req *aiplatformpb.ReadTensorboardUsageRequest, opts ...gax.CallOption) (*aiplatformpb.ReadTensorboardUsageResponse, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "tensorboard", url.QueryEscape(req.GetTensorboard())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).ReadTensorboardUsage[0:len((*c.CallOptions).ReadTensorboardUsage):len((*c.CallOptions).ReadTensorboardUsage)], opts...)
+	var resp *aiplatformpb.ReadTensorboardUsageResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.tensorboardClient.ReadTensorboardUsage(ctx, req, settings.GRPC...)
 		return err
 	}, opts...)
 	if err != nil {
@@ -1256,6 +1280,7 @@ func (c *tensorboardGRPCClient) ReadTensorboardBlobData(ctx context.Context, req
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "time_series", url.QueryEscape(req.GetTimeSeries())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).ReadTensorboardBlobData[0:len((*c.CallOptions).ReadTensorboardBlobData):len((*c.CallOptions).ReadTensorboardBlobData)], opts...)
 	var resp aiplatformpb.TensorboardService_ReadTensorboardBlobDataClient
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1644,6 +1669,59 @@ func (c *tensorboardRESTClient) GetTensorboard(ctx context.Context, req *aiplatf
 	opts = append((*c.CallOptions).GetTensorboard[0:len((*c.CallOptions).GetTensorboard):len((*c.CallOptions).GetTensorboard)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &aiplatformpb.Tensorboard{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// ReadTensorboardUsage returns a list of monthly active users for a given TensorBoard instance.
+func (c *tensorboardRESTClient) ReadTensorboardUsage(ctx context.Context, req *aiplatformpb.ReadTensorboardUsageRequest, opts ...gax.CallOption) (*aiplatformpb.ReadTensorboardUsageResponse, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:readUsage", req.GetTensorboard())
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "tensorboard", url.QueryEscape(req.GetTensorboard())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).ReadTensorboardUsage[0:len((*c.CallOptions).ReadTensorboardUsage):len((*c.CallOptions).ReadTensorboardUsage)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &aiplatformpb.ReadTensorboardUsageResponse{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -3074,8 +3152,8 @@ func (c *tensorboardRESTClient) DeleteTensorboardTimeSeries(ctx context.Context,
 
 // BatchReadTensorboardTimeSeriesData reads multiple TensorboardTimeSeries’ data. The data point number limit is
 // 1000 for scalars, 100 for tensors and blob references. If the number of
-// data points stored is less than the limit, all data will be returned.
-// Otherwise, that limit number of data points will be randomly selected from
+// data points stored is less than the limit, all data is returned.
+// Otherwise, the number limit of data points is randomly selected from
 // this time series and returned.
 func (c *tensorboardRESTClient) BatchReadTensorboardTimeSeriesData(ctx context.Context, req *aiplatformpb.BatchReadTensorboardTimeSeriesDataRequest, opts ...gax.CallOption) (*aiplatformpb.BatchReadTensorboardTimeSeriesDataResponse, error) {
 	baseUrl, err := url.Parse(c.endpoint)
@@ -3085,8 +3163,10 @@ func (c *tensorboardRESTClient) BatchReadTensorboardTimeSeriesData(ctx context.C
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/experiments/*/runs/*/timeSeries:batchRead", req.GetTensorboard())
 
 	params := url.Values{}
-	if req.GetTimeSeries() != nil {
-		params.Add("timeSeries", fmt.Sprintf("%v", req.GetTimeSeries()))
+	if items := req.GetTimeSeries(); len(items) > 0 {
+		for _, item := range items {
+			params.Add("timeSeries", fmt.Sprintf("%v", item))
+		}
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -3137,8 +3217,8 @@ func (c *tensorboardRESTClient) BatchReadTensorboardTimeSeriesData(ctx context.C
 }
 
 // ReadTensorboardTimeSeriesData reads a TensorboardTimeSeries’ data. By default, if the number of data
-// points stored is less than 1000, all data will be returned. Otherwise, 1000
-// data points will be randomly selected from this time series and returned.
+// points stored is less than 1000, all data is returned. Otherwise, 1000
+// data points is randomly selected from this time series and returned.
 // This value can be changed by changing max_data_points, which can’t be
 // greater than 10k.
 func (c *tensorboardRESTClient) ReadTensorboardTimeSeriesData(ctx context.Context, req *aiplatformpb.ReadTensorboardTimeSeriesDataRequest, opts ...gax.CallOption) (*aiplatformpb.ReadTensorboardTimeSeriesDataResponse, error) {
@@ -3215,8 +3295,10 @@ func (c *tensorboardRESTClient) ReadTensorboardBlobData(ctx context.Context, req
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:readBlobData", req.GetTimeSeries())
 
 	params := url.Values{}
-	if req.GetBlobIds() != nil {
-		params.Add("blobIds", fmt.Sprintf("%v", req.GetBlobIds()))
+	if items := req.GetBlobIds(); len(items) > 0 {
+		for _, item := range items {
+			params.Add("blobIds", fmt.Sprintf("%v", item))
+		}
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -3307,8 +3389,7 @@ func (c *readTensorboardBlobDataRESTClient) RecvMsg(m interface{}) error {
 }
 
 // WriteTensorboardExperimentData write time series data points of multiple TensorboardTimeSeries in multiple
-// TensorboardRun’s. If any data fail to be ingested, an error will be
-// returned.
+// TensorboardRun’s. If any data fail to be ingested, an error is returned.
 func (c *tensorboardRESTClient) WriteTensorboardExperimentData(ctx context.Context, req *aiplatformpb.WriteTensorboardExperimentDataRequest, opts ...gax.CallOption) (*aiplatformpb.WriteTensorboardExperimentDataResponse, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -3368,8 +3449,7 @@ func (c *tensorboardRESTClient) WriteTensorboardExperimentData(ctx context.Conte
 }
 
 // WriteTensorboardRunData write time series data points into multiple TensorboardTimeSeries under
-// a TensorboardRun. If any data fail to be ingested, an error will be
-// returned.
+// a TensorboardRun. If any data fail to be ingested, an error is returned.
 func (c *tensorboardRESTClient) WriteTensorboardRunData(ctx context.Context, req *aiplatformpb.WriteTensorboardRunDataRequest, opts ...gax.CallOption) (*aiplatformpb.WriteTensorboardRunDataResponse, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)

@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@ import (
 
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	retailpb "cloud.google.com/go/retail/apiv2beta/retailpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
@@ -36,7 +37,6 @@ import (
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -49,6 +49,7 @@ var newModelClientHook clientHook
 // ModelCallOptions contains the retry settings for each method of ModelClient.
 type ModelCallOptions struct {
 	CreateModel    []gax.CallOption
+	GetModel       []gax.CallOption
 	PauseModel     []gax.CallOption
 	ResumeModel    []gax.CallOption
 	DeleteModel    []gax.CallOption
@@ -74,6 +75,7 @@ func defaultModelGRPCClientOptions() []option.ClientOption {
 func defaultModelCallOptions() *ModelCallOptions {
 	return &ModelCallOptions{
 		CreateModel:  []gax.CallOption{},
+		GetModel:     []gax.CallOption{},
 		PauseModel:   []gax.CallOption{},
 		ResumeModel:  []gax.CallOption{},
 		DeleteModel:  []gax.CallOption{},
@@ -99,6 +101,7 @@ func defaultModelCallOptions() *ModelCallOptions {
 func defaultModelRESTCallOptions() *ModelCallOptions {
 	return &ModelCallOptions{
 		CreateModel:  []gax.CallOption{},
+		GetModel:     []gax.CallOption{},
 		PauseModel:   []gax.CallOption{},
 		ResumeModel:  []gax.CallOption{},
 		DeleteModel:  []gax.CallOption{},
@@ -127,6 +130,7 @@ type internalModelClient interface {
 	Connection() *grpc.ClientConn
 	CreateModel(context.Context, *retailpb.CreateModelRequest, ...gax.CallOption) (*CreateModelOperation, error)
 	CreateModelOperation(name string) *CreateModelOperation
+	GetModel(context.Context, *retailpb.GetModelRequest, ...gax.CallOption) (*retailpb.Model, error)
 	PauseModel(context.Context, *retailpb.PauseModelRequest, ...gax.CallOption) (*retailpb.Model, error)
 	ResumeModel(context.Context, *retailpb.ResumeModelRequest, ...gax.CallOption) (*retailpb.Model, error)
 	DeleteModel(context.Context, *retailpb.DeleteModelRequest, ...gax.CallOption) error
@@ -201,6 +205,11 @@ func (c *ModelClient) CreateModel(ctx context.Context, req *retailpb.CreateModel
 // The name must be that of a previously created CreateModelOperation, possibly from a different process.
 func (c *ModelClient) CreateModelOperation(name string) *CreateModelOperation {
 	return c.internalClient.CreateModelOperation(name)
+}
+
+// GetModel gets a model.
+func (c *ModelClient) GetModel(ctx context.Context, req *retailpb.GetModelRequest, opts ...gax.CallOption) (*retailpb.Model, error) {
+	return c.internalClient.GetModel(ctx, req, opts...)
 }
 
 // PauseModel pauses the training of an existing model.
@@ -482,6 +491,23 @@ func (c *modelGRPCClient) CreateModel(ctx context.Context, req *retailpb.CreateM
 	}, nil
 }
 
+func (c *modelGRPCClient) GetModel(ctx context.Context, req *retailpb.GetModelRequest, opts ...gax.CallOption) (*retailpb.Model, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).GetModel[0:len((*c.CallOptions).GetModel):len((*c.CallOptions).GetModel)], opts...)
+	var resp *retailpb.Model
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.modelClient.GetModel(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
 func (c *modelGRPCClient) PauseModel(ctx context.Context, req *retailpb.PauseModelRequest, opts ...gax.CallOption) (*retailpb.Model, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
@@ -688,6 +714,7 @@ func (c *modelRESTClient) CreateModel(ctx context.Context, req *retailpb.CreateM
 	baseUrl.Path += fmt.Sprintf("/v2beta/%v/models", req.GetParent())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetDryRun() {
 		params.Add("dryRun", fmt.Sprintf("%v", req.GetDryRun()))
 	}
@@ -743,6 +770,64 @@ func (c *modelRESTClient) CreateModel(ctx context.Context, req *retailpb.CreateM
 	}, nil
 }
 
+// GetModel gets a model.
+func (c *modelRESTClient) GetModel(ctx context.Context, req *retailpb.GetModelRequest, opts ...gax.CallOption) (*retailpb.Model, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v2beta/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).GetModel[0:len((*c.CallOptions).GetModel):len((*c.CallOptions).GetModel)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &retailpb.Model{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
 // PauseModel pauses the training of an existing model.
 func (c *modelRESTClient) PauseModel(ctx context.Context, req *retailpb.PauseModelRequest, opts ...gax.CallOption) (*retailpb.Model, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
@@ -756,6 +841,11 @@ func (c *modelRESTClient) PauseModel(ctx context.Context, req *retailpb.PauseMod
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2beta/%v:pause", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
@@ -816,6 +906,11 @@ func (c *modelRESTClient) ResumeModel(ctx context.Context, req *retailpb.ResumeM
 	}
 	baseUrl.Path += fmt.Sprintf("/v2beta/%v:resume", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
@@ -869,6 +964,11 @@ func (c *modelRESTClient) DeleteModel(ctx context.Context, req *retailpb.DeleteM
 	}
 	baseUrl.Path += fmt.Sprintf("/v2beta/%v", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
@@ -918,6 +1018,7 @@ func (c *modelRESTClient) ListModels(ctx context.Context, req *retailpb.ListMode
 		baseUrl.Path += fmt.Sprintf("/v2beta/%v/models", req.GetParent())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetPageSize() != 0 {
 			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
 		}
@@ -1002,6 +1103,7 @@ func (c *modelRESTClient) UpdateModel(ctx context.Context, req *retailpb.UpdateM
 	baseUrl.Path += fmt.Sprintf("/v2beta/%v", req.GetModel().GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
 		updateMask, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
@@ -1071,6 +1173,11 @@ func (c *modelRESTClient) TuneModel(ctx context.Context, req *retailpb.TuneModel
 	}
 	baseUrl.Path += fmt.Sprintf("/v2beta/%v:tune", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
@@ -1127,6 +1234,11 @@ func (c *modelRESTClient) GetOperation(ctx context.Context, req *longrunningpb.G
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2beta/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
@@ -1195,6 +1307,7 @@ func (c *modelRESTClient) ListOperations(ctx context.Context, req *longrunningpb
 		baseUrl.Path += fmt.Sprintf("/v2beta/%v/operations", req.GetName())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}

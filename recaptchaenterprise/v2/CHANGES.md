@@ -1,5 +1,28 @@
 # Changes
 
+## [2.7.1](https://github.com/googleapis/google-cloud-go/compare/recaptchaenterprise/v2.7.0...recaptchaenterprise/v2.7.1) (2023-05-08)
+
+
+### Bug Fixes
+
+* **recaptchaenterprise/v2:** Update grpc to v1.55.0 ([1147ce0](https://github.com/googleapis/google-cloud-go/commit/1147ce02a990276ca4f8ab7a1ab65c14da4450ef))
+* **recaptchaenterprise:** Update grpc to v1.55.0 ([1147ce0](https://github.com/googleapis/google-cloud-go/commit/1147ce02a990276ca4f8ab7a1ab65c14da4450ef))
+
+## [2.7.0](https://github.com/googleapis/google-cloud-go/compare/recaptchaenterprise/v2.6.0...recaptchaenterprise/v2.7.0) (2023-03-22)
+
+
+### Features
+
+* **recaptchaenterprise/v2:** Add reCAPTCHA Enterprise Fraud Prevention API ([00fff3a](https://github.com/googleapis/google-cloud-go/commit/00fff3a58bed31274ab39af575876dab91d708c9))
+* **recaptchaenterprise/v2:** Add reCAPTCHA Enterprise Fraud Prevention API ([00fff3a](https://github.com/googleapis/google-cloud-go/commit/00fff3a58bed31274ab39af575876dab91d708c9))
+
+## [2.6.0](https://github.com/googleapis/google-cloud-go/compare/recaptchaenterprise/v2.5.0...recaptchaenterprise/v2.6.0) (2023-01-04)
+
+
+### Features
+
+* **recaptchaenterprise/v2:** Add REST client ([06a54a1](https://github.com/googleapis/google-cloud-go/commit/06a54a16a5866cce966547c51e203b9e09a25bc0))
+
 ## [2.5.0](https://github.com/googleapis/google-cloud-go/compare/recaptchaenterprise/v2.4.0...recaptchaenterprise/v2.5.0) (2022-11-03)
 
 

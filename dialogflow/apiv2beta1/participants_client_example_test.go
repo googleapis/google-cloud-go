@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -21,10 +21,10 @@ import (
 	"io"
 
 	dialogflow "cloud.google.com/go/dialogflow/apiv2beta1"
+	dialogflowpb "cloud.google.com/go/dialogflow/apiv2beta1/dialogflowpb"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	"google.golang.org/api/iterator"
-	dialogflowpb "google.golang.org/genproto/googleapis/cloud/dialogflow/v2beta1"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 )
 
 func ExampleNewParticipantsClient() {
@@ -76,7 +76,7 @@ func ExampleParticipantsClient_CreateParticipant() {
 
 	req := &dialogflowpb.CreateParticipantRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2beta1#CreateParticipantRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/apiv2beta1/dialogflowpb#CreateParticipantRequest.
 	}
 	resp, err := c.CreateParticipant(ctx, req)
 	if err != nil {
@@ -101,7 +101,7 @@ func ExampleParticipantsClient_GetParticipant() {
 
 	req := &dialogflowpb.GetParticipantRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2beta1#GetParticipantRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/apiv2beta1/dialogflowpb#GetParticipantRequest.
 	}
 	resp, err := c.GetParticipant(ctx, req)
 	if err != nil {
@@ -126,7 +126,7 @@ func ExampleParticipantsClient_ListParticipants() {
 
 	req := &dialogflowpb.ListParticipantsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2beta1#ListParticipantsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/apiv2beta1/dialogflowpb#ListParticipantsRequest.
 	}
 	it := c.ListParticipants(ctx, req)
 	for {
@@ -157,7 +157,7 @@ func ExampleParticipantsClient_UpdateParticipant() {
 
 	req := &dialogflowpb.UpdateParticipantRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2beta1#UpdateParticipantRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/apiv2beta1/dialogflowpb#UpdateParticipantRequest.
 	}
 	resp, err := c.UpdateParticipant(ctx, req)
 	if err != nil {
@@ -182,7 +182,7 @@ func ExampleParticipantsClient_AnalyzeContent() {
 
 	req := &dialogflowpb.AnalyzeContentRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2beta1#AnalyzeContentRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/apiv2beta1/dialogflowpb#AnalyzeContentRequest.
 	}
 	resp, err := c.AnalyzeContent(ctx, req)
 	if err != nil {
@@ -247,7 +247,7 @@ func ExampleParticipantsClient_SuggestArticles() {
 
 	req := &dialogflowpb.SuggestArticlesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2beta1#SuggestArticlesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/apiv2beta1/dialogflowpb#SuggestArticlesRequest.
 	}
 	resp, err := c.SuggestArticles(ctx, req)
 	if err != nil {
@@ -272,7 +272,7 @@ func ExampleParticipantsClient_SuggestFaqAnswers() {
 
 	req := &dialogflowpb.SuggestFaqAnswersRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2beta1#SuggestFaqAnswersRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/apiv2beta1/dialogflowpb#SuggestFaqAnswersRequest.
 	}
 	resp, err := c.SuggestFaqAnswers(ctx, req)
 	if err != nil {
@@ -297,7 +297,7 @@ func ExampleParticipantsClient_SuggestSmartReplies() {
 
 	req := &dialogflowpb.SuggestSmartRepliesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2beta1#SuggestSmartRepliesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/apiv2beta1/dialogflowpb#SuggestSmartRepliesRequest.
 	}
 	resp, err := c.SuggestSmartReplies(ctx, req)
 	if err != nil {
@@ -322,7 +322,7 @@ func ExampleParticipantsClient_ListSuggestions() {
 
 	req := &dialogflowpb.ListSuggestionsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2beta1#ListSuggestionsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/apiv2beta1/dialogflowpb#ListSuggestionsRequest.
 	}
 	it := c.ListSuggestions(ctx, req)
 	for {
@@ -353,7 +353,7 @@ func ExampleParticipantsClient_CompileSuggestion() {
 
 	req := &dialogflowpb.CompileSuggestionRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2beta1#CompileSuggestionRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/apiv2beta1/dialogflowpb#CompileSuggestionRequest.
 	}
 	resp, err := c.CompileSuggestion(ctx, req)
 	if err != nil {
@@ -434,7 +434,7 @@ func ExampleParticipantsClient_CancelOperation() {
 
 	req := &longrunningpb.CancelOperationRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/longrunning#CancelOperationRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/longrunning/autogen/longrunningpb#CancelOperationRequest.
 	}
 	err = c.CancelOperation(ctx, req)
 	if err != nil {
@@ -457,7 +457,7 @@ func ExampleParticipantsClient_GetOperation() {
 
 	req := &longrunningpb.GetOperationRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/longrunning#GetOperationRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/longrunning/autogen/longrunningpb#GetOperationRequest.
 	}
 	resp, err := c.GetOperation(ctx, req)
 	if err != nil {
@@ -482,7 +482,7 @@ func ExampleParticipantsClient_ListOperations() {
 
 	req := &longrunningpb.ListOperationsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/longrunning#ListOperationsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/longrunning/autogen/longrunningpb#ListOperationsRequest.
 	}
 	it := c.ListOperations(ctx, req)
 	for {

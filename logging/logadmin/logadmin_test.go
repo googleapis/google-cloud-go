@@ -29,6 +29,7 @@ import (
 
 	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/logging"
+	logpb "cloud.google.com/go/logging/apiv2/loggingpb"
 	ltesting "cloud.google.com/go/logging/internal/testing"
 	"github.com/golang/protobuf/ptypes"
 	durpb "github.com/golang/protobuf/ptypes/duration"
@@ -38,7 +39,6 @@ import (
 	mrpb "google.golang.org/genproto/googleapis/api/monitoredres"
 	audit "google.golang.org/genproto/googleapis/cloud/audit"
 	logtypepb "google.golang.org/genproto/googleapis/logging/type"
-	logpb "google.golang.org/genproto/googleapis/logging/v2"
 	"google.golang.org/grpc"
 )
 

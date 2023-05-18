@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -26,13 +26,13 @@ import (
 	"net/url"
 	"time"
 
+	storagepb "cloud.google.com/go/bigquery/storage/apiv1beta2/storagepb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
-	storagepb "google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1beta2"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -292,6 +292,8 @@ func (c *BigQueryWriteClient) CreateWriteStream(ctx context.Context, req *storag
 //
 // If the stream is of PENDING type, data will only be available for read
 // operations after the stream is committed.
+//
+// This method is not supported for the REST transport.
 func (c *BigQueryWriteClient) AppendRows(ctx context.Context, opts ...gax.CallOption) (storagepb.BigQueryWrite_AppendRowsClient, error) {
 	return c.internalClient.AppendRows(ctx, opts...)
 }
@@ -688,6 +690,8 @@ func (c *bigQueryWriteRESTClient) CreateWriteStream(ctx context.Context, req *st
 //
 // If the stream is of PENDING type, data will only be available for read
 // operations after the stream is committed.
+//
+// This method is not supported for the REST transport.
 func (c *bigQueryWriteRESTClient) AppendRows(ctx context.Context, opts ...gax.CallOption) (storagepb.BigQueryWrite_AppendRowsClient, error) {
 	return nil, fmt.Errorf("AppendRows not yet supported for REST clients")
 }
@@ -824,8 +828,10 @@ func (c *bigQueryWriteRESTClient) BatchCommitWriteStreams(ctx context.Context, r
 	baseUrl.Path += fmt.Sprintf("/v1beta2/%v", req.GetParent())
 
 	params := url.Values{}
-	if req.GetWriteStreams() != nil {
-		params.Add("writeStreams", fmt.Sprintf("%v", req.GetWriteStreams()))
+	if items := req.GetWriteStreams(); len(items) > 0 {
+		for _, item := range items {
+			params.Add("writeStreams", fmt.Sprintf("%v", item))
+		}
 	}
 
 	baseUrl.RawQuery = params.Encode()

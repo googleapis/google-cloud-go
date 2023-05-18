@@ -20,9 +20,9 @@ import (
 	"reflect"
 	"strings"
 
+	pb "cloud.google.com/go/firestore/apiv1/firestorepb"
 	"cloud.google.com/go/internal/fields"
 	"github.com/golang/protobuf/ptypes"
-	pb "google.golang.org/genproto/googleapis/firestore/v1"
 )
 
 func setFromProtoValue(x interface{}, vproto *pb.Value, c *Client) error {

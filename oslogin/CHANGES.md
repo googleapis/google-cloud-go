@@ -1,5 +1,26 @@
 # Changes
 
+## [1.9.1](https://github.com/googleapis/google-cloud-go/compare/oslogin/v1.9.0...oslogin/v1.9.1) (2023-05-08)
+
+
+### Bug Fixes
+
+* **oslogin:** Update grpc to v1.55.0 ([1147ce0](https://github.com/googleapis/google-cloud-go/commit/1147ce02a990276ca4f8ab7a1ab65c14da4450ef))
+
+## [1.9.0](https://github.com/googleapis/google-cloud-go/compare/oslogin/v1.8.0...oslogin/v1.9.0) (2023-01-04)
+
+
+### Features
+
+* **oslogin:** Add REST client ([06a54a1](https://github.com/googleapis/google-cloud-go/commit/06a54a16a5866cce966547c51e203b9e09a25bc0))
+
+## [1.8.0](https://github.com/googleapis/google-cloud-go/compare/oslogin/v1.7.0...oslogin/v1.8.0) (2022-12-01)
+
+
+### Features
+
+* **oslogin:** added CreateSshPublicKey RPC ([2a0b1ae](https://github.com/googleapis/google-cloud-go/commit/2a0b1aeb1683222e6aa5c876cb945845c00cef79))
+
 ## [1.7.0](https://github.com/googleapis/google-cloud-go/compare/oslogin/v1.6.0...oslogin/v1.7.0) (2022-11-03)
 
 

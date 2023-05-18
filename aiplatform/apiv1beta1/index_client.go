@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -27,8 +27,10 @@ import (
 	"time"
 
 	aiplatformpb "cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb"
+	iampb "cloud.google.com/go/iam/apiv1/iampb"
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
@@ -37,8 +39,6 @@ import (
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
-	iampb "google.golang.org/genproto/googleapis/iam/v1"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/encoding/protojson"
@@ -225,7 +225,8 @@ func (c *IndexClient) UpdateIndexOperation(name string) *UpdateIndexOperation {
 
 // DeleteIndex deletes an Index.
 // An Index can only be deleted when all its
-// DeployedIndexes had been undeployed.
+// DeployedIndexes
+// had been undeployed.
 func (c *IndexClient) DeleteIndex(ctx context.Context, req *aiplatformpb.DeleteIndexRequest, opts ...gax.CallOption) (*DeleteIndexOperation, error) {
 	return c.internalClient.DeleteIndex(ctx, req, opts...)
 }
@@ -1178,7 +1179,8 @@ func (c *indexRESTClient) UpdateIndex(ctx context.Context, req *aiplatformpb.Upd
 
 // DeleteIndex deletes an Index.
 // An Index can only be deleted when all its
-// DeployedIndexes had been undeployed.
+// DeployedIndexes
+// had been undeployed.
 func (c *indexRESTClient) DeleteIndex(ctx context.Context, req *aiplatformpb.DeleteIndexRequest, opts ...gax.CallOption) (*DeleteIndexOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {

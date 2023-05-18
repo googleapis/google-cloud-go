@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,23 +17,29 @@
 package networkmanagement
 
 import (
+	"bytes"
 	"context"
 	"fmt"
+	"io/ioutil"
 	"math"
+	"net/http"
 	"net/url"
 	"time"
 
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	networkmanagementpb "cloud.google.com/go/networkmanagement/apiv1/networkmanagementpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
+	httptransport "google.golang.org/api/transport/http"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -62,6 +68,17 @@ func defaultReachabilityGRPCClientOptions() []option.ClientOption {
 }
 
 func defaultReachabilityCallOptions() *ReachabilityCallOptions {
+	return &ReachabilityCallOptions{
+		ListConnectivityTests:  []gax.CallOption{},
+		GetConnectivityTest:    []gax.CallOption{},
+		CreateConnectivityTest: []gax.CallOption{},
+		UpdateConnectivityTest: []gax.CallOption{},
+		RerunConnectivityTest:  []gax.CallOption{},
+		DeleteConnectivityTest: []gax.CallOption{},
+	}
+}
+
+func defaultReachabilityRESTCallOptions() *ReachabilityCallOptions {
 	return &ReachabilityCallOptions{
 		ListConnectivityTests:  []gax.CallOption{},
 		GetConnectivityTest:    []gax.CallOption{},
@@ -330,6 +347,96 @@ func (c *reachabilityGRPCClient) Close() error {
 	return c.connPool.Close()
 }
 
+// Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
+type reachabilityRESTClient struct {
+	// The http endpoint to connect to.
+	endpoint string
+
+	// The http client.
+	httpClient *http.Client
+
+	// LROClient is used internally to handle long-running operations.
+	// It is exposed so that its CallOptions can be modified if required.
+	// Users should not Close this client.
+	LROClient **lroauto.OperationsClient
+
+	// The x-goog-* metadata to be sent with each request.
+	xGoogMetadata metadata.MD
+
+	// Points back to the CallOptions field of the containing ReachabilityClient
+	CallOptions **ReachabilityCallOptions
+}
+
+// NewReachabilityRESTClient creates a new reachability service rest client.
+//
+// The Reachability service in the Google Cloud Network Management API provides
+// services that analyze the reachability within a single Google Virtual Private
+// Cloud (VPC) network, between peered VPC networks, between VPC and on-premises
+// networks, or between VPC networks and internet hosts. A reachability analysis
+// is based on Google Cloud network configurations.
+//
+// You can use the analysis results to verify these configurations and
+// to troubleshoot connectivity issues.
+func NewReachabilityRESTClient(ctx context.Context, opts ...option.ClientOption) (*ReachabilityClient, error) {
+	clientOpts := append(defaultReachabilityRESTClientOptions(), opts...)
+	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
+	if err != nil {
+		return nil, err
+	}
+
+	callOpts := defaultReachabilityRESTCallOptions()
+	c := &reachabilityRESTClient{
+		endpoint:    endpoint,
+		httpClient:  httpClient,
+		CallOptions: &callOpts,
+	}
+	c.setGoogleClientInfo()
+
+	lroOpts := []option.ClientOption{
+		option.WithHTTPClient(httpClient),
+		option.WithEndpoint(endpoint),
+	}
+	opClient, err := lroauto.NewOperationsRESTClient(ctx, lroOpts...)
+	if err != nil {
+		return nil, err
+	}
+	c.LROClient = &opClient
+
+	return &ReachabilityClient{internalClient: c, CallOptions: callOpts}, nil
+}
+
+func defaultReachabilityRESTClientOptions() []option.ClientOption {
+	return []option.ClientOption{
+		internaloption.WithDefaultEndpoint("https://networkmanagement.googleapis.com"),
+		internaloption.WithDefaultMTLSEndpoint("https://networkmanagement.mtls.googleapis.com"),
+		internaloption.WithDefaultAudience("https://networkmanagement.googleapis.com/"),
+		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+	}
+}
+
+// setGoogleClientInfo sets the name and version of the application in
+// the `x-goog-api-client` header passed on each request. Intended for
+// use by Google-written clients.
+func (c *reachabilityRESTClient) setGoogleClientInfo(keyval ...string) {
+	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
+	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+}
+
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *reachabilityRESTClient) Close() error {
+	// Replace httpClient with nil to force cleanup.
+	c.httpClient = nil
+	return nil
+}
+
+// Connection returns a connection to the API service.
+//
+// Deprecated: This method always returns nil.
+func (c *reachabilityRESTClient) Connection() *grpc.ClientConn {
+	return nil
+}
 func (c *reachabilityGRPCClient) ListConnectivityTests(ctx context.Context, req *networkmanagementpb.ListConnectivityTestsRequest, opts ...gax.CallOption) *ConnectivityTestIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
@@ -493,9 +600,474 @@ func (c *reachabilityGRPCClient) DeleteConnectivityTest(ctx context.Context, req
 	}, nil
 }
 
+// ListConnectivityTests lists all Connectivity Tests owned by a project.
+func (c *reachabilityRESTClient) ListConnectivityTests(ctx context.Context, req *networkmanagementpb.ListConnectivityTestsRequest, opts ...gax.CallOption) *ConnectivityTestIterator {
+	it := &ConnectivityTestIterator{}
+	req = proto.Clone(req).(*networkmanagementpb.ListConnectivityTestsRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*networkmanagementpb.ConnectivityTest, string, error) {
+		resp := &networkmanagementpb.ListConnectivityTestsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v/connectivityTests", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req.GetOrderBy() != "" {
+			params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))
+		}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			httpRsp, err := c.httpClient.Do(httpReq)
+			if err != nil {
+				return err
+			}
+			defer httpRsp.Body.Close()
+
+			if err = googleapi.CheckResponse(httpRsp); err != nil {
+				return err
+			}
+
+			buf, err := ioutil.ReadAll(httpRsp.Body)
+			if err != nil {
+				return err
+			}
+
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return maybeUnknownEnum(err)
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetResources(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// GetConnectivityTest gets the details of a specific Connectivity Test.
+func (c *reachabilityRESTClient) GetConnectivityTest(ctx context.Context, req *networkmanagementpb.GetConnectivityTestRequest, opts ...gax.CallOption) (*networkmanagementpb.ConnectivityTest, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).GetConnectivityTest[0:len((*c.CallOptions).GetConnectivityTest):len((*c.CallOptions).GetConnectivityTest)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &networkmanagementpb.ConnectivityTest{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// CreateConnectivityTest creates a new Connectivity Test.
+// After you create a test, the reachability analysis is performed as part
+// of the long running operation, which completes when the analysis completes.
+//
+// If the endpoint specifications in ConnectivityTest are invalid
+// (for example, containing non-existent resources in the network, or you
+// don’t have read permissions to the network configurations of listed
+// projects), then the reachability result returns a value of UNKNOWN.
+//
+// If the endpoint specifications in ConnectivityTest are
+// incomplete, the reachability result returns a value of
+// AMBIGUOUS. For more information,
+// see the Connectivity Test documentation.
+func (c *reachabilityRESTClient) CreateConnectivityTest(ctx context.Context, req *networkmanagementpb.CreateConnectivityTestRequest, opts ...gax.CallOption) (*CreateConnectivityTestOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetResource()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v/connectivityTests", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	params.Add("testId", fmt.Sprintf("%v", req.GetTestId()))
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &CreateConnectivityTestOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// UpdateConnectivityTest updates the configuration of an existing ConnectivityTest.
+// After you update a test, the reachability analysis is performed as part
+// of the long running operation, which completes when the analysis completes.
+// The Reachability state in the test resource is updated with the new result.
+//
+// If the endpoint specifications in ConnectivityTest are invalid
+// (for example, they contain non-existent resources in the network, or the
+// user does not have read permissions to the network configurations of
+// listed projects), then the reachability result returns a value of
+// UNKNOWN.
+//
+// If the endpoint specifications in ConnectivityTest are incomplete, the
+// reachability result returns a value of AMBIGUOUS. See the documentation
+// in ConnectivityTest for for more details.
+func (c *reachabilityRESTClient) UpdateConnectivityTest(ctx context.Context, req *networkmanagementpb.UpdateConnectivityTestRequest, opts ...gax.CallOption) (*UpdateConnectivityTestOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetResource()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetResource().GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetUpdateMask() != nil {
+		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(updateMask))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource.name", url.QueryEscape(req.GetResource().GetName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &UpdateConnectivityTestOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// RerunConnectivityTest rerun an existing ConnectivityTest.
+// After the user triggers the rerun, the reachability analysis is performed
+// as part of the long running operation, which completes when the analysis
+// completes.
+//
+// Even though the test configuration remains the same, the reachability
+// result may change due to underlying network configuration changes.
+//
+// If the endpoint specifications in ConnectivityTest become invalid (for
+// example, specified resources are deleted in the network, or you lost
+// read permissions to the network configurations of listed projects), then
+// the reachability result returns a value of UNKNOWN.
+func (c *reachabilityRESTClient) RerunConnectivityTest(ctx context.Context, req *networkmanagementpb.RerunConnectivityTestRequest, opts ...gax.CallOption) (*RerunConnectivityTestOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:rerun", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &RerunConnectivityTestOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// DeleteConnectivityTest deletes a specific ConnectivityTest.
+func (c *reachabilityRESTClient) DeleteConnectivityTest(ctx context.Context, req *networkmanagementpb.DeleteConnectivityTestRequest, opts ...gax.CallOption) (*DeleteConnectivityTestOperation, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &DeleteConnectivityTestOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
 // CreateConnectivityTestOperation manages a long-running operation from CreateConnectivityTest.
 type CreateConnectivityTestOperation struct {
-	lro *longrunning.Operation
+	lro      *longrunning.Operation
+	pollPath string
 }
 
 // CreateConnectivityTestOperation returns a new CreateConnectivityTestOperation from a given name.
@@ -506,10 +1078,21 @@ func (c *reachabilityGRPCClient) CreateConnectivityTestOperation(name string) *C
 	}
 }
 
+// CreateConnectivityTestOperation returns a new CreateConnectivityTestOperation from a given name.
+// The name must be that of a previously created CreateConnectivityTestOperation, possibly from a different process.
+func (c *reachabilityRESTClient) CreateConnectivityTestOperation(name string) *CreateConnectivityTestOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &CreateConnectivityTestOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
 // Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
 //
 // See documentation of Poll for error-handling information.
 func (op *CreateConnectivityTestOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*networkmanagementpb.ConnectivityTest, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
 	var resp networkmanagementpb.ConnectivityTest
 	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
 		return nil, err
@@ -527,6 +1110,7 @@ func (op *CreateConnectivityTestOperation) Wait(ctx context.Context, opts ...gax
 // op.Done will return true, and the response of the operation is returned.
 // If Poll succeeds and the operation has not completed, the returned response and error are both nil.
 func (op *CreateConnectivityTestOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*networkmanagementpb.ConnectivityTest, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
 	var resp networkmanagementpb.ConnectivityTest
 	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
 		return nil, err
@@ -564,7 +1148,8 @@ func (op *CreateConnectivityTestOperation) Name() string {
 
 // DeleteConnectivityTestOperation manages a long-running operation from DeleteConnectivityTest.
 type DeleteConnectivityTestOperation struct {
-	lro *longrunning.Operation
+	lro      *longrunning.Operation
+	pollPath string
 }
 
 // DeleteConnectivityTestOperation returns a new DeleteConnectivityTestOperation from a given name.
@@ -575,10 +1160,21 @@ func (c *reachabilityGRPCClient) DeleteConnectivityTestOperation(name string) *D
 	}
 }
 
+// DeleteConnectivityTestOperation returns a new DeleteConnectivityTestOperation from a given name.
+// The name must be that of a previously created DeleteConnectivityTestOperation, possibly from a different process.
+func (c *reachabilityRESTClient) DeleteConnectivityTestOperation(name string) *DeleteConnectivityTestOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &DeleteConnectivityTestOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
 // Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
 //
 // See documentation of Poll for error-handling information.
 func (op *DeleteConnectivityTestOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
 	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
 }
 
@@ -592,6 +1188,7 @@ func (op *DeleteConnectivityTestOperation) Wait(ctx context.Context, opts ...gax
 // op.Done will return true, and the response of the operation is returned.
 // If Poll succeeds and the operation has not completed, the returned response and error are both nil.
 func (op *DeleteConnectivityTestOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
 	return op.lro.Poll(ctx, nil, opts...)
 }
 
@@ -622,7 +1219,8 @@ func (op *DeleteConnectivityTestOperation) Name() string {
 
 // RerunConnectivityTestOperation manages a long-running operation from RerunConnectivityTest.
 type RerunConnectivityTestOperation struct {
-	lro *longrunning.Operation
+	lro      *longrunning.Operation
+	pollPath string
 }
 
 // RerunConnectivityTestOperation returns a new RerunConnectivityTestOperation from a given name.
@@ -633,10 +1231,21 @@ func (c *reachabilityGRPCClient) RerunConnectivityTestOperation(name string) *Re
 	}
 }
 
+// RerunConnectivityTestOperation returns a new RerunConnectivityTestOperation from a given name.
+// The name must be that of a previously created RerunConnectivityTestOperation, possibly from a different process.
+func (c *reachabilityRESTClient) RerunConnectivityTestOperation(name string) *RerunConnectivityTestOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &RerunConnectivityTestOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
 // Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
 //
 // See documentation of Poll for error-handling information.
 func (op *RerunConnectivityTestOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*networkmanagementpb.ConnectivityTest, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
 	var resp networkmanagementpb.ConnectivityTest
 	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
 		return nil, err
@@ -654,6 +1263,7 @@ func (op *RerunConnectivityTestOperation) Wait(ctx context.Context, opts ...gax.
 // op.Done will return true, and the response of the operation is returned.
 // If Poll succeeds and the operation has not completed, the returned response and error are both nil.
 func (op *RerunConnectivityTestOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*networkmanagementpb.ConnectivityTest, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
 	var resp networkmanagementpb.ConnectivityTest
 	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
 		return nil, err
@@ -691,7 +1301,8 @@ func (op *RerunConnectivityTestOperation) Name() string {
 
 // UpdateConnectivityTestOperation manages a long-running operation from UpdateConnectivityTest.
 type UpdateConnectivityTestOperation struct {
-	lro *longrunning.Operation
+	lro      *longrunning.Operation
+	pollPath string
 }
 
 // UpdateConnectivityTestOperation returns a new UpdateConnectivityTestOperation from a given name.
@@ -702,10 +1313,21 @@ func (c *reachabilityGRPCClient) UpdateConnectivityTestOperation(name string) *U
 	}
 }
 
+// UpdateConnectivityTestOperation returns a new UpdateConnectivityTestOperation from a given name.
+// The name must be that of a previously created UpdateConnectivityTestOperation, possibly from a different process.
+func (c *reachabilityRESTClient) UpdateConnectivityTestOperation(name string) *UpdateConnectivityTestOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &UpdateConnectivityTestOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
 // Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
 //
 // See documentation of Poll for error-handling information.
 func (op *UpdateConnectivityTestOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*networkmanagementpb.ConnectivityTest, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
 	var resp networkmanagementpb.ConnectivityTest
 	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
 		return nil, err
@@ -723,6 +1345,7 @@ func (op *UpdateConnectivityTestOperation) Wait(ctx context.Context, opts ...gax
 // op.Done will return true, and the response of the operation is returned.
 // If Poll succeeds and the operation has not completed, the returned response and error are both nil.
 func (op *UpdateConnectivityTestOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*networkmanagementpb.ConnectivityTest, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
 	var resp networkmanagementpb.ConnectivityTest
 	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
 		return nil, err

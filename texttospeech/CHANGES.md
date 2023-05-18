@@ -1,5 +1,26 @@
 # Changes
 
+## [1.6.2](https://github.com/googleapis/google-cloud-go/compare/texttospeech/v1.6.1...texttospeech/v1.6.2) (2023-05-10)
+
+
+### Documentation
+
+* **texttospeech:** Update documentation to require certain fields ([31c3766](https://github.com/googleapis/google-cloud-go/commit/31c3766c9c4cab411669c14fc1a30bd6d2e3f2dd))
+
+## [1.6.1](https://github.com/googleapis/google-cloud-go/compare/texttospeech/v1.6.0...texttospeech/v1.6.1) (2023-05-08)
+
+
+### Bug Fixes
+
+* **texttospeech:** Update grpc to v1.55.0 ([1147ce0](https://github.com/googleapis/google-cloud-go/commit/1147ce02a990276ca4f8ab7a1ab65c14da4450ef))
+
+## [1.6.0](https://github.com/googleapis/google-cloud-go/compare/texttospeech/v1.5.0...texttospeech/v1.6.0) (2023-01-04)
+
+
+### Features
+
+* **texttospeech:** Add REST client ([06a54a1](https://github.com/googleapis/google-cloud-go/commit/06a54a16a5866cce966547c51e203b9e09a25bc0))
+
 ## [1.5.0](https://github.com/googleapis/google-cloud-go/compare/texttospeech/v1.4.0...texttospeech/v1.5.0) (2022-11-03)
 
 

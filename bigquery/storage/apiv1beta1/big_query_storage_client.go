@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -26,13 +26,13 @@ import (
 	"net/url"
 	"time"
 
+	storagepb "cloud.google.com/go/bigquery/storage/apiv1beta1/storagepb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
-	storagepb "google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1beta1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -203,6 +203,11 @@ type internalBigQueryStorageClient interface {
 // BigQuery storage API.
 //
 // The BigQuery storage API can be used to read data stored in BigQuery.
+//
+// The v1beta1 API is not yet officially deprecated, and will go through a full
+// deprecation cycle (https://cloud.google.com/products#product-launch-stages (at https://cloud.google.com/products#product-launch-stages))
+// before the service is turned down. However, new code should use the v1 API
+// going forward.
 type BigQueryStorageClient struct {
 	// The internal transport-dependent client.
 	internalClient internalBigQueryStorageClient
@@ -244,7 +249,7 @@ func (c *BigQueryStorageClient) Connection() *grpc.ClientConn {
 // reached the end of each stream in the session, then all the data in the
 // table has been read.
 //
-// Read sessions automatically expire 24 hours after they are created and do
+// Read sessions automatically expire 6 hours after they are created and do
 // not require manual clean-up by the caller.
 func (c *BigQueryStorageClient) CreateReadSession(ctx context.Context, req *storagepb.CreateReadSessionRequest, opts ...gax.CallOption) (*storagepb.ReadSession, error) {
 	return c.internalClient.CreateReadSession(ctx, req, opts...)
@@ -270,7 +275,7 @@ func (c *BigQueryStorageClient) BatchCreateReadSessionStreams(ctx context.Contex
 	return c.internalClient.BatchCreateReadSessionStreams(ctx, req, opts...)
 }
 
-// FinalizeStream triggers the graceful termination of a single stream in a ReadSession. This
+// FinalizeStream causes a single stream in a ReadSession to gracefully stop. This
 // API can be used to dynamically adjust the parallelism of a batch processing
 // task downwards without losing data.
 //
@@ -331,6 +336,11 @@ type bigQueryStorageGRPCClient struct {
 // BigQuery storage API.
 //
 // The BigQuery storage API can be used to read data stored in BigQuery.
+//
+// The v1beta1 API is not yet officially deprecated, and will go through a full
+// deprecation cycle (https://cloud.google.com/products#product-launch-stages (at https://cloud.google.com/products#product-launch-stages))
+// before the service is turned down. However, new code should use the v1 API
+// going forward.
 func NewBigQueryStorageClient(ctx context.Context, opts ...option.ClientOption) (*BigQueryStorageClient, error) {
 	clientOpts := defaultBigQueryStorageGRPCClientOptions()
 	if newBigQueryStorageClientHook != nil {
@@ -408,6 +418,11 @@ type bigQueryStorageRESTClient struct {
 // BigQuery storage API.
 //
 // The BigQuery storage API can be used to read data stored in BigQuery.
+//
+// The v1beta1 API is not yet officially deprecated, and will go through a full
+// deprecation cycle (https://cloud.google.com/products#product-launch-stages (at https://cloud.google.com/products#product-launch-stages))
+// before the service is turned down. However, new code should use the v1 API
+// going forward.
 func NewBigQueryStorageRESTClient(ctx context.Context, opts ...option.ClientOption) (*BigQueryStorageClient, error) {
 	clientOpts := append(defaultBigQueryStorageRESTClientOptions(), opts...)
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
@@ -484,6 +499,7 @@ func (c *bigQueryStorageGRPCClient) ReadRows(ctx context.Context, req *storagepb
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "read_position.stream.name", url.QueryEscape(req.GetReadPosition().GetStream().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).ReadRows[0:len((*c.CallOptions).ReadRows):len((*c.CallOptions).ReadRows)], opts...)
 	var resp storagepb.BigQueryStorage_ReadRowsClient
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -568,7 +584,7 @@ func (c *bigQueryStorageGRPCClient) SplitReadStream(ctx context.Context, req *st
 // reached the end of each stream in the session, then all the data in the
 // table has been read.
 //
-// Read sessions automatically expire 24 hours after they are created and do
+// Read sessions automatically expire 6 hours after they are created and do
 // not require manual clean-up by the caller.
 func (c *bigQueryStorageRESTClient) CreateReadSession(ctx context.Context, req *storagepb.CreateReadSessionRequest, opts ...gax.CallOption) (*storagepb.ReadSession, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
@@ -797,7 +813,7 @@ func (c *bigQueryStorageRESTClient) BatchCreateReadSessionStreams(ctx context.Co
 	return resp, nil
 }
 
-// FinalizeStream triggers the graceful termination of a single stream in a ReadSession. This
+// FinalizeStream causes a single stream in a ReadSession to gracefully stop. This
 // API can be used to dynamically adjust the parallelism of a batch processing
 // task downwards without losing data.
 //

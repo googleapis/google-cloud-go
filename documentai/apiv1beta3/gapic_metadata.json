@@ -80,9 +80,19 @@
                 "GetProcessor"
               ]
             },
+            "GetProcessorType": {
+              "methods": [
+                "GetProcessorType"
+              ]
+            },
             "GetProcessorVersion": {
               "methods": [
                 "GetProcessorVersion"
+              ]
+            },
+            "ImportProcessorVersion": {
+              "methods": [
+                "ImportProcessorVersion"
               ]
             },
             "ListEvaluations": {
@@ -215,9 +225,19 @@
                 "GetProcessor"
               ]
             },
+            "GetProcessorType": {
+              "methods": [
+                "GetProcessorType"
+              ]
+            },
             "GetProcessorVersion": {
               "methods": [
                 "GetProcessorVersion"
+              ]
+            },
+            "ImportProcessorVersion": {
+              "methods": [
+                "ImportProcessorVersion"
               ]
             },
             "ListEvaluations": {

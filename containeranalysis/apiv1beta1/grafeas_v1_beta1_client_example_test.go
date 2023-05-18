@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,8 +20,8 @@ import (
 	"context"
 
 	containeranalysis "cloud.google.com/go/containeranalysis/apiv1beta1"
-	grafeaspb "cloud.google.com/go/containeranalysis/apiv1beta1/grafeas/grafeaspb"
 	"google.golang.org/api/iterator"
+	grafeaspb "google.golang.org/genproto/googleapis/devtools/containeranalysis/v1beta1/grafeas"
 )
 
 func ExampleNewGrafeasV1Beta1Client() {
@@ -73,7 +73,7 @@ func ExampleGrafeasV1Beta1Client_GetOccurrence() {
 
 	req := &grafeaspb.GetOccurrenceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/containeranalysis/apiv1beta1/grafeas/grafeaspb#GetOccurrenceRequest.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/containeranalysis/v1beta1/grafeas#GetOccurrenceRequest.
 	}
 	resp, err := c.GetOccurrence(ctx, req)
 	if err != nil {
@@ -98,7 +98,7 @@ func ExampleGrafeasV1Beta1Client_ListOccurrences() {
 
 	req := &grafeaspb.ListOccurrencesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/containeranalysis/apiv1beta1/grafeas/grafeaspb#ListOccurrencesRequest.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/containeranalysis/v1beta1/grafeas#ListOccurrencesRequest.
 	}
 	it := c.ListOccurrences(ctx, req)
 	for {
@@ -129,7 +129,7 @@ func ExampleGrafeasV1Beta1Client_DeleteOccurrence() {
 
 	req := &grafeaspb.DeleteOccurrenceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/containeranalysis/apiv1beta1/grafeas/grafeaspb#DeleteOccurrenceRequest.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/containeranalysis/v1beta1/grafeas#DeleteOccurrenceRequest.
 	}
 	err = c.DeleteOccurrence(ctx, req)
 	if err != nil {
@@ -152,7 +152,7 @@ func ExampleGrafeasV1Beta1Client_CreateOccurrence() {
 
 	req := &grafeaspb.CreateOccurrenceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/containeranalysis/apiv1beta1/grafeas/grafeaspb#CreateOccurrenceRequest.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/containeranalysis/v1beta1/grafeas#CreateOccurrenceRequest.
 	}
 	resp, err := c.CreateOccurrence(ctx, req)
 	if err != nil {
@@ -177,7 +177,7 @@ func ExampleGrafeasV1Beta1Client_BatchCreateOccurrences() {
 
 	req := &grafeaspb.BatchCreateOccurrencesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/containeranalysis/apiv1beta1/grafeas/grafeaspb#BatchCreateOccurrencesRequest.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/containeranalysis/v1beta1/grafeas#BatchCreateOccurrencesRequest.
 	}
 	resp, err := c.BatchCreateOccurrences(ctx, req)
 	if err != nil {
@@ -202,7 +202,7 @@ func ExampleGrafeasV1Beta1Client_UpdateOccurrence() {
 
 	req := &grafeaspb.UpdateOccurrenceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/containeranalysis/apiv1beta1/grafeas/grafeaspb#UpdateOccurrenceRequest.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/containeranalysis/v1beta1/grafeas#UpdateOccurrenceRequest.
 	}
 	resp, err := c.UpdateOccurrence(ctx, req)
 	if err != nil {
@@ -227,7 +227,7 @@ func ExampleGrafeasV1Beta1Client_GetOccurrenceNote() {
 
 	req := &grafeaspb.GetOccurrenceNoteRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/containeranalysis/apiv1beta1/grafeas/grafeaspb#GetOccurrenceNoteRequest.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/containeranalysis/v1beta1/grafeas#GetOccurrenceNoteRequest.
 	}
 	resp, err := c.GetOccurrenceNote(ctx, req)
 	if err != nil {
@@ -252,7 +252,7 @@ func ExampleGrafeasV1Beta1Client_GetNote() {
 
 	req := &grafeaspb.GetNoteRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/containeranalysis/apiv1beta1/grafeas/grafeaspb#GetNoteRequest.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/containeranalysis/v1beta1/grafeas#GetNoteRequest.
 	}
 	resp, err := c.GetNote(ctx, req)
 	if err != nil {
@@ -277,7 +277,7 @@ func ExampleGrafeasV1Beta1Client_ListNotes() {
 
 	req := &grafeaspb.ListNotesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/containeranalysis/apiv1beta1/grafeas/grafeaspb#ListNotesRequest.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/containeranalysis/v1beta1/grafeas#ListNotesRequest.
 	}
 	it := c.ListNotes(ctx, req)
 	for {
@@ -308,7 +308,7 @@ func ExampleGrafeasV1Beta1Client_DeleteNote() {
 
 	req := &grafeaspb.DeleteNoteRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/containeranalysis/apiv1beta1/grafeas/grafeaspb#DeleteNoteRequest.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/containeranalysis/v1beta1/grafeas#DeleteNoteRequest.
 	}
 	err = c.DeleteNote(ctx, req)
 	if err != nil {
@@ -331,7 +331,7 @@ func ExampleGrafeasV1Beta1Client_CreateNote() {
 
 	req := &grafeaspb.CreateNoteRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/containeranalysis/apiv1beta1/grafeas/grafeaspb#CreateNoteRequest.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/containeranalysis/v1beta1/grafeas#CreateNoteRequest.
 	}
 	resp, err := c.CreateNote(ctx, req)
 	if err != nil {
@@ -356,7 +356,7 @@ func ExampleGrafeasV1Beta1Client_BatchCreateNotes() {
 
 	req := &grafeaspb.BatchCreateNotesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/containeranalysis/apiv1beta1/grafeas/grafeaspb#BatchCreateNotesRequest.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/containeranalysis/v1beta1/grafeas#BatchCreateNotesRequest.
 	}
 	resp, err := c.BatchCreateNotes(ctx, req)
 	if err != nil {
@@ -381,7 +381,7 @@ func ExampleGrafeasV1Beta1Client_UpdateNote() {
 
 	req := &grafeaspb.UpdateNoteRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/containeranalysis/apiv1beta1/grafeas/grafeaspb#UpdateNoteRequest.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/containeranalysis/v1beta1/grafeas#UpdateNoteRequest.
 	}
 	resp, err := c.UpdateNote(ctx, req)
 	if err != nil {
@@ -406,7 +406,7 @@ func ExampleGrafeasV1Beta1Client_ListNoteOccurrences() {
 
 	req := &grafeaspb.ListNoteOccurrencesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/containeranalysis/apiv1beta1/grafeas/grafeaspb#ListNoteOccurrencesRequest.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/containeranalysis/v1beta1/grafeas#ListNoteOccurrencesRequest.
 	}
 	it := c.ListNoteOccurrences(ctx, req)
 	for {
@@ -437,7 +437,7 @@ func ExampleGrafeasV1Beta1Client_GetVulnerabilityOccurrencesSummary() {
 
 	req := &grafeaspb.GetVulnerabilityOccurrencesSummaryRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/containeranalysis/apiv1beta1/grafeas/grafeaspb#GetVulnerabilityOccurrencesSummaryRequest.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/containeranalysis/v1beta1/grafeas#GetVulnerabilityOccurrencesSummaryRequest.
 	}
 	resp, err := c.GetVulnerabilityOccurrencesSummary(ctx, req)
 	if err != nil {

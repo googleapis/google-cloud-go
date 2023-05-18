@@ -1,5 +1,26 @@
 # Changes
 
+## [1.6.1](https://github.com/googleapis/google-cloud-go/compare/shell/v1.6.0...shell/v1.6.1) (2023-05-08)
+
+
+### Bug Fixes
+
+* **shell:** Update grpc to v1.55.0 ([1147ce0](https://github.com/googleapis/google-cloud-go/commit/1147ce02a990276ca4f8ab7a1ab65c14da4450ef))
+
+## [1.6.0](https://github.com/googleapis/google-cloud-go/compare/shell/v1.5.0...shell/v1.6.0) (2023-01-04)
+
+
+### Features
+
+* **shell:** Add REST client ([06a54a1](https://github.com/googleapis/google-cloud-go/commit/06a54a16a5866cce966547c51e203b9e09a25bc0))
+
+## [1.5.0](https://github.com/googleapis/google-cloud-go/compare/shell/v1.4.0...shell/v1.5.0) (2022-12-01)
+
+
+### Features
+
+* **shell:** add CloudShellErrorCode.ENVIRONMENT_UNAVAILABLE enum value ([22ec3e3](https://github.com/googleapis/google-cloud-go/commit/22ec3e3e727f8c0232059a5d31bccd12b7b5034c))
+
 ## [1.4.0](https://github.com/googleapis/google-cloud-go/compare/shell/v1.3.0...shell/v1.4.0) (2022-11-03)
 
 

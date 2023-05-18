@@ -23,10 +23,10 @@ import (
 	"sort"
 	"strings"
 
+	pb "cloud.google.com/go/firestore/apiv1/firestorepb"
 	"cloud.google.com/go/internal/testutil"
 	"github.com/golang/protobuf/proto"
 	"github.com/golang/protobuf/ptypes/empty"
-	pb "google.golang.org/genproto/googleapis/firestore/v1"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -101,6 +101,7 @@ func (s *mockServer) popRPC(gotReq proto.Message) (interface{}, error) {
 				case *pb.Write_Transform:
 					sort.Sort(ByFieldPath(opTyped.Transform.FieldTransforms))
 				}
+				sort.Sort(ByFieldPath(w.UpdateTransforms))
 			}
 		}
 

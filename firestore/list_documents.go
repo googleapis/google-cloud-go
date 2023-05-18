@@ -18,9 +18,9 @@ import (
 	"context"
 
 	vkit "cloud.google.com/go/firestore/apiv1"
+	pb "cloud.google.com/go/firestore/apiv1/firestorepb"
 	"cloud.google.com/go/internal/trace"
 	"google.golang.org/api/iterator"
-	pb "google.golang.org/genproto/googleapis/firestore/v1"
 )
 
 // DocumentRefIterator is an iterator over DocumentRefs.

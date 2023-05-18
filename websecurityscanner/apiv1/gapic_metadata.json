@@ -76,6 +76,76 @@
               ]
             }
           }
+        },
+        "rest": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "CreateScanConfig": {
+              "methods": [
+                "CreateScanConfig"
+              ]
+            },
+            "DeleteScanConfig": {
+              "methods": [
+                "DeleteScanConfig"
+              ]
+            },
+            "GetFinding": {
+              "methods": [
+                "GetFinding"
+              ]
+            },
+            "GetScanConfig": {
+              "methods": [
+                "GetScanConfig"
+              ]
+            },
+            "GetScanRun": {
+              "methods": [
+                "GetScanRun"
+              ]
+            },
+            "ListCrawledUrls": {
+              "methods": [
+                "ListCrawledUrls"
+              ]
+            },
+            "ListFindingTypeStats": {
+              "methods": [
+                "ListFindingTypeStats"
+              ]
+            },
+            "ListFindings": {
+              "methods": [
+                "ListFindings"
+              ]
+            },
+            "ListScanConfigs": {
+              "methods": [
+                "ListScanConfigs"
+              ]
+            },
+            "ListScanRuns": {
+              "methods": [
+                "ListScanRuns"
+              ]
+            },
+            "StartScanRun": {
+              "methods": [
+                "StartScanRun"
+              ]
+            },
+            "StopScanRun": {
+              "methods": [
+                "StopScanRun"
+              ]
+            },
+            "UpdateScanConfig": {
+              "methods": [
+                "UpdateScanConfig"
+              ]
+            }
+          }
         }
       }
     }

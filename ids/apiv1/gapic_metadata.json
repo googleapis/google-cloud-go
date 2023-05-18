@@ -31,6 +31,31 @@
               ]
             }
           }
+        },
+        "rest": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "CreateEndpoint": {
+              "methods": [
+                "CreateEndpoint"
+              ]
+            },
+            "DeleteEndpoint": {
+              "methods": [
+                "DeleteEndpoint"
+              ]
+            },
+            "GetEndpoint": {
+              "methods": [
+                "GetEndpoint"
+              ]
+            },
+            "ListEndpoints": {
+              "methods": [
+                "ListEndpoints"
+              ]
+            }
+          }
         }
       }
     }

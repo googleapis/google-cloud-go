@@ -1,5 +1,26 @@
 # Changes
 
+## [1.6.1](https://github.com/googleapis/google-cloud-go/compare/policytroubleshooter/v1.6.0...policytroubleshooter/v1.6.1) (2023-05-08)
+
+
+### Bug Fixes
+
+* **policytroubleshooter:** Update grpc to v1.55.0 ([1147ce0](https://github.com/googleapis/google-cloud-go/commit/1147ce02a990276ca4f8ab7a1ab65c14da4450ef))
+
+## [1.6.0](https://github.com/googleapis/google-cloud-go/compare/policytroubleshooter/v1.5.0...policytroubleshooter/v1.6.0) (2023-03-15)
+
+
+### Features
+
+* **policytroubleshooter:** Update iam and longrunning deps ([91a1f78](https://github.com/googleapis/google-cloud-go/commit/91a1f784a109da70f63b96414bba8a9b4254cddd))
+
+## [1.5.0](https://github.com/googleapis/google-cloud-go/compare/policytroubleshooter/v1.4.0...policytroubleshooter/v1.5.0) (2023-01-04)
+
+
+### Features
+
+* **policytroubleshooter:** Add REST client ([06a54a1](https://github.com/googleapis/google-cloud-go/commit/06a54a16a5866cce966547c51e203b9e09a25bc0))
+
 ## [1.4.0](https://github.com/googleapis/google-cloud-go/compare/policytroubleshooter/v1.3.0...policytroubleshooter/v1.4.0) (2022-11-03)
 
 

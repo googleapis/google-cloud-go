@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -24,14 +24,15 @@ import (
 	"math"
 	"net/http"
 	"net/url"
+	"time"
 
+	computepb "cloud.google.com/go/compute/apiv1/computepb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	httptransport "google.golang.org/api/transport/http"
-	computepb "google.golang.org/genproto/googleapis/cloud/compute/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/encoding/protojson"
@@ -55,12 +56,32 @@ type BackendBucketsCallOptions struct {
 
 func defaultBackendBucketsRESTCallOptions() *BackendBucketsCallOptions {
 	return &BackendBucketsCallOptions{
-		AddSignedUrlKey:       []gax.CallOption{},
-		Delete:                []gax.CallOption{},
-		DeleteSignedUrlKey:    []gax.CallOption{},
-		Get:                   []gax.CallOption{},
-		Insert:                []gax.CallOption{},
-		List:                  []gax.CallOption{},
+		AddSignedUrlKey:    []gax.CallOption{},
+		Delete:             []gax.CallOption{},
+		DeleteSignedUrlKey: []gax.CallOption{},
+		Get: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
+		Insert: []gax.CallOption{},
+		List: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
 		Patch:                 []gax.CallOption{},
 		SetEdgeSecurityPolicy: []gax.CallOption{},
 		Update:                []gax.CallOption{},
@@ -133,7 +154,7 @@ func (c *BackendBucketsClient) DeleteSignedUrlKey(ctx context.Context, req *comp
 	return c.internalClient.DeleteSignedUrlKey(ctx, req, opts...)
 }
 
-// Get returns the specified BackendBucket resource. Gets a list of available backend buckets by making a list() request.
+// Get returns the specified BackendBucket resource.
 func (c *BackendBucketsClient) Get(ctx context.Context, req *computepb.GetBackendBucketRequest, opts ...gax.CallOption) (*computepb.BackendBucket, error) {
 	return c.internalClient.Get(ctx, req, opts...)
 }
@@ -457,7 +478,7 @@ func (c *backendBucketsRESTClient) DeleteSignedUrlKey(ctx context.Context, req *
 	return op, nil
 }
 
-// Get returns the specified BackendBucket resource. Gets a list of available backend buckets by making a list() request.
+// Get returns the specified BackendBucket resource.
 func (c *backendBucketsRESTClient) Get(ctx context.Context, req *computepb.GetBackendBucketRequest, opts ...gax.CallOption) (*computepb.BackendBucket, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {

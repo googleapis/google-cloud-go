@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -581,6 +581,11 @@ func (c *restClient) AnalyzeSentiment(ctx context.Context, req *languagepb.Analy
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta2/documents:analyzeSentiment")
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
 	opts = append((*c.CallOptions).AnalyzeSentiment[0:len((*c.CallOptions).AnalyzeSentiment):len((*c.CallOptions).AnalyzeSentiment)], opts...)
@@ -640,6 +645,11 @@ func (c *restClient) AnalyzeEntities(ctx context.Context, req *languagepb.Analyz
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta2/documents:analyzeEntities")
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
 	opts = append((*c.CallOptions).AnalyzeEntities[0:len((*c.CallOptions).AnalyzeEntities):len((*c.CallOptions).AnalyzeEntities)], opts...)
@@ -697,6 +707,11 @@ func (c *restClient) AnalyzeEntitySentiment(ctx context.Context, req *languagepb
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta2/documents:analyzeEntitySentiment")
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
@@ -757,6 +772,11 @@ func (c *restClient) AnalyzeSyntax(ctx context.Context, req *languagepb.AnalyzeS
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta2/documents:analyzeSyntax")
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
 	opts = append((*c.CallOptions).AnalyzeSyntax[0:len((*c.CallOptions).AnalyzeSyntax):len((*c.CallOptions).AnalyzeSyntax)], opts...)
@@ -813,6 +833,11 @@ func (c *restClient) ClassifyText(ctx context.Context, req *languagepb.ClassifyT
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta2/documents:classifyText")
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
@@ -871,6 +896,11 @@ func (c *restClient) AnnotateText(ctx context.Context, req *languagepb.AnnotateT
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta2/documents:annotateText")
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))

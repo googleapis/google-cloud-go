@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -27,8 +27,10 @@ import (
 	"time"
 
 	aiplatformpb "cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb"
+	iampb "cloud.google.com/go/iam/apiv1/iampb"
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
@@ -37,8 +39,6 @@ import (
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
-	iampb "google.golang.org/genproto/googleapis/iam/v1"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/encoding/protojson"
@@ -57,6 +57,7 @@ type DatasetCallOptions struct {
 	ImportData         []gax.CallOption
 	ExportData         []gax.CallOption
 	ListDataItems      []gax.CallOption
+	SearchDataItems    []gax.CallOption
 	ListSavedQueries   []gax.CallOption
 	GetAnnotationSpec  []gax.CallOption
 	ListAnnotations    []gax.CallOption
@@ -94,6 +95,7 @@ func defaultDatasetCallOptions() *DatasetCallOptions {
 		ImportData:         []gax.CallOption{},
 		ExportData:         []gax.CallOption{},
 		ListDataItems:      []gax.CallOption{},
+		SearchDataItems:    []gax.CallOption{},
 		ListSavedQueries:   []gax.CallOption{},
 		GetAnnotationSpec:  []gax.CallOption{},
 		ListAnnotations:    []gax.CallOption{},
@@ -120,6 +122,7 @@ func defaultDatasetRESTCallOptions() *DatasetCallOptions {
 		ImportData:         []gax.CallOption{},
 		ExportData:         []gax.CallOption{},
 		ListDataItems:      []gax.CallOption{},
+		SearchDataItems:    []gax.CallOption{},
 		ListSavedQueries:   []gax.CallOption{},
 		GetAnnotationSpec:  []gax.CallOption{},
 		ListAnnotations:    []gax.CallOption{},
@@ -153,6 +156,7 @@ type internalDatasetClient interface {
 	ExportData(context.Context, *aiplatformpb.ExportDataRequest, ...gax.CallOption) (*ExportDataOperation, error)
 	ExportDataOperation(name string) *ExportDataOperation
 	ListDataItems(context.Context, *aiplatformpb.ListDataItemsRequest, ...gax.CallOption) *DataItemIterator
+	SearchDataItems(context.Context, *aiplatformpb.SearchDataItemsRequest, ...gax.CallOption) *DataItemViewIterator
 	ListSavedQueries(context.Context, *aiplatformpb.ListSavedQueriesRequest, ...gax.CallOption) *SavedQueryIterator
 	GetAnnotationSpec(context.Context, *aiplatformpb.GetAnnotationSpecRequest, ...gax.CallOption) (*aiplatformpb.AnnotationSpec, error)
 	ListAnnotations(context.Context, *aiplatformpb.ListAnnotationsRequest, ...gax.CallOption) *AnnotationIterator
@@ -271,6 +275,11 @@ func (c *DatasetClient) ExportDataOperation(name string) *ExportDataOperation {
 // ListDataItems lists DataItems in a Dataset.
 func (c *DatasetClient) ListDataItems(ctx context.Context, req *aiplatformpb.ListDataItemsRequest, opts ...gax.CallOption) *DataItemIterator {
 	return c.internalClient.ListDataItems(ctx, req, opts...)
+}
+
+// SearchDataItems searches DataItems in a Dataset.
+func (c *DatasetClient) SearchDataItems(ctx context.Context, req *aiplatformpb.SearchDataItemsRequest, opts ...gax.CallOption) *DataItemViewIterator {
+	return c.internalClient.SearchDataItems(ctx, req, opts...)
 }
 
 // ListSavedQueries lists SavedQueries in a Dataset.
@@ -753,6 +762,51 @@ func (c *datasetGRPCClient) ListDataItems(ctx context.Context, req *aiplatformpb
 
 		it.Response = resp
 		return resp.GetDataItems(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *datasetGRPCClient) SearchDataItems(ctx context.Context, req *aiplatformpb.SearchDataItemsRequest, opts ...gax.CallOption) *DataItemViewIterator {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "dataset", url.QueryEscape(req.GetDataset())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).SearchDataItems[0:len((*c.CallOptions).SearchDataItems):len((*c.CallOptions).SearchDataItems)], opts...)
+	it := &DataItemViewIterator{}
+	req = proto.Clone(req).(*aiplatformpb.SearchDataItemsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*aiplatformpb.DataItemView, string, error) {
+		resp := &aiplatformpb.SearchDataItemsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.datasetClient.SearchDataItems(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetDataItemViews(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -1664,6 +1718,130 @@ func (c *datasetRESTClient) ListDataItems(ctx context.Context, req *aiplatformpb
 		}
 		it.Response = resp
 		return resp.GetDataItems(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// SearchDataItems searches DataItems in a Dataset.
+func (c *datasetRESTClient) SearchDataItems(ctx context.Context, req *aiplatformpb.SearchDataItemsRequest, opts ...gax.CallOption) *DataItemViewIterator {
+	it := &DataItemViewIterator{}
+	req = proto.Clone(req).(*aiplatformpb.SearchDataItemsRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*aiplatformpb.DataItemView, string, error) {
+		resp := &aiplatformpb.SearchDataItemsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1beta1/%v:searchDataItems", req.GetDataset())
+
+		params := url.Values{}
+		if items := req.GetAnnotationFilters(); len(items) > 0 {
+			for _, item := range items {
+				params.Add("annotationFilters", fmt.Sprintf("%v", item))
+			}
+		}
+		if req.GetAnnotationsFilter() != "" {
+			params.Add("annotationsFilter", fmt.Sprintf("%v", req.GetAnnotationsFilter()))
+		}
+		if req.GetAnnotationsLimit() != 0 {
+			params.Add("annotationsLimit", fmt.Sprintf("%v", req.GetAnnotationsLimit()))
+		}
+		if req.GetDataItemFilter() != "" {
+			params.Add("dataItemFilter", fmt.Sprintf("%v", req.GetDataItemFilter()))
+		}
+		if req.GetDataLabelingJob() != "" {
+			params.Add("dataLabelingJob", fmt.Sprintf("%v", req.GetDataLabelingJob()))
+		}
+		if req.GetFieldMask() != nil {
+			fieldMask, err := protojson.Marshal(req.GetFieldMask())
+			if err != nil {
+				return nil, "", err
+			}
+			params.Add("fieldMask", string(fieldMask))
+		}
+		if req.GetOrderBy() != "" {
+			params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))
+		}
+		if req.GetOrderByAnnotation().GetOrderBy() != "" {
+			params.Add("orderByAnnotation.orderBy", fmt.Sprintf("%v", req.GetOrderByAnnotation().GetOrderBy()))
+		}
+		params.Add("orderByAnnotation.savedQuery", fmt.Sprintf("%v", req.GetOrderByAnnotation().GetSavedQuery()))
+		if req.GetOrderByDataItem() != "" {
+			params.Add("orderByDataItem", fmt.Sprintf("%v", req.GetOrderByDataItem()))
+		}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+		if req.GetSavedQuery() != "" {
+			params.Add("savedQuery", fmt.Sprintf("%v", req.GetSavedQuery()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			httpRsp, err := c.httpClient.Do(httpReq)
+			if err != nil {
+				return err
+			}
+			defer httpRsp.Body.Close()
+
+			if err = googleapi.CheckResponse(httpRsp); err != nil {
+				return err
+			}
+
+			buf, err := ioutil.ReadAll(httpRsp.Body)
+			if err != nil {
+				return err
+			}
+
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return maybeUnknownEnum(err)
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetDataItemViews(), resp.GetNextPageToken(), nil
 	}
 
 	fetch := func(pageSize int, pageToken string) (string, error) {
@@ -2960,6 +3138,53 @@ func (it *DataItemIterator) bufLen() int {
 }
 
 func (it *DataItemIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// DataItemViewIterator manages a stream of *aiplatformpb.DataItemView.
+type DataItemViewIterator struct {
+	items    []*aiplatformpb.DataItemView
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*aiplatformpb.DataItemView, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *DataItemViewIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *DataItemViewIterator) Next() (*aiplatformpb.DataItemView, error) {
+	var item *aiplatformpb.DataItemView
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *DataItemViewIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *DataItemViewIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b

@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -29,6 +29,7 @@ import (
 	cxpb "cloud.google.com/go/dialogflow/cx/apiv3beta1/cxpb"
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
@@ -37,7 +38,6 @@ import (
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -304,23 +304,27 @@ func (c *VersionsClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// ListVersions returns the list of all versions in the specified Flow.
+// ListVersions returns the list of all versions in the specified
+// Flow.
 func (c *VersionsClient) ListVersions(ctx context.Context, req *cxpb.ListVersionsRequest, opts ...gax.CallOption) *VersionIterator {
 	return c.internalClient.ListVersions(ctx, req, opts...)
 }
 
-// GetVersion retrieves the specified Version.
+// GetVersion retrieves the specified
+// Version.
 func (c *VersionsClient) GetVersion(ctx context.Context, req *cxpb.GetVersionRequest, opts ...gax.CallOption) (*cxpb.Version, error) {
 	return c.internalClient.GetVersion(ctx, req, opts...)
 }
 
-// CreateVersion creates a Version in the specified Flow.
+// CreateVersion creates a Version in the
+// specified Flow.
 //
 // This method is a long-running
 // operation (at https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 // The returned Operation type has the following method-specific fields:
 //
-//	metadata: CreateVersionOperationMetadata
+//	metadata:
+//	CreateVersionOperationMetadata
 //
 //	response: Version
 func (c *VersionsClient) CreateVersion(ctx context.Context, req *cxpb.CreateVersionRequest, opts ...gax.CallOption) (*CreateVersionOperation, error) {
@@ -333,12 +337,14 @@ func (c *VersionsClient) CreateVersionOperation(name string) *CreateVersionOpera
 	return c.internalClient.CreateVersionOperation(name)
 }
 
-// UpdateVersion updates the specified Version.
+// UpdateVersion updates the specified
+// Version.
 func (c *VersionsClient) UpdateVersion(ctx context.Context, req *cxpb.UpdateVersionRequest, opts ...gax.CallOption) (*cxpb.Version, error) {
 	return c.internalClient.UpdateVersion(ctx, req, opts...)
 }
 
-// DeleteVersion deletes the specified Version.
+// DeleteVersion deletes the specified
+// Version.
 func (c *VersionsClient) DeleteVersion(ctx context.Context, req *cxpb.DeleteVersionRequest, opts ...gax.CallOption) error {
 	return c.internalClient.DeleteVersion(ctx, req, opts...)
 }
@@ -894,7 +900,8 @@ func (c *versionsGRPCClient) ListOperations(ctx context.Context, req *longrunnin
 	return it
 }
 
-// ListVersions returns the list of all versions in the specified Flow.
+// ListVersions returns the list of all versions in the specified
+// Flow.
 func (c *versionsRESTClient) ListVersions(ctx context.Context, req *cxpb.ListVersionsRequest, opts ...gax.CallOption) *VersionIterator {
 	it := &VersionIterator{}
 	req = proto.Clone(req).(*cxpb.ListVersionsRequest)
@@ -916,6 +923,7 @@ func (c *versionsRESTClient) ListVersions(ctx context.Context, req *cxpb.ListVer
 		baseUrl.Path += fmt.Sprintf("/v3beta1/%v/versions", req.GetParent())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetPageSize() != 0 {
 			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
 		}
@@ -981,13 +989,19 @@ func (c *versionsRESTClient) ListVersions(ctx context.Context, req *cxpb.ListVer
 	return it
 }
 
-// GetVersion retrieves the specified Version.
+// GetVersion retrieves the specified
+// Version.
 func (c *versionsRESTClient) GetVersion(ctx context.Context, req *cxpb.GetVersionRequest, opts ...gax.CallOption) (*cxpb.Version, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
@@ -1034,13 +1048,15 @@ func (c *versionsRESTClient) GetVersion(ctx context.Context, req *cxpb.GetVersio
 	return resp, nil
 }
 
-// CreateVersion creates a Version in the specified Flow.
+// CreateVersion creates a Version in the
+// specified Flow.
 //
 // This method is a long-running
 // operation (at https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 // The returned Operation type has the following method-specific fields:
 //
-//	metadata: CreateVersionOperationMetadata
+//	metadata:
+//	CreateVersionOperationMetadata
 //
 //	response: Version
 func (c *versionsRESTClient) CreateVersion(ctx context.Context, req *cxpb.CreateVersionRequest, opts ...gax.CallOption) (*CreateVersionOperation, error) {
@@ -1056,6 +1072,11 @@ func (c *versionsRESTClient) CreateVersion(ctx context.Context, req *cxpb.Create
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v/versions", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
@@ -1106,7 +1127,8 @@ func (c *versionsRESTClient) CreateVersion(ctx context.Context, req *cxpb.Create
 	}, nil
 }
 
-// UpdateVersion updates the specified Version.
+// UpdateVersion updates the specified
+// Version.
 func (c *versionsRESTClient) UpdateVersion(ctx context.Context, req *cxpb.UpdateVersionRequest, opts ...gax.CallOption) (*cxpb.Version, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetVersion()
@@ -1122,6 +1144,7 @@ func (c *versionsRESTClient) UpdateVersion(ctx context.Context, req *cxpb.Update
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v", req.GetVersion().GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
 		updateMask, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
@@ -1177,13 +1200,19 @@ func (c *versionsRESTClient) UpdateVersion(ctx context.Context, req *cxpb.Update
 	return resp, nil
 }
 
-// DeleteVersion deletes the specified Version.
+// DeleteVersion deletes the specified
+// Version.
 func (c *versionsRESTClient) DeleteVersion(ctx context.Context, req *cxpb.DeleteVersionRequest, opts ...gax.CallOption) error {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
 		return err
 	}
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
@@ -1235,6 +1264,11 @@ func (c *versionsRESTClient) LoadVersion(ctx context.Context, req *cxpb.LoadVers
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v:load", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
@@ -1299,6 +1333,11 @@ func (c *versionsRESTClient) CompareVersions(ctx context.Context, req *cxpb.Comp
 	}
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v:compareVersions", req.GetBaseVersion())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "base_version", url.QueryEscape(req.GetBaseVersion())))
 
@@ -1351,6 +1390,11 @@ func (c *versionsRESTClient) GetLocation(ctx context.Context, req *locationpb.Ge
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
@@ -1419,6 +1463,7 @@ func (c *versionsRESTClient) ListLocations(ctx context.Context, req *locationpb.
 		baseUrl.Path += fmt.Sprintf("/v3beta1/%v/locations", req.GetName())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -1495,6 +1540,11 @@ func (c *versionsRESTClient) CancelOperation(ctx context.Context, req *longrunni
 	}
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v:cancel", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
@@ -1529,6 +1579,11 @@ func (c *versionsRESTClient) GetOperation(ctx context.Context, req *longrunningp
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
@@ -1597,6 +1652,7 @@ func (c *versionsRESTClient) ListOperations(ctx context.Context, req *longrunnin
 		baseUrl.Path += fmt.Sprintf("/v3beta1/%v/operations", req.GetName())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}

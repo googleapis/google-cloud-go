@@ -32,9 +32,9 @@ import (
 
 	"cloud.google.com/go/civil"
 	"cloud.google.com/go/internal/fields"
+	sppb "cloud.google.com/go/spanner/apiv1/spannerpb"
 	"github.com/golang/protobuf/proto"
 	proto3 "github.com/golang/protobuf/ptypes/struct"
-	sppb "google.golang.org/genproto/googleapis/spanner/v1"
 	"google.golang.org/grpc/codes"
 )
 
@@ -2656,10 +2656,12 @@ func getGenericValue(t *sppb.Type, v *proto3.Value) (interface{}, error) {
 		return x.BoolValue, nil
 	case *proto3.Value_StringValue:
 		return x.StringValue, nil
+	case *proto3.Value_ListValue:
+		return x.ListValue, nil
 	case *proto3.Value_NullValue:
 		return getTypedNil(t)
 	default:
-		return 0, errSrcVal(v, "Number, Bool, String")
+		return 0, errSrcVal(v, "Number, Bool, String, List")
 	}
 }
 

@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -348,6 +348,7 @@ func (c *messagesV1Beta3RESTClient) ListJobMessages(ctx context.Context, req *da
 		baseUrl.Path += fmt.Sprintf("/v1b3/projects/%v/locations/%v/jobs/%v/messages", req.GetProjectId(), req.GetLocation(), req.GetJobId())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetEndTime() != nil {
 			endTime, err := protojson.Marshal(req.GetEndTime())
 			if err != nil {

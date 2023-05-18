@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -24,14 +24,15 @@ import (
 	"math"
 	"net/http"
 	"net/url"
+	"time"
 
+	computepb "cloud.google.com/go/compute/apiv1/computepb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	httptransport "google.golang.org/api/transport/http"
-	computepb "google.golang.org/genproto/googleapis/cloud/compute/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/encoding/protojson"
@@ -57,13 +58,53 @@ type ImagesCallOptions struct {
 
 func defaultImagesRESTCallOptions() *ImagesCallOptions {
 	return &ImagesCallOptions{
-		Delete:             []gax.CallOption{},
-		Deprecate:          []gax.CallOption{},
-		Get:                []gax.CallOption{},
-		GetFromFamily:      []gax.CallOption{},
-		GetIamPolicy:       []gax.CallOption{},
-		Insert:             []gax.CallOption{},
-		List:               []gax.CallOption{},
+		Delete:    []gax.CallOption{},
+		Deprecate: []gax.CallOption{},
+		Get: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
+		GetFromFamily: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
+		GetIamPolicy: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
+		Insert: []gax.CallOption{},
+		List: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
 		Patch:              []gax.CallOption{},
 		SetIamPolicy:       []gax.CallOption{},
 		SetLabels:          []gax.CallOption{},
@@ -134,12 +175,12 @@ func (c *ImagesClient) Deprecate(ctx context.Context, req *computepb.DeprecateIm
 	return c.internalClient.Deprecate(ctx, req, opts...)
 }
 
-// Get returns the specified image. Gets a list of available images by making a list() request.
+// Get returns the specified image.
 func (c *ImagesClient) Get(ctx context.Context, req *computepb.GetImageRequest, opts ...gax.CallOption) (*computepb.Image, error) {
 	return c.internalClient.Get(ctx, req, opts...)
 }
 
-// GetFromFamily returns the latest image that is part of an image family and is not deprecated.
+// GetFromFamily returns the latest image that is part of an image family and is not deprecated. For more information on image families, see Public image families documentation.
 func (c *ImagesClient) GetFromFamily(ctx context.Context, req *computepb.GetFromFamilyImageRequest, opts ...gax.CallOption) (*computepb.Image, error) {
 	return c.internalClient.GetFromFamily(ctx, req, opts...)
 }
@@ -405,7 +446,7 @@ func (c *imagesRESTClient) Deprecate(ctx context.Context, req *computepb.Depreca
 	return op, nil
 }
 
-// Get returns the specified image. Gets a list of available images by making a list() request.
+// Get returns the specified image.
 func (c *imagesRESTClient) Get(ctx context.Context, req *computepb.GetImageRequest, opts ...gax.CallOption) (*computepb.Image, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -458,7 +499,7 @@ func (c *imagesRESTClient) Get(ctx context.Context, req *computepb.GetImageReque
 	return resp, nil
 }
 
-// GetFromFamily returns the latest image that is part of an image family and is not deprecated.
+// GetFromFamily returns the latest image that is part of an image family and is not deprecated. For more information on image families, see Public image families documentation.
 func (c *imagesRESTClient) GetFromFamily(ctx context.Context, req *computepb.GetFromFamilyImageRequest, opts ...gax.CallOption) (*computepb.Image, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {

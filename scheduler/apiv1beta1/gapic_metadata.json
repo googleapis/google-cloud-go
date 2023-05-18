@@ -25,9 +25,19 @@
                 "GetJob"
               ]
             },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
             "ListJobs": {
               "methods": [
                 "ListJobs"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
               ]
             },
             "PauseJob": {
@@ -70,9 +80,19 @@
                 "GetJob"
               ]
             },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
             "ListJobs": {
               "methods": [
                 "ListJobs"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
               ]
             },
             "PauseJob": {

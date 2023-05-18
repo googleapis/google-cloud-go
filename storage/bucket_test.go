@@ -20,13 +20,14 @@ import (
 	"time"
 
 	"cloud.google.com/go/internal/testutil"
-	storagepb "cloud.google.com/go/storage/internal/apiv2/stubs"
+	"cloud.google.com/go/storage/internal/apiv2/storagepb"
 	"github.com/google/go-cmp/cmp"
 	gax "github.com/googleapis/gax-go/v2"
 	"golang.org/x/oauth2/google"
 	"google.golang.org/api/googleapi"
 	raw "google.golang.org/api/storage/v1"
 	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/types/known/durationpb"
 )
 
 func TestBucketAttrsToRawBucket(t *testing.T) {
@@ -725,8 +726,8 @@ func TestNewBucketFromProto(t *testing.T) {
 		LocationType: "region",
 		StorageClass: "class",
 		RetentionPolicy: &storagepb.Bucket_RetentionPolicy{
-			RetentionPeriod: proto.Int64(int64(3)),
-			EffectiveTime:   toProtoTimestamp(time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC)),
+			RetentionDuration: durationpb.New(3 * time.Second),
+			EffectiveTime:     toProtoTimestamp(time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC)),
 		},
 		IamConfig: &storagepb.Bucket_IamConfig{
 			UniformBucketLevelAccess: &storagepb.Bucket_IamConfig_UniformBucketLevelAccess{
@@ -866,7 +867,7 @@ func TestBucketAttrsToProtoBucket(t *testing.T) {
 		Location:     "loc",
 		StorageClass: "class",
 		RetentionPolicy: &storagepb.Bucket_RetentionPolicy{
-			RetentionPeriod: proto.Int64(int64(3)),
+			RetentionDuration: durationpb.New(3 * time.Second),
 		},
 		IamConfig: &storagepb.Bucket_IamConfig{
 			UniformBucketLevelAccess: &storagepb.Bucket_IamConfig_UniformBucketLevelAccess{

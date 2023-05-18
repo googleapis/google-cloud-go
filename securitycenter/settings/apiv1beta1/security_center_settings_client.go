@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -1263,8 +1263,10 @@ func (c *securityCenterSettingsRESTClient) BatchGetSettings(ctx context.Context,
 	baseUrl.Path += fmt.Sprintf("/settings/v1beta1/%v/settings:batchGet", req.GetParent())
 
 	params := url.Values{}
-	if req.GetNames() != nil {
-		params.Add("names", fmt.Sprintf("%v", req.GetNames()))
+	if items := req.GetNames(); len(items) > 0 {
+		for _, item := range items {
+			params.Add("names", fmt.Sprintf("%v", item))
+		}
 	}
 
 	baseUrl.RawQuery = params.Encode()

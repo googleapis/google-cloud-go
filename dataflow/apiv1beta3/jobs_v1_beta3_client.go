@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -570,6 +570,7 @@ func (c *jobsV1Beta3RESTClient) CreateJob(ctx context.Context, req *dataflowpb.C
 	baseUrl.Path += fmt.Sprintf("/v1b3/projects/%v/locations/%v/jobs", req.GetProjectId(), req.GetLocation())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetReplaceJobId() != "" {
 		params.Add("replaceJobId", fmt.Sprintf("%v", req.GetReplaceJobId()))
 	}
@@ -639,6 +640,7 @@ func (c *jobsV1Beta3RESTClient) GetJob(ctx context.Context, req *dataflowpb.GetJ
 	baseUrl.Path += fmt.Sprintf("/v1b3/projects/%v/locations/%v/jobs/%v", req.GetProjectId(), req.GetLocation(), req.GetJobId())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetView() != 0 {
 		params.Add("view", fmt.Sprintf("%v", req.GetView()))
 	}
@@ -710,6 +712,11 @@ func (c *jobsV1Beta3RESTClient) UpdateJob(ctx context.Context, req *dataflowpb.U
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1b3/projects/%v/locations/%v/jobs/%v", req.GetProjectId(), req.GetLocation(), req.GetJobId())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project_id", url.QueryEscape(req.GetProjectId()), "location", url.QueryEscape(req.GetLocation()), "job_id", url.QueryEscape(req.GetJobId())))
@@ -785,6 +792,7 @@ func (c *jobsV1Beta3RESTClient) ListJobs(ctx context.Context, req *dataflowpb.Li
 		baseUrl.Path += fmt.Sprintf("/v1b3/projects/%v/locations/%v/jobs", req.GetProjectId(), req.GetLocation())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != 0 {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -878,6 +886,7 @@ func (c *jobsV1Beta3RESTClient) AggregatedListJobs(ctx context.Context, req *dat
 		baseUrl.Path += fmt.Sprintf("/v1b3/projects/%v/jobs:aggregated", req.GetProjectId())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != 0 {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -961,6 +970,7 @@ func (c *jobsV1Beta3RESTClient) CheckActiveJobs(ctx context.Context, req *datafl
 	baseUrl.Path += fmt.Sprintf("")
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetProjectId() != "" {
 		params.Add("projectId", fmt.Sprintf("%v", req.GetProjectId()))
 	}
@@ -1023,6 +1033,11 @@ func (c *jobsV1Beta3RESTClient) SnapshotJob(ctx context.Context, req *dataflowpb
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1b3/projects/%v/locations/%v/jobs/%v:snapshot", req.GetProjectId(), req.GetLocation(), req.GetJobId())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project_id", url.QueryEscape(req.GetProjectId()), "location", url.QueryEscape(req.GetLocation()), "job_id", url.QueryEscape(req.GetJobId())))

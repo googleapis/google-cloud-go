@@ -19,8 +19,8 @@ import (
 	"testing"
 	"time"
 
+	pb "cloud.google.com/go/firestore/apiv1/firestorepb"
 	"github.com/golang/protobuf/proto"
-	pb "google.golang.org/genproto/googleapis/firestore/v1"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 

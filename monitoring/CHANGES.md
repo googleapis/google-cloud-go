@@ -1,5 +1,54 @@
 # Changes
 
+## [1.14.0](https://github.com/googleapis/google-cloud-go/compare/monitoring/v1.13.1...monitoring/v1.14.0) (2023-05-10)
+
+
+### Features
+
+* **monitoring/apiv3:** Add ICMP pings ([31c3766](https://github.com/googleapis/google-cloud-go/commit/31c3766c9c4cab411669c14fc1a30bd6d2e3f2dd))
+
+## [1.13.1](https://github.com/googleapis/google-cloud-go/compare/monitoring/v1.13.0...monitoring/v1.13.1) (2023-05-08)
+
+
+### Bug Fixes
+
+* **monitoring:** Update grpc to v1.55.0 ([1147ce0](https://github.com/googleapis/google-cloud-go/commit/1147ce02a990276ca4f8ab7a1ab65c14da4450ef))
+
+## [1.13.0](https://github.com/googleapis/google-cloud-go/compare/monitoring/v1.12.0...monitoring/v1.13.0) (2023-03-15)
+
+
+### Features
+
+* **monitoring:** Update iam and longrunning deps ([91a1f78](https://github.com/googleapis/google-cloud-go/commit/91a1f784a109da70f63b96414bba8a9b4254cddd))
+
+## [1.12.0](https://github.com/googleapis/google-cloud-go/compare/monitoring/v1.11.0...monitoring/v1.12.0) (2023-01-18)
+
+
+### Features
+
+* **monitoring/dashboard:** Added support for horizontal bar rendering and column settings on time series tables ([1fb0c5e](https://github.com/googleapis/google-cloud-go/commit/1fb0c5e105dcae3a30b2e5b10ee47b84cbef8295))
+
+## [1.11.0](https://github.com/googleapis/google-cloud-go/compare/monitoring/v1.10.0...monitoring/v1.11.0) (2023-01-10)
+
+
+### Features
+
+* **monitoring/apiv3:** Added Snooze API support ([3115df4](https://github.com/googleapis/google-cloud-go/commit/3115df407cd4876d58c79e726308e9f229ceb6ed))
+
+## [1.10.0](https://github.com/googleapis/google-cloud-go/compare/monitoring/v1.9.1...monitoring/v1.10.0) (2023-01-04)
+
+
+### Features
+
+* **monitoring:** Add REST client ([06a54a1](https://github.com/googleapis/google-cloud-go/commit/06a54a16a5866cce966547c51e203b9e09a25bc0))
+
+## [1.9.1](https://github.com/googleapis/google-cloud-go/compare/monitoring/v1.9.0...monitoring/v1.9.1) (2022-12-15)
+
+
+### Documentation
+
+* **monitoring/dashboard:** Fix minor docstring formatting ([7357077](https://github.com/googleapis/google-cloud-go/commit/735707796d81d7f6f32fc3415800c512fe62297e))
+
 ## [1.9.0](https://github.com/googleapis/google-cloud-go/compare/monitoring/v1.8.0...monitoring/v1.9.0) (2022-11-09)
 
 

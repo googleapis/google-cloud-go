@@ -19,7 +19,7 @@ import (
 	"time"
 
 	ipubsub "cloud.google.com/go/internal/pubsub"
-	pb "google.golang.org/genproto/googleapis/pubsub/v1"
+	pb "cloud.google.com/go/pubsub/apiv1/pubsubpb"
 )
 
 // Message represents a Pub/Sub message.
@@ -157,20 +157,20 @@ func (ah *psAckHandler) OnNack() {
 }
 
 func (ah *psAckHandler) OnAckWithResult() *AckResult {
+	// call done with true to indicate ack.
+	ah.done(true)
 	if !ah.exactlyOnceDelivery {
 		return newSuccessAckResult()
 	}
-	// call done with true to indicate ack.
-	ah.done(true)
 	return ah.ackResult
 }
 
 func (ah *psAckHandler) OnNackWithResult() *AckResult {
+	// call done with false to indicate nack.
+	ah.done(false)
 	if !ah.exactlyOnceDelivery {
 		return newSuccessAckResult()
 	}
-	// call done with false to indicate nack.
-	ah.done(false)
 	return ah.ackResult
 }
 

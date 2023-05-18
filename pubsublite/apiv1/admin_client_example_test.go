@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,10 +19,10 @@ package pubsublite_test
 import (
 	"context"
 
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	pubsublite "cloud.google.com/go/pubsublite/apiv1"
+	pubsublitepb "cloud.google.com/go/pubsublite/apiv1/pubsublitepb"
 	"google.golang.org/api/iterator"
-	pubsublitepb "google.golang.org/genproto/googleapis/cloud/pubsublite/v1"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 )
 
 func ExampleNewAdminClient() {
@@ -57,7 +57,7 @@ func ExampleAdminClient_CreateTopic() {
 
 	req := &pubsublitepb.CreateTopicRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/pubsublite/v1#CreateTopicRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/pubsublite/apiv1/pubsublitepb#CreateTopicRequest.
 	}
 	resp, err := c.CreateTopic(ctx, req)
 	if err != nil {
@@ -82,7 +82,7 @@ func ExampleAdminClient_GetTopic() {
 
 	req := &pubsublitepb.GetTopicRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/pubsublite/v1#GetTopicRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/pubsublite/apiv1/pubsublitepb#GetTopicRequest.
 	}
 	resp, err := c.GetTopic(ctx, req)
 	if err != nil {
@@ -107,7 +107,7 @@ func ExampleAdminClient_GetTopicPartitions() {
 
 	req := &pubsublitepb.GetTopicPartitionsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/pubsublite/v1#GetTopicPartitionsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/pubsublite/apiv1/pubsublitepb#GetTopicPartitionsRequest.
 	}
 	resp, err := c.GetTopicPartitions(ctx, req)
 	if err != nil {
@@ -132,7 +132,7 @@ func ExampleAdminClient_ListTopics() {
 
 	req := &pubsublitepb.ListTopicsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/pubsublite/v1#ListTopicsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/pubsublite/apiv1/pubsublitepb#ListTopicsRequest.
 	}
 	it := c.ListTopics(ctx, req)
 	for {
@@ -163,7 +163,7 @@ func ExampleAdminClient_UpdateTopic() {
 
 	req := &pubsublitepb.UpdateTopicRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/pubsublite/v1#UpdateTopicRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/pubsublite/apiv1/pubsublitepb#UpdateTopicRequest.
 	}
 	resp, err := c.UpdateTopic(ctx, req)
 	if err != nil {
@@ -188,7 +188,7 @@ func ExampleAdminClient_DeleteTopic() {
 
 	req := &pubsublitepb.DeleteTopicRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/pubsublite/v1#DeleteTopicRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/pubsublite/apiv1/pubsublitepb#DeleteTopicRequest.
 	}
 	err = c.DeleteTopic(ctx, req)
 	if err != nil {
@@ -211,7 +211,7 @@ func ExampleAdminClient_ListTopicSubscriptions() {
 
 	req := &pubsublitepb.ListTopicSubscriptionsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/pubsublite/v1#ListTopicSubscriptionsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/pubsublite/apiv1/pubsublitepb#ListTopicSubscriptionsRequest.
 	}
 	it := c.ListTopicSubscriptions(ctx, req)
 	for {
@@ -242,7 +242,7 @@ func ExampleAdminClient_CreateSubscription() {
 
 	req := &pubsublitepb.CreateSubscriptionRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/pubsublite/v1#CreateSubscriptionRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/pubsublite/apiv1/pubsublitepb#CreateSubscriptionRequest.
 	}
 	resp, err := c.CreateSubscription(ctx, req)
 	if err != nil {
@@ -267,7 +267,7 @@ func ExampleAdminClient_GetSubscription() {
 
 	req := &pubsublitepb.GetSubscriptionRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/pubsublite/v1#GetSubscriptionRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/pubsublite/apiv1/pubsublitepb#GetSubscriptionRequest.
 	}
 	resp, err := c.GetSubscription(ctx, req)
 	if err != nil {
@@ -292,7 +292,7 @@ func ExampleAdminClient_ListSubscriptions() {
 
 	req := &pubsublitepb.ListSubscriptionsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/pubsublite/v1#ListSubscriptionsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/pubsublite/apiv1/pubsublitepb#ListSubscriptionsRequest.
 	}
 	it := c.ListSubscriptions(ctx, req)
 	for {
@@ -323,7 +323,7 @@ func ExampleAdminClient_UpdateSubscription() {
 
 	req := &pubsublitepb.UpdateSubscriptionRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/pubsublite/v1#UpdateSubscriptionRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/pubsublite/apiv1/pubsublitepb#UpdateSubscriptionRequest.
 	}
 	resp, err := c.UpdateSubscription(ctx, req)
 	if err != nil {
@@ -348,7 +348,7 @@ func ExampleAdminClient_DeleteSubscription() {
 
 	req := &pubsublitepb.DeleteSubscriptionRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/pubsublite/v1#DeleteSubscriptionRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/pubsublite/apiv1/pubsublitepb#DeleteSubscriptionRequest.
 	}
 	err = c.DeleteSubscription(ctx, req)
 	if err != nil {
@@ -371,7 +371,7 @@ func ExampleAdminClient_SeekSubscription() {
 
 	req := &pubsublitepb.SeekSubscriptionRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/pubsublite/v1#SeekSubscriptionRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/pubsublite/apiv1/pubsublitepb#SeekSubscriptionRequest.
 	}
 	op, err := c.SeekSubscription(ctx, req)
 	if err != nil {
@@ -401,7 +401,7 @@ func ExampleAdminClient_CreateReservation() {
 
 	req := &pubsublitepb.CreateReservationRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/pubsublite/v1#CreateReservationRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/pubsublite/apiv1/pubsublitepb#CreateReservationRequest.
 	}
 	resp, err := c.CreateReservation(ctx, req)
 	if err != nil {
@@ -426,7 +426,7 @@ func ExampleAdminClient_GetReservation() {
 
 	req := &pubsublitepb.GetReservationRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/pubsublite/v1#GetReservationRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/pubsublite/apiv1/pubsublitepb#GetReservationRequest.
 	}
 	resp, err := c.GetReservation(ctx, req)
 	if err != nil {
@@ -451,7 +451,7 @@ func ExampleAdminClient_ListReservations() {
 
 	req := &pubsublitepb.ListReservationsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/pubsublite/v1#ListReservationsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/pubsublite/apiv1/pubsublitepb#ListReservationsRequest.
 	}
 	it := c.ListReservations(ctx, req)
 	for {
@@ -482,7 +482,7 @@ func ExampleAdminClient_UpdateReservation() {
 
 	req := &pubsublitepb.UpdateReservationRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/pubsublite/v1#UpdateReservationRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/pubsublite/apiv1/pubsublitepb#UpdateReservationRequest.
 	}
 	resp, err := c.UpdateReservation(ctx, req)
 	if err != nil {
@@ -507,7 +507,7 @@ func ExampleAdminClient_DeleteReservation() {
 
 	req := &pubsublitepb.DeleteReservationRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/pubsublite/v1#DeleteReservationRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/pubsublite/apiv1/pubsublitepb#DeleteReservationRequest.
 	}
 	err = c.DeleteReservation(ctx, req)
 	if err != nil {
@@ -530,7 +530,7 @@ func ExampleAdminClient_ListReservationTopics() {
 
 	req := &pubsublitepb.ListReservationTopicsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/pubsublite/v1#ListReservationTopicsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/pubsublite/apiv1/pubsublitepb#ListReservationTopicsRequest.
 	}
 	it := c.ListReservationTopics(ctx, req)
 	for {
@@ -561,7 +561,7 @@ func ExampleAdminClient_CancelOperation() {
 
 	req := &longrunningpb.CancelOperationRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/longrunning#CancelOperationRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/longrunning/autogen/longrunningpb#CancelOperationRequest.
 	}
 	err = c.CancelOperation(ctx, req)
 	if err != nil {
@@ -584,7 +584,7 @@ func ExampleAdminClient_DeleteOperation() {
 
 	req := &longrunningpb.DeleteOperationRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/longrunning#DeleteOperationRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/longrunning/autogen/longrunningpb#DeleteOperationRequest.
 	}
 	err = c.DeleteOperation(ctx, req)
 	if err != nil {
@@ -607,7 +607,7 @@ func ExampleAdminClient_GetOperation() {
 
 	req := &longrunningpb.GetOperationRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/longrunning#GetOperationRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/longrunning/autogen/longrunningpb#GetOperationRequest.
 	}
 	resp, err := c.GetOperation(ctx, req)
 	if err != nil {
@@ -632,7 +632,7 @@ func ExampleAdminClient_ListOperations() {
 
 	req := &longrunningpb.ListOperationsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/longrunning#ListOperationsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/longrunning/autogen/longrunningpb#ListOperationsRequest.
 	}
 	it := c.ListOperations(ctx, req)
 	for {

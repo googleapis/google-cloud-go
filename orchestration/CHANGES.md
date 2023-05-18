@@ -1,6 +1,27 @@
 # Changes
 
 
+## [1.6.1](https://github.com/googleapis/google-cloud-go/compare/orchestration/v1.6.0...orchestration/v1.6.1) (2023-05-08)
+
+
+### Bug Fixes
+
+* **orchestration:** Update grpc to v1.55.0 ([1147ce0](https://github.com/googleapis/google-cloud-go/commit/1147ce02a990276ca4f8ab7a1ab65c14da4450ef))
+
+## [1.6.0](https://github.com/googleapis/google-cloud-go/compare/orchestration/v1.5.0...orchestration/v1.6.0) (2023-01-04)
+
+
+### Features
+
+* **orchestration:** Add REST client ([06a54a1](https://github.com/googleapis/google-cloud-go/commit/06a54a16a5866cce966547c51e203b9e09a25bc0))
+
+## [1.5.0](https://github.com/googleapis/google-cloud-go/compare/orchestration/v1.4.0...orchestration/v1.5.0) (2022-12-15)
+
+
+### Features
+
+* **orchestration/airflow/service:** Added LoadSnapshot, SaveSnapshot RPCs feat: added fields maintenance_window, workloads_config, environment_size, master_authorized_networks_config, recovery_config to EnvironmentConfig feat: added field scheduler_count to SoftwareConfig feat: added field enable_ip_masq_agent to NodeConfig feat: added fields cloud_composer_network_ipv4_cidr_block, cloud_composer_network_ipv4_reserved_range, enable_privately_used_public_ips, cloud_composer_connection_subnetwork, networking_config to PrivateEnvironmentConfig ([7357077](https://github.com/googleapis/google-cloud-go/commit/735707796d81d7f6f32fc3415800c512fe62297e))
+
 ## [1.4.0](https://github.com/googleapis/google-cloud-go/compare/orchestration/v1.3.0...orchestration/v1.4.0) (2022-11-03)
 
 

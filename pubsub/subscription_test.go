@@ -18,16 +18,15 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"sync"
 	"testing"
 	"time"
 
 	"cloud.google.com/go/internal/testutil"
+	pb "cloud.google.com/go/pubsub/apiv1/pubsubpb"
 	"cloud.google.com/go/pubsub/pstest"
 	"github.com/google/go-cmp/cmp/cmpopts"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
-	pb "google.golang.org/genproto/googleapis/pubsub/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/credentials/insecure"
@@ -296,7 +295,7 @@ func testReceive(t *testing.T, synchronous, exactlyOnceDelivery bool) {
 			srv.Publish(topic.name, []byte{byte(i)}, nil)
 		}
 		sub.ReceiveSettings.Synchronous = synchronous
-		msgs, err := pullN(ctx, sub, 256, func(_ context.Context, m *Message) {
+		msgs, err := pullN(ctx, sub, 256, 0, func(_ context.Context, m *Message) {
 			if exactlyOnceDelivery {
 				ar := m.AckWithResult()
 				// Don't use the above ctx here since that will get cancelled.
@@ -586,7 +585,6 @@ func TestExactlyOnceDelivery_AckFailureErrorPermissionDenied(t *testing.T) {
 }
 
 func TestExactlyOnceDelivery_AckRetryDeadlineExceeded(t *testing.T) {
-	t.Parallel()
 	ctx, cancel := context.WithCancel(context.Background())
 	srv := pstest.NewServer(pstest.WithErrorInjection("Acknowledge", codes.Internal, "internal error"))
 	client, err := NewClient(ctx, projName,
@@ -621,7 +619,7 @@ func TestExactlyOnceDelivery_AckRetryDeadlineExceeded(t *testing.T) {
 		MinExtensionPeriod: 2 * time.Minute,
 	}
 	// Override the default timeout here so this test doesn't take 10 minutes.
-	exactlyOnceDeliveryRetryDeadline = 1 * time.Minute
+	exactlyOnceDeliveryRetryDeadline = 20 * time.Second
 	err = s.Receive(ctx, func(ctx context.Context, msg *Message) {
 		ar := msg.AckWithResult()
 		s, err := ar.Get(ctx)
@@ -681,9 +679,8 @@ func TestExactlyOnceDelivery_NackSuccess(t *testing.T) {
 	}
 }
 
-func TestExactlyOnceDelivery_NackRetry_DeadlineExceeded(t *testing.T) {
-	t.Parallel()
-	ctx, cancel := context.WithCancel(context.Background())
+func TestExactlyOnceDelivery_ReceiptModackError(t *testing.T) {
+	ctx := context.Background()
 	srv := pstest.NewServer(pstest.WithErrorInjection("ModifyAckDeadline", codes.Internal, "internal error"))
 	client, err := NewClient(ctx, projName,
 		option.WithEndpoint(srv.Addr),
@@ -710,31 +707,12 @@ func TestExactlyOnceDelivery_NackRetry_DeadlineExceeded(t *testing.T) {
 	if _, err := r.Get(ctx); err != nil {
 		t.Fatalf("failed to publish message: %v", err)
 	}
+	s.ReceiveSettings.MaxExtensionPeriod = 1 * time.Minute
 
-	s.ReceiveSettings = ReceiveSettings{
-		NumGoroutines: 1,
-		// This needs to be greater than total deadline otherwise the message will be redelivered.
-		MinExtensionPeriod: 2 * time.Minute,
-		MaxExtensionPeriod: 2 * time.Minute,
-	}
+	ctx, cancel := context.WithTimeout(ctx, 20*time.Second)
+	defer cancel()
 	// Override the default timeout here so this test doesn't take 10 minutes.
-	exactlyOnceDeliveryRetryDeadline = 1 * time.Minute
-	var once sync.Once
-	err = s.Receive(ctx, func(ctx context.Context, msg *Message) {
-		once.Do(func() {
-			ar := msg.NackWithResult()
-			s, err := ar.Get(ctx)
-			if s != AcknowledgeStatusOther {
-				t.Errorf("AckResult AckStatus got %v, want %v", s, AcknowledgeStatusOther)
-			}
-			wantErr := context.DeadlineExceeded
-			if !errors.Is(err, wantErr) {
-				t.Errorf("AckResult error\ngot  %v\nwant %s", err, wantErr)
-			}
-			cancel()
-		})
+	s.Receive(ctx, func(ctx context.Context, msg *Message) {
+		t.Fatal("expected message to not have been delivered when exactly once enabled")
 	})
-	if err != nil {
-		t.Fatalf("s.Receive err: %v", err)
-	}
 }

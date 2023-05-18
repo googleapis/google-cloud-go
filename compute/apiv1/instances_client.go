@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -25,14 +25,15 @@ import (
 	"net/http"
 	"net/url"
 	"sort"
+	"time"
 
+	computepb "cloud.google.com/go/compute/apiv1/computepb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	httptransport "google.golang.org/api/transport/http"
-	computepb "google.golang.org/genproto/googleapis/cloud/compute/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/encoding/protojson"
@@ -73,6 +74,7 @@ type InstancesCallOptions struct {
 	SetMachineType                     []gax.CallOption
 	SetMetadata                        []gax.CallOption
 	SetMinCpuPlatform                  []gax.CallOption
+	SetName                            []gax.CallOption
 	SetScheduling                      []gax.CallOption
 	SetServiceAccount                  []gax.CallOption
 	SetShieldedInstanceIntegrityPolicy []gax.CallOption
@@ -92,24 +94,124 @@ type InstancesCallOptions struct {
 
 func defaultInstancesRESTCallOptions() *InstancesCallOptions {
 	return &InstancesCallOptions{
-		AddAccessConfig:                    []gax.CallOption{},
-		AddResourcePolicies:                []gax.CallOption{},
-		AggregatedList:                     []gax.CallOption{},
-		AttachDisk:                         []gax.CallOption{},
-		BulkInsert:                         []gax.CallOption{},
-		Delete:                             []gax.CallOption{},
-		DeleteAccessConfig:                 []gax.CallOption{},
-		DetachDisk:                         []gax.CallOption{},
-		Get:                                []gax.CallOption{},
-		GetEffectiveFirewalls:              []gax.CallOption{},
-		GetGuestAttributes:                 []gax.CallOption{},
-		GetIamPolicy:                       []gax.CallOption{},
-		GetScreenshot:                      []gax.CallOption{},
-		GetSerialPortOutput:                []gax.CallOption{},
-		GetShieldedInstanceIdentity:        []gax.CallOption{},
-		Insert:                             []gax.CallOption{},
-		List:                               []gax.CallOption{},
-		ListReferrers:                      []gax.CallOption{},
+		AddAccessConfig:     []gax.CallOption{},
+		AddResourcePolicies: []gax.CallOption{},
+		AggregatedList: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
+		AttachDisk:         []gax.CallOption{},
+		BulkInsert:         []gax.CallOption{},
+		Delete:             []gax.CallOption{},
+		DeleteAccessConfig: []gax.CallOption{},
+		DetachDisk:         []gax.CallOption{},
+		Get: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
+		GetEffectiveFirewalls: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
+		GetGuestAttributes: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
+		GetIamPolicy: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
+		GetScreenshot: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
+		GetSerialPortOutput: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
+		GetShieldedInstanceIdentity: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
+		Insert: []gax.CallOption{},
+		List: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
+		ListReferrers: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
 		RemoveResourcePolicies:             []gax.CallOption{},
 		Reset:                              []gax.CallOption{},
 		Resume:                             []gax.CallOption{},
@@ -122,6 +224,7 @@ func defaultInstancesRESTCallOptions() *InstancesCallOptions {
 		SetMachineType:                     []gax.CallOption{},
 		SetMetadata:                        []gax.CallOption{},
 		SetMinCpuPlatform:                  []gax.CallOption{},
+		SetName:                            []gax.CallOption{},
 		SetScheduling:                      []gax.CallOption{},
 		SetServiceAccount:                  []gax.CallOption{},
 		SetShieldedInstanceIntegrityPolicy: []gax.CallOption{},
@@ -175,6 +278,7 @@ type internalInstancesClient interface {
 	SetMachineType(context.Context, *computepb.SetMachineTypeInstanceRequest, ...gax.CallOption) (*Operation, error)
 	SetMetadata(context.Context, *computepb.SetMetadataInstanceRequest, ...gax.CallOption) (*Operation, error)
 	SetMinCpuPlatform(context.Context, *computepb.SetMinCpuPlatformInstanceRequest, ...gax.CallOption) (*Operation, error)
+	SetName(context.Context, *computepb.SetNameInstanceRequest, ...gax.CallOption) (*Operation, error)
 	SetScheduling(context.Context, *computepb.SetSchedulingInstanceRequest, ...gax.CallOption) (*Operation, error)
 	SetServiceAccount(context.Context, *computepb.SetServiceAccountInstanceRequest, ...gax.CallOption) (*Operation, error)
 	SetShieldedInstanceIntegrityPolicy(context.Context, *computepb.SetShieldedInstanceIntegrityPolicyInstanceRequest, ...gax.CallOption) (*Operation, error)
@@ -267,7 +371,7 @@ func (c *InstancesClient) DetachDisk(ctx context.Context, req *computepb.DetachD
 	return c.internalClient.DetachDisk(ctx, req, opts...)
 }
 
-// Get returns the specified Instance resource. Gets a list of available instances by making a list() request.
+// Get returns the specified Instance resource.
 func (c *InstancesClient) Get(ctx context.Context, req *computepb.GetInstanceRequest, opts ...gax.CallOption) (*computepb.Instance, error) {
 	return c.internalClient.Get(ctx, req, opts...)
 }
@@ -375,6 +479,11 @@ func (c *InstancesClient) SetMetadata(ctx context.Context, req *computepb.SetMet
 // SetMinCpuPlatform changes the minimum CPU platform that this instance should use. This method can only be called on a stopped instance. For more information, read Specifying a Minimum CPU Platform.
 func (c *InstancesClient) SetMinCpuPlatform(ctx context.Context, req *computepb.SetMinCpuPlatformInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.SetMinCpuPlatform(ctx, req, opts...)
+}
+
+// SetName sets name of an instance.
+func (c *InstancesClient) SetName(ctx context.Context, req *computepb.SetNameInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
+	return c.internalClient.SetName(ctx, req, opts...)
 }
 
 // SetScheduling sets an instance’s scheduling options. You can only call this method on a stopped instance, that is, a VM instance that is in a TERMINATED state. See Instance Life Cycle for more information on the possible instance states. For more information about setting scheduling options for a VM, see Set VM host maintenance policy.
@@ -1154,7 +1263,7 @@ func (c *instancesRESTClient) DetachDisk(ctx context.Context, req *computepb.Det
 	return op, nil
 }
 
-// Get returns the specified Instance resource. Gets a list of available instances by making a list() request.
+// Get returns the specified Instance resource.
 func (c *instancesRESTClient) Get(ctx context.Context, req *computepb.GetInstanceRequest, opts ...gax.CallOption) (*computepb.Instance, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -2670,6 +2779,81 @@ func (c *instancesRESTClient) SetMinCpuPlatform(ctx context.Context, req *comput
 	return op, nil
 }
 
+// SetName sets name of an instance.
+func (c *instancesRESTClient) SetName(ctx context.Context, req *computepb.SetNameInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true}
+	body := req.GetInstancesSetNameRequestResource()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instances/%v/setName", req.GetProject(), req.GetZone(), req.GetInstance())
+
+	params := url.Values{}
+	if req != nil && req.RequestId != nil {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "zone", url.QueryEscape(req.GetZone()), "instance", url.QueryEscape(req.GetInstance())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).SetName[0:len((*c.CallOptions).SetName):len((*c.CallOptions).SetName)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &computepb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	op := &Operation{
+		&zoneOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+			zone:    req.GetZone(),
+		},
+	}
+	return op, nil
+}
+
 // SetScheduling sets an instance’s scheduling options. You can only call this method on a stopped instance, that is, a VM instance that is in a TERMINATED state. See Instance Life Cycle for more information on the possible instance states. For more information about setting scheduling options for a VM, see Set VM host maintenance policy.
 func (c *instancesRESTClient) SetScheduling(ctx context.Context, req *computepb.SetSchedulingInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
@@ -3183,6 +3367,9 @@ func (c *instancesRESTClient) Stop(ctx context.Context, req *computepb.StopInsta
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instances/%v/stop", req.GetProject(), req.GetZone(), req.GetInstance())
 
 	params := url.Values{}
+	if req != nil && req.DiscardLocalSsd != nil {
+		params.Add("discardLocalSsd", fmt.Sprintf("%v", req.GetDiscardLocalSsd()))
+	}
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -3251,6 +3438,9 @@ func (c *instancesRESTClient) Suspend(ctx context.Context, req *computepb.Suspen
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instances/%v/suspend", req.GetProject(), req.GetZone(), req.GetInstance())
 
 	params := url.Values{}
+	if req != nil && req.DiscardLocalSsd != nil {
+		params.Add("discardLocalSsd", fmt.Sprintf("%v", req.GetDiscardLocalSsd()))
+	}
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}

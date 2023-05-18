@@ -31,7 +31,8 @@ type flowController struct {
 	// Semaphores for governing pending inserts.
 	semInsertCount, semInsertBytes *semaphore.Weighted
 
-	countRemaining int64 // Atomic.
+	countTracked int64 // Atomic.
+	bytesTracked int64 // Atomic.  Only tracked if bytes are bounded.
 }
 
 func newFlowController(maxInserts, maxInsertBytes int) *flowController {
@@ -48,6 +49,17 @@ func newFlowController(maxInserts, maxInsertBytes int) *flowController {
 		fc.semInsertBytes = semaphore.NewWeighted(int64(maxInsertBytes))
 	}
 	return fc
+}
+
+// copyFlowController is for creating a new flow controller based on
+// settings from another.  It does not copy flow state.
+func copyFlowController(in *flowController) *flowController {
+	var maxInserts, maxBytes int
+	if in != nil {
+		maxInserts = in.maxInsertCount
+		maxBytes = in.maxInsertBytes
+	}
+	return newFlowController(maxInserts, maxBytes)
 }
 
 // acquire blocks until one insert of size bytes can proceed or ctx is done.
@@ -69,7 +81,8 @@ func (fc *flowController) acquire(ctx context.Context, sizeBytes int) error {
 			return err
 		}
 	}
-	atomic.AddInt64(&fc.countRemaining, 1)
+	atomic.AddInt64(&fc.bytesTracked, fc.bound(sizeBytes))
+	atomic.AddInt64(&fc.countTracked, 1)
 	return nil
 }
 
@@ -92,12 +105,14 @@ func (fc *flowController) tryAcquire(sizeBytes int) bool {
 			return false
 		}
 	}
-	atomic.AddInt64(&fc.countRemaining, 1)
+	atomic.AddInt64(&fc.bytesTracked, fc.bound(sizeBytes))
+	atomic.AddInt64(&fc.countTracked, 1)
 	return true
 }
 
 func (fc *flowController) release(sizeBytes int) {
-	atomic.AddInt64(&fc.countRemaining, -1)
+	atomic.AddInt64(&fc.countTracked, -1)
+	atomic.AddInt64(&fc.bytesTracked, (0 - fc.bound(sizeBytes)))
 	if fc.semInsertCount != nil {
 		fc.semInsertCount.Release(1)
 	}
@@ -115,5 +130,9 @@ func (fc *flowController) bound(sizeBytes int) int64 {
 }
 
 func (fc *flowController) count() int {
-	return int(atomic.LoadInt64(&fc.countRemaining))
+	return int(atomic.LoadInt64(&fc.countTracked))
+}
+
+func (fc *flowController) bytes() int {
+	return int(atomic.LoadInt64(&fc.bytesTracked))
 }

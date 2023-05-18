@@ -1,5 +1,26 @@
 # Changes
 
+## [1.10.1](https://github.com/googleapis/google-cloud-go/compare/cloudtasks/v1.10.0...cloudtasks/v1.10.1) (2023-05-08)
+
+
+### Bug Fixes
+
+* **cloudtasks:** Update grpc to v1.55.0 ([1147ce0](https://github.com/googleapis/google-cloud-go/commit/1147ce02a990276ca4f8ab7a1ab65c14da4450ef))
+
+## [1.10.0](https://github.com/googleapis/google-cloud-go/compare/cloudtasks/v1.9.0...cloudtasks/v1.10.0) (2023-03-15)
+
+
+### Features
+
+* **cloudtasks:** Update iam and longrunning deps ([91a1f78](https://github.com/googleapis/google-cloud-go/commit/91a1f784a109da70f63b96414bba8a9b4254cddd))
+
+## [1.9.0](https://github.com/googleapis/google-cloud-go/compare/cloudtasks/v1.8.0...cloudtasks/v1.9.0) (2023-01-04)
+
+
+### Features
+
+* **cloudtasks:** Add REST client ([06a54a1](https://github.com/googleapis/google-cloud-go/commit/06a54a16a5866cce966547c51e203b9e09a25bc0))
+
 ## [1.8.0](https://github.com/googleapis/google-cloud-go/compare/cloudtasks/v1.7.0...cloudtasks/v1.8.0) (2022-11-03)
 
 

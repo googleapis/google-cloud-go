@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -27,13 +27,13 @@ import (
 	"time"
 
 	osloginpb "cloud.google.com/go/oslogin/apiv1beta/osloginpb"
+	commonpb "cloud.google.com/go/oslogin/common/commonpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
-	commonpb "google.golang.org/genproto/googleapis/cloud/oslogin/common"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -617,6 +617,11 @@ func (c *restClient) CreateSshPublicKey(ctx context.Context, req *osloginpb.Crea
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v/sshPublicKeys", req.GetParent())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
@@ -670,6 +675,11 @@ func (c *restClient) DeletePosixAccount(ctx context.Context, req *osloginpb.Dele
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
@@ -704,6 +714,11 @@ func (c *restClient) DeleteSshPublicKey(ctx context.Context, req *osloginpb.Dele
 		return err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
@@ -742,6 +757,7 @@ func (c *restClient) GetLoginProfile(ctx context.Context, req *osloginpb.GetLogi
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v/loginProfile", req.GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetProjectId() != "" {
 		params.Add("projectId", fmt.Sprintf("%v", req.GetProjectId()))
 	}
@@ -807,6 +823,11 @@ func (c *restClient) GetSshPublicKey(ctx context.Context, req *osloginpb.GetSshP
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
@@ -870,6 +891,7 @@ func (c *restClient) ImportSshPublicKey(ctx context.Context, req *osloginpb.Impo
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v:importSshPublicKey", req.GetParent())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetProjectId() != "" {
 		params.Add("projectId", fmt.Sprintf("%v", req.GetProjectId()))
 	}
@@ -941,6 +963,7 @@ func (c *restClient) UpdateSshPublicKey(ctx context.Context, req *osloginpb.Upda
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
 		updateMask, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {

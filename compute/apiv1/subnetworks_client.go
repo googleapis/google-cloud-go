@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -25,14 +25,15 @@ import (
 	"net/http"
 	"net/url"
 	"sort"
+	"time"
 
+	computepb "cloud.google.com/go/compute/apiv1/computepb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	httptransport "google.golang.org/api/transport/http"
-	computepb "google.golang.org/genproto/googleapis/cloud/compute/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/encoding/protojson"
@@ -59,14 +60,64 @@ type SubnetworksCallOptions struct {
 
 func defaultSubnetworksRESTCallOptions() *SubnetworksCallOptions {
 	return &SubnetworksCallOptions{
-		AggregatedList:           []gax.CallOption{},
-		Delete:                   []gax.CallOption{},
-		ExpandIpCidrRange:        []gax.CallOption{},
-		Get:                      []gax.CallOption{},
-		GetIamPolicy:             []gax.CallOption{},
-		Insert:                   []gax.CallOption{},
-		List:                     []gax.CallOption{},
-		ListUsable:               []gax.CallOption{},
+		AggregatedList: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
+		Delete:            []gax.CallOption{},
+		ExpandIpCidrRange: []gax.CallOption{},
+		Get: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
+		GetIamPolicy: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
+		Insert: []gax.CallOption{},
+		List: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
+		ListUsable: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
 		Patch:                    []gax.CallOption{},
 		SetIamPolicy:             []gax.CallOption{},
 		SetPrivateIpGoogleAccess: []gax.CallOption{},
@@ -143,7 +194,7 @@ func (c *SubnetworksClient) ExpandIpCidrRange(ctx context.Context, req *computep
 	return c.internalClient.ExpandIpCidrRange(ctx, req, opts...)
 }
 
-// Get returns the specified subnetwork. Gets a list of available subnetworks list() request.
+// Get returns the specified subnetwork.
 func (c *SubnetworksClient) Get(ctx context.Context, req *computepb.GetSubnetworkRequest, opts ...gax.CallOption) (*computepb.Subnetwork, error) {
 	return c.internalClient.Get(ctx, req, opts...)
 }
@@ -522,7 +573,7 @@ func (c *subnetworksRESTClient) ExpandIpCidrRange(ctx context.Context, req *comp
 	return op, nil
 }
 
-// Get returns the specified subnetwork. Gets a list of available subnetworks list() request.
+// Get returns the specified subnetwork.
 func (c *subnetworksRESTClient) Get(ctx context.Context, req *computepb.GetSubnetworkRequest, opts ...gax.CallOption) (*computepb.Subnetwork, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {

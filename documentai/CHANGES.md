@@ -1,6 +1,170 @@
 # Changes
 
 
+## [1.18.1](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.18.0...documentai/v1.18.1) (2023-05-08)
+
+
+### Bug Fixes
+
+* **documentai:** Update grpc to v1.55.0 ([1147ce0](https://github.com/googleapis/google-cloud-go/commit/1147ce02a990276ca4f8ab7a1ab65c14da4450ef))
+
+## [1.18.0](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.17.0...documentai/v1.18.0) (2023-03-22)
+
+
+### Features
+
+* **documentai:** Add ImportProcessorVersion in v1beta3 ([c967961](https://github.com/googleapis/google-cloud-go/commit/c967961ed95750e173af0193ec8d0974471f43ff))
+
+## [1.17.0](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.16.0...documentai/v1.17.0) (2023-03-15)
+
+
+### Features
+
+* **documentai:** Added hints.language_hints field in OcrConfig ([#7522](https://github.com/googleapis/google-cloud-go/issues/7522)) ([b2c40c3](https://github.com/googleapis/google-cloud-go/commit/b2c40c3df916691b82f1b384eac5bc953960960a))
+
+## [1.16.0](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.15.0...documentai/v1.16.0) (2023-02-22)
+
+
+### Features
+
+* **documentai:** ROLLBACK ([#7439](https://github.com/googleapis/google-cloud-go/issues/7439)) ([932ddc8](https://github.com/googleapis/google-cloud-go/commit/932ddc87ed3889bd5b132d4c2307b1017c3ef3a2))
+
+## [1.15.0](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.8.0...documentai/v1.15.0) (2023-02-14)
+
+
+### ⚠ BREAKING CHANGES
+
+* **documentai:** The TrainProcessorVersion parent was incorrectly annotated.
+
+### Features
+
+* **documentai:** Add REST client ([06a54a1](https://github.com/googleapis/google-cloud-go/commit/06a54a16a5866cce966547c51e203b9e09a25bc0))
+* **documentai:** Added advanced_ocr_options field in OcrConfig ([45c70e3](https://github.com/googleapis/google-cloud-go/commit/45c70e31e12ae5bb9ad9644648eb154ff5c033df))
+* **documentai:** Added EvaluationReference to evaluation.proto ([#7290](https://github.com/googleapis/google-cloud-go/issues/7290)) ([4623db8](https://github.com/googleapis/google-cloud-go/commit/4623db86fb70305278f6740999ecaee674506052))
+* **documentai:** Added field_mask field in DocumentOutputConfig.GcsOutputConfig in document_io.proto ([2a0b1ae](https://github.com/googleapis/google-cloud-go/commit/2a0b1aeb1683222e6aa5c876cb945845c00cef79))
+* **documentai:** Added font_family to document.proto feat: added ImageQualityScores message to document.proto feat: added PropertyMetadata and EntityTypeMetadata to document_schema.proto ([9c5d6c8](https://github.com/googleapis/google-cloud-go/commit/9c5d6c857b9deece4663d37fc6c834fd758b98ca))
+* **documentai:** Added TrainProcessorVersion, EvaluateProcessorVersion, GetEvaluation, and ListEvaluations v1beta3 APIs feat: added evaluation.proto feat: added document_schema field in ProcessorVersion processor.proto feat: added image_quality_scores field in Document.Page in document.proto feat: added font_family field in Document.Style in document.proto ([ac0c5c2](https://github.com/googleapis/google-cloud-go/commit/ac0c5c21221e8d055e6b8b1c473600c58e306b00))
+* **documentai:** Exposed GetProcessorType to v1 ([447afdd](https://github.com/googleapis/google-cloud-go/commit/447afddf34d59c599cabe5415b4f9265b228bb9a))
+* **documentai:** Exposed GetProcessorType to v1beta3 ([447afdd](https://github.com/googleapis/google-cloud-go/commit/447afddf34d59c599cabe5415b4f9265b228bb9a))
+* **documentai:** Rewrite signatures in terms of new location ([3c4b2b3](https://github.com/googleapis/google-cloud-go/commit/3c4b2b34565795537aac1661e6af2442437e34ad))
+* **documentai:** Start generating stubs dir ([de2d180](https://github.com/googleapis/google-cloud-go/commit/de2d18066dc613b72f6f8db93ca60146dabcfdcc))
+
+
+### Miscellaneous Chores
+
+* **documentai:** Release 1.15.0 ([#7426](https://github.com/googleapis/google-cloud-go/issues/7426)) ([672d8c2](https://github.com/googleapis/google-cloud-go/commit/672d8c20f7cbce9fbd9b2d5e29cfb803f1e51d2d))
+* **documentai:** Release 1.8.0 ([#7423](https://github.com/googleapis/google-cloud-go/issues/7423)) ([a10f592](https://github.com/googleapis/google-cloud-go/commit/a10f592f85641153832d713551e0246d9b5a1174))
+
+## [1.8.0](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.7.0...documentai/v1.8.0) (2023-02-14)
+
+
+### Features
+
+* **documentai:** Add REST client ([06a54a1](https://github.com/googleapis/google-cloud-go/commit/06a54a16a5866cce966547c51e203b9e09a25bc0))
+* **documentai:** Added advanced_ocr_options field in OcrConfig ([45c70e3](https://github.com/googleapis/google-cloud-go/commit/45c70e31e12ae5bb9ad9644648eb154ff5c033df))
+* **documentai:** Added EvaluationReference to evaluation.proto ([#7290](https://github.com/googleapis/google-cloud-go/issues/7290)) ([4623db8](https://github.com/googleapis/google-cloud-go/commit/4623db86fb70305278f6740999ecaee674506052))
+* **documentai:** Added field_mask field in DocumentOutputConfig.GcsOutputConfig in document_io.proto ([2a0b1ae](https://github.com/googleapis/google-cloud-go/commit/2a0b1aeb1683222e6aa5c876cb945845c00cef79))
+* **documentai:** Added font_family to document.proto feat: added ImageQualityScores message to document.proto feat: added PropertyMetadata and EntityTypeMetadata to document_schema.proto ([9c5d6c8](https://github.com/googleapis/google-cloud-go/commit/9c5d6c857b9deece4663d37fc6c834fd758b98ca))
+* **documentai:** Added TrainProcessorVersion, EvaluateProcessorVersion, GetEvaluation, and ListEvaluations v1beta3 APIs feat: added evaluation.proto feat: added document_schema field in ProcessorVersion processor.proto feat: added image_quality_scores field in Document.Page in document.proto feat: added font_family field in Document.Style in document.proto ([ac0c5c2](https://github.com/googleapis/google-cloud-go/commit/ac0c5c21221e8d055e6b8b1c473600c58e306b00))
+* **documentai:** Exposed GetProcessorType to v1 ([447afdd](https://github.com/googleapis/google-cloud-go/commit/447afddf34d59c599cabe5415b4f9265b228bb9a))
+* **documentai:** Exposed GetProcessorType to v1beta3 ([447afdd](https://github.com/googleapis/google-cloud-go/commit/447afddf34d59c599cabe5415b4f9265b228bb9a))
+* **documentai:** Rewrite signatures in terms of new location ([3c4b2b3](https://github.com/googleapis/google-cloud-go/commit/3c4b2b34565795537aac1661e6af2442437e34ad))
+* **documentai:** Rewrite signatures in terms of new types for betas ([9f303f9](https://github.com/googleapis/google-cloud-go/commit/9f303f9efc2e919a9a6bd828f3cdb1fcb3b8b390))
+* **documentai:** Start generating stubs dir ([de2d180](https://github.com/googleapis/google-cloud-go/commit/de2d18066dc613b72f6f8db93ca60146dabcfdcc))
+
+
+### Miscellaneous Chores
+
+* **documentai:** Release 1.8.0 ([#7423](https://github.com/googleapis/google-cloud-go/issues/7423)) ([a10f592](https://github.com/googleapis/google-cloud-go/commit/a10f592f85641153832d713551e0246d9b5a1174))
+
+## [1.7.0](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.6.0...documentai/v1.7.0) (2023-01-31)
+
+
+### Features
+
+* **documentai:** Add REST client ([06a54a1](https://github.com/googleapis/google-cloud-go/commit/06a54a16a5866cce966547c51e203b9e09a25bc0))
+* **documentai:** Added advanced_ocr_options field in OcrConfig ([45c70e3](https://github.com/googleapis/google-cloud-go/commit/45c70e31e12ae5bb9ad9644648eb154ff5c033df))
+* **documentai:** Added field_mask field in DocumentOutputConfig.GcsOutputConfig in document_io.proto ([2a0b1ae](https://github.com/googleapis/google-cloud-go/commit/2a0b1aeb1683222e6aa5c876cb945845c00cef79))
+* **documentai:** Added font_family to document.proto feat: added ImageQualityScores message to document.proto feat: added PropertyMetadata and EntityTypeMetadata to document_schema.proto ([9c5d6c8](https://github.com/googleapis/google-cloud-go/commit/9c5d6c857b9deece4663d37fc6c834fd758b98ca))
+* **documentai:** Added TrainProcessorVersion, EvaluateProcessorVersion, GetEvaluation, and ListEvaluations v1beta3 APIs feat: added evaluation.proto feat: added document_schema field in ProcessorVersion processor.proto feat: added image_quality_scores field in Document.Page in document.proto feat: added font_family field in Document.Style in document.proto ([ac0c5c2](https://github.com/googleapis/google-cloud-go/commit/ac0c5c21221e8d055e6b8b1c473600c58e306b00))
+* **documentai:** Exposed GetProcessorType to v1 ([447afdd](https://github.com/googleapis/google-cloud-go/commit/447afddf34d59c599cabe5415b4f9265b228bb9a))
+* **documentai:** Exposed GetProcessorType to v1beta3 ([447afdd](https://github.com/googleapis/google-cloud-go/commit/447afddf34d59c599cabe5415b4f9265b228bb9a))
+* **documentai:** Rewrite signatures in terms of new location ([3c4b2b3](https://github.com/googleapis/google-cloud-go/commit/3c4b2b34565795537aac1661e6af2442437e34ad))
+* **documentai:** Rewrite signatures in terms of new types for betas ([9f303f9](https://github.com/googleapis/google-cloud-go/commit/9f303f9efc2e919a9a6bd828f3cdb1fcb3b8b390))
+* **documentai:** Start generating proto message types ([563f546](https://github.com/googleapis/google-cloud-go/commit/563f546262e68102644db64134d1071fc8caa383))
+* **documentai:** Start generating stubs dir ([de2d180](https://github.com/googleapis/google-cloud-go/commit/de2d18066dc613b72f6f8db93ca60146dabcfdcc))
+
+## [1.6.0](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.5.0...documentai/v1.6.0) (2023-01-26)
+
+
+### Features
+
+* **documentai/apiv1beta3:** Add REST transport ([f7b0822](https://github.com/googleapis/google-cloud-go/commit/f7b082212b1e46ff2f4126b52d49618785c2e8ca))
+* **documentai:** Add REST client ([06a54a1](https://github.com/googleapis/google-cloud-go/commit/06a54a16a5866cce966547c51e203b9e09a25bc0))
+* **documentai:** Added field_mask field in DocumentOutputConfig.GcsOutputConfig in document_io.proto ([2a0b1ae](https://github.com/googleapis/google-cloud-go/commit/2a0b1aeb1683222e6aa5c876cb945845c00cef79))
+* **documentai:** Added font_family to document.proto feat: added ImageQualityScores message to document.proto feat: added PropertyMetadata and EntityTypeMetadata to document_schema.proto ([9c5d6c8](https://github.com/googleapis/google-cloud-go/commit/9c5d6c857b9deece4663d37fc6c834fd758b98ca))
+* **documentai:** Added TrainProcessorVersion, EvaluateProcessorVersion, GetEvaluation, and ListEvaluations v1beta3 APIs feat: added evaluation.proto feat: added document_schema field in ProcessorVersion processor.proto feat: added image_quality_scores field in Document.Page in document.proto feat: added font_family field in Document.Style in document.proto ([ac0c5c2](https://github.com/googleapis/google-cloud-go/commit/ac0c5c21221e8d055e6b8b1c473600c58e306b00))
+* **documentai:** Exposed GetProcessorType to v1 ([447afdd](https://github.com/googleapis/google-cloud-go/commit/447afddf34d59c599cabe5415b4f9265b228bb9a))
+* **documentai:** Exposed GetProcessorType to v1beta3 ([447afdd](https://github.com/googleapis/google-cloud-go/commit/447afddf34d59c599cabe5415b4f9265b228bb9a))
+* **documentai:** Rewrite signatures in terms of new location ([3c4b2b3](https://github.com/googleapis/google-cloud-go/commit/3c4b2b34565795537aac1661e6af2442437e34ad))
+* **documentai:** Rewrite signatures in terms of new types for betas ([9f303f9](https://github.com/googleapis/google-cloud-go/commit/9f303f9efc2e919a9a6bd828f3cdb1fcb3b8b390))
+* **documentai:** Start generating proto message types ([563f546](https://github.com/googleapis/google-cloud-go/commit/563f546262e68102644db64134d1071fc8caa383))
+* **documentai:** Start generating stubs dir ([de2d180](https://github.com/googleapis/google-cloud-go/commit/de2d18066dc613b72f6f8db93ca60146dabcfdcc))
+
+## [1.5.0](https://github.com/googleapis/google-cloud-go/compare/documentai-v1.15.0...documentai/v1.5.0) (2023-01-26)
+
+
+### ⚠ BREAKING CHANGES
+
+* **documentai:** Changed the name field for ProcessRequest and BatchProcessorRequest to accept * so the name field can accept Processor and ProcessorVersion.
+
+### Features
+
+* **documentai/apiv1beta3:** Add REST transport ([f7b0822](https://github.com/googleapis/google-cloud-go/commit/f7b082212b1e46ff2f4126b52d49618785c2e8ca))
+* **documentai:** Add REST client ([06a54a1](https://github.com/googleapis/google-cloud-go/commit/06a54a16a5866cce966547c51e203b9e09a25bc0))
+* **documentai:** Added field_mask field in DocumentOutputConfig.GcsOutputConfig in document_io.proto ([2a0b1ae](https://github.com/googleapis/google-cloud-go/commit/2a0b1aeb1683222e6aa5c876cb945845c00cef79))
+* **documentai:** Added field_mask to ProcessRequest object in document_processor_service.proto feat: Added parent_ids to Revision object in document.proto feat: Added integer_values, float_values and non_present to Entity object in document.proto feat: Added corrected_key_text, correct_value_text to FormField object in document.proto feat: Added OperationMetadata resource feat!: Added Processor Management and Processor Version support to v1 library ([370e23e](https://github.com/googleapis/google-cloud-go/commit/370e23eaa342a7055a8d8b6f8fe9420f83afe43e))
+* **documentai:** Added font_family to document.proto feat: added ImageQualityScores message to document.proto feat: added PropertyMetadata and EntityTypeMetadata to document_schema.proto ([9c5d6c8](https://github.com/googleapis/google-cloud-go/commit/9c5d6c857b9deece4663d37fc6c834fd758b98ca))
+* **documentai:** Added TrainProcessorVersion, EvaluateProcessorVersion, GetEvaluation, and ListEvaluations v1beta3 APIs feat: added evaluation.proto feat: added document_schema field in ProcessorVersion processor.proto feat: added image_quality_scores field in Document.Page in document.proto feat: added font_family field in Document.Style in document.proto ([ac0c5c2](https://github.com/googleapis/google-cloud-go/commit/ac0c5c21221e8d055e6b8b1c473600c58e306b00))
+* **documentai:** Exposed GetProcessorType to v1 ([447afdd](https://github.com/googleapis/google-cloud-go/commit/447afddf34d59c599cabe5415b4f9265b228bb9a))
+* **documentai:** Exposed GetProcessorType to v1beta3 ([447afdd](https://github.com/googleapis/google-cloud-go/commit/447afddf34d59c599cabe5415b4f9265b228bb9a))
+* **documentai:** Rewrite signatures in terms of new location ([3c4b2b3](https://github.com/googleapis/google-cloud-go/commit/3c4b2b34565795537aac1661e6af2442437e34ad))
+* **documentai:** Rewrite signatures in terms of new types for betas ([9f303f9](https://github.com/googleapis/google-cloud-go/commit/9f303f9efc2e919a9a6bd828f3cdb1fcb3b8b390))
+* **documentai:** Start generating proto message types ([563f546](https://github.com/googleapis/google-cloud-go/commit/563f546262e68102644db64134d1071fc8caa383))
+* **documentai:** Start generating stubs dir ([de2d180](https://github.com/googleapis/google-cloud-go/commit/de2d18066dc613b72f6f8db93ca60146dabcfdcc))
+
+
+### Documentation
+
+* **documentai:** Fix minor docstring formatting ([370e23e](https://github.com/googleapis/google-cloud-go/commit/370e23eaa342a7055a8d8b6f8fe9420f83afe43e))
+
+
+### Miscellaneous Chores
+
+* **documentai:** Release v1.5.0 ([#6522](https://github.com/googleapis/google-cloud-go/issues/6522)) ([4169a66](https://github.com/googleapis/google-cloud-go/commit/4169a66d15e99a14d3a59fd5d0e9a8f4509f0643))
+
+## [1.15.0](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.14.0...documentai/v1.15.0) (2023-01-26)
+
+
+### Features
+
+* **documentai:** Exposed GetProcessorType to v1 ([447afdd](https://github.com/googleapis/google-cloud-go/commit/447afddf34d59c599cabe5415b4f9265b228bb9a))
+* **documentai:** Exposed GetProcessorType to v1beta3 ([447afdd](https://github.com/googleapis/google-cloud-go/commit/447afddf34d59c599cabe5415b4f9265b228bb9a))
+
+## [1.14.0](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.13.0...documentai/v1.14.0) (2023-01-04)
+
+
+### Features
+
+* **documentai:** Add REST client ([06a54a1](https://github.com/googleapis/google-cloud-go/commit/06a54a16a5866cce966547c51e203b9e09a25bc0))
+
+## [1.13.0](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.12.0...documentai/v1.13.0) (2022-12-01)
+
+
+### Features
+
+* **documentai:** added field_mask field in DocumentOutputConfig.GcsOutputConfig in document_io.proto ([2a0b1ae](https://github.com/googleapis/google-cloud-go/commit/2a0b1aeb1683222e6aa5c876cb945845c00cef79))
+
 ## [1.12.0](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.11.0...documentai/v1.12.0) (2022-11-16)
 
 

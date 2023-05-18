@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -25,14 +25,15 @@ import (
 	"net/http"
 	"net/url"
 	"sort"
+	"time"
 
+	computepb "cloud.google.com/go/compute/apiv1/computepb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	httptransport "google.golang.org/api/transport/http"
-	computepb "google.golang.org/genproto/googleapis/cloud/compute/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/encoding/protojson"
@@ -57,16 +58,66 @@ type RoutersCallOptions struct {
 
 func defaultRoutersRESTCallOptions() *RoutersCallOptions {
 	return &RoutersCallOptions{
-		AggregatedList:    []gax.CallOption{},
-		Delete:            []gax.CallOption{},
-		Get:               []gax.CallOption{},
-		GetNatMappingInfo: []gax.CallOption{},
-		GetRouterStatus:   []gax.CallOption{},
-		Insert:            []gax.CallOption{},
-		List:              []gax.CallOption{},
-		Patch:             []gax.CallOption{},
-		Preview:           []gax.CallOption{},
-		Update:            []gax.CallOption{},
+		AggregatedList: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
+		Delete: []gax.CallOption{},
+		Get: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
+		GetNatMappingInfo: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
+		GetRouterStatus: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
+		Insert: []gax.CallOption{},
+		List: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
+		Patch:   []gax.CallOption{},
+		Preview: []gax.CallOption{},
+		Update:  []gax.CallOption{},
 	}
 }
 
@@ -132,7 +183,7 @@ func (c *RoutersClient) Delete(ctx context.Context, req *computepb.DeleteRouterR
 	return c.internalClient.Delete(ctx, req, opts...)
 }
 
-// Get returns the specified Router resource. Gets a list of available routers by making a list() request.
+// Get returns the specified Router resource.
 func (c *RoutersClient) Get(ctx context.Context, req *computepb.GetRouterRequest, opts ...gax.CallOption) (*computepb.Router, error) {
 	return c.internalClient.Get(ctx, req, opts...)
 }
@@ -431,7 +482,7 @@ func (c *routersRESTClient) Delete(ctx context.Context, req *computepb.DeleteRou
 	return op, nil
 }
 
-// Get returns the specified Router resource. Gets a list of available routers by making a list() request.
+// Get returns the specified Router resource.
 func (c *routersRESTClient) Get(ctx context.Context, req *computepb.GetRouterRequest, opts ...gax.CallOption) (*computepb.Router, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {

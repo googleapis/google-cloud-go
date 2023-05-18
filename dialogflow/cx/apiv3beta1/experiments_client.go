@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -27,6 +27,7 @@ import (
 	"time"
 
 	cxpb "cloud.google.com/go/dialogflow/cx/apiv3beta1/cxpb"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
@@ -35,7 +36,6 @@ import (
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -262,7 +262,8 @@ type internalExperimentsClient interface {
 // ExperimentsClient is a client for interacting with Dialogflow API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
-// Service for managing Experiments.
+// Service for managing
+// Experiments.
 type ExperimentsClient struct {
 	// The internal transport-dependent client.
 	internalClient internalExperimentsClient
@@ -294,39 +295,47 @@ func (c *ExperimentsClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// ListExperiments returns the list of all experiments in the specified Environment.
+// ListExperiments returns the list of all experiments in the specified
+// Environment.
 func (c *ExperimentsClient) ListExperiments(ctx context.Context, req *cxpb.ListExperimentsRequest, opts ...gax.CallOption) *ExperimentIterator {
 	return c.internalClient.ListExperiments(ctx, req, opts...)
 }
 
-// GetExperiment retrieves the specified Experiment.
+// GetExperiment retrieves the specified
+// Experiment.
 func (c *ExperimentsClient) GetExperiment(ctx context.Context, req *cxpb.GetExperimentRequest, opts ...gax.CallOption) (*cxpb.Experiment, error) {
 	return c.internalClient.GetExperiment(ctx, req, opts...)
 }
 
-// CreateExperiment creates an Experiment in the specified Environment.
+// CreateExperiment creates an Experiment in
+// the specified
+// Environment.
 func (c *ExperimentsClient) CreateExperiment(ctx context.Context, req *cxpb.CreateExperimentRequest, opts ...gax.CallOption) (*cxpb.Experiment, error) {
 	return c.internalClient.CreateExperiment(ctx, req, opts...)
 }
 
-// UpdateExperiment updates the specified Experiment.
+// UpdateExperiment updates the specified
+// Experiment.
 func (c *ExperimentsClient) UpdateExperiment(ctx context.Context, req *cxpb.UpdateExperimentRequest, opts ...gax.CallOption) (*cxpb.Experiment, error) {
 	return c.internalClient.UpdateExperiment(ctx, req, opts...)
 }
 
-// DeleteExperiment deletes the specified Experiment.
+// DeleteExperiment deletes the specified
+// Experiment.
 func (c *ExperimentsClient) DeleteExperiment(ctx context.Context, req *cxpb.DeleteExperimentRequest, opts ...gax.CallOption) error {
 	return c.internalClient.DeleteExperiment(ctx, req, opts...)
 }
 
-// StartExperiment starts the specified Experiment. This rpc only changes the state of
-// experiment from PENDING to RUNNING.
+// StartExperiment starts the specified
+// Experiment. This rpc only
+// changes the state of experiment from PENDING to RUNNING.
 func (c *ExperimentsClient) StartExperiment(ctx context.Context, req *cxpb.StartExperimentRequest, opts ...gax.CallOption) (*cxpb.Experiment, error) {
 	return c.internalClient.StartExperiment(ctx, req, opts...)
 }
 
-// StopExperiment stops the specified Experiment. This rpc only changes the state of
-// experiment from RUNNING to DONE.
+// StopExperiment stops the specified
+// Experiment. This rpc only
+// changes the state of experiment from RUNNING to DONE.
 func (c *ExperimentsClient) StopExperiment(ctx context.Context, req *cxpb.StopExperimentRequest, opts ...gax.CallOption) (*cxpb.Experiment, error) {
 	return c.internalClient.StopExperiment(ctx, req, opts...)
 }
@@ -383,7 +392,8 @@ type experimentsGRPCClient struct {
 // NewExperimentsClient creates a new experiments client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
-// Service for managing Experiments.
+// Service for managing
+// Experiments.
 func NewExperimentsClient(ctx context.Context, opts ...option.ClientOption) (*ExperimentsClient, error) {
 	clientOpts := defaultExperimentsGRPCClientOptions()
 	if newExperimentsClientHook != nil {
@@ -460,7 +470,8 @@ type experimentsRESTClient struct {
 
 // NewExperimentsRESTClient creates a new experiments rest client.
 //
-// Service for managing Experiments.
+// Service for managing
+// Experiments.
 func NewExperimentsRESTClient(ctx context.Context, opts ...option.ClientOption) (*ExperimentsClient, error) {
 	clientOpts := append(defaultExperimentsRESTClientOptions(), opts...)
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
@@ -821,7 +832,8 @@ func (c *experimentsGRPCClient) ListOperations(ctx context.Context, req *longrun
 	return it
 }
 
-// ListExperiments returns the list of all experiments in the specified Environment.
+// ListExperiments returns the list of all experiments in the specified
+// Environment.
 func (c *experimentsRESTClient) ListExperiments(ctx context.Context, req *cxpb.ListExperimentsRequest, opts ...gax.CallOption) *ExperimentIterator {
 	it := &ExperimentIterator{}
 	req = proto.Clone(req).(*cxpb.ListExperimentsRequest)
@@ -843,6 +855,7 @@ func (c *experimentsRESTClient) ListExperiments(ctx context.Context, req *cxpb.L
 		baseUrl.Path += fmt.Sprintf("/v3beta1/%v/experiments", req.GetParent())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetPageSize() != 0 {
 			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
 		}
@@ -908,13 +921,19 @@ func (c *experimentsRESTClient) ListExperiments(ctx context.Context, req *cxpb.L
 	return it
 }
 
-// GetExperiment retrieves the specified Experiment.
+// GetExperiment retrieves the specified
+// Experiment.
 func (c *experimentsRESTClient) GetExperiment(ctx context.Context, req *cxpb.GetExperimentRequest, opts ...gax.CallOption) (*cxpb.Experiment, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
@@ -961,7 +980,9 @@ func (c *experimentsRESTClient) GetExperiment(ctx context.Context, req *cxpb.Get
 	return resp, nil
 }
 
-// CreateExperiment creates an Experiment in the specified Environment.
+// CreateExperiment creates an Experiment in
+// the specified
+// Environment.
 func (c *experimentsRESTClient) CreateExperiment(ctx context.Context, req *cxpb.CreateExperimentRequest, opts ...gax.CallOption) (*cxpb.Experiment, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetExperiment()
@@ -975,6 +996,11 @@ func (c *experimentsRESTClient) CreateExperiment(ctx context.Context, req *cxpb.
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v/experiments", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
@@ -1021,7 +1047,8 @@ func (c *experimentsRESTClient) CreateExperiment(ctx context.Context, req *cxpb.
 	return resp, nil
 }
 
-// UpdateExperiment updates the specified Experiment.
+// UpdateExperiment updates the specified
+// Experiment.
 func (c *experimentsRESTClient) UpdateExperiment(ctx context.Context, req *cxpb.UpdateExperimentRequest, opts ...gax.CallOption) (*cxpb.Experiment, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetExperiment()
@@ -1037,6 +1064,7 @@ func (c *experimentsRESTClient) UpdateExperiment(ctx context.Context, req *cxpb.
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v", req.GetExperiment().GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
 		updateMask, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
@@ -1092,13 +1120,19 @@ func (c *experimentsRESTClient) UpdateExperiment(ctx context.Context, req *cxpb.
 	return resp, nil
 }
 
-// DeleteExperiment deletes the specified Experiment.
+// DeleteExperiment deletes the specified
+// Experiment.
 func (c *experimentsRESTClient) DeleteExperiment(ctx context.Context, req *cxpb.DeleteExperimentRequest, opts ...gax.CallOption) error {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
 		return err
 	}
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
@@ -1127,8 +1161,9 @@ func (c *experimentsRESTClient) DeleteExperiment(ctx context.Context, req *cxpb.
 	}, opts...)
 }
 
-// StartExperiment starts the specified Experiment. This rpc only changes the state of
-// experiment from PENDING to RUNNING.
+// StartExperiment starts the specified
+// Experiment. This rpc only
+// changes the state of experiment from PENDING to RUNNING.
 func (c *experimentsRESTClient) StartExperiment(ctx context.Context, req *cxpb.StartExperimentRequest, opts ...gax.CallOption) (*cxpb.Experiment, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -1141,6 +1176,11 @@ func (c *experimentsRESTClient) StartExperiment(ctx context.Context, req *cxpb.S
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v:start", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
@@ -1187,8 +1227,9 @@ func (c *experimentsRESTClient) StartExperiment(ctx context.Context, req *cxpb.S
 	return resp, nil
 }
 
-// StopExperiment stops the specified Experiment. This rpc only changes the state of
-// experiment from RUNNING to DONE.
+// StopExperiment stops the specified
+// Experiment. This rpc only
+// changes the state of experiment from RUNNING to DONE.
 func (c *experimentsRESTClient) StopExperiment(ctx context.Context, req *cxpb.StopExperimentRequest, opts ...gax.CallOption) (*cxpb.Experiment, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -1201,6 +1242,11 @@ func (c *experimentsRESTClient) StopExperiment(ctx context.Context, req *cxpb.St
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v:stop", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
@@ -1254,6 +1300,11 @@ func (c *experimentsRESTClient) GetLocation(ctx context.Context, req *locationpb
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
@@ -1322,6 +1373,7 @@ func (c *experimentsRESTClient) ListLocations(ctx context.Context, req *location
 		baseUrl.Path += fmt.Sprintf("/v3beta1/%v/locations", req.GetName())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -1398,6 +1450,11 @@ func (c *experimentsRESTClient) CancelOperation(ctx context.Context, req *longru
 	}
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v:cancel", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
@@ -1432,6 +1489,11 @@ func (c *experimentsRESTClient) GetOperation(ctx context.Context, req *longrunni
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
@@ -1500,6 +1562,7 @@ func (c *experimentsRESTClient) ListOperations(ctx context.Context, req *longrun
 		baseUrl.Path += fmt.Sprintf("/v3beta1/%v/operations", req.GetName())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}

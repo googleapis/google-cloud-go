@@ -20,13 +20,13 @@ import (
 	"testing"
 	"time"
 
+	pb "cloud.google.com/go/firestore/apiv1/firestorepb"
 	"cloud.google.com/go/internal/testutil"
 	"github.com/golang/protobuf/ptypes"
 	tspb "github.com/golang/protobuf/ptypes/timestamp"
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
 	"google.golang.org/api/option"
-	pb "google.golang.org/genproto/googleapis/firestore/v1"
 	"google.golang.org/genproto/googleapis/type/latlng"
 	"google.golang.org/grpc"
 )
@@ -50,7 +50,7 @@ func mustTimestampProto(t time.Time) *tspb.Timestamp {
 
 var cmpOpts = []cmp.Option{
 	cmp.AllowUnexported(DocumentSnapshot{},
-		Query{}, filter{}, order{}, fpv{}, DocumentRef{}, CollectionRef{}, Query{}),
+		Query{}, OrFilter{}, AndFilter{}, PropertyPathFilter{}, PropertyFilter{}, order{}, fpv{}, DocumentRef{}, CollectionRef{}, Query{}),
 	cmpopts.IgnoreTypes(Client{}, &Client{}),
 	cmp.Comparer(func(*readSettings, *readSettings) bool {
 		return true // Don't try to compare two readSettings pointer types

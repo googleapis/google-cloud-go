@@ -1,6 +1,197 @@
 # Changes
 
 
+## [1.42.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.41.0...aiplatform/v1.42.0) (2023-05-16)
+
+
+### Features
+
+* **aiplatform:** Add examples to ExplanationParameters in aiplatform v1 explanation.proto ([7c2f642](https://github.com/googleapis/google-cloud-go/commit/7c2f642ac308fcdfcb41985aae425785afa27823))
+
+## [1.41.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.40.1...aiplatform/v1.41.0) (2023-05-10)
+
+
+### Features
+
+* **aiplatform:** Add example_gcs_source to Examples in aiplatform v1beta1 explanation.proto PiperOrigin-RevId: 529739833 ([31c3766](https://github.com/googleapis/google-cloud-go/commit/31c3766c9c4cab411669c14fc1a30bd6d2e3f2dd))
+
+## [1.40.1](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.40.0...aiplatform/v1.40.1) (2023-05-08)
+
+
+### Bug Fixes
+
+* **aiplatform:** Update grpc to v1.55.0 ([1147ce0](https://github.com/googleapis/google-cloud-go/commit/1147ce02a990276ca4f8ab7a1ab65c14da4450ef))
+
+## [1.40.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.39.0...aiplatform/v1.40.0) (2023-05-01)
+
+
+### Features
+
+* **aiplatform:** Support for Model Garden -- A single place to search, discover, and interact with a wide variety of foundation models from Google and Google partners, available on Vertex AI ([#7849](https://github.com/googleapis/google-cloud-go/issues/7849)) ([ac00efc](https://github.com/googleapis/google-cloud-go/commit/ac00efcab5d7e2292d5b7cc60dd1196a1f8279a4))
+
+## [1.39.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.38.0...aiplatform/v1.39.0) (2023-04-25)
+
+
+### Features
+
+* **aiplatform:** Add is_default to Tensorboard in aiplatform v1 tensorboard.proto and v1beta1 tensorboard.proto ([87a67b4](https://github.com/googleapis/google-cloud-go/commit/87a67b44b2c7ffc3cea986b255614ea0d21aa6fc))
+
+## [1.38.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.37.0...aiplatform/v1.38.0) (2023-04-11)
+
+
+### Features
+
+* **aiplatform:** Add notification_channels in aiplatform v1beta1 model_monitoring.proto ([#7719](https://github.com/googleapis/google-cloud-go/issues/7719)) ([23c974a](https://github.com/googleapis/google-cloud-go/commit/23c974a019693e6453c1342cad172df77f86974e))
+
+## [1.37.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.36.1...aiplatform/v1.37.0) (2023-04-04)
+
+
+### Features
+
+* **aiplatform:** Add public_endpoint_enabled and publid_endpoint_domain_name to IndexEndpoint ([c893c15](https://github.com/googleapis/google-cloud-go/commit/c893c158f1e6d03b0cde45dda2059c0e2aa9ead1))
+* **aiplatform:** Add public_endpoint_enabled and publid_endpoint_domain_name to IndexEndpoint ([c893c15](https://github.com/googleapis/google-cloud-go/commit/c893c158f1e6d03b0cde45dda2059c0e2aa9ead1))
+* **aiplatform:** ScheduleService (schedule_service.proto) creates and manages Schedule resources to launch scheduled pipelines runs ([597ea0f](https://github.com/googleapis/google-cloud-go/commit/597ea0fe09bcea04e884dffe78add850edb2120d))
+
+## [1.36.1](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.36.0...aiplatform/v1.36.1) (2023-03-22)
+
+
+### Bug Fixes
+
+* **aiplatform:** Remove large_model_reference from Model in aiplatform v1beta1 model.proto ([#7582](https://github.com/googleapis/google-cloud-go/issues/7582)) ([4497130](https://github.com/googleapis/google-cloud-go/commit/44971302a2a4bd0eee6c50524b630bad41b2cca4))
+
+## [1.36.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.35.0...aiplatform/v1.36.0) (2023-03-15)
+
+
+### Features
+
+* **aiplatform:** Add disable_container_logging to BatchPredictionJob in aiplatform v1,v1beta1 batch_prediction_job.proto ([8c98464](https://github.com/googleapis/google-cloud-go/commit/8c9846414f57620db198bad863cca38529d39e9e))
+* **aiplatform:** Add evaluated_annotation.proto to aiplatform v1beta1 ([8c98464](https://github.com/googleapis/google-cloud-go/commit/8c9846414f57620db198bad863cca38529d39e9e))
+* **aiplatform:** Add split to ExportDataConfig in aiplatform v1 dataset.proto ([8c98464](https://github.com/googleapis/google-cloud-go/commit/8c9846414f57620db198bad863cca38529d39e9e))
+
+## [1.35.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.34.0...aiplatform/v1.35.0) (2023-02-22)
+
+
+### Features
+
+* **aiplatform:** Add match service in aiplatform v1beta1 match_service.proto ([932ddc8](https://github.com/googleapis/google-cloud-go/commit/932ddc87ed3889bd5b132d4c2307b1017c3ef3a2))
+
+## [1.34.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.33.0...aiplatform/v1.34.0) (2023-02-14)
+
+
+### Features
+
+* **aiplatform:** Add disable_explanations to DeployedModel in aiplatform v1beta1 endpoint.proto ([4623db8](https://github.com/googleapis/google-cloud-go/commit/4623db86fb70305278f6740999ecaee674506052))
+* **aiplatform:** Add service_networking.proto to aiplatform v1 ([4623db8](https://github.com/googleapis/google-cloud-go/commit/4623db86fb70305278f6740999ecaee674506052))
+
+## [1.33.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform-v1.32.0...aiplatform/v1.33.0) (2023-01-26)
+
+
+### Features
+
+* **aiplatform/apiv1beta1:** Add REST transport ([f7b0822](https://github.com/googleapis/google-cloud-go/commit/f7b082212b1e46ff2f4126b52d49618785c2e8ca))
+* **aiplatform:** Add annotation_labels to ImportDataConfig in aiplatform v1 dataset.proto feat: add start_time to BatchReadFeatureValuesRequest in aiplatform v1 featurestore_service.proto feat: add metadata_artifact to Model in aiplatform v1 model.proto feat: add failed_main_jobs and failed_pre_caching_check_jobs to ContainerDetail in aiplatform v1 pipeline_job.proto feat: add persist_ml_use_assignment to InputDataConfig in aiplatform v1 training_pipeline.proto ([9c5d6c8](https://github.com/googleapis/google-cloud-go/commit/9c5d6c857b9deece4663d37fc6c834fd758b98ca))
+* **aiplatform:** Add deleteFeatureValues in aiplatform v1beta1 featurestore_service.proto ([bc7a5f6](https://github.com/googleapis/google-cloud-go/commit/bc7a5f609994f73e26f72a78f0ff14aa75c1c227))
+* **aiplatform:** Add DeploymentResourcePool in aiplatform v1beta1 deployment_resource_pool.proto feat: add DeploymentResourcePoolService in aiplatform v1beta1 deployment_resource_pool_service.proto feat: add SHARED_RESOURCES to DeploymentResourcesType in aiplatform v1beta1 model.proto ([1d6fbcc](https://github.com/googleapis/google-cloud-go/commit/1d6fbcc6406e2063201ef5a98de560bf32f7fb73))
+* **aiplatform:** Add enable_dashboard_access in aiplatform v1 and v1beta1 custom_job.proto ([447afdd](https://github.com/googleapis/google-cloud-go/commit/447afddf34d59c599cabe5415b4f9265b228bb9a))
+* **aiplatform:** Add instance_config to batch_prediction_job in aiplatform v1beta1 batch_prediction_job.proto ([2b4957c](https://github.com/googleapis/google-cloud-go/commit/2b4957c7c348ecf5952e02f3602379fffaa758b4))
+* **aiplatform:** Add instance_config to BatchPredictionJob in aiplatform v1 batch_prediction_job.proto ([ee41485](https://github.com/googleapis/google-cloud-go/commit/ee41485860bcbbd09ce4e28ee6ddca81a5f17211))
+* **aiplatform:** Add metadata_artifact to Dataset in aiplatform v1 dataset.proto feat: add WriteFeatureValues rpc to FeaturestoreOnlineServingService in aiplatform v1 featurestore_online_service.proto ([7231644](https://github.com/googleapis/google-cloud-go/commit/7231644e71f05abc864924a0065b9ea22a489180))
+* **aiplatform:** Add metadata_artifact to Dataset in aiplatform v1beta1 dataset.proto feat: add offline_storage_ttl_days to EntityType in aiplatform v1beta1 entity_type.proto feat: add online_storage_ttl_days to Featurestore in aiplatform v1beta1 featurestore.proto feat: add source_uris to ImportFeatureValuesOperationMetadata in aiplatform v1beta1 featurestore_service.proto ([7231644](https://github.com/googleapis/google-cloud-go/commit/7231644e71f05abc864924a0065b9ea22a489180))
+* **aiplatform:** Add model_monitoring_stats_anomalies,model_monitoring_status to BatchPredictionJob in aiplatform v1beta1 batch_prediction_job.proto ([e45ad9a](https://github.com/googleapis/google-cloud-go/commit/e45ad9af568c59151decc0dacedf137653b576dd))
+* **aiplatform:** Add model_source_info to Model in aiplatform v1 model.proto ([52dddd1](https://github.com/googleapis/google-cloud-go/commit/52dddd1ed89fbe77e1859311c3b993a77a82bfc7))
+* **aiplatform:** Add model_source_info to Model in aiplatform v1beta1 model.proto ([52dddd1](https://github.com/googleapis/google-cloud-go/commit/52dddd1ed89fbe77e1859311c3b993a77a82bfc7))
+* **aiplatform:** Add NVIDIA_A100_80GB to AcceleratorType in aiplatform v1beta1 accelerator_type.proto feat: add annotation_labels to ImportDataConfig in aiplatform v1beta1 dataset.proto feat: add total_deployed_model_count and total_endpoint_count to QueryDeployedModelsResponse in aiplatform v1beta1 deployment_resource_pool_service.proto feat: add start_time to BatchReadFeatureValuesRequest in aiplatform v1beta1 featurestore_service.proto feat: add metadata_artifact to Model in aiplatform v1beta1 model.proto feat: add failed_main_jobs and failed_pre_caching_check_jobs to ContainerDetail in aiplatform v1beta1 pipeline_job.proto feat: add persist_ml_use_assignment to InputDataConfig in aiplatform v1beta1 training_pipeline.proto ([9c5d6c8](https://github.com/googleapis/google-cloud-go/commit/9c5d6c857b9deece4663d37fc6c834fd758b98ca))
+* **aiplatform:** Add read_mask to ListPipelineJobsRequest in aiplatform v1 pipeline_service feat: add input_artifacts to PipelineJob.runtime_config in aiplatform v1 pipeline_job ([3bc37e2](https://github.com/googleapis/google-cloud-go/commit/3bc37e28626df5f7ec37b00c0c2f0bfb91c30495))
+* **aiplatform:** Add REST client ([06a54a1](https://github.com/googleapis/google-cloud-go/commit/06a54a16a5866cce966547c51e203b9e09a25bc0))
+* **aiplatform:** Add saved_queries to Dataset in aiplatform v1 dataset.proto feat: add order_by to ListModelVersionRequest in aiplatform v1 model_service.proto feat: add update_all_stopped_trials to ConvexAutomatedStoppingSpec in aiplatform v1 study.proto feat: add ReadTensorboardUsage rpc in aiplatform v1 tensorboard_service.proto ([ee41485](https://github.com/googleapis/google-cloud-go/commit/ee41485860bcbbd09ce4e28ee6ddca81a5f17211))
+* **aiplatform:** Add saved_queries to Dataset in aiplatform v1beta1 dataset.proto feat: add order_by to ListModelVersionRequest in aiplatform v1beta1 model_service.proto feat: add update_all_stopped_trials to ConvexAutomatedStoppingSpec in aiplatform v1beta1 study.proto feat: add ReadTensorboardUsage rpc in aiplatform v1beta1 tensorboard_service.proto ([ee41485](https://github.com/googleapis/google-cloud-go/commit/ee41485860bcbbd09ce4e28ee6ddca81a5f17211))
+* **aiplatform:** Add service_account to batch_prediction_job in aiplatform v1 batch_prediction_job.proto ([ac0c5c2](https://github.com/googleapis/google-cloud-go/commit/ac0c5c21221e8d055e6b8b1c473600c58e306b00))
+* **aiplatform:** Add timestamp_outside_retention_rows_count to ImportFeatureValuesResponse and ImportFeatureValuesOperationMetadata in aiplatform v1 featurestore_service.proto feat: add RemoveContextChildren rpc to aiplatform v1 metadata_service.proto feat: add order_by to ListArtifactsRequest, ListContextsRequest, and ListExecutionsRequest in aiplatform v1 metadata_service.proto ([52dddd1](https://github.com/googleapis/google-cloud-go/commit/52dddd1ed89fbe77e1859311c3b993a77a82bfc7))
+* **aiplatform:** Add timestamp_outside_retention_rows_count to ImportFeatureValuesResponse and ImportFeatureValuesOperationMetadata in aiplatform v1beta1 featurestore_service.proto feat: add RemoveContextChildren rpc to aiplatform v1beta1 metadata_service.proto feat: add order_by to ListArtifactsRequest, ListContextsRequest, and ListExecutionsRequest in aiplatform v1beta1 metadata_service.proto feat: add InputArtifact to RuntimeConfig in aiplatform v1beta1 pipeline_job.proto feat: add read_mask to ListPipelineJobsRequest in aiplatform v1beta1 pipeline_service.proto feat: add TransferLearningConfig in aiplatform v1beta1 study.proto ([52dddd1](https://github.com/googleapis/google-cloud-go/commit/52dddd1ed89fbe77e1859311c3b993a77a82bfc7))
+* **aiplatform:** Add UpsertDatapoints and RemoveDatapoints rpcs to IndexService in aiplatform v1 index_service.proto ([204b856](https://github.com/googleapis/google-cloud-go/commit/204b85632f2556ab2c74020250850b53f6a405ff))
+* **aiplatform:** Add UpsertDatapoints and RemoveDatapoints rpcs to IndexService in aiplatform v1beta1 index_service.proto ([204b856](https://github.com/googleapis/google-cloud-go/commit/204b85632f2556ab2c74020250850b53f6a405ff))
+* **aiplatform:** Add WriteFeatureValues in aiplatform v1beta1 featurestore_online_service.proto ([370e23e](https://github.com/googleapis/google-cloud-go/commit/370e23eaa342a7055a8d8b6f8fe9420f83afe43e))
+* **aiplatform:** Making network arg optional in aiplatform v1 custom_job.proto feat: added SHARED_RESOURCES enum to aiplatform v1 model.proto docs: doc edits to aiplatform v1 dataset_service.proto, job_service.proto, model_service.proto, pipeline_service.proto, saved_query.proto, study.proto, types.proto ([1d6fbcc](https://github.com/googleapis/google-cloud-go/commit/1d6fbcc6406e2063201ef5a98de560bf32f7fb73))
+* **aiplatform:** Making network arg optional in aiplatform v1beta1 custom_job.proto feat: DeploymentResourcePool and DeployementResourcePoolService added to aiplatform v1beta1 model.proto (cl/463147866) docs: doc edits to aiplatform v1beta1 job_service.proto, model_service.proto, pipeline_service.proto, saved_query.proto, study.proto, types.proto ([1d6fbcc](https://github.com/googleapis/google-cloud-go/commit/1d6fbcc6406e2063201ef5a98de560bf32f7fb73))
+* **aiplatform:** Rewrite beta methods in terms of new stub location ([#6735](https://github.com/googleapis/google-cloud-go/issues/6735)) ([095cafd](https://github.com/googleapis/google-cloud-go/commit/095cafd432fc9e7d3f761e616fd20e732890d5e4))
+* **aiplatform:** Rewrite signatures and type in terms of new location ([620e6d8](https://github.com/googleapis/google-cloud-go/commit/620e6d828ad8641663ae351bfccfe46281e817ad))
+* **aiplatform:** Start generating stubs dir ([5d0b405](https://github.com/googleapis/google-cloud-go/commit/5d0b405033f55023825ef90e5c539f1bcf2ddedb))
+* **aiplatform:** Start generating stubs for beta ([#6723](https://github.com/googleapis/google-cloud-go/issues/6723)) ([71f5ab9](https://github.com/googleapis/google-cloud-go/commit/71f5ab946fd3e529fd65a66ea0bfe8f3bb5dc8e9))
+
+## [1.32.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform-v1.31.0...aiplatform/v1.32.0) (2023-01-26)
+
+
+### Features
+
+* **aiplatform/apiv1beta1:** Add REST transport ([f7b0822](https://github.com/googleapis/google-cloud-go/commit/f7b082212b1e46ff2f4126b52d49618785c2e8ca))
+* **aiplatform:** Add annotation_labels to ImportDataConfig in aiplatform v1 dataset.proto feat: add start_time to BatchReadFeatureValuesRequest in aiplatform v1 featurestore_service.proto feat: add metadata_artifact to Model in aiplatform v1 model.proto feat: add failed_main_jobs and failed_pre_caching_check_jobs to ContainerDetail in aiplatform v1 pipeline_job.proto feat: add persist_ml_use_assignment to InputDataConfig in aiplatform v1 training_pipeline.proto ([9c5d6c8](https://github.com/googleapis/google-cloud-go/commit/9c5d6c857b9deece4663d37fc6c834fd758b98ca))
+* **aiplatform:** Add deleteFeatureValues in aiplatform v1beta1 featurestore_service.proto ([bc7a5f6](https://github.com/googleapis/google-cloud-go/commit/bc7a5f609994f73e26f72a78f0ff14aa75c1c227))
+* **aiplatform:** Add DeploymentResourcePool in aiplatform v1beta1 deployment_resource_pool.proto feat: add DeploymentResourcePoolService in aiplatform v1beta1 deployment_resource_pool_service.proto feat: add SHARED_RESOURCES to DeploymentResourcesType in aiplatform v1beta1 model.proto ([1d6fbcc](https://github.com/googleapis/google-cloud-go/commit/1d6fbcc6406e2063201ef5a98de560bf32f7fb73))
+* **aiplatform:** Add enable_dashboard_access in aiplatform v1 and v1beta1 custom_job.proto ([447afdd](https://github.com/googleapis/google-cloud-go/commit/447afddf34d59c599cabe5415b4f9265b228bb9a))
+* **aiplatform:** Add instance_config to batch_prediction_job in aiplatform v1beta1 batch_prediction_job.proto ([2b4957c](https://github.com/googleapis/google-cloud-go/commit/2b4957c7c348ecf5952e02f3602379fffaa758b4))
+* **aiplatform:** Add instance_config to BatchPredictionJob in aiplatform v1 batch_prediction_job.proto ([ee41485](https://github.com/googleapis/google-cloud-go/commit/ee41485860bcbbd09ce4e28ee6ddca81a5f17211))
+* **aiplatform:** Add metadata_artifact to Dataset in aiplatform v1 dataset.proto feat: add WriteFeatureValues rpc to FeaturestoreOnlineServingService in aiplatform v1 featurestore_online_service.proto ([7231644](https://github.com/googleapis/google-cloud-go/commit/7231644e71f05abc864924a0065b9ea22a489180))
+* **aiplatform:** Add metadata_artifact to Dataset in aiplatform v1beta1 dataset.proto feat: add offline_storage_ttl_days to EntityType in aiplatform v1beta1 entity_type.proto feat: add online_storage_ttl_days to Featurestore in aiplatform v1beta1 featurestore.proto feat: add source_uris to ImportFeatureValuesOperationMetadata in aiplatform v1beta1 featurestore_service.proto ([7231644](https://github.com/googleapis/google-cloud-go/commit/7231644e71f05abc864924a0065b9ea22a489180))
+* **aiplatform:** Add model_monitoring_stats_anomalies,model_monitoring_status to BatchPredictionJob in aiplatform v1beta1 batch_prediction_job.proto ([e45ad9a](https://github.com/googleapis/google-cloud-go/commit/e45ad9af568c59151decc0dacedf137653b576dd))
+* **aiplatform:** Add model_source_info to Model in aiplatform v1 model.proto ([52dddd1](https://github.com/googleapis/google-cloud-go/commit/52dddd1ed89fbe77e1859311c3b993a77a82bfc7))
+* **aiplatform:** Add model_source_info to Model in aiplatform v1beta1 model.proto ([52dddd1](https://github.com/googleapis/google-cloud-go/commit/52dddd1ed89fbe77e1859311c3b993a77a82bfc7))
+* **aiplatform:** Add NVIDIA_A100_80GB to AcceleratorType in aiplatform v1beta1 accelerator_type.proto feat: add annotation_labels to ImportDataConfig in aiplatform v1beta1 dataset.proto feat: add total_deployed_model_count and total_endpoint_count to QueryDeployedModelsResponse in aiplatform v1beta1 deployment_resource_pool_service.proto feat: add start_time to BatchReadFeatureValuesRequest in aiplatform v1beta1 featurestore_service.proto feat: add metadata_artifact to Model in aiplatform v1beta1 model.proto feat: add failed_main_jobs and failed_pre_caching_check_jobs to ContainerDetail in aiplatform v1beta1 pipeline_job.proto feat: add persist_ml_use_assignment to InputDataConfig in aiplatform v1beta1 training_pipeline.proto ([9c5d6c8](https://github.com/googleapis/google-cloud-go/commit/9c5d6c857b9deece4663d37fc6c834fd758b98ca))
+* **aiplatform:** Add read_mask to ListPipelineJobsRequest in aiplatform v1 pipeline_service feat: add input_artifacts to PipelineJob.runtime_config in aiplatform v1 pipeline_job ([3bc37e2](https://github.com/googleapis/google-cloud-go/commit/3bc37e28626df5f7ec37b00c0c2f0bfb91c30495))
+* **aiplatform:** Add REST client ([06a54a1](https://github.com/googleapis/google-cloud-go/commit/06a54a16a5866cce966547c51e203b9e09a25bc0))
+* **aiplatform:** Add saved_queries to Dataset in aiplatform v1 dataset.proto feat: add order_by to ListModelVersionRequest in aiplatform v1 model_service.proto feat: add update_all_stopped_trials to ConvexAutomatedStoppingSpec in aiplatform v1 study.proto feat: add ReadTensorboardUsage rpc in aiplatform v1 tensorboard_service.proto ([ee41485](https://github.com/googleapis/google-cloud-go/commit/ee41485860bcbbd09ce4e28ee6ddca81a5f17211))
+* **aiplatform:** Add saved_queries to Dataset in aiplatform v1beta1 dataset.proto feat: add order_by to ListModelVersionRequest in aiplatform v1beta1 model_service.proto feat: add update_all_stopped_trials to ConvexAutomatedStoppingSpec in aiplatform v1beta1 study.proto feat: add ReadTensorboardUsage rpc in aiplatform v1beta1 tensorboard_service.proto ([ee41485](https://github.com/googleapis/google-cloud-go/commit/ee41485860bcbbd09ce4e28ee6ddca81a5f17211))
+* **aiplatform:** Add service_account to batch_prediction_job in aiplatform v1 batch_prediction_job.proto ([ac0c5c2](https://github.com/googleapis/google-cloud-go/commit/ac0c5c21221e8d055e6b8b1c473600c58e306b00))
+* **aiplatform:** Add timestamp_outside_retention_rows_count to ImportFeatureValuesResponse and ImportFeatureValuesOperationMetadata in aiplatform v1 featurestore_service.proto feat: add RemoveContextChildren rpc to aiplatform v1 metadata_service.proto feat: add order_by to ListArtifactsRequest, ListContextsRequest, and ListExecutionsRequest in aiplatform v1 metadata_service.proto ([52dddd1](https://github.com/googleapis/google-cloud-go/commit/52dddd1ed89fbe77e1859311c3b993a77a82bfc7))
+* **aiplatform:** Add timestamp_outside_retention_rows_count to ImportFeatureValuesResponse and ImportFeatureValuesOperationMetadata in aiplatform v1beta1 featurestore_service.proto feat: add RemoveContextChildren rpc to aiplatform v1beta1 metadata_service.proto feat: add order_by to ListArtifactsRequest, ListContextsRequest, and ListExecutionsRequest in aiplatform v1beta1 metadata_service.proto feat: add InputArtifact to RuntimeConfig in aiplatform v1beta1 pipeline_job.proto feat: add read_mask to ListPipelineJobsRequest in aiplatform v1beta1 pipeline_service.proto feat: add TransferLearningConfig in aiplatform v1beta1 study.proto ([52dddd1](https://github.com/googleapis/google-cloud-go/commit/52dddd1ed89fbe77e1859311c3b993a77a82bfc7))
+* **aiplatform:** Add UpsertDatapoints and RemoveDatapoints rpcs to IndexService in aiplatform v1 index_service.proto ([204b856](https://github.com/googleapis/google-cloud-go/commit/204b85632f2556ab2c74020250850b53f6a405ff))
+* **aiplatform:** Add UpsertDatapoints and RemoveDatapoints rpcs to IndexService in aiplatform v1beta1 index_service.proto ([204b856](https://github.com/googleapis/google-cloud-go/commit/204b85632f2556ab2c74020250850b53f6a405ff))
+* **aiplatform:** Add WriteFeatureValues in aiplatform v1beta1 featurestore_online_service.proto ([370e23e](https://github.com/googleapis/google-cloud-go/commit/370e23eaa342a7055a8d8b6f8fe9420f83afe43e))
+* **aiplatform:** Making network arg optional in aiplatform v1 custom_job.proto feat: added SHARED_RESOURCES enum to aiplatform v1 model.proto docs: doc edits to aiplatform v1 dataset_service.proto, job_service.proto, model_service.proto, pipeline_service.proto, saved_query.proto, study.proto, types.proto ([1d6fbcc](https://github.com/googleapis/google-cloud-go/commit/1d6fbcc6406e2063201ef5a98de560bf32f7fb73))
+* **aiplatform:** Making network arg optional in aiplatform v1beta1 custom_job.proto feat: DeploymentResourcePool and DeployementResourcePoolService added to aiplatform v1beta1 model.proto (cl/463147866) docs: doc edits to aiplatform v1beta1 job_service.proto, model_service.proto, pipeline_service.proto, saved_query.proto, study.proto, types.proto ([1d6fbcc](https://github.com/googleapis/google-cloud-go/commit/1d6fbcc6406e2063201ef5a98de560bf32f7fb73))
+* **aiplatform:** Rewrite beta methods in terms of new stub location ([#6735](https://github.com/googleapis/google-cloud-go/issues/6735)) ([095cafd](https://github.com/googleapis/google-cloud-go/commit/095cafd432fc9e7d3f761e616fd20e732890d5e4))
+* **aiplatform:** Rewrite signatures and type in terms of new location ([620e6d8](https://github.com/googleapis/google-cloud-go/commit/620e6d828ad8641663ae351bfccfe46281e817ad))
+* **aiplatform:** Start generating stubs dir ([5d0b405](https://github.com/googleapis/google-cloud-go/commit/5d0b405033f55023825ef90e5c539f1bcf2ddedb))
+* **aiplatform:** Start generating stubs for beta ([#6723](https://github.com/googleapis/google-cloud-go/issues/6723)) ([71f5ab9](https://github.com/googleapis/google-cloud-go/commit/71f5ab946fd3e529fd65a66ea0bfe8f3bb5dc8e9))
+
+## [1.31.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.30.0...aiplatform/v1.31.0) (2023-01-26)
+
+
+### Features
+
+* **aiplatform:** Add enable_dashboard_access in aiplatform v1 and v1beta1 custom_job.proto ([447afdd](https://github.com/googleapis/google-cloud-go/commit/447afddf34d59c599cabe5415b4f9265b228bb9a))
+
+## [1.30.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.29.0...aiplatform/v1.30.0) (2023-01-18)
+
+
+### Features
+
+* **aiplatform:** Add instance_config to BatchPredictionJob in aiplatform v1 batch_prediction_job.proto ([ee41485](https://github.com/googleapis/google-cloud-go/commit/ee41485860bcbbd09ce4e28ee6ddca81a5f17211))
+* **aiplatform:** Add saved_queries to Dataset in aiplatform v1 dataset.proto feat: add order_by to ListModelVersionRequest in aiplatform v1 model_service.proto feat: add update_all_stopped_trials to ConvexAutomatedStoppingSpec in aiplatform v1 study.proto feat: add ReadTensorboardUsage rpc in aiplatform v1 tensorboard_service.proto ([ee41485](https://github.com/googleapis/google-cloud-go/commit/ee41485860bcbbd09ce4e28ee6ddca81a5f17211))
+* **aiplatform:** Add saved_queries to Dataset in aiplatform v1beta1 dataset.proto feat: add order_by to ListModelVersionRequest in aiplatform v1beta1 model_service.proto feat: add update_all_stopped_trials to ConvexAutomatedStoppingSpec in aiplatform v1beta1 study.proto feat: add ReadTensorboardUsage rpc in aiplatform v1beta1 tensorboard_service.proto ([ee41485](https://github.com/googleapis/google-cloud-go/commit/ee41485860bcbbd09ce4e28ee6ddca81a5f17211))
+
+## [1.29.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.28.0...aiplatform/v1.29.0) (2023-01-04)
+
+
+### Features
+
+* **aiplatform:** Add REST client ([06a54a1](https://github.com/googleapis/google-cloud-go/commit/06a54a16a5866cce966547c51e203b9e09a25bc0))
+
+## [1.28.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.27.0...aiplatform/v1.28.0) (2022-12-05)
+
+
+### Features
+
+* **aiplatform:** rewrite signatures and type in terms of new location ([620e6d8](https://github.com/googleapis/google-cloud-go/commit/620e6d828ad8641663ae351bfccfe46281e817ad))
+
+## [1.27.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.26.0...aiplatform/v1.27.0) (2022-12-01)
+
+
+### Features
+
+* **aiplatform:** add metadata_artifact to Dataset in aiplatform v1 dataset.proto feat: add WriteFeatureValues rpc to FeaturestoreOnlineServingService in aiplatform v1 featurestore_online_service.proto ([7231644](https://github.com/googleapis/google-cloud-go/commit/7231644e71f05abc864924a0065b9ea22a489180))
+* **aiplatform:** add metadata_artifact to Dataset in aiplatform v1beta1 dataset.proto feat: add offline_storage_ttl_days to EntityType in aiplatform v1beta1 entity_type.proto feat: add online_storage_ttl_days to Featurestore in aiplatform v1beta1 featurestore.proto feat: add source_uris to ImportFeatureValuesOperationMetadata in aiplatform v1beta1 featurestore_service.proto ([7231644](https://github.com/googleapis/google-cloud-go/commit/7231644e71f05abc864924a0065b9ea22a489180))
+* **aiplatform:** start generating stubs dir ([5d0b405](https://github.com/googleapis/google-cloud-go/commit/5d0b405033f55023825ef90e5c539f1bcf2ddedb))
+
 ## [1.26.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.25.0...aiplatform/v1.26.0) (2022-11-16)
 
 
