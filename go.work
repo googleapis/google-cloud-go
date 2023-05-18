@@ -107,7 +107,6 @@ use (
 	./pubsub
 	./pubsublite
 	./recaptchaenterprise
-	./recaptchaenterprise/v2
 	./recommendationengine
 	./recommender
 	./redis

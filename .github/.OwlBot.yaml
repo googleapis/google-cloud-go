@@ -380,8 +380,8 @@ deep-remove-regex:
   - /privatecatalog/apiv1beta1/
   - /pubsub/apiv1/
   - /pubsublite/apiv1/
-  - /recaptchaenterprise/v2/apiv1/
-  - /recaptchaenterprise/v2/apiv1beta1/
+  - /recaptchaenterprise/apiv1/
+  - /recaptchaenterprise/apiv1beta1/
   - /recommendationengine/apiv1beta1/
   - /recommender/apiv1/
   - /recommender/apiv1beta1/
@@ -802,10 +802,14 @@ deep-copy-regex:
     dest: /
   - source: /google/cloud/pubsublite/v1/cloud.google.com/go
     dest: /
-  - source: /google/cloud/recaptchaenterprise/v1/cloud.google.com/go
-    dest: /
-  - source: /google/cloud/recaptchaenterprise/v1beta1/cloud.google.com/go
-    dest: /
+  - source: /google/cloud/recaptchaenterprise/v1/cloud.google.com/go/recaptchaenterprise/v2/apiv1
+    dest: /recaptchaenterprise/apiv1
+  - source: /google/cloud/recaptchaenterprise/v1/cloud.google.com/go/internal/generated/snippets/recaptchaenterprise/v2/apiv1
+    dest: /internal/generated/snippets/recaptchaenterprise/v2/apiv1
+  - source: /google/cloud/recaptchaenterprise/v1beta1/cloud.google.com/go/recaptchaenterprise/v2/apiv1beta1
+    dest: /recaptchaenterprise/apiv1beta1
+  - source: /google/cloud/recaptchaenterprise/v1beta1/cloud.google.com/go/internal/generated/snippets/recaptchaenterprise/v2/apiv1beta1
+    dest: /internal/generated/snippets/recaptchaenterprise/v2/apiv1beta1
   - source: /google/cloud/recommendationengine/v1beta1/cloud.google.com/go
     dest: /
   - source: /google/cloud/recommender/v1/cloud.google.com/go

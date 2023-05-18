@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -26,7 +26,7 @@ import (
 	"net/url"
 	"time"
 
-	"cloud.google.com/go/recaptchaenterprise/v2/apiv1beta1/recaptchaenterprisepb"
+	recaptchaenterprisepb "cloud.google.com/go/recaptchaenterprise/v2/apiv1beta1/recaptchaenterprisepb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/option"
@@ -335,6 +335,11 @@ func (c *recaptchaEnterpriseServiceV1Beta1RESTClient) CreateAssessment(ctx conte
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/assessments", req.GetParent())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
@@ -394,6 +399,11 @@ func (c *recaptchaEnterpriseServiceV1Beta1RESTClient) AnnotateAssessment(ctx con
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:annotate", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
