@@ -159,6 +159,9 @@ func (p *postProcessor) run(ctx context.Context) error {
 	if err := p.TidyAffectedMods(); err != nil {
 		return err
 	}
+	if err := p.UpdateReleaseFiles(); err != nil {
+		return err
+	}
 	if err := gocmd.Vet(p.googleCloudDir); err != nil {
 		return err
 	}
