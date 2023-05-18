@@ -19,10 +19,11 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
-	"log"
 	"os"
 	"os/exec"
 	"strings"
+
+	"cloud.google.com/go/internal/actions/logg"
 )
 
 var (
@@ -30,30 +31,28 @@ var (
 	format    = flag.String("format", "plain", "output format, one of [plain|github], defaults to 'plain'")
 	ghVarName = flag.String("gh-var", "submodules", "github format's variable name to set output for, defaults to 'submodules'.")
 	base      = flag.String("base", "origin/main", "the base ref to compare to, defaults to 'origin/main'")
-	quiet     = flag.Bool("q", false, "quiet mode, minimal logging")
-	// Only used in quiet mode, printed in the event of an error.
-	logBuffer []string
 )
 
 func main() {
+	flag.BoolVar(&logg.Quiet, "q", false, "quiet mode, minimal logging")
 	flag.Parse()
 	rootDir, err := os.Getwd()
 	if err != nil {
-		fatalE(err)
+		logg.Fatal(err)
 	}
 	if *dir != "" {
 		rootDir = *dir
 	}
-	logg("Root dir: %q", rootDir)
+	logg.Printf("Root dir: %q", rootDir)
 
 	submodules, err := mods(rootDir)
 	if err != nil {
-		fatalE(err)
+		logg.Fatal(err)
 	}
 
 	changes, err := gitFilesChanges(rootDir)
 	if err != nil {
-		fatal("unable to get files changed: %v", err)
+		logg.Fatalf("unable to get files changed: %v", err)
 	}
 
 	modulesSeen := map[string]bool{}
@@ -64,11 +63,11 @@ func main() {
 		}
 		submod, ok := owner(change, submodules)
 		if !ok {
-			logg("no module for: %s", change)
+			logg.Printf("no module for: %s", change)
 			continue
 		}
 		if _, seen := modulesSeen[submod]; !seen {
-			logg("changes in submodule: %s", submod)
+			logg.Printf("changes in submodule: %s", submod)
 			updatedSubmodules = append(updatedSubmodules, submod)
 			modulesSeen[submod] = true
 		}
@@ -82,7 +81,7 @@ func output(s []string) error {
 	case "github":
 		b, err := json.Marshal(s)
 		if err != nil {
-			fatal("unable to marshal submodules: %v", err)
+			logg.Fatalf("unable to marshal submodules: %v", err)
 		}
 		fmt.Printf("::set-output name=%s::%s", *ghVarName, b)
 	case "plain":
@@ -119,7 +118,7 @@ func mods(dir string) (submodules []string, err error) {
 		if mod == "cloud.google.com/go" || strings.Contains(mod, "internal") {
 			continue
 		}
-		logg("found module: %s", mod)
+		logg.Printf("found module: %s", mod)
 		mod = strings.TrimPrefix(mod, "cloud.google.com/go/")
 		submodules = append(submodules, mod)
 	}
@@ -135,29 +134,6 @@ func gitFilesChanges(dir string) ([]string, error) {
 		return nil, err
 	}
 	b = bytes.TrimSpace(b)
-	logg("Files changed:\n%s", b)
+	logg.Printf("Files changed:\n%s", b)
 	return strings.Split(string(b), "\n"), nil
-}
-
-// logg is a potentially quiet log.Printf.
-func logg(format string, values ...interface{}) {
-	if *quiet {
-		logBuffer = append(logBuffer, fmt.Sprintf(format, values...))
-		return
-	}
-	log.Printf(format, values...)
-}
-
-func fatalE(err error) {
-	if *quiet {
-		log.Print(strings.Join(logBuffer, "\n"))
-	}
-	log.Fatal(err)
-}
-
-func fatal(format string, values ...interface{}) {
-	if *quiet {
-		log.Print(strings.Join(logBuffer, "\n"))
-	}
-	log.Fatalf(format, values...)
 }
