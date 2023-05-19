@@ -1,2 +1,2 @@
-cloud.google.com/go/compute v1.19.2 h1:GbJtPo8OKVHbVep8jvM57KidbYHxeE68LOVqouNLrDY=
-cloud.google.com/go/compute v1.19.2/go.mod h1:5f5a+iC1IriXYauaQ0EyQmEAEq9CGRnV5xJSQSlTV08=
+cloud.google.com/go/compute v1.19.3 h1:DcTwsFgGev/wV5+q8o2fzgcHOaac+DKGC91ZlvpsQds=
+cloud.google.com/go/compute v1.19.3/go.mod h1:qxvISKp/gYnXkSAD1ppcSOveRAmzxicEv/JlizULFrI=
