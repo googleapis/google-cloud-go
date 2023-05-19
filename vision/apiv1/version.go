@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 package vision
 
-import "cloud.google.com/go/vision/internal"
+import "cloud.google.com/go/vision/v2/internal"
 
 func init() {
 	versionClient = internal.Version

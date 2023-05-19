@@ -15,6 +15,7 @@
 package main
 
 import (
+	"bytes"
 	"flag"
 	"log"
 	"os"
@@ -156,4 +157,36 @@ func TestUpdateSnippetsMetadata(t *testing.T) {
 		t.Fatalf("UpdateSnippetsMetadata() did not update metadata as expected, check %s", f)
 	}
 
+}
+
+func TestUpdateConfigFile(t *testing.T) {
+	var b bytes.Buffer
+	if err := updateConfigFile(&b, []string{"accessapproval", "newmod"}); err != nil {
+		t.Fatal(err)
+	}
+	want, err := os.ReadFile("testdata/release-please-config-yoshi-submodules.want")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if diff := cmp.Diff(want, b.Bytes()); diff != "" {
+		t.Errorf("updateConfigFile() mismatch (-want +got):\n%s", diff)
+	}
+}
+
+func TestUpdateManifestFile(t *testing.T) {
+	existing, err := os.ReadFile("testdata/.release-please-manifest-submodules.json")
+	if err != nil {
+		t.Fatal(err)
+	}
+	var b bytes.Buffer
+	if err := updateManifestFile(&b, existing, []string{"accessapproval", "newmod"}); err != nil {
+		t.Fatal(err)
+	}
+	want, err := os.ReadFile("testdata/.release-please-manifest-submodules.want")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if diff := cmp.Diff(want, b.Bytes()); diff != "" {
+		t.Errorf("updateConfigFile() mismatch (-want +got):\n%s", diff)
+	}
 }

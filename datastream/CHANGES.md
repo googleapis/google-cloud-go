@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.8.0](https://github.com/googleapis/google-cloud-go/compare/datastream/v1.7.1...datastream/v1.8.0) (2023-05-10)
+
+
+### Features
+
+* **datastream:** Max concurrent backfill tasks ([31c3766](https://github.com/googleapis/google-cloud-go/commit/31c3766c9c4cab411669c14fc1a30bd6d2e3f2dd))
+
 ## [1.7.1](https://github.com/googleapis/google-cloud-go/compare/datastream/v1.7.0...datastream/v1.7.1) (2023-05-08)
 
 
