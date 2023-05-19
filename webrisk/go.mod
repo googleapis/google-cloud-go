@@ -3,6 +3,7 @@ module cloud.google.com/go/webrisk
 go 1.19
 
 require (
+	cloud.google.com/go/longrunning v0.4.1
 	github.com/googleapis/gax-go/v2 v2.8.0
 	google.golang.org/api v0.123.0
 	google.golang.org/genproto v0.0.0-20230410155749-daa745c078e1
@@ -11,6 +12,7 @@ require (
 )
 
 require (
+	cloud.google.com/go v0.110.0 // indirect
 	cloud.google.com/go/compute v1.19.0 // indirect
 	cloud.google.com/go/compute/metadata v0.2.3 // indirect
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
