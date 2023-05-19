@@ -35,6 +35,7 @@ import (
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/encoding/gzip"
 	"google.golang.org/grpc/status"
 
 	vkit "cloud.google.com/go/spanner/apiv1"
@@ -69,6 +70,20 @@ func setupMockedTestServerWithConfigAndClientOptions(t *testing.T, config Client
 				},
 			},
 		},
+	}
+	if config.Compression == gzip.Name {
+		grpcHeaderChecker.Checkers = append(grpcHeaderChecker.Checkers, &itestutil.HeaderChecker{
+			Key: "x-response-encoding",
+			ValuesValidator: func(token ...string) error {
+				if len(token) != 1 {
+					return status.Errorf(codes.Internal, "unexpected number of compression headers: %v", len(token))
+				}
+				if token[0] != gzip.Name {
+					return status.Errorf(codes.Internal, "unexpected compression: %v", token[0])
+				}
+				return nil
+			},
+		})
 	}
 	clientOptions = append(clientOptions, grpcHeaderChecker.CallOptions()...)
 	server, opts, serverTeardown := NewMockedSpannerInMemTestServer(t)
