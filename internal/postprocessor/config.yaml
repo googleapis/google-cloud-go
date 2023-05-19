@@ -621,9 +621,11 @@ service-configs:
   - input-directory: google/cloud/recaptchaenterprise/v1
     service-config: recaptchaenterprise_v1.yaml
     import-path: cloud.google.com/go/recaptchaenterprise/v2/apiv1
+    rel-path: /recaptchaenterprise/apiv1
   - input-directory: google/cloud/recaptchaenterprise/v1beta1
     service-config: recaptchaenterprise_v1beta1.yaml
     import-path: cloud.google.com/go/recaptchaenterprise/v2/apiv1beta1
+    rel-path: /recaptchaenterprise/apiv1beta1
   - input-directory: google/cloud/recommendationengine/v1beta1
     service-config: recommendationengine_v1beta1.yaml
     import-path: cloud.google.com/go/recommendationengine/apiv1beta1
@@ -768,9 +770,11 @@ service-configs:
   - input-directory: google/cloud/vision/v1
     service-config: vision_v1.yaml
     import-path: cloud.google.com/go/vision/v2/apiv1
+    rel-path: /vision/apiv1
   - input-directory: google/cloud/vision/v1p1beta1
     service-config: vision_v1p1beta1.yaml
     import-path: cloud.google.com/go/vision/v2/apiv1p1beta1
+    rel-path: /vision/apiv1p1beta1
   - input-directory: google/cloud/vmmigration/v1
     service-config: vmmigration_v1.yaml
     import-path: cloud.google.com/go/vmmigration/apiv1
