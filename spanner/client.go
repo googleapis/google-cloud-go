@@ -52,6 +52,8 @@ const (
 	// requests need  to route to leader.
 	routeToLeaderHeader = "x-goog-spanner-route-to-leader"
 
+	requestsCompressionHeader = "x-response-encoding"
+
 	// numChannels is the default value for NumChannels of client.
 	numChannels = 4
 )
@@ -250,8 +252,12 @@ func NewClientWithConfig(ctx context.Context, database string, config ClientConf
 	if config.incStep == 0 {
 		config.incStep = DefaultSessionPoolConfig.incStep
 	}
+	md := metadata.Pairs(resourcePrefixHeader, database)
+	if config.Compression == gzip.Name {
+		md.Append(requestsCompressionHeader, gzip.Name)
+	}
 	// Create a session client.
-	sc := newSessionClient(pool, database, config.UserAgent, sessionLabels, config.DatabaseRole, config.DisableRouteToLeader, metadata.Pairs(resourcePrefixHeader, database), config.Logger, config.CallOptions)
+	sc := newSessionClient(pool, database, config.UserAgent, sessionLabels, config.DatabaseRole, config.DisableRouteToLeader, md, config.Logger, config.CallOptions)
 	// Create a session pool.
 	config.SessionPoolConfig.sessionLabels = sessionLabels
 	sp, err := newSessionPool(sc, config.SessionPoolConfig)
@@ -284,7 +290,7 @@ func allClientOpts(numChannels int, compression string, userOpts ...option.Clien
 		internaloption.EnableDirectPath(true),
 	}
 	if compression == "gzip" {
-		clientDefaultOpts = append(clientDefaultOpts, option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
+		userOpts = append(userOpts, option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.UseCompressor(gzip.Name))))
 	}
 	allDefaultOpts := append(generatedDefaultOpts, clientDefaultOpts...)
