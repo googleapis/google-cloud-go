@@ -7,7 +7,7 @@ require (
 	github.com/golang/protobuf v1.5.3
 	github.com/google/go-cmp v0.5.9
 	github.com/google/martian/v3 v3.3.2
-	github.com/googleapis/gax-go/v2 v2.8.0
+	github.com/googleapis/gax-go/v2 v2.9.0
 	go.opencensus.io v0.24.0
 	golang.org/x/oauth2 v0.8.0
 	golang.org/x/xerrors v0.0.0-20220907171357-04be3eba64a2
