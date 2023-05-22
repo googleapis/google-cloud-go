@@ -1,5 +1,25 @@
 # Changes
 
+## [1.10.0](https://github.com/googleapis/google-cloud-go/compare/firestore/v1.9.0...firestore/v1.10.0) (2023-05-22)
+
+
+### Features
+
+* **firestore:** Add `OR` query support docs: Improve the API documentation for the `Firestore.ListDocuments` RPC docs: Minor documentation formatting and cleanup ([aeb6fec](https://github.com/googleapis/google-cloud-go/commit/aeb6fecc7fd3f088ff461a0c068ceb9a7ae7b2a3))
+* **firestore:** Add bloom filter related proto fields PiperOrigin-RevId: 529511263 ([31c3766](https://github.com/googleapis/google-cloud-go/commit/31c3766c9c4cab411669c14fc1a30bd6d2e3f2dd))
+* **firestore:** Add REST client ([06a54a1](https://github.com/googleapis/google-cloud-go/commit/06a54a16a5866cce966547c51e203b9e09a25bc0))
+* **firestore:** Added support for REST transport ([aeb6fec](https://github.com/googleapis/google-cloud-go/commit/aeb6fecc7fd3f088ff461a0c068ceb9a7ae7b2a3))
+* **firestore:** EntityFilter for AND/OR queries ([#7757](https://github.com/googleapis/google-cloud-go/issues/7757)) ([ae37793](https://github.com/googleapis/google-cloud-go/commit/ae377932de20d99f31766ca1cccd2d1cfa18a1c0))
+* **firestore:** Rewrite signatures and type in terms of new location ([620e6d8](https://github.com/googleapis/google-cloud-go/commit/620e6d828ad8641663ae351bfccfe46281e817ad))
+* **firestore:** Update iam and longrunning deps ([91a1f78](https://github.com/googleapis/google-cloud-go/commit/91a1f784a109da70f63b96414bba8a9b4254cddd))
+
+
+### Bug Fixes
+
+* **firestore:** Enable rest_numeric_enums for PHP client ([2fef56f](https://github.com/googleapis/google-cloud-go/commit/2fef56f75a63dc4ff6e0eea56c7b26d4831c8e27))
+* **firestore:** Replace usage of transform with update_transform in batch write  ([#7864](https://github.com/googleapis/google-cloud-go/issues/7864)) ([949e4d8](https://github.com/googleapis/google-cloud-go/commit/949e4d8001040e78f2ad9b1e5cbf5b9113d8f3ef))
+* **firestore:** Update grpc to v1.55.0 ([1147ce0](https://github.com/googleapis/google-cloud-go/commit/1147ce02a990276ca4f8ab7a1ab65c14da4450ef))
+
 ## [1.9.0](https://github.com/googleapis/google-cloud-go/compare/firestore/v1.8.0...firestore/v1.9.0) (2022-11-29)
 
 
