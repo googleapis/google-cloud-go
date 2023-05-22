@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/workstations/apiv1beta",
-    "version": "0.1.0",
+    "version": "0.3.0",
     "language": "GO",
     "apis": [
       {
@@ -40,10 +40,10 @@
         },
         "method": {
           "shortName": "CancelOperation",
-          "fullName": "google.cloud.workstations.v1beta.Workstations.CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
           "service": {
-            "shortName": "Workstations",
-            "fullName": "google.cloud.workstations.v1beta.Workstations"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -51,7 +51,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -97,7 +97,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 58,
           "type": "FULL"
         }
       ]
@@ -143,7 +143,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 58,
           "type": "FULL"
         }
       ]
@@ -189,7 +189,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 58,
           "type": "FULL"
         }
       ]
@@ -223,10 +223,10 @@
         },
         "method": {
           "shortName": "DeleteOperation",
-          "fullName": "google.cloud.workstations.v1beta.Workstations.DeleteOperation",
+          "fullName": "google.longrunning.Operations.DeleteOperation",
           "service": {
-            "shortName": "Workstations",
-            "fullName": "google.cloud.workstations.v1beta.Workstations"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -234,7 +234,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -280,7 +280,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 58,
           "type": "FULL"
         }
       ]
@@ -326,7 +326,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 58,
           "type": "FULL"
         }
       ]
@@ -372,7 +372,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 58,
           "type": "FULL"
         }
       ]
@@ -400,7 +400,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "workstationspb.GenerateAccessTokenResponse",
+        "resultType": "*workstationspb.GenerateAccessTokenResponse",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.workstations.v1beta.Client"
@@ -418,7 +418,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -446,17 +446,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "iampb.Policy",
+        "resultType": "*iampb.Policy",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.workstations.v1beta.Client"
         },
         "method": {
           "shortName": "GetIamPolicy",
-          "fullName": "google.cloud.workstations.v1beta.Workstations.GetIamPolicy",
+          "fullName": "google.iam.v1.IAMPolicy.GetIamPolicy",
           "service": {
-            "shortName": "Workstations",
-            "fullName": "google.cloud.workstations.v1beta.Workstations"
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
           }
         }
       },
@@ -464,7 +464,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -492,17 +492,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "longrunningpb.Operation",
+        "resultType": "*longrunningpb.Operation",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.workstations.v1beta.Client"
         },
         "method": {
           "shortName": "GetOperation",
-          "fullName": "google.cloud.workstations.v1beta.Workstations.GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
           "service": {
-            "shortName": "Workstations",
-            "fullName": "google.cloud.workstations.v1beta.Workstations"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -510,7 +510,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -538,7 +538,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "workstationspb.Workstation",
+        "resultType": "*workstationspb.Workstation",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.workstations.v1beta.Client"
@@ -556,7 +556,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -584,7 +584,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "workstationspb.WorkstationCluster",
+        "resultType": "*workstationspb.WorkstationCluster",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.workstations.v1beta.Client"
@@ -602,7 +602,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -630,7 +630,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "workstationspb.WorkstationConfig",
+        "resultType": "*workstationspb.WorkstationConfig",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.workstations.v1beta.Client"
@@ -648,7 +648,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -683,10 +683,10 @@
         },
         "method": {
           "shortName": "ListOperations",
-          "fullName": "google.cloud.workstations.v1beta.Workstations.ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
           "service": {
-            "shortName": "Workstations",
-            "fullName": "google.cloud.workstations.v1beta.Workstations"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -694,7 +694,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 61,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -702,7 +702,7 @@
     {
       "regionTag": "workstations_v1beta_generated_Workstations_ListUsableWorkstationConfigs_sync",
       "title": "workstations ListUsableWorkstationConfigs Sample",
-      "description": "ListUsableWorkstationConfigs returns all workstation configurations in the specified cluster on which\nthe caller has the “workstations.workstation.create” permission.",
+      "description": "ListUsableWorkstationConfigs returns all workstation configurations in the specified cluster on which\nthe caller has the \"workstations.workstation.create\" permission.",
       "file": "Client/ListUsableWorkstationConfigs/main.go",
       "language": "GO",
       "clientMethod": {
@@ -740,7 +740,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 61,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -748,7 +748,7 @@
     {
       "regionTag": "workstations_v1beta_generated_Workstations_ListUsableWorkstations_sync",
       "title": "workstations ListUsableWorkstations Sample",
-      "description": "ListUsableWorkstations returns all Workstations using the specified config on which the caller has\nthe “workstations.workstations.use” permission.",
+      "description": "ListUsableWorkstations returns all workstations using the specified workstation configuration\non which the caller has the \"workstations.workstations.use\" permission.",
       "file": "Client/ListUsableWorkstations/main.go",
       "language": "GO",
       "clientMethod": {
@@ -786,7 +786,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 61,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -832,7 +832,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 61,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -878,7 +878,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 61,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -886,7 +886,7 @@
     {
       "regionTag": "workstations_v1beta_generated_Workstations_ListWorkstations_sync",
       "title": "workstations ListWorkstations Sample",
-      "description": "ListWorkstations returns all Workstations using the specified config.",
+      "description": "ListWorkstations returns all Workstations using the specified workstation configuration.",
       "file": "Client/ListWorkstations/main.go",
       "language": "GO",
       "clientMethod": {
@@ -924,7 +924,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 61,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -932,7 +932,7 @@
     {
       "regionTag": "workstations_v1beta_generated_Workstations_SetIamPolicy_sync",
       "title": "workstations SetIamPolicy Sample",
-      "description": "SetIamPolicy sets the access control policy on the specified resource. Replaces\nany existing policy.\n\nCan return NOT_FOUND, INVALID_ARGUMENT, and PERMISSION_DENIED\nerrors.",
+      "description": "SetIamPolicy sets the access control policy on the specified resource. Replaces\nany existing policy.\n\nCan return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED`\nerrors.",
       "file": "Client/SetIamPolicy/main.go",
       "language": "GO",
       "clientMethod": {
@@ -952,17 +952,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "iampb.Policy",
+        "resultType": "*iampb.Policy",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.workstations.v1beta.Client"
         },
         "method": {
           "shortName": "SetIamPolicy",
-          "fullName": "google.cloud.workstations.v1beta.Workstations.SetIamPolicy",
+          "fullName": "google.iam.v1.IAMPolicy.SetIamPolicy",
           "service": {
-            "shortName": "Workstations",
-            "fullName": "google.cloud.workstations.v1beta.Workstations"
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
           }
         }
       },
@@ -970,7 +970,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -1016,7 +1016,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 58,
           "type": "FULL"
         }
       ]
@@ -1062,7 +1062,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 58,
           "type": "FULL"
         }
       ]
@@ -1070,7 +1070,7 @@
     {
       "regionTag": "workstations_v1beta_generated_Workstations_TestIamPermissions_sync",
       "title": "workstations TestIamPermissions Sample",
-      "description": "TestIamPermissions returns permissions that a caller has on the specified resource. If the\nresource does not exist, this will return an empty set of\npermissions, not a NOT_FOUND error.\n\nNote: This operation is designed to be used for building\npermission-aware UIs and command-line tools, not for authorization\nchecking. This operation may “fail open” without warning.",
+      "description": "TestIamPermissions returns permissions that a caller has on the specified resource. If the\nresource does not exist, this will return an empty set of\npermissions, not a `NOT_FOUND` error.\n\nNote: This operation is designed to be used for building\npermission-aware UIs and command-line tools, not for authorization\nchecking. This operation may \"fail open\" without warning.",
       "file": "Client/TestIamPermissions/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1090,17 +1090,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "iampb.TestIamPermissionsResponse",
+        "resultType": "*iampb.TestIamPermissionsResponse",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.workstations.v1beta.Client"
         },
         "method": {
           "shortName": "TestIamPermissions",
-          "fullName": "google.cloud.workstations.v1beta.Workstations.TestIamPermissions",
+          "fullName": "google.iam.v1.IAMPolicy.TestIamPermissions",
           "service": {
-            "shortName": "Workstations",
-            "fullName": "google.cloud.workstations.v1beta.Workstations"
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
           }
         }
       },
@@ -1108,7 +1108,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -1154,7 +1154,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 58,
           "type": "FULL"
         }
       ]
@@ -1200,7 +1200,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 58,
           "type": "FULL"
         }
       ]
@@ -1246,7 +1246,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 58,
           "type": "FULL"
         }
       ]

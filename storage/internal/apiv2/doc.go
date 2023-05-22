@@ -19,8 +19,6 @@
 //
 // Lets you store and retrieve potentially-large, immutable data objects.
 //
-//	NOTE: This package is in alpha. It is not stable, and is likely to change.
-//
 // # General documentation
 //
 // For information about setting deadlines, reusing contexts, and more
@@ -64,7 +62,7 @@
 //
 //	req := &storagepb.DeleteBucketRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/cloud.google.com/go/storage/internal/apiv2/stubs#DeleteBucketRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/storage/internal/apiv2/storagepb#DeleteBucketRequest.
 //	}
 //	err = c.DeleteBucket(ctx, req)
 //	if err != nil {

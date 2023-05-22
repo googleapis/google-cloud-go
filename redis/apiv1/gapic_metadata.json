@@ -10,6 +10,11 @@
         "grpc": {
           "libraryClient": "CloudRedisClient",
           "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
             "CreateInstance": {
               "methods": [
                 "CreateInstance"
@@ -18,6 +23,11 @@
             "DeleteInstance": {
               "methods": [
                 "DeleteInstance"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
               ]
             },
             "ExportInstance": {
@@ -40,6 +50,16 @@
                 "GetInstanceAuthString"
               ]
             },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
             "ImportInstance": {
               "methods": [
                 "ImportInstance"
@@ -48,6 +68,16 @@
             "ListInstances": {
               "methods": [
                 "ListInstances"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
               ]
             },
             "RescheduleMaintenance": {
@@ -70,6 +100,11 @@
         "rest": {
           "libraryClient": "CloudRedisClient",
           "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
             "CreateInstance": {
               "methods": [
                 "CreateInstance"
@@ -78,6 +113,11 @@
             "DeleteInstance": {
               "methods": [
                 "DeleteInstance"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
               ]
             },
             "ExportInstance": {
@@ -100,6 +140,16 @@
                 "GetInstanceAuthString"
               ]
             },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
             "ImportInstance": {
               "methods": [
                 "ImportInstance"
@@ -108,6 +158,16 @@
             "ListInstances": {
               "methods": [
                 "ListInstances"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
               ]
             },
             "RescheduleMaintenance": {

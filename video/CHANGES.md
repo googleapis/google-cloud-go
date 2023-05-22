@@ -1,5 +1,19 @@
 # Changes
 
+## [1.16.1](https://github.com/googleapis/google-cloud-go/compare/video/v1.16.0...video/v1.16.1) (2023-05-08)
+
+
+### Bug Fixes
+
+* **video:** Update grpc to v1.55.0 ([1147ce0](https://github.com/googleapis/google-cloud-go/commit/1147ce02a990276ca4f8ab7a1ab65c14da4450ef))
+
+## [1.16.0](https://github.com/googleapis/google-cloud-go/compare/video/v1.15.0...video/v1.16.0) (2023-04-25)
+
+
+### Features
+
+* **video/transcoder:** Add support for batch processing mode ([c298dcc](https://github.com/googleapis/google-cloud-go/commit/c298dcc14e73fbb5648945b84c23087cafc8179c))
+
 ## [1.15.0](https://github.com/googleapis/google-cloud-go/compare/video/v1.14.0...video/v1.15.0) (2023-04-04)
 
 

@@ -77,15 +77,13 @@ func (p *postProcessor) Manifest() (map[string]ManifestEntry, error) {
 		if err := yaml.NewDecoder(yamlFile).Decode(&yamlConfig); err != nil {
 			return nil, fmt.Errorf("decode: %v", err)
 		}
-		docURL, err := docURL(p.googleCloudDir, conf.ImportPath)
+		docURL, err := docURL(p.googleCloudDir, conf.ImportPath, conf.RelPath)
 		if err != nil {
 			return nil, fmt.Errorf("unable to build docs URL: %v", err)
 		}
-		// TODO(codyoss): We can read a files doc.go to see if it has a warning
-		// if needs. For beta/alpha use a guess
-		releaseLevel, err := releaseLevel(p.googleCloudDir, conf.ImportPath)
+		releaseLevel, err := releaseLevel(p.googleCloudDir, conf.ImportPath, conf.RelPath)
 		if err != nil {
-			return nil, fmt.Errorf("unable to calculate release level for: %v", inputDir)
+			return nil, fmt.Errorf("unable to calculate release level for %v: %v", inputDir, err)
 		}
 
 		entry := ManifestEntry{
@@ -99,14 +97,16 @@ func (p *postProcessor) Manifest() (map[string]ManifestEntry, error) {
 		}
 		entries[conf.ImportPath] = entry
 	}
+	// Remove base module entry
+	delete(entries, "")
 	enc := json.NewEncoder(f)
 	enc.SetIndent("", "  ")
 	return entries, enc.Encode(entries)
 }
 
-func docURL(cloudDir, importPath string) (string, error) {
-	suffix := strings.TrimPrefix(importPath, "cloud.google.com/go/")
-	mod, err := gocmd.CurrentMod(filepath.Join(cloudDir, suffix))
+func docURL(cloudDir, importPath, relPath string) (string, error) {
+	dir := filepath.Join(cloudDir, relPath)
+	mod, err := gocmd.CurrentMod(dir)
 	if err != nil {
 		return "", err
 	}
@@ -114,7 +114,7 @@ func docURL(cloudDir, importPath string) (string, error) {
 	return "https://cloud.google.com/go/docs/reference/" + mod + "/latest/" + pkgPath, nil
 }
 
-func releaseLevel(cloudDir, importPath string) (string, error) {
+func releaseLevel(cloudDir, importPath, relPath string) (string, error) {
 	i := strings.LastIndex(importPath, "/")
 	lastElm := importPath[i+1:]
 	if strings.Contains(lastElm, "alpha") {
@@ -124,8 +124,7 @@ func releaseLevel(cloudDir, importPath string) (string, error) {
 	}
 
 	// Determine by scanning doc.go for our beta disclaimer
-	gapicRelPath := strings.TrimPrefix(importPath, "cloud.google.com/go/")
-	docFile := filepath.Join(cloudDir, gapicRelPath, "doc.go")
+	docFile := filepath.Join(cloudDir, relPath, "doc.go")
 	f, err := os.Open(docFile)
 	if err != nil {
 		return "", err

@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/edgecontainer/apiv1",
-    "version": "0.3.0",
+    "version": "1.0.1",
     "language": "GO",
     "apis": [
       {
@@ -11,6 +11,51 @@
     ]
   },
   "snippets": [
+    {
+      "regionTag": "edgecontainer_v1_generated_EdgeContainer_CancelOperation_sync",
+      "title": "edgecontainer CancelOperation Sample",
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "Client/CancelOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CancelOperation",
+        "fullName": "google.cloud.edgecontainer.v1.Client.CancelOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.CancelOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.edgecontainer.v1.Client"
+        },
+        "method": {
+          "shortName": "CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
     {
       "regionTag": "edgecontainer_v1_generated_EdgeContainer_CreateCluster_sync",
       "title": "edgecontainer CreateCluster Sample",
@@ -242,6 +287,51 @@
       ]
     },
     {
+      "regionTag": "edgecontainer_v1_generated_EdgeContainer_DeleteOperation_sync",
+      "title": "edgecontainer DeleteOperation Sample",
+      "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
+      "file": "Client/DeleteOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteOperation",
+        "fullName": "google.cloud.edgecontainer.v1.Client.DeleteOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.DeleteOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.edgecontainer.v1.Client"
+        },
+        "method": {
+          "shortName": "DeleteOperation",
+          "fullName": "google.longrunning.Operations.DeleteOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "edgecontainer_v1_generated_EdgeContainer_DeleteVpnConnection_sync",
       "title": "edgecontainer DeleteVpnConnection Sample",
       "description": "DeleteVpnConnection deletes a single VPN connection.",
@@ -310,7 +400,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "edgecontainerpb.GenerateAccessTokenResponse",
+        "resultType": "*edgecontainerpb.GenerateAccessTokenResponse",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.edgecontainer.v1.Client"
@@ -356,7 +446,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "edgecontainerpb.Cluster",
+        "resultType": "*edgecontainerpb.Cluster",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.edgecontainer.v1.Client"
@@ -367,6 +457,52 @@
           "service": {
             "shortName": "EdgeContainer",
             "fullName": "google.cloud.edgecontainer.v1.EdgeContainer"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "edgecontainer_v1_generated_EdgeContainer_GetLocation_sync",
+      "title": "edgecontainer GetLocation Sample",
+      "description": "GetLocation gets information about a location.",
+      "file": "Client/GetLocation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetLocation",
+        "fullName": "google.cloud.edgecontainer.v1.Client.GetLocation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.GetLocationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*locationpb.Location",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.edgecontainer.v1.Client"
+        },
+        "method": {
+          "shortName": "GetLocation",
+          "fullName": "google.cloud.location.Locations.GetLocation",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
           }
         }
       },
@@ -402,7 +538,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "edgecontainerpb.Machine",
+        "resultType": "*edgecontainerpb.Machine",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.edgecontainer.v1.Client"
@@ -448,7 +584,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "edgecontainerpb.NodePool",
+        "resultType": "*edgecontainerpb.NodePool",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.edgecontainer.v1.Client"
@@ -459,6 +595,52 @@
           "service": {
             "shortName": "EdgeContainer",
             "fullName": "google.cloud.edgecontainer.v1.EdgeContainer"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "edgecontainer_v1_generated_EdgeContainer_GetOperation_sync",
+      "title": "edgecontainer GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "Client/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.edgecontainer.v1.Client.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.edgecontainer.v1.Client"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -494,7 +676,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "edgecontainerpb.VpnConnection",
+        "resultType": "*edgecontainerpb.VpnConnection",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.edgecontainer.v1.Client"
@@ -551,6 +733,52 @@
           "service": {
             "shortName": "EdgeContainer",
             "fullName": "google.cloud.edgecontainer.v1.EdgeContainer"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 60,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "edgecontainer_v1_generated_EdgeContainer_ListLocations_sync",
+      "title": "edgecontainer ListLocations Sample",
+      "description": "ListLocations lists information about the supported locations for this service.",
+      "file": "Client/ListLocations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListLocations",
+        "fullName": "google.cloud.edgecontainer.v1.Client.ListLocations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.ListLocationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "LocationIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.edgecontainer.v1.Client"
+        },
+        "method": {
+          "shortName": "ListLocations",
+          "fullName": "google.cloud.location.Locations.ListLocations",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
           }
         }
       },
@@ -643,6 +871,52 @@
           "service": {
             "shortName": "EdgeContainer",
             "fullName": "google.cloud.edgecontainer.v1.EdgeContainer"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 60,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "edgecontainer_v1_generated_EdgeContainer_ListOperations_sync",
+      "title": "edgecontainer ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "Client/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.cloud.edgecontainer.v1.Client.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.edgecontainer.v1.Client"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },

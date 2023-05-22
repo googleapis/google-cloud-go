@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/datastream/apiv1",
-    "version": "1.6.0",
+    "version": "1.8.0",
     "language": "GO",
     "apis": [
       {
@@ -40,10 +40,10 @@
         },
         "method": {
           "shortName": "CancelOperation",
-          "fullName": "google.cloud.datastream.v1.Datastream.CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
           "service": {
-            "shortName": "Datastream",
-            "fullName": "google.cloud.datastream.v1.Datastream"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -51,7 +51,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -315,10 +315,10 @@
         },
         "method": {
           "shortName": "DeleteOperation",
-          "fullName": "google.cloud.datastream.v1.Datastream.DeleteOperation",
+          "fullName": "google.longrunning.Operations.DeleteOperation",
           "service": {
-            "shortName": "Datastream",
-            "fullName": "google.cloud.datastream.v1.Datastream"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -326,7 +326,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -472,7 +472,7 @@
     {
       "regionTag": "datastream_v1_generated_Datastream_DiscoverConnectionProfile_sync",
       "title": "datastream DiscoverConnectionProfile Sample",
-      "description": "DiscoverConnectionProfile use this method to discover a connection profile.\nThe discover API call exposes the data objects and metadata belonging to\nthe profile. Typically, a request returns children data objects of a\nparent data object that’s optionally supplied in the request.",
+      "description": "DiscoverConnectionProfile use this method to discover a connection profile.\nThe discover API call exposes the data objects and metadata belonging to\nthe profile. Typically, a request returns children data objects of a\nparent data object that's optionally supplied in the request.",
       "file": "Client/DiscoverConnectionProfile/main.go",
       "language": "GO",
       "clientMethod": {
@@ -492,7 +492,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "datastreampb.DiscoverConnectionProfileResponse",
+        "resultType": "*datastreampb.DiscoverConnectionProfileResponse",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.datastream.v1.Client"
@@ -584,7 +584,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "datastreampb.ConnectionProfile",
+        "resultType": "*datastreampb.ConnectionProfile",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.datastream.v1.Client"
@@ -630,17 +630,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "locationpb.Location",
+        "resultType": "*locationpb.Location",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.datastream.v1.Client"
         },
         "method": {
           "shortName": "GetLocation",
-          "fullName": "google.cloud.datastream.v1.Datastream.GetLocation",
+          "fullName": "google.cloud.location.Locations.GetLocation",
           "service": {
-            "shortName": "Datastream",
-            "fullName": "google.cloud.datastream.v1.Datastream"
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
           }
         }
       },
@@ -648,7 +648,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -676,17 +676,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "longrunningpb.Operation",
+        "resultType": "*longrunningpb.Operation",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.datastream.v1.Client"
         },
         "method": {
           "shortName": "GetOperation",
-          "fullName": "google.cloud.datastream.v1.Datastream.GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
           "service": {
-            "shortName": "Datastream",
-            "fullName": "google.cloud.datastream.v1.Datastream"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -694,7 +694,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -722,7 +722,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "datastreampb.PrivateConnection",
+        "resultType": "*datastreampb.PrivateConnection",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.datastream.v1.Client"
@@ -768,7 +768,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "datastreampb.Route",
+        "resultType": "*datastreampb.Route",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.datastream.v1.Client"
@@ -814,7 +814,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "datastreampb.Stream",
+        "resultType": "*datastreampb.Stream",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.datastream.v1.Client"
@@ -860,7 +860,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "datastreampb.StreamObject",
+        "resultType": "*datastreampb.StreamObject",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.datastream.v1.Client"
@@ -959,10 +959,10 @@
         },
         "method": {
           "shortName": "ListLocations",
-          "fullName": "google.cloud.datastream.v1.Datastream.ListLocations",
+          "fullName": "google.cloud.location.Locations.ListLocations",
           "service": {
-            "shortName": "Datastream",
-            "fullName": "google.cloud.datastream.v1.Datastream"
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
           }
         }
       },
@@ -970,7 +970,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 61,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -1005,10 +1005,10 @@
         },
         "method": {
           "shortName": "ListOperations",
-          "fullName": "google.cloud.datastream.v1.Datastream.ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
           "service": {
-            "shortName": "Datastream",
-            "fullName": "google.cloud.datastream.v1.Datastream"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -1016,7 +1016,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 61,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -1228,7 +1228,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "datastreampb.StreamObject",
+        "resultType": "*datastreampb.StreamObject",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.datastream.v1.Client"
@@ -1274,7 +1274,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "datastreampb.StartBackfillJobResponse",
+        "resultType": "*datastreampb.StartBackfillJobResponse",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.datastream.v1.Client"
@@ -1320,7 +1320,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "datastreampb.StopBackfillJobResponse",
+        "resultType": "*datastreampb.StopBackfillJobResponse",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.datastream.v1.Client"
@@ -1431,418 +1431,6 @@
         {
           "start": 18,
           "end": 58,
-          "type": "FULL"
-        }
-      ]
-    },
-    {
-      "regionTag": "datastream_v1_generated_IAMPolicy_CancelOperation_sync",
-      "title": "datastream CancelOperation Sample",
-      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
-      "file": "IamPolicyClient/CancelOperation/main.go",
-      "language": "GO",
-      "clientMethod": {
-        "shortName": "CancelOperation",
-        "fullName": "google.cloud.datastream.v1.IamPolicyClient.CancelOperation",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "longrunningpb.CancelOperationRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "client": {
-          "shortName": "IamPolicyClient",
-          "fullName": "google.cloud.datastream.v1.IamPolicyClient"
-        },
-        "method": {
-          "shortName": "CancelOperation",
-          "fullName": "google.cloud.datastream.v1.IAMPolicy.CancelOperation",
-          "service": {
-            "shortName": "IAMPolicy",
-            "fullName": "google.cloud.datastream.v1.IAMPolicy"
-          }
-        }
-      },
-      "origin": "API_DEFINITION",
-      "segments": [
-        {
-          "start": 18,
-          "end": 52,
-          "type": "FULL"
-        }
-      ]
-    },
-    {
-      "regionTag": "datastream_v1_generated_IAMPolicy_DeleteOperation_sync",
-      "title": "datastream DeleteOperation Sample",
-      "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
-      "file": "IamPolicyClient/DeleteOperation/main.go",
-      "language": "GO",
-      "clientMethod": {
-        "shortName": "DeleteOperation",
-        "fullName": "google.cloud.datastream.v1.IamPolicyClient.DeleteOperation",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "longrunningpb.DeleteOperationRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "client": {
-          "shortName": "IamPolicyClient",
-          "fullName": "google.cloud.datastream.v1.IamPolicyClient"
-        },
-        "method": {
-          "shortName": "DeleteOperation",
-          "fullName": "google.cloud.datastream.v1.IAMPolicy.DeleteOperation",
-          "service": {
-            "shortName": "IAMPolicy",
-            "fullName": "google.cloud.datastream.v1.IAMPolicy"
-          }
-        }
-      },
-      "origin": "API_DEFINITION",
-      "segments": [
-        {
-          "start": 18,
-          "end": 52,
-          "type": "FULL"
-        }
-      ]
-    },
-    {
-      "regionTag": "datastream_v1_generated_IAMPolicy_GetIamPolicy_sync",
-      "title": "datastream GetIamPolicy Sample",
-      "description": "GetIamPolicy gets the access control policy for a resource.\nReturns an empty policy if the resource exists and does not have a policy\nset.",
-      "file": "IamPolicyClient/GetIamPolicy/main.go",
-      "language": "GO",
-      "clientMethod": {
-        "shortName": "GetIamPolicy",
-        "fullName": "google.cloud.datastream.v1.IamPolicyClient.GetIamPolicy",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "iampb.GetIamPolicyRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "iampb.Policy",
-        "client": {
-          "shortName": "IamPolicyClient",
-          "fullName": "google.cloud.datastream.v1.IamPolicyClient"
-        },
-        "method": {
-          "shortName": "GetIamPolicy",
-          "fullName": "google.cloud.datastream.v1.IAMPolicy.GetIamPolicy",
-          "service": {
-            "shortName": "IAMPolicy",
-            "fullName": "google.cloud.datastream.v1.IAMPolicy"
-          }
-        }
-      },
-      "origin": "API_DEFINITION",
-      "segments": [
-        {
-          "start": 18,
-          "end": 54,
-          "type": "FULL"
-        }
-      ]
-    },
-    {
-      "regionTag": "datastream_v1_generated_IAMPolicy_GetLocation_sync",
-      "title": "datastream GetLocation Sample",
-      "description": "GetLocation gets information about a location.",
-      "file": "IamPolicyClient/GetLocation/main.go",
-      "language": "GO",
-      "clientMethod": {
-        "shortName": "GetLocation",
-        "fullName": "google.cloud.datastream.v1.IamPolicyClient.GetLocation",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "locationpb.GetLocationRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "locationpb.Location",
-        "client": {
-          "shortName": "IamPolicyClient",
-          "fullName": "google.cloud.datastream.v1.IamPolicyClient"
-        },
-        "method": {
-          "shortName": "GetLocation",
-          "fullName": "google.cloud.datastream.v1.IAMPolicy.GetLocation",
-          "service": {
-            "shortName": "IAMPolicy",
-            "fullName": "google.cloud.datastream.v1.IAMPolicy"
-          }
-        }
-      },
-      "origin": "API_DEFINITION",
-      "segments": [
-        {
-          "start": 18,
-          "end": 54,
-          "type": "FULL"
-        }
-      ]
-    },
-    {
-      "regionTag": "datastream_v1_generated_IAMPolicy_GetOperation_sync",
-      "title": "datastream GetOperation Sample",
-      "description": "GetOperation is a utility method from google.longrunning.Operations.",
-      "file": "IamPolicyClient/GetOperation/main.go",
-      "language": "GO",
-      "clientMethod": {
-        "shortName": "GetOperation",
-        "fullName": "google.cloud.datastream.v1.IamPolicyClient.GetOperation",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "longrunningpb.GetOperationRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "longrunningpb.Operation",
-        "client": {
-          "shortName": "IamPolicyClient",
-          "fullName": "google.cloud.datastream.v1.IamPolicyClient"
-        },
-        "method": {
-          "shortName": "GetOperation",
-          "fullName": "google.cloud.datastream.v1.IAMPolicy.GetOperation",
-          "service": {
-            "shortName": "IAMPolicy",
-            "fullName": "google.cloud.datastream.v1.IAMPolicy"
-          }
-        }
-      },
-      "origin": "API_DEFINITION",
-      "segments": [
-        {
-          "start": 18,
-          "end": 54,
-          "type": "FULL"
-        }
-      ]
-    },
-    {
-      "regionTag": "datastream_v1_generated_IAMPolicy_ListLocations_sync",
-      "title": "datastream ListLocations Sample",
-      "description": "ListLocations lists information about the supported locations for this service.",
-      "file": "IamPolicyClient/ListLocations/main.go",
-      "language": "GO",
-      "clientMethod": {
-        "shortName": "ListLocations",
-        "fullName": "google.cloud.datastream.v1.IamPolicyClient.ListLocations",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "locationpb.ListLocationsRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "LocationIterator",
-        "client": {
-          "shortName": "IamPolicyClient",
-          "fullName": "google.cloud.datastream.v1.IamPolicyClient"
-        },
-        "method": {
-          "shortName": "ListLocations",
-          "fullName": "google.cloud.datastream.v1.IAMPolicy.ListLocations",
-          "service": {
-            "shortName": "IAMPolicy",
-            "fullName": "google.cloud.datastream.v1.IAMPolicy"
-          }
-        }
-      },
-      "origin": "API_DEFINITION",
-      "segments": [
-        {
-          "start": 18,
-          "end": 61,
-          "type": "FULL"
-        }
-      ]
-    },
-    {
-      "regionTag": "datastream_v1_generated_IAMPolicy_ListOperations_sync",
-      "title": "datastream ListOperations Sample",
-      "description": "ListOperations is a utility method from google.longrunning.Operations.",
-      "file": "IamPolicyClient/ListOperations/main.go",
-      "language": "GO",
-      "clientMethod": {
-        "shortName": "ListOperations",
-        "fullName": "google.cloud.datastream.v1.IamPolicyClient.ListOperations",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "longrunningpb.ListOperationsRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "OperationIterator",
-        "client": {
-          "shortName": "IamPolicyClient",
-          "fullName": "google.cloud.datastream.v1.IamPolicyClient"
-        },
-        "method": {
-          "shortName": "ListOperations",
-          "fullName": "google.cloud.datastream.v1.IAMPolicy.ListOperations",
-          "service": {
-            "shortName": "IAMPolicy",
-            "fullName": "google.cloud.datastream.v1.IAMPolicy"
-          }
-        }
-      },
-      "origin": "API_DEFINITION",
-      "segments": [
-        {
-          "start": 18,
-          "end": 61,
-          "type": "FULL"
-        }
-      ]
-    },
-    {
-      "regionTag": "datastream_v1_generated_IAMPolicy_SetIamPolicy_sync",
-      "title": "datastream SetIamPolicy Sample",
-      "description": "SetIamPolicy sets the access control policy on the specified resource. Replaces any\nexisting policy.\n\nCan return NOT_FOUND, INVALID_ARGUMENT, and PERMISSION_DENIED errors.",
-      "file": "IamPolicyClient/SetIamPolicy/main.go",
-      "language": "GO",
-      "clientMethod": {
-        "shortName": "SetIamPolicy",
-        "fullName": "google.cloud.datastream.v1.IamPolicyClient.SetIamPolicy",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "iampb.SetIamPolicyRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "iampb.Policy",
-        "client": {
-          "shortName": "IamPolicyClient",
-          "fullName": "google.cloud.datastream.v1.IamPolicyClient"
-        },
-        "method": {
-          "shortName": "SetIamPolicy",
-          "fullName": "google.cloud.datastream.v1.IAMPolicy.SetIamPolicy",
-          "service": {
-            "shortName": "IAMPolicy",
-            "fullName": "google.cloud.datastream.v1.IAMPolicy"
-          }
-        }
-      },
-      "origin": "API_DEFINITION",
-      "segments": [
-        {
-          "start": 18,
-          "end": 54,
-          "type": "FULL"
-        }
-      ]
-    },
-    {
-      "regionTag": "datastream_v1_generated_IAMPolicy_TestIamPermissions_sync",
-      "title": "datastream TestIamPermissions Sample",
-      "description": "TestIamPermissions returns permissions that a caller has on the specified resource.\nIf the resource does not exist, this will return an empty set of\npermissions, not a NOT_FOUND error.\n\nNote: This operation is designed to be used for building permission-aware\nUIs and command-line tools, not for authorization checking. This operation\nmay “fail open” without warning.",
-      "file": "IamPolicyClient/TestIamPermissions/main.go",
-      "language": "GO",
-      "clientMethod": {
-        "shortName": "TestIamPermissions",
-        "fullName": "google.cloud.datastream.v1.IamPolicyClient.TestIamPermissions",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "iampb.TestIamPermissionsRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "iampb.TestIamPermissionsResponse",
-        "client": {
-          "shortName": "IamPolicyClient",
-          "fullName": "google.cloud.datastream.v1.IamPolicyClient"
-        },
-        "method": {
-          "shortName": "TestIamPermissions",
-          "fullName": "google.cloud.datastream.v1.IAMPolicy.TestIamPermissions",
-          "service": {
-            "shortName": "IAMPolicy",
-            "fullName": "google.cloud.datastream.v1.IAMPolicy"
-          }
-        }
-      },
-      "origin": "API_DEFINITION",
-      "segments": [
-        {
-          "start": 18,
-          "end": 54,
           "type": "FULL"
         }
       ]

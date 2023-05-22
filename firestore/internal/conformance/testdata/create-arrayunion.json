@@ -2,7 +2,7 @@
   "tests": [
     {
       "description": "create: ArrayUnion with data",
-      "comment": "A key with ArrayUnion is removed from the data in the update \noperation. Instead it appears in a separate Transform operation.",
+      "comment": "A key with ArrayUnion is removed from the data in the update \nmask. Instead it appears in update transforms.",
       "create": {
         "docRefPath": "projects/projectID/databases/(default)/documents/C/d",
         "jsonData": "{\"a\": 1, \"b\": [\"ArrayUnion\", 1, 2, 3]}",
@@ -18,31 +18,26 @@
                   }
                 }
               },
+              "updateTransforms": [
+                {
+                  "fieldPath": "b",
+                  "appendMissingElements": {
+                    "values": [
+                      {
+                        "integerValue": "1"
+                      },
+                      {
+                        "integerValue": "2"
+                      },
+                      {
+                        "integerValue": "3"
+                      }
+                    ]
+                  }
+                }
+              ],
               "currentDocument": {
                 "exists": false
-              }
-            },
-            {
-              "transform": {
-                "document": "projects/projectID/databases/(default)/documents/C/d",
-                "fieldTransforms": [
-                  {
-                    "fieldPath": "b",
-                    "appendMissingElements": {
-                      "values": [
-                        {
-                          "integerValue": "1"
-                        },
-                        {
-                          "integerValue": "2"
-                        },
-                        {
-                          "integerValue": "3"
-                        }
-                      ]
-                    }
-                  }
-                ]
               }
             }
           ]

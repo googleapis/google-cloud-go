@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/talent/apiv4beta1",
-    "version": "1.5.0",
+    "version": "1.5.2",
     "language": "GO",
     "apis": [
       {
@@ -34,7 +34,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "talentpb.Company",
+        "resultType": "*talentpb.Company",
         "client": {
           "shortName": "CompanyClient",
           "fullName": "google.cloud.talent.v4beta1.CompanyClient"
@@ -125,7 +125,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "talentpb.Company",
+        "resultType": "*talentpb.Company",
         "client": {
           "shortName": "CompanyClient",
           "fullName": "google.cloud.talent.v4beta1.CompanyClient"
@@ -171,17 +171,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "longrunningpb.Operation",
+        "resultType": "*longrunningpb.Operation",
         "client": {
           "shortName": "CompanyClient",
           "fullName": "google.cloud.talent.v4beta1.CompanyClient"
         },
         "method": {
           "shortName": "GetOperation",
-          "fullName": "google.cloud.talent.v4beta1.CompanyService.GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
           "service": {
-            "shortName": "CompanyService",
-            "fullName": "google.cloud.talent.v4beta1.CompanyService"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -189,7 +189,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -263,7 +263,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "talentpb.Company",
+        "resultType": "*talentpb.Company",
         "client": {
           "shortName": "CompanyClient",
           "fullName": "google.cloud.talent.v4beta1.CompanyClient"
@@ -309,7 +309,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "talentpb.CompleteQueryResponse",
+        "resultType": "*talentpb.CompleteQueryResponse",
         "client": {
           "shortName": "CompletionClient",
           "fullName": "google.cloud.talent.v4beta1.CompletionClient"
@@ -355,17 +355,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "longrunningpb.Operation",
+        "resultType": "*longrunningpb.Operation",
         "client": {
           "shortName": "CompletionClient",
           "fullName": "google.cloud.talent.v4beta1.CompletionClient"
         },
         "method": {
           "shortName": "GetOperation",
-          "fullName": "google.cloud.talent.v4beta1.Completion.GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
           "service": {
-            "shortName": "Completion",
-            "fullName": "google.cloud.talent.v4beta1.Completion"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -373,7 +373,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -381,7 +381,7 @@
     {
       "regionTag": "jobs_v4beta1_generated_EventService_CreateClientEvent_sync",
       "title": "jobs CreateClientEvent Sample",
-      "description": "CreateClientEvent report events issued when end user interacts with customer’s application\nthat uses Cloud Talent Solution. You may inspect the created events in\nself service\ntools (at https: //console.cloud.google.com/talent-solution/overview).\nLearn\nmore (at https: //cloud.google.com/talent-solution/docs/management-tools)\nabout self service tools.",
+      "description": "CreateClientEvent report events issued when end user interacts with customer's application\nthat uses Cloud Talent Solution. You may inspect the created events in\n[self service\ntools](https: //console.cloud.google.com/talent-solution/overview).\n[Learn\nmore](https: //cloud.google.com/talent-solution/docs/management-tools)\nabout self service tools.",
       "file": "EventClient/CreateClientEvent/main.go",
       "language": "GO",
       "clientMethod": {
@@ -401,7 +401,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "talentpb.ClientEvent",
+        "resultType": "*talentpb.ClientEvent",
         "client": {
           "shortName": "EventClient",
           "fullName": "google.cloud.talent.v4beta1.EventClient"
@@ -447,17 +447,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "longrunningpb.Operation",
+        "resultType": "*longrunningpb.Operation",
         "client": {
           "shortName": "EventClient",
           "fullName": "google.cloud.talent.v4beta1.EventClient"
         },
         "method": {
           "shortName": "GetOperation",
-          "fullName": "google.cloud.talent.v4beta1.EventService.GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
           "service": {
-            "shortName": "EventService",
-            "fullName": "google.cloud.talent.v4beta1.EventService"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -465,7 +465,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -519,7 +519,7 @@
     {
       "regionTag": "jobs_v4beta1_generated_JobService_BatchDeleteJobs_sync",
       "title": "jobs BatchDeleteJobs Sample",
-      "description": "BatchDeleteJobs deletes a list of Jobs by filter.",
+      "description": "BatchDeleteJobs deletes a list of [Job][google.cloud.talent.v4beta1.Job]s by filter.",
       "file": "JobClient/BatchDeleteJobs/main.go",
       "language": "GO",
       "clientMethod": {
@@ -630,7 +630,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "talentpb.Job",
+        "resultType": "*talentpb.Job",
         "client": {
           "shortName": "JobClient",
           "fullName": "google.cloud.talent.v4beta1.JobClient"
@@ -721,7 +721,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "talentpb.Job",
+        "resultType": "*talentpb.Job",
         "client": {
           "shortName": "JobClient",
           "fullName": "google.cloud.talent.v4beta1.JobClient"
@@ -767,17 +767,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "longrunningpb.Operation",
+        "resultType": "*longrunningpb.Operation",
         "client": {
           "shortName": "JobClient",
           "fullName": "google.cloud.talent.v4beta1.JobClient"
         },
         "method": {
           "shortName": "GetOperation",
-          "fullName": "google.cloud.talent.v4beta1.JobService.GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
           "service": {
-            "shortName": "JobService",
-            "fullName": "google.cloud.talent.v4beta1.JobService"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -785,7 +785,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -839,7 +839,7 @@
     {
       "regionTag": "jobs_v4beta1_generated_JobService_SearchJobs_sync",
       "title": "jobs SearchJobs Sample",
-      "description": "SearchJobs searches for jobs using the provided\nSearchJobsRequest.\n\nThis call constrains the\nvisibility of jobs present in\nthe database, and only returns jobs that the caller has permission to\nsearch against.",
+      "description": "SearchJobs searches for jobs using the provided\n[SearchJobsRequest][google.cloud.talent.v4beta1.SearchJobsRequest].\n\nThis call constrains the\n[visibility][google.cloud.talent.v4beta1.Job.visibility] of jobs present in\nthe database, and only returns jobs that the caller has permission to\nsearch against.",
       "file": "JobClient/SearchJobs/main.go",
       "language": "GO",
       "clientMethod": {
@@ -859,7 +859,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "talentpb.SearchJobsResponse",
+        "resultType": "*talentpb.SearchJobsResponse",
         "client": {
           "shortName": "JobClient",
           "fullName": "google.cloud.talent.v4beta1.JobClient"
@@ -885,7 +885,7 @@
     {
       "regionTag": "jobs_v4beta1_generated_JobService_SearchJobsForAlert_sync",
       "title": "jobs SearchJobsForAlert Sample",
-      "description": "SearchJobsForAlert searches for jobs using the provided\nSearchJobsRequest.\n\nThis API call is intended for the use case of targeting passive job\nseekers (for example, job seekers who have signed up to receive email\nalerts about potential job opportunities), and has different algorithmic\nadjustments that are targeted to passive job seekers.\n\nThis call constrains the\nvisibility of jobs present in\nthe database, and only returns jobs the caller has permission to search\nagainst.",
+      "description": "SearchJobsForAlert searches for jobs using the provided\n[SearchJobsRequest][google.cloud.talent.v4beta1.SearchJobsRequest].\n\nThis API call is intended for the use case of targeting passive job\nseekers (for example, job seekers who have signed up to receive email\nalerts about potential job opportunities), and has different algorithmic\nadjustments that are targeted to passive job seekers.\n\nThis call constrains the\n[visibility][google.cloud.talent.v4beta1.Job.visibility] of jobs present in\nthe database, and only returns jobs the caller has permission to search\nagainst.",
       "file": "JobClient/SearchJobsForAlert/main.go",
       "language": "GO",
       "clientMethod": {
@@ -951,7 +951,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "talentpb.Job",
+        "resultType": "*talentpb.Job",
         "client": {
           "shortName": "JobClient",
           "fullName": "google.cloud.talent.v4beta1.JobClient"
@@ -997,7 +997,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "talentpb.Tenant",
+        "resultType": "*talentpb.Tenant",
         "client": {
           "shortName": "TenantClient",
           "fullName": "google.cloud.talent.v4beta1.TenantClient"
@@ -1088,17 +1088,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "longrunningpb.Operation",
+        "resultType": "*longrunningpb.Operation",
         "client": {
           "shortName": "TenantClient",
           "fullName": "google.cloud.talent.v4beta1.TenantClient"
         },
         "method": {
           "shortName": "GetOperation",
-          "fullName": "google.cloud.talent.v4beta1.TenantService.GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
           "service": {
-            "shortName": "TenantService",
-            "fullName": "google.cloud.talent.v4beta1.TenantService"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -1106,7 +1106,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -1134,7 +1134,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "talentpb.Tenant",
+        "resultType": "*talentpb.Tenant",
         "client": {
           "shortName": "TenantClient",
           "fullName": "google.cloud.talent.v4beta1.TenantClient"
@@ -1226,7 +1226,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "talentpb.Tenant",
+        "resultType": "*talentpb.Tenant",
         "client": {
           "shortName": "TenantClient",
           "fullName": "google.cloud.talent.v4beta1.TenantClient"

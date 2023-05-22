@@ -1,5 +1,40 @@
 # Changes
 
+## [1.18.1](https://github.com/googleapis/google-cloud-go/compare/container/v1.18.0...container/v1.18.1) (2023-05-08)
+
+
+### Bug Fixes
+
+* **container:** Update grpc to v1.55.0 ([1147ce0](https://github.com/googleapis/google-cloud-go/commit/1147ce02a990276ca4f8ab7a1ab65c14da4450ef))
+
+## [1.18.0](https://github.com/googleapis/google-cloud-go/compare/container/v1.17.0...container/v1.18.0) (2023-05-03)
+
+
+### Features
+
+* **container:** Support fleet registration via cluster update ([#7877](https://github.com/googleapis/google-cloud-go/issues/7877)) ([d5d1fe9](https://github.com/googleapis/google-cloud-go/commit/d5d1fe96c9cf3cc3bb0e05fb75297a68bbbd8e41))
+
+## [1.17.0](https://github.com/googleapis/google-cloud-go/compare/container/v1.16.0...container/v1.17.0) (2023-04-25)
+
+
+### Features
+
+* **container:** Add support for updating additional pod IPv4 ranges for Standard and Autopilot clusters ([87a67b4](https://github.com/googleapis/google-cloud-go/commit/87a67b44b2c7ffc3cea986b255614ea0d21aa6fc))
+
+
+### Documentation
+
+* **container:** Minor formatting in docstring ([#7814](https://github.com/googleapis/google-cloud-go/issues/7814)) ([4900851](https://github.com/googleapis/google-cloud-go/commit/49008518e168fe6f7891b907d6fc14eecdef758c))
+* **container:** Operation.Type is now documented in detail ([#7811](https://github.com/googleapis/google-cloud-go/issues/7811)) ([87eaf38](https://github.com/googleapis/google-cloud-go/commit/87eaf383fab91f5e1dcbaa037bff36d3044d06db))
+
+## [1.16.0](https://github.com/googleapis/google-cloud-go/compare/container/v1.15.0...container/v1.16.0) (2023-04-11)
+
+
+### Features
+
+* **container:** Add support for disabling pod IP cidr overprovision ([fc90e54](https://github.com/googleapis/google-cloud-go/commit/fc90e54b25bda6b339266e3e5388174339ed6a44))
+* **container:** Add support for updating additional pod IPv4 ranges for Standard and Autopilot clusters ([fc90e54](https://github.com/googleapis/google-cloud-go/commit/fc90e54b25bda6b339266e3e5388174339ed6a44))
+
 ## [1.15.0](https://github.com/googleapis/google-cloud-go/compare/container/v1.14.0...container/v1.15.0) (2023-04-04)
 
 

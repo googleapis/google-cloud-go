@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/scheduler/apiv1beta1",
-    "version": "1.8.0",
+    "version": "1.9.1",
     "language": "GO",
     "apis": [
       {
@@ -34,7 +34,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "schedulerpb.Job",
+        "resultType": "*schedulerpb.Job",
         "client": {
           "shortName": "CloudSchedulerClient",
           "fullName": "google.cloud.scheduler.v1beta1.CloudSchedulerClient"
@@ -125,7 +125,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "schedulerpb.Job",
+        "resultType": "*schedulerpb.Job",
         "client": {
           "shortName": "CloudSchedulerClient",
           "fullName": "google.cloud.scheduler.v1beta1.CloudSchedulerClient"
@@ -171,17 +171,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "locationpb.Location",
+        "resultType": "*locationpb.Location",
         "client": {
           "shortName": "CloudSchedulerClient",
           "fullName": "google.cloud.scheduler.v1beta1.CloudSchedulerClient"
         },
         "method": {
           "shortName": "GetLocation",
-          "fullName": "google.cloud.scheduler.v1beta1.CloudScheduler.GetLocation",
+          "fullName": "google.cloud.location.Locations.GetLocation",
           "service": {
-            "shortName": "CloudScheduler",
-            "fullName": "google.cloud.scheduler.v1beta1.CloudScheduler"
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
           }
         }
       },
@@ -189,7 +189,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -270,10 +270,10 @@
         },
         "method": {
           "shortName": "ListLocations",
-          "fullName": "google.cloud.scheduler.v1beta1.CloudScheduler.ListLocations",
+          "fullName": "google.cloud.location.Locations.ListLocations",
           "service": {
-            "shortName": "CloudScheduler",
-            "fullName": "google.cloud.scheduler.v1beta1.CloudScheduler"
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
           }
         }
       },
@@ -281,7 +281,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 61,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -289,7 +289,7 @@
     {
       "regionTag": "cloudscheduler_v1beta1_generated_CloudScheduler_PauseJob_sync",
       "title": "cloudscheduler PauseJob Sample",
-      "description": "PauseJob pauses a job.\n\nIf a job is paused then the system will stop executing the job\nuntil it is re-enabled via\nResumeJob. The\nstate of the job is stored in\nstate; if paused it will be set\nto Job.State.PAUSED. A\njob must be in\nJob.State.ENABLED to be\npaused.",
+      "description": "PauseJob pauses a job.\n\nIf a job is paused then the system will stop executing the job\nuntil it is re-enabled via\n[ResumeJob][google.cloud.scheduler.v1beta1.CloudScheduler.ResumeJob]. The\nstate of the job is stored in\n[state][google.cloud.scheduler.v1beta1.Job.state]; if paused it will be set\nto [Job.State.PAUSED][google.cloud.scheduler.v1beta1.Job.State.PAUSED]. A\njob must be in\n[Job.State.ENABLED][google.cloud.scheduler.v1beta1.Job.State.ENABLED] to be\npaused.",
       "file": "CloudSchedulerClient/PauseJob/main.go",
       "language": "GO",
       "clientMethod": {
@@ -309,7 +309,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "schedulerpb.Job",
+        "resultType": "*schedulerpb.Job",
         "client": {
           "shortName": "CloudSchedulerClient",
           "fullName": "google.cloud.scheduler.v1beta1.CloudSchedulerClient"
@@ -335,7 +335,7 @@
     {
       "regionTag": "cloudscheduler_v1beta1_generated_CloudScheduler_ResumeJob_sync",
       "title": "cloudscheduler ResumeJob Sample",
-      "description": "ResumeJob resume a job.\n\nThis method reenables a job after it has been\nJob.State.PAUSED. The\nstate of a job is stored in\nJob.state; after calling this\nmethod it will be set to\nJob.State.ENABLED. A\njob must be in\nJob.State.PAUSED to be\nresumed.",
+      "description": "ResumeJob resume a job.\n\nThis method reenables a job after it has been\n[Job.State.PAUSED][google.cloud.scheduler.v1beta1.Job.State.PAUSED]. The\nstate of a job is stored in\n[Job.state][google.cloud.scheduler.v1beta1.Job.state]; after calling this\nmethod it will be set to\n[Job.State.ENABLED][google.cloud.scheduler.v1beta1.Job.State.ENABLED]. A\njob must be in\n[Job.State.PAUSED][google.cloud.scheduler.v1beta1.Job.State.PAUSED] to be\nresumed.",
       "file": "CloudSchedulerClient/ResumeJob/main.go",
       "language": "GO",
       "clientMethod": {
@@ -355,7 +355,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "schedulerpb.Job",
+        "resultType": "*schedulerpb.Job",
         "client": {
           "shortName": "CloudSchedulerClient",
           "fullName": "google.cloud.scheduler.v1beta1.CloudSchedulerClient"
@@ -401,7 +401,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "schedulerpb.Job",
+        "resultType": "*schedulerpb.Job",
         "client": {
           "shortName": "CloudSchedulerClient",
           "fullName": "google.cloud.scheduler.v1beta1.CloudSchedulerClient"
@@ -427,7 +427,7 @@
     {
       "regionTag": "cloudscheduler_v1beta1_generated_CloudScheduler_UpdateJob_sync",
       "title": "cloudscheduler UpdateJob Sample",
-      "description": "UpdateJob updates a job.\n\nIf successful, the updated Job is\nreturned. If the job does not exist, NOT_FOUND is returned.\n\nIf UpdateJob does not successfully return, it is possible for the\njob to be in an\nJob.State.UPDATE_FAILED\nstate. A job in this state may not be executed. If this happens, retry the\nUpdateJob request until a successful response is received.",
+      "description": "UpdateJob updates a job.\n\nIf successful, the updated [Job][google.cloud.scheduler.v1beta1.Job] is\nreturned. If the job does not exist, `NOT_FOUND` is returned.\n\nIf UpdateJob does not successfully return, it is possible for the\njob to be in an\n[Job.State.UPDATE_FAILED][google.cloud.scheduler.v1beta1.Job.State.UPDATE_FAILED]\nstate. A job in this state may not be executed. If this happens, retry the\nUpdateJob request until a successful response is received.",
       "file": "CloudSchedulerClient/UpdateJob/main.go",
       "language": "GO",
       "clientMethod": {
@@ -447,7 +447,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "schedulerpb.Job",
+        "resultType": "*schedulerpb.Job",
         "client": {
           "shortName": "CloudSchedulerClient",
           "fullName": "google.cloud.scheduler.v1beta1.CloudSchedulerClient"

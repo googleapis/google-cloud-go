@@ -2,6 +2,40 @@
 
 
 
+## [1.51.2](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.51.1...bigquery/v1.51.2) (2023-05-08)
+
+
+### Bug Fixes
+
+* **bigquery:** Update grpc to v1.55.0 ([1147ce0](https://github.com/googleapis/google-cloud-go/commit/1147ce02a990276ca4f8ab7a1ab65c14da4450ef))
+
+## [1.51.1](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.51.0...bigquery/v1.51.1) (2023-05-04)
+
+
+### Bug Fixes
+
+* **bigquery/storage/managedwriter:** Schema evolution improvements ([#7838](https://github.com/googleapis/google-cloud-go/issues/7838)) ([49a1621](https://github.com/googleapis/google-cloud-go/commit/49a1621254cc9cc16cbcc2ca779979edfd2565ab))
+* **bigquery:** Upgrade arrow to v12 to fix build error ([#7870](https://github.com/googleapis/google-cloud-go/issues/7870)) ([402e365](https://github.com/googleapis/google-cloud-go/commit/402e3651c18b9e5b73529e9a8f9bdeac71323875))
+
+
+### Documentation
+
+* **bigquery/storage/managedwriter:** Improve tuning guidance ([#7848](https://github.com/googleapis/google-cloud-go/issues/7848)) ([ca2184c](https://github.com/googleapis/google-cloud-go/commit/ca2184c8e7094294479665ca02ae9b29c21b09aa))
+
+## [1.51.0](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.50.0...bigquery/v1.51.0) (2023-04-17)
+
+
+### Features
+
+* **bigquery/storage/managedwriter:** Expose connection multiplexing as experimental ([#7673](https://github.com/googleapis/google-cloud-go/issues/7673)) ([3b8bfb4](https://github.com/googleapis/google-cloud-go/commit/3b8bfb44a237fc0696e77a47c5a8305caa5ec64b))
+* **bigquery:** Add Iceberg as DataFormat option. ([#7155](https://github.com/googleapis/google-cloud-go/issues/7155)) ([7a9e211](https://github.com/googleapis/google-cloud-go/commit/7a9e21121ca8debffe11fe16d1b96b0d969e11ac))
+* **bigquery:** Expose dataset MaxTimeTravelHours ([#7706](https://github.com/googleapis/google-cloud-go/issues/7706)) ([22a666c](https://github.com/googleapis/google-cloud-go/commit/22a666c766fa4565ee120574709b345e7fc37c5f))
+
+
+### Bug Fixes
+
+* **bigquery:** Respect context during query execution ([#7693](https://github.com/googleapis/google-cloud-go/issues/7693)) ([56772f5](https://github.com/googleapis/google-cloud-go/commit/56772f50217574e6776efeefef767c16e374e593))
+
 ## [1.50.0](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.49.0...bigquery/v1.50.0) (2023-04-03)
 
 

@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/tpu/apiv1",
-    "version": "1.5.0",
+    "version": "1.5.1",
     "language": "GO",
     "apis": [
       {
@@ -40,10 +40,10 @@
         },
         "method": {
           "shortName": "CancelOperation",
-          "fullName": "google.cloud.tpu.v1.Tpu.CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
           "service": {
-            "shortName": "Tpu",
-            "fullName": "google.cloud.tpu.v1.Tpu"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -51,7 +51,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -177,10 +177,10 @@
         },
         "method": {
           "shortName": "DeleteOperation",
-          "fullName": "google.cloud.tpu.v1.Tpu.DeleteOperation",
+          "fullName": "google.longrunning.Operations.DeleteOperation",
           "service": {
-            "shortName": "Tpu",
-            "fullName": "google.cloud.tpu.v1.Tpu"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -188,7 +188,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -216,7 +216,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "tpupb.AcceleratorType",
+        "resultType": "*tpupb.AcceleratorType",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.tpu.v1.Client"
@@ -262,17 +262,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "locationpb.Location",
+        "resultType": "*locationpb.Location",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.tpu.v1.Client"
         },
         "method": {
           "shortName": "GetLocation",
-          "fullName": "google.cloud.tpu.v1.Tpu.GetLocation",
+          "fullName": "google.cloud.location.Locations.GetLocation",
           "service": {
-            "shortName": "Tpu",
-            "fullName": "google.cloud.tpu.v1.Tpu"
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
           }
         }
       },
@@ -280,7 +280,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -308,7 +308,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "tpupb.Node",
+        "resultType": "*tpupb.Node",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.tpu.v1.Client"
@@ -354,17 +354,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "longrunningpb.Operation",
+        "resultType": "*longrunningpb.Operation",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.tpu.v1.Client"
         },
         "method": {
           "shortName": "GetOperation",
-          "fullName": "google.cloud.tpu.v1.Tpu.GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
           "service": {
-            "shortName": "Tpu",
-            "fullName": "google.cloud.tpu.v1.Tpu"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -372,7 +372,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -400,7 +400,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "tpupb.TensorFlowVersion",
+        "resultType": "*tpupb.TensorFlowVersion",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.tpu.v1.Client"
@@ -499,10 +499,10 @@
         },
         "method": {
           "shortName": "ListLocations",
-          "fullName": "google.cloud.tpu.v1.Tpu.ListLocations",
+          "fullName": "google.cloud.location.Locations.ListLocations",
           "service": {
-            "shortName": "Tpu",
-            "fullName": "google.cloud.tpu.v1.Tpu"
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
           }
         }
       },
@@ -510,7 +510,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 61,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -591,10 +591,10 @@
         },
         "method": {
           "shortName": "ListOperations",
-          "fullName": "google.cloud.tpu.v1.Tpu.ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
           "service": {
-            "shortName": "Tpu",
-            "fullName": "google.cloud.tpu.v1.Tpu"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -602,7 +602,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 61,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -656,7 +656,7 @@
     {
       "regionTag": "tpu_v1_generated_Tpu_ReimageNode_sync",
       "title": "tpu ReimageNode Sample",
-      "description": "ReimageNode reimages a node’s OS.",
+      "description": "ReimageNode reimages a node's OS.",
       "file": "Client/ReimageNode/main.go",
       "language": "GO",
       "clientMethod": {

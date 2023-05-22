@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -44,10 +44,8 @@ type GcsDestination struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Required. The Google Cloud Storage URI for the exported objects. A URI is
-	// of the form:
-	//   gs://bucket/object-name-or-prefix
-	// Whether a full object name, or just a prefix, its usage depends on the
-	// Dialogflow operation.
+	// of the form: `gs://bucket/object-name-or-prefix` Whether a full object
+	// name, or just a prefix, its usage depends on the Dialogflow operation.
 	Uri string `protobuf:"bytes,1,opt,name=uri,proto3" json:"uri,omitempty"`
 }
 

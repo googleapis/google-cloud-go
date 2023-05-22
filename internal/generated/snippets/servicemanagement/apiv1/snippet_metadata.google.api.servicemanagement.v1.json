@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/servicemanagement/apiv1",
-    "version": "1.8.0",
+    "version": "1.8.1",
     "language": "GO",
     "apis": [
       {
@@ -60,7 +60,7 @@
     {
       "regionTag": "servicemanagement_v1_generated_ServiceManager_CreateServiceConfig_sync",
       "title": "servicemanagement CreateServiceConfig Sample",
-      "description": "CreateServiceConfig creates a new service configuration (version) for a managed service.\nThis method only stores the service configuration. To roll out the service\nconfiguration to backend systems please call\nCreateServiceRollout.\n\nOnly the 100 most recent service configurations and ones referenced by\nexisting rollouts are kept for each service. The rest will be deleted\neventually.",
+      "description": "CreateServiceConfig creates a new service configuration (version) for a managed service.\nThis method only stores the service configuration. To roll out the service\nconfiguration to backend systems please call\n[CreateServiceRollout][google.api.servicemanagement.v1.ServiceManager.CreateServiceRollout].\n\nOnly the 100 most recent service configurations and ones referenced by\nexisting rollouts are kept for each service. The rest will be deleted\neventually.",
       "file": "ServiceManagerClient/CreateServiceConfig/main.go",
       "language": "GO",
       "clientMethod": {
@@ -80,7 +80,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "serviceconfigpb.Service",
+        "resultType": "*serviceconfigpb.Service",
         "client": {
           "shortName": "ServiceManagerClient",
           "fullName": "google.api.servicemanagement.v1.ServiceManagerClient"
@@ -152,7 +152,7 @@
     {
       "regionTag": "servicemanagement_v1_generated_ServiceManager_DeleteService_sync",
       "title": "servicemanagement DeleteService Sample",
-      "description": "DeleteService deletes a managed service. This method will change the service to the\nSoft-Delete state for 30 days. Within this period, service producers may\ncall\nUndeleteService\nto restore the service. After 30 days, the service will be permanently\ndeleted.\n\nOperation<response: google.protobuf.Empty>",
+      "description": "DeleteService deletes a managed service. This method will change the service to the\n`Soft-Delete` state for 30 days. Within this period, service producers may\ncall\n[UndeleteService][google.api.servicemanagement.v1.ServiceManager.UndeleteService]\nto restore the service. After 30 days, the service will be permanently\ndeleted.\n\nOperation<response: google.protobuf.Empty>",
       "file": "ServiceManagerClient/DeleteService/main.go",
       "language": "GO",
       "clientMethod": {
@@ -218,7 +218,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "servicemanagementpb.GenerateConfigReportResponse",
+        "resultType": "*servicemanagementpb.GenerateConfigReportResponse",
         "client": {
           "shortName": "ServiceManagerClient",
           "fullName": "google.api.servicemanagement.v1.ServiceManagerClient"
@@ -264,7 +264,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "servicemanagementpb.ManagedService",
+        "resultType": "*servicemanagementpb.ManagedService",
         "client": {
           "shortName": "ServiceManagerClient",
           "fullName": "google.api.servicemanagement.v1.ServiceManagerClient"
@@ -310,7 +310,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "serviceconfigpb.Service",
+        "resultType": "*serviceconfigpb.Service",
         "client": {
           "shortName": "ServiceManagerClient",
           "fullName": "google.api.servicemanagement.v1.ServiceManagerClient"
@@ -336,7 +336,7 @@
     {
       "regionTag": "servicemanagement_v1_generated_ServiceManager_GetServiceRollout_sync",
       "title": "servicemanagement GetServiceRollout Sample",
-      "description": "GetServiceRollout gets a service configuration\nrollout.",
+      "description": "GetServiceRollout gets a service configuration\n[rollout][google.api.servicemanagement.v1.Rollout].",
       "file": "ServiceManagerClient/GetServiceRollout/main.go",
       "language": "GO",
       "clientMethod": {
@@ -356,7 +356,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "servicemanagementpb.Rollout",
+        "resultType": "*servicemanagementpb.Rollout",
         "client": {
           "shortName": "ServiceManagerClient",
           "fullName": "google.api.servicemanagement.v1.ServiceManagerClient"
@@ -474,7 +474,7 @@
     {
       "regionTag": "servicemanagement_v1_generated_ServiceManager_ListServices_sync",
       "title": "servicemanagement ListServices Sample",
-      "description": "ListServices lists managed services.\n\nReturns all public services. For authenticated users, also returns all\nservices the calling user has “servicemanagement.services.get” permission\nfor.",
+      "description": "ListServices lists managed services.\n\nReturns all public services. For authenticated users, also returns all\nservices the calling user has \"servicemanagement.services.get\" permission\nfor.",
       "file": "ServiceManagerClient/ListServices/main.go",
       "language": "GO",
       "clientMethod": {
@@ -520,7 +520,7 @@
     {
       "regionTag": "servicemanagement_v1_generated_ServiceManager_SubmitConfigSource_sync",
       "title": "servicemanagement SubmitConfigSource Sample",
-      "description": "SubmitConfigSource creates a new service configuration (version) for a managed service based\non\nuser-supplied configuration source files (for example: OpenAPI\nSpecification). This method stores the source configurations as well as the\ngenerated service configuration. To rollout the service configuration to\nother services,\nplease call\nCreateServiceRollout.\n\nOnly the 100 most recent configuration sources and ones referenced by\nexisting service configurtions are kept for each service. The rest will be\ndeleted eventually.\n\nOperation<response: SubmitConfigSourceResponse>",
+      "description": "SubmitConfigSource creates a new service configuration (version) for a managed service based\non\nuser-supplied configuration source files (for example: OpenAPI\nSpecification). This method stores the source configurations as well as the\ngenerated service configuration. To rollout the service configuration to\nother services,\nplease call\n[CreateServiceRollout][google.api.servicemanagement.v1.ServiceManager.CreateServiceRollout].\n\nOnly the 100 most recent configuration sources and ones referenced by\nexisting service configurtions are kept for each service. The rest will be\ndeleted eventually.\n\nOperation<response: SubmitConfigSourceResponse>",
       "file": "ServiceManagerClient/SubmitConfigSource/main.go",
       "language": "GO",
       "clientMethod": {

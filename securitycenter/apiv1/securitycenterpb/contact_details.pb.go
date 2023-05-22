@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -84,13 +84,13 @@ func (x *ContactDetails) GetContacts() []*Contact {
 	return nil
 }
 
-// Representa a single contact's email address
+// The email address of a contact.
 type Contact struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// An email address e.g. "person123@company.com"
+	// An email address. For example, "`person123@company.com`".
 	Email string `protobuf:"bytes,1,opt,name=email,proto3" json:"email,omitempty"`
 }
 

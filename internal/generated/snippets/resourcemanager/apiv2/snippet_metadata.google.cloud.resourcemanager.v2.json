@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/resourcemanager/apiv2",
-    "version": "1.6.0",
+    "version": "1.8.2",
     "language": "GO",
     "apis": [
       {
@@ -14,7 +14,7 @@
     {
       "regionTag": "cloudresourcemanager_v2_generated_Folders_CreateFolder_sync",
       "title": "cloudresourcemanager CreateFolder Sample",
-      "description": "CreateFolder creates a Folder in the resource hierarchy.\nReturns an Operation which can be used to track the progress of the\nfolder creation workflow.\nUpon success the Operation.response field will be populated with the\ncreated Folder.\n\nIn order to succeed, the addition of this new Folder must not violate\nthe Folder naming, height or fanout constraints.\n\n\tThe Folder’s display_name must be distinct from all other Folder’s that\n\tshare its parent.\n\n\tThe addition of the Folder must not cause the active Folder hierarchy\n\tto exceed a height of 4. Note, the full active + deleted Folder hierarchy\n\tis allowed to reach a height of 8; this provides additional headroom when\n\tmoving folders that contain deleted folders.\n\n\tThe addition of the Folder must not cause the total number of Folders\n\tunder its parent to exceed 100.\n\nIf the operation fails due to a folder constraint violation, some errors\nmay be returned by the CreateFolder request, with status code\nFAILED_PRECONDITION and an error description. Other folder constraint\nviolations will be communicated in the Operation, with the specific\nPreconditionFailure returned via the details list in the Operation.error\nfield.\n\nThe caller must have resourcemanager.folders.create permission on the\nidentified parent.",
+      "description": "CreateFolder creates a Folder in the resource hierarchy.\nReturns an Operation which can be used to track the progress of the\nfolder creation workflow.\nUpon success the Operation.response field will be populated with the\ncreated Folder.\n\nIn order to succeed, the addition of this new Folder must not violate\nthe Folder naming, height or fanout constraints.\n\n+ The Folder's display_name must be distinct from all other Folder's that\nshare its parent.\n+ The addition of the Folder must not cause the active Folder hierarchy\nto exceed a height of 4. Note, the full active + deleted Folder hierarchy\nis allowed to reach a height of 8; this provides additional headroom when\nmoving folders that contain deleted folders.\n+ The addition of the Folder must not cause the total number of Folders\nunder its parent to exceed 100.\n\nIf the operation fails due to a folder constraint violation, some errors\nmay be returned by the CreateFolder request, with status code\nFAILED_PRECONDITION and an error description. Other folder constraint\nviolations will be communicated in the Operation, with the specific\nPreconditionFailure returned via the details list in the Operation.error\nfield.\n\nThe caller must have `resourcemanager.folders.create` permission on the\nidentified parent.",
       "file": "FoldersClient/CreateFolder/main.go",
       "language": "GO",
       "clientMethod": {
@@ -52,7 +52,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 58,
           "type": "FULL"
         }
       ]
@@ -60,7 +60,7 @@
     {
       "regionTag": "cloudresourcemanager_v2_generated_Folders_DeleteFolder_sync",
       "title": "cloudresourcemanager DeleteFolder Sample",
-      "description": "DeleteFolder requests deletion of a Folder. The Folder is moved into the\nDELETE_REQUESTED state\nimmediately, and is deleted approximately 30 days later. This method may\nonly be called on an empty Folder in the\n[ACTIVE][google.cloud.resourcemanager.v2.Folder.LifecycleState.ACTIVE (at http: //google.cloud.resourcemanager.v2.Folder.LifecycleState.ACTIVE)] state, where a Folder is empty if\nit doesn’t contain any Folders or Projects in the\n[ACTIVE][google.cloud.resourcemanager.v2.Folder.LifecycleState.ACTIVE (at http: //google.cloud.resourcemanager.v2.Folder.LifecycleState.ACTIVE)] state.\nThe caller must have resourcemanager.folders.delete permission on the\nidentified folder.",
+      "description": "DeleteFolder requests deletion of a Folder. The Folder is moved into the\n[DELETE_REQUESTED][google.cloud.resourcemanager.v2.Folder.LifecycleState.DELETE_REQUESTED] state\nimmediately, and is deleted approximately 30 days later. This method may\nonly be called on an empty Folder in the\n[ACTIVE][google.cloud.resourcemanager.v2.Folder.LifecycleState.ACTIVE] state, where a Folder is empty if\nit doesn't contain any Folders or Projects in the\n[ACTIVE][google.cloud.resourcemanager.v2.Folder.LifecycleState.ACTIVE] state.\nThe caller must have `resourcemanager.folders.delete` permission on the\nidentified folder.",
       "file": "FoldersClient/DeleteFolder/main.go",
       "language": "GO",
       "clientMethod": {
@@ -80,7 +80,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "resourcemanagerpb.Folder",
+        "resultType": "*resourcemanagerpb.Folder",
         "client": {
           "shortName": "FoldersClient",
           "fullName": "google.cloud.resourcemanager.v2.FoldersClient"
@@ -98,7 +98,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -106,7 +106,7 @@
     {
       "regionTag": "cloudresourcemanager_v2_generated_Folders_GetFolder_sync",
       "title": "cloudresourcemanager GetFolder Sample",
-      "description": "GetFolder retrieves a Folder identified by the supplied resource name.\nValid Folder resource names have the format folders/{folder_id}\n(for example, folders/1234).\nThe caller must have resourcemanager.folders.get permission on the\nidentified folder.",
+      "description": "GetFolder retrieves a Folder identified by the supplied resource name.\nValid Folder resource names have the format `folders/{folder_id}`\n(for example, `folders/1234`).\nThe caller must have `resourcemanager.folders.get` permission on the\nidentified folder.",
       "file": "FoldersClient/GetFolder/main.go",
       "language": "GO",
       "clientMethod": {
@@ -126,7 +126,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "resourcemanagerpb.Folder",
+        "resultType": "*resourcemanagerpb.Folder",
         "client": {
           "shortName": "FoldersClient",
           "fullName": "google.cloud.resourcemanager.v2.FoldersClient"
@@ -144,7 +144,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -152,7 +152,7 @@
     {
       "regionTag": "cloudresourcemanager_v2_generated_Folders_GetIamPolicy_sync",
       "title": "cloudresourcemanager GetIamPolicy Sample",
-      "description": "GetIamPolicy gets the access control policy for a Folder. The returned policy may be\nempty if no such policy or resource exists. The resource field should\nbe the Folder’s resource name, e.g. “folders/1234”.\nThe caller must have resourcemanager.folders.getIamPolicy permission\non the identified folder.",
+      "description": "GetIamPolicy gets the access control policy for a Folder. The returned policy may be\nempty if no such policy or resource exists. The `resource` field should\nbe the Folder's resource name, e.g. \"folders/1234\".\nThe caller must have `resourcemanager.folders.getIamPolicy` permission\non the identified folder.",
       "file": "FoldersClient/GetIamPolicy/main.go",
       "language": "GO",
       "clientMethod": {
@@ -172,7 +172,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "iampb.Policy",
+        "resultType": "*iampb.Policy",
         "client": {
           "shortName": "FoldersClient",
           "fullName": "google.cloud.resourcemanager.v2.FoldersClient"
@@ -198,7 +198,7 @@
     {
       "regionTag": "cloudresourcemanager_v2_generated_Folders_ListFolders_sync",
       "title": "cloudresourcemanager ListFolders Sample",
-      "description": "ListFolders lists the Folders that are direct descendants of supplied parent resource.\nList provides a strongly consistent view of the Folders underneath\nthe specified parent resource.\nList returns Folders sorted based upon the (ascending) lexical ordering\nof their display_name.\nThe caller must have resourcemanager.folders.list permission on the\nidentified parent.",
+      "description": "ListFolders lists the Folders that are direct descendants of supplied parent resource.\nList provides a strongly consistent view of the Folders underneath\nthe specified parent resource.\nList returns Folders sorted based upon the (ascending) lexical ordering\nof their display_name.\nThe caller must have `resourcemanager.folders.list` permission on the\nidentified parent.",
       "file": "FoldersClient/ListFolders/main.go",
       "language": "GO",
       "clientMethod": {
@@ -236,7 +236,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 61,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -244,7 +244,7 @@
     {
       "regionTag": "cloudresourcemanager_v2_generated_Folders_MoveFolder_sync",
       "title": "cloudresourcemanager MoveFolder Sample",
-      "description": "MoveFolder moves a Folder under a new resource parent.\nReturns an Operation which can be used to track the progress of the\nfolder move workflow.\nUpon success the Operation.response field will be populated with the\nmoved Folder.\nUpon failure, a FolderOperationError categorizing the failure cause will\nbe returned - if the failure occurs synchronously then the\nFolderOperationError will be returned via the Status.details field\nand if it occurs asynchronously then the FolderOperation will be returned\nvia the Operation.error field.\nIn addition, the Operation.metadata field will be populated with a\nFolderOperation message as an aid to stateless clients.\nFolder moves will be rejected if they violate either the naming, height\nor fanout constraints described in the\nCreateFolder documentation.\nThe caller must have resourcemanager.folders.move permission on the\nfolder’s current and proposed new parent.",
+      "description": "MoveFolder moves a Folder under a new resource parent.\nReturns an Operation which can be used to track the progress of the\nfolder move workflow.\nUpon success the Operation.response field will be populated with the\nmoved Folder.\nUpon failure, a FolderOperationError categorizing the failure cause will\nbe returned - if the failure occurs synchronously then the\nFolderOperationError will be returned via the Status.details field\nand if it occurs asynchronously then the FolderOperation will be returned\nvia the Operation.error field.\nIn addition, the Operation.metadata field will be populated with a\nFolderOperation message as an aid to stateless clients.\nFolder moves will be rejected if they violate either the naming, height\nor fanout constraints described in the\n[CreateFolder][google.cloud.resourcemanager.v2.Folders.CreateFolder] documentation.\nThe caller must have `resourcemanager.folders.move` permission on the\nfolder's current and proposed new parent.",
       "file": "FoldersClient/MoveFolder/main.go",
       "language": "GO",
       "clientMethod": {
@@ -282,7 +282,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 58,
           "type": "FULL"
         }
       ]
@@ -290,7 +290,7 @@
     {
       "regionTag": "cloudresourcemanager_v2_generated_Folders_SearchFolders_sync",
       "title": "cloudresourcemanager SearchFolders Sample",
-      "description": "SearchFolders search for folders that match specific filter criteria.\nSearch provides an eventually consistent view of the folders a user has\naccess to which meet the specified filter criteria.\n\nThis will only return folders on which the caller has the\npermission resourcemanager.folders.get.",
+      "description": "SearchFolders search for folders that match specific filter criteria.\nSearch provides an eventually consistent view of the folders a user has\naccess to which meet the specified filter criteria.\n\nThis will only return folders on which the caller has the\npermission `resourcemanager.folders.get`.",
       "file": "FoldersClient/SearchFolders/main.go",
       "language": "GO",
       "clientMethod": {
@@ -328,7 +328,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 61,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -336,7 +336,7 @@
     {
       "regionTag": "cloudresourcemanager_v2_generated_Folders_SetIamPolicy_sync",
       "title": "cloudresourcemanager SetIamPolicy Sample",
-      "description": "SetIamPolicy sets the access control policy on a Folder, replacing any existing policy.\nThe resource field should be the Folder’s resource name, e.g.\n“folders/1234”.\nThe caller must have resourcemanager.folders.setIamPolicy permission\non the identified folder.",
+      "description": "SetIamPolicy sets the access control policy on a Folder, replacing any existing policy.\nThe `resource` field should be the Folder's resource name, e.g.\n\"folders/1234\".\nThe caller must have `resourcemanager.folders.setIamPolicy` permission\non the identified folder.",
       "file": "FoldersClient/SetIamPolicy/main.go",
       "language": "GO",
       "clientMethod": {
@@ -356,7 +356,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "iampb.Policy",
+        "resultType": "*iampb.Policy",
         "client": {
           "shortName": "FoldersClient",
           "fullName": "google.cloud.resourcemanager.v2.FoldersClient"
@@ -382,7 +382,7 @@
     {
       "regionTag": "cloudresourcemanager_v2_generated_Folders_TestIamPermissions_sync",
       "title": "cloudresourcemanager TestIamPermissions Sample",
-      "description": "TestIamPermissions returns permissions that a caller has on the specified Folder.\nThe resource field should be the Folder’s resource name,\ne.g. “folders/1234”.\n\nThere are no permissions required for making this API call.",
+      "description": "TestIamPermissions returns permissions that a caller has on the specified Folder.\nThe `resource` field should be the Folder's resource name,\ne.g. \"folders/1234\".\n\nThere are no permissions required for making this API call.",
       "file": "FoldersClient/TestIamPermissions/main.go",
       "language": "GO",
       "clientMethod": {
@@ -402,7 +402,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "iampb.TestIamPermissionsResponse",
+        "resultType": "*iampb.TestIamPermissionsResponse",
         "client": {
           "shortName": "FoldersClient",
           "fullName": "google.cloud.resourcemanager.v2.FoldersClient"
@@ -428,7 +428,7 @@
     {
       "regionTag": "cloudresourcemanager_v2_generated_Folders_UndeleteFolder_sync",
       "title": "cloudresourcemanager UndeleteFolder Sample",
-      "description": "UndeleteFolder cancels the deletion request for a Folder. This method may only be\ncalled on a Folder in the\nDELETE_REQUESTED state.\nIn order to succeed, the Folder’s parent must be in the\n[ACTIVE][google.cloud.resourcemanager.v2.Folder.LifecycleState.ACTIVE (at http: //google.cloud.resourcemanager.v2.Folder.LifecycleState.ACTIVE)] state.\nIn addition, reintroducing the folder into the tree must not violate\nfolder naming, height and fanout constraints described in the\nCreateFolder documentation.\nThe caller must have resourcemanager.folders.undelete permission on the\nidentified folder.",
+      "description": "UndeleteFolder cancels the deletion request for a Folder. This method may only be\ncalled on a Folder in the\n[DELETE_REQUESTED][google.cloud.resourcemanager.v2.Folder.LifecycleState.DELETE_REQUESTED] state.\nIn order to succeed, the Folder's parent must be in the\n[ACTIVE][google.cloud.resourcemanager.v2.Folder.LifecycleState.ACTIVE] state.\nIn addition, reintroducing the folder into the tree must not violate\nfolder naming, height and fanout constraints described in the\n[CreateFolder][google.cloud.resourcemanager.v2.Folders.CreateFolder] documentation.\nThe caller must have `resourcemanager.folders.undelete` permission on the\nidentified folder.",
       "file": "FoldersClient/UndeleteFolder/main.go",
       "language": "GO",
       "clientMethod": {
@@ -448,7 +448,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "resourcemanagerpb.Folder",
+        "resultType": "*resourcemanagerpb.Folder",
         "client": {
           "shortName": "FoldersClient",
           "fullName": "google.cloud.resourcemanager.v2.FoldersClient"
@@ -466,7 +466,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -474,7 +474,7 @@
     {
       "regionTag": "cloudresourcemanager_v2_generated_Folders_UpdateFolder_sync",
       "title": "cloudresourcemanager UpdateFolder Sample",
-      "description": "UpdateFolder updates a Folder, changing its display_name.\nChanges to the folder display_name will be rejected if they violate either\nthe display_name formatting rules or naming constraints described in\nthe CreateFolder documentation.\n\nThe Folder’s display name must start and end with a letter or digit,\nmay contain letters, digits, spaces, hyphens and underscores and can be\nno longer than 30 characters. This is captured by the regular expression: \n[\\p{L}\\p{N}]([\\p{L}\\p{N}_- ]{0,28}[\\p{L}\\p{N}])?.\nThe caller must have resourcemanager.folders.update permission on the\nidentified folder.\n\nIf the update fails due to the unique name constraint then a\nPreconditionFailure explaining this violation will be returned\nin the Status.details field.",
+      "description": "UpdateFolder updates a Folder, changing its display_name.\nChanges to the folder display_name will be rejected if they violate either\nthe display_name formatting rules or naming constraints described in\nthe [CreateFolder][google.cloud.resourcemanager.v2.Folders.CreateFolder] documentation.\n\nThe Folder's display name must start and end with a letter or digit,\nmay contain letters, digits, spaces, hyphens and underscores and can be\nno longer than 30 characters. This is captured by the regular expression: \n[\\p{L}\\p{N}]([\\p{L}\\p{N}_- ]{0,28}[\\p{L}\\p{N}])?.\nThe caller must have `resourcemanager.folders.update` permission on the\nidentified folder.\n\nIf the update fails due to the unique name constraint then a\nPreconditionFailure explaining this violation will be returned\nin the Status.details field.",
       "file": "FoldersClient/UpdateFolder/main.go",
       "language": "GO",
       "clientMethod": {
@@ -494,7 +494,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "resourcemanagerpb.Folder",
+        "resultType": "*resourcemanagerpb.Folder",
         "client": {
           "shortName": "FoldersClient",
           "fullName": "google.cloud.resourcemanager.v2.FoldersClient"
@@ -512,7 +512,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]

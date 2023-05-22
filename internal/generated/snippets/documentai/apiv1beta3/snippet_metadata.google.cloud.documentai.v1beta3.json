@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/documentai/apiv1beta3",
-    "version": "1.15.0",
+    "version": "1.18.1",
     "language": "GO",
     "apis": [
       {
@@ -86,10 +86,10 @@
         },
         "method": {
           "shortName": "CancelOperation",
-          "fullName": "google.cloud.documentai.v1beta3.DocumentProcessorService.CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
           "service": {
-            "shortName": "DocumentProcessorService",
-            "fullName": "google.cloud.documentai.v1beta3.DocumentProcessorService"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -97,7 +97,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -105,7 +105,7 @@
     {
       "regionTag": "documentai_v1beta3_generated_DocumentProcessorService_CreateProcessor_sync",
       "title": "documentai CreateProcessor Sample",
-      "description": "CreateProcessor creates a processor from the type processor that the user chose.\nThe processor will be at “ENABLED” state by default after its creation.",
+      "description": "CreateProcessor creates a processor from the type processor that the user chose.\nThe processor will be at \"ENABLED\" state by default after its creation.",
       "file": "DocumentProcessorClient/CreateProcessor/main.go",
       "language": "GO",
       "clientMethod": {
@@ -125,7 +125,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "documentaipb.Processor",
+        "resultType": "*documentaipb.Processor",
         "client": {
           "shortName": "DocumentProcessorClient",
           "fullName": "google.cloud.documentai.v1beta3.DocumentProcessorClient"
@@ -447,7 +447,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "documentaipb.FetchProcessorTypesResponse",
+        "resultType": "*documentaipb.FetchProcessorTypesResponse",
         "client": {
           "shortName": "DocumentProcessorClient",
           "fullName": "google.cloud.documentai.v1beta3.DocumentProcessorClient"
@@ -493,7 +493,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "documentaipb.Evaluation",
+        "resultType": "*documentaipb.Evaluation",
         "client": {
           "shortName": "DocumentProcessorClient",
           "fullName": "google.cloud.documentai.v1beta3.DocumentProcessorClient"
@@ -539,17 +539,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "locationpb.Location",
+        "resultType": "*locationpb.Location",
         "client": {
           "shortName": "DocumentProcessorClient",
           "fullName": "google.cloud.documentai.v1beta3.DocumentProcessorClient"
         },
         "method": {
           "shortName": "GetLocation",
-          "fullName": "google.cloud.documentai.v1beta3.DocumentProcessorService.GetLocation",
+          "fullName": "google.cloud.location.Locations.GetLocation",
           "service": {
-            "shortName": "DocumentProcessorService",
-            "fullName": "google.cloud.documentai.v1beta3.DocumentProcessorService"
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
           }
         }
       },
@@ -557,7 +557,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -585,17 +585,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "longrunningpb.Operation",
+        "resultType": "*longrunningpb.Operation",
         "client": {
           "shortName": "DocumentProcessorClient",
           "fullName": "google.cloud.documentai.v1beta3.DocumentProcessorClient"
         },
         "method": {
           "shortName": "GetOperation",
-          "fullName": "google.cloud.documentai.v1beta3.DocumentProcessorService.GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
           "service": {
-            "shortName": "DocumentProcessorService",
-            "fullName": "google.cloud.documentai.v1beta3.DocumentProcessorService"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -603,7 +603,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -631,7 +631,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "documentaipb.Processor",
+        "resultType": "*documentaipb.Processor",
         "client": {
           "shortName": "DocumentProcessorClient",
           "fullName": "google.cloud.documentai.v1beta3.DocumentProcessorClient"
@@ -677,7 +677,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "documentaipb.ProcessorType",
+        "resultType": "*documentaipb.ProcessorType",
         "client": {
           "shortName": "DocumentProcessorClient",
           "fullName": "google.cloud.documentai.v1beta3.DocumentProcessorClient"
@@ -723,7 +723,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "documentaipb.ProcessorVersion",
+        "resultType": "*documentaipb.ProcessorVersion",
         "client": {
           "shortName": "DocumentProcessorClient",
           "fullName": "google.cloud.documentai.v1beta3.DocumentProcessorClient"
@@ -742,6 +742,52 @@
         {
           "start": 18,
           "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "documentai_v1beta3_generated_DocumentProcessorService_ImportProcessorVersion_sync",
+      "title": "documentai ImportProcessorVersion Sample",
+      "description": "ImportProcessorVersion imports a processor version from source processor version.",
+      "file": "DocumentProcessorClient/ImportProcessorVersion/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ImportProcessorVersion",
+        "fullName": "google.cloud.documentai.v1beta3.DocumentProcessorClient.ImportProcessorVersion",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "documentaipb.ImportProcessorVersionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ImportProcessorVersionOperation",
+        "client": {
+          "shortName": "DocumentProcessorClient",
+          "fullName": "google.cloud.documentai.v1beta3.DocumentProcessorClient"
+        },
+        "method": {
+          "shortName": "ImportProcessorVersion",
+          "fullName": "google.cloud.documentai.v1beta3.DocumentProcessorService.ImportProcessorVersion",
+          "service": {
+            "shortName": "DocumentProcessorService",
+            "fullName": "google.cloud.documentai.v1beta3.DocumentProcessorService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
           "type": "FULL"
         }
       ]
@@ -822,10 +868,10 @@
         },
         "method": {
           "shortName": "ListLocations",
-          "fullName": "google.cloud.documentai.v1beta3.DocumentProcessorService.ListLocations",
+          "fullName": "google.cloud.location.Locations.ListLocations",
           "service": {
-            "shortName": "DocumentProcessorService",
-            "fullName": "google.cloud.documentai.v1beta3.DocumentProcessorService"
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
           }
         }
       },
@@ -833,7 +879,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 61,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -868,10 +914,10 @@
         },
         "method": {
           "shortName": "ListOperations",
-          "fullName": "google.cloud.documentai.v1beta3.DocumentProcessorService.ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
           "service": {
-            "shortName": "DocumentProcessorService",
-            "fullName": "google.cloud.documentai.v1beta3.DocumentProcessorService"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -879,7 +925,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 61,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -1045,7 +1091,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "documentaipb.ProcessResponse",
+        "resultType": "*documentaipb.ProcessResponse",
         "client": {
           "shortName": "DocumentProcessorClient",
           "fullName": "google.cloud.documentai.v1beta3.DocumentProcessorClient"
@@ -1117,7 +1163,7 @@
     {
       "regionTag": "documentai_v1beta3_generated_DocumentProcessorService_SetDefaultProcessorVersion_sync",
       "title": "documentai SetDefaultProcessorVersion Sample",
-      "description": "SetDefaultProcessorVersion set the default (active) version of a\nProcessor that will be used in\nProcessDocument\nand\nBatchProcessDocuments.",
+      "description": "SetDefaultProcessorVersion set the default (active) version of a\n[Processor][google.cloud.documentai.v1beta3.Processor] that will be used in\n[ProcessDocument][google.cloud.documentai.v1beta3.DocumentProcessorService.ProcessDocument]\nand\n[BatchProcessDocuments][google.cloud.documentai.v1beta3.DocumentProcessorService.BatchProcessDocuments].",
       "file": "DocumentProcessorClient/SetDefaultProcessorVersion/main.go",
       "language": "GO",
       "clientMethod": {

@@ -27,8 +27,8 @@ for i in $(find . -name go.mod); do
   go mod tidy
   popd
 done
-git diff go.mod | tee /dev/stderr | (! read)
-git diff go.sum | tee /dev/stderr | (! read)
+git diff '*go.mod' | tee /dev/stderr | (! read)
+git diff '*go.sum' | tee /dev/stderr | (! read)
 
 gofmt -s -d -l . 2>&1 | tee /dev/stderr | (! read)
 goimports -l . 2>&1 | tee /dev/stderr | (! read)

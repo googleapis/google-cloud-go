@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/baremetalsolution/apiv2",
-    "version": "0.5.0",
+    "version": "1.0.1",
     "language": "GO",
     "apis": [
       {
@@ -80,7 +80,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "baremetalsolutionpb.Instance",
+        "resultType": "*baremetalsolutionpb.Instance",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.baremetalsolution.v2.Client"
@@ -126,17 +126,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "locationpb.Location",
+        "resultType": "*locationpb.Location",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.baremetalsolution.v2.Client"
         },
         "method": {
           "shortName": "GetLocation",
-          "fullName": "google.cloud.baremetalsolution.v2.BareMetalSolution.GetLocation",
+          "fullName": "google.cloud.location.Locations.GetLocation",
           "service": {
-            "shortName": "BareMetalSolution",
-            "fullName": "google.cloud.baremetalsolution.v2.BareMetalSolution"
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
           }
         }
       },
@@ -144,7 +144,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -172,7 +172,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "baremetalsolutionpb.Lun",
+        "resultType": "*baremetalsolutionpb.Lun",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.baremetalsolution.v2.Client"
@@ -218,7 +218,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "baremetalsolutionpb.Network",
+        "resultType": "*baremetalsolutionpb.Network",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.baremetalsolution.v2.Client"
@@ -264,7 +264,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "baremetalsolutionpb.NfsShare",
+        "resultType": "*baremetalsolutionpb.NfsShare",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.baremetalsolution.v2.Client"
@@ -310,7 +310,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "baremetalsolutionpb.Volume",
+        "resultType": "*baremetalsolutionpb.Volume",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.baremetalsolution.v2.Client"
@@ -409,10 +409,10 @@
         },
         "method": {
           "shortName": "ListLocations",
-          "fullName": "google.cloud.baremetalsolution.v2.BareMetalSolution.ListLocations",
+          "fullName": "google.cloud.location.Locations.ListLocations",
           "service": {
-            "shortName": "BareMetalSolution",
-            "fullName": "google.cloud.baremetalsolution.v2.BareMetalSolution"
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
           }
         }
       },
@@ -420,7 +420,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 61,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -494,7 +494,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "baremetalsolutionpb.ListNetworkUsageResponse",
+        "resultType": "*baremetalsolutionpb.ListNetworkUsageResponse",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.baremetalsolution.v2.Client"

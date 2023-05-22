@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/networksecurity/apiv1beta1",
-    "version": "0.7.0",
+    "version": "0.8.1",
     "language": "GO",
     "apis": [
       {
@@ -40,10 +40,10 @@
         },
         "method": {
           "shortName": "CancelOperation",
-          "fullName": "google.cloud.networksecurity.v1beta1.NetworkSecurity.CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
           "service": {
-            "shortName": "NetworkSecurity",
-            "fullName": "google.cloud.networksecurity.v1beta1.NetworkSecurity"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -51,7 +51,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -315,10 +315,10 @@
         },
         "method": {
           "shortName": "DeleteOperation",
-          "fullName": "google.cloud.networksecurity.v1beta1.NetworkSecurity.DeleteOperation",
+          "fullName": "google.longrunning.Operations.DeleteOperation",
           "service": {
-            "shortName": "NetworkSecurity",
-            "fullName": "google.cloud.networksecurity.v1beta1.NetworkSecurity"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -326,7 +326,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -400,7 +400,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "networksecuritypb.AuthorizationPolicy",
+        "resultType": "*networksecuritypb.AuthorizationPolicy",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.networksecurity.v1beta1.Client"
@@ -446,7 +446,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "networksecuritypb.ClientTlsPolicy",
+        "resultType": "*networksecuritypb.ClientTlsPolicy",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.networksecurity.v1beta1.Client"
@@ -492,17 +492,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "iampb.Policy",
+        "resultType": "*iampb.Policy",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.networksecurity.v1beta1.Client"
         },
         "method": {
           "shortName": "GetIamPolicy",
-          "fullName": "google.cloud.networksecurity.v1beta1.NetworkSecurity.GetIamPolicy",
+          "fullName": "google.iam.v1.IAMPolicy.GetIamPolicy",
           "service": {
-            "shortName": "NetworkSecurity",
-            "fullName": "google.cloud.networksecurity.v1beta1.NetworkSecurity"
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
           }
         }
       },
@@ -510,7 +510,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -538,17 +538,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "locationpb.Location",
+        "resultType": "*locationpb.Location",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.networksecurity.v1beta1.Client"
         },
         "method": {
           "shortName": "GetLocation",
-          "fullName": "google.cloud.networksecurity.v1beta1.NetworkSecurity.GetLocation",
+          "fullName": "google.cloud.location.Locations.GetLocation",
           "service": {
-            "shortName": "NetworkSecurity",
-            "fullName": "google.cloud.networksecurity.v1beta1.NetworkSecurity"
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
           }
         }
       },
@@ -556,7 +556,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -584,17 +584,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "longrunningpb.Operation",
+        "resultType": "*longrunningpb.Operation",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.networksecurity.v1beta1.Client"
         },
         "method": {
           "shortName": "GetOperation",
-          "fullName": "google.cloud.networksecurity.v1beta1.NetworkSecurity.GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
           "service": {
-            "shortName": "NetworkSecurity",
-            "fullName": "google.cloud.networksecurity.v1beta1.NetworkSecurity"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -602,7 +602,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -630,7 +630,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "networksecuritypb.ServerTlsPolicy",
+        "resultType": "*networksecuritypb.ServerTlsPolicy",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.networksecurity.v1beta1.Client"
@@ -775,10 +775,10 @@
         },
         "method": {
           "shortName": "ListLocations",
-          "fullName": "google.cloud.networksecurity.v1beta1.NetworkSecurity.ListLocations",
+          "fullName": "google.cloud.location.Locations.ListLocations",
           "service": {
-            "shortName": "NetworkSecurity",
-            "fullName": "google.cloud.networksecurity.v1beta1.NetworkSecurity"
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
           }
         }
       },
@@ -786,7 +786,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 61,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -821,10 +821,10 @@
         },
         "method": {
           "shortName": "ListOperations",
-          "fullName": "google.cloud.networksecurity.v1beta1.NetworkSecurity.ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
           "service": {
-            "shortName": "NetworkSecurity",
-            "fullName": "google.cloud.networksecurity.v1beta1.NetworkSecurity"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -832,7 +832,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 61,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -886,7 +886,7 @@
     {
       "regionTag": "networksecurity_v1beta1_generated_NetworkSecurity_SetIamPolicy_sync",
       "title": "networksecurity SetIamPolicy Sample",
-      "description": "SetIamPolicy sets the access control policy on the specified resource. Replaces\nany existing policy.\n\nCan return NOT_FOUND, INVALID_ARGUMENT, and PERMISSION_DENIED\nerrors.",
+      "description": "SetIamPolicy sets the access control policy on the specified resource. Replaces\nany existing policy.\n\nCan return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED`\nerrors.",
       "file": "Client/SetIamPolicy/main.go",
       "language": "GO",
       "clientMethod": {
@@ -906,17 +906,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "iampb.Policy",
+        "resultType": "*iampb.Policy",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.networksecurity.v1beta1.Client"
         },
         "method": {
           "shortName": "SetIamPolicy",
-          "fullName": "google.cloud.networksecurity.v1beta1.NetworkSecurity.SetIamPolicy",
+          "fullName": "google.iam.v1.IAMPolicy.SetIamPolicy",
           "service": {
-            "shortName": "NetworkSecurity",
-            "fullName": "google.cloud.networksecurity.v1beta1.NetworkSecurity"
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
           }
         }
       },
@@ -924,7 +924,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -932,7 +932,7 @@
     {
       "regionTag": "networksecurity_v1beta1_generated_NetworkSecurity_TestIamPermissions_sync",
       "title": "networksecurity TestIamPermissions Sample",
-      "description": "TestIamPermissions returns permissions that a caller has on the specified resource. If the\nresource does not exist, this will return an empty set of\npermissions, not a NOT_FOUND error.\n\nNote: This operation is designed to be used for building\npermission-aware UIs and command-line tools, not for authorization\nchecking. This operation may “fail open” without warning.",
+      "description": "TestIamPermissions returns permissions that a caller has on the specified resource. If the\nresource does not exist, this will return an empty set of\npermissions, not a `NOT_FOUND` error.\n\nNote: This operation is designed to be used for building\npermission-aware UIs and command-line tools, not for authorization\nchecking. This operation may \"fail open\" without warning.",
       "file": "Client/TestIamPermissions/main.go",
       "language": "GO",
       "clientMethod": {
@@ -952,17 +952,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "iampb.TestIamPermissionsResponse",
+        "resultType": "*iampb.TestIamPermissionsResponse",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.networksecurity.v1beta1.Client"
         },
         "method": {
           "shortName": "TestIamPermissions",
-          "fullName": "google.cloud.networksecurity.v1beta1.NetworkSecurity.TestIamPermissions",
+          "fullName": "google.iam.v1.IAMPolicy.TestIamPermissions",
           "service": {
-            "shortName": "NetworkSecurity",
-            "fullName": "google.cloud.networksecurity.v1beta1.NetworkSecurity"
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
           }
         }
       },
@@ -970,7 +970,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]

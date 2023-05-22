@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/kms/apiv1",
-    "version": "1.8.0",
+    "version": "1.10.2",
     "language": "GO",
     "apis": [
       {
@@ -14,7 +14,7 @@
     {
       "regionTag": "cloudkms_v1_generated_EkmService_CreateEkmConnection_sync",
       "title": "cloudkms CreateEkmConnection Sample",
-      "description": "CreateEkmConnection creates a new EkmConnection in a given\nProject and Location.",
+      "description": "CreateEkmConnection creates a new [EkmConnection][google.cloud.kms.v1.EkmConnection] in a given\nProject and Location.",
       "file": "EkmClient/CreateEkmConnection/main.go",
       "language": "GO",
       "clientMethod": {
@@ -34,7 +34,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "kmspb.EkmConnection",
+        "resultType": "*kmspb.EkmConnection",
         "client": {
           "shortName": "EkmClient",
           "fullName": "google.cloud.kms.v1.EkmClient"
@@ -58,9 +58,55 @@
       ]
     },
     {
+      "regionTag": "cloudkms_v1_generated_EkmService_GetEkmConfig_sync",
+      "title": "cloudkms GetEkmConfig Sample",
+      "description": "GetEkmConfig returns the [EkmConfig][google.cloud.kms.v1.EkmConfig] singleton resource\nfor a given project and location.",
+      "file": "EkmClient/GetEkmConfig/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetEkmConfig",
+        "fullName": "google.cloud.kms.v1.EkmClient.GetEkmConfig",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "kmspb.GetEkmConfigRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*kmspb.EkmConfig",
+        "client": {
+          "shortName": "EkmClient",
+          "fullName": "google.cloud.kms.v1.EkmClient"
+        },
+        "method": {
+          "shortName": "GetEkmConfig",
+          "fullName": "google.cloud.kms.v1.EkmService.GetEkmConfig",
+          "service": {
+            "shortName": "EkmService",
+            "fullName": "google.cloud.kms.v1.EkmService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "cloudkms_v1_generated_EkmService_GetEkmConnection_sync",
       "title": "cloudkms GetEkmConnection Sample",
-      "description": "GetEkmConnection returns metadata for a given\nEkmConnection.",
+      "description": "GetEkmConnection returns metadata for a given\n[EkmConnection][google.cloud.kms.v1.EkmConnection].",
       "file": "EkmClient/GetEkmConnection/main.go",
       "language": "GO",
       "clientMethod": {
@@ -80,7 +126,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "kmspb.EkmConnection",
+        "resultType": "*kmspb.EkmConnection",
         "client": {
           "shortName": "EkmClient",
           "fullName": "google.cloud.kms.v1.EkmClient"
@@ -126,17 +172,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "iampb.Policy",
+        "resultType": "*iampb.Policy",
         "client": {
           "shortName": "EkmClient",
           "fullName": "google.cloud.kms.v1.EkmClient"
         },
         "method": {
           "shortName": "GetIamPolicy",
-          "fullName": "google.cloud.kms.v1.EkmService.GetIamPolicy",
+          "fullName": "google.iam.v1.IAMPolicy.GetIamPolicy",
           "service": {
-            "shortName": "EkmService",
-            "fullName": "google.cloud.kms.v1.EkmService"
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
           }
         }
       },
@@ -144,7 +190,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -172,17 +218,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "locationpb.Location",
+        "resultType": "*locationpb.Location",
         "client": {
           "shortName": "EkmClient",
           "fullName": "google.cloud.kms.v1.EkmClient"
         },
         "method": {
           "shortName": "GetLocation",
-          "fullName": "google.cloud.kms.v1.EkmService.GetLocation",
+          "fullName": "google.cloud.location.Locations.GetLocation",
           "service": {
-            "shortName": "EkmService",
-            "fullName": "google.cloud.kms.v1.EkmService"
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
           }
         }
       },
@@ -190,7 +236,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -198,7 +244,7 @@
     {
       "regionTag": "cloudkms_v1_generated_EkmService_ListEkmConnections_sync",
       "title": "cloudkms ListEkmConnections Sample",
-      "description": "ListEkmConnections lists EkmConnections.",
+      "description": "ListEkmConnections lists [EkmConnections][google.cloud.kms.v1.EkmConnection].",
       "file": "EkmClient/ListEkmConnections/main.go",
       "language": "GO",
       "clientMethod": {
@@ -271,10 +317,10 @@
         },
         "method": {
           "shortName": "ListLocations",
-          "fullName": "google.cloud.kms.v1.EkmService.ListLocations",
+          "fullName": "google.cloud.location.Locations.ListLocations",
           "service": {
-            "shortName": "EkmService",
-            "fullName": "google.cloud.kms.v1.EkmService"
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
           }
         }
       },
@@ -282,7 +328,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 61,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -290,7 +336,7 @@
     {
       "regionTag": "cloudkms_v1_generated_EkmService_SetIamPolicy_sync",
       "title": "cloudkms SetIamPolicy Sample",
-      "description": "SetIamPolicy sets the access control policy on the specified resource. Replaces\nany existing policy.\n\nCan return NOT_FOUND, INVALID_ARGUMENT, and PERMISSION_DENIED\nerrors.",
+      "description": "SetIamPolicy sets the access control policy on the specified resource. Replaces\nany existing policy.\n\nCan return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED`\nerrors.",
       "file": "EkmClient/SetIamPolicy/main.go",
       "language": "GO",
       "clientMethod": {
@@ -310,17 +356,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "iampb.Policy",
+        "resultType": "*iampb.Policy",
         "client": {
           "shortName": "EkmClient",
           "fullName": "google.cloud.kms.v1.EkmClient"
         },
         "method": {
           "shortName": "SetIamPolicy",
-          "fullName": "google.cloud.kms.v1.EkmService.SetIamPolicy",
+          "fullName": "google.iam.v1.IAMPolicy.SetIamPolicy",
           "service": {
-            "shortName": "EkmService",
-            "fullName": "google.cloud.kms.v1.EkmService"
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
           }
         }
       },
@@ -328,7 +374,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -336,7 +382,7 @@
     {
       "regionTag": "cloudkms_v1_generated_EkmService_TestIamPermissions_sync",
       "title": "cloudkms TestIamPermissions Sample",
-      "description": "TestIamPermissions returns permissions that a caller has on the specified resource. If the\nresource does not exist, this will return an empty set of\npermissions, not a NOT_FOUND error.\n\nNote: This operation is designed to be used for building\npermission-aware UIs and command-line tools, not for authorization\nchecking. This operation may “fail open” without warning.",
+      "description": "TestIamPermissions returns permissions that a caller has on the specified resource. If the\nresource does not exist, this will return an empty set of\npermissions, not a `NOT_FOUND` error.\n\nNote: This operation is designed to be used for building\npermission-aware UIs and command-line tools, not for authorization\nchecking. This operation may \"fail open\" without warning.",
       "file": "EkmClient/TestIamPermissions/main.go",
       "language": "GO",
       "clientMethod": {
@@ -356,14 +402,60 @@
             "name": "opts"
           }
         ],
-        "resultType": "iampb.TestIamPermissionsResponse",
+        "resultType": "*iampb.TestIamPermissionsResponse",
         "client": {
           "shortName": "EkmClient",
           "fullName": "google.cloud.kms.v1.EkmClient"
         },
         "method": {
           "shortName": "TestIamPermissions",
-          "fullName": "google.cloud.kms.v1.EkmService.TestIamPermissions",
+          "fullName": "google.iam.v1.IAMPolicy.TestIamPermissions",
+          "service": {
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudkms_v1_generated_EkmService_UpdateEkmConfig_sync",
+      "title": "cloudkms UpdateEkmConfig Sample",
+      "description": "UpdateEkmConfig updates the [EkmConfig][google.cloud.kms.v1.EkmConfig] singleton resource\nfor a given project and location.",
+      "file": "EkmClient/UpdateEkmConfig/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateEkmConfig",
+        "fullName": "google.cloud.kms.v1.EkmClient.UpdateEkmConfig",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "kmspb.UpdateEkmConfigRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*kmspb.EkmConfig",
+        "client": {
+          "shortName": "EkmClient",
+          "fullName": "google.cloud.kms.v1.EkmClient"
+        },
+        "method": {
+          "shortName": "UpdateEkmConfig",
+          "fullName": "google.cloud.kms.v1.EkmService.UpdateEkmConfig",
           "service": {
             "shortName": "EkmService",
             "fullName": "google.cloud.kms.v1.EkmService"
@@ -374,7 +466,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -382,7 +474,7 @@
     {
       "regionTag": "cloudkms_v1_generated_EkmService_UpdateEkmConnection_sync",
       "title": "cloudkms UpdateEkmConnection Sample",
-      "description": "UpdateEkmConnection updates an EkmConnection's metadata.",
+      "description": "UpdateEkmConnection updates an [EkmConnection][google.cloud.kms.v1.EkmConnection]'s metadata.",
       "file": "EkmClient/UpdateEkmConnection/main.go",
       "language": "GO",
       "clientMethod": {
@@ -402,7 +494,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "kmspb.EkmConnection",
+        "resultType": "*kmspb.EkmConnection",
         "client": {
           "shortName": "EkmClient",
           "fullName": "google.cloud.kms.v1.EkmClient"
@@ -426,9 +518,55 @@
       ]
     },
     {
+      "regionTag": "cloudkms_v1_generated_EkmService_VerifyConnectivity_sync",
+      "title": "cloudkms VerifyConnectivity Sample",
+      "description": "VerifyConnectivity verifies that Cloud KMS can successfully connect to the external key\nmanager specified by an [EkmConnection][google.cloud.kms.v1.EkmConnection].\nIf there is an error connecting to the EKM, this method returns a\nFAILED_PRECONDITION status containing structured information as described\nat https: //cloud.google.com/kms/docs/reference/ekm_errors.",
+      "file": "EkmClient/VerifyConnectivity/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "VerifyConnectivity",
+        "fullName": "google.cloud.kms.v1.EkmClient.VerifyConnectivity",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "kmspb.VerifyConnectivityRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*kmspb.VerifyConnectivityResponse",
+        "client": {
+          "shortName": "EkmClient",
+          "fullName": "google.cloud.kms.v1.EkmClient"
+        },
+        "method": {
+          "shortName": "VerifyConnectivity",
+          "fullName": "google.cloud.kms.v1.EkmService.VerifyConnectivity",
+          "service": {
+            "shortName": "EkmService",
+            "fullName": "google.cloud.kms.v1.EkmService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "cloudkms_v1_generated_KeyManagementService_AsymmetricDecrypt_sync",
       "title": "cloudkms AsymmetricDecrypt Sample",
-      "description": "AsymmetricDecrypt decrypts data that was encrypted with a public key retrieved from\nGetPublicKey\ncorresponding to a CryptoKeyVersion\nwith CryptoKey.purpose\nASYMMETRIC_DECRYPT.",
+      "description": "AsymmetricDecrypt decrypts data that was encrypted with a public key retrieved from\n[GetPublicKey][google.cloud.kms.v1.KeyManagementService.GetPublicKey]\ncorresponding to a [CryptoKeyVersion][google.cloud.kms.v1.CryptoKeyVersion]\nwith [CryptoKey.purpose][google.cloud.kms.v1.CryptoKey.purpose]\nASYMMETRIC_DECRYPT.",
       "file": "KeyManagementClient/AsymmetricDecrypt/main.go",
       "language": "GO",
       "clientMethod": {
@@ -448,7 +586,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "kmspb.AsymmetricDecryptResponse",
+        "resultType": "*kmspb.AsymmetricDecryptResponse",
         "client": {
           "shortName": "KeyManagementClient",
           "fullName": "google.cloud.kms.v1.KeyManagementClient"
@@ -474,7 +612,7 @@
     {
       "regionTag": "cloudkms_v1_generated_KeyManagementService_AsymmetricSign_sync",
       "title": "cloudkms AsymmetricSign Sample",
-      "description": "AsymmetricSign signs data using a CryptoKeyVersion\nwith CryptoKey.purpose\nASYMMETRIC_SIGN, producing a signature that can be verified with the public\nkey retrieved from\nGetPublicKey.",
+      "description": "AsymmetricSign signs data using a [CryptoKeyVersion][google.cloud.kms.v1.CryptoKeyVersion]\nwith [CryptoKey.purpose][google.cloud.kms.v1.CryptoKey.purpose]\nASYMMETRIC_SIGN, producing a signature that can be verified with the public\nkey retrieved from\n[GetPublicKey][google.cloud.kms.v1.KeyManagementService.GetPublicKey].",
       "file": "KeyManagementClient/AsymmetricSign/main.go",
       "language": "GO",
       "clientMethod": {
@@ -494,7 +632,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "kmspb.AsymmetricSignResponse",
+        "resultType": "*kmspb.AsymmetricSignResponse",
         "client": {
           "shortName": "KeyManagementClient",
           "fullName": "google.cloud.kms.v1.KeyManagementClient"
@@ -520,7 +658,7 @@
     {
       "regionTag": "cloudkms_v1_generated_KeyManagementService_CreateCryptoKey_sync",
       "title": "cloudkms CreateCryptoKey Sample",
-      "description": "CreateCryptoKey create a new CryptoKey within a\nKeyRing.\n\nCryptoKey.purpose and\nCryptoKey.version_template.algorithm\nare required.",
+      "description": "CreateCryptoKey create a new [CryptoKey][google.cloud.kms.v1.CryptoKey] within a\n[KeyRing][google.cloud.kms.v1.KeyRing].\n\n[CryptoKey.purpose][google.cloud.kms.v1.CryptoKey.purpose] and\n[CryptoKey.version_template.algorithm][google.cloud.kms.v1.CryptoKeyVersionTemplate.algorithm]\nare required.",
       "file": "KeyManagementClient/CreateCryptoKey/main.go",
       "language": "GO",
       "clientMethod": {
@@ -540,7 +678,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "kmspb.CryptoKey",
+        "resultType": "*kmspb.CryptoKey",
         "client": {
           "shortName": "KeyManagementClient",
           "fullName": "google.cloud.kms.v1.KeyManagementClient"
@@ -566,7 +704,7 @@
     {
       "regionTag": "cloudkms_v1_generated_KeyManagementService_CreateCryptoKeyVersion_sync",
       "title": "cloudkms CreateCryptoKeyVersion Sample",
-      "description": "CreateCryptoKeyVersion create a new CryptoKeyVersion in a\nCryptoKey.\n\nThe server will assign the next sequential id. If unset,\nstate will be set to\nENABLED.",
+      "description": "CreateCryptoKeyVersion create a new [CryptoKeyVersion][google.cloud.kms.v1.CryptoKeyVersion] in a\n[CryptoKey][google.cloud.kms.v1.CryptoKey].\n\nThe server will assign the next sequential id. If unset,\n[state][google.cloud.kms.v1.CryptoKeyVersion.state] will be set to\n[ENABLED][google.cloud.kms.v1.CryptoKeyVersion.CryptoKeyVersionState.ENABLED].",
       "file": "KeyManagementClient/CreateCryptoKeyVersion/main.go",
       "language": "GO",
       "clientMethod": {
@@ -586,7 +724,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "kmspb.CryptoKeyVersion",
+        "resultType": "*kmspb.CryptoKeyVersion",
         "client": {
           "shortName": "KeyManagementClient",
           "fullName": "google.cloud.kms.v1.KeyManagementClient"
@@ -612,7 +750,7 @@
     {
       "regionTag": "cloudkms_v1_generated_KeyManagementService_CreateImportJob_sync",
       "title": "cloudkms CreateImportJob Sample",
-      "description": "CreateImportJob create a new ImportJob within a\nKeyRing.\n\nImportJob.import_method is\nrequired.",
+      "description": "CreateImportJob create a new [ImportJob][google.cloud.kms.v1.ImportJob] within a\n[KeyRing][google.cloud.kms.v1.KeyRing].\n\n[ImportJob.import_method][google.cloud.kms.v1.ImportJob.import_method] is\nrequired.",
       "file": "KeyManagementClient/CreateImportJob/main.go",
       "language": "GO",
       "clientMethod": {
@@ -632,7 +770,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "kmspb.ImportJob",
+        "resultType": "*kmspb.ImportJob",
         "client": {
           "shortName": "KeyManagementClient",
           "fullName": "google.cloud.kms.v1.KeyManagementClient"
@@ -658,7 +796,7 @@
     {
       "regionTag": "cloudkms_v1_generated_KeyManagementService_CreateKeyRing_sync",
       "title": "cloudkms CreateKeyRing Sample",
-      "description": "CreateKeyRing create a new KeyRing in a given Project and\nLocation.",
+      "description": "CreateKeyRing create a new [KeyRing][google.cloud.kms.v1.KeyRing] in a given Project and\nLocation.",
       "file": "KeyManagementClient/CreateKeyRing/main.go",
       "language": "GO",
       "clientMethod": {
@@ -678,7 +816,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "kmspb.KeyRing",
+        "resultType": "*kmspb.KeyRing",
         "client": {
           "shortName": "KeyManagementClient",
           "fullName": "google.cloud.kms.v1.KeyManagementClient"
@@ -704,7 +842,7 @@
     {
       "regionTag": "cloudkms_v1_generated_KeyManagementService_Decrypt_sync",
       "title": "cloudkms Decrypt Sample",
-      "description": "Decrypt decrypts data that was protected by\nEncrypt. The\nCryptoKey.purpose must be\nENCRYPT_DECRYPT.",
+      "description": "Decrypt decrypts data that was protected by\n[Encrypt][google.cloud.kms.v1.KeyManagementService.Encrypt]. The\n[CryptoKey.purpose][google.cloud.kms.v1.CryptoKey.purpose] must be\n[ENCRYPT_DECRYPT][google.cloud.kms.v1.CryptoKey.CryptoKeyPurpose.ENCRYPT_DECRYPT].",
       "file": "KeyManagementClient/Decrypt/main.go",
       "language": "GO",
       "clientMethod": {
@@ -724,7 +862,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "kmspb.DecryptResponse",
+        "resultType": "*kmspb.DecryptResponse",
         "client": {
           "shortName": "KeyManagementClient",
           "fullName": "google.cloud.kms.v1.KeyManagementClient"
@@ -750,7 +888,7 @@
     {
       "regionTag": "cloudkms_v1_generated_KeyManagementService_DestroyCryptoKeyVersion_sync",
       "title": "cloudkms DestroyCryptoKeyVersion Sample",
-      "description": "DestroyCryptoKeyVersion schedule a CryptoKeyVersion for\ndestruction.\n\nUpon calling this method,\nCryptoKeyVersion.state will\nbe set to\nDESTROY_SCHEDULED,\nand destroy_time will\nbe set to the time\ndestroy_scheduled_duration\nin the future. At that time, the\nstate will automatically\nchange to\nDESTROYED,\nand the key material will be irrevocably destroyed.\n\nBefore the\ndestroy_time is\nreached,\nRestoreCryptoKeyVersion\nmay be called to reverse the process.",
+      "description": "DestroyCryptoKeyVersion schedule a [CryptoKeyVersion][google.cloud.kms.v1.CryptoKeyVersion] for\ndestruction.\n\nUpon calling this method,\n[CryptoKeyVersion.state][google.cloud.kms.v1.CryptoKeyVersion.state] will\nbe set to\n[DESTROY_SCHEDULED][google.cloud.kms.v1.CryptoKeyVersion.CryptoKeyVersionState.DESTROY_SCHEDULED],\nand [destroy_time][google.cloud.kms.v1.CryptoKeyVersion.destroy_time] will\nbe set to the time\n[destroy_scheduled_duration][google.cloud.kms.v1.CryptoKey.destroy_scheduled_duration]\nin the future. At that time, the\n[state][google.cloud.kms.v1.CryptoKeyVersion.state] will automatically\nchange to\n[DESTROYED][google.cloud.kms.v1.CryptoKeyVersion.CryptoKeyVersionState.DESTROYED],\nand the key material will be irrevocably destroyed.\n\nBefore the\n[destroy_time][google.cloud.kms.v1.CryptoKeyVersion.destroy_time] is\nreached,\n[RestoreCryptoKeyVersion][google.cloud.kms.v1.KeyManagementService.RestoreCryptoKeyVersion]\nmay be called to reverse the process.",
       "file": "KeyManagementClient/DestroyCryptoKeyVersion/main.go",
       "language": "GO",
       "clientMethod": {
@@ -770,7 +908,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "kmspb.CryptoKeyVersion",
+        "resultType": "*kmspb.CryptoKeyVersion",
         "client": {
           "shortName": "KeyManagementClient",
           "fullName": "google.cloud.kms.v1.KeyManagementClient"
@@ -796,7 +934,7 @@
     {
       "regionTag": "cloudkms_v1_generated_KeyManagementService_Encrypt_sync",
       "title": "cloudkms Encrypt Sample",
-      "description": "Encrypt encrypts data, so that it can only be recovered by a call to\nDecrypt. The\nCryptoKey.purpose must be\nENCRYPT_DECRYPT.",
+      "description": "Encrypt encrypts data, so that it can only be recovered by a call to\n[Decrypt][google.cloud.kms.v1.KeyManagementService.Decrypt]. The\n[CryptoKey.purpose][google.cloud.kms.v1.CryptoKey.purpose] must be\n[ENCRYPT_DECRYPT][google.cloud.kms.v1.CryptoKey.CryptoKeyPurpose.ENCRYPT_DECRYPT].",
       "file": "KeyManagementClient/Encrypt/main.go",
       "language": "GO",
       "clientMethod": {
@@ -816,7 +954,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "kmspb.EncryptResponse",
+        "resultType": "*kmspb.EncryptResponse",
         "client": {
           "shortName": "KeyManagementClient",
           "fullName": "google.cloud.kms.v1.KeyManagementClient"
@@ -862,7 +1000,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "kmspb.GenerateRandomBytesResponse",
+        "resultType": "*kmspb.GenerateRandomBytesResponse",
         "client": {
           "shortName": "KeyManagementClient",
           "fullName": "google.cloud.kms.v1.KeyManagementClient"
@@ -888,7 +1026,7 @@
     {
       "regionTag": "cloudkms_v1_generated_KeyManagementService_GetCryptoKey_sync",
       "title": "cloudkms GetCryptoKey Sample",
-      "description": "GetCryptoKey returns metadata for a given CryptoKey, as\nwell as its primary\nCryptoKeyVersion.",
+      "description": "GetCryptoKey returns metadata for a given [CryptoKey][google.cloud.kms.v1.CryptoKey], as\nwell as its [primary][google.cloud.kms.v1.CryptoKey.primary]\n[CryptoKeyVersion][google.cloud.kms.v1.CryptoKeyVersion].",
       "file": "KeyManagementClient/GetCryptoKey/main.go",
       "language": "GO",
       "clientMethod": {
@@ -908,7 +1046,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "kmspb.CryptoKey",
+        "resultType": "*kmspb.CryptoKey",
         "client": {
           "shortName": "KeyManagementClient",
           "fullName": "google.cloud.kms.v1.KeyManagementClient"
@@ -934,7 +1072,7 @@
     {
       "regionTag": "cloudkms_v1_generated_KeyManagementService_GetCryptoKeyVersion_sync",
       "title": "cloudkms GetCryptoKeyVersion Sample",
-      "description": "GetCryptoKeyVersion returns metadata for a given\nCryptoKeyVersion.",
+      "description": "GetCryptoKeyVersion returns metadata for a given\n[CryptoKeyVersion][google.cloud.kms.v1.CryptoKeyVersion].",
       "file": "KeyManagementClient/GetCryptoKeyVersion/main.go",
       "language": "GO",
       "clientMethod": {
@@ -954,7 +1092,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "kmspb.CryptoKeyVersion",
+        "resultType": "*kmspb.CryptoKeyVersion",
         "client": {
           "shortName": "KeyManagementClient",
           "fullName": "google.cloud.kms.v1.KeyManagementClient"
@@ -1000,17 +1138,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "iampb.Policy",
+        "resultType": "*iampb.Policy",
         "client": {
           "shortName": "KeyManagementClient",
           "fullName": "google.cloud.kms.v1.KeyManagementClient"
         },
         "method": {
           "shortName": "GetIamPolicy",
-          "fullName": "google.cloud.kms.v1.KeyManagementService.GetIamPolicy",
+          "fullName": "google.iam.v1.IAMPolicy.GetIamPolicy",
           "service": {
-            "shortName": "KeyManagementService",
-            "fullName": "google.cloud.kms.v1.KeyManagementService"
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
           }
         }
       },
@@ -1018,7 +1156,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -1026,7 +1164,7 @@
     {
       "regionTag": "cloudkms_v1_generated_KeyManagementService_GetImportJob_sync",
       "title": "cloudkms GetImportJob Sample",
-      "description": "GetImportJob returns metadata for a given ImportJob.",
+      "description": "GetImportJob returns metadata for a given [ImportJob][google.cloud.kms.v1.ImportJob].",
       "file": "KeyManagementClient/GetImportJob/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1046,7 +1184,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "kmspb.ImportJob",
+        "resultType": "*kmspb.ImportJob",
         "client": {
           "shortName": "KeyManagementClient",
           "fullName": "google.cloud.kms.v1.KeyManagementClient"
@@ -1072,7 +1210,7 @@
     {
       "regionTag": "cloudkms_v1_generated_KeyManagementService_GetKeyRing_sync",
       "title": "cloudkms GetKeyRing Sample",
-      "description": "GetKeyRing returns metadata for a given KeyRing.",
+      "description": "GetKeyRing returns metadata for a given [KeyRing][google.cloud.kms.v1.KeyRing].",
       "file": "KeyManagementClient/GetKeyRing/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1092,7 +1230,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "kmspb.KeyRing",
+        "resultType": "*kmspb.KeyRing",
         "client": {
           "shortName": "KeyManagementClient",
           "fullName": "google.cloud.kms.v1.KeyManagementClient"
@@ -1138,17 +1276,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "locationpb.Location",
+        "resultType": "*locationpb.Location",
         "client": {
           "shortName": "KeyManagementClient",
           "fullName": "google.cloud.kms.v1.KeyManagementClient"
         },
         "method": {
           "shortName": "GetLocation",
-          "fullName": "google.cloud.kms.v1.KeyManagementService.GetLocation",
+          "fullName": "google.cloud.location.Locations.GetLocation",
           "service": {
-            "shortName": "KeyManagementService",
-            "fullName": "google.cloud.kms.v1.KeyManagementService"
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
           }
         }
       },
@@ -1156,7 +1294,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -1164,7 +1302,7 @@
     {
       "regionTag": "cloudkms_v1_generated_KeyManagementService_GetPublicKey_sync",
       "title": "cloudkms GetPublicKey Sample",
-      "description": "GetPublicKey returns the public key for the given\nCryptoKeyVersion. The\nCryptoKey.purpose must be\nASYMMETRIC_SIGN\nor\nASYMMETRIC_DECRYPT.",
+      "description": "GetPublicKey returns the public key for the given\n[CryptoKeyVersion][google.cloud.kms.v1.CryptoKeyVersion]. The\n[CryptoKey.purpose][google.cloud.kms.v1.CryptoKey.purpose] must be\n[ASYMMETRIC_SIGN][google.cloud.kms.v1.CryptoKey.CryptoKeyPurpose.ASYMMETRIC_SIGN]\nor\n[ASYMMETRIC_DECRYPT][google.cloud.kms.v1.CryptoKey.CryptoKeyPurpose.ASYMMETRIC_DECRYPT].",
       "file": "KeyManagementClient/GetPublicKey/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1184,7 +1322,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "kmspb.PublicKey",
+        "resultType": "*kmspb.PublicKey",
         "client": {
           "shortName": "KeyManagementClient",
           "fullName": "google.cloud.kms.v1.KeyManagementClient"
@@ -1210,7 +1348,7 @@
     {
       "regionTag": "cloudkms_v1_generated_KeyManagementService_ImportCryptoKeyVersion_sync",
       "title": "cloudkms ImportCryptoKeyVersion Sample",
-      "description": "ImportCryptoKeyVersion import wrapped key material into a\nCryptoKeyVersion.\n\nAll requests must specify a CryptoKey. If\na CryptoKeyVersion is additionally\nspecified in the request, key material will be reimported into that\nversion. Otherwise, a new version will be created, and will be assigned the\nnext sequential id within the CryptoKey.",
+      "description": "ImportCryptoKeyVersion import wrapped key material into a\n[CryptoKeyVersion][google.cloud.kms.v1.CryptoKeyVersion].\n\nAll requests must specify a [CryptoKey][google.cloud.kms.v1.CryptoKey]. If\na [CryptoKeyVersion][google.cloud.kms.v1.CryptoKeyVersion] is additionally\nspecified in the request, key material will be reimported into that\nversion. Otherwise, a new version will be created, and will be assigned the\nnext sequential id within the [CryptoKey][google.cloud.kms.v1.CryptoKey].",
       "file": "KeyManagementClient/ImportCryptoKeyVersion/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1230,7 +1368,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "kmspb.CryptoKeyVersion",
+        "resultType": "*kmspb.CryptoKeyVersion",
         "client": {
           "shortName": "KeyManagementClient",
           "fullName": "google.cloud.kms.v1.KeyManagementClient"
@@ -1256,7 +1394,7 @@
     {
       "regionTag": "cloudkms_v1_generated_KeyManagementService_ListCryptoKeyVersions_sync",
       "title": "cloudkms ListCryptoKeyVersions Sample",
-      "description": "ListCryptoKeyVersions lists CryptoKeyVersions.",
+      "description": "ListCryptoKeyVersions lists [CryptoKeyVersions][google.cloud.kms.v1.CryptoKeyVersion].",
       "file": "KeyManagementClient/ListCryptoKeyVersions/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1302,7 +1440,7 @@
     {
       "regionTag": "cloudkms_v1_generated_KeyManagementService_ListCryptoKeys_sync",
       "title": "cloudkms ListCryptoKeys Sample",
-      "description": "ListCryptoKeys lists CryptoKeys.",
+      "description": "ListCryptoKeys lists [CryptoKeys][google.cloud.kms.v1.CryptoKey].",
       "file": "KeyManagementClient/ListCryptoKeys/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1348,7 +1486,7 @@
     {
       "regionTag": "cloudkms_v1_generated_KeyManagementService_ListImportJobs_sync",
       "title": "cloudkms ListImportJobs Sample",
-      "description": "ListImportJobs lists ImportJobs.",
+      "description": "ListImportJobs lists [ImportJobs][google.cloud.kms.v1.ImportJob].",
       "file": "KeyManagementClient/ListImportJobs/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1394,7 +1532,7 @@
     {
       "regionTag": "cloudkms_v1_generated_KeyManagementService_ListKeyRings_sync",
       "title": "cloudkms ListKeyRings Sample",
-      "description": "ListKeyRings lists KeyRings.",
+      "description": "ListKeyRings lists [KeyRings][google.cloud.kms.v1.KeyRing].",
       "file": "KeyManagementClient/ListKeyRings/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1467,10 +1605,10 @@
         },
         "method": {
           "shortName": "ListLocations",
-          "fullName": "google.cloud.kms.v1.KeyManagementService.ListLocations",
+          "fullName": "google.cloud.location.Locations.ListLocations",
           "service": {
-            "shortName": "KeyManagementService",
-            "fullName": "google.cloud.kms.v1.KeyManagementService"
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
           }
         }
       },
@@ -1478,7 +1616,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 61,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -1486,7 +1624,7 @@
     {
       "regionTag": "cloudkms_v1_generated_KeyManagementService_MacSign_sync",
       "title": "cloudkms MacSign Sample",
-      "description": "MacSign signs data using a CryptoKeyVersion\nwith CryptoKey.purpose MAC,\nproducing a tag that can be verified by another source with the same key.",
+      "description": "MacSign signs data using a [CryptoKeyVersion][google.cloud.kms.v1.CryptoKeyVersion]\nwith [CryptoKey.purpose][google.cloud.kms.v1.CryptoKey.purpose] MAC,\nproducing a tag that can be verified by another source with the same key.",
       "file": "KeyManagementClient/MacSign/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1506,7 +1644,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "kmspb.MacSignResponse",
+        "resultType": "*kmspb.MacSignResponse",
         "client": {
           "shortName": "KeyManagementClient",
           "fullName": "google.cloud.kms.v1.KeyManagementClient"
@@ -1532,7 +1670,7 @@
     {
       "regionTag": "cloudkms_v1_generated_KeyManagementService_MacVerify_sync",
       "title": "cloudkms MacVerify Sample",
-      "description": "MacVerify verifies MAC tag using a\nCryptoKeyVersion with\nCryptoKey.purpose MAC, and returns\na response that indicates whether or not the verification was successful.",
+      "description": "MacVerify verifies MAC tag using a\n[CryptoKeyVersion][google.cloud.kms.v1.CryptoKeyVersion] with\n[CryptoKey.purpose][google.cloud.kms.v1.CryptoKey.purpose] MAC, and returns\na response that indicates whether or not the verification was successful.",
       "file": "KeyManagementClient/MacVerify/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1552,7 +1690,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "kmspb.MacVerifyResponse",
+        "resultType": "*kmspb.MacVerifyResponse",
         "client": {
           "shortName": "KeyManagementClient",
           "fullName": "google.cloud.kms.v1.KeyManagementClient"
@@ -1578,7 +1716,7 @@
     {
       "regionTag": "cloudkms_v1_generated_KeyManagementService_RestoreCryptoKeyVersion_sync",
       "title": "cloudkms RestoreCryptoKeyVersion Sample",
-      "description": "RestoreCryptoKeyVersion restore a CryptoKeyVersion in the\nDESTROY_SCHEDULED\nstate.\n\nUpon restoration of the CryptoKeyVersion,\nstate will be set to\nDISABLED,\nand destroy_time will\nbe cleared.",
+      "description": "RestoreCryptoKeyVersion restore a [CryptoKeyVersion][google.cloud.kms.v1.CryptoKeyVersion] in the\n[DESTROY_SCHEDULED][google.cloud.kms.v1.CryptoKeyVersion.CryptoKeyVersionState.DESTROY_SCHEDULED]\nstate.\n\nUpon restoration of the CryptoKeyVersion,\n[state][google.cloud.kms.v1.CryptoKeyVersion.state] will be set to\n[DISABLED][google.cloud.kms.v1.CryptoKeyVersion.CryptoKeyVersionState.DISABLED],\nand [destroy_time][google.cloud.kms.v1.CryptoKeyVersion.destroy_time] will\nbe cleared.",
       "file": "KeyManagementClient/RestoreCryptoKeyVersion/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1598,7 +1736,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "kmspb.CryptoKeyVersion",
+        "resultType": "*kmspb.CryptoKeyVersion",
         "client": {
           "shortName": "KeyManagementClient",
           "fullName": "google.cloud.kms.v1.KeyManagementClient"
@@ -1624,7 +1762,7 @@
     {
       "regionTag": "cloudkms_v1_generated_KeyManagementService_SetIamPolicy_sync",
       "title": "cloudkms SetIamPolicy Sample",
-      "description": "SetIamPolicy sets the access control policy on the specified resource. Replaces\nany existing policy.\n\nCan return NOT_FOUND, INVALID_ARGUMENT, and PERMISSION_DENIED\nerrors.",
+      "description": "SetIamPolicy sets the access control policy on the specified resource. Replaces\nany existing policy.\n\nCan return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED`\nerrors.",
       "file": "KeyManagementClient/SetIamPolicy/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1644,17 +1782,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "iampb.Policy",
+        "resultType": "*iampb.Policy",
         "client": {
           "shortName": "KeyManagementClient",
           "fullName": "google.cloud.kms.v1.KeyManagementClient"
         },
         "method": {
           "shortName": "SetIamPolicy",
-          "fullName": "google.cloud.kms.v1.KeyManagementService.SetIamPolicy",
+          "fullName": "google.iam.v1.IAMPolicy.SetIamPolicy",
           "service": {
-            "shortName": "KeyManagementService",
-            "fullName": "google.cloud.kms.v1.KeyManagementService"
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
           }
         }
       },
@@ -1662,7 +1800,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -1670,7 +1808,7 @@
     {
       "regionTag": "cloudkms_v1_generated_KeyManagementService_TestIamPermissions_sync",
       "title": "cloudkms TestIamPermissions Sample",
-      "description": "TestIamPermissions returns permissions that a caller has on the specified resource. If the\nresource does not exist, this will return an empty set of\npermissions, not a NOT_FOUND error.\n\nNote: This operation is designed to be used for building\npermission-aware UIs and command-line tools, not for authorization\nchecking. This operation may “fail open” without warning.",
+      "description": "TestIamPermissions returns permissions that a caller has on the specified resource. If the\nresource does not exist, this will return an empty set of\npermissions, not a `NOT_FOUND` error.\n\nNote: This operation is designed to be used for building\npermission-aware UIs and command-line tools, not for authorization\nchecking. This operation may \"fail open\" without warning.",
       "file": "KeyManagementClient/TestIamPermissions/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1690,17 +1828,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "iampb.TestIamPermissionsResponse",
+        "resultType": "*iampb.TestIamPermissionsResponse",
         "client": {
           "shortName": "KeyManagementClient",
           "fullName": "google.cloud.kms.v1.KeyManagementClient"
         },
         "method": {
           "shortName": "TestIamPermissions",
-          "fullName": "google.cloud.kms.v1.KeyManagementService.TestIamPermissions",
+          "fullName": "google.iam.v1.IAMPolicy.TestIamPermissions",
           "service": {
-            "shortName": "KeyManagementService",
-            "fullName": "google.cloud.kms.v1.KeyManagementService"
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
           }
         }
       },
@@ -1708,7 +1846,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -1716,7 +1854,7 @@
     {
       "regionTag": "cloudkms_v1_generated_KeyManagementService_UpdateCryptoKey_sync",
       "title": "cloudkms UpdateCryptoKey Sample",
-      "description": "UpdateCryptoKey update a CryptoKey.",
+      "description": "UpdateCryptoKey update a [CryptoKey][google.cloud.kms.v1.CryptoKey].",
       "file": "KeyManagementClient/UpdateCryptoKey/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1736,7 +1874,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "kmspb.CryptoKey",
+        "resultType": "*kmspb.CryptoKey",
         "client": {
           "shortName": "KeyManagementClient",
           "fullName": "google.cloud.kms.v1.KeyManagementClient"
@@ -1762,7 +1900,7 @@
     {
       "regionTag": "cloudkms_v1_generated_KeyManagementService_UpdateCryptoKeyPrimaryVersion_sync",
       "title": "cloudkms UpdateCryptoKeyPrimaryVersion Sample",
-      "description": "UpdateCryptoKeyPrimaryVersion update the version of a CryptoKey that\nwill be used in\nEncrypt.\n\nReturns an error if called on a key whose purpose is not\nENCRYPT_DECRYPT.",
+      "description": "UpdateCryptoKeyPrimaryVersion update the version of a [CryptoKey][google.cloud.kms.v1.CryptoKey] that\nwill be used in\n[Encrypt][google.cloud.kms.v1.KeyManagementService.Encrypt].\n\nReturns an error if called on a key whose purpose is not\n[ENCRYPT_DECRYPT][google.cloud.kms.v1.CryptoKey.CryptoKeyPurpose.ENCRYPT_DECRYPT].",
       "file": "KeyManagementClient/UpdateCryptoKeyPrimaryVersion/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1782,7 +1920,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "kmspb.CryptoKey",
+        "resultType": "*kmspb.CryptoKey",
         "client": {
           "shortName": "KeyManagementClient",
           "fullName": "google.cloud.kms.v1.KeyManagementClient"
@@ -1808,7 +1946,7 @@
     {
       "regionTag": "cloudkms_v1_generated_KeyManagementService_UpdateCryptoKeyVersion_sync",
       "title": "cloudkms UpdateCryptoKeyVersion Sample",
-      "description": "UpdateCryptoKeyVersion update a CryptoKeyVersion's\nmetadata.\n\nstate may be changed between\nENABLED\nand\nDISABLED\nusing this method. See\nDestroyCryptoKeyVersion\nand\nRestoreCryptoKeyVersion\nto move between other states.",
+      "description": "UpdateCryptoKeyVersion update a [CryptoKeyVersion][google.cloud.kms.v1.CryptoKeyVersion]'s\nmetadata.\n\n[state][google.cloud.kms.v1.CryptoKeyVersion.state] may be changed between\n[ENABLED][google.cloud.kms.v1.CryptoKeyVersion.CryptoKeyVersionState.ENABLED]\nand\n[DISABLED][google.cloud.kms.v1.CryptoKeyVersion.CryptoKeyVersionState.DISABLED]\nusing this method. See\n[DestroyCryptoKeyVersion][google.cloud.kms.v1.KeyManagementService.DestroyCryptoKeyVersion]\nand\n[RestoreCryptoKeyVersion][google.cloud.kms.v1.KeyManagementService.RestoreCryptoKeyVersion]\nto move between other states.",
       "file": "KeyManagementClient/UpdateCryptoKeyVersion/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1828,7 +1966,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "kmspb.CryptoKeyVersion",
+        "resultType": "*kmspb.CryptoKeyVersion",
         "client": {
           "shortName": "KeyManagementClient",
           "fullName": "google.cloud.kms.v1.KeyManagementClient"

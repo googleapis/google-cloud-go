@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/advisorynotifications/apiv1",
-    "version": "0.1.0",
+    "version": "0.2.1",
     "language": "GO",
     "apis": [
       {
@@ -34,7 +34,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "advisorynotificationspb.Notification",
+        "resultType": "*advisorynotificationspb.Notification",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.advisorynotifications.v1.Client"

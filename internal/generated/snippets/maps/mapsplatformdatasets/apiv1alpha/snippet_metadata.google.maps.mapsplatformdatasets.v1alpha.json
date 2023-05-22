@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/maps/mapsplatformdatasets/apiv1alpha",
-    "version": "0.7.0",
+    "version": "1.1.0",
     "language": "GO",
     "apis": [
       {
@@ -34,7 +34,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "mapsplatformdatasetspb.Dataset",
+        "resultType": "*mapsplatformdatasetspb.Dataset",
         "client": {
           "shortName": "MapsPlatformDatasetsV1AlphaClient",
           "fullName": "google.maps.mapsplatformdatasets.v1alpha.MapsPlatformDatasetsV1AlphaClient"
@@ -170,7 +170,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "mapsplatformdatasetspb.Dataset",
+        "resultType": "*mapsplatformdatasetspb.Dataset",
         "client": {
           "shortName": "MapsPlatformDatasetsV1AlphaClient",
           "fullName": "google.maps.mapsplatformdatasets.v1alpha.MapsPlatformDatasetsV1AlphaClient"
@@ -308,7 +308,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "mapsplatformdatasetspb.Dataset",
+        "resultType": "*mapsplatformdatasetspb.Dataset",
         "client": {
           "shortName": "MapsPlatformDatasetsV1AlphaClient",
           "fullName": "google.maps.mapsplatformdatasets.v1alpha.MapsPlatformDatasetsV1AlphaClient"
