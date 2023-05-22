@@ -7,7 +7,7 @@ require (
 	github.com/google/uuid v1.3.0
 	golang.org/x/net v0.10.0
 	golang.org/x/sync v0.2.0
-	google.golang.org/api v0.122.0
+	google.golang.org/api v0.123.0
 	google.golang.org/grpc v1.55.0
 )
 

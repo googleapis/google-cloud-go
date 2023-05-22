@@ -33,7 +33,7 @@ import (
 	"time"
 
 	"cloud.google.com/go/internal/postprocessor/execv/gocmd"
-	"github.com/google/go-github/v50/github"
+	"github.com/google/go-github/v52/github"
 )
 
 const (
@@ -157,6 +157,9 @@ func (p *postProcessor) run(ctx context.Context) error {
 		return err
 	}
 	if err := p.TidyAffectedMods(); err != nil {
+		return err
+	}
+	if err := p.UpdateReleaseFiles(); err != nil {
 		return err
 	}
 	if err := gocmd.Vet(p.googleCloudDir); err != nil {

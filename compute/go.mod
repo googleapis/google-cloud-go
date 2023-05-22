@@ -3,9 +3,9 @@ module cloud.google.com/go/compute
 go 1.19
 
 require (
-	cloud.google.com/go v0.110.0
+	cloud.google.com/go v0.110.2
 	github.com/googleapis/gax-go/v2 v2.8.0
-	google.golang.org/api v0.122.0
+	google.golang.org/api v0.123.0
 	google.golang.org/genproto v0.0.0-20230410155749-daa745c078e1
 	google.golang.org/grpc v1.55.0
 	google.golang.org/protobuf v1.30.0

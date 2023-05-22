@@ -5551,7 +5551,12 @@ type Cluster struct {
 	VerticalPodAutoscaling *VerticalPodAutoscaling `protobuf:"bytes,39,opt,name=vertical_pod_autoscaling,json=verticalPodAutoscaling,proto3" json:"vertical_pod_autoscaling,omitempty"`
 	// Shielded Nodes configuration.
 	ShieldedNodes *ShieldedNodes `protobuf:"bytes,40,opt,name=shielded_nodes,json=shieldedNodes,proto3" json:"shielded_nodes,omitempty"`
-	// Release channel configuration.
+	// Release channel configuration. If left unspecified on cluster creation and
+	// a version is specified, the cluster is enrolled in the most mature release
+	// channel where the version is available (first checking STABLE, then
+	// REGULAR, and finally RAPID). Otherwise, if no release channel
+	// configuration and no version is specified, the cluster is enrolled in the
+	// REGULAR channel with its default version.
 	ReleaseChannel *ReleaseChannel `protobuf:"bytes,41,opt,name=release_channel,json=releaseChannel,proto3" json:"release_channel,omitempty"`
 	// Configuration for the use of Kubernetes Service Accounts in GCP IAM
 	// policies.
@@ -6902,12 +6907,14 @@ type Operation struct {
 	//
 	// Examples:
 	//
-	//   -
-	//   `https://container.googleapis.com/v1/projects/123/locations/us-central1/clusters/my-cluster`
-	//   -
-	//   `https://container.googleapis.com/v1/projects/123/zones/us-central1-c/clusters/my-cluster/nodePools/my-np`
-	//   -
-	//   `https://container.googleapis.com/v1/projects/123/zones/us-central1-c/clusters/my-cluster/nodePools/my-np/node/my-node`
+	// -
+	// ##
+	// `https://container.googleapis.com/v1/projects/123/locations/us-central1/clusters/my-cluster`
+	//
+	// ##
+	// `https://container.googleapis.com/v1/projects/123/zones/us-central1-c/clusters/my-cluster/nodePools/my-np`
+	//
+	// `https://container.googleapis.com/v1/projects/123/zones/us-central1-c/clusters/my-cluster/nodePools/my-np/node/my-node`
 	TargetLink string `protobuf:"bytes,7,opt,name=target_link,json=targetLink,proto3" json:"target_link,omitempty"`
 	// [Output only] The name of the Google Compute Engine
 	// [zone](https://cloud.google.com/compute/docs/regions-zones/regions-zones#available)

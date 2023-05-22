@@ -31,7 +31,7 @@ require (
 	cloud.google.com/go/cloudbuild v1.9.0
 	cloud.google.com/go/clouddms v1.5.0
 	cloud.google.com/go/cloudtasks v1.10.0
-	cloud.google.com/go/compute v1.19.2
+	cloud.google.com/go/compute v1.19.3
 	cloud.google.com/go/confidentialcomputing v0.1.0
 	cloud.google.com/go/contactcenterinsights v1.6.0
 	cloud.google.com/go/container v1.15.0
@@ -123,7 +123,6 @@ require (
 	cloud.google.com/go/translate v1.7.0
 	cloud.google.com/go/video v1.15.0
 	cloud.google.com/go/videointelligence v1.10.0
-	cloud.google.com/go/vision v1.2.0
 	cloud.google.com/go/vision/v2 v2.7.1
 	cloud.google.com/go/vmmigration v1.6.0
 	cloud.google.com/go/vmwareengine v0.3.0
@@ -133,7 +132,7 @@ require (
 	cloud.google.com/go/workflows v1.10.0
 	cloud.google.com/go/workstations v0.0.0-00010101000000-000000000000
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
-	google.golang.org/api v0.122.0
+	google.golang.org/api v0.123.0
 	google.golang.org/genproto v0.0.0-20230410155749-daa745c078e1
 )
 

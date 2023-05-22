@@ -3465,6 +3465,11 @@
                 "TestIamPermissions"
               ]
             },
+            "UpdateSchedule": {
+              "methods": [
+                "UpdateSchedule"
+              ]
+            },
             "WaitOperation": {
               "methods": [
                 "WaitOperation"
@@ -3548,6 +3553,11 @@
             "TestIamPermissions": {
               "methods": [
                 "TestIamPermissions"
+              ]
+            },
+            "UpdateSchedule": {
+              "methods": [
+                "UpdateSchedule"
               ]
             },
             "WaitOperation": {
