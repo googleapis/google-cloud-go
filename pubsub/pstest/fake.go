@@ -505,6 +505,11 @@ func (s *GServer) CreateSubscription(_ context.Context, ps *pb.Subscription) (*p
 	} else if ps.BigqueryConfig.Table != "" {
 		ps.BigqueryConfig.State = pb.BigQueryConfig_ACTIVE
 	}
+	if ps.CloudStorageConfig == nil {
+		ps.CloudStorageConfig = &pb.CloudStorageConfig{}
+	} else if ps.CloudStorageConfig.Bucket != "" {
+		ps.CloudStorageConfig.State = pb.CloudStorageConfig_ACTIVE
+	}
 	ps.TopicMessageRetentionDuration = top.proto.MessageRetentionDuration
 	var deadLetterTopic *topic
 	if ps.DeadLetterPolicy != nil {
@@ -609,6 +614,12 @@ func (s *GServer) UpdateSubscription(_ context.Context, req *pb.UpdateSubscripti
 			sub.proto.BigqueryConfig = req.GetSubscription().GetBigqueryConfig()
 			if sub.proto.GetBigqueryConfig().GetTable() != "" {
 				sub.proto.GetBigqueryConfig().State = pb.BigQueryConfig_ACTIVE
+			}
+
+		case "cloud_storage_config":
+			sub.proto.CloudStorageConfig = req.GetSubscription().GetCloudStorageConfig()
+			if sub.proto.GetCloudStorageConfig().GetBucket() != "" {
+				sub.proto.CloudStorageConfig.State = pb.CloudStorageConfig_ACTIVE
 			}
 
 		case "ack_deadline_seconds":

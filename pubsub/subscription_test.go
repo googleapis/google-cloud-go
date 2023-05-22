@@ -497,6 +497,60 @@ func TestBigQuerySubscription(t *testing.T) {
 	}
 }
 
+func TestCloudStorageSubscription(t *testing.T) {
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	client, srv := newFake(t)
+	defer client.Close()
+	defer srv.Close()
+
+	topic := mustCreateTopic(t, client, "t")
+	bucket := "fake-bucket"
+	csCfg := CloudStorageConfig{
+		Bucket:         bucket,
+		FilenamePrefix: "some-prefix",
+		FilenameSuffix: "some-suffix",
+		OutputFormat: &CloudStorageOutputFormat_AvroConfig{
+			WriteMetadata: true,
+		},
+		MaxDuration: 10 * time.Minute,
+		MaxBytes:    10e5,
+	}
+
+	subConfig := SubscriptionConfig{
+		Topic:              topic,
+		CloudStorageConfig: csCfg,
+	}
+	csSub, err := client.CreateSubscription(ctx, "s", subConfig)
+	if err != nil {
+		t.Fatal(err)
+	}
+	cfg, err := csSub.Config(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	want := csCfg
+	want.State = CloudStorageConfigActive
+	if diff := testutil.Diff(cfg.CloudStorageConfig, want); diff != "" {
+		t.Fatalf("create cloud storage subscription mismatch: \n%s", diff)
+	}
+
+	// Test resetting to a pull based subscription.
+	cfg, err = csSub.Update(ctx, SubscriptionConfigToUpdate{
+		CloudStorageConfig: &CloudStorageConfig{},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	got := cfg.CloudStorageConfig
+	want = CloudStorageConfig{}
+	if diff := testutil.Diff(got, want); diff != "" {
+		t.Fatalf("remove cloud storage subscription mismatch: \n%s", diff)
+	}
+
+}
+
 func TestExactlyOnceDelivery_AckSuccess(t *testing.T) {
 	t.Parallel()
 	ctx, cancel := context.WithCancel(context.Background())

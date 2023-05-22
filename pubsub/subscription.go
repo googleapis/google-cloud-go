@@ -33,6 +33,7 @@ import (
 	fmpb "google.golang.org/genproto/protobuf/field_mask"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/types/known/durationpb"
 	durpb "google.golang.org/protobuf/types/known/durationpb"
 
 	vkit "cloud.google.com/go/pubsub/apiv1"
@@ -275,6 +276,111 @@ func (bc *BigQueryConfig) toProto() *pb.BigQueryConfig {
 	return pbCfg
 }
 
+// CloudStorageConfigState denotes the possible states for a Cloud Storage Subscription.
+type CloudStorageConfigState int
+
+const (
+	// CloudStorageConfigStateUnspecified is the default value. This value is unused.
+	CloudStorageConfigStateUnspecified = iota
+
+	// CloudStorageConfigActive means the subscription can actively send messages to Cloud Storage.
+	CloudStorageConfigActive
+
+	// CloudStorageConfigPermissionDenied means the subscription cannot write to the Cloud storage bucket because of permission denied errors.
+	CloudStorageConfigPermissionDenied
+
+	// CloudStorageConfigNotFound means the subscription cannot write to the Cloud Storage bucket because it does not exist.
+	CloudStorageConfigNotFound
+)
+
+// Configuration options for how to write the message data to Cloud Storage.
+type isCloudStorageOutputFormat interface {
+	isCloudStorageOutputFormat()
+}
+
+// CloudStorageOutputFormat_TextConfig is the configuration for writing
+// message data in text format. Message paylods will be written to files
+// as raw text, separated by a newline.
+type CloudStorageOutputFormat_TextConfig struct{}
+
+// Configuration for writing message data in Avro format.
+// Message payloads and metadata will be written to the files as an Avro binary.
+type CloudStorageOutputFormat_AvroConfig struct {
+	// When true, write the subscription name, message_id, publish_time,
+	// attributes, and ordering_key as additional fields in the output.
+	WriteMetadata bool
+}
+
+func (*CloudStorageOutputFormat_TextConfig) isCloudStorageOutputFormat() {}
+
+func (*CloudStorageOutputFormat_AvroConfig) isCloudStorageOutputFormat() {}
+
+// CloudStorageConfig configures the subscription to deliver to Cloud Storage.
+type CloudStorageConfig struct {
+	// User-provided name for the Cloud Storage bucket.
+	// The bucket must be created by the user. The bucket name must be without
+	// any prefix like "gs://". See the [bucket naming
+	// requirements] (https://cloud.google.com/storage/docs/buckets#naming).
+	Bucket string
+
+	// User-provided prefix for Cloud Storage filename. See the [object naming
+	// requirements](https://cloud.google.com/storage/docs/objects#naming).
+	FilenamePrefix string
+
+	// User-provided suffix for Cloud Storage filename. See the [object naming
+	// requirements](https://cloud.google.com/storage/docs/objects#naming).
+	FilenameSuffix string
+
+	// Configuration for how to write message data. Options are
+	// CloudStorageOutputFormat_TextConfig and CloudStorageOutputFormat_AvroConfig.
+	// Defaults to text format.
+	OutputFormat isCloudStorageOutputFormat
+
+	// The maximum duration that can elapse before a new Cloud Storage file is
+	// created. Min 1 minute, max 10 minutes, default 5 minutes. May not exceed
+	// the subscription's acknowledgement deadline.
+	MaxDuration optional.Duration
+
+	// The maximum bytes that can be written to a Cloud Storage file before a new
+	// file is created. Min 1 KB, max 10 GiB. The max_bytes limit may be exceeded
+	// in cases where messages are larger than the limit.
+	MaxBytes int64
+
+	// Output only. An output-only field that indicates whether or not the
+	// subscription can receive messages.
+	State CloudStorageConfigState
+}
+
+func (bc *CloudStorageConfig) toProto() *pb.CloudStorageConfig {
+	if bc == nil {
+		return nil
+	}
+	var dur *durationpb.Duration
+	if bc.MaxDuration != nil {
+		dur = durationpb.New(optional.ToDuration(bc.MaxDuration))
+	}
+	pbCfg := &pb.CloudStorageConfig{
+		Bucket:         bc.Bucket,
+		FilenamePrefix: bc.FilenamePrefix,
+		FilenameSuffix: bc.FilenameSuffix,
+		MaxDuration:    dur,
+		MaxBytes:       bc.MaxBytes,
+		State:          pb.CloudStorageConfig_State(bc.State),
+	}
+	if out := bc.OutputFormat; out != nil {
+		if _, ok := out.(*CloudStorageOutputFormat_TextConfig); ok {
+			pbCfg.OutputFormat = &pb.CloudStorageConfig_TextConfig_{}
+		} else if cfg, ok := out.(*CloudStorageOutputFormat_AvroConfig); ok {
+			pbCfg.OutputFormat = &pb.CloudStorageConfig_AvroConfig_{
+				AvroConfig: &pb.CloudStorageConfig_AvroConfig{
+					WriteMetadata: cfg.WriteMetadata,
+				},
+			}
+		}
+	}
+	return pbCfg
+}
+
 // SubscriptionState denotes the possible states for a Subscription.
 type SubscriptionState int
 
@@ -291,7 +397,9 @@ const (
 	SubscriptionStateResourceError
 )
 
-// SubscriptionConfig describes the configuration of a subscription.
+// SubscriptionConfig describes the configuration of a subscription. If none of
+// PushConfig, BigQueryConfig, or CloudStorageConfig is set, then the subscriber will
+// pull and ack messages using API methods. At most one of these fields may be set.
 type SubscriptionConfig struct {
 	// The fully qualified identifier for the subscription, in the format "projects/<projid>/subscriptions/<name>"
 	name string
@@ -300,16 +408,22 @@ type SubscriptionConfig struct {
 	Topic *Topic
 
 	// If push delivery is used with this subscription, this field is
-	// used to configure it. Either `PushConfig` or `BigQueryConfig` can be set,
-	// but not both. If both are empty, then the subscriber will pull and ack
-	// messages using API methods.
+	// used to configure it. At most one of `PushConfig`, `BigQueryConfig`,
+	// and `CloudStorageConfig` can be set. If all are empty, then the
+	// subscriber will pull and ack messages using API methods.
 	PushConfig PushConfig
 
 	// If delivery to BigQuery is used with this subscription, this field is
-	// used to configure it. Either `PushConfig` or `BigQueryConfig` can be set,
-	// but not both. If both are empty, then the subscriber will pull and ack
-	// messages using API methods.
+	// used to configure it. At most one of `PushConfig`, `BigQueryConfig`,
+	// and `CloudStorageConfig` can be set. If all are empty, then the
+	// subscriber will pull and ack messages using API methods.
 	BigQueryConfig BigQueryConfig
+
+	// If delivery to Cloud Storage is used with this subscription, this field is
+	// used to configure it. At most one of `PushConfig`, `BigQueryConfig`,
+	// and `CloudStorageConfig` can be set. If all are empty, then the
+	// subscriber will pull and ack messages using API methods.
+	CloudStorageConfig CloudStorageConfig
 
 	// The default maximum time after a subscriber receives a message before
 	// the subscriber should acknowledge the message. Note: messages which are
@@ -437,6 +551,10 @@ func (cfg *SubscriptionConfig) toProto(name string) *pb.Subscription {
 	if cfg.BigQueryConfig.Table != "" {
 		pbBigQueryConfig = cfg.BigQueryConfig.toProto()
 	}
+	var pbCloudStorageConfig *pb.CloudStorageConfig
+	if cfg.CloudStorageConfig.Bucket != "" {
+		pbCloudStorageConfig = cfg.CloudStorageConfig.toProto()
+	}
 	var retentionDuration *durpb.Duration
 	if cfg.RetentionDuration != 0 {
 		retentionDuration = durpb.New(cfg.RetentionDuration)
@@ -454,6 +572,7 @@ func (cfg *SubscriptionConfig) toProto(name string) *pb.Subscription {
 		Topic:                     cfg.Topic.name,
 		PushConfig:                pbPushConfig,
 		BigqueryConfig:            pbBigQueryConfig,
+		CloudStorageConfig:        pbCloudStorageConfig,
 		AckDeadlineSeconds:        trunc32(int64(cfg.AckDeadline.Seconds())),
 		RetainAckedMessages:       cfg.RetainAckedMessages,
 		MessageRetentionDuration:  retentionDuration,
@@ -502,6 +621,9 @@ func protoToSubscriptionConfig(pbSub *pb.Subscription, c *Client) (SubscriptionC
 	if bq := protoToBQConfig(pbSub.GetBigqueryConfig()); bq != nil {
 		subC.BigQueryConfig = *bq
 	}
+	if cs := protoToStorageConfig(pbSub.GetCloudStorageConfig()); cs != nil {
+		subC.CloudStorageConfig = *cs
+	}
 	return subC, nil
 }
 
@@ -536,6 +658,31 @@ func protoToBQConfig(pbBQ *pb.BigQueryConfig) *BigQueryConfig {
 		State:             BigQueryConfigState(pbBQ.State),
 	}
 	return bq
+}
+
+func protoToStorageConfig(pbCSC *pb.CloudStorageConfig) *CloudStorageConfig {
+	if pbCSC == nil {
+		return nil
+	}
+
+	csc := &CloudStorageConfig{
+		Bucket:         pbCSC.GetBucket(),
+		FilenamePrefix: pbCSC.GetFilenamePrefix(),
+		FilenameSuffix: pbCSC.GetFilenameSuffix(),
+		MaxBytes:       pbCSC.GetMaxBytes(),
+		State:          CloudStorageConfigState(pbCSC.GetState()),
+	}
+	if dur := pbCSC.GetMaxDuration().AsDuration(); dur != 0 {
+		csc.MaxDuration = dur
+	}
+	if out := pbCSC.OutputFormat; out != nil {
+		if _, ok := out.(*pb.CloudStorageConfig_TextConfig_); ok {
+			csc.OutputFormat = &CloudStorageOutputFormat_TextConfig{}
+		} else if cfg, ok := out.(*pb.CloudStorageConfig_AvroConfig_); ok {
+			csc.OutputFormat = &CloudStorageOutputFormat_AvroConfig{WriteMetadata: cfg.AvroConfig.GetWriteMetadata()}
+		}
+	}
+	return csc
 }
 
 // DeadLetterPolicy specifies the conditions for dead lettering messages in
@@ -781,13 +928,20 @@ func (s *Subscription) Config(ctx context.Context) (SubscriptionConfig, error) {
 
 // SubscriptionConfigToUpdate describes how to update a subscription.
 type SubscriptionConfigToUpdate struct {
-	// If non-nil, the push config is changed. Cannot be set at the same time as BigQueryConfig.
+	// If non-nil, the push config is changed. At most one of PushConfig, BigQueryConfig, or CloudStorageConfig
+	// can be set.
 	// If currently in push mode, set this value to the zero value to revert to a Pull based subscription.
 	PushConfig *PushConfig
 
-	// If non-nil, the bigquery config is changed. Cannot be set at the same time as PushConfig.
+	// If non-nil, the bigquery config is changed. At most one of PushConfig, BigQueryConfig, or CloudStorageConfig
+	// can be set.
 	// If currently in bigquery mode, set this value to the zero value to revert to a Pull based subscription,
 	BigQueryConfig *BigQueryConfig
+
+	// If non-nil, the Cloud Storage config is changed. At most one of PushConfig, BigQueryConfig, or CloudStorageConfig
+	// can be set.
+	// If currently in CloudStorage mode, set this value to the zero value to revert to a Pull based subscription,
+	CloudStorageConfig *CloudStorageConfig
 
 	// If non-zero, the ack deadline is changed.
 	AckDeadline time.Duration
@@ -849,6 +1003,10 @@ func (s *Subscription) updateRequest(cfg *SubscriptionConfigToUpdate) *pb.Update
 	if cfg.BigQueryConfig != nil {
 		psub.BigqueryConfig = cfg.BigQueryConfig.toProto()
 		paths = append(paths, "bigquery_config")
+	}
+	if cfg.CloudStorageConfig != nil {
+		psub.CloudStorageConfig = cfg.CloudStorageConfig.toProto()
+		paths = append(paths, "cloud_storage_config")
 	}
 	if cfg.AckDeadline != 0 {
 		psub.AckDeadlineSeconds = trunc32(int64(cfg.AckDeadline.Seconds()))
