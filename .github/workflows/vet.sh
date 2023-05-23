@@ -27,8 +27,11 @@ for i in $(find . -name go.mod); do
   go mod tidy
   popd
 done
-git diff '*go.mod' | tee /dev/stderr | (! read)
-git diff '*go.sum' | tee /dev/stderr | (! read)
+
+# Documentation for the :^ pathspec can be found at:
+# https://git-scm.com/docs/gitglossary#Documentation/gitglossary.txt-aiddefpathspecapathspec
+git diff '*go.mod' :^internal/generated/snippets | tee /dev/stderr | (! read)
+git diff '*go.sum' :^internal/generated/snippets | tee /dev/stderr | (! read)
 
 gofmt -s -d -l . 2>&1 | tee /dev/stderr | (! read)
 goimports -l . 2>&1 | tee /dev/stderr | (! read)
