@@ -3,9 +3,9 @@ module cloud.google.com/go/clouddms
 go 1.19
 
 require (
-	cloud.google.com/go/iam v0.13.0
+	cloud.google.com/go/iam v1.0.1
 	cloud.google.com/go/longrunning v0.4.2
-	github.com/googleapis/gax-go/v2 v2.8.0
+	github.com/googleapis/gax-go/v2 v2.9.0
 	google.golang.org/api v0.123.0
 	google.golang.org/genproto v0.0.0-20230410155749-daa745c078e1
 	google.golang.org/grpc v1.55.0
