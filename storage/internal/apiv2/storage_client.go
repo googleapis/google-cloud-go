@@ -712,6 +712,9 @@ func (c *Client) UpdateObject(ctx context.Context, req *storagepb.UpdateObjectRe
 //   incur a performance cost over resuming at the correct write offset.
 //   This behavior can make client-side handling simpler in some cases.
 //
+//   Clients must only send data that is a multiple of 256 KiB per message,
+//   unless the object is being finished with finish_write set to true.
+//
 // The service will not view the object as complete until the client has
 // sent a WriteObjectRequest with finish_write set to true. Sending any
 // requests on a stream after sending a request with finish_write set to
