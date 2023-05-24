@@ -55,12 +55,12 @@ func main() {
 
 	if *localMode {
 		if err := genLocal(ctx, localConfig{
-			googleapisDir:   *googleapisDir,
-			genprotoDir:     *genprotoDir,
-			protoDir:        *protoDir,
-			regenOnly:       *regenOnly,
-			forceAll:        *forceAll,
-			genAlias:        *genAlias,
+			googleapisDir: *googleapisDir,
+			genprotoDir:   *genprotoDir,
+			protoDir:      *protoDir,
+			regenOnly:     *regenOnly,
+			forceAll:      *forceAll,
+			genAlias:      *genAlias,
 		}); err != nil {
 			log.Fatal(err)
 		}
@@ -82,4 +82,3 @@ func strToBool(s string) bool {
 	b, _ := strconv.ParseBool(s)
 	return b
 }
-
