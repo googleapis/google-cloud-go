@@ -1,5 +1,19 @@
 # Changes
 
+## [1.14.0](https://github.com/googleapis/google-cloud-go/compare/monitoring/v1.13.1...monitoring/v1.14.0) (2023-05-10)
+
+
+### Features
+
+* **monitoring/apiv3:** Add ICMP pings ([31c3766](https://github.com/googleapis/google-cloud-go/commit/31c3766c9c4cab411669c14fc1a30bd6d2e3f2dd))
+
+## [1.13.1](https://github.com/googleapis/google-cloud-go/compare/monitoring/v1.13.0...monitoring/v1.13.1) (2023-05-08)
+
+
+### Bug Fixes
+
+* **monitoring:** Update grpc to v1.55.0 ([1147ce0](https://github.com/googleapis/google-cloud-go/commit/1147ce02a990276ca4f8ab7a1ab65c14da4450ef))
+
 ## [1.13.0](https://github.com/googleapis/google-cloud-go/compare/monitoring/v1.12.0...monitoring/v1.13.0) (2023-03-15)
 
 

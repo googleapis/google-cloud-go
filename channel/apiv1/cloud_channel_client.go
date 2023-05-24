@@ -1862,7 +1862,7 @@ func (c *CloudChannelClient) GetCustomerRepricingConfig(ctx context.Context, req
 // resources. The data for each resource is displayed in the ascending order
 // of:
 //
-//	customer ID
+//	Customer ID
 //
 //	RepricingConfig.EntitlementGranularity.entitlement
 //
@@ -2034,7 +2034,7 @@ func (c *CloudChannelClient) GetChannelPartnerRepricingConfig(ctx context.Contex
 // resources. The data for each resource is displayed in the ascending order
 // of:
 //
-//	channel partner ID
+//	Channel Partner ID
 //
 //	RepricingConfig.effective_invoice_month
 //
@@ -2350,8 +2350,7 @@ func (c *CloudChannelClient) GetOperation(ctx context.Context, req *longrunningp
 	return c.internalClient.GetOperation(ctx, req, opts...)
 }
 
-// ListOperations lists operations that match the specified filter in the request. If
-// the server doesn’t support this method, it returns UNIMPLEMENTED.
+// ListOperations is a utility method from google.longrunning.Operations.
 func (c *CloudChannelClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	return c.internalClient.ListOperations(ctx, req, opts...)
 }
@@ -6521,7 +6520,7 @@ func (c *cloudChannelRESTClient) GetCustomerRepricingConfig(ctx context.Context,
 // resources. The data for each resource is displayed in the ascending order
 // of:
 //
-//	customer ID
+//	Customer ID
 //
 //	RepricingConfig.EntitlementGranularity.entitlement
 //
@@ -6987,7 +6986,7 @@ func (c *cloudChannelRESTClient) GetChannelPartnerRepricingConfig(ctx context.Co
 // resources. The data for each resource is displayed in the ascending order
 // of:
 //
-//	channel partner ID
+//	Channel Partner ID
 //
 //	RepricingConfig.effective_invoice_month
 //
@@ -8459,8 +8458,7 @@ func (c *cloudChannelRESTClient) GetOperation(ctx context.Context, req *longrunn
 	return resp, nil
 }
 
-// ListOperations lists operations that match the specified filter in the request. If
-// the server doesn’t support this method, it returns UNIMPLEMENTED.
+// ListOperations is a utility method from google.longrunning.Operations.
 func (c *cloudChannelRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
 	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)

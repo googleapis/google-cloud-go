@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.8.1](https://github.com/googleapis/google-cloud-go/compare/deploy/v1.8.0...deploy/v1.8.1) (2023-05-08)
+
+
+### Bug Fixes
+
+* **deploy:** Update grpc to v1.55.0 ([1147ce0](https://github.com/googleapis/google-cloud-go/commit/1147ce02a990276ca4f8ab7a1ab65c14da4450ef))
+
 ## [1.8.0](https://github.com/googleapis/google-cloud-go/compare/deploy/v1.7.0...deploy/v1.8.0) (2023-03-22)
 
 

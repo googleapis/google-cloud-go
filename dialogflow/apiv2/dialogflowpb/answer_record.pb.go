@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -610,6 +610,8 @@ type AnswerFeedback struct {
 	DetailFeedback isAnswerFeedback_DetailFeedback `protobuf_oneof:"detail_feedback"`
 	// Indicates whether the answer/item was clicked by the human agent
 	// or not. Default to false.
+	// For knowledge search, the answer record is considered to be clicked if the
+	// answer was copied or any URI was clicked.
 	Clicked bool `protobuf:"varint,3,opt,name=clicked,proto3" json:"clicked,omitempty"`
 	// Time when the answer/item was clicked.
 	ClickTime *timestamppb.Timestamp `protobuf:"bytes,5,opt,name=click_time,json=clickTime,proto3" json:"click_time,omitempty"`

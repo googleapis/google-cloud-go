@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/speech/apiv2",
-    "version": "1.15.0",
+    "version": "1.16.0",
     "language": "GO",
     "apis": [
       {
@@ -794,7 +794,7 @@
     {
       "regionTag": "speech_v2_generated_Speech_ListOperations_sync",
       "title": "speech ListOperations Sample",
-      "description": "ListOperations lists operations that match the specified filter in the request. If\nthe server doesn't support this method, it returns `UNIMPLEMENTED`.",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
       "file": "Client/ListOperations/main.go",
       "language": "GO",
       "clientMethod": {

@@ -610,19 +610,22 @@ type EffectiveTag struct {
 
 	// Resource name for TagValue in the format `tagValues/456`.
 	TagValue string `protobuf:"bytes,1,opt,name=tag_value,json=tagValue,proto3" json:"tag_value,omitempty"`
-	// Namespaced name of the TagValue. Now only supported in the format
-	// `{organization_id}/{tag_key_short_name}/{tag_value_short_name}`.
-	// Other formats will be supported when we add non-org parented tags.
+	// The namespaced name of the TagValue. Can be in the form
+	// `{organization_id}/{tag_key_short_name}/{tag_value_short_name}` or
+	// `{project_id}/{tag_key_short_name}/{tag_value_short_name}` or
+	// `{project_number}/{tag_key_short_name}/{tag_value_short_name}`.
 	NamespacedTagValue string `protobuf:"bytes,2,opt,name=namespaced_tag_value,json=namespacedTagValue,proto3" json:"namespaced_tag_value,omitempty"`
 	// The name of the TagKey, in the format `tagKeys/{id}`, such as
 	// `tagKeys/123`.
 	TagKey string `protobuf:"bytes,3,opt,name=tag_key,json=tagKey,proto3" json:"tag_key,omitempty"`
-	// The namespaced_name of the TagKey. Now only supported in the format of
-	// `{organization_id}/{tag_key_short_name}`. Other formats will be
-	// supported when we add non-org parented tags.
+	// The namespaced name of the TagKey. Can be in the form
+	// `{organization_id}/{tag_key_short_name}` or
+	// `{project_id}/{tag_key_short_name}` or
+	// `{project_number}/{tag_key_short_name}`.
 	NamespacedTagKey string `protobuf:"bytes,4,opt,name=namespaced_tag_key,json=namespacedTagKey,proto3" json:"namespaced_tag_key,omitempty"`
 	// The parent name of the tag key.
-	// Must be in the format `organizations/{organization_id}`.
+	// Must be in the format `organizations/{organization_id}` or
+	// `projects/{project_number}`
 	TagKeyParentName string `protobuf:"bytes,6,opt,name=tag_key_parent_name,json=tagKeyParentName,proto3" json:"tag_key_parent_name,omitempty"`
 	// Indicates the inheritance status of a tag value
 	// attached to the given resource. If the tag value is inherited from one of

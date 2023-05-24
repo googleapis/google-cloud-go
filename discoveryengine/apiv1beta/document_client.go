@@ -54,6 +54,7 @@ type DocumentCallOptions struct {
 	UpdateDocument  []gax.CallOption
 	DeleteDocument  []gax.CallOption
 	ImportDocuments []gax.CallOption
+	PurgeDocuments  []gax.CallOption
 	GetOperation    []gax.CallOption
 	ListOperations  []gax.CallOption
 }
@@ -134,6 +135,17 @@ func defaultDocumentCallOptions() *DocumentCallOptions {
 				}, gax.Backoff{
 					Initial:    1000 * time.Millisecond,
 					Max:        30000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		PurgeDocuments: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
 					Multiplier: 1.30,
 				})
 			}),
@@ -225,6 +237,16 @@ func defaultDocumentRESTCallOptions() *DocumentCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
+		PurgeDocuments: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
 		GetOperation: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
@@ -260,6 +282,8 @@ type internalDocumentClient interface {
 	DeleteDocument(context.Context, *discoveryenginepb.DeleteDocumentRequest, ...gax.CallOption) error
 	ImportDocuments(context.Context, *discoveryenginepb.ImportDocumentsRequest, ...gax.CallOption) (*ImportDocumentsOperation, error)
 	ImportDocumentsOperation(name string) *ImportDocumentsOperation
+	PurgeDocuments(context.Context, *discoveryenginepb.PurgeDocumentsRequest, ...gax.CallOption) (*PurgeDocumentsOperation, error)
+	PurgeDocumentsOperation(name string) *PurgeDocumentsOperation
 	GetOperation(context.Context, *longrunningpb.GetOperationRequest, ...gax.CallOption) (*longrunningpb.Operation, error)
 	ListOperations(context.Context, *longrunningpb.ListOperationsRequest, ...gax.CallOption) *OperationIterator
 }
@@ -346,6 +370,33 @@ func (c *DocumentClient) ImportDocuments(ctx context.Context, req *discoveryengi
 // The name must be that of a previously created ImportDocumentsOperation, possibly from a different process.
 func (c *DocumentClient) ImportDocumentsOperation(name string) *ImportDocumentsOperation {
 	return c.internalClient.ImportDocumentsOperation(name)
+}
+
+// PurgeDocuments permanently deletes all selected
+// Documents in a branch.
+//
+// This process is asynchronous. Depending on the number of
+// Documents to be deleted,
+// this operation can take hours to complete. Before the delete operation
+// completes, some Documents
+// might still be returned by
+// DocumentService.GetDocument
+// or
+// DocumentService.ListDocuments.
+//
+// To get a list of the
+// Documents to be deleted,
+// set
+// PurgeDocumentsRequest.force
+// to false.
+func (c *DocumentClient) PurgeDocuments(ctx context.Context, req *discoveryenginepb.PurgeDocumentsRequest, opts ...gax.CallOption) (*PurgeDocumentsOperation, error) {
+	return c.internalClient.PurgeDocuments(ctx, req, opts...)
+}
+
+// PurgeDocumentsOperation returns a new PurgeDocumentsOperation from a given name.
+// The name must be that of a previously created PurgeDocumentsOperation, possibly from a different process.
+func (c *DocumentClient) PurgeDocumentsOperation(name string) *PurgeDocumentsOperation {
+	return c.internalClient.PurgeDocumentsOperation(name)
 }
 
 // GetOperation is a utility method from google.longrunning.Operations.
@@ -694,6 +745,30 @@ func (c *documentGRPCClient) ImportDocuments(ctx context.Context, req *discovery
 		return nil, err
 	}
 	return &ImportDocumentsOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *documentGRPCClient) PurgeDocuments(ctx context.Context, req *discoveryenginepb.PurgeDocumentsRequest, opts ...gax.CallOption) (*PurgeDocumentsOperation, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).PurgeDocuments[0:len((*c.CallOptions).PurgeDocuments):len((*c.CallOptions).PurgeDocuments)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.documentClient.PurgeDocuments(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &PurgeDocumentsOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
@@ -1159,6 +1234,90 @@ func (c *documentRESTClient) ImportDocuments(ctx context.Context, req *discovery
 	}, nil
 }
 
+// PurgeDocuments permanently deletes all selected
+// Documents in a branch.
+//
+// This process is asynchronous. Depending on the number of
+// Documents to be deleted,
+// this operation can take hours to complete. Before the delete operation
+// completes, some Documents
+// might still be returned by
+// DocumentService.GetDocument
+// or
+// DocumentService.ListDocuments.
+//
+// To get a list of the
+// Documents to be deleted,
+// set
+// PurgeDocumentsRequest.force
+// to false.
+func (c *documentRESTClient) PurgeDocuments(ctx context.Context, req *discoveryenginepb.PurgeDocumentsRequest, opts ...gax.CallOption) (*PurgeDocumentsOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta/%v/documents:purge", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1beta/%s", resp.GetName())
+	return &PurgeDocumentsOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
 // GetOperation is a utility method from google.longrunning.Operations.
 func (c *documentRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
@@ -1387,6 +1546,88 @@ func (op *ImportDocumentsOperation) Done() bool {
 // Name returns the name of the long-running operation.
 // The name is assigned by the server and is unique within the service from which the operation is created.
 func (op *ImportDocumentsOperation) Name() string {
+	return op.lro.Name()
+}
+
+// PurgeDocumentsOperation manages a long-running operation from PurgeDocuments.
+type PurgeDocumentsOperation struct {
+	lro      *longrunning.Operation
+	pollPath string
+}
+
+// PurgeDocumentsOperation returns a new PurgeDocumentsOperation from a given name.
+// The name must be that of a previously created PurgeDocumentsOperation, possibly from a different process.
+func (c *documentGRPCClient) PurgeDocumentsOperation(name string) *PurgeDocumentsOperation {
+	return &PurgeDocumentsOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// PurgeDocumentsOperation returns a new PurgeDocumentsOperation from a given name.
+// The name must be that of a previously created PurgeDocumentsOperation, possibly from a different process.
+func (c *documentRESTClient) PurgeDocumentsOperation(name string) *PurgeDocumentsOperation {
+	override := fmt.Sprintf("/v1beta/%s", name)
+	return &PurgeDocumentsOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *PurgeDocumentsOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*discoveryenginepb.PurgeDocumentsResponse, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp discoveryenginepb.PurgeDocumentsResponse
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *PurgeDocumentsOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*discoveryenginepb.PurgeDocumentsResponse, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp discoveryenginepb.PurgeDocumentsResponse
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *PurgeDocumentsOperation) Metadata() (*discoveryenginepb.PurgeDocumentsMetadata, error) {
+	var meta discoveryenginepb.PurgeDocumentsMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *PurgeDocumentsOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *PurgeDocumentsOperation) Name() string {
 	return op.lro.Name()
 }
 

@@ -458,7 +458,7 @@ func (c *Client) GetWorkstationConfig(ctx context.Context, req *workstationspb.G
 	return c.internalClient.GetWorkstationConfig(ctx, req, opts...)
 }
 
-// ListWorkstationConfigs returns all WorkstationConfigs in the specified cluster.
+// ListWorkstationConfigs returns all workstation configurations in the specified cluster.
 func (c *Client) ListWorkstationConfigs(ctx context.Context, req *workstationspb.ListWorkstationConfigsRequest, opts ...gax.CallOption) *WorkstationConfigIterator {
 	return c.internalClient.ListWorkstationConfigs(ctx, req, opts...)
 }
@@ -507,13 +507,13 @@ func (c *Client) GetWorkstation(ctx context.Context, req *workstationspb.GetWork
 	return c.internalClient.GetWorkstation(ctx, req, opts...)
 }
 
-// ListWorkstations returns all Workstations using the specified config.
+// ListWorkstations returns all Workstations using the specified workstation configuration.
 func (c *Client) ListWorkstations(ctx context.Context, req *workstationspb.ListWorkstationsRequest, opts ...gax.CallOption) *WorkstationIterator {
 	return c.internalClient.ListWorkstations(ctx, req, opts...)
 }
 
-// ListUsableWorkstations returns all Workstations using the specified config on which the caller has
-// the “workstations.workstations.use” permission.
+// ListUsableWorkstations returns all workstations using the specified workstation configuration
+// on which the caller has the “workstations.workstations.use” permission.
 func (c *Client) ListUsableWorkstations(ctx context.Context, req *workstationspb.ListUsableWorkstationsRequest, opts ...gax.CallOption) *WorkstationIterator {
 	return c.internalClient.ListUsableWorkstations(ctx, req, opts...)
 }
@@ -1957,7 +1957,7 @@ func (c *restClient) GetWorkstationConfig(ctx context.Context, req *workstations
 	return resp, nil
 }
 
-// ListWorkstationConfigs returns all WorkstationConfigs in the specified cluster.
+// ListWorkstationConfigs returns all workstation configurations in the specified cluster.
 func (c *restClient) ListWorkstationConfigs(ctx context.Context, req *workstationspb.ListWorkstationConfigsRequest, opts ...gax.CallOption) *WorkstationConfigIterator {
 	it := &WorkstationConfigIterator{}
 	req = proto.Clone(req).(*workstationspb.ListWorkstationConfigsRequest)
@@ -2418,7 +2418,7 @@ func (c *restClient) GetWorkstation(ctx context.Context, req *workstationspb.Get
 	return resp, nil
 }
 
-// ListWorkstations returns all Workstations using the specified config.
+// ListWorkstations returns all Workstations using the specified workstation configuration.
 func (c *restClient) ListWorkstations(ctx context.Context, req *workstationspb.ListWorkstationsRequest, opts ...gax.CallOption) *WorkstationIterator {
 	it := &WorkstationIterator{}
 	req = proto.Clone(req).(*workstationspb.ListWorkstationsRequest)
@@ -2506,8 +2506,8 @@ func (c *restClient) ListWorkstations(ctx context.Context, req *workstationspb.L
 	return it
 }
 
-// ListUsableWorkstations returns all Workstations using the specified config on which the caller has
-// the “workstations.workstations.use” permission.
+// ListUsableWorkstations returns all workstations using the specified workstation configuration
+// on which the caller has the “workstations.workstations.use” permission.
 func (c *restClient) ListUsableWorkstations(ctx context.Context, req *workstationspb.ListUsableWorkstationsRequest, opts ...gax.CallOption) *WorkstationIterator {
 	it := &WorkstationIterator{}
 	req = proto.Clone(req).(*workstationspb.ListUsableWorkstationsRequest)

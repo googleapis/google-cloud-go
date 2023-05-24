@@ -15,8 +15,8 @@
 package main
 
 import (
+	"bytes"
 	"flag"
-	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
@@ -143,13 +143,13 @@ func TestUpdateSnippetsMetadata(t *testing.T) {
 
 	// Assert result and restore testdata
 	f := filepath.FromSlash("testdata/internal/generated/snippets/video/stitcher/apiv1/snippet_metadata.google.cloud.video.stitcher.v1.json")
-	read, err := ioutil.ReadFile(f)
+	read, err := os.ReadFile(f)
 	if err != nil {
 		t.Fatal(err)
 	}
 	if strings.Contains(string(read), "3.45.6") {
 		s := strings.Replace(string(read), "3.45.6", "$VERSION", 1)
-		err = ioutil.WriteFile(f, []byte(s), 0)
+		err = os.WriteFile(f, []byte(s), 0)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -157,4 +157,36 @@ func TestUpdateSnippetsMetadata(t *testing.T) {
 		t.Fatalf("UpdateSnippetsMetadata() did not update metadata as expected, check %s", f)
 	}
 
+}
+
+func TestUpdateConfigFile(t *testing.T) {
+	var b bytes.Buffer
+	if err := updateConfigFile(&b, []string{"accessapproval", "newmod"}); err != nil {
+		t.Fatal(err)
+	}
+	want, err := os.ReadFile("testdata/release-please-config-yoshi-submodules.want")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if diff := cmp.Diff(want, b.Bytes()); diff != "" {
+		t.Errorf("updateConfigFile() mismatch (-want +got):\n%s", diff)
+	}
+}
+
+func TestUpdateManifestFile(t *testing.T) {
+	existing, err := os.ReadFile("testdata/.release-please-manifest-submodules.json")
+	if err != nil {
+		t.Fatal(err)
+	}
+	var b bytes.Buffer
+	if err := updateManifestFile(&b, existing, []string{"accessapproval", "newmod"}); err != nil {
+		t.Fatal(err)
+	}
+	want, err := os.ReadFile("testdata/.release-please-manifest-submodules.want")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if diff := cmp.Diff(want, b.Bytes()); diff != "" {
+		t.Errorf("updateConfigFile() mismatch (-want +got):\n%s", diff)
+	}
 }

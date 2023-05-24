@@ -1,6 +1,20 @@
 # Changes
 
 
+## [1.14.0](https://github.com/googleapis/google-cloud-go/compare/functions/v1.13.1...functions/v1.14.0) (2023-05-16)
+
+
+### Features
+
+* **functions:** Added helper methods for long running operations, IAM, and locations ([31421d5](https://github.com/googleapis/google-cloud-go/commit/31421d52c3bf3b7baa235fb6cb18bb8a786398df))
+
+## [1.13.1](https://github.com/googleapis/google-cloud-go/compare/functions/v1.13.0...functions/v1.13.1) (2023-05-08)
+
+
+### Bug Fixes
+
+* **functions:** Update grpc to v1.55.0 ([1147ce0](https://github.com/googleapis/google-cloud-go/commit/1147ce02a990276ca4f8ab7a1ab65c14da4450ef))
+
 ## [1.13.0](https://github.com/googleapis/google-cloud-go/compare/functions/v1.12.0...functions/v1.13.0) (2023-04-04)
 
 
