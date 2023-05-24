@@ -82,3 +82,4 @@ func strToBool(s string) bool {
 	b, _ := strconv.ParseBool(s)
 	return b
 }
+
