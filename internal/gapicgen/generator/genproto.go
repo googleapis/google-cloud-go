@@ -35,27 +35,26 @@ var goPkgOptRe = regexp.MustCompile(`(?m)^option go_package = (.*);`)
 
 // GenprotoGenerator is used to generate code for googleapis/go-genproto.
 type GenprotoGenerator struct {
-	genprotoDir     string
-	googleapisDir   string
-	protoSrcDir     string
-	gapicToGenerate string
-	forceAll        bool
+	genprotoDir   string
+	googleapisDir string
+	protoSrcDir   string
+	forceAll      bool
 }
 
 // NewGenprotoGenerator creates a new GenprotoGenerator.
 func NewGenprotoGenerator(c *Config) *GenprotoGenerator {
 	return &GenprotoGenerator{
-		genprotoDir:     c.GenprotoDir,
-		googleapisDir:   c.GoogleapisDir,
-		protoSrcDir:     filepath.Join(c.ProtoDir, "/src"),
-		gapicToGenerate: c.GapicToGenerate,
-		forceAll:        c.ForceAll,
+		genprotoDir:   c.GenprotoDir,
+		googleapisDir: c.GoogleapisDir,
+		protoSrcDir:   filepath.Join(c.ProtoDir, "/src"),
+		forceAll:      c.ForceAll,
 	}
 }
 
 // TODO: consider flipping this to an allowlist
 var skipPrefixes = []string{
 	"google.golang.org/genproto/googleapis/ads/",
+	"google.golang.org/genproto/googleapis/ai/",
 	"google.golang.org/genproto/googleapis/analytics/",
 	"google.golang.org/genproto/googleapis/api/servicecontrol/",
 	"google.golang.org/genproto/googleapis/api/servicemanagement/",
@@ -190,7 +189,6 @@ func goPkg(fileName string) (string, error) {
 func (g *GenprotoGenerator) protoc(fileNames []string) error {
 	args := []string{
 		"--experimental_allow_proto3_optional",
-		fmt.Sprintf("--go_out=%s/generated", g.genprotoDir),
 		fmt.Sprintf("--go_out=plugins=grpc:%s/generated", g.genprotoDir),
 		"-I", g.googleapisDir,
 		"-I", g.protoSrcDir,
