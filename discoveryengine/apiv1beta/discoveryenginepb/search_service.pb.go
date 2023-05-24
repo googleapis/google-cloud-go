@@ -227,9 +227,7 @@ type SearchRequest struct {
 	BoostSpec *SearchRequest_BoostSpec `protobuf:"bytes,10,opt,name=boost_spec,json=boostSpec,proto3" json:"boost_spec,omitempty"`
 	// Additional search parameters.
 	//
-	// For
-	// [IndustryVertical.SITE_SEARCH][google.cloud.discoveryengine.v1beta.IndustryVertical.SITE_SEARCH]
-	// vertical, supported values are:
+	// For public website search only, supported values are:
 	//
 	// * `user_country_code`: string. Default empty. If set to non-empty, results
 	//    are restricted or boosted based on the location provided.
