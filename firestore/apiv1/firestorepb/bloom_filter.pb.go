@@ -21,10 +21,11 @@
 package firestorepb
 
 import (
-	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
-	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	reflect "reflect"
 	sync "sync"
+
+	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
+	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 )
 
 const (
@@ -118,7 +119,7 @@ func (x *BitSequence) GetPadding() int32 {
 // These two hash values, named `h1` and `h2`, are then used to compute the
 // `hash_count` hash values using the formula, starting at `i=0`:
 //
-//     h(i) = h1 + (i * h2)
+//	h(i) = h1 + (i * h2)
 //
 // These resulting values are then taken modulo the number of bits in the bloom
 // filter to get the bits of the bloom filter to test for the given entry.
