@@ -4,7 +4,7 @@ go 1.19
 
 require (
 	cloud.google.com/go/translate v1.7.1
-	github.com/googleapis/gax-go/v2 v2.9.0
+	github.com/googleapis/gax-go/v2 v2.9.1
 )
 
 require (
