@@ -91,8 +91,8 @@ modules:
   - profiler
   - pubsub
   - pubsublite
+  - rapidmigrationassessment
   - recaptchaenterprise
-  - recaptchaenterprise/v2
   - recommendationengine
   - recommender
   - redis
@@ -124,7 +124,6 @@ modules:
   - video
   - videointelligence
   - vision
-  - vision/v2
   - vmmigration
   - vmwareengine
   - vpcaccess
@@ -620,12 +619,17 @@ service-configs:
   - input-directory: google/cloud/pubsublite/v1
     service-config: pubsublite_v1.yaml
     import-path: cloud.google.com/go/pubsublite/apiv1
+  - input-directory: google/cloud/rapidmigrationassessment/v1
+    service-config: rapidmigrationassessment_v1.yaml
+    import-path: cloud.google.com/go/rapidmigrationassessment/apiv1
   - input-directory: google/cloud/recaptchaenterprise/v1
     service-config: recaptchaenterprise_v1.yaml
     import-path: cloud.google.com/go/recaptchaenterprise/v2/apiv1
+    rel-path: /recaptchaenterprise/apiv1
   - input-directory: google/cloud/recaptchaenterprise/v1beta1
     service-config: recaptchaenterprise_v1beta1.yaml
     import-path: cloud.google.com/go/recaptchaenterprise/v2/apiv1beta1
+    rel-path: /recaptchaenterprise/apiv1beta1
   - input-directory: google/cloud/recommendationengine/v1beta1
     service-config: recommendationengine_v1beta1.yaml
     import-path: cloud.google.com/go/recommendationengine/apiv1beta1
@@ -770,9 +774,11 @@ service-configs:
   - input-directory: google/cloud/vision/v1
     service-config: vision_v1.yaml
     import-path: cloud.google.com/go/vision/v2/apiv1
+    rel-path: /vision/apiv1
   - input-directory: google/cloud/vision/v1p1beta1
     service-config: vision_v1p1beta1.yaml
     import-path: cloud.google.com/go/vision/v2/apiv1p1beta1
+    rel-path: /vision/apiv1p1beta1
   - input-directory: google/cloud/vmmigration/v1
     service-config: vmmigration_v1.yaml
     import-path: cloud.google.com/go/vmmigration/apiv1
@@ -872,6 +878,9 @@ service-configs:
   - input-directory: google/maps/mapsplatformdatasets/v1alpha
     service-config: mapsplatformdatasets_v1alpha.yaml
     import-path: cloud.google.com/go/maps/mapsplatformdatasets/apiv1alpha
+  - input-directory: google/maps/places/v1
+    service-config: places_v1.yaml
+    import-path: cloud.google.com/go/maps/places/apiv1
   - input-directory: google/maps/routing/v2
     service-config: routes_v2.yaml
     import-path: cloud.google.com/go/maps/routing/apiv2

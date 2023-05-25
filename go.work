@@ -77,7 +77,6 @@ use (
 	./internal/examples/mock
 	./internal/gapicgen
 	./internal/generated/snippets
-	./internal/gensnippets
 	./internal/godocfx
 	./internal/postprocessor
 	./iot
@@ -108,7 +107,6 @@ use (
 	./pubsub
 	./pubsublite
 	./recaptchaenterprise
-	./recaptchaenterprise/v2
 	./recommendationengine
 	./recommender
 	./redis
@@ -138,7 +136,6 @@ use (
 	./video
 	./videointelligence
 	./vision
-	./vision/v2
 	./vmmigration
 	./vmwareengine
 	./vpcaccess

@@ -258,7 +258,10 @@
         "privatecatalog": {
             "component": "privatecatalog"
         },
-        "recaptchaenterprise/v2": {
+        "rapidmigrationassessment": {
+            "component": "rapidmigrationassessment"
+        },
+        "recaptchaenterprise": {
             "component": "recaptchaenterprise"
         },
         "recommendationengine": {
@@ -342,7 +345,7 @@
         "videointelligence": {
             "component": "videointelligence"
         },
-        "vision/v2": {
+        "vision": {
             "component": "vision"
         },
         "vmmigration": {
@@ -367,5 +370,7 @@
             "component": "workstations"
         }
     },
-    "plugins": ["sentence-case"]
+    "plugins": [
+        "sentence-case"
+    ]
 }

@@ -1,5 +1,12 @@
 # Changes
 
+## [1.12.0](https://github.com/googleapis/google-cloud-go/compare/redis/v1.11.1...redis/v1.12.0) (2023-05-10)
+
+
+### Features
+
+* **redis:** [Cloud Memorystore for Redis] Add CMEK key field feat: [Cloud Memorystore for Redis] Add suspension_reasons field feat: [Cloud Memorystore for Redis] Add persistence support feat: [Cloud Memorystore for Redis] Add self service update maintenance version support ([31c3766](https://github.com/googleapis/google-cloud-go/commit/31c3766c9c4cab411669c14fc1a30bd6d2e3f2dd))
+
 ## [1.11.1](https://github.com/googleapis/google-cloud-go/compare/redis/v1.11.0...redis/v1.11.1) (2023-05-08)
 
 
