@@ -44,6 +44,7 @@ modules:
   - datastream
   - deploy
   - dialogflow
+  - discoveryengine
   - dlp
   - documentai
   - domains
@@ -450,6 +451,9 @@ service-configs:
   - input-directory: google/cloud/dialogflow/v2beta1
     service-config: dialogflow_v2beta1.yaml
     import-path: cloud.google.com/go/dialogflow/apiv2beta1
+  - input-directory: google/cloud/discoveryengine/v1
+    service-config: discoveryengine_v1.yaml
+    import-path: cloud.google.com/go/discoveryengine/apiv1
   - input-directory: google/cloud/discoveryengine/v1beta
     service-config: discoveryengine_v1beta.yaml
     import-path: cloud.google.com/go/discoveryengine/apiv1beta
