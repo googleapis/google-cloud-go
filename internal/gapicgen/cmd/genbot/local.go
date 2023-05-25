@@ -68,8 +68,7 @@ func genLocal(ctx context.Context, c localConfig) error {
 		GenAlias:      c.genAlias,
 	}
 	if _, err := generator.Generate(ctx, conf); err != nil {
-		log.Printf("Generator ran (and failed) in %s\n", tmpDir)
-		log.Fatal(err)
+		return err
 	}
 	return nil
 }

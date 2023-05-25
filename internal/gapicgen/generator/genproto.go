@@ -32,6 +32,7 @@ import (
 )
 
 var goPkgOptRe = regexp.MustCompile(`(?m)^option go_package = (.*);`)
+var ErrNoProcessing = errors.New("there are not files to regenerate")
 
 // GenprotoGenerator is used to generate code for googleapis/go-genproto.
 type GenprotoGenerator struct {
@@ -125,8 +126,9 @@ func (g *GenprotoGenerator) Regen(ctx context.Context) error {
 	if err != nil {
 		return err
 	}
-	if len(pkgFiles) == 0 {
-		return errors.New("couldn't find any pkgfiles")
+	pkgFiles, err = filterPackages(pkgFiles)
+	if err != nil {
+		return err
 	}
 
 	log.Println("generating from protos")
@@ -160,6 +162,20 @@ func (g *GenprotoGenerator) Regen(ctx context.Context) error {
 	}
 
 	return nil
+}
+
+func filterPackages(in map[string][]string) (map[string][]string, error) {
+	out := map[string][]string{}
+	for pkg, fileNames := range in {
+		if !strings.HasPrefix(pkg, "google.golang.org/genproto") || hasPrefix(pkg, skipPrefixes) {
+			continue
+		}
+		out[pkg] = fileNames
+	}
+	if len(out) == 0 {
+		return nil, ErrNoProcessing
+	}
+	return out, nil
 }
 
 // goPkg reports the import path declared in the given file's `go_package`
