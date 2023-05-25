@@ -92,6 +92,7 @@ modules:
   - profiler
   - pubsub
   - pubsublite
+  - rapidmigrationassessment
   - recaptchaenterprise
   - recommendationengine
   - recommender
@@ -622,6 +623,9 @@ service-configs:
   - input-directory: google/cloud/pubsublite/v1
     service-config: pubsublite_v1.yaml
     import-path: cloud.google.com/go/pubsublite/apiv1
+  - input-directory: google/cloud/rapidmigrationassessment/v1
+    service-config: rapidmigrationassessment_v1.yaml
+    import-path: cloud.google.com/go/rapidmigrationassessment/apiv1
   - input-directory: google/cloud/recaptchaenterprise/v1
     service-config: recaptchaenterprise_v1.yaml
     import-path: cloud.google.com/go/recaptchaenterprise/v2/apiv1
