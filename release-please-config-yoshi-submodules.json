@@ -258,6 +258,9 @@
         "privatecatalog": {
             "component": "privatecatalog"
         },
+        "rapidmigrationassessment": {
+            "component": "rapidmigrationassessment"
+        },
         "recaptchaenterprise": {
             "component": "recaptchaenterprise"
         },
