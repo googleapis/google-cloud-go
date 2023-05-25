@@ -11,6 +11,17 @@ jobs:
   scan_changes:
     runs-on: ubuntu-latest
     steps:
+    - name: Remove breaking change label
+      if: "contains(github.event.pull_request.labels.*.name, 'breaking change')"
+      uses: actions/github-script@v6
+      with:
+        script: |
+          github.rest.issues.removeLabel({
+            issue_number: ${{ github.event.number }},
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            name: ['breaking change']
+          })
     - uses: actions/checkout@v3
       with:
         ref: main
