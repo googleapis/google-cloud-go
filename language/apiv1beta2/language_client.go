@@ -48,6 +48,7 @@ type CallOptions struct {
 	AnalyzeEntitySentiment []gax.CallOption
 	AnalyzeSyntax          []gax.CallOption
 	ClassifyText           []gax.CallOption
+	ModerateText           []gax.CallOption
 	AnnotateText           []gax.CallOption
 }
 
@@ -125,6 +126,7 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
+		ModerateText: []gax.CallOption{},
 		AnnotateText: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
@@ -197,6 +199,7 @@ func defaultRESTCallOptions() *CallOptions {
 					http.StatusGatewayTimeout)
 			}),
 		},
+		ModerateText: []gax.CallOption{},
 		AnnotateText: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
@@ -221,6 +224,7 @@ type internalClient interface {
 	AnalyzeEntitySentiment(context.Context, *languagepb.AnalyzeEntitySentimentRequest, ...gax.CallOption) (*languagepb.AnalyzeEntitySentimentResponse, error)
 	AnalyzeSyntax(context.Context, *languagepb.AnalyzeSyntaxRequest, ...gax.CallOption) (*languagepb.AnalyzeSyntaxResponse, error)
 	ClassifyText(context.Context, *languagepb.ClassifyTextRequest, ...gax.CallOption) (*languagepb.ClassifyTextResponse, error)
+	ModerateText(context.Context, *languagepb.ModerateTextRequest, ...gax.CallOption) (*languagepb.ModerateTextResponse, error)
 	AnnotateText(context.Context, *languagepb.AnnotateTextRequest, ...gax.CallOption) (*languagepb.AnnotateTextResponse, error)
 }
 
@@ -272,8 +276,10 @@ func (c *Client) AnalyzeEntities(ctx context.Context, req *languagepb.AnalyzeEnt
 	return c.internalClient.AnalyzeEntities(ctx, req, opts...)
 }
 
-// AnalyzeEntitySentiment finds entities, similar to AnalyzeEntities in the text and analyzes
-// sentiment associated with each entity and its mentions.
+// AnalyzeEntitySentiment finds entities, similar to
+// AnalyzeEntities
+// in the text and analyzes sentiment associated with each entity and its
+// mentions.
 func (c *Client) AnalyzeEntitySentiment(ctx context.Context, req *languagepb.AnalyzeEntitySentimentRequest, opts ...gax.CallOption) (*languagepb.AnalyzeEntitySentimentResponse, error) {
 	return c.internalClient.AnalyzeEntitySentiment(ctx, req, opts...)
 }
@@ -288,6 +294,11 @@ func (c *Client) AnalyzeSyntax(ctx context.Context, req *languagepb.AnalyzeSynta
 // ClassifyText classifies a document into categories.
 func (c *Client) ClassifyText(ctx context.Context, req *languagepb.ClassifyTextRequest, opts ...gax.CallOption) (*languagepb.ClassifyTextResponse, error) {
 	return c.internalClient.ClassifyText(ctx, req, opts...)
+}
+
+// ModerateText moderates a document for harmful and sensitive categories.
+func (c *Client) ModerateText(ctx context.Context, req *languagepb.ModerateTextRequest, opts ...gax.CallOption) (*languagepb.ModerateTextResponse, error) {
+	return c.internalClient.ModerateText(ctx, req, opts...)
 }
 
 // AnnotateText a convenience method that provides all syntax, sentiment, entity, and
@@ -547,6 +558,21 @@ func (c *gRPCClient) ClassifyText(ctx context.Context, req *languagepb.ClassifyT
 	return resp, nil
 }
 
+func (c *gRPCClient) ModerateText(ctx context.Context, req *languagepb.ModerateTextRequest, opts ...gax.CallOption) (*languagepb.ModerateTextResponse, error) {
+	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	opts = append((*c.CallOptions).ModerateText[0:len((*c.CallOptions).ModerateText):len((*c.CallOptions).ModerateText)], opts...)
+	var resp *languagepb.ModerateTextResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.ModerateText(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
 func (c *gRPCClient) AnnotateText(ctx context.Context, req *languagepb.AnnotateTextRequest, opts ...gax.CallOption) (*languagepb.AnnotateTextResponse, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
@@ -693,8 +719,10 @@ func (c *restClient) AnalyzeEntities(ctx context.Context, req *languagepb.Analyz
 	return resp, nil
 }
 
-// AnalyzeEntitySentiment finds entities, similar to AnalyzeEntities in the text and analyzes
-// sentiment associated with each entity and its mentions.
+// AnalyzeEntitySentiment finds entities, similar to
+// AnalyzeEntities
+// in the text and analyzes sentiment associated with each entity and its
+// mentions.
 func (c *restClient) AnalyzeEntitySentiment(ctx context.Context, req *languagepb.AnalyzeEntitySentimentRequest, opts ...gax.CallOption) (*languagepb.AnalyzeEntitySentimentResponse, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -844,6 +872,68 @@ func (c *restClient) ClassifyText(ctx context.Context, req *languagepb.ClassifyT
 	opts = append((*c.CallOptions).ClassifyText[0:len((*c.CallOptions).ClassifyText):len((*c.CallOptions).ClassifyText)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &languagepb.ClassifyTextResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// ModerateText moderates a document for harmful and sensitive categories.
+func (c *restClient) ModerateText(ctx context.Context, req *languagepb.ModerateTextRequest, opts ...gax.CallOption) (*languagepb.ModerateTextResponse, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta2/documents:moderateText")
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).ModerateText[0:len((*c.CallOptions).ModerateText):len((*c.CallOptions).ModerateText)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &languagepb.ModerateTextResponse{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
