@@ -37,7 +37,7 @@ const (
 )
 
 // Actions to take when the user is not logged in.
-type AuthFailAction float64
+type AuthFailAction int32
 
 const (
 	// Not specified. `AUTH_FAIL_ACTION_REDIRECT` is assumed.

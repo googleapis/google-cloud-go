@@ -100,7 +100,7 @@ import (
 	"google.golang.org/grpc/metadata"
 )
 
-
+// For more information on implementing a client constructor hook, see
 // https://github.com/googleapis/google-cloud-go/wiki/Customizing-constructors.
 type clientHookParams struct{}
 type clientHook func(context.Context, clientHookParams) ([]option.ClientOption, error)
