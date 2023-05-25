@@ -21,12 +21,11 @@
 package automlpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -39,7 +38,7 @@ const (
 // A representation of a column in a relational table. When listing them, column specs are returned in the same order in which they were
 // given on import .
 // Used by:
-//   - Tables
+//   *   Tables
 type ColumnSpec struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
