@@ -21,12 +21,14 @@ package main
 
 import (
 	"context"
+	"errors"
 	"flag"
 	"log"
 	"os"
 	"strconv"
 
 	"cloud.google.com/go/internal/gapicgen"
+	"cloud.google.com/go/internal/gapicgen/generator"
 )
 
 func main() {
@@ -62,6 +64,11 @@ func main() {
 			forceAll:      *forceAll,
 			genAlias:      *genAlias,
 		}); err != nil {
+			if errors.Is(err, generator.ErrNoProcessing) {
+				log.Println(err)
+				os.Exit(0)
+				return
+			}
 			log.Fatal(err)
 		}
 		return
@@ -73,6 +80,11 @@ func main() {
 		githubEmail:       *githubEmail,
 		forceAll:          *forceAll,
 	}); err != nil {
+		if errors.Is(err, generator.ErrNoProcessing) {
+			log.Println(err)
+			os.Exit(0)
+			return
+		}
 		log.Fatal(err)
 	}
 }
