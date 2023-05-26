@@ -42,6 +42,7 @@ import (
 	"google.golang.org/genproto/googleapis/rpc/status"
 	"google.golang.org/genproto/protobuf/field_mask"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/protobuf/runtime/protoiface"
 )
 
 const adminAddr = "bigtableadmin.googleapis.com:443"
@@ -66,7 +67,7 @@ type AdminClient struct {
 
 	project, instance string
 	defaultInterval   time.Duration
-	
+
 	// Metadata to be sent with each request.
 	md metadata.MD
 }
@@ -327,12 +328,26 @@ func (ac *AdminClient) UpdateTableWithDeletionProtection(ctx context.Context, ta
 // only deletion protection can be updated at this period.
 // table ID is required.
 func (ac *AdminClient) updateTableWithConf(ctx context.Context, conf *UpdateTableConf) error {
+	op, err := ac.updateTableWithConfAsync(ctx, conf)
+	if err != nil {
+		return err
+	}
+	ctx = mergeOutgoingMetadata(ctx, ac.md)
+	var tbl btapb.Table
+	return AwaitOperation(ctx, op, &tbl, ac.defaultInterval)
+}
+
+// updateTableWithConfAsync updates a table in the instance from the given configuration.
+// It returns an awaitable operation.
+// only deletion protection can be updated at this period.
+// table ID is required.
+func (ac *AdminClient) updateTableWithConfAsync(ctx context.Context, conf *UpdateTableConf) (*longrunning.Operation, error) {
 	if conf.tableID == "" {
-		return errors.New("TableID is required")
+		return nil, errors.New("TableID is required")
 	}
 
 	if conf.deletionProtection == None {
-		return errors.New("deletion protection is required")
+		return nil, errors.New("deletion protection is required")
 	}
 
 	ctx = mergeOutgoingMetadata(ctx, ac.md)
@@ -357,15 +372,9 @@ func (ac *AdminClient) updateTableWithConf(ctx context.Context, conf *UpdateTabl
 	}
 	lro, err := ac.tClient.UpdateTable(ctx, req)
 	if err != nil {
-		return fmt.Errorf("error from update: %w", err)
+		return nil, fmt.Errorf("error from update: %w", err)
 	}
-	var tbl btapb.Table
-	op := longrunning.InternalNewOperation(ac.lroClient, lro)
-	err = op.WaitWithInterval(ctx, &tbl, ac.defaultInterval)
-	if err != nil {
-		return fmt.Errorf("error from operation: %v", err)
-	}
-	return nil
+	return longrunning.InternalNewOperation(ac.lroClient, lro), nil
 }
 
 // DeleteTable deletes a table and all of its data.
@@ -510,6 +519,24 @@ func (ac *AdminClient) DropAllRows(ctx context.Context, table string) error {
 // might be changed in backward-incompatible ways and is not recommended for
 // production use. It is not subject to any SLA or deprecation policy.
 func (ac *AdminClient) CreateTableFromSnapshot(ctx context.Context, table, cluster, snapshot string) error {
+	op, err := ac.CreateTableFromSnapshotAsync(ctx, table, cluster, snapshot)
+	if err != nil {
+		return err
+	}
+	ctx = mergeOutgoingMetadata(ctx, ac.md)
+	resp := btapb.Table{}
+	return AwaitOperation(ctx, op, &resp, ac.defaultInterval)
+}
+
+// CreateTableFromSnapshotAsync creates a table from snapshot.
+// The table will be created in the same cluster as the snapshot.
+// It returns an awaitable operation.
+//
+// This is a private alpha release of Cloud Bigtable snapshots. This feature
+// is not currently available to most Cloud Bigtable customers. This feature
+// might be changed in backward-incompatible ways and is not recommended for
+// production use. It is not subject to any SLA or deprecation policy.
+func (ac *AdminClient) CreateTableFromSnapshotAsync(ctx context.Context, table, cluster, snapshot string) (*longrunning.Operation, error) {
 	ctx = mergeOutgoingMetadata(ctx, ac.md)
 	prefix := ac.instancePrefix()
 	snapshotPath := prefix + "/clusters/" + cluster + "/snapshots/" + snapshot
@@ -521,10 +548,9 @@ func (ac *AdminClient) CreateTableFromSnapshot(ctx context.Context, table, clust
 	}
 	op, err := ac.tClient.CreateTableFromSnapshot(ctx, req)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	resp := btapb.Table{}
-	return longrunning.InternalNewOperation(ac.lroClient, op).WaitWithInterval(ctx, &resp, ac.defaultInterval)
+	return longrunning.InternalNewOperation(ac.lroClient, op), nil
 }
 
 // DefaultSnapshotDuration is the default TTL for a snapshot.
@@ -539,6 +565,25 @@ const DefaultSnapshotDuration time.Duration = 0
 // might be changed in backward-incompatible ways and is not recommended for
 // production use. It is not subject to any SLA or deprecation policy.
 func (ac *AdminClient) SnapshotTable(ctx context.Context, table, cluster, snapshot string, ttl time.Duration) error {
+	op, err := ac.SnapshotTableAsync(ctx, table, cluster, snapshot, ttl)
+	if err != nil {
+		return err
+	}
+	ctx = mergeOutgoingMetadata(ctx, ac.md)
+	resp := btapb.Snapshot{}
+	return AwaitOperation(ctx, op, &resp, ac.defaultInterval)
+}
+
+// SnapshotTable creates a new snapshot in the specified cluster from the
+// specified source table. Setting the TTL to `DefaultSnapshotDuration` will
+// use the server side default for the duration.
+// It returns an awaitable operation.
+//
+// This is a private alpha release of Cloud Bigtable snapshots. This feature
+// is not currently available to most Cloud Bigtable customers. This feature
+// might be changed in backward-incompatible ways and is not recommended for
+// production use. It is not subject to any SLA or deprecation policy.
+func (ac *AdminClient) SnapshotTableAsync(ctx context.Context, table, cluster, snapshot string, ttl time.Duration) (*longrunning.Operation, error) {
 	ctx = mergeOutgoingMetadata(ctx, ac.md)
 	prefix := ac.instancePrefix()
 
@@ -557,10 +602,9 @@ func (ac *AdminClient) SnapshotTable(ctx context.Context, table, cluster, snapsh
 
 	op, err := ac.tClient.SnapshotTable(ctx, req)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	resp := btapb.Snapshot{}
-	return longrunning.InternalNewOperation(ac.lroClient, op).WaitWithInterval(ctx, &resp, ac.defaultInterval)
+	return longrunning.InternalNewOperation(ac.lroClient, op), nil
 }
 
 // Snapshots returns a SnapshotIterator for iterating over the snapshots in a cluster.
@@ -967,6 +1011,18 @@ func (iac *InstanceAdminClient) CreateInstance(ctx context.Context, conf *Instan
 // CreateInstanceWithClusters creates a new instance with configured clusters in the project.
 // This method will return when the instance has been created or when an error occurs.
 func (iac *InstanceAdminClient) CreateInstanceWithClusters(ctx context.Context, conf *InstanceWithClustersConfig) error {
+	op, err := iac.CreateInstanceWithClustersAsync(ctx, conf)
+	if err != nil {
+		return err
+	}
+	ctx = mergeOutgoingMetadata(ctx, iac.md)
+	resp := btapb.Instance{}
+	return AwaitOperation(ctx, op, &resp, iac.defaultInterval)
+}
+
+// CreateInstanceWithClustersAsync creates a new instance with configured clusters in the project.
+// It returns an awaitable operation.
+func (iac *InstanceAdminClient) CreateInstanceWithClustersAsync(ctx context.Context, conf *InstanceWithClustersConfig) (*longrunning.Operation, error) {
 	ctx = mergeOutgoingMetadata(ctx, iac.md)
 	clusters := make(map[string]*btapb.Cluster)
 	for _, cluster := range conf.Clusters {
@@ -986,17 +1042,31 @@ func (iac *InstanceAdminClient) CreateInstanceWithClusters(ctx context.Context, 
 
 	lro, err := iac.iClient.CreateInstance(ctx, req)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	resp := btapb.Instance{}
-	return longrunning.InternalNewOperation(iac.lroClient, lro).WaitWithInterval(ctx, &resp, iac.defaultInterval)
+	return longrunning.InternalNewOperation(iac.lroClient, lro), nil
 }
 
 // updateInstance updates a single instance based on config fields that operate
 // at an instance level: DisplayName and InstanceType.
 func (iac *InstanceAdminClient) updateInstance(ctx context.Context, conf *InstanceWithClustersConfig) (updated bool, err error) {
+	op, err := iac.updateInstanceAsync(ctx, conf)
+	if err != nil {
+		return false, err
+	}
+	err = AwaitOperation(ctx, op, nil, iac.defaultInterval)
+	if err != nil {
+		return false, err
+	}
+	return true, nil
+}
+
+// updateInstance updates a single instance based on config fields that operate
+// at an instance level: DisplayName and InstanceType.
+// It returns an awaitable operation.
+func (iac *InstanceAdminClient) updateInstanceAsync(ctx context.Context, conf *InstanceWithClustersConfig) (op *longrunning.Operation, err error) {
 	if conf.InstanceID == "" {
-		return false, errors.New("InstanceID is required")
+		return nil, errors.New("InstanceID is required")
 	}
 
 	// Update the instance, if necessary
@@ -1021,19 +1091,14 @@ func (iac *InstanceAdminClient) updateInstance(ctx context.Context, conf *Instan
 	}
 
 	if len(mask.Paths) == 0 {
-		return false, nil
+		return nil, nil
 	}
 
 	lro, err := iac.iClient.PartialUpdateInstance(ctx, ireq)
 	if err != nil {
-		return false, err
+		return nil, err
 	}
-	err = longrunning.InternalNewOperation(iac.lroClient, lro).WaitWithInterval(ctx, nil, iac.defaultInterval)
-	if err != nil {
-		return false, err
-	}
-
-	return true, nil
+	return longrunning.InternalNewOperation(iac.lroClient, lro), nil
 }
 
 // UpdateInstanceWithClusters updates an instance and its clusters. Updateable
@@ -1288,6 +1353,18 @@ type ClusterInfo struct {
 // CreateCluster creates a new cluster in an instance.
 // This method will return when the cluster has been created or when an error occurs.
 func (iac *InstanceAdminClient) CreateCluster(ctx context.Context, conf *ClusterConfig) error {
+	op, err := iac.CreateClusterAsync(ctx, conf)
+	if err != nil {
+		return err
+	}
+	ctx = mergeOutgoingMetadata(ctx, iac.md)
+	resp := btapb.Cluster{}
+	return AwaitOperation(ctx, op, &resp, iac.defaultInterval)
+}
+
+// CreateCluster creates a new cluster in an instance.
+// It returns an awaitable operation.
+func (iac *InstanceAdminClient) CreateClusterAsync(ctx context.Context, conf *ClusterConfig) (*longrunning.Operation, error) {
 	ctx = mergeOutgoingMetadata(ctx, iac.md)
 
 	req := &btapb.CreateClusterRequest{
@@ -1298,10 +1375,9 @@ func (iac *InstanceAdminClient) CreateCluster(ctx context.Context, conf *Cluster
 
 	lro, err := iac.iClient.CreateCluster(ctx, req)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	resp := btapb.Cluster{}
-	return longrunning.InternalNewOperation(iac.lroClient, lro).WaitWithInterval(ctx, &resp, iac.defaultInterval)
+	return longrunning.InternalNewOperation(iac.lroClient, lro), nil
 }
 
 // DeleteCluster deletes a cluster from an instance.
@@ -1315,6 +1391,18 @@ func (iac *InstanceAdminClient) DeleteCluster(ctx context.Context, instanceID, c
 // SetAutoscaling enables autoscaling on a cluster. To remove autoscaling, use
 // UpdateCluster. See AutoscalingConfig documentation for deatils.
 func (iac *InstanceAdminClient) SetAutoscaling(ctx context.Context, instanceID, clusterID string, conf AutoscalingConfig) error {
+	op, err := iac.SetAutoscalingAsync(ctx, instanceID, clusterID, conf)
+	if err != nil {
+		return err
+	}
+	ctx = mergeOutgoingMetadata(ctx, iac.md)
+	return AwaitOperation(ctx, op, nil, iac.defaultInterval)
+}
+
+// SetAutoscaling enables autoscaling on a cluster. To remove autoscaling, use
+// UpdateCluster. See AutoscalingConfig documentation for deatils.
+// It returns an awaitable operation.
+func (iac *InstanceAdminClient) SetAutoscalingAsync(ctx context.Context, instanceID, clusterID string, conf AutoscalingConfig) (*longrunning.Operation, error) {
 	ctx = mergeOutgoingMetadata(ctx, iac.md)
 	cluster := &btapb.Cluster{
 		Name: "projects/" + iac.project + "/instances/" + instanceID + "/clusters/" + clusterID,
@@ -1331,15 +1419,28 @@ func (iac *InstanceAdminClient) SetAutoscaling(ctx context.Context, instanceID, 
 		Cluster: cluster,
 	})
 	if err != nil {
-		return err
+		return nil, err
 	}
-	return longrunning.InternalNewOperation(iac.lroClient, lro).WaitWithInterval(ctx, nil, iac.defaultInterval)
+	return longrunning.InternalNewOperation(iac.lroClient, lro), nil
 }
 
 // UpdateCluster updates attributes of a cluster. If Autoscaling is configured
 // for the cluster, it will be removed and replaced by the static number of
 // serve nodes specified.
 func (iac *InstanceAdminClient) UpdateCluster(ctx context.Context, instanceID, clusterID string, serveNodes int32) error {
+	op, err := iac.UpdateClusterAsync(ctx, instanceID, clusterID, serveNodes)
+	if err != nil {
+		return err
+	}
+	ctx = mergeOutgoingMetadata(ctx, iac.md)
+	return AwaitOperation(ctx, op, nil, iac.defaultInterval)
+}
+
+// UpdateCluster updates attributes of a cluster. If Autoscaling is configured
+// for the cluster, it will be removed and replaced by the static number of
+// serve nodes specified.
+// It returns an awaitable operation.
+func (iac *InstanceAdminClient) UpdateClusterAsync(ctx context.Context, instanceID, clusterID string, serveNodes int32) (*longrunning.Operation, error) {
 	ctx = mergeOutgoingMetadata(ctx, iac.md)
 	cluster := &btapb.Cluster{
 		Name:       "projects/" + iac.project + "/instances/" + instanceID + "/clusters/" + clusterID,
@@ -1355,9 +1456,9 @@ func (iac *InstanceAdminClient) UpdateCluster(ctx context.Context, instanceID, c
 		Cluster: cluster,
 	})
 	if err != nil {
-		return err
+		return nil, err
 	}
-	return longrunning.InternalNewOperation(iac.lroClient, lro).WaitWithInterval(ctx, nil, iac.defaultInterval)
+	return longrunning.InternalNewOperation(iac.lroClient, lro), nil
 }
 
 // Clusters lists the clusters in an instance. If any location
@@ -1642,6 +1743,18 @@ func (iac *InstanceAdminClient) ListAppProfiles(ctx context.Context, instanceID 
 // UpdateAppProfile updates an app profile within an instance.
 // updateAttrs should be set. If unset, all fields will be replaced.
 func (iac *InstanceAdminClient) UpdateAppProfile(ctx context.Context, instanceID, profileID string, updateAttrs ProfileAttrsToUpdate) error {
+	op, err := iac.UpdateAppProfileAsync(ctx, instanceID, profileID, updateAttrs)
+	if err != nil {
+		return err
+	}
+	ctx = mergeOutgoingMetadata(ctx, iac.md)
+	return AwaitOperation(ctx, op, nil, iac.defaultInterval)
+}
+
+// UpdateAppProfile updates an app profile within an instance.
+// updateAttrs should be set. If unset, all fields will be replaced.
+// it returns an awaitable operation.
+func (iac *InstanceAdminClient) UpdateAppProfileAsync(ctx context.Context, instanceID, profileID string, updateAttrs ProfileAttrsToUpdate) (*longrunning.Operation, error) {
 	ctx = mergeOutgoingMetadata(ctx, iac.md)
 
 	profile := &btapb.AppProfile{
@@ -1665,7 +1778,7 @@ func (iac *InstanceAdminClient) UpdateAppProfile(ctx context.Context, instanceID
 				},
 			}
 		default:
-			return errors.New("invalid routing policy")
+			return nil, errors.New("invalid routing policy")
 		}
 	}
 	patchRequest := &btapb.UpdateAppProfileRequest{
@@ -1677,10 +1790,10 @@ func (iac *InstanceAdminClient) UpdateAppProfile(ctx context.Context, instanceID
 	}
 	updateRequest, err := iac.iClient.UpdateAppProfile(ctx, patchRequest)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	return longrunning.InternalNewOperation(iac.lroClient, updateRequest).WaitWithInterval(ctx, nil, iac.defaultInterval)
+	return longrunning.InternalNewOperation(iac.lroClient, updateRequest), nil
 }
 
 // DeleteAppProfile deletes an app profile from an instance.
@@ -1864,31 +1977,59 @@ func (ac *AdminClient) RestoreTable(ctx context.Context, table, cluster, backup 
 // tableName (ex. "my-restored-table") will be the name of the newly created table.
 // backupName (ex. "my-backup") is the name of the backup to restore.
 func (ac *AdminClient) RestoreTableFrom(ctx context.Context, sourceInstance, table, sourceCluster, backup string) error {
+	op, err := ac.RestoreTableFromAsync(ctx, sourceInstance, table, sourceCluster, backup)
+	if err != nil {
+		return err
+	}
+	ctx = mergeOutgoingMetadata(ctx, ac.md)
+	resp := btapb.Table{}
+	return AwaitOperation(ctx, op, &resp, ac.defaultInterval)
+}
+
+// RestoreTableFrom creates a new table in the admin's instance by restoring from the given backup and instance.
+// To restore within the same instance, see RestoreTable.
+// It returns an awaitable operation.
+// sourceInstance (ex. "my-instance") and sourceCluster (ex. "my-cluster") are the instance and cluster in which the new table will be restored from.
+// tableName (ex. "my-restored-table") will be the name of the newly created table.
+// backupName (ex. "my-backup") is the name of the backup to restore.
+func (ac *AdminClient) RestoreTableFromAsync(ctx context.Context, sourceInstance, table, sourceCluster, backup string) (*longrunning.Operation, error) {
 	ctx = mergeOutgoingMetadata(ctx, ac.md)
 	parent := ac.instancePrefix()
 	sourceBackupPath := ac.backupPath(sourceCluster, sourceInstance, backup)
 	req := &btapb.RestoreTableRequest{
 		Parent:  parent,
 		TableId: table,
-		Source:  &btapb.RestoreTableRequest_Backup{sourceBackupPath},
+		Source:  &btapb.RestoreTableRequest_Backup{Backup: sourceBackupPath},
 	}
 	op, err := ac.tClient.RestoreTable(ctx, req)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	resp := btapb.Table{}
-	return longrunning.InternalNewOperation(ac.lroClient, op).WaitWithInterval(ctx, &resp, ac.defaultInterval)
+	return longrunning.InternalNewOperation(ac.lroClient, op), nil
 }
 
 // CreateBackup creates a new backup in the specified cluster from the
 // specified source table with the user-provided expire time.
 func (ac *AdminClient) CreateBackup(ctx context.Context, table, cluster, backup string, expireTime time.Time) error {
+	op, err := ac.CreateBackupAsync(ctx, table, cluster, backup, expireTime)
+	if err != nil {
+		return err
+	}
+	ctx = mergeOutgoingMetadata(ctx, ac.md)
+	resp := btapb.Backup{}
+	return AwaitOperation(ctx, op, &resp, ac.defaultInterval)
+}
+
+// CreateBackup creates a new backup in the specified cluster from the
+// specified source table with the user-provided expire time.
+// It returns an awaitable operation.
+func (ac *AdminClient) CreateBackupAsync(ctx context.Context, table, cluster, backup string, expireTime time.Time) (*longrunning.Operation, error) {
 	ctx = mergeOutgoingMetadata(ctx, ac.md)
 	prefix := ac.instancePrefix()
 
 	parsedExpireTime, err := ptypes.TimestampProto(expireTime)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	req := &btapb.CreateBackupRequest{
@@ -1902,10 +2043,9 @@ func (ac *AdminClient) CreateBackup(ctx context.Context, table, cluster, backup 
 
 	op, err := ac.tClient.CreateBackup(ctx, req)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	resp := btapb.Backup{}
-	return longrunning.InternalNewOperation(ac.lroClient, op).WaitWithInterval(ctx, &resp, ac.defaultInterval)
+	return longrunning.InternalNewOperation(ac.lroClient, op), nil
 }
 
 // Backups returns a BackupIterator for iterating over the backups in a cluster.
@@ -2082,4 +2222,12 @@ func (ac *AdminClient) UpdateBackup(ctx context.Context, cluster, backup string,
 	}
 	_, err = ac.tClient.UpdateBackup(ctx, req)
 	return err
+}
+
+func AwaitOperation(ctx context.Context, op *longrunning.Operation, resp protoiface.MessageV1, defaultInterval time.Duration) error {
+	err := op.WaitWithInterval(ctx, resp, defaultInterval)
+	if err != nil {
+		return fmt.Errorf("error from operation: %v", err)
+	}
+	return nil
 }
