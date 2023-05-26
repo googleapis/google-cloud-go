@@ -65,7 +65,8 @@ type AdminClient struct {
 	lroClient *lroauto.OperationsClient
 
 	project, instance string
-
+	defaultInterval   time.Duration
+	
 	// Metadata to be sent with each request.
 	md metadata.MD
 }
@@ -98,18 +99,25 @@ func NewAdminClient(ctx context.Context, project, instance string, opts ...optio
 	}
 
 	return &AdminClient{
-		connPool:  connPool,
-		tClient:   btapb.NewBigtableTableAdminClient(connPool),
-		lroClient: lroClient,
-		project:   project,
-		instance:  instance,
-		md:        metadata.Pairs(resourcePrefixHeader, fmt.Sprintf("projects/%s/instances/%s", project, instance)),
+		connPool:        connPool,
+		tClient:         btapb.NewBigtableTableAdminClient(connPool),
+		lroClient:       lroClient,
+		project:         project,
+		instance:        instance,
+		defaultInterval: 180 * time.Second,
+		md:              metadata.Pairs(resourcePrefixHeader, fmt.Sprintf("projects/%s/instances/%s", project, instance)),
 	}, nil
 }
 
 // Close closes the AdminClient.
 func (ac *AdminClient) Close() error {
 	return ac.connPool.Close()
+}
+
+// SetDefaultTimeout sets the default timeout for admin operations.
+// Default is 3 minutes.
+func (ac *AdminClient) SetDefaultTimeout(defaultInterval time.Duration) {
+	ac.defaultInterval = defaultInterval
 }
 
 func (ac *AdminClient) instancePrefix() string {
@@ -353,7 +361,7 @@ func (ac *AdminClient) updateTableWithConf(ctx context.Context, conf *UpdateTabl
 	}
 	var tbl btapb.Table
 	op := longrunning.InternalNewOperation(ac.lroClient, lro)
-	err = op.Wait(ctx, &tbl)
+	err = op.WaitWithInterval(ctx, &tbl, ac.defaultInterval)
 	if err != nil {
 		return fmt.Errorf("error from operation: %v", err)
 	}
@@ -516,7 +524,7 @@ func (ac *AdminClient) CreateTableFromSnapshot(ctx context.Context, table, clust
 		return err
 	}
 	resp := btapb.Table{}
-	return longrunning.InternalNewOperation(ac.lroClient, op).Wait(ctx, &resp)
+	return longrunning.InternalNewOperation(ac.lroClient, op).WaitWithInterval(ctx, &resp, ac.defaultInterval)
 }
 
 // DefaultSnapshotDuration is the default TTL for a snapshot.
@@ -552,7 +560,7 @@ func (ac *AdminClient) SnapshotTable(ctx context.Context, table, cluster, snapsh
 		return err
 	}
 	resp := btapb.Snapshot{}
-	return longrunning.InternalNewOperation(ac.lroClient, op).Wait(ctx, &resp)
+	return longrunning.InternalNewOperation(ac.lroClient, op).WaitWithInterval(ctx, &resp, ac.defaultInterval)
 }
 
 // Snapshots returns a SnapshotIterator for iterating over the snapshots in a cluster.
@@ -801,7 +809,8 @@ type InstanceAdminClient struct {
 	iClient   btapb.BigtableInstanceAdminClient
 	lroClient *lroauto.OperationsClient
 
-	project string
+	project         string
+	defaultInterval time.Duration
 
 	// Metadata to be sent with each request.
 	md metadata.MD
@@ -837,14 +846,21 @@ func NewInstanceAdminClient(ctx context.Context, project string, opts ...option.
 		iClient:   btapb.NewBigtableInstanceAdminClient(connPool),
 		lroClient: lroClient,
 
-		project: project,
-		md:      metadata.Pairs(resourcePrefixHeader, "projects/"+project),
+		project:         project,
+		defaultInterval: 180 * time.Second,
+		md:              metadata.Pairs(resourcePrefixHeader, "projects/"+project),
 	}, nil
 }
 
 // Close closes the InstanceAdminClient.
 func (iac *InstanceAdminClient) Close() error {
 	return iac.connPool.Close()
+}
+
+// SetDefaultTimeout sets the default timeout for admin operations.
+// Default is 3 minutes.
+func (iac *InstanceAdminClient) SetDefaultTimeout(defaultInterval time.Duration) {
+	iac.defaultInterval = defaultInterval
 }
 
 // StorageType is the type of storage used for all tables in an instance
@@ -973,7 +989,7 @@ func (iac *InstanceAdminClient) CreateInstanceWithClusters(ctx context.Context, 
 		return err
 	}
 	resp := btapb.Instance{}
-	return longrunning.InternalNewOperation(iac.lroClient, lro).Wait(ctx, &resp)
+	return longrunning.InternalNewOperation(iac.lroClient, lro).WaitWithInterval(ctx, &resp, iac.defaultInterval)
 }
 
 // updateInstance updates a single instance based on config fields that operate
@@ -1012,7 +1028,7 @@ func (iac *InstanceAdminClient) updateInstance(ctx context.Context, conf *Instan
 	if err != nil {
 		return false, err
 	}
-	err = longrunning.InternalNewOperation(iac.lroClient, lro).Wait(ctx, nil)
+	err = longrunning.InternalNewOperation(iac.lroClient, lro).WaitWithInterval(ctx, nil, iac.defaultInterval)
 	if err != nil {
 		return false, err
 	}
@@ -1285,7 +1301,7 @@ func (iac *InstanceAdminClient) CreateCluster(ctx context.Context, conf *Cluster
 		return err
 	}
 	resp := btapb.Cluster{}
-	return longrunning.InternalNewOperation(iac.lroClient, lro).Wait(ctx, &resp)
+	return longrunning.InternalNewOperation(iac.lroClient, lro).WaitWithInterval(ctx, &resp, iac.defaultInterval)
 }
 
 // DeleteCluster deletes a cluster from an instance.
@@ -1317,7 +1333,7 @@ func (iac *InstanceAdminClient) SetAutoscaling(ctx context.Context, instanceID, 
 	if err != nil {
 		return err
 	}
-	return longrunning.InternalNewOperation(iac.lroClient, lro).Wait(ctx, nil)
+	return longrunning.InternalNewOperation(iac.lroClient, lro).WaitWithInterval(ctx, nil, iac.defaultInterval)
 }
 
 // UpdateCluster updates attributes of a cluster. If Autoscaling is configured
@@ -1341,7 +1357,7 @@ func (iac *InstanceAdminClient) UpdateCluster(ctx context.Context, instanceID, c
 	if err != nil {
 		return err
 	}
-	return longrunning.InternalNewOperation(iac.lroClient, lro).Wait(ctx, nil)
+	return longrunning.InternalNewOperation(iac.lroClient, lro).WaitWithInterval(ctx, nil, iac.defaultInterval)
 }
 
 // Clusters lists the clusters in an instance. If any location
@@ -1664,8 +1680,7 @@ func (iac *InstanceAdminClient) UpdateAppProfile(ctx context.Context, instanceID
 		return err
 	}
 
-	return longrunning.InternalNewOperation(iac.lroClient, updateRequest).Wait(ctx, nil)
-
+	return longrunning.InternalNewOperation(iac.lroClient, updateRequest).WaitWithInterval(ctx, nil, iac.defaultInterval)
 }
 
 // DeleteAppProfile deletes an app profile from an instance.
@@ -1862,7 +1877,7 @@ func (ac *AdminClient) RestoreTableFrom(ctx context.Context, sourceInstance, tab
 		return err
 	}
 	resp := btapb.Table{}
-	return longrunning.InternalNewOperation(ac.lroClient, op).Wait(ctx, &resp)
+	return longrunning.InternalNewOperation(ac.lroClient, op).WaitWithInterval(ctx, &resp, ac.defaultInterval)
 }
 
 // CreateBackup creates a new backup in the specified cluster from the
@@ -1890,7 +1905,7 @@ func (ac *AdminClient) CreateBackup(ctx context.Context, table, cluster, backup 
 		return err
 	}
 	resp := btapb.Backup{}
-	return longrunning.InternalNewOperation(ac.lroClient, op).Wait(ctx, &resp)
+	return longrunning.InternalNewOperation(ac.lroClient, op).WaitWithInterval(ctx, &resp, ac.defaultInterval)
 }
 
 // Backups returns a BackupIterator for iterating over the backups in a cluster.
