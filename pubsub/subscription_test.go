@@ -510,7 +510,7 @@ func TestCloudStorageSubscription(t *testing.T) {
 		Bucket:         bucket,
 		FilenamePrefix: "some-prefix",
 		FilenameSuffix: "some-suffix",
-		OutputFormat: &CloudStorageOutputFormat_AvroConfig{
+		OutputFormat: &CloudStorageOutputFormatAvroConfig{
 			WriteMetadata: true,
 		},
 		MaxDuration: 10 * time.Minute,

@@ -298,22 +298,23 @@ type isCloudStorageOutputFormat interface {
 	isCloudStorageOutputFormat()
 }
 
-// CloudStorageOutputFormat_TextConfig is the configuration for writing
-// message data in text format. Message paylods will be written to files
+// CloudStorageOutputFormatTextConfig is the configuration for writing
+// message data in text format. Message payloads will be written to files
 // as raw text, separated by a newline.
-type CloudStorageOutputFormat_TextConfig struct{}
+type CloudStorageOutputFormatTextConfig struct{}
 
-// Configuration for writing message data in Avro format.
-// Message payloads and metadata will be written to the files as an Avro binary.
-type CloudStorageOutputFormat_AvroConfig struct {
+// CloudStorageOutputFormatAvroConfig is the configuration for writing
+// message data in Avro format. Message payloads and metadata will be written
+// to the files as an Avro binary.
+type CloudStorageOutputFormatAvroConfig struct {
 	// When true, write the subscription name, message_id, publish_time,
 	// attributes, and ordering_key as additional fields in the output.
 	WriteMetadata bool
 }
 
-func (*CloudStorageOutputFormat_TextConfig) isCloudStorageOutputFormat() {}
+func (*CloudStorageOutputFormatTextConfig) isCloudStorageOutputFormat() {}
 
-func (*CloudStorageOutputFormat_AvroConfig) isCloudStorageOutputFormat() {}
+func (*CloudStorageOutputFormatAvroConfig) isCloudStorageOutputFormat() {}
 
 // CloudStorageConfig configures the subscription to deliver to Cloud Storage.
 type CloudStorageConfig struct {
@@ -368,9 +369,9 @@ func (bc *CloudStorageConfig) toProto() *pb.CloudStorageConfig {
 		State:          pb.CloudStorageConfig_State(bc.State),
 	}
 	if out := bc.OutputFormat; out != nil {
-		if _, ok := out.(*CloudStorageOutputFormat_TextConfig); ok {
+		if _, ok := out.(*CloudStorageOutputFormatTextConfig); ok {
 			pbCfg.OutputFormat = &pb.CloudStorageConfig_TextConfig_{}
-		} else if cfg, ok := out.(*CloudStorageOutputFormat_AvroConfig); ok {
+		} else if cfg, ok := out.(*CloudStorageOutputFormatAvroConfig); ok {
 			pbCfg.OutputFormat = &pb.CloudStorageConfig_AvroConfig_{
 				AvroConfig: &pb.CloudStorageConfig_AvroConfig{
 					WriteMetadata: cfg.WriteMetadata,
@@ -677,9 +678,9 @@ func protoToStorageConfig(pbCSC *pb.CloudStorageConfig) *CloudStorageConfig {
 	}
 	if out := pbCSC.OutputFormat; out != nil {
 		if _, ok := out.(*pb.CloudStorageConfig_TextConfig_); ok {
-			csc.OutputFormat = &CloudStorageOutputFormat_TextConfig{}
+			csc.OutputFormat = &CloudStorageOutputFormatTextConfig{}
 		} else if cfg, ok := out.(*pb.CloudStorageConfig_AvroConfig_); ok {
-			csc.OutputFormat = &CloudStorageOutputFormat_AvroConfig{WriteMetadata: cfg.AvroConfig.GetWriteMetadata()}
+			csc.OutputFormat = &CloudStorageOutputFormatAvroConfig{WriteMetadata: cfg.AvroConfig.GetWriteMetadata()}
 		}
 	}
 	return csc
