@@ -42,7 +42,7 @@ type Config struct {
 func Generate(ctx context.Context, conf *Config) ([]*git.ChangeInfo, error) {
 	protoGenerator := NewGenprotoGenerator(conf)
 	if err := protoGenerator.Regen(ctx); err != nil {
-		return nil, fmt.Errorf("error generating genproto (may need to check logs for more errors): %v", err)
+		return nil, fmt.Errorf("error generating genproto (may need to check logs for more errors): %w", err)
 	}
 
 	var changes []*git.ChangeInfo
