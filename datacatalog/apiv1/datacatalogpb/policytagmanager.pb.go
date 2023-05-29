@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -1078,7 +1078,7 @@ type Taxonomy_Service struct {
 
 	// The Google Cloud service name.
 	Name ManagingSystem `protobuf:"varint,1,opt,name=name,proto3,enum=google.cloud.datacatalog.v1.ManagingSystem" json:"name,omitempty"`
-	// P4SA Identity of the service.
+	// The service agent for the service.
 	Identity string `protobuf:"bytes,2,opt,name=identity,proto3" json:"identity,omitempty"`
 }
 
