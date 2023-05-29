@@ -102,7 +102,7 @@ type sessionClient struct {
 }
 
 // newSessionClient creates a session client to use for a database.
-func newSessionClient(connPool gtransport.ConnPool, database, userAgent string, sessionLabels map[string]string, databaseRole string, disableRouteToLeader bool, md metadata.MD, logger *log.Logger, callOptions *vkit.CallOptions) *sessionClient {
+func newSessionClient(connPool gtransport.ConnPool, database, userAgent string, sessionLabels map[string]string, databaseRole string, disableRouteToLeader bool, md metadata.MD, batchTimeout time.Duration, logger *log.Logger, callOptions *vkit.CallOptions) *sessionClient {
 	return &sessionClient{
 		connPool:             connPool,
 		database:             database,
@@ -112,7 +112,7 @@ func newSessionClient(connPool gtransport.ConnPool, database, userAgent string, 
 		databaseRole:         databaseRole,
 		disableRouteToLeader: disableRouteToLeader,
 		md:                   md,
-		batchTimeout:         time.Minute,
+		batchTimeout:         batchTimeout,
 		logger:               logger,
 		callOptions:          callOptions,
 	}
