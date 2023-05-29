@@ -79,7 +79,8 @@ type benchmarkOptions struct {
 
 	continueOnFail bool
 
-	numClients int
+	numClients            int
+	benchmarkPerDirectory bool
 }
 
 func (b *benchmarkOptions) validate() error {
@@ -167,6 +168,8 @@ func parseFlags() {
 
 	flag.IntVar(&opts.numClients, "clients", 1, "number of storage clients to be used; if Mixed APIs, then twice the clients are created")
 
+	flag.BoolVar(&opts.benchmarkPerDirectory, "directory", false, "benchmark per directory")
+
 	flag.Parse()
 
 	if len(projectID) < 1 {
@@ -253,15 +256,28 @@ func main() {
 	recordResultGroup, _ := errgroup.WithContext(ctx)
 	startRecordingResults(w, recordResultGroup, opts.outType)
 
+	simultaneousGoroutines := opts.numWorkers
+
+	// Directories parallelize on the object level, so only run one benchmark at a time
+	if opts.benchmarkPerDirectory {
+		simultaneousGoroutines = 1
+	}
+
 	benchGroup, ctx := errgroup.WithContext(ctx)
-	benchGroup.SetLimit(opts.numWorkers)
+	benchGroup.SetLimit(simultaneousGoroutines)
 
 	exitWithErrorCode := false
 
 	// Run benchmarks
 	for i := 0; i < opts.numSamples && time.Since(start) < opts.timeout; i++ {
 		benchGroup.Go(func() error {
-			benchmark := w1r3{opts: opts, bucketName: opts.bucket}
+			var benchmark benchmark
+			benchmark = &w1r3{opts: opts, bucketName: opts.bucket}
+
+			if opts.benchmarkPerDirectory {
+				benchmark = &directoryBenchmark{opts: opts, bucketName: opts.bucket, numWorkers: opts.numWorkers}
+			}
+
 			if err := benchmark.setup(ctx); err != nil {
 				// If setup failed once, it will probably continue failing.
 				// Returning the error here will cancel the context to stop the
@@ -305,6 +321,12 @@ func main() {
 	}
 }
 
+type benchmark interface {
+	setup(context.Context) error
+	run(context.Context) error
+	cleanup() error
+}
+
 type randomizedParams struct {
 	appBufferSize int
 	chunkSize     int64
@@ -316,6 +338,7 @@ type randomizedParams struct {
 
 type benchmarkResult struct {
 	objectSize    int64
+	directorySize int64 // if benchmark is on a directory, this will be > 0
 	readOffset    int64
 	params        randomizedParams
 	isRead        bool
@@ -409,6 +432,10 @@ func (br *benchmarkResult) cloudMonitoring() []byte {
 
 	throughput := float64(br.objectSize) / float64(br.elapsedTime.Seconds())
 
+	if br.directorySize > 0 {
+		throughput = float64(br.directorySize) / float64(br.elapsedTime.Seconds())
+	}
+
 	// Cloud monitoring only allows letters, numbers and underscores
 	sanitizeKey := func(key string) string {
 		key = strings.Replace(key, ".", "", -1)
@@ -438,6 +465,11 @@ func (br *benchmarkResult) cloudMonitoring() []byte {
 	sb.WriteString(",")
 	sb.WriteString(makeStringUnquoted("object_size", br.objectSize))
 	sb.WriteString(",")
+
+	if br.directorySize > 0 {
+		sb.WriteString(makeStringUnquoted("directory_size", br.directorySize))
+		sb.WriteString(",")
+	}
 
 	if op != "WRITE" && opts.rangeSize > 0 {
 		sb.WriteString(makeStringUnquoted("transfer_size", opts.rangeSize))

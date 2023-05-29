@@ -23,6 +23,7 @@ import (
 	"log"
 	"math/rand"
 	"os"
+	"path"
 	"runtime/debug"
 	"strings"
 
@@ -108,6 +109,44 @@ func generateRandomFile(path string, size int64) (string, error) {
 	return f.Name(), err
 }
 
+// fillDirectoryRandomly fills the directory with up to 1000 different files and
+// subdirectories. Files may be located in any of the subdirectories.
+// The number of bytes in the created files is returned.
+func fillDirectoryRandomly(dirPath string, size int64) (int64, error) {
+	currDirectoryLevel := 0
+	currPath := dirPath
+	currNumBytes := int64(0)
+
+	// directory contains a random number of objects =< 1000
+	for i := randomInt(1, 1000); i > 0; i-- {
+		// choose at random whether to create a directory or a file
+		if randomInt(0, 1) == 1 {
+			if _, err := generateRandomFile(currPath, size); err != nil {
+				return 0, err
+			}
+			currNumBytes += size
+		} else {
+			d, err := os.MkdirTemp(currPath, "")
+			if err != nil {
+				return 0, err
+			}
+			currPath = d
+			currDirectoryLevel++
+		}
+
+		// choose at random whether to step out of current subdirectory
+		if currDirectoryLevel > 0 {
+			if randomInt(0, 1) == 1 {
+				// step out
+				currPath = path.Dir(currPath)
+				currDirectoryLevel--
+			}
+		}
+	}
+
+	return currNumBytes, nil
+}
+
 var goVersion string
 var dependencyVersions = map[string]string{
 	"cloud.google.com/go/storage": "",
@@ -138,10 +177,13 @@ func errorIsDeadLineExceeded(err error) bool {
 		return true
 	}
 
-	for err = errors.Unwrap(err); err != nil; {
+	err = errors.Unwrap(err)
+	for err != nil {
 		if status.Code(err) == codes.DeadlineExceeded {
 			return true
 		}
+
+		err = errors.Unwrap(err)
 	}
 	return false
 }
