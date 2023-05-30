@@ -137,6 +137,7 @@ require (
 )
 
 require (
+	cloud.google.com/go/rapidmigrationassessment v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/recaptchaenterprise v1.3.1
 	google.golang.org/genproto/googleapis/api v0.0.0-20230530153820-e85fd2cbaebc
 )
