@@ -1,5 +1,12 @@
 # Changes
 
+## [1.20.0](https://github.com/googleapis/google-cloud-go/compare/compute/v1.19.3...compute/v1.20.0) (2023-05-30)
+
+
+### Features
+
+* **compute:** Update all direct dependencies ([b340d03](https://github.com/googleapis/google-cloud-go/commit/b340d030f2b52a4ce48846ce63984b28583abde6))
+
 ## [1.19.3](https://github.com/googleapis/google-cloud-go/compare/compute/v1.19.2...compute/v1.19.3) (2023-05-16)
 
 
