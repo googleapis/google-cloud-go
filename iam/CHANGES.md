@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.1.0](https://github.com/googleapis/google-cloud-go/compare/iam/v1.0.1...iam/v1.1.0) (2023-05-30)
+
+
+### Features
+
+* **iam:** Update all direct dependencies ([b340d03](https://github.com/googleapis/google-cloud-go/commit/b340d030f2b52a4ce48846ce63984b28583abde6))
+
 ## [1.0.1](https://github.com/googleapis/google-cloud-go/compare/iam/v1.0.0...iam/v1.0.1) (2023-05-08)
 
 
