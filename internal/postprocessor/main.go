@@ -250,7 +250,11 @@ func (p *postProcessor) generateModule(modPath, importPath string) error {
 		return err
 	}
 	log.Printf("Creating %s/go.mod", modPath)
-	return gocmd.ModInit(modPath, importPath)
+	if err := gocmd.ModInit(modPath, importPath); err != nil {
+		return err
+	}
+	log.Print("Updating workspace")
+	return gocmd.WorkUse(p.googleCloudDir)
 }
 
 func (p *postProcessor) generateVersionFile(moduleName, path string) error {
