@@ -12,7 +12,8 @@ require (
 	github.com/googleapis/cloud-bigtable-clients-test v0.0.0-20230505150253-16eeee810d3a
 	github.com/googleapis/gax-go/v2 v2.9.1
 	google.golang.org/api v0.124.0
-	google.golang.org/genproto v0.0.0-20230410155749-daa745c078e1
+	google.golang.org/genproto v0.0.0-20230530153820-e85fd2cbaebc
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20230526203410-71b5a4ffd15e
 	google.golang.org/grpc v1.55.0
 	google.golang.org/protobuf v1.30.0
 	rsc.io/binaryregexp v0.2.0
@@ -39,4 +40,5 @@ require (
 	golang.org/x/text v0.9.0 // indirect
 	golang.org/x/xerrors v0.0.0-20220907171357-04be3eba64a2 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
+	google.golang.org/genproto/googleapis/api v0.0.0-20230526203410-71b5a4ffd15e // indirect
 )
