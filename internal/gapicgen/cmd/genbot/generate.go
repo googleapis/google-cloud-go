@@ -85,7 +85,7 @@ func generate(ctx context.Context, githubClient *git.GithubClient, forceAll bool
 	}
 	genprotoPRNum, err := githubClient.CreateGenprotoPR(ctx, genprotoDir, false, changes)
 	if err != nil {
-		return fmt.Errorf("error creating PR for genproto (may need to check logs for more errors): %v", err)
+		return fmt.Errorf("error creating PR for genproto (may need to check logs for more errors): %w", err)
 	}
 	log.Printf("https://github.com/googleapis/go-genproto/pull/%d", genprotoPRNum)
 	return nil

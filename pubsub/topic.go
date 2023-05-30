@@ -407,6 +407,11 @@ func (t *Topic) updateRequest(cfg TopicConfigToUpdate) *pb.UpdateTopicRequest {
 		}
 		paths = append(paths, "message_retention_duration")
 	}
+	// Updating SchemaSettings' field masks are more complicated here
+	// since each field should be able to be independently edited, while
+	// preserving the current values for everything else. We also denote
+	// the zero value SchemaSetting to mean clearing or removing schema
+	// from the topic.
 	if cfg.SchemaSettings != nil {
 		pt.SchemaSettings = schemaSettingsToProto(cfg.SchemaSettings)
 		clearSchema := true
@@ -426,9 +431,10 @@ func (t *Topic) updateRequest(cfg TopicConfigToUpdate) *pb.UpdateTopicRequest {
 			paths = append(paths, "schema_settings.last_revision_id")
 			clearSchema = false
 		}
-		// Clear the schema if none of it's value changes.
+		// Clear the schema if all of its values are equal to the zero value.
 		if clearSchema {
 			paths = append(paths, "schema_settings")
+			pt.SchemaSettings = nil
 		}
 	}
 	return &pb.UpdateTopicRequest{
