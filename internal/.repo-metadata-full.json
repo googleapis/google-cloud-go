@@ -589,7 +589,7 @@
     "description": "Container Analysis API",
     "language": "Go",
     "client_library_type": "generated",
-    "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/containeranalysis/latest/apiv1beta1",
+    "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/latest/containeranalysis/apiv1beta1",
     "release_level": "beta",
     "library_type": "GAPIC_AUTO"
   },
@@ -1498,7 +1498,7 @@
     "description": "Rapid Migration Assessment API",
     "language": "Go",
     "client_library_type": "generated",
-    "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/latest/rapidmigrationassessment/apiv1",
+    "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/rapidmigrationassessment/latest/apiv1",
     "release_level": "beta",
     "library_type": "GAPIC_AUTO"
   },
