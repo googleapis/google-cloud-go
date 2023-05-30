@@ -2224,8 +2224,9 @@ func (ac *AdminClient) UpdateBackup(ctx context.Context, cluster, backup string,
 	return err
 }
 
-func AwaitOperation(ctx context.Context, op *longrunning.Operation, resp protoiface.MessageV1, defaultInterval time.Duration) error {
-	err := op.WaitWithInterval(ctx, resp, defaultInterval)
+// AwaitOperation waits for an operation to be completed for interval duration.
+func AwaitOperation(ctx context.Context, op *longrunning.Operation, resp protoiface.MessageV1, interval time.Duration) error {
+	err := op.WaitWithInterval(ctx, resp, interval)
 	if err != nil {
 		return fmt.Errorf("error from operation: %v", err)
 	}
