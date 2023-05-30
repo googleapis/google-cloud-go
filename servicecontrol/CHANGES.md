@@ -1,5 +1,12 @@
 # Changes
 
+## [1.12.0](https://github.com/googleapis/google-cloud-go/compare/servicecontrol/v1.11.2...servicecontrol/v1.12.0) (2023-05-30)
+
+
+### Features
+
+* **servicecontrol:** Update all direct dependencies ([b340d03](https://github.com/googleapis/google-cloud-go/commit/b340d030f2b52a4ce48846ce63984b28583abde6))
+
 ## [1.11.2](https://github.com/googleapis/google-cloud-go/compare/servicecontrol/v1.11.1...servicecontrol/v1.11.2) (2023-05-08)
 
 
