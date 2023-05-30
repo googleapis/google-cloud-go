@@ -328,7 +328,6 @@ func (ac *AdminClient) UpdateTableWithDeletionProtection(ctx context.Context, ta
 // only deletion protection can be updated at this period.
 // table ID is required.
 func (ac *AdminClient) updateTableWithConf(ctx context.Context, conf *UpdateTableConf) error {
-	op, err := ac.updateTableWithConfAsync(ctx, conf)
 	if err != nil {
 		return err
 	}
@@ -574,7 +573,7 @@ func (ac *AdminClient) SnapshotTable(ctx context.Context, table, cluster, snapsh
 	return AwaitOperation(ctx, op, &resp, ac.defaultInterval)
 }
 
-// SnapshotTable creates a new snapshot in the specified cluster from the
+// SnapshotTableAsync creates a new snapshot in the specified cluster from the
 // specified source table. Setting the TTL to `DefaultSnapshotDuration` will
 // use the server side default for the duration.
 // It returns an awaitable operation.
@@ -1061,7 +1060,7 @@ func (iac *InstanceAdminClient) updateInstance(ctx context.Context, conf *Instan
 	return true, nil
 }
 
-// updateInstance updates a single instance based on config fields that operate
+// updateInstanceAsync updates a single instance based on config fields that operate
 // at an instance level: DisplayName and InstanceType.
 // It returns an awaitable operation.
 func (iac *InstanceAdminClient) updateInstanceAsync(ctx context.Context, conf *InstanceWithClustersConfig) (op *longrunning.Operation, err error) {
@@ -1362,7 +1361,7 @@ func (iac *InstanceAdminClient) CreateCluster(ctx context.Context, conf *Cluster
 	return AwaitOperation(ctx, op, &resp, iac.defaultInterval)
 }
 
-// CreateCluster creates a new cluster in an instance.
+// CreateClusterAsync creates a new cluster in an instance.
 // It returns an awaitable operation.
 func (iac *InstanceAdminClient) CreateClusterAsync(ctx context.Context, conf *ClusterConfig) (*longrunning.Operation, error) {
 	ctx = mergeOutgoingMetadata(ctx, iac.md)
@@ -1399,7 +1398,7 @@ func (iac *InstanceAdminClient) SetAutoscaling(ctx context.Context, instanceID, 
 	return AwaitOperation(ctx, op, nil, iac.defaultInterval)
 }
 
-// SetAutoscaling enables autoscaling on a cluster. To remove autoscaling, use
+// SetAutoscalingAsync enables autoscaling on a cluster. To remove autoscaling, use
 // UpdateCluster. See AutoscalingConfig documentation for deatils.
 // It returns an awaitable operation.
 func (iac *InstanceAdminClient) SetAutoscalingAsync(ctx context.Context, instanceID, clusterID string, conf AutoscalingConfig) (*longrunning.Operation, error) {
@@ -1436,7 +1435,7 @@ func (iac *InstanceAdminClient) UpdateCluster(ctx context.Context, instanceID, c
 	return AwaitOperation(ctx, op, nil, iac.defaultInterval)
 }
 
-// UpdateCluster updates attributes of a cluster. If Autoscaling is configured
+// UpdateClusterAsync updates attributes of a cluster. If Autoscaling is configured
 // for the cluster, it will be removed and replaced by the static number of
 // serve nodes specified.
 // It returns an awaitable operation.
@@ -1751,7 +1750,7 @@ func (iac *InstanceAdminClient) UpdateAppProfile(ctx context.Context, instanceID
 	return AwaitOperation(ctx, op, nil, iac.defaultInterval)
 }
 
-// UpdateAppProfile updates an app profile within an instance.
+// UpdateAppProfileAsync updates an app profile within an instance.
 // updateAttrs should be set. If unset, all fields will be replaced.
 // it returns an awaitable operation.
 func (iac *InstanceAdminClient) UpdateAppProfileAsync(ctx context.Context, instanceID, profileID string, updateAttrs ProfileAttrsToUpdate) (*longrunning.Operation, error) {
@@ -1986,7 +1985,7 @@ func (ac *AdminClient) RestoreTableFrom(ctx context.Context, sourceInstance, tab
 	return AwaitOperation(ctx, op, &resp, ac.defaultInterval)
 }
 
-// RestoreTableFrom creates a new table in the admin's instance by restoring from the given backup and instance.
+// RestoreTableFromAsync creates a new table in the admin's instance by restoring from the given backup and instance.
 // To restore within the same instance, see RestoreTable.
 // It returns an awaitable operation.
 // sourceInstance (ex. "my-instance") and sourceCluster (ex. "my-cluster") are the instance and cluster in which the new table will be restored from.
@@ -2020,7 +2019,7 @@ func (ac *AdminClient) CreateBackup(ctx context.Context, table, cluster, backup 
 	return AwaitOperation(ctx, op, &resp, ac.defaultInterval)
 }
 
-// CreateBackup creates a new backup in the specified cluster from the
+// CreateBackupAsync creates a new backup in the specified cluster from the
 // specified source table with the user-provided expire time.
 // It returns an awaitable operation.
 func (ac *AdminClient) CreateBackupAsync(ctx context.Context, table, cluster, backup string, expireTime time.Time) (*longrunning.Operation, error) {
