@@ -328,6 +328,7 @@ func (ac *AdminClient) UpdateTableWithDeletionProtection(ctx context.Context, ta
 // only deletion protection can be updated at this period.
 // table ID is required.
 func (ac *AdminClient) updateTableWithConf(ctx context.Context, conf *UpdateTableConf) error {
+	op, err := ac.updateTableWithConfAsync(ctx, conf)
 	if err != nil {
 		return err
 	}
