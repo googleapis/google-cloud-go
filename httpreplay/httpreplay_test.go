@@ -20,7 +20,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"net/http/httptest"
@@ -186,7 +185,7 @@ func run(t *testing.T, hc *http.Client) (*storage.BucketAttrs, []byte) {
 		t.Fatal(err)
 	}
 	defer r.Close()
-	contents, err := ioutil.ReadAll(r)
+	contents, err := io.ReadAll(r)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -304,7 +303,7 @@ func testReadCRC(t *testing.T, hc *http.Client, mode string) {
 			t.Errorf("%s: %s: %v", mode, test.desc, err)
 			continue
 		}
-		data, err := ioutil.ReadAll(r)
+		data, err := io.ReadAll(r)
 		_ = r.Close()
 		if err != nil {
 			t.Errorf("%s: %s: %v", mode, test.desc, err)
@@ -318,7 +317,7 @@ func testReadCRC(t *testing.T, hc *http.Client, mode string) {
 
 func TestRemoveAndClear(t *testing.T) {
 	// Disable logging for this test, since it generates a lot.
-	log.SetOutput(ioutil.Discard)
+	log.SetOutput(io.Discard)
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		fmt.Fprintln(w, "LGTM")
 	}))
@@ -421,7 +420,7 @@ func TestRemoveAndClear(t *testing.T) {
 }
 
 func tempFilename(t *testing.T, pattern string) string {
-	f, err := ioutil.TempFile("", pattern)
+	f, err := os.CreateTemp("", pattern)
 	if err != nil {
 		t.Fatal(err)
 	}

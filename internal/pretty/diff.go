@@ -19,7 +19,6 @@ package pretty
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 	"os/exec"
 	"syscall"
@@ -67,7 +66,7 @@ func Diff(want, got interface{}) (string, bool, error) {
 }
 
 func writeToTemp(v interface{}) (string, error) {
-	f, err := ioutil.TempFile("", "prettyDiff")
+	f, err := os.CreateTemp("", "prettyDiff")
 	if err != nil {
 		return "", err
 	}
