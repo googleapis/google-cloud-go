@@ -321,11 +321,11 @@
         "storagetransfer": {
             "component": "storagetransfer"
         },
-        "talent": {
-            "component": "talent"
-        },
         "support": {
             "component": "support"
+        },
+        "talent": {
+            "component": "talent"
         },
         "texttospeech": {
             "component": "texttospeech"

@@ -45,7 +45,7 @@ func main() {
 	}
 	logg.Printf("Root dir: %q", rootDir)
 
-	submodules, err := mods(rootDir)
+	submodulesDirs, err := modDirs(rootDir)
 	if err != nil {
 		logg.Fatal(err)
 	}
@@ -56,24 +56,24 @@ func main() {
 	}
 
 	modulesSeen := map[string]bool{}
-	updatedSubmodules := []string{}
+	updatedSubmoduleDirs := []string{}
 	for _, change := range changes {
 		if strings.HasPrefix(change, "internal") {
 			continue
 		}
-		submod, ok := owner(change, submodules)
+		submodDir, ok := owner(change, submodulesDirs)
 		if !ok {
 			logg.Printf("no module for: %s", change)
 			continue
 		}
-		if _, seen := modulesSeen[submod]; !seen {
-			logg.Printf("changes in submodule: %s", submod)
-			updatedSubmodules = append(updatedSubmodules, submod)
-			modulesSeen[submod] = true
+		if _, seen := modulesSeen[submodDir]; !seen {
+			logg.Printf("changes in submodule: %s", submodDir)
+			updatedSubmoduleDirs = append(updatedSubmoduleDirs, submodDir)
+			modulesSeen[submodDir] = true
 		}
 	}
 
-	output(updatedSubmodules)
+	output(updatedSubmoduleDirs)
 }
 
 func output(s []string) error {
@@ -92,9 +92,9 @@ func output(s []string) error {
 	return nil
 }
 
-func owner(file string, submodules []string) (string, bool) {
+func owner(file string, submoduleDirs []string) (string, bool) {
 	submod := ""
-	for _, mod := range submodules {
+	for _, mod := range submoduleDirs {
 		if strings.HasPrefix(file, mod) && len(mod) > len(submod) {
 			submod = mod
 		}
@@ -103,27 +103,28 @@ func owner(file string, submodules []string) (string, bool) {
 	return submod, submod != ""
 }
 
-func mods(dir string) (submodules []string, err error) {
-	c := exec.Command("go", "list", "-m")
+func modDirs(dir string) (submodulesDirs []string, err error) {
+	c := exec.Command("go", "list", "-m", "-f", "{{.Dir}}")
 	c.Dir = dir
 	b, err := c.Output()
 	if err != nil {
-		return submodules, err
+		return submodulesDirs, err
 	}
-	list := strings.Split(strings.TrimSpace(string(b)), "\n")
+	// Skip the root mod
+	list := strings.Split(strings.TrimSpace(string(b)), "\n")[1:]
 
-	submodules = []string{}
-	for _, mod := range list {
+	submodulesDirs = []string{}
+	for _, modPath := range list {
 		// Skip non-submodule or internal submodules.
-		if mod == "cloud.google.com/go" || strings.Contains(mod, "internal") {
+		if strings.Contains(modPath, "internal") {
 			continue
 		}
-		logg.Printf("found module: %s", mod)
-		mod = strings.TrimPrefix(mod, "cloud.google.com/go/")
-		submodules = append(submodules, mod)
+		logg.Printf("found module: %s", modPath)
+		modPath = strings.TrimPrefix(modPath, dir+"/")
+		submodulesDirs = append(submodulesDirs, modPath)
 	}
 
-	return submodules, nil
+	return submodulesDirs, nil
 }
 
 func gitFilesChanges(dir string) ([]string, error) {

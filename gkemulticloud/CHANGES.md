@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.6.0](https://github.com/googleapis/google-cloud-go/compare/gkemulticloud/v0.5.1...gkemulticloud/v0.6.0) (2023-05-30)
+
+
+### Features
+
+* **gkemulticloud:** Update all direct dependencies ([b340d03](https://github.com/googleapis/google-cloud-go/commit/b340d030f2b52a4ce48846ce63984b28583abde6))
+
 ## [0.5.1](https://github.com/googleapis/google-cloud-go/compare/gkemulticloud/v0.5.0...gkemulticloud/v0.5.1) (2023-05-08)
 
 

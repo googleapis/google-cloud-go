@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [1.2.0](https://github.com/googleapis/google-cloud-go/compare/batch/v1.1.0...batch/v1.2.0) (2023-05-30)
+
+
+### Features
+
+* **batch:** Update all direct dependencies ([b340d03](https://github.com/googleapis/google-cloud-go/commit/b340d030f2b52a4ce48846ce63984b28583abde6))
+
 ## [1.1.0](https://github.com/googleapis/google-cloud-go/compare/batch/v1.0.1...batch/v1.1.0) (2023-05-16)
 
 
