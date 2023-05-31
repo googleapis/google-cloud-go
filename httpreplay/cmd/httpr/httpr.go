@@ -23,7 +23,7 @@ package main
 import (
 	"flag"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"log"
 	"net"
 	"net/http"
@@ -101,7 +101,7 @@ func handleInitial(pr *proxy.Proxy) http.HandlerFunc {
 			}
 
 		case "POST":
-			bytes, err := ioutil.ReadAll(req.Body)
+			bytes, err := io.ReadAll(req.Body)
 			req.Body.Close()
 			if err != nil {
 				w.WriteHeader(http.StatusInternalServerError)
