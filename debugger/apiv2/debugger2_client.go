@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
+	"io/ioutil"
 	"math"
 	"net/http"
 	"net/url"
@@ -573,7 +573,7 @@ func (c *debugger2RESTClient) SetBreakpoint(ctx context.Context, req *debuggerpb
 			return err
 		}
 
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := ioutil.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
@@ -632,7 +632,7 @@ func (c *debugger2RESTClient) GetBreakpoint(ctx context.Context, req *debuggerpb
 			return err
 		}
 
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := ioutil.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
@@ -747,7 +747,7 @@ func (c *debugger2RESTClient) ListBreakpoints(ctx context.Context, req *debugger
 			return err
 		}
 
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := ioutil.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
@@ -808,7 +808,7 @@ func (c *debugger2RESTClient) ListDebuggees(ctx context.Context, req *debuggerpb
 			return err
 		}
 
-		buf, err := io.ReadAll(httpRsp.Body)
+		buf, err := ioutil.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
