@@ -1,5 +1,12 @@
 # Changes
 
+## [1.20.0](https://github.com/googleapis/google-cloud-go/compare/container/v1.19.0...container/v1.20.0) (2023-05-31)
+
+
+### Features
+
+* **container:** Add SoleTenantConfig API ([#8015](https://github.com/googleapis/google-cloud-go/issues/8015)) ([01eff11](https://github.com/googleapis/google-cloud-go/commit/01eff11eedb3edde69cc33db23e26be6a7e42f10))
+
 ## [1.19.0](https://github.com/googleapis/google-cloud-go/compare/container/v1.18.1...container/v1.19.0) (2023-05-30)
 
 
