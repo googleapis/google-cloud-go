@@ -24,10 +24,10 @@ import (
 	"crypto/x509"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"net"
 	"net/http"
 	"net/url"
+	"os"
 	"strings"
 	"sync"
 	"time"
@@ -216,7 +216,7 @@ func (p *Proxy) writeLog() error {
 	if err != nil {
 		return err
 	}
-	return ioutil.WriteFile(p.filename, bytes, 0600) // only accessible by owner
+	return os.WriteFile(p.filename, bytes, 0600) // only accessible by owner
 }
 
 // skipLoggingByHost disables logging for traffic to a particular host.
