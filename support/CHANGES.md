@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.1](https://github.com/googleapis/google-cloud-go/compare/support/v0.2.0...support/v0.2.1) (2023-05-31)
+
+
+### Bug Fixes
+
+* **support:** Fix go.sum ([1c7edc8](https://github.com/googleapis/google-cloud-go/commit/1c7edc8f6e9e485052f04c74756987861d825def))
+
 ## [0.2.0](https://github.com/googleapis/google-cloud-go/compare/support/v0.1.0...support/v0.2.0) (2023-05-30)
 
 
