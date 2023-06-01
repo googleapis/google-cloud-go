@@ -553,6 +553,8 @@ func (cfg *SubscriptionConfig) toProto(name string) *pb.Subscription {
 		pbBigQueryConfig = cfg.BigQueryConfig.toProto()
 	}
 	var pbCloudStorageConfig *pb.CloudStorageConfig
+	// Use the bucket as sentinel value here. If it is blank,
+	// that's equivalent to clearing the config and reverting to pull.
 	if cfg.CloudStorageConfig.Bucket != "" {
 		pbCloudStorageConfig = cfg.CloudStorageConfig.toProto()
 	}
@@ -1006,7 +1008,11 @@ func (s *Subscription) updateRequest(cfg *SubscriptionConfigToUpdate) *pb.Update
 		paths = append(paths, "bigquery_config")
 	}
 	if cfg.CloudStorageConfig != nil {
-		psub.CloudStorageConfig = cfg.CloudStorageConfig.toProto()
+		if cfg.CloudStorageConfig.Bucket == "" {
+			psub.CloudStorageConfig = nil
+		} else {
+			psub.CloudStorageConfig = cfg.CloudStorageConfig.toProto()
+		}
 		paths = append(paths, "cloud_storage_config")
 	}
 	if cfg.AckDeadline != 0 {

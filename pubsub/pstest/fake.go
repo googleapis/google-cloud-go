@@ -499,14 +499,10 @@ func (s *GServer) CreateSubscription(_ context.Context, ps *pb.Subscription) (*p
 	if ps.PushConfig == nil {
 		ps.PushConfig = &pb.PushConfig{}
 	}
-	if ps.BigqueryConfig == nil {
-		ps.BigqueryConfig = &pb.BigQueryConfig{}
-	} else if ps.BigqueryConfig.Table != "" {
+	if ps.BigqueryConfig != nil && ps.BigqueryConfig.Table != "" {
 		ps.BigqueryConfig.State = pb.BigQueryConfig_ACTIVE
 	}
-	if ps.CloudStorageConfig == nil {
-		ps.CloudStorageConfig = &pb.CloudStorageConfig{}
-	} else if ps.CloudStorageConfig.Bucket != "" {
+	if ps.CloudStorageConfig != nil && ps.CloudStorageConfig.Bucket != "" {
 		ps.CloudStorageConfig.State = pb.CloudStorageConfig_ACTIVE
 	}
 	ps.TopicMessageRetentionDuration = top.proto.MessageRetentionDuration
@@ -611,13 +607,17 @@ func (s *GServer) UpdateSubscription(_ context.Context, req *pb.UpdateSubscripti
 
 		case "bigquery_config":
 			sub.proto.BigqueryConfig = req.GetSubscription().GetBigqueryConfig()
-			if sub.proto.GetBigqueryConfig().GetTable() != "" {
+			// As long as the bq config is not nil, we assume it's valid
+			// without additional checks.
+			if sub.proto.GetBigqueryConfig() != nil {
 				sub.proto.GetBigqueryConfig().State = pb.BigQueryConfig_ACTIVE
 			}
 
 		case "cloud_storage_config":
 			sub.proto.CloudStorageConfig = req.GetSubscription().GetCloudStorageConfig()
-			if sub.proto.GetCloudStorageConfig().GetBucket() != "" {
+			// As long as the storage config is not nil, we assume it's valid
+			// without additional checks.
+			if sub.proto.GetCloudStorageConfig() != nil {
 				sub.proto.CloudStorageConfig.State = pb.CloudStorageConfig_ACTIVE
 			}
 
