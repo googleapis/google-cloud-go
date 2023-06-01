@@ -1,5 +1,26 @@
 # Changes
 
+## [1.11.0](https://github.com/googleapis/google-cloud-go/compare/kms/v1.10.2...kms/v1.11.0) (2023-05-30)
+
+
+### Features
+
+* **kms:** Update all direct dependencies ([b340d03](https://github.com/googleapis/google-cloud-go/commit/b340d030f2b52a4ce48846ce63984b28583abde6))
+
+## [1.10.2](https://github.com/googleapis/google-cloud-go/compare/kms/v1.10.1...kms/v1.10.2) (2023-05-08)
+
+
+### Bug Fixes
+
+* **kms:** Update grpc to v1.55.0 ([1147ce0](https://github.com/googleapis/google-cloud-go/commit/1147ce02a990276ca4f8ab7a1ab65c14da4450ef))
+
+## [1.10.1](https://github.com/googleapis/google-cloud-go/compare/kms/v1.10.0...kms/v1.10.1) (2023-04-04)
+
+
+### Documentation
+
+* **kms:** Publish the API comment changes related to supporting different hash functions/values for ECDSA signing ([#7619](https://github.com/googleapis/google-cloud-go/issues/7619)) ([597ea0f](https://github.com/googleapis/google-cloud-go/commit/597ea0fe09bcea04e884dffe78add850edb2120d))
+
 ## [1.10.0](https://github.com/googleapis/google-cloud-go/compare/kms/v1.9.0...kms/v1.10.0) (2023-03-15)
 
 

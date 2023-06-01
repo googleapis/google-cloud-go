@@ -24,6 +24,7 @@ import (
 	"math"
 	"net/http"
 	"net/url"
+	"time"
 
 	servicecontrolpb "cloud.google.com/go/servicecontrol/apiv1/servicecontrolpb"
 	gax "github.com/googleapis/gax-go/v2"
@@ -33,6 +34,7 @@ import (
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/encoding/protojson"
 )
@@ -59,14 +61,33 @@ func defaultServiceControllerGRPCClientOptions() []option.ClientOption {
 
 func defaultServiceControllerCallOptions() *ServiceControllerCallOptions {
 	return &ServiceControllerCallOptions{
-		Check:  []gax.CallOption{},
+		Check: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 		Report: []gax.CallOption{},
 	}
 }
 
 func defaultServiceControllerRESTCallOptions() *ServiceControllerCallOptions {
 	return &ServiceControllerCallOptions{
-		Check:  []gax.CallOption{},
+		Check: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
 		Report: []gax.CallOption{},
 	}
 }
@@ -314,6 +335,11 @@ func (c *serviceControllerRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 func (c *serviceControllerGRPCClient) Check(ctx context.Context, req *servicecontrolpb.CheckRequest, opts ...gax.CallOption) (*servicecontrolpb.CheckResponse, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "service_name", url.QueryEscape(req.GetServiceName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -331,6 +357,11 @@ func (c *serviceControllerGRPCClient) Check(ctx context.Context, req *servicecon
 }
 
 func (c *serviceControllerGRPCClient) Report(ctx context.Context, req *servicecontrolpb.ReportRequest, opts ...gax.CallOption) (*servicecontrolpb.ReportResponse, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 16000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "service_name", url.QueryEscape(req.GetServiceName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)

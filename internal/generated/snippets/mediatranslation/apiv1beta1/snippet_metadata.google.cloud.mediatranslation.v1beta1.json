@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/mediatranslation/apiv1beta1",
-    "version": "0.7.0",
+    "version": "0.8.0",
     "language": "GO",
     "apis": [
       {
@@ -30,6 +30,7 @@
             "name": "opts"
           }
         ],
+        "resultType": "mediatranslationpb.SpeechTranslationService_StreamingTranslateSpeechClient",
         "client": {
           "shortName": "SpeechTranslationClient",
           "fullName": "google.cloud.mediatranslation.v1beta1.SpeechTranslationClient"

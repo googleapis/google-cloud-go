@@ -55,6 +55,7 @@ type ScheduleCallOptions struct {
 	ListSchedules      []gax.CallOption
 	PauseSchedule      []gax.CallOption
 	ResumeSchedule     []gax.CallOption
+	UpdateSchedule     []gax.CallOption
 	GetLocation        []gax.CallOption
 	ListLocations      []gax.CallOption
 	GetIamPolicy       []gax.CallOption
@@ -87,6 +88,7 @@ func defaultScheduleCallOptions() *ScheduleCallOptions {
 		ListSchedules:      []gax.CallOption{},
 		PauseSchedule:      []gax.CallOption{},
 		ResumeSchedule:     []gax.CallOption{},
+		UpdateSchedule:     []gax.CallOption{},
 		GetLocation:        []gax.CallOption{},
 		ListLocations:      []gax.CallOption{},
 		GetIamPolicy:       []gax.CallOption{},
@@ -108,6 +110,7 @@ func defaultScheduleRESTCallOptions() *ScheduleCallOptions {
 		ListSchedules:      []gax.CallOption{},
 		PauseSchedule:      []gax.CallOption{},
 		ResumeSchedule:     []gax.CallOption{},
+		UpdateSchedule:     []gax.CallOption{},
 		GetLocation:        []gax.CallOption{},
 		ListLocations:      []gax.CallOption{},
 		GetIamPolicy:       []gax.CallOption{},
@@ -133,6 +136,7 @@ type internalScheduleClient interface {
 	ListSchedules(context.Context, *aiplatformpb.ListSchedulesRequest, ...gax.CallOption) *ScheduleIterator
 	PauseSchedule(context.Context, *aiplatformpb.PauseScheduleRequest, ...gax.CallOption) error
 	ResumeSchedule(context.Context, *aiplatformpb.ResumeScheduleRequest, ...gax.CallOption) error
+	UpdateSchedule(context.Context, *aiplatformpb.UpdateScheduleRequest, ...gax.CallOption) (*aiplatformpb.Schedule, error)
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
 	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
 	GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
@@ -232,6 +236,17 @@ func (c *ScheduleClient) ResumeSchedule(ctx context.Context, req *aiplatformpb.R
 	return c.internalClient.ResumeSchedule(ctx, req, opts...)
 }
 
+// UpdateSchedule updates an active or paused Schedule.
+//
+// When the Schedule is updated, new runs will be scheduled starting from the
+// updated next execution time after the update time based on the
+// time_specification in the updated Schedule. All unstarted runs before the
+// update time will be skipped while already created runs will NOT be paused
+// or canceled.
+func (c *ScheduleClient) UpdateSchedule(ctx context.Context, req *aiplatformpb.UpdateScheduleRequest, opts ...gax.CallOption) (*aiplatformpb.Schedule, error) {
+	return c.internalClient.UpdateSchedule(ctx, req, opts...)
+}
+
 // GetLocation gets information about a location.
 func (c *ScheduleClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	return c.internalClient.GetLocation(ctx, req, opts...)
@@ -283,8 +298,7 @@ func (c *ScheduleClient) GetOperation(ctx context.Context, req *longrunningpb.Ge
 	return c.internalClient.GetOperation(ctx, req, opts...)
 }
 
-// ListOperations lists operations that match the specified filter in the request. If
-// the server doesn’t support this method, it returns UNIMPLEMENTED.
+// ListOperations is a utility method from google.longrunning.Operations.
 func (c *ScheduleClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	return c.internalClient.ListOperations(ctx, req, opts...)
 }
@@ -607,6 +621,23 @@ func (c *scheduleGRPCClient) ResumeSchedule(ctx context.Context, req *aiplatform
 		return err
 	}, opts...)
 	return err
+}
+
+func (c *scheduleGRPCClient) UpdateSchedule(ctx context.Context, req *aiplatformpb.UpdateScheduleRequest, opts ...gax.CallOption) (*aiplatformpb.Schedule, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "schedule.name", url.QueryEscape(req.GetSchedule().GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).UpdateSchedule[0:len((*c.CallOptions).UpdateSchedule):len((*c.CallOptions).UpdateSchedule)], opts...)
+	var resp *aiplatformpb.Schedule
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.scheduleClient.UpdateSchedule(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
 }
 
 func (c *scheduleGRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
@@ -1182,6 +1213,83 @@ func (c *scheduleRESTClient) ResumeSchedule(ctx context.Context, req *aiplatform
 	}, opts...)
 }
 
+// UpdateSchedule updates an active or paused Schedule.
+//
+// When the Schedule is updated, new runs will be scheduled starting from the
+// updated next execution time after the update time based on the
+// time_specification in the updated Schedule. All unstarted runs before the
+// update time will be skipped while already created runs will NOT be paused
+// or canceled.
+func (c *scheduleRESTClient) UpdateSchedule(ctx context.Context, req *aiplatformpb.UpdateScheduleRequest, opts ...gax.CallOption) (*aiplatformpb.Schedule, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetSchedule()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetSchedule().GetName())
+
+	params := url.Values{}
+	if req.GetUpdateMask() != nil {
+		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(updateMask))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "schedule.name", url.QueryEscape(req.GetSchedule().GetName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).UpdateSchedule[0:len((*c.CallOptions).UpdateSchedule):len((*c.CallOptions).UpdateSchedule)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &aiplatformpb.Schedule{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
 // GetLocation gets information about a location.
 func (c *scheduleRESTClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	baseUrl, err := url.Parse(c.endpoint)
@@ -1636,8 +1744,7 @@ func (c *scheduleRESTClient) GetOperation(ctx context.Context, req *longrunningp
 	return resp, nil
 }
 
-// ListOperations lists operations that match the specified filter in the request. If
-// the server doesn’t support this method, it returns UNIMPLEMENTED.
+// ListOperations is a utility method from google.longrunning.Operations.
 func (c *scheduleRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
 	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)

@@ -690,9 +690,8 @@ type ReceiveSettings struct {
 	// The default is false.
 	UseLegacyFlowControl bool
 
-	// NumGoroutines is the number of goroutines that each datastructure along
-	// the Receive path will spawn. Adjusting this value adjusts concurrency
-	// along the receive path.
+	// NumGoroutines sets the number of StreamingPull streams to pull messages
+	// from the subscription.
 	//
 	// NumGoroutines defaults to DefaultReceiveSettings.NumGoroutines.
 	//

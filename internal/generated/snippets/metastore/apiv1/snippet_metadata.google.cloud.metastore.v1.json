@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/metastore/apiv1",
-    "version": "1.10.0",
+    "version": "1.11.0",
     "language": "GO",
     "apis": [
       {
@@ -11,6 +11,51 @@
     ]
   },
   "snippets": [
+    {
+      "regionTag": "metastore_v1_generated_DataprocMetastore_CancelOperation_sync",
+      "title": "metastore CancelOperation Sample",
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "DataprocMetastoreClient/CancelOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CancelOperation",
+        "fullName": "google.cloud.metastore.v1.DataprocMetastoreClient.CancelOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.CancelOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "DataprocMetastoreClient",
+          "fullName": "google.cloud.metastore.v1.DataprocMetastoreClient"
+        },
+        "method": {
+          "shortName": "CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
     {
       "regionTag": "metastore_v1_generated_DataprocMetastore_CreateBackup_sync",
       "title": "metastore CreateBackup Sample",
@@ -224,10 +269,10 @@
         },
         "method": {
           "shortName": "DeleteOperation",
-          "fullName": "google.cloud.metastore.v1.DataprocMetastore.DeleteOperation",
+          "fullName": "google.longrunning.Operations.DeleteOperation",
           "service": {
-            "shortName": "DataprocMetastore",
-            "fullName": "google.cloud.metastore.v1.DataprocMetastore"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -235,7 +280,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -355,7 +400,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "metastorepb.Backup",
+        "resultType": "*metastorepb.Backup",
         "client": {
           "shortName": "DataprocMetastoreClient",
           "fullName": "google.cloud.metastore.v1.DataprocMetastoreClient"
@@ -401,17 +446,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "iampb.Policy",
+        "resultType": "*iampb.Policy",
         "client": {
           "shortName": "DataprocMetastoreClient",
           "fullName": "google.cloud.metastore.v1.DataprocMetastoreClient"
         },
         "method": {
           "shortName": "GetIamPolicy",
-          "fullName": "google.cloud.metastore.v1.DataprocMetastore.GetIamPolicy",
+          "fullName": "google.iam.v1.IAMPolicy.GetIamPolicy",
           "service": {
-            "shortName": "DataprocMetastore",
-            "fullName": "google.cloud.metastore.v1.DataprocMetastore"
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
           }
         }
       },
@@ -419,7 +464,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -447,17 +492,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "locationpb.Location",
+        "resultType": "*locationpb.Location",
         "client": {
           "shortName": "DataprocMetastoreClient",
           "fullName": "google.cloud.metastore.v1.DataprocMetastoreClient"
         },
         "method": {
           "shortName": "GetLocation",
-          "fullName": "google.cloud.metastore.v1.DataprocMetastore.GetLocation",
+          "fullName": "google.cloud.location.Locations.GetLocation",
           "service": {
-            "shortName": "DataprocMetastore",
-            "fullName": "google.cloud.metastore.v1.DataprocMetastore"
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
           }
         }
       },
@@ -465,7 +510,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -493,7 +538,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "metastorepb.MetadataImport",
+        "resultType": "*metastorepb.MetadataImport",
         "client": {
           "shortName": "DataprocMetastoreClient",
           "fullName": "google.cloud.metastore.v1.DataprocMetastoreClient"
@@ -539,17 +584,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "longrunningpb.Operation",
+        "resultType": "*longrunningpb.Operation",
         "client": {
           "shortName": "DataprocMetastoreClient",
           "fullName": "google.cloud.metastore.v1.DataprocMetastoreClient"
         },
         "method": {
           "shortName": "GetOperation",
-          "fullName": "google.cloud.metastore.v1.DataprocMetastore.GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
           "service": {
-            "shortName": "DataprocMetastore",
-            "fullName": "google.cloud.metastore.v1.DataprocMetastore"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -557,7 +602,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -585,7 +630,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "metastorepb.Service",
+        "resultType": "*metastorepb.Service",
         "client": {
           "shortName": "DataprocMetastoreClient",
           "fullName": "google.cloud.metastore.v1.DataprocMetastoreClient"
@@ -684,10 +729,10 @@
         },
         "method": {
           "shortName": "ListLocations",
-          "fullName": "google.cloud.metastore.v1.DataprocMetastore.ListLocations",
+          "fullName": "google.cloud.location.Locations.ListLocations",
           "service": {
-            "shortName": "DataprocMetastore",
-            "fullName": "google.cloud.metastore.v1.DataprocMetastore"
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
           }
         }
       },
@@ -695,7 +740,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 61,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -776,10 +821,10 @@
         },
         "method": {
           "shortName": "ListOperations",
-          "fullName": "google.cloud.metastore.v1.DataprocMetastore.ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
           "service": {
-            "shortName": "DataprocMetastore",
-            "fullName": "google.cloud.metastore.v1.DataprocMetastore"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -787,7 +832,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 61,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -887,7 +932,7 @@
     {
       "regionTag": "metastore_v1_generated_DataprocMetastore_SetIamPolicy_sync",
       "title": "metastore SetIamPolicy Sample",
-      "description": "SetIamPolicy sets the access control policy on the specified resource. Replaces\nany existing policy.\n\nCan return NOT_FOUND, INVALID_ARGUMENT, and PERMISSION_DENIED\nerrors.",
+      "description": "SetIamPolicy sets the access control policy on the specified resource. Replaces\nany existing policy.\n\nCan return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED`\nerrors.",
       "file": "DataprocMetastoreClient/SetIamPolicy/main.go",
       "language": "GO",
       "clientMethod": {
@@ -907,17 +952,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "iampb.Policy",
+        "resultType": "*iampb.Policy",
         "client": {
           "shortName": "DataprocMetastoreClient",
           "fullName": "google.cloud.metastore.v1.DataprocMetastoreClient"
         },
         "method": {
           "shortName": "SetIamPolicy",
-          "fullName": "google.cloud.metastore.v1.DataprocMetastore.SetIamPolicy",
+          "fullName": "google.iam.v1.IAMPolicy.SetIamPolicy",
           "service": {
-            "shortName": "DataprocMetastore",
-            "fullName": "google.cloud.metastore.v1.DataprocMetastore"
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
           }
         }
       },
@@ -925,7 +970,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -933,7 +978,7 @@
     {
       "regionTag": "metastore_v1_generated_DataprocMetastore_TestIamPermissions_sync",
       "title": "metastore TestIamPermissions Sample",
-      "description": "TestIamPermissions returns permissions that a caller has on the specified resource. If the\nresource does not exist, this will return an empty set of\npermissions, not a NOT_FOUND error.\n\nNote: This operation is designed to be used for building\npermission-aware UIs and command-line tools, not for authorization\nchecking. This operation may “fail open” without warning.",
+      "description": "TestIamPermissions returns permissions that a caller has on the specified resource. If the\nresource does not exist, this will return an empty set of\npermissions, not a `NOT_FOUND` error.\n\nNote: This operation is designed to be used for building\npermission-aware UIs and command-line tools, not for authorization\nchecking. This operation may \"fail open\" without warning.",
       "file": "DataprocMetastoreClient/TestIamPermissions/main.go",
       "language": "GO",
       "clientMethod": {
@@ -953,17 +998,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "iampb.TestIamPermissionsResponse",
+        "resultType": "*iampb.TestIamPermissionsResponse",
         "client": {
           "shortName": "DataprocMetastoreClient",
           "fullName": "google.cloud.metastore.v1.DataprocMetastoreClient"
         },
         "method": {
           "shortName": "TestIamPermissions",
-          "fullName": "google.cloud.metastore.v1.DataprocMetastore.TestIamPermissions",
+          "fullName": "google.iam.v1.IAMPolicy.TestIamPermissions",
           "service": {
-            "shortName": "DataprocMetastore",
-            "fullName": "google.cloud.metastore.v1.DataprocMetastore"
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
           }
         }
       },
@@ -971,7 +1016,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -1064,6 +1109,51 @@
         {
           "start": 18,
           "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "metastore_v1_generated_DataprocMetastoreFederation_CancelOperation_sync",
+      "title": "metastore CancelOperation Sample",
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "DataprocMetastoreFederationClient/CancelOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CancelOperation",
+        "fullName": "google.cloud.metastore.v1.DataprocMetastoreFederationClient.CancelOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.CancelOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "DataprocMetastoreFederationClient",
+          "fullName": "google.cloud.metastore.v1.DataprocMetastoreFederationClient"
+        },
+        "method": {
+          "shortName": "CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -1189,10 +1279,10 @@
         },
         "method": {
           "shortName": "DeleteOperation",
-          "fullName": "google.cloud.metastore.v1.DataprocMetastoreFederation.DeleteOperation",
+          "fullName": "google.longrunning.Operations.DeleteOperation",
           "service": {
-            "shortName": "DataprocMetastoreFederation",
-            "fullName": "google.cloud.metastore.v1.DataprocMetastoreFederation"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -1200,7 +1290,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -1228,7 +1318,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "metastorepb.Federation",
+        "resultType": "*metastorepb.Federation",
         "client": {
           "shortName": "DataprocMetastoreFederationClient",
           "fullName": "google.cloud.metastore.v1.DataprocMetastoreFederationClient"
@@ -1274,17 +1364,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "iampb.Policy",
+        "resultType": "*iampb.Policy",
         "client": {
           "shortName": "DataprocMetastoreFederationClient",
           "fullName": "google.cloud.metastore.v1.DataprocMetastoreFederationClient"
         },
         "method": {
           "shortName": "GetIamPolicy",
-          "fullName": "google.cloud.metastore.v1.DataprocMetastoreFederation.GetIamPolicy",
+          "fullName": "google.iam.v1.IAMPolicy.GetIamPolicy",
           "service": {
-            "shortName": "DataprocMetastoreFederation",
-            "fullName": "google.cloud.metastore.v1.DataprocMetastoreFederation"
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
           }
         }
       },
@@ -1292,7 +1382,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -1320,17 +1410,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "locationpb.Location",
+        "resultType": "*locationpb.Location",
         "client": {
           "shortName": "DataprocMetastoreFederationClient",
           "fullName": "google.cloud.metastore.v1.DataprocMetastoreFederationClient"
         },
         "method": {
           "shortName": "GetLocation",
-          "fullName": "google.cloud.metastore.v1.DataprocMetastoreFederation.GetLocation",
+          "fullName": "google.cloud.location.Locations.GetLocation",
           "service": {
-            "shortName": "DataprocMetastoreFederation",
-            "fullName": "google.cloud.metastore.v1.DataprocMetastoreFederation"
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
           }
         }
       },
@@ -1338,7 +1428,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -1366,17 +1456,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "longrunningpb.Operation",
+        "resultType": "*longrunningpb.Operation",
         "client": {
           "shortName": "DataprocMetastoreFederationClient",
           "fullName": "google.cloud.metastore.v1.DataprocMetastoreFederationClient"
         },
         "method": {
           "shortName": "GetOperation",
-          "fullName": "google.cloud.metastore.v1.DataprocMetastoreFederation.GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
           "service": {
-            "shortName": "DataprocMetastoreFederation",
-            "fullName": "google.cloud.metastore.v1.DataprocMetastoreFederation"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -1384,7 +1474,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -1465,10 +1555,10 @@
         },
         "method": {
           "shortName": "ListLocations",
-          "fullName": "google.cloud.metastore.v1.DataprocMetastoreFederation.ListLocations",
+          "fullName": "google.cloud.location.Locations.ListLocations",
           "service": {
-            "shortName": "DataprocMetastoreFederation",
-            "fullName": "google.cloud.metastore.v1.DataprocMetastoreFederation"
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
           }
         }
       },
@@ -1476,7 +1566,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 61,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -1511,10 +1601,10 @@
         },
         "method": {
           "shortName": "ListOperations",
-          "fullName": "google.cloud.metastore.v1.DataprocMetastoreFederation.ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
           "service": {
-            "shortName": "DataprocMetastoreFederation",
-            "fullName": "google.cloud.metastore.v1.DataprocMetastoreFederation"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -1522,7 +1612,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 61,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -1530,7 +1620,7 @@
     {
       "regionTag": "metastore_v1_generated_DataprocMetastoreFederation_SetIamPolicy_sync",
       "title": "metastore SetIamPolicy Sample",
-      "description": "SetIamPolicy sets the access control policy on the specified resource. Replaces\nany existing policy.\n\nCan return NOT_FOUND, INVALID_ARGUMENT, and PERMISSION_DENIED\nerrors.",
+      "description": "SetIamPolicy sets the access control policy on the specified resource. Replaces\nany existing policy.\n\nCan return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED`\nerrors.",
       "file": "DataprocMetastoreFederationClient/SetIamPolicy/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1550,17 +1640,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "iampb.Policy",
+        "resultType": "*iampb.Policy",
         "client": {
           "shortName": "DataprocMetastoreFederationClient",
           "fullName": "google.cloud.metastore.v1.DataprocMetastoreFederationClient"
         },
         "method": {
           "shortName": "SetIamPolicy",
-          "fullName": "google.cloud.metastore.v1.DataprocMetastoreFederation.SetIamPolicy",
+          "fullName": "google.iam.v1.IAMPolicy.SetIamPolicy",
           "service": {
-            "shortName": "DataprocMetastoreFederation",
-            "fullName": "google.cloud.metastore.v1.DataprocMetastoreFederation"
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
           }
         }
       },
@@ -1568,7 +1658,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -1576,7 +1666,7 @@
     {
       "regionTag": "metastore_v1_generated_DataprocMetastoreFederation_TestIamPermissions_sync",
       "title": "metastore TestIamPermissions Sample",
-      "description": "TestIamPermissions returns permissions that a caller has on the specified resource. If the\nresource does not exist, this will return an empty set of\npermissions, not a NOT_FOUND error.\n\nNote: This operation is designed to be used for building\npermission-aware UIs and command-line tools, not for authorization\nchecking. This operation may “fail open” without warning.",
+      "description": "TestIamPermissions returns permissions that a caller has on the specified resource. If the\nresource does not exist, this will return an empty set of\npermissions, not a `NOT_FOUND` error.\n\nNote: This operation is designed to be used for building\npermission-aware UIs and command-line tools, not for authorization\nchecking. This operation may \"fail open\" without warning.",
       "file": "DataprocMetastoreFederationClient/TestIamPermissions/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1596,17 +1686,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "iampb.TestIamPermissionsResponse",
+        "resultType": "*iampb.TestIamPermissionsResponse",
         "client": {
           "shortName": "DataprocMetastoreFederationClient",
           "fullName": "google.cloud.metastore.v1.DataprocMetastoreFederationClient"
         },
         "method": {
           "shortName": "TestIamPermissions",
-          "fullName": "google.cloud.metastore.v1.DataprocMetastoreFederation.TestIamPermissions",
+          "fullName": "google.iam.v1.IAMPolicy.TestIamPermissions",
           "service": {
-            "shortName": "DataprocMetastoreFederation",
-            "fullName": "google.cloud.metastore.v1.DataprocMetastoreFederation"
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
           }
         }
       },
@@ -1614,7 +1704,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]

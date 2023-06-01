@@ -111,7 +111,11 @@ func setupDynamicDescriptors(t *testing.T, schema bigquery.Schema) (protoreflect
 	if !ok {
 		t.Fatalf("adapted descriptor is not a message descriptor")
 	}
-	return messageDescriptor, protodesc.ToDescriptorProto(messageDescriptor)
+	dp, err := adapt.NormalizeDescriptor(messageDescriptor)
+	if err != nil {
+		t.Fatalf("NormalizeDescriptor: %v", err)
+	}
+	return messageDescriptor, dp
 }
 
 func TestIntegration_ClientGetWriteStream(t *testing.T) {
@@ -344,11 +348,11 @@ func testDefaultStream(ctx context.Context, t *testing.T, mwClient *Client, bqCl
 
 func testDefaultStreamDynamicJSON(ctx context.Context, t *testing.T, mwClient *Client, bqClient *bigquery.Client, dataset *bigquery.Dataset) {
 	testTable := dataset.Table(tableIDs.New())
-	if err := testTable.Create(ctx, &bigquery.TableMetadata{Schema: testdata.SimpleMessageSchema}); err != nil {
+	if err := testTable.Create(ctx, &bigquery.TableMetadata{Schema: testdata.GithubArchiveSchema}); err != nil {
 		t.Fatalf("failed to create test table %s: %v", testTable.FullyQualifiedName(), err)
 	}
 
-	md, descriptorProto := setupDynamicDescriptors(t, testdata.SimpleMessageSchema)
+	md, descriptorProto := setupDynamicDescriptors(t, testdata.GithubArchiveSchema)
 
 	ms, err := mwClient.NewManagedStream(ctx,
 		WithDestinationTable(TableParentFromParts(testTable.ProjectID, testTable.DatasetID, testTable.TableID)),
@@ -362,11 +366,11 @@ func testDefaultStreamDynamicJSON(ctx context.Context, t *testing.T, mwClient *C
 		withExactRowCount(0))
 
 	sampleJSONData := [][]byte{
-		[]byte(`{"name": "one", "value": 1}`),
-		[]byte(`{"name": "two", "value": 2}`),
-		[]byte(`{"name": "three", "value": 3}`),
-		[]byte(`{"name": "four", "value": 4}`),
-		[]byte(`{"name": "five", "value": 5}`),
+		[]byte(`{"type": "foo", "public": true, "repo": {"id": 99, "name": "repo_name_1", "url": "https://one.example.com"}}`),
+		[]byte(`{"type": "bar", "public": false, "repo": {"id": 101, "name": "repo_name_2", "url": "https://two.example.com"}}`),
+		[]byte(`{"type": "baz", "public": true, "repo": {"id": 456, "name": "repo_name_3", "url": "https://three.example.com"}}`),
+		[]byte(`{"type": "wow", "public": false, "repo": {"id": 123, "name": "repo_name_4", "url": "https://four.example.com"}}`),
+		[]byte(`{"type": "yay", "public": true, "repo": {"name": "repo_name_5", "url": "https://five.example.com"}}`),
 	}
 
 	var result *AppendResult
@@ -399,8 +403,8 @@ func testDefaultStreamDynamicJSON(ctx context.Context, t *testing.T, mwClient *C
 	}
 	validateTableConstraints(ctx, t, bqClient, testTable, "after send",
 		withExactRowCount(int64(len(sampleJSONData))),
-		withDistinctValues("name", int64(len(sampleJSONData))),
-		withDistinctValues("value", int64(len(sampleJSONData))))
+		withDistinctValues("type", int64(len(sampleJSONData))),
+		withDistinctValues("public", int64(2)))
 }
 
 func testBufferedStream(ctx context.Context, t *testing.T, mwClient *Client, bqClient *bigquery.Client, dataset *bigquery.Dataset) {
@@ -1345,7 +1349,10 @@ func testProtoNormalization(ctx context.Context, t *testing.T, mwClient *Client,
 }
 
 func TestIntegration_MultiplexWrites(t *testing.T) {
-	mwClient, bqClient := getTestClients(context.Background(), t, enableMultiplex(true, 5))
+	mwClient, bqClient := getTestClients(context.Background(), t,
+		WithMultiplexing(),
+		WithMultiplexPoolLimit(2),
+	)
 	defer mwClient.Close()
 	defer bqClient.Close()
 

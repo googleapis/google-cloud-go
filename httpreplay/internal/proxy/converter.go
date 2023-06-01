@@ -17,7 +17,6 @@ package proxy
 import (
 	"bytes"
 	"io"
-	"io/ioutil"
 	"mime"
 	"mime/multipart"
 	"net/http"
@@ -174,7 +173,7 @@ func parseRequestBody(contentType string, body []byte) (string, [][]byte, error)
 			if err != nil {
 				return "", nil, err
 			}
-			part, err := ioutil.ReadAll(p)
+			part, err := io.ReadAll(p)
 			if err != nil {
 				return "", nil, err
 			}
@@ -204,12 +203,12 @@ func (c *Converter) convertResponse(res *http.Response) (*Response, error) {
 }
 
 func snapshotBody(body *io.ReadCloser) ([]byte, error) {
-	data, err := ioutil.ReadAll(*body)
+	data, err := io.ReadAll(*body)
 	if err != nil {
 		return nil, err
 	}
 	(*body).Close()
-	*body = ioutil.NopCloser(bytes.NewReader(data))
+	*body = io.NopCloser(bytes.NewReader(data))
 	return data, nil
 }
 

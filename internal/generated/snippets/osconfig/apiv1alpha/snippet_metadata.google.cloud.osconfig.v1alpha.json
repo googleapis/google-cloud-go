@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/osconfig/apiv1alpha",
-    "version": "1.11.0",
+    "version": "1.12.0",
     "language": "GO",
     "apis": [
       {
@@ -14,7 +14,7 @@
     {
       "regionTag": "osconfig_v1alpha_generated_OsConfigZonalService_CreateOSPolicyAssignment_sync",
       "title": "osconfig CreateOSPolicyAssignment Sample",
-      "description": "CreateOSPolicyAssignment create an OS policy assignment.\n\nThis method also creates the first revision of the OS policy assignment.\n\nThis method returns a long running operation (LRO) that contains the\nrollout details. The rollout can be cancelled by cancelling the LRO.\n\nFor more information, see Method: \nprojects.locations.osPolicyAssignments.operations.cancel (at https: //cloud.google.com/compute/docs/osconfig/rest/v1alpha/projects.locations.osPolicyAssignments.operations/cancel).",
+      "description": "CreateOSPolicyAssignment create an OS policy assignment.\n\nThis method also creates the first revision of the OS policy assignment.\n\nThis method returns a long running operation (LRO) that contains the\nrollout details. The rollout can be cancelled by cancelling the LRO.\n\nFor more information, see [Method: \nprojects.locations.osPolicyAssignments.operations.cancel](https: //cloud.google.com/compute/docs/osconfig/rest/v1alpha/projects.locations.osPolicyAssignments.operations/cancel).",
       "file": "OsConfigZonalClient/CreateOSPolicyAssignment/main.go",
       "language": "GO",
       "clientMethod": {
@@ -60,7 +60,7 @@
     {
       "regionTag": "osconfig_v1alpha_generated_OsConfigZonalService_DeleteOSPolicyAssignment_sync",
       "title": "osconfig DeleteOSPolicyAssignment Sample",
-      "description": "DeleteOSPolicyAssignment delete the OS policy assignment.\n\nThis method creates a new revision of the OS policy assignment.\n\nThis method returns a long running operation (LRO) that contains the\nrollout details. The rollout can be cancelled by cancelling the LRO.\n\nIf the LRO completes and is not cancelled, all revisions associated with\nthe OS policy assignment are deleted.\n\nFor more information, see Method: \nprojects.locations.osPolicyAssignments.operations.cancel (at https: //cloud.google.com/compute/docs/osconfig/rest/v1alpha/projects.locations.osPolicyAssignments.operations/cancel).",
+      "description": "DeleteOSPolicyAssignment delete the OS policy assignment.\n\nThis method creates a new revision of the OS policy assignment.\n\nThis method returns a long running operation (LRO) that contains the\nrollout details. The rollout can be cancelled by cancelling the LRO.\n\nIf the LRO completes and is not cancelled, all revisions associated with\nthe OS policy assignment are deleted.\n\nFor more information, see [Method: \nprojects.locations.osPolicyAssignments.operations.cancel](https: //cloud.google.com/compute/docs/osconfig/rest/v1alpha/projects.locations.osPolicyAssignments.operations/cancel).",
       "file": "OsConfigZonalClient/DeleteOSPolicyAssignment/main.go",
       "language": "GO",
       "clientMethod": {
@@ -106,7 +106,7 @@
     {
       "regionTag": "osconfig_v1alpha_generated_OsConfigZonalService_GetInstanceOSPoliciesCompliance_sync",
       "title": "osconfig GetInstanceOSPoliciesCompliance Sample",
-      "description": "GetInstanceOSPoliciesCompliance get OS policies compliance data for the specified Compute Engine VM\ninstance.\n\nDeprecated: GetInstanceOSPoliciesCompliance may be removed in a future version.",
+      "description": "GetInstanceOSPoliciesCompliance get OS policies compliance data for the specified Compute Engine VM\ninstance.\n\n\nDeprecated: GetInstanceOSPoliciesCompliance may be removed in a future version.",
       "file": "OsConfigZonalClient/GetInstanceOSPoliciesCompliance/main.go",
       "language": "GO",
       "clientMethod": {
@@ -126,7 +126,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "osconfigpb.InstanceOSPoliciesCompliance",
+        "resultType": "*osconfigpb.InstanceOSPoliciesCompliance",
         "client": {
           "shortName": "OsConfigZonalClient",
           "fullName": "google.cloud.osconfig.v1alpha.OsConfigZonalClient"
@@ -152,7 +152,7 @@
     {
       "regionTag": "osconfig_v1alpha_generated_OsConfigZonalService_GetInventory_sync",
       "title": "osconfig GetInventory Sample",
-      "description": "GetInventory get inventory data for the specified VM instance. If the VM has no\nassociated inventory, the message NOT_FOUND is returned.",
+      "description": "GetInventory get inventory data for the specified VM instance. If the VM has no\nassociated inventory, the message `NOT_FOUND` is returned.",
       "file": "OsConfigZonalClient/GetInventory/main.go",
       "language": "GO",
       "clientMethod": {
@@ -172,7 +172,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "osconfigpb.Inventory",
+        "resultType": "*osconfigpb.Inventory",
         "client": {
           "shortName": "OsConfigZonalClient",
           "fullName": "google.cloud.osconfig.v1alpha.OsConfigZonalClient"
@@ -198,7 +198,7 @@
     {
       "regionTag": "osconfig_v1alpha_generated_OsConfigZonalService_GetOSPolicyAssignment_sync",
       "title": "osconfig GetOSPolicyAssignment Sample",
-      "description": "GetOSPolicyAssignment retrieve an existing OS policy assignment.\n\nThis method always returns the latest revision. In order to retrieve a\nprevious revision of the assignment, also provide the revision ID in the\nname parameter.",
+      "description": "GetOSPolicyAssignment retrieve an existing OS policy assignment.\n\nThis method always returns the latest revision. In order to retrieve a\nprevious revision of the assignment, also provide the revision ID in the\n`name` parameter.",
       "file": "OsConfigZonalClient/GetOSPolicyAssignment/main.go",
       "language": "GO",
       "clientMethod": {
@@ -218,7 +218,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "osconfigpb.OSPolicyAssignment",
+        "resultType": "*osconfigpb.OSPolicyAssignment",
         "client": {
           "shortName": "OsConfigZonalClient",
           "fullName": "google.cloud.osconfig.v1alpha.OsConfigZonalClient"
@@ -264,7 +264,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "osconfigpb.OSPolicyAssignmentReport",
+        "resultType": "*osconfigpb.OSPolicyAssignmentReport",
         "client": {
           "shortName": "OsConfigZonalClient",
           "fullName": "google.cloud.osconfig.v1alpha.OsConfigZonalClient"
@@ -310,7 +310,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "osconfigpb.VulnerabilityReport",
+        "resultType": "*osconfigpb.VulnerabilityReport",
         "client": {
           "shortName": "OsConfigZonalClient",
           "fullName": "google.cloud.osconfig.v1alpha.OsConfigZonalClient"
@@ -336,7 +336,7 @@
     {
       "regionTag": "osconfig_v1alpha_generated_OsConfigZonalService_ListInstanceOSPoliciesCompliances_sync",
       "title": "osconfig ListInstanceOSPoliciesCompliances Sample",
-      "description": "ListInstanceOSPoliciesCompliances list OS policies compliance data for all Compute Engine VM instances in the\nspecified zone.\n\nDeprecated: ListInstanceOSPoliciesCompliances may be removed in a future version.",
+      "description": "ListInstanceOSPoliciesCompliances list OS policies compliance data for all Compute Engine VM instances in the\nspecified zone.\n\n\nDeprecated: ListInstanceOSPoliciesCompliances may be removed in a future version.",
       "file": "OsConfigZonalClient/ListInstanceOSPoliciesCompliances/main.go",
       "language": "GO",
       "clientMethod": {
@@ -612,7 +612,7 @@
     {
       "regionTag": "osconfig_v1alpha_generated_OsConfigZonalService_UpdateOSPolicyAssignment_sync",
       "title": "osconfig UpdateOSPolicyAssignment Sample",
-      "description": "UpdateOSPolicyAssignment update an existing OS policy assignment.\n\nThis method creates a new revision of the OS policy assignment.\n\nThis method returns a long running operation (LRO) that contains the\nrollout details. The rollout can be cancelled by cancelling the LRO.\n\nFor more information, see Method: \nprojects.locations.osPolicyAssignments.operations.cancel (at https: //cloud.google.com/compute/docs/osconfig/rest/v1alpha/projects.locations.osPolicyAssignments.operations/cancel).",
+      "description": "UpdateOSPolicyAssignment update an existing OS policy assignment.\n\nThis method creates a new revision of the OS policy assignment.\n\nThis method returns a long running operation (LRO) that contains the\nrollout details. The rollout can be cancelled by cancelling the LRO.\n\nFor more information, see [Method: \nprojects.locations.osPolicyAssignments.operations.cancel](https: //cloud.google.com/compute/docs/osconfig/rest/v1alpha/projects.locations.osPolicyAssignments.operations/cancel).",
       "file": "OsConfigZonalClient/UpdateOSPolicyAssignment/main.go",
       "language": "GO",
       "clientMethod": {

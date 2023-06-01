@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/workflows/apiv1beta",
-    "version": "1.10.0",
+    "version": "1.11.0",
     "language": "GO",
     "apis": [
       {
@@ -14,7 +14,7 @@
     {
       "regionTag": "workflows_v1beta_generated_Workflows_CreateWorkflow_sync",
       "title": "workflows CreateWorkflow Sample",
-      "description": "CreateWorkflow creates a new workflow. If a workflow with the specified name already\nexists in the specified project and location, the long running operation\nwill return ALREADY_EXISTS error.",
+      "description": "CreateWorkflow creates a new workflow. If a workflow with the specified name already\nexists in the specified project and location, the long running operation\nwill return [ALREADY_EXISTS][google.rpc.Code.ALREADY_EXISTS] error.",
       "file": "Client/CreateWorkflow/main.go",
       "language": "GO",
       "clientMethod": {
@@ -126,7 +126,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "workflowspb.Workflow",
+        "resultType": "*workflowspb.Workflow",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.workflows.v1beta.Client"

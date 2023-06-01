@@ -19,8 +19,6 @@
 //
 // Creates and manages builds on Google Cloud Platform.
 //
-//	NOTE: This package is in beta. It is not stable, and may be subject to changes.
-//
 // # General documentation
 //
 // For information about setting deadlines, reusing contexts, and more

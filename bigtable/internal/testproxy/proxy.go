@@ -594,7 +594,7 @@ func (s *goTestProxyServer) ReadRows(ctx context.Context, req *pb.ReadRowsReques
 		Status: &statpb.Status{
 			Code: int32(codes.OK),
 		},
-		Row: []*btpb.Row{},
+		Rows: []*btpb.Row{},
 	}
 
 	if err != nil {
@@ -608,7 +608,7 @@ func (s *goTestProxyServer) ReadRows(ctx context.Context, req *pb.ReadRowsReques
 		return res, nil
 	}
 
-	res.Row = rowsPb
+	res.Rows = rowsPb
 
 	return res, nil
 }
@@ -726,7 +726,7 @@ func (s *goTestProxyServer) BulkMutateRows(ctx context.Context, req *pb.MutateRo
 		}
 	}
 
-	res.Entry = entries
+	res.Entries = entries
 	return res, nil
 }
 
@@ -838,7 +838,7 @@ func (s *goTestProxyServer) SampleRowKeys(ctx context.Context, req *pb.SampleRow
 		sk = append(sk, s)
 	}
 
-	res.Sample = sk
+	res.Samples = sk
 
 	return res, nil
 }

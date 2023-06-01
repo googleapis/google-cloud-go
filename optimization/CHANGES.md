@@ -1,6 +1,20 @@
 # Changes
 
 
+## [1.4.0](https://github.com/googleapis/google-cloud-go/compare/optimization/v1.3.2...optimization/v1.4.0) (2023-05-30)
+
+
+### Features
+
+* **optimization:** Update all direct dependencies ([b340d03](https://github.com/googleapis/google-cloud-go/commit/b340d030f2b52a4ce48846ce63984b28583abde6))
+
+## [1.3.2](https://github.com/googleapis/google-cloud-go/compare/optimization/v1.3.1...optimization/v1.3.2) (2023-05-08)
+
+
+### Bug Fixes
+
+* **optimization:** Update grpc to v1.55.0 ([1147ce0](https://github.com/googleapis/google-cloud-go/commit/1147ce02a990276ca4f8ab7a1ab65c14da4450ef))
+
 ## [1.3.1](https://github.com/googleapis/google-cloud-go/compare/optimization/v1.3.0...optimization/v1.3.1) (2023-02-14)
 
 

@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/redis/apiv1beta1",
-    "version": "1.11.0",
+    "version": "1.13.0",
     "language": "GO",
     "apis": [
       {
@@ -14,7 +14,7 @@
     {
       "regionTag": "redis_v1beta1_generated_CloudRedis_CreateInstance_sync",
       "title": "redis CreateInstance Sample",
-      "description": "CreateInstance creates a Redis instance based on the specified tier and memory size.\n\nBy default, the instance is accessible from the project’s\ndefault network (at https: //cloud.google.com/vpc/docs/vpc).\n\nThe creation is executed asynchronously and callers may check the returned\noperation to track its progress. Once the operation is completed the Redis\ninstance will be fully functional. The completed longrunning.Operation will\ncontain the new instance object in the response field.\n\nThe returned operation is automatically deleted after a few hours, so there\nis no need to call DeleteOperation.",
+      "description": "CreateInstance creates a Redis instance based on the specified tier and memory size.\n\nBy default, the instance is accessible from the project's\n[default network](https: //cloud.google.com/vpc/docs/vpc).\n\nThe creation is executed asynchronously and callers may check the returned\noperation to track its progress. Once the operation is completed the Redis\ninstance will be fully functional. The completed longrunning.Operation will\ncontain the new instance object in the response field.\n\nThe returned operation is automatically deleted after a few hours, so there\nis no need to call DeleteOperation.",
       "file": "CloudRedisClient/CreateInstance/main.go",
       "language": "GO",
       "clientMethod": {
@@ -218,7 +218,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "redispb.Instance",
+        "resultType": "*redispb.Instance",
         "client": {
           "shortName": "CloudRedisClient",
           "fullName": "google.cloud.redis.v1beta1.CloudRedisClient"
@@ -264,7 +264,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "redispb.InstanceAuthString",
+        "resultType": "*redispb.InstanceAuthString",
         "client": {
           "shortName": "CloudRedisClient",
           "fullName": "google.cloud.redis.v1beta1.CloudRedisClient"
@@ -336,7 +336,7 @@
     {
       "regionTag": "redis_v1beta1_generated_CloudRedis_ListInstances_sync",
       "title": "redis ListInstances Sample",
-      "description": "ListInstances lists all Redis instances owned by a project in either the specified\nlocation (region) or all locations.\n\nThe location should have the following format: \n\n\tprojects/{project_id}/locations/{location_id}\n\nIf location_id is specified as - (wildcard), then all regions\navailable to the project are queried, and the results are aggregated.",
+      "description": "ListInstances lists all Redis instances owned by a project in either the specified\nlocation (region) or all locations.\n\nThe location should have the following format: \n\n* `projects/{project_id}/locations/{location_id}`\n\nIf `location_id` is specified as `-` (wildcard), then all regions\navailable to the project are queried, and the results are aggregated.",
       "file": "CloudRedisClient/ListInstances/main.go",
       "language": "GO",
       "clientMethod": {

@@ -1,5 +1,33 @@
 # Changes
 
+## [1.20.0](https://github.com/googleapis/google-cloud-go/compare/compute/v1.19.3...compute/v1.20.0) (2023-05-30)
+
+
+### Features
+
+* **compute:** Update all direct dependencies ([b340d03](https://github.com/googleapis/google-cloud-go/commit/b340d030f2b52a4ce48846ce63984b28583abde6))
+
+## [1.19.3](https://github.com/googleapis/google-cloud-go/compare/compute/v1.19.2...compute/v1.19.3) (2023-05-16)
+
+
+### Bug Fixes
+
+* **compute:** Emit errors found in Operations ([31421d5](https://github.com/googleapis/google-cloud-go/commit/31421d52c3bf3b7baa235fb6cb18bb8a786398df))
+
+## [1.19.2](https://github.com/googleapis/google-cloud-go/compare/compute/v1.19.1...compute/v1.19.2) (2023-05-08)
+
+
+### Bug Fixes
+
+* **compute:** Update grpc to v1.55.0 ([1147ce0](https://github.com/googleapis/google-cloud-go/commit/1147ce02a990276ca4f8ab7a1ab65c14da4450ef))
+
+## [1.19.1](https://github.com/googleapis/google-cloud-go/compare/compute/v1.19.0...compute/v1.19.1) (2023-04-11)
+
+
+### Bug Fixes
+
+* **compute:** Add diregapic flag for compute ([#793](https://github.com/googleapis/google-cloud-go/issues/793)) ([fc90e54](https://github.com/googleapis/google-cloud-go/commit/fc90e54b25bda6b339266e3e5388174339ed6a44))
+
 ## [1.19.0](https://github.com/googleapis/google-cloud-go/compare/compute/v1.18.0...compute/v1.19.0) (2023-03-22)
 
 

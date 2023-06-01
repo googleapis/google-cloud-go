@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/notebooks/apiv1",
-    "version": "1.7.0",
+    "version": "1.9.0",
     "language": "GO",
     "apis": [
       {
@@ -40,10 +40,10 @@
         },
         "method": {
           "shortName": "CancelOperation",
-          "fullName": "google.cloud.notebooks.v1.ManagedNotebookService.CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
           "service": {
-            "shortName": "ManagedNotebookService",
-            "fullName": "google.cloud.notebooks.v1.ManagedNotebookService"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -51,7 +51,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -131,10 +131,10 @@
         },
         "method": {
           "shortName": "DeleteOperation",
-          "fullName": "google.cloud.notebooks.v1.ManagedNotebookService.DeleteOperation",
+          "fullName": "google.longrunning.Operations.DeleteOperation",
           "service": {
-            "shortName": "ManagedNotebookService",
-            "fullName": "google.cloud.notebooks.v1.ManagedNotebookService"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -142,7 +142,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -262,17 +262,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "iampb.Policy",
+        "resultType": "*iampb.Policy",
         "client": {
           "shortName": "ManagedNotebookClient",
           "fullName": "google.cloud.notebooks.v1.ManagedNotebookClient"
         },
         "method": {
           "shortName": "GetIamPolicy",
-          "fullName": "google.cloud.notebooks.v1.ManagedNotebookService.GetIamPolicy",
+          "fullName": "google.iam.v1.IAMPolicy.GetIamPolicy",
           "service": {
-            "shortName": "ManagedNotebookService",
-            "fullName": "google.cloud.notebooks.v1.ManagedNotebookService"
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
           }
         }
       },
@@ -280,7 +280,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -308,17 +308,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "locationpb.Location",
+        "resultType": "*locationpb.Location",
         "client": {
           "shortName": "ManagedNotebookClient",
           "fullName": "google.cloud.notebooks.v1.ManagedNotebookClient"
         },
         "method": {
           "shortName": "GetLocation",
-          "fullName": "google.cloud.notebooks.v1.ManagedNotebookService.GetLocation",
+          "fullName": "google.cloud.location.Locations.GetLocation",
           "service": {
-            "shortName": "ManagedNotebookService",
-            "fullName": "google.cloud.notebooks.v1.ManagedNotebookService"
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
           }
         }
       },
@@ -326,7 +326,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -354,17 +354,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "longrunningpb.Operation",
+        "resultType": "*longrunningpb.Operation",
         "client": {
           "shortName": "ManagedNotebookClient",
           "fullName": "google.cloud.notebooks.v1.ManagedNotebookClient"
         },
         "method": {
           "shortName": "GetOperation",
-          "fullName": "google.cloud.notebooks.v1.ManagedNotebookService.GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
           "service": {
-            "shortName": "ManagedNotebookService",
-            "fullName": "google.cloud.notebooks.v1.ManagedNotebookService"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -372,7 +372,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -400,7 +400,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "notebookspb.Runtime",
+        "resultType": "*notebookspb.Runtime",
         "client": {
           "shortName": "ManagedNotebookClient",
           "fullName": "google.cloud.notebooks.v1.ManagedNotebookClient"
@@ -453,10 +453,10 @@
         },
         "method": {
           "shortName": "ListLocations",
-          "fullName": "google.cloud.notebooks.v1.ManagedNotebookService.ListLocations",
+          "fullName": "google.cloud.location.Locations.ListLocations",
           "service": {
-            "shortName": "ManagedNotebookService",
-            "fullName": "google.cloud.notebooks.v1.ManagedNotebookService"
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
           }
         }
       },
@@ -464,7 +464,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 61,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -499,10 +499,10 @@
         },
         "method": {
           "shortName": "ListOperations",
-          "fullName": "google.cloud.notebooks.v1.ManagedNotebookService.ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
           "service": {
-            "shortName": "ManagedNotebookService",
-            "fullName": "google.cloud.notebooks.v1.ManagedNotebookService"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -510,7 +510,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 61,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -584,7 +584,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "notebookspb.RefreshRuntimeTokenInternalResponse",
+        "resultType": "*notebookspb.RefreshRuntimeTokenInternalResponse",
         "client": {
           "shortName": "ManagedNotebookClient",
           "fullName": "google.cloud.notebooks.v1.ManagedNotebookClient"
@@ -702,7 +702,7 @@
     {
       "regionTag": "notebooks_v1_generated_ManagedNotebookService_SetIamPolicy_sync",
       "title": "notebooks SetIamPolicy Sample",
-      "description": "SetIamPolicy sets the access control policy on the specified resource. Replaces\nany existing policy.\n\nCan return NOT_FOUND, INVALID_ARGUMENT, and PERMISSION_DENIED\nerrors.",
+      "description": "SetIamPolicy sets the access control policy on the specified resource. Replaces\nany existing policy.\n\nCan return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED`\nerrors.",
       "file": "ManagedNotebookClient/SetIamPolicy/main.go",
       "language": "GO",
       "clientMethod": {
@@ -722,17 +722,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "iampb.Policy",
+        "resultType": "*iampb.Policy",
         "client": {
           "shortName": "ManagedNotebookClient",
           "fullName": "google.cloud.notebooks.v1.ManagedNotebookClient"
         },
         "method": {
           "shortName": "SetIamPolicy",
-          "fullName": "google.cloud.notebooks.v1.ManagedNotebookService.SetIamPolicy",
+          "fullName": "google.iam.v1.IAMPolicy.SetIamPolicy",
           "service": {
-            "shortName": "ManagedNotebookService",
-            "fullName": "google.cloud.notebooks.v1.ManagedNotebookService"
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
           }
         }
       },
@@ -740,7 +740,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -748,7 +748,7 @@
     {
       "regionTag": "notebooks_v1_generated_ManagedNotebookService_StartRuntime_sync",
       "title": "notebooks StartRuntime Sample",
-      "description": "StartRuntime starts a Managed Notebook Runtime.\nPerform “Start” on GPU instances; “Resume” on CPU instances\nSee: \nhttps: //cloud.google.com/compute/docs/instances/stop-start-instance (at https: //cloud.google.com/compute/docs/instances/stop-start-instance)\nhttps: //cloud.google.com/compute/docs/instances/suspend-resume-instance (at https: //cloud.google.com/compute/docs/instances/suspend-resume-instance)",
+      "description": "StartRuntime starts a Managed Notebook Runtime.\nPerform \"Start\" on GPU instances; \"Resume\" on CPU instances\nSee: \nhttps: //cloud.google.com/compute/docs/instances/stop-start-instance\nhttps: //cloud.google.com/compute/docs/instances/suspend-resume-instance",
       "file": "ManagedNotebookClient/StartRuntime/main.go",
       "language": "GO",
       "clientMethod": {
@@ -794,7 +794,7 @@
     {
       "regionTag": "notebooks_v1_generated_ManagedNotebookService_StopRuntime_sync",
       "title": "notebooks StopRuntime Sample",
-      "description": "StopRuntime stops a Managed Notebook Runtime.\nPerform “Stop” on GPU instances; “Suspend” on CPU instances\nSee: \nhttps: //cloud.google.com/compute/docs/instances/stop-start-instance (at https: //cloud.google.com/compute/docs/instances/stop-start-instance)\nhttps: //cloud.google.com/compute/docs/instances/suspend-resume-instance (at https: //cloud.google.com/compute/docs/instances/suspend-resume-instance)",
+      "description": "StopRuntime stops a Managed Notebook Runtime.\nPerform \"Stop\" on GPU instances; \"Suspend\" on CPU instances\nSee: \nhttps: //cloud.google.com/compute/docs/instances/stop-start-instance\nhttps: //cloud.google.com/compute/docs/instances/suspend-resume-instance",
       "file": "ManagedNotebookClient/StopRuntime/main.go",
       "language": "GO",
       "clientMethod": {
@@ -886,7 +886,7 @@
     {
       "regionTag": "notebooks_v1_generated_ManagedNotebookService_TestIamPermissions_sync",
       "title": "notebooks TestIamPermissions Sample",
-      "description": "TestIamPermissions returns permissions that a caller has on the specified resource. If the\nresource does not exist, this will return an empty set of\npermissions, not a NOT_FOUND error.\n\nNote: This operation is designed to be used for building\npermission-aware UIs and command-line tools, not for authorization\nchecking. This operation may “fail open” without warning.",
+      "description": "TestIamPermissions returns permissions that a caller has on the specified resource. If the\nresource does not exist, this will return an empty set of\npermissions, not a `NOT_FOUND` error.\n\nNote: This operation is designed to be used for building\npermission-aware UIs and command-line tools, not for authorization\nchecking. This operation may \"fail open\" without warning.",
       "file": "ManagedNotebookClient/TestIamPermissions/main.go",
       "language": "GO",
       "clientMethod": {
@@ -906,17 +906,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "iampb.TestIamPermissionsResponse",
+        "resultType": "*iampb.TestIamPermissionsResponse",
         "client": {
           "shortName": "ManagedNotebookClient",
           "fullName": "google.cloud.notebooks.v1.ManagedNotebookClient"
         },
         "method": {
           "shortName": "TestIamPermissions",
-          "fullName": "google.cloud.notebooks.v1.ManagedNotebookService.TestIamPermissions",
+          "fullName": "google.iam.v1.IAMPolicy.TestIamPermissions",
           "service": {
-            "shortName": "ManagedNotebookService",
-            "fullName": "google.cloud.notebooks.v1.ManagedNotebookService"
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
           }
         }
       },
@@ -924,7 +924,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -1050,10 +1050,10 @@
         },
         "method": {
           "shortName": "CancelOperation",
-          "fullName": "google.cloud.notebooks.v1.NotebookService.CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
           "service": {
-            "shortName": "NotebookService",
-            "fullName": "google.cloud.notebooks.v1.NotebookService"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -1061,7 +1061,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -1417,10 +1417,10 @@
         },
         "method": {
           "shortName": "DeleteOperation",
-          "fullName": "google.cloud.notebooks.v1.NotebookService.DeleteOperation",
+          "fullName": "google.longrunning.Operations.DeleteOperation",
           "service": {
-            "shortName": "NotebookService",
-            "fullName": "google.cloud.notebooks.v1.NotebookService"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -1428,7 +1428,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -1548,7 +1548,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "notebookspb.Environment",
+        "resultType": "*notebookspb.Environment",
         "client": {
           "shortName": "NotebookClient",
           "fullName": "google.cloud.notebooks.v1.NotebookClient"
@@ -1594,7 +1594,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "notebookspb.Execution",
+        "resultType": "*notebookspb.Execution",
         "client": {
           "shortName": "NotebookClient",
           "fullName": "google.cloud.notebooks.v1.NotebookClient"
@@ -1640,17 +1640,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "iampb.Policy",
+        "resultType": "*iampb.Policy",
         "client": {
           "shortName": "NotebookClient",
           "fullName": "google.cloud.notebooks.v1.NotebookClient"
         },
         "method": {
           "shortName": "GetIamPolicy",
-          "fullName": "google.cloud.notebooks.v1.NotebookService.GetIamPolicy",
+          "fullName": "google.iam.v1.IAMPolicy.GetIamPolicy",
           "service": {
-            "shortName": "NotebookService",
-            "fullName": "google.cloud.notebooks.v1.NotebookService"
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
           }
         }
       },
@@ -1658,7 +1658,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -1686,7 +1686,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "notebookspb.Instance",
+        "resultType": "*notebookspb.Instance",
         "client": {
           "shortName": "NotebookClient",
           "fullName": "google.cloud.notebooks.v1.NotebookClient"
@@ -1732,7 +1732,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "notebookspb.GetInstanceHealthResponse",
+        "resultType": "*notebookspb.GetInstanceHealthResponse",
         "client": {
           "shortName": "NotebookClient",
           "fullName": "google.cloud.notebooks.v1.NotebookClient"
@@ -1778,17 +1778,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "locationpb.Location",
+        "resultType": "*locationpb.Location",
         "client": {
           "shortName": "NotebookClient",
           "fullName": "google.cloud.notebooks.v1.NotebookClient"
         },
         "method": {
           "shortName": "GetLocation",
-          "fullName": "google.cloud.notebooks.v1.NotebookService.GetLocation",
+          "fullName": "google.cloud.location.Locations.GetLocation",
           "service": {
-            "shortName": "NotebookService",
-            "fullName": "google.cloud.notebooks.v1.NotebookService"
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
           }
         }
       },
@@ -1796,7 +1796,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -1824,17 +1824,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "longrunningpb.Operation",
+        "resultType": "*longrunningpb.Operation",
         "client": {
           "shortName": "NotebookClient",
           "fullName": "google.cloud.notebooks.v1.NotebookClient"
         },
         "method": {
           "shortName": "GetOperation",
-          "fullName": "google.cloud.notebooks.v1.NotebookService.GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
           "service": {
-            "shortName": "NotebookService",
-            "fullName": "google.cloud.notebooks.v1.NotebookService"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -1842,7 +1842,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -1870,7 +1870,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "notebookspb.Schedule",
+        "resultType": "*notebookspb.Schedule",
         "client": {
           "shortName": "NotebookClient",
           "fullName": "google.cloud.notebooks.v1.NotebookClient"
@@ -1916,7 +1916,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "notebookspb.IsInstanceUpgradeableResponse",
+        "resultType": "*notebookspb.IsInstanceUpgradeableResponse",
         "client": {
           "shortName": "NotebookClient",
           "fullName": "google.cloud.notebooks.v1.NotebookClient"
@@ -2107,10 +2107,10 @@
         },
         "method": {
           "shortName": "ListLocations",
-          "fullName": "google.cloud.notebooks.v1.NotebookService.ListLocations",
+          "fullName": "google.cloud.location.Locations.ListLocations",
           "service": {
-            "shortName": "NotebookService",
-            "fullName": "google.cloud.notebooks.v1.NotebookService"
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
           }
         }
       },
@@ -2118,7 +2118,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 61,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -2153,10 +2153,10 @@
         },
         "method": {
           "shortName": "ListOperations",
-          "fullName": "google.cloud.notebooks.v1.NotebookService.ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
           "service": {
-            "shortName": "NotebookService",
-            "fullName": "google.cloud.notebooks.v1.NotebookService"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -2164,7 +2164,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 61,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -2402,7 +2402,7 @@
     {
       "regionTag": "notebooks_v1_generated_NotebookService_SetIamPolicy_sync",
       "title": "notebooks SetIamPolicy Sample",
-      "description": "SetIamPolicy sets the access control policy on the specified resource. Replaces\nany existing policy.\n\nCan return NOT_FOUND, INVALID_ARGUMENT, and PERMISSION_DENIED\nerrors.",
+      "description": "SetIamPolicy sets the access control policy on the specified resource. Replaces\nany existing policy.\n\nCan return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED`\nerrors.",
       "file": "NotebookClient/SetIamPolicy/main.go",
       "language": "GO",
       "clientMethod": {
@@ -2422,17 +2422,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "iampb.Policy",
+        "resultType": "*iampb.Policy",
         "client": {
           "shortName": "NotebookClient",
           "fullName": "google.cloud.notebooks.v1.NotebookClient"
         },
         "method": {
           "shortName": "SetIamPolicy",
-          "fullName": "google.cloud.notebooks.v1.NotebookService.SetIamPolicy",
+          "fullName": "google.iam.v1.IAMPolicy.SetIamPolicy",
           "service": {
-            "shortName": "NotebookService",
-            "fullName": "google.cloud.notebooks.v1.NotebookService"
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
           }
         }
       },
@@ -2440,7 +2440,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -2678,7 +2678,7 @@
     {
       "regionTag": "notebooks_v1_generated_NotebookService_TestIamPermissions_sync",
       "title": "notebooks TestIamPermissions Sample",
-      "description": "TestIamPermissions returns permissions that a caller has on the specified resource. If the\nresource does not exist, this will return an empty set of\npermissions, not a NOT_FOUND error.\n\nNote: This operation is designed to be used for building\npermission-aware UIs and command-line tools, not for authorization\nchecking. This operation may “fail open” without warning.",
+      "description": "TestIamPermissions returns permissions that a caller has on the specified resource. If the\nresource does not exist, this will return an empty set of\npermissions, not a `NOT_FOUND` error.\n\nNote: This operation is designed to be used for building\npermission-aware UIs and command-line tools, not for authorization\nchecking. This operation may \"fail open\" without warning.",
       "file": "NotebookClient/TestIamPermissions/main.go",
       "language": "GO",
       "clientMethod": {
@@ -2698,17 +2698,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "iampb.TestIamPermissionsResponse",
+        "resultType": "*iampb.TestIamPermissionsResponse",
         "client": {
           "shortName": "NotebookClient",
           "fullName": "google.cloud.notebooks.v1.NotebookClient"
         },
         "method": {
           "shortName": "TestIamPermissions",
-          "fullName": "google.cloud.notebooks.v1.NotebookService.TestIamPermissions",
+          "fullName": "google.iam.v1.IAMPolicy.TestIamPermissions",
           "service": {
-            "shortName": "NotebookService",
-            "fullName": "google.cloud.notebooks.v1.NotebookService"
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
           }
         }
       },
@@ -2716,7 +2716,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -2836,7 +2836,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "notebookspb.UpdateInstanceMetadataItemsResponse",
+        "resultType": "*notebookspb.UpdateInstanceMetadataItemsResponse",
         "client": {
           "shortName": "NotebookClient",
           "fullName": "google.cloud.notebooks.v1.NotebookClient"

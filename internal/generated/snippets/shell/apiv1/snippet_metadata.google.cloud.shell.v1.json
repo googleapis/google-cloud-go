@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/shell/apiv1",
-    "version": "1.6.0",
+    "version": "1.7.0",
     "language": "GO",
     "apis": [
       {
@@ -126,7 +126,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "shellpb.Environment",
+        "resultType": "*shellpb.Environment",
         "client": {
           "shortName": "CloudShellClient",
           "fullName": "google.cloud.shell.v1.CloudShellClient"

@@ -89,6 +89,31 @@ func ExampleModelClient_CreateModel() {
 	_ = resp
 }
 
+func ExampleModelClient_GetModel() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := retail.NewModelClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &retailpb.GetModelRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/retail/apiv2beta/retailpb#GetModelRequest.
+	}
+	resp, err := c.GetModel(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleModelClient_PauseModel() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.

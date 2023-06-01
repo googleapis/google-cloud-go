@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/alloydb/apiv1",
-    "version": "0.2.0",
+    "version": "1.1.0",
     "language": "GO",
     "apis": [
       {
@@ -86,10 +86,10 @@
         },
         "method": {
           "shortName": "CancelOperation",
-          "fullName": "google.cloud.alloydb.v1.AlloyDBAdmin.CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
           "service": {
-            "shortName": "AlloyDBAdmin",
-            "fullName": "google.cloud.alloydb.v1.AlloyDBAdmin"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -97,7 +97,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -407,10 +407,10 @@
         },
         "method": {
           "shortName": "DeleteOperation",
-          "fullName": "google.cloud.alloydb.v1.AlloyDBAdmin.DeleteOperation",
+          "fullName": "google.longrunning.Operations.DeleteOperation",
           "service": {
-            "shortName": "AlloyDBAdmin",
-            "fullName": "google.cloud.alloydb.v1.AlloyDBAdmin"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -418,7 +418,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -492,7 +492,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "alloydbpb.Backup",
+        "resultType": "*alloydbpb.Backup",
         "client": {
           "shortName": "AlloyDBAdminClient",
           "fullName": "google.cloud.alloydb.v1.AlloyDBAdminClient"
@@ -538,7 +538,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "alloydbpb.Cluster",
+        "resultType": "*alloydbpb.Cluster",
         "client": {
           "shortName": "AlloyDBAdminClient",
           "fullName": "google.cloud.alloydb.v1.AlloyDBAdminClient"
@@ -584,7 +584,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "alloydbpb.Instance",
+        "resultType": "*alloydbpb.Instance",
         "client": {
           "shortName": "AlloyDBAdminClient",
           "fullName": "google.cloud.alloydb.v1.AlloyDBAdminClient"
@@ -630,17 +630,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "locationpb.Location",
+        "resultType": "*locationpb.Location",
         "client": {
           "shortName": "AlloyDBAdminClient",
           "fullName": "google.cloud.alloydb.v1.AlloyDBAdminClient"
         },
         "method": {
           "shortName": "GetLocation",
-          "fullName": "google.cloud.alloydb.v1.AlloyDBAdmin.GetLocation",
+          "fullName": "google.cloud.location.Locations.GetLocation",
           "service": {
-            "shortName": "AlloyDBAdmin",
-            "fullName": "google.cloud.alloydb.v1.AlloyDBAdmin"
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
           }
         }
       },
@@ -648,7 +648,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -676,17 +676,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "longrunningpb.Operation",
+        "resultType": "*longrunningpb.Operation",
         "client": {
           "shortName": "AlloyDBAdminClient",
           "fullName": "google.cloud.alloydb.v1.AlloyDBAdminClient"
         },
         "method": {
           "shortName": "GetOperation",
-          "fullName": "google.cloud.alloydb.v1.AlloyDBAdmin.GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
           "service": {
-            "shortName": "AlloyDBAdmin",
-            "fullName": "google.cloud.alloydb.v1.AlloyDBAdmin"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -694,7 +694,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -867,10 +867,10 @@
         },
         "method": {
           "shortName": "ListLocations",
-          "fullName": "google.cloud.alloydb.v1.AlloyDBAdmin.ListLocations",
+          "fullName": "google.cloud.location.Locations.ListLocations",
           "service": {
-            "shortName": "AlloyDBAdmin",
-            "fullName": "google.cloud.alloydb.v1.AlloyDBAdmin"
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
           }
         }
       },
@@ -878,7 +878,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 61,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -913,10 +913,10 @@
         },
         "method": {
           "shortName": "ListOperations",
-          "fullName": "google.cloud.alloydb.v1.AlloyDBAdmin.ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
           "service": {
-            "shortName": "AlloyDBAdmin",
-            "fullName": "google.cloud.alloydb.v1.AlloyDBAdmin"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -924,7 +924,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 61,
+          "end": 60,
           "type": "FULL"
         }
       ]

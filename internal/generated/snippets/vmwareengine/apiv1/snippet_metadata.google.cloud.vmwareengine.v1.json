@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/vmwareengine/apiv1",
-    "version": "0.2.2",
+    "version": "0.4.0",
     "language": "GO",
     "apis": [
       {
@@ -14,7 +14,7 @@
     {
       "regionTag": "vmwareengine_v1_generated_VmwareEngine_CreateCluster_sync",
       "title": "vmwareengine CreateCluster Sample",
-      "description": "CreateCluster creates a new cluster in a given private cloud.\nCreating a new cluster provides additional nodes for\nuse in the parent private cloud and requires sufficient node\nquota (at https: //cloud.google.com/vmware-engine/quotas).",
+      "description": "CreateCluster creates a new cluster in a given private cloud.\nCreating a new cluster provides additional nodes for\nuse in the parent private cloud and requires sufficient [node\nquota](https: //cloud.google.com/vmware-engine/quotas).",
       "file": "Client/CreateCluster/main.go",
       "language": "GO",
       "clientMethod": {
@@ -152,7 +152,7 @@
     {
       "regionTag": "vmwareengine_v1_generated_VmwareEngine_CreatePrivateCloud_sync",
       "title": "vmwareengine CreatePrivateCloud Sample",
-      "description": "CreatePrivateCloud creates a new PrivateCloud resource in a given project and location.\nPrivate clouds can only be created in zones, regional private clouds are\nnot supported.\n\nCreating a private cloud also creates a management\ncluster (at https: //cloud.google.com/vmware-engine/docs/concepts-vmware-components)\nfor that private cloud.",
+      "description": "CreatePrivateCloud creates a new `PrivateCloud` resource in a given project and location.\nPrivate clouds can only be created in zones, regional private clouds are\nnot supported.\n\nCreating a private cloud also creates a [management\ncluster](https: //cloud.google.com/vmware-engine/docs/concepts-vmware-components)\nfor that private cloud.",
       "file": "Client/CreatePrivateCloud/main.go",
       "language": "GO",
       "clientMethod": {
@@ -244,7 +244,7 @@
     {
       "regionTag": "vmwareengine_v1_generated_VmwareEngine_DeleteCluster_sync",
       "title": "vmwareengine DeleteCluster Sample",
-      "description": "DeleteCluster deletes a Cluster resource. To avoid unintended data loss, migrate or\ngracefully shut down any workloads running on the cluster before deletion.\nYou cannot delete the management cluster of a private cloud using this\nmethod.",
+      "description": "DeleteCluster deletes a `Cluster` resource. To avoid unintended data loss, migrate or\ngracefully shut down any workloads running on the cluster before deletion.\nYou cannot delete the management cluster of a private cloud using this\nmethod.",
       "file": "Client/DeleteCluster/main.go",
       "language": "GO",
       "clientMethod": {
@@ -290,7 +290,7 @@
     {
       "regionTag": "vmwareengine_v1_generated_VmwareEngine_DeleteNetworkPolicy_sync",
       "title": "vmwareengine DeleteNetworkPolicy Sample",
-      "description": "DeleteNetworkPolicy deletes a NetworkPolicy resource. A network policy cannot be deleted\nwhen NetworkService.state is set to RECONCILING for either its external\nIP or internet access service.",
+      "description": "DeleteNetworkPolicy deletes a `NetworkPolicy` resource. A network policy cannot be deleted\nwhen `NetworkService.state` is set to `RECONCILING` for either its external\nIP or internet access service.",
       "file": "Client/DeleteNetworkPolicy/main.go",
       "language": "GO",
       "clientMethod": {
@@ -362,10 +362,10 @@
         },
         "method": {
           "shortName": "DeleteOperation",
-          "fullName": "google.cloud.vmwareengine.v1.VmwareEngine.DeleteOperation",
+          "fullName": "google.longrunning.Operations.DeleteOperation",
           "service": {
-            "shortName": "VmwareEngine",
-            "fullName": "google.cloud.vmwareengine.v1.VmwareEngine"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -373,7 +373,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -381,7 +381,7 @@
     {
       "regionTag": "vmwareengine_v1_generated_VmwareEngine_DeletePrivateCloud_sync",
       "title": "vmwareengine DeletePrivateCloud Sample",
-      "description": "DeletePrivateCloud schedules a PrivateCloud resource for deletion.\n\nA PrivateCloud resource scheduled for deletion has PrivateCloud.state\nset to DELETED and expireTime set to the time when deletion is final\nand can no longer be reversed. The delete operation is marked as done\nas soon as the PrivateCloud is successfully scheduled for deletion\n(this also applies when delayHours is set to zero), and the operation is\nnot kept in pending state until PrivateCloud is purged.\nPrivateCloud can be restored using UndeletePrivateCloud method before\nthe expireTime elapses. When expireTime is reached, deletion is final\nand all private cloud resources are irreversibly removed and billing stops.\nDuring the final removal process, PrivateCloud.state is set to PURGING.\nPrivateCloud can be polled using standard GET method for the whole\nperiod of deletion and purging. It will not be returned only\nwhen it is completely purged.",
+      "description": "DeletePrivateCloud schedules a `PrivateCloud` resource for deletion.\n\nA `PrivateCloud` resource scheduled for deletion has `PrivateCloud.state`\nset to `DELETED` and `expireTime` set to the time when deletion is final\nand can no longer be reversed. The delete operation is marked as done\nas soon as the `PrivateCloud` is successfully scheduled for deletion\n(this also applies when `delayHours` is set to zero), and the operation is\nnot kept in pending state until `PrivateCloud` is purged.\n`PrivateCloud` can be restored using `UndeletePrivateCloud` method before\nthe `expireTime` elapses. When `expireTime` is reached, deletion is final\nand all private cloud resources are irreversibly removed and billing stops.\nDuring the final removal process, `PrivateCloud.state` is set to `PURGING`.\n`PrivateCloud` can be polled using standard `GET` method for the whole\nperiod of deletion and purging. It will not be returned only\nwhen it is completely purged.",
       "file": "Client/DeletePrivateCloud/main.go",
       "language": "GO",
       "clientMethod": {
@@ -427,7 +427,7 @@
     {
       "regionTag": "vmwareengine_v1_generated_VmwareEngine_DeleteVmwareEngineNetwork_sync",
       "title": "vmwareengine DeleteVmwareEngineNetwork Sample",
-      "description": "DeleteVmwareEngineNetwork deletes a VmwareEngineNetwork resource. You can only delete a VMware\nEngine network after all resources that refer to it are deleted. For\nexample, a private cloud, a network peering, and a network policy can all\nrefer to the same VMware Engine network.",
+      "description": "DeleteVmwareEngineNetwork deletes a `VmwareEngineNetwork` resource. You can only delete a VMware\nEngine network after all resources that refer to it are deleted. For\nexample, a private cloud, a network peering, and a network policy can all\nrefer to the same VMware Engine network.",
       "file": "Client/DeleteVmwareEngineNetwork/main.go",
       "language": "GO",
       "clientMethod": {
@@ -473,7 +473,7 @@
     {
       "regionTag": "vmwareengine_v1_generated_VmwareEngine_GetCluster_sync",
       "title": "vmwareengine GetCluster Sample",
-      "description": "GetCluster retrieves a Cluster resource by its resource name.",
+      "description": "GetCluster retrieves a `Cluster` resource by its resource name.",
       "file": "Client/GetCluster/main.go",
       "language": "GO",
       "clientMethod": {
@@ -493,7 +493,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "vmwareenginepb.Cluster",
+        "resultType": "*vmwareenginepb.Cluster",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.vmwareengine.v1.Client"
@@ -519,7 +519,7 @@
     {
       "regionTag": "vmwareengine_v1_generated_VmwareEngine_GetHcxActivationKey_sync",
       "title": "vmwareengine GetHcxActivationKey Sample",
-      "description": "GetHcxActivationKey retrieves a HcxActivationKey resource by its resource name.",
+      "description": "GetHcxActivationKey retrieves a `HcxActivationKey` resource by its resource name.",
       "file": "Client/GetHcxActivationKey/main.go",
       "language": "GO",
       "clientMethod": {
@@ -539,7 +539,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "vmwareenginepb.HcxActivationKey",
+        "resultType": "*vmwareenginepb.HcxActivationKey",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.vmwareengine.v1.Client"
@@ -585,17 +585,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "iampb.Policy",
+        "resultType": "*iampb.Policy",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.vmwareengine.v1.Client"
         },
         "method": {
           "shortName": "GetIamPolicy",
-          "fullName": "google.cloud.vmwareengine.v1.VmwareEngine.GetIamPolicy",
+          "fullName": "google.iam.v1.IAMPolicy.GetIamPolicy",
           "service": {
-            "shortName": "VmwareEngine",
-            "fullName": "google.cloud.vmwareengine.v1.VmwareEngine"
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
           }
         }
       },
@@ -603,7 +603,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -631,17 +631,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "locationpb.Location",
+        "resultType": "*locationpb.Location",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.vmwareengine.v1.Client"
         },
         "method": {
           "shortName": "GetLocation",
-          "fullName": "google.cloud.vmwareengine.v1.VmwareEngine.GetLocation",
+          "fullName": "google.cloud.location.Locations.GetLocation",
           "service": {
-            "shortName": "VmwareEngine",
-            "fullName": "google.cloud.vmwareengine.v1.VmwareEngine"
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
           }
         }
       },
@@ -649,7 +649,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -657,7 +657,7 @@
     {
       "regionTag": "vmwareengine_v1_generated_VmwareEngine_GetNetworkPolicy_sync",
       "title": "vmwareengine GetNetworkPolicy Sample",
-      "description": "GetNetworkPolicy retrieves a NetworkPolicy resource by its resource name.",
+      "description": "GetNetworkPolicy retrieves a `NetworkPolicy` resource by its resource name.",
       "file": "Client/GetNetworkPolicy/main.go",
       "language": "GO",
       "clientMethod": {
@@ -677,7 +677,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "vmwareenginepb.NetworkPolicy",
+        "resultType": "*vmwareenginepb.NetworkPolicy",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.vmwareengine.v1.Client"
@@ -703,7 +703,7 @@
     {
       "regionTag": "vmwareengine_v1_generated_VmwareEngine_GetNodeType_sync",
       "title": "vmwareengine GetNodeType Sample",
-      "description": "GetNodeType gets details of a single NodeType.",
+      "description": "GetNodeType gets details of a single `NodeType`.",
       "file": "Client/GetNodeType/main.go",
       "language": "GO",
       "clientMethod": {
@@ -723,7 +723,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "vmwareenginepb.NodeType",
+        "resultType": "*vmwareenginepb.NodeType",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.vmwareengine.v1.Client"
@@ -769,17 +769,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "longrunningpb.Operation",
+        "resultType": "*longrunningpb.Operation",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.vmwareengine.v1.Client"
         },
         "method": {
           "shortName": "GetOperation",
-          "fullName": "google.cloud.vmwareengine.v1.VmwareEngine.GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
           "service": {
-            "shortName": "VmwareEngine",
-            "fullName": "google.cloud.vmwareengine.v1.VmwareEngine"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -787,7 +787,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -795,7 +795,7 @@
     {
       "regionTag": "vmwareengine_v1_generated_VmwareEngine_GetPrivateCloud_sync",
       "title": "vmwareengine GetPrivateCloud Sample",
-      "description": "GetPrivateCloud retrieves a PrivateCloud resource by its resource name.",
+      "description": "GetPrivateCloud retrieves a `PrivateCloud` resource by its resource name.",
       "file": "Client/GetPrivateCloud/main.go",
       "language": "GO",
       "clientMethod": {
@@ -815,7 +815,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "vmwareenginepb.PrivateCloud",
+        "resultType": "*vmwareenginepb.PrivateCloud",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.vmwareengine.v1.Client"
@@ -841,7 +841,7 @@
     {
       "regionTag": "vmwareengine_v1_generated_VmwareEngine_GetVmwareEngineNetwork_sync",
       "title": "vmwareengine GetVmwareEngineNetwork Sample",
-      "description": "GetVmwareEngineNetwork retrieves a VmwareEngineNetwork resource by its resource name. The\nresource contains details of the VMware Engine network, such as its VMware\nEngine network type, peered networks in a service project, and state\n(for example, CREATING, ACTIVE, DELETING).",
+      "description": "GetVmwareEngineNetwork retrieves a `VmwareEngineNetwork` resource by its resource name. The\nresource contains details of the VMware Engine network, such as its VMware\nEngine network type, peered networks in a service project, and state\n(for example, `CREATING`, `ACTIVE`, `DELETING`).",
       "file": "Client/GetVmwareEngineNetwork/main.go",
       "language": "GO",
       "clientMethod": {
@@ -861,7 +861,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "vmwareenginepb.VmwareEngineNetwork",
+        "resultType": "*vmwareenginepb.VmwareEngineNetwork",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.vmwareengine.v1.Client"
@@ -887,7 +887,7 @@
     {
       "regionTag": "vmwareengine_v1_generated_VmwareEngine_ListClusters_sync",
       "title": "vmwareengine ListClusters Sample",
-      "description": "ListClusters lists Cluster resources in a given private cloud.",
+      "description": "ListClusters lists `Cluster` resources in a given private cloud.",
       "file": "Client/ListClusters/main.go",
       "language": "GO",
       "clientMethod": {
@@ -933,7 +933,7 @@
     {
       "regionTag": "vmwareengine_v1_generated_VmwareEngine_ListHcxActivationKeys_sync",
       "title": "vmwareengine ListHcxActivationKeys Sample",
-      "description": "ListHcxActivationKeys lists HcxActivationKey resources in a given private cloud.",
+      "description": "ListHcxActivationKeys lists `HcxActivationKey` resources in a given private cloud.",
       "file": "Client/ListHcxActivationKeys/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1006,10 +1006,10 @@
         },
         "method": {
           "shortName": "ListLocations",
-          "fullName": "google.cloud.vmwareengine.v1.VmwareEngine.ListLocations",
+          "fullName": "google.cloud.location.Locations.ListLocations",
           "service": {
-            "shortName": "VmwareEngine",
-            "fullName": "google.cloud.vmwareengine.v1.VmwareEngine"
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
           }
         }
       },
@@ -1017,7 +1017,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 61,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -1025,7 +1025,7 @@
     {
       "regionTag": "vmwareengine_v1_generated_VmwareEngine_ListNetworkPolicies_sync",
       "title": "vmwareengine ListNetworkPolicies Sample",
-      "description": "ListNetworkPolicies lists NetworkPolicy resources in a specified project and location.",
+      "description": "ListNetworkPolicies lists `NetworkPolicy` resources in a specified project and location.",
       "file": "Client/ListNetworkPolicies/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1144,10 +1144,10 @@
         },
         "method": {
           "shortName": "ListOperations",
-          "fullName": "google.cloud.vmwareengine.v1.VmwareEngine.ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
           "service": {
-            "shortName": "VmwareEngine",
-            "fullName": "google.cloud.vmwareengine.v1.VmwareEngine"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -1155,7 +1155,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 61,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -1163,7 +1163,7 @@
     {
       "regionTag": "vmwareengine_v1_generated_VmwareEngine_ListPrivateClouds_sync",
       "title": "vmwareengine ListPrivateClouds Sample",
-      "description": "ListPrivateClouds lists PrivateCloud resources in a given project and location.",
+      "description": "ListPrivateClouds lists `PrivateCloud` resources in a given project and location.",
       "file": "Client/ListPrivateClouds/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1255,7 +1255,7 @@
     {
       "regionTag": "vmwareengine_v1_generated_VmwareEngine_ListVmwareEngineNetworks_sync",
       "title": "vmwareengine ListVmwareEngineNetworks Sample",
-      "description": "ListVmwareEngineNetworks lists VmwareEngineNetwork resources in a given project and location.",
+      "description": "ListVmwareEngineNetworks lists `VmwareEngineNetwork` resources in a given project and location.",
       "file": "Client/ListVmwareEngineNetworks/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1393,7 +1393,7 @@
     {
       "regionTag": "vmwareengine_v1_generated_VmwareEngine_SetIamPolicy_sync",
       "title": "vmwareengine SetIamPolicy Sample",
-      "description": "SetIamPolicy sets the access control policy on the specified resource. Replaces\nany existing policy.\n\nCan return NOT_FOUND, INVALID_ARGUMENT, and PERMISSION_DENIED\nerrors.",
+      "description": "SetIamPolicy sets the access control policy on the specified resource. Replaces\nany existing policy.\n\nCan return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED`\nerrors.",
       "file": "Client/SetIamPolicy/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1413,17 +1413,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "iampb.Policy",
+        "resultType": "*iampb.Policy",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.vmwareengine.v1.Client"
         },
         "method": {
           "shortName": "SetIamPolicy",
-          "fullName": "google.cloud.vmwareengine.v1.VmwareEngine.SetIamPolicy",
+          "fullName": "google.iam.v1.IAMPolicy.SetIamPolicy",
           "service": {
-            "shortName": "VmwareEngine",
-            "fullName": "google.cloud.vmwareengine.v1.VmwareEngine"
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
           }
         }
       },
@@ -1431,7 +1431,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -1459,7 +1459,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "vmwareenginepb.Credentials",
+        "resultType": "*vmwareenginepb.Credentials",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.vmwareengine.v1.Client"
@@ -1505,7 +1505,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "vmwareenginepb.Credentials",
+        "resultType": "*vmwareenginepb.Credentials",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.vmwareengine.v1.Client"
@@ -1531,7 +1531,7 @@
     {
       "regionTag": "vmwareengine_v1_generated_VmwareEngine_TestIamPermissions_sync",
       "title": "vmwareengine TestIamPermissions Sample",
-      "description": "TestIamPermissions returns permissions that a caller has on the specified resource. If the\nresource does not exist, this will return an empty set of\npermissions, not a NOT_FOUND error.\n\nNote: This operation is designed to be used for building\npermission-aware UIs and command-line tools, not for authorization\nchecking. This operation may “fail open” without warning.",
+      "description": "TestIamPermissions returns permissions that a caller has on the specified resource. If the\nresource does not exist, this will return an empty set of\npermissions, not a `NOT_FOUND` error.\n\nNote: This operation is designed to be used for building\npermission-aware UIs and command-line tools, not for authorization\nchecking. This operation may \"fail open\" without warning.",
       "file": "Client/TestIamPermissions/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1551,17 +1551,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "iampb.TestIamPermissionsResponse",
+        "resultType": "*iampb.TestIamPermissionsResponse",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.vmwareengine.v1.Client"
         },
         "method": {
           "shortName": "TestIamPermissions",
-          "fullName": "google.cloud.vmwareengine.v1.VmwareEngine.TestIamPermissions",
+          "fullName": "google.iam.v1.IAMPolicy.TestIamPermissions",
           "service": {
-            "shortName": "VmwareEngine",
-            "fullName": "google.cloud.vmwareengine.v1.VmwareEngine"
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
           }
         }
       },
@@ -1569,7 +1569,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -1577,7 +1577,7 @@
     {
       "regionTag": "vmwareengine_v1_generated_VmwareEngine_UndeletePrivateCloud_sync",
       "title": "vmwareengine UndeletePrivateCloud Sample",
-      "description": "UndeletePrivateCloud restores a private cloud that was previously scheduled for deletion by\nDeletePrivateCloud. A PrivateCloud resource scheduled for deletion has\nPrivateCloud.state set to DELETED and PrivateCloud.expireTime set to\nthe time when deletion can no longer be reversed.",
+      "description": "UndeletePrivateCloud restores a private cloud that was previously scheduled for deletion by\n`DeletePrivateCloud`. A `PrivateCloud` resource scheduled for deletion has\n`PrivateCloud.state` set to `DELETED` and `PrivateCloud.expireTime` set to\nthe time when deletion can no longer be reversed.",
       "file": "Client/UndeletePrivateCloud/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1623,7 +1623,7 @@
     {
       "regionTag": "vmwareengine_v1_generated_VmwareEngine_UpdateCluster_sync",
       "title": "vmwareengine UpdateCluster Sample",
-      "description": "UpdateCluster modifies a Cluster resource. Only the following fields can be updated: \nnode_type_configs.*.node_count. Only fields specified in updateMask are\napplied.\n\nDuring operation processing, the resource is temporarily in the ACTIVE\nstate before the operation fully completes. For that period of time, you\ncan’t update the resource. Use the operation status to determine when the\nprocessing fully completes.",
+      "description": "UpdateCluster modifies a `Cluster` resource. Only the following fields can be updated: \n`node_type_configs.*.node_count`. Only fields specified in `updateMask` are\napplied.\n\nDuring operation processing, the resource is temporarily in the `ACTIVE`\nstate before the operation fully completes. For that period of time, you\ncan't update the resource. Use the operation status to determine when the\nprocessing fully completes.",
       "file": "Client/UpdateCluster/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1669,7 +1669,7 @@
     {
       "regionTag": "vmwareengine_v1_generated_VmwareEngine_UpdateNetworkPolicy_sync",
       "title": "vmwareengine UpdateNetworkPolicy Sample",
-      "description": "UpdateNetworkPolicy modifies a NetworkPolicy resource. Only the following fields can be\nupdated: internet_access, external_ip, edge_services_cidr.\nOnly fields specified in updateMask are applied. When updating a network\npolicy, the external IP network service can only be disabled if there are\nno external IP addresses present in the scope of the policy. Also, a\nNetworkService cannot be updated when NetworkService.state is set\nto RECONCILING.\n\nDuring operation processing, the resource is temporarily in the ACTIVE\nstate before the operation fully completes. For that period of time, you\ncan’t update the resource. Use the operation status to determine when the\nprocessing fully completes.",
+      "description": "UpdateNetworkPolicy modifies a `NetworkPolicy` resource. Only the following fields can be\nupdated: `internet_access`, `external_ip`, `edge_services_cidr`.\nOnly fields specified in `updateMask` are applied. When updating a network\npolicy, the external IP network service can only be disabled if there are\nno external IP addresses present in the scope of the policy. Also, a\n`NetworkService` cannot be updated when `NetworkService.state` is set\nto `RECONCILING`.\n\nDuring operation processing, the resource is temporarily in the `ACTIVE`\nstate before the operation fully completes. For that period of time, you\ncan't update the resource. Use the operation status to determine when the\nprocessing fully completes.",
       "file": "Client/UpdateNetworkPolicy/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1715,7 +1715,7 @@
     {
       "regionTag": "vmwareengine_v1_generated_VmwareEngine_UpdatePrivateCloud_sync",
       "title": "vmwareengine UpdatePrivateCloud Sample",
-      "description": "UpdatePrivateCloud modifies a PrivateCloud resource. Only the following fields can be\nupdated: description.\nOnly fields specified in updateMask are applied.\n\nDuring operation processing, the resource is temporarily in the ACTIVE\nstate before the operation fully completes. For that period of time, you\ncan’t update the resource. Use the operation status to determine when the\nprocessing fully completes.",
+      "description": "UpdatePrivateCloud modifies a `PrivateCloud` resource. Only the following fields can be\nupdated: `description`.\nOnly fields specified in `updateMask` are applied.\n\nDuring operation processing, the resource is temporarily in the `ACTIVE`\nstate before the operation fully completes. For that period of time, you\ncan't update the resource. Use the operation status to determine when the\nprocessing fully completes.",
       "file": "Client/UpdatePrivateCloud/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1761,7 +1761,7 @@
     {
       "regionTag": "vmwareengine_v1_generated_VmwareEngine_UpdateVmwareEngineNetwork_sync",
       "title": "vmwareengine UpdateVmwareEngineNetwork Sample",
-      "description": "UpdateVmwareEngineNetwork modifies a VMware Engine network resource. Only the following fields can be\nupdated: description. Only fields specified in updateMask are\napplied.",
+      "description": "UpdateVmwareEngineNetwork modifies a VMware Engine network resource. Only the following fields can be\nupdated: `description`. Only fields specified in `updateMask` are\napplied.",
       "file": "Client/UpdateVmwareEngineNetwork/main.go",
       "language": "GO",
       "clientMethod": {

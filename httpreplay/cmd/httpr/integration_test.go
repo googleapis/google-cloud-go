@@ -23,7 +23,7 @@ import (
 	"crypto/x509"
 	"errors"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net"
 	"net/http"
 	"net/url"
@@ -49,7 +49,7 @@ func TestIntegration_HTTPR(t *testing.T) {
 		t.Fatal("set GCLOUD_TESTS_GOLANG_PROJECT_ID and GCLOUD_TESTS_GOLANG_KEY")
 	}
 	// Get a unique temporary filename.
-	f, err := ioutil.TempFile("", "httpreplay")
+	f, err := os.CreateTemp("", "httpreplay")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -116,7 +116,7 @@ func runReplay(t *testing.T, filename string) string {
 	if res.StatusCode != 200 {
 		t.Fatalf("from GET: %s", res.Status)
 	}
-	bytes, err := ioutil.ReadAll(res.Body)
+	bytes, err := io.ReadAll(res.Body)
 	res.Body.Close()
 	if err != nil {
 		t.Fatal(err)
@@ -143,7 +143,15 @@ func start(modeFlag, filename string) (*exec.Cmd, *http.Transport, string, error
 	if err != nil {
 		return nil, nil, "", err
 	}
-	cmd := exec.Command("./httpr", "-port", pport, "-control-port", cport, modeFlag, filename, "-debug-headers")
+	cmd := exec.Command("./httpr",
+		"-port", pport,
+		"-control-port", cport,
+		modeFlag,
+		filename,
+		"-debug-headers",
+		"-ignore-header", "X-Goog-Api-Client",
+		"-ignore-header", "X-Goog-Gcs-Idempotency-Token",
+	)
 	if err := cmd.Start(); err != nil {
 		return nil, nil, "", err
 	}
@@ -204,6 +212,9 @@ func proxyTransport(pport, cport string) (*http.Transport, error) {
 }
 
 func getBucketInfo(ctx context.Context, hc *http.Client) (string, error) {
+	ctx, cc := context.WithTimeout(ctx, 10*time.Second)
+	defer cc()
+
 	client, err := storage.NewClient(ctx, option.WithHTTPClient(hc))
 	if err != nil {
 		return "", err
@@ -227,5 +238,5 @@ func getBody(url string) ([]byte, error) {
 		return nil, fmt.Errorf("response: %s", res.Status)
 	}
 	defer res.Body.Close()
-	return ioutil.ReadAll(res.Body)
+	return io.ReadAll(res.Body)
 }

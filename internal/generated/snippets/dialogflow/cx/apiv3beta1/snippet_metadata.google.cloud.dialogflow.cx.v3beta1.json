@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/dialogflow/cx/apiv3beta1",
-    "version": "1.27.0",
+    "version": "1.35.0",
     "language": "GO",
     "apis": [
       {
@@ -40,10 +40,10 @@
         },
         "method": {
           "shortName": "CancelOperation",
-          "fullName": "google.cloud.dialogflow.cx.v3beta1.Agents.CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
           "service": {
-            "shortName": "Agents",
-            "fullName": "google.cloud.dialogflow.cx.v3beta1.Agents"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -51,7 +51,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -59,7 +59,7 @@
     {
       "regionTag": "dialogflow_v3beta1_generated_Agents_CreateAgent_sync",
       "title": "dialogflow CreateAgent Sample",
-      "description": "CreateAgent creates an agent in the specified location.\n\nNote: You should always train a flow prior to sending it queries. See the\ntraining\ndocumentation (at https: //cloud.google.com/dialogflow/cx/docs/concept/training).",
+      "description": "CreateAgent creates an agent in the specified location.\n\nNote: You should always train a flow prior to sending it queries. See the\n[training\ndocumentation](https: //cloud.google.com/dialogflow/cx/docs/concept/training).",
       "file": "AgentsClient/CreateAgent/main.go",
       "language": "GO",
       "clientMethod": {
@@ -79,7 +79,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "cxpb.Agent",
+        "resultType": "*cxpb.Agent",
         "client": {
           "shortName": "AgentsClient",
           "fullName": "google.cloud.dialogflow.cx.v3beta1.AgentsClient"
@@ -150,7 +150,7 @@
     {
       "regionTag": "dialogflow_v3beta1_generated_Agents_ExportAgent_sync",
       "title": "dialogflow ExportAgent Sample",
-      "description": "ExportAgent exports the specified agent to a binary file.\n\nThis method is a long-running\noperation (at https: //cloud.google.com/dialogflow/cx/docs/how/long-running-operation).\nThe returned Operation type has the following method-specific fields: \n\n\tmetadata: An empty Struct\n\tmessage (at https: //developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)\n\n\tresponse: \n\tExportAgentResponse",
+      "description": "ExportAgent exports the specified agent to a binary file.\n\nThis method is a [long-running\noperation](https: //cloud.google.com/dialogflow/cx/docs/how/long-running-operation).\nThe returned `Operation` type has the following method-specific fields: \n\n- `metadata`: An empty [Struct\nmessage](https: //developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)\n- `response`: \n[ExportAgentResponse][google.cloud.dialogflow.cx.v3beta1.ExportAgentResponse]",
       "file": "AgentsClient/ExportAgent/main.go",
       "language": "GO",
       "clientMethod": {
@@ -216,7 +216,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "cxpb.Agent",
+        "resultType": "*cxpb.Agent",
         "client": {
           "shortName": "AgentsClient",
           "fullName": "google.cloud.dialogflow.cx.v3beta1.AgentsClient"
@@ -262,7 +262,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "cxpb.AgentValidationResult",
+        "resultType": "*cxpb.AgentValidationResult",
         "client": {
           "shortName": "AgentsClient",
           "fullName": "google.cloud.dialogflow.cx.v3beta1.AgentsClient"
@@ -308,17 +308,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "locationpb.Location",
+        "resultType": "*locationpb.Location",
         "client": {
           "shortName": "AgentsClient",
           "fullName": "google.cloud.dialogflow.cx.v3beta1.AgentsClient"
         },
         "method": {
           "shortName": "GetLocation",
-          "fullName": "google.cloud.dialogflow.cx.v3beta1.Agents.GetLocation",
+          "fullName": "google.cloud.location.Locations.GetLocation",
           "service": {
-            "shortName": "Agents",
-            "fullName": "google.cloud.dialogflow.cx.v3beta1.Agents"
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
           }
         }
       },
@@ -326,7 +326,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -354,17 +354,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "longrunningpb.Operation",
+        "resultType": "*longrunningpb.Operation",
         "client": {
           "shortName": "AgentsClient",
           "fullName": "google.cloud.dialogflow.cx.v3beta1.AgentsClient"
         },
         "method": {
           "shortName": "GetOperation",
-          "fullName": "google.cloud.dialogflow.cx.v3beta1.Agents.GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
           "service": {
-            "shortName": "Agents",
-            "fullName": "google.cloud.dialogflow.cx.v3beta1.Agents"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -372,7 +372,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -453,10 +453,10 @@
         },
         "method": {
           "shortName": "ListLocations",
-          "fullName": "google.cloud.dialogflow.cx.v3beta1.Agents.ListLocations",
+          "fullName": "google.cloud.location.Locations.ListLocations",
           "service": {
-            "shortName": "Agents",
-            "fullName": "google.cloud.dialogflow.cx.v3beta1.Agents"
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
           }
         }
       },
@@ -464,7 +464,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 61,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -499,10 +499,10 @@
         },
         "method": {
           "shortName": "ListOperations",
-          "fullName": "google.cloud.dialogflow.cx.v3beta1.Agents.ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
           "service": {
-            "shortName": "Agents",
-            "fullName": "google.cloud.dialogflow.cx.v3beta1.Agents"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -510,7 +510,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 61,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -518,7 +518,7 @@
     {
       "regionTag": "dialogflow_v3beta1_generated_Agents_RestoreAgent_sync",
       "title": "dialogflow RestoreAgent Sample",
-      "description": "RestoreAgent restores the specified agent from a binary file.\n\nReplaces the current agent with a new one. Note that all existing resources\nin agent (e.g. intents, entity types, flows) will be removed.\n\nThis method is a long-running\noperation (at https: //cloud.google.com/dialogflow/cx/docs/how/long-running-operation).\nThe returned Operation type has the following method-specific fields: \n\n\tmetadata: An empty Struct\n\tmessage (at https: //developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)\n\n\tresponse: An Empty\n\tmessage (at https: //developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)\n\nNote: You should always train a flow prior to sending it queries. See the\ntraining\ndocumentation (at https: //cloud.google.com/dialogflow/cx/docs/concept/training).",
+      "description": "RestoreAgent restores the specified agent from a binary file.\n\nReplaces the current agent with a new one. Note that all existing resources\nin agent (e.g. intents, entity types, flows) will be removed.\n\nThis method is a [long-running\noperation](https: //cloud.google.com/dialogflow/cx/docs/how/long-running-operation).\nThe returned `Operation` type has the following method-specific fields: \n\n- `metadata`: An empty [Struct\nmessage](https: //developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)\n- `response`: An [Empty\nmessage](https: //developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)\n\nNote: You should always train a flow prior to sending it queries. See the\n[training\ndocumentation](https: //cloud.google.com/dialogflow/cx/docs/concept/training).",
       "file": "AgentsClient/RestoreAgent/main.go",
       "language": "GO",
       "clientMethod": {
@@ -564,7 +564,7 @@
     {
       "regionTag": "dialogflow_v3beta1_generated_Agents_UpdateAgent_sync",
       "title": "dialogflow UpdateAgent Sample",
-      "description": "UpdateAgent updates the specified agent.\n\nNote: You should always train a flow prior to sending it queries. See the\ntraining\ndocumentation (at https: //cloud.google.com/dialogflow/cx/docs/concept/training).",
+      "description": "UpdateAgent updates the specified agent.\n\nNote: You should always train a flow prior to sending it queries. See the\n[training\ndocumentation](https: //cloud.google.com/dialogflow/cx/docs/concept/training).",
       "file": "AgentsClient/UpdateAgent/main.go",
       "language": "GO",
       "clientMethod": {
@@ -584,7 +584,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "cxpb.Agent",
+        "resultType": "*cxpb.Agent",
         "client": {
           "shortName": "AgentsClient",
           "fullName": "google.cloud.dialogflow.cx.v3beta1.AgentsClient"
@@ -630,7 +630,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "cxpb.AgentValidationResult",
+        "resultType": "*cxpb.AgentValidationResult",
         "client": {
           "shortName": "AgentsClient",
           "fullName": "google.cloud.dialogflow.cx.v3beta1.AgentsClient"
@@ -682,10 +682,10 @@
         },
         "method": {
           "shortName": "CancelOperation",
-          "fullName": "google.cloud.dialogflow.cx.v3beta1.Changelogs.CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
           "service": {
-            "shortName": "Changelogs",
-            "fullName": "google.cloud.dialogflow.cx.v3beta1.Changelogs"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -693,7 +693,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -721,7 +721,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "cxpb.Changelog",
+        "resultType": "*cxpb.Changelog",
         "client": {
           "shortName": "ChangelogsClient",
           "fullName": "google.cloud.dialogflow.cx.v3beta1.ChangelogsClient"
@@ -767,17 +767,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "locationpb.Location",
+        "resultType": "*locationpb.Location",
         "client": {
           "shortName": "ChangelogsClient",
           "fullName": "google.cloud.dialogflow.cx.v3beta1.ChangelogsClient"
         },
         "method": {
           "shortName": "GetLocation",
-          "fullName": "google.cloud.dialogflow.cx.v3beta1.Changelogs.GetLocation",
+          "fullName": "google.cloud.location.Locations.GetLocation",
           "service": {
-            "shortName": "Changelogs",
-            "fullName": "google.cloud.dialogflow.cx.v3beta1.Changelogs"
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
           }
         }
       },
@@ -785,7 +785,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -813,17 +813,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "longrunningpb.Operation",
+        "resultType": "*longrunningpb.Operation",
         "client": {
           "shortName": "ChangelogsClient",
           "fullName": "google.cloud.dialogflow.cx.v3beta1.ChangelogsClient"
         },
         "method": {
           "shortName": "GetOperation",
-          "fullName": "google.cloud.dialogflow.cx.v3beta1.Changelogs.GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
           "service": {
-            "shortName": "Changelogs",
-            "fullName": "google.cloud.dialogflow.cx.v3beta1.Changelogs"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -831,7 +831,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -912,10 +912,10 @@
         },
         "method": {
           "shortName": "ListLocations",
-          "fullName": "google.cloud.dialogflow.cx.v3beta1.Changelogs.ListLocations",
+          "fullName": "google.cloud.location.Locations.ListLocations",
           "service": {
-            "shortName": "Changelogs",
-            "fullName": "google.cloud.dialogflow.cx.v3beta1.Changelogs"
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
           }
         }
       },
@@ -923,7 +923,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 61,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -958,10 +958,10 @@
         },
         "method": {
           "shortName": "ListOperations",
-          "fullName": "google.cloud.dialogflow.cx.v3beta1.Changelogs.ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
           "service": {
-            "shortName": "Changelogs",
-            "fullName": "google.cloud.dialogflow.cx.v3beta1.Changelogs"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -969,7 +969,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 61,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -1003,10 +1003,10 @@
         },
         "method": {
           "shortName": "CancelOperation",
-          "fullName": "google.cloud.dialogflow.cx.v3beta1.Deployments.CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
           "service": {
-            "shortName": "Deployments",
-            "fullName": "google.cloud.dialogflow.cx.v3beta1.Deployments"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -1014,7 +1014,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -1022,7 +1022,7 @@
     {
       "regionTag": "dialogflow_v3beta1_generated_Deployments_GetDeployment_sync",
       "title": "dialogflow GetDeployment Sample",
-      "description": "GetDeployment retrieves the specified\nDeployment.",
+      "description": "GetDeployment retrieves the specified\n[Deployment][google.cloud.dialogflow.cx.v3beta1.Deployment].",
       "file": "DeploymentsClient/GetDeployment/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1042,7 +1042,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "cxpb.Deployment",
+        "resultType": "*cxpb.Deployment",
         "client": {
           "shortName": "DeploymentsClient",
           "fullName": "google.cloud.dialogflow.cx.v3beta1.DeploymentsClient"
@@ -1088,17 +1088,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "locationpb.Location",
+        "resultType": "*locationpb.Location",
         "client": {
           "shortName": "DeploymentsClient",
           "fullName": "google.cloud.dialogflow.cx.v3beta1.DeploymentsClient"
         },
         "method": {
           "shortName": "GetLocation",
-          "fullName": "google.cloud.dialogflow.cx.v3beta1.Deployments.GetLocation",
+          "fullName": "google.cloud.location.Locations.GetLocation",
           "service": {
-            "shortName": "Deployments",
-            "fullName": "google.cloud.dialogflow.cx.v3beta1.Deployments"
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
           }
         }
       },
@@ -1106,7 +1106,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -1134,17 +1134,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "longrunningpb.Operation",
+        "resultType": "*longrunningpb.Operation",
         "client": {
           "shortName": "DeploymentsClient",
           "fullName": "google.cloud.dialogflow.cx.v3beta1.DeploymentsClient"
         },
         "method": {
           "shortName": "GetOperation",
-          "fullName": "google.cloud.dialogflow.cx.v3beta1.Deployments.GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
           "service": {
-            "shortName": "Deployments",
-            "fullName": "google.cloud.dialogflow.cx.v3beta1.Deployments"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -1152,7 +1152,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -1160,7 +1160,7 @@
     {
       "regionTag": "dialogflow_v3beta1_generated_Deployments_ListDeployments_sync",
       "title": "dialogflow ListDeployments Sample",
-      "description": "ListDeployments returns the list of all deployments in the specified\nEnvironment.",
+      "description": "ListDeployments returns the list of all deployments in the specified\n[Environment][google.cloud.dialogflow.cx.v3beta1.Environment].",
       "file": "DeploymentsClient/ListDeployments/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1233,10 +1233,10 @@
         },
         "method": {
           "shortName": "ListLocations",
-          "fullName": "google.cloud.dialogflow.cx.v3beta1.Deployments.ListLocations",
+          "fullName": "google.cloud.location.Locations.ListLocations",
           "service": {
-            "shortName": "Deployments",
-            "fullName": "google.cloud.dialogflow.cx.v3beta1.Deployments"
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
           }
         }
       },
@@ -1244,7 +1244,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 61,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -1279,10 +1279,10 @@
         },
         "method": {
           "shortName": "ListOperations",
-          "fullName": "google.cloud.dialogflow.cx.v3beta1.Deployments.ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
           "service": {
-            "shortName": "Deployments",
-            "fullName": "google.cloud.dialogflow.cx.v3beta1.Deployments"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -1290,7 +1290,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 61,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -1324,10 +1324,10 @@
         },
         "method": {
           "shortName": "CancelOperation",
-          "fullName": "google.cloud.dialogflow.cx.v3beta1.EntityTypes.CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
           "service": {
-            "shortName": "EntityTypes",
-            "fullName": "google.cloud.dialogflow.cx.v3beta1.EntityTypes"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -1335,7 +1335,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -1363,7 +1363,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "cxpb.EntityType",
+        "resultType": "*cxpb.EntityType",
         "client": {
           "shortName": "EntityTypesClient",
           "fullName": "google.cloud.dialogflow.cx.v3beta1.EntityTypesClient"
@@ -1389,7 +1389,7 @@
     {
       "regionTag": "dialogflow_v3beta1_generated_EntityTypes_DeleteEntityType_sync",
       "title": "dialogflow DeleteEntityType Sample",
-      "description": "DeleteEntityType deletes the specified entity type.\n\nNote: You should always train a flow prior to sending it queries. See the\ntraining\ndocumentation (at https: //cloud.google.com/dialogflow/cx/docs/concept/training).",
+      "description": "DeleteEntityType deletes the specified entity type.\n\nNote: You should always train a flow prior to sending it queries. See the\n[training\ndocumentation](https: //cloud.google.com/dialogflow/cx/docs/concept/training).",
       "file": "EntityTypesClient/DeleteEntityType/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1454,7 +1454,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "cxpb.EntityType",
+        "resultType": "*cxpb.EntityType",
         "client": {
           "shortName": "EntityTypesClient",
           "fullName": "google.cloud.dialogflow.cx.v3beta1.EntityTypesClient"
@@ -1500,17 +1500,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "locationpb.Location",
+        "resultType": "*locationpb.Location",
         "client": {
           "shortName": "EntityTypesClient",
           "fullName": "google.cloud.dialogflow.cx.v3beta1.EntityTypesClient"
         },
         "method": {
           "shortName": "GetLocation",
-          "fullName": "google.cloud.dialogflow.cx.v3beta1.EntityTypes.GetLocation",
+          "fullName": "google.cloud.location.Locations.GetLocation",
           "service": {
-            "shortName": "EntityTypes",
-            "fullName": "google.cloud.dialogflow.cx.v3beta1.EntityTypes"
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
           }
         }
       },
@@ -1518,7 +1518,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -1546,17 +1546,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "longrunningpb.Operation",
+        "resultType": "*longrunningpb.Operation",
         "client": {
           "shortName": "EntityTypesClient",
           "fullName": "google.cloud.dialogflow.cx.v3beta1.EntityTypesClient"
         },
         "method": {
           "shortName": "GetOperation",
-          "fullName": "google.cloud.dialogflow.cx.v3beta1.EntityTypes.GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
           "service": {
-            "shortName": "EntityTypes",
-            "fullName": "google.cloud.dialogflow.cx.v3beta1.EntityTypes"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -1564,7 +1564,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -1645,10 +1645,10 @@
         },
         "method": {
           "shortName": "ListLocations",
-          "fullName": "google.cloud.dialogflow.cx.v3beta1.EntityTypes.ListLocations",
+          "fullName": "google.cloud.location.Locations.ListLocations",
           "service": {
-            "shortName": "EntityTypes",
-            "fullName": "google.cloud.dialogflow.cx.v3beta1.EntityTypes"
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
           }
         }
       },
@@ -1656,7 +1656,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 61,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -1691,10 +1691,10 @@
         },
         "method": {
           "shortName": "ListOperations",
-          "fullName": "google.cloud.dialogflow.cx.v3beta1.EntityTypes.ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
           "service": {
-            "shortName": "EntityTypes",
-            "fullName": "google.cloud.dialogflow.cx.v3beta1.EntityTypes"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -1702,7 +1702,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 61,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -1710,7 +1710,7 @@
     {
       "regionTag": "dialogflow_v3beta1_generated_EntityTypes_UpdateEntityType_sync",
       "title": "dialogflow UpdateEntityType Sample",
-      "description": "UpdateEntityType updates the specified entity type.\n\nNote: You should always train a flow prior to sending it queries. See the\ntraining\ndocumentation (at https: //cloud.google.com/dialogflow/cx/docs/concept/training).",
+      "description": "UpdateEntityType updates the specified entity type.\n\nNote: You should always train a flow prior to sending it queries. See the\n[training\ndocumentation](https: //cloud.google.com/dialogflow/cx/docs/concept/training).",
       "file": "EntityTypesClient/UpdateEntityType/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1730,7 +1730,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "cxpb.EntityType",
+        "resultType": "*cxpb.EntityType",
         "client": {
           "shortName": "EntityTypesClient",
           "fullName": "google.cloud.dialogflow.cx.v3beta1.EntityTypesClient"
@@ -1782,10 +1782,10 @@
         },
         "method": {
           "shortName": "CancelOperation",
-          "fullName": "google.cloud.dialogflow.cx.v3beta1.Environments.CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
           "service": {
-            "shortName": "Environments",
-            "fullName": "google.cloud.dialogflow.cx.v3beta1.Environments"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -1793,7 +1793,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -1801,7 +1801,7 @@
     {
       "regionTag": "dialogflow_v3beta1_generated_Environments_CreateEnvironment_sync",
       "title": "dialogflow CreateEnvironment Sample",
-      "description": "CreateEnvironment creates an Environment in\nthe specified Agent.\n\nThis method is a long-running\noperation (at https: //cloud.google.com/dialogflow/cx/docs/how/long-running-operation).\nThe returned Operation type has the following method-specific fields: \n\n\tmetadata: An empty Struct\n\tmessage (at https: //developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)\n\n\tresponse: Environment",
+      "description": "CreateEnvironment creates an [Environment][google.cloud.dialogflow.cx.v3beta1.Environment] in\nthe specified [Agent][google.cloud.dialogflow.cx.v3beta1.Agent].\n\nThis method is a [long-running\noperation](https: //cloud.google.com/dialogflow/cx/docs/how/long-running-operation).\nThe returned `Operation` type has the following method-specific fields: \n\n- `metadata`: An empty [Struct\nmessage](https: //developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)\n- `response`: [Environment][google.cloud.dialogflow.cx.v3beta1.Environment]",
       "file": "EnvironmentsClient/CreateEnvironment/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1847,7 +1847,7 @@
     {
       "regionTag": "dialogflow_v3beta1_generated_Environments_DeleteEnvironment_sync",
       "title": "dialogflow DeleteEnvironment Sample",
-      "description": "DeleteEnvironment deletes the specified\nEnvironment.",
+      "description": "DeleteEnvironment deletes the specified\n[Environment][google.cloud.dialogflow.cx.v3beta1.Environment].",
       "file": "EnvironmentsClient/DeleteEnvironment/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1892,7 +1892,7 @@
     {
       "regionTag": "dialogflow_v3beta1_generated_Environments_DeployFlow_sync",
       "title": "dialogflow DeployFlow Sample",
-      "description": "DeployFlow deploys a flow to the specified\nEnvironment.\n\nThis method is a long-running\noperation (at https: //cloud.google.com/dialogflow/cx/docs/how/long-running-operation).\nThe returned Operation type has the following method-specific fields: \n\n\tmetadata: \n\tDeployFlowMetadata\n\n\tresponse: \n\tDeployFlowResponse",
+      "description": "DeployFlow deploys a flow to the specified\n[Environment][google.cloud.dialogflow.cx.v3beta1.Environment].\n\nThis method is a [long-running\noperation](https: //cloud.google.com/dialogflow/cx/docs/how/long-running-operation).\nThe returned `Operation` type has the following method-specific fields: \n\n- `metadata`: \n[DeployFlowMetadata][google.cloud.dialogflow.cx.v3beta1.DeployFlowMetadata]\n- `response`: \n[DeployFlowResponse][google.cloud.dialogflow.cx.v3beta1.DeployFlowResponse]",
       "file": "EnvironmentsClient/DeployFlow/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1938,7 +1938,7 @@
     {
       "regionTag": "dialogflow_v3beta1_generated_Environments_GetEnvironment_sync",
       "title": "dialogflow GetEnvironment Sample",
-      "description": "GetEnvironment retrieves the specified\nEnvironment.",
+      "description": "GetEnvironment retrieves the specified\n[Environment][google.cloud.dialogflow.cx.v3beta1.Environment].",
       "file": "EnvironmentsClient/GetEnvironment/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1958,7 +1958,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "cxpb.Environment",
+        "resultType": "*cxpb.Environment",
         "client": {
           "shortName": "EnvironmentsClient",
           "fullName": "google.cloud.dialogflow.cx.v3beta1.EnvironmentsClient"
@@ -2004,17 +2004,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "locationpb.Location",
+        "resultType": "*locationpb.Location",
         "client": {
           "shortName": "EnvironmentsClient",
           "fullName": "google.cloud.dialogflow.cx.v3beta1.EnvironmentsClient"
         },
         "method": {
           "shortName": "GetLocation",
-          "fullName": "google.cloud.dialogflow.cx.v3beta1.Environments.GetLocation",
+          "fullName": "google.cloud.location.Locations.GetLocation",
           "service": {
-            "shortName": "Environments",
-            "fullName": "google.cloud.dialogflow.cx.v3beta1.Environments"
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
           }
         }
       },
@@ -2022,7 +2022,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -2050,17 +2050,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "longrunningpb.Operation",
+        "resultType": "*longrunningpb.Operation",
         "client": {
           "shortName": "EnvironmentsClient",
           "fullName": "google.cloud.dialogflow.cx.v3beta1.EnvironmentsClient"
         },
         "method": {
           "shortName": "GetOperation",
-          "fullName": "google.cloud.dialogflow.cx.v3beta1.Environments.GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
           "service": {
-            "shortName": "Environments",
-            "fullName": "google.cloud.dialogflow.cx.v3beta1.Environments"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -2068,7 +2068,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -2122,7 +2122,7 @@
     {
       "regionTag": "dialogflow_v3beta1_generated_Environments_ListEnvironments_sync",
       "title": "dialogflow ListEnvironments Sample",
-      "description": "ListEnvironments returns the list of all environments in the specified\nAgent.",
+      "description": "ListEnvironments returns the list of all environments in the specified\n[Agent][google.cloud.dialogflow.cx.v3beta1.Agent].",
       "file": "EnvironmentsClient/ListEnvironments/main.go",
       "language": "GO",
       "clientMethod": {
@@ -2195,10 +2195,10 @@
         },
         "method": {
           "shortName": "ListLocations",
-          "fullName": "google.cloud.dialogflow.cx.v3beta1.Environments.ListLocations",
+          "fullName": "google.cloud.location.Locations.ListLocations",
           "service": {
-            "shortName": "Environments",
-            "fullName": "google.cloud.dialogflow.cx.v3beta1.Environments"
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
           }
         }
       },
@@ -2206,7 +2206,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 61,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -2241,10 +2241,10 @@
         },
         "method": {
           "shortName": "ListOperations",
-          "fullName": "google.cloud.dialogflow.cx.v3beta1.Environments.ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
           "service": {
-            "shortName": "Environments",
-            "fullName": "google.cloud.dialogflow.cx.v3beta1.Environments"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -2252,7 +2252,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 61,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -2260,7 +2260,7 @@
     {
       "regionTag": "dialogflow_v3beta1_generated_Environments_LookupEnvironmentHistory_sync",
       "title": "dialogflow LookupEnvironmentHistory Sample",
-      "description": "LookupEnvironmentHistory looks up the history of the specified\nEnvironment.",
+      "description": "LookupEnvironmentHistory looks up the history of the specified\n[Environment][google.cloud.dialogflow.cx.v3beta1.Environment].",
       "file": "EnvironmentsClient/LookupEnvironmentHistory/main.go",
       "language": "GO",
       "clientMethod": {
@@ -2306,7 +2306,7 @@
     {
       "regionTag": "dialogflow_v3beta1_generated_Environments_RunContinuousTest_sync",
       "title": "dialogflow RunContinuousTest Sample",
-      "description": "RunContinuousTest kicks off a continuous test under the specified\nEnvironment.\n\nThis method is a long-running\noperation (at https: //cloud.google.com/dialogflow/cx/docs/how/long-running-operation).\nThe returned Operation type has the following method-specific fields: \n\n\tmetadata: \n\tRunContinuousTestMetadata\n\n\tresponse: \n\tRunContinuousTestResponse",
+      "description": "RunContinuousTest kicks off a continuous test under the specified\n[Environment][google.cloud.dialogflow.cx.v3beta1.Environment].\n\nThis method is a [long-running\noperation](https: //cloud.google.com/dialogflow/cx/docs/how/long-running-operation).\nThe returned `Operation` type has the following method-specific fields: \n\n- `metadata`: \n[RunContinuousTestMetadata][google.cloud.dialogflow.cx.v3beta1.RunContinuousTestMetadata]\n- `response`: \n[RunContinuousTestResponse][google.cloud.dialogflow.cx.v3beta1.RunContinuousTestResponse]",
       "file": "EnvironmentsClient/RunContinuousTest/main.go",
       "language": "GO",
       "clientMethod": {
@@ -2352,7 +2352,7 @@
     {
       "regionTag": "dialogflow_v3beta1_generated_Environments_UpdateEnvironment_sync",
       "title": "dialogflow UpdateEnvironment Sample",
-      "description": "UpdateEnvironment updates the specified\nEnvironment.\n\nThis method is a long-running\noperation (at https: //cloud.google.com/dialogflow/cx/docs/how/long-running-operation).\nThe returned Operation type has the following method-specific fields: \n\n\tmetadata: An empty Struct\n\tmessage (at https: //developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)\n\n\tresponse: Environment",
+      "description": "UpdateEnvironment updates the specified\n[Environment][google.cloud.dialogflow.cx.v3beta1.Environment].\n\nThis method is a [long-running\noperation](https: //cloud.google.com/dialogflow/cx/docs/how/long-running-operation).\nThe returned `Operation` type has the following method-specific fields: \n\n- `metadata`: An empty [Struct\nmessage](https: //developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)\n- `response`: [Environment][google.cloud.dialogflow.cx.v3beta1.Environment]",
       "file": "EnvironmentsClient/UpdateEnvironment/main.go",
       "language": "GO",
       "clientMethod": {
@@ -2424,10 +2424,10 @@
         },
         "method": {
           "shortName": "CancelOperation",
-          "fullName": "google.cloud.dialogflow.cx.v3beta1.Experiments.CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
           "service": {
-            "shortName": "Experiments",
-            "fullName": "google.cloud.dialogflow.cx.v3beta1.Experiments"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -2435,7 +2435,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -2443,7 +2443,7 @@
     {
       "regionTag": "dialogflow_v3beta1_generated_Experiments_CreateExperiment_sync",
       "title": "dialogflow CreateExperiment Sample",
-      "description": "CreateExperiment creates an Experiment in\nthe specified\nEnvironment.",
+      "description": "CreateExperiment creates an [Experiment][google.cloud.dialogflow.cx.v3beta1.Experiment] in\nthe specified\n[Environment][google.cloud.dialogflow.cx.v3beta1.Environment].",
       "file": "ExperimentsClient/CreateExperiment/main.go",
       "language": "GO",
       "clientMethod": {
@@ -2463,7 +2463,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "cxpb.Experiment",
+        "resultType": "*cxpb.Experiment",
         "client": {
           "shortName": "ExperimentsClient",
           "fullName": "google.cloud.dialogflow.cx.v3beta1.ExperimentsClient"
@@ -2489,7 +2489,7 @@
     {
       "regionTag": "dialogflow_v3beta1_generated_Experiments_DeleteExperiment_sync",
       "title": "dialogflow DeleteExperiment Sample",
-      "description": "DeleteExperiment deletes the specified\nExperiment.",
+      "description": "DeleteExperiment deletes the specified\n[Experiment][google.cloud.dialogflow.cx.v3beta1.Experiment].",
       "file": "ExperimentsClient/DeleteExperiment/main.go",
       "language": "GO",
       "clientMethod": {
@@ -2534,7 +2534,7 @@
     {
       "regionTag": "dialogflow_v3beta1_generated_Experiments_GetExperiment_sync",
       "title": "dialogflow GetExperiment Sample",
-      "description": "GetExperiment retrieves the specified\nExperiment.",
+      "description": "GetExperiment retrieves the specified\n[Experiment][google.cloud.dialogflow.cx.v3beta1.Experiment].",
       "file": "ExperimentsClient/GetExperiment/main.go",
       "language": "GO",
       "clientMethod": {
@@ -2554,7 +2554,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "cxpb.Experiment",
+        "resultType": "*cxpb.Experiment",
         "client": {
           "shortName": "ExperimentsClient",
           "fullName": "google.cloud.dialogflow.cx.v3beta1.ExperimentsClient"
@@ -2600,17 +2600,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "locationpb.Location",
+        "resultType": "*locationpb.Location",
         "client": {
           "shortName": "ExperimentsClient",
           "fullName": "google.cloud.dialogflow.cx.v3beta1.ExperimentsClient"
         },
         "method": {
           "shortName": "GetLocation",
-          "fullName": "google.cloud.dialogflow.cx.v3beta1.Experiments.GetLocation",
+          "fullName": "google.cloud.location.Locations.GetLocation",
           "service": {
-            "shortName": "Experiments",
-            "fullName": "google.cloud.dialogflow.cx.v3beta1.Experiments"
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
           }
         }
       },
@@ -2618,7 +2618,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -2646,17 +2646,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "longrunningpb.Operation",
+        "resultType": "*longrunningpb.Operation",
         "client": {
           "shortName": "ExperimentsClient",
           "fullName": "google.cloud.dialogflow.cx.v3beta1.ExperimentsClient"
         },
         "method": {
           "shortName": "GetOperation",
-          "fullName": "google.cloud.dialogflow.cx.v3beta1.Experiments.GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
           "service": {
-            "shortName": "Experiments",
-            "fullName": "google.cloud.dialogflow.cx.v3beta1.Experiments"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -2664,7 +2664,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -2672,7 +2672,7 @@
     {
       "regionTag": "dialogflow_v3beta1_generated_Experiments_ListExperiments_sync",
       "title": "dialogflow ListExperiments Sample",
-      "description": "ListExperiments returns the list of all experiments in the specified\nEnvironment.",
+      "description": "ListExperiments returns the list of all experiments in the specified\n[Environment][google.cloud.dialogflow.cx.v3beta1.Environment].",
       "file": "ExperimentsClient/ListExperiments/main.go",
       "language": "GO",
       "clientMethod": {
@@ -2745,10 +2745,10 @@
         },
         "method": {
           "shortName": "ListLocations",
-          "fullName": "google.cloud.dialogflow.cx.v3beta1.Experiments.ListLocations",
+          "fullName": "google.cloud.location.Locations.ListLocations",
           "service": {
-            "shortName": "Experiments",
-            "fullName": "google.cloud.dialogflow.cx.v3beta1.Experiments"
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
           }
         }
       },
@@ -2756,7 +2756,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 61,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -2791,10 +2791,10 @@
         },
         "method": {
           "shortName": "ListOperations",
-          "fullName": "google.cloud.dialogflow.cx.v3beta1.Experiments.ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
           "service": {
-            "shortName": "Experiments",
-            "fullName": "google.cloud.dialogflow.cx.v3beta1.Experiments"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -2802,7 +2802,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 61,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -2810,7 +2810,7 @@
     {
       "regionTag": "dialogflow_v3beta1_generated_Experiments_StartExperiment_sync",
       "title": "dialogflow StartExperiment Sample",
-      "description": "StartExperiment starts the specified\nExperiment. This rpc only\nchanges the state of experiment from PENDING to RUNNING.",
+      "description": "StartExperiment starts the specified\n[Experiment][google.cloud.dialogflow.cx.v3beta1.Experiment]. This rpc only\nchanges the state of experiment from PENDING to RUNNING.",
       "file": "ExperimentsClient/StartExperiment/main.go",
       "language": "GO",
       "clientMethod": {
@@ -2830,7 +2830,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "cxpb.Experiment",
+        "resultType": "*cxpb.Experiment",
         "client": {
           "shortName": "ExperimentsClient",
           "fullName": "google.cloud.dialogflow.cx.v3beta1.ExperimentsClient"
@@ -2856,7 +2856,7 @@
     {
       "regionTag": "dialogflow_v3beta1_generated_Experiments_StopExperiment_sync",
       "title": "dialogflow StopExperiment Sample",
-      "description": "StopExperiment stops the specified\nExperiment. This rpc only\nchanges the state of experiment from RUNNING to DONE.",
+      "description": "StopExperiment stops the specified\n[Experiment][google.cloud.dialogflow.cx.v3beta1.Experiment]. This rpc only\nchanges the state of experiment from RUNNING to DONE.",
       "file": "ExperimentsClient/StopExperiment/main.go",
       "language": "GO",
       "clientMethod": {
@@ -2876,7 +2876,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "cxpb.Experiment",
+        "resultType": "*cxpb.Experiment",
         "client": {
           "shortName": "ExperimentsClient",
           "fullName": "google.cloud.dialogflow.cx.v3beta1.ExperimentsClient"
@@ -2902,7 +2902,7 @@
     {
       "regionTag": "dialogflow_v3beta1_generated_Experiments_UpdateExperiment_sync",
       "title": "dialogflow UpdateExperiment Sample",
-      "description": "UpdateExperiment updates the specified\nExperiment.",
+      "description": "UpdateExperiment updates the specified\n[Experiment][google.cloud.dialogflow.cx.v3beta1.Experiment].",
       "file": "ExperimentsClient/UpdateExperiment/main.go",
       "language": "GO",
       "clientMethod": {
@@ -2922,7 +2922,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "cxpb.Experiment",
+        "resultType": "*cxpb.Experiment",
         "client": {
           "shortName": "ExperimentsClient",
           "fullName": "google.cloud.dialogflow.cx.v3beta1.ExperimentsClient"
@@ -2974,10 +2974,10 @@
         },
         "method": {
           "shortName": "CancelOperation",
-          "fullName": "google.cloud.dialogflow.cx.v3beta1.Flows.CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
           "service": {
-            "shortName": "Flows",
-            "fullName": "google.cloud.dialogflow.cx.v3beta1.Flows"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -2985,7 +2985,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -2993,7 +2993,7 @@
     {
       "regionTag": "dialogflow_v3beta1_generated_Flows_CreateFlow_sync",
       "title": "dialogflow CreateFlow Sample",
-      "description": "CreateFlow creates a flow in the specified agent.\n\nNote: You should always train a flow prior to sending it queries. See the\ntraining\ndocumentation (at https: //cloud.google.com/dialogflow/cx/docs/concept/training).",
+      "description": "CreateFlow creates a flow in the specified agent.\n\nNote: You should always train a flow prior to sending it queries. See the\n[training\ndocumentation](https: //cloud.google.com/dialogflow/cx/docs/concept/training).",
       "file": "FlowsClient/CreateFlow/main.go",
       "language": "GO",
       "clientMethod": {
@@ -3013,7 +3013,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "cxpb.Flow",
+        "resultType": "*cxpb.Flow",
         "client": {
           "shortName": "FlowsClient",
           "fullName": "google.cloud.dialogflow.cx.v3beta1.FlowsClient"
@@ -3084,7 +3084,7 @@
     {
       "regionTag": "dialogflow_v3beta1_generated_Flows_ExportFlow_sync",
       "title": "dialogflow ExportFlow Sample",
-      "description": "ExportFlow exports the specified flow to a binary file.\n\nThis method is a long-running\noperation (at https: //cloud.google.com/dialogflow/cx/docs/how/long-running-operation).\nThe returned Operation type has the following method-specific fields: \n\n\tmetadata: An empty Struct\n\tmessage (at https: //developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)\n\n\tresponse: \n\tExportFlowResponse\n\nNote that resources (e.g. intents, entities, webhooks) that the flow\nreferences will also be exported.",
+      "description": "ExportFlow exports the specified flow to a binary file.\n\nThis method is a [long-running\noperation](https: //cloud.google.com/dialogflow/cx/docs/how/long-running-operation).\nThe returned `Operation` type has the following method-specific fields: \n\n- `metadata`: An empty [Struct\nmessage](https: //developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)\n- `response`: \n[ExportFlowResponse][google.cloud.dialogflow.cx.v3beta1.ExportFlowResponse]\n\nNote that resources (e.g. intents, entities, webhooks) that the flow\nreferences will also be exported.",
       "file": "FlowsClient/ExportFlow/main.go",
       "language": "GO",
       "clientMethod": {
@@ -3150,7 +3150,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "cxpb.Flow",
+        "resultType": "*cxpb.Flow",
         "client": {
           "shortName": "FlowsClient",
           "fullName": "google.cloud.dialogflow.cx.v3beta1.FlowsClient"
@@ -3196,7 +3196,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "cxpb.FlowValidationResult",
+        "resultType": "*cxpb.FlowValidationResult",
         "client": {
           "shortName": "FlowsClient",
           "fullName": "google.cloud.dialogflow.cx.v3beta1.FlowsClient"
@@ -3242,17 +3242,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "locationpb.Location",
+        "resultType": "*locationpb.Location",
         "client": {
           "shortName": "FlowsClient",
           "fullName": "google.cloud.dialogflow.cx.v3beta1.FlowsClient"
         },
         "method": {
           "shortName": "GetLocation",
-          "fullName": "google.cloud.dialogflow.cx.v3beta1.Flows.GetLocation",
+          "fullName": "google.cloud.location.Locations.GetLocation",
           "service": {
-            "shortName": "Flows",
-            "fullName": "google.cloud.dialogflow.cx.v3beta1.Flows"
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
           }
         }
       },
@@ -3260,7 +3260,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -3288,17 +3288,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "longrunningpb.Operation",
+        "resultType": "*longrunningpb.Operation",
         "client": {
           "shortName": "FlowsClient",
           "fullName": "google.cloud.dialogflow.cx.v3beta1.FlowsClient"
         },
         "method": {
           "shortName": "GetOperation",
-          "fullName": "google.cloud.dialogflow.cx.v3beta1.Flows.GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
           "service": {
-            "shortName": "Flows",
-            "fullName": "google.cloud.dialogflow.cx.v3beta1.Flows"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -3306,7 +3306,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -3314,7 +3314,7 @@
     {
       "regionTag": "dialogflow_v3beta1_generated_Flows_ImportFlow_sync",
       "title": "dialogflow ImportFlow Sample",
-      "description": "ImportFlow imports the specified flow to the specified agent from a binary file.\n\nThis method is a long-running\noperation (at https: //cloud.google.com/dialogflow/cx/docs/how/long-running-operation).\nThe returned Operation type has the following method-specific fields: \n\n\tmetadata: An empty Struct\n\tmessage (at https: //developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)\n\n\tresponse: \n\tImportFlowResponse\n\nNote: You should always train a flow prior to sending it queries. See the\ntraining\ndocumentation (at https: //cloud.google.com/dialogflow/cx/docs/concept/training).",
+      "description": "ImportFlow imports the specified flow to the specified agent from a binary file.\n\nThis method is a [long-running\noperation](https: //cloud.google.com/dialogflow/cx/docs/how/long-running-operation).\nThe returned `Operation` type has the following method-specific fields: \n\n- `metadata`: An empty [Struct\nmessage](https: //developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)\n- `response`: \n[ImportFlowResponse][google.cloud.dialogflow.cx.v3beta1.ImportFlowResponse]\n\nNote: You should always train a flow prior to sending it queries. See the\n[training\ndocumentation](https: //cloud.google.com/dialogflow/cx/docs/concept/training).",
       "file": "FlowsClient/ImportFlow/main.go",
       "language": "GO",
       "clientMethod": {
@@ -3433,10 +3433,10 @@
         },
         "method": {
           "shortName": "ListLocations",
-          "fullName": "google.cloud.dialogflow.cx.v3beta1.Flows.ListLocations",
+          "fullName": "google.cloud.location.Locations.ListLocations",
           "service": {
-            "shortName": "Flows",
-            "fullName": "google.cloud.dialogflow.cx.v3beta1.Flows"
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
           }
         }
       },
@@ -3444,7 +3444,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 61,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -3479,10 +3479,10 @@
         },
         "method": {
           "shortName": "ListOperations",
-          "fullName": "google.cloud.dialogflow.cx.v3beta1.Flows.ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
           "service": {
-            "shortName": "Flows",
-            "fullName": "google.cloud.dialogflow.cx.v3beta1.Flows"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -3490,7 +3490,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 61,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -3498,7 +3498,7 @@
     {
       "regionTag": "dialogflow_v3beta1_generated_Flows_TrainFlow_sync",
       "title": "dialogflow TrainFlow Sample",
-      "description": "TrainFlow trains the specified flow. Note that only the flow in ‘draft’ environment\nis trained.\n\nThis method is a long-running\noperation (at https: //cloud.google.com/dialogflow/cx/docs/how/long-running-operation).\nThe returned Operation type has the following method-specific fields: \n\n\tmetadata: An empty Struct\n\tmessage (at https: //developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)\n\n\tresponse: An Empty\n\tmessage (at https: //developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)\n\nNote: You should always train a flow prior to sending it queries. See the\ntraining\ndocumentation (at https: //cloud.google.com/dialogflow/cx/docs/concept/training).",
+      "description": "TrainFlow trains the specified flow. Note that only the flow in 'draft' environment\nis trained.\n\nThis method is a [long-running\noperation](https: //cloud.google.com/dialogflow/cx/docs/how/long-running-operation).\nThe returned `Operation` type has the following method-specific fields: \n\n- `metadata`: An empty [Struct\nmessage](https: //developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)\n- `response`: An [Empty\nmessage](https: //developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)\n\nNote: You should always train a flow prior to sending it queries. See the\n[training\ndocumentation](https: //cloud.google.com/dialogflow/cx/docs/concept/training).",
       "file": "FlowsClient/TrainFlow/main.go",
       "language": "GO",
       "clientMethod": {
@@ -3544,7 +3544,7 @@
     {
       "regionTag": "dialogflow_v3beta1_generated_Flows_UpdateFlow_sync",
       "title": "dialogflow UpdateFlow Sample",
-      "description": "UpdateFlow updates the specified flow.\n\nNote: You should always train a flow prior to sending it queries. See the\ntraining\ndocumentation (at https: //cloud.google.com/dialogflow/cx/docs/concept/training).",
+      "description": "UpdateFlow updates the specified flow.\n\nNote: You should always train a flow prior to sending it queries. See the\n[training\ndocumentation](https: //cloud.google.com/dialogflow/cx/docs/concept/training).",
       "file": "FlowsClient/UpdateFlow/main.go",
       "language": "GO",
       "clientMethod": {
@@ -3564,7 +3564,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "cxpb.Flow",
+        "resultType": "*cxpb.Flow",
         "client": {
           "shortName": "FlowsClient",
           "fullName": "google.cloud.dialogflow.cx.v3beta1.FlowsClient"
@@ -3610,7 +3610,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "cxpb.FlowValidationResult",
+        "resultType": "*cxpb.FlowValidationResult",
         "client": {
           "shortName": "FlowsClient",
           "fullName": "google.cloud.dialogflow.cx.v3beta1.FlowsClient"
@@ -3662,10 +3662,10 @@
         },
         "method": {
           "shortName": "CancelOperation",
-          "fullName": "google.cloud.dialogflow.cx.v3beta1.Intents.CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
           "service": {
-            "shortName": "Intents",
-            "fullName": "google.cloud.dialogflow.cx.v3beta1.Intents"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -3673,7 +3673,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -3681,7 +3681,7 @@
     {
       "regionTag": "dialogflow_v3beta1_generated_Intents_CreateIntent_sync",
       "title": "dialogflow CreateIntent Sample",
-      "description": "CreateIntent creates an intent in the specified agent.\n\nNote: You should always train a flow prior to sending it queries. See the\ntraining\ndocumentation (at https: //cloud.google.com/dialogflow/cx/docs/concept/training).",
+      "description": "CreateIntent creates an intent in the specified agent.\n\nNote: You should always train a flow prior to sending it queries. See the\n[training\ndocumentation](https: //cloud.google.com/dialogflow/cx/docs/concept/training).",
       "file": "IntentsClient/CreateIntent/main.go",
       "language": "GO",
       "clientMethod": {
@@ -3701,7 +3701,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "cxpb.Intent",
+        "resultType": "*cxpb.Intent",
         "client": {
           "shortName": "IntentsClient",
           "fullName": "google.cloud.dialogflow.cx.v3beta1.IntentsClient"
@@ -3727,7 +3727,7 @@
     {
       "regionTag": "dialogflow_v3beta1_generated_Intents_DeleteIntent_sync",
       "title": "dialogflow DeleteIntent Sample",
-      "description": "DeleteIntent deletes the specified intent.\n\nNote: You should always train a flow prior to sending it queries. See the\ntraining\ndocumentation (at https: //cloud.google.com/dialogflow/cx/docs/concept/training).",
+      "description": "DeleteIntent deletes the specified intent.\n\nNote: You should always train a flow prior to sending it queries. See the\n[training\ndocumentation](https: //cloud.google.com/dialogflow/cx/docs/concept/training).",
       "file": "IntentsClient/DeleteIntent/main.go",
       "language": "GO",
       "clientMethod": {
@@ -3792,7 +3792,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "cxpb.Intent",
+        "resultType": "*cxpb.Intent",
         "client": {
           "shortName": "IntentsClient",
           "fullName": "google.cloud.dialogflow.cx.v3beta1.IntentsClient"
@@ -3838,17 +3838,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "locationpb.Location",
+        "resultType": "*locationpb.Location",
         "client": {
           "shortName": "IntentsClient",
           "fullName": "google.cloud.dialogflow.cx.v3beta1.IntentsClient"
         },
         "method": {
           "shortName": "GetLocation",
-          "fullName": "google.cloud.dialogflow.cx.v3beta1.Intents.GetLocation",
+          "fullName": "google.cloud.location.Locations.GetLocation",
           "service": {
-            "shortName": "Intents",
-            "fullName": "google.cloud.dialogflow.cx.v3beta1.Intents"
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
           }
         }
       },
@@ -3856,7 +3856,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -3884,17 +3884,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "longrunningpb.Operation",
+        "resultType": "*longrunningpb.Operation",
         "client": {
           "shortName": "IntentsClient",
           "fullName": "google.cloud.dialogflow.cx.v3beta1.IntentsClient"
         },
         "method": {
           "shortName": "GetOperation",
-          "fullName": "google.cloud.dialogflow.cx.v3beta1.Intents.GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
           "service": {
-            "shortName": "Intents",
-            "fullName": "google.cloud.dialogflow.cx.v3beta1.Intents"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -3902,7 +3902,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -3983,10 +3983,10 @@
         },
         "method": {
           "shortName": "ListLocations",
-          "fullName": "google.cloud.dialogflow.cx.v3beta1.Intents.ListLocations",
+          "fullName": "google.cloud.location.Locations.ListLocations",
           "service": {
-            "shortName": "Intents",
-            "fullName": "google.cloud.dialogflow.cx.v3beta1.Intents"
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
           }
         }
       },
@@ -3994,7 +3994,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 61,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -4029,10 +4029,10 @@
         },
         "method": {
           "shortName": "ListOperations",
-          "fullName": "google.cloud.dialogflow.cx.v3beta1.Intents.ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
           "service": {
-            "shortName": "Intents",
-            "fullName": "google.cloud.dialogflow.cx.v3beta1.Intents"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -4040,7 +4040,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 61,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -4048,7 +4048,7 @@
     {
       "regionTag": "dialogflow_v3beta1_generated_Intents_UpdateIntent_sync",
       "title": "dialogflow UpdateIntent Sample",
-      "description": "UpdateIntent updates the specified intent.\n\nNote: You should always train a flow prior to sending it queries. See the\ntraining\ndocumentation (at https: //cloud.google.com/dialogflow/cx/docs/concept/training).",
+      "description": "UpdateIntent updates the specified intent.\n\nNote: You should always train a flow prior to sending it queries. See the\n[training\ndocumentation](https: //cloud.google.com/dialogflow/cx/docs/concept/training).",
       "file": "IntentsClient/UpdateIntent/main.go",
       "language": "GO",
       "clientMethod": {
@@ -4068,7 +4068,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "cxpb.Intent",
+        "resultType": "*cxpb.Intent",
         "client": {
           "shortName": "IntentsClient",
           "fullName": "google.cloud.dialogflow.cx.v3beta1.IntentsClient"
@@ -4120,10 +4120,10 @@
         },
         "method": {
           "shortName": "CancelOperation",
-          "fullName": "google.cloud.dialogflow.cx.v3beta1.Pages.CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
           "service": {
-            "shortName": "Pages",
-            "fullName": "google.cloud.dialogflow.cx.v3beta1.Pages"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -4131,7 +4131,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -4159,7 +4159,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "cxpb.Page",
+        "resultType": "*cxpb.Page",
         "client": {
           "shortName": "PagesClient",
           "fullName": "google.cloud.dialogflow.cx.v3beta1.PagesClient"
@@ -4250,17 +4250,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "locationpb.Location",
+        "resultType": "*locationpb.Location",
         "client": {
           "shortName": "PagesClient",
           "fullName": "google.cloud.dialogflow.cx.v3beta1.PagesClient"
         },
         "method": {
           "shortName": "GetLocation",
-          "fullName": "google.cloud.dialogflow.cx.v3beta1.Pages.GetLocation",
+          "fullName": "google.cloud.location.Locations.GetLocation",
           "service": {
-            "shortName": "Pages",
-            "fullName": "google.cloud.dialogflow.cx.v3beta1.Pages"
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
           }
         }
       },
@@ -4268,7 +4268,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -4296,17 +4296,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "longrunningpb.Operation",
+        "resultType": "*longrunningpb.Operation",
         "client": {
           "shortName": "PagesClient",
           "fullName": "google.cloud.dialogflow.cx.v3beta1.PagesClient"
         },
         "method": {
           "shortName": "GetOperation",
-          "fullName": "google.cloud.dialogflow.cx.v3beta1.Pages.GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
           "service": {
-            "shortName": "Pages",
-            "fullName": "google.cloud.dialogflow.cx.v3beta1.Pages"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -4314,7 +4314,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -4342,7 +4342,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "cxpb.Page",
+        "resultType": "*cxpb.Page",
         "client": {
           "shortName": "PagesClient",
           "fullName": "google.cloud.dialogflow.cx.v3beta1.PagesClient"
@@ -4395,10 +4395,10 @@
         },
         "method": {
           "shortName": "ListLocations",
-          "fullName": "google.cloud.dialogflow.cx.v3beta1.Pages.ListLocations",
+          "fullName": "google.cloud.location.Locations.ListLocations",
           "service": {
-            "shortName": "Pages",
-            "fullName": "google.cloud.dialogflow.cx.v3beta1.Pages"
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
           }
         }
       },
@@ -4406,7 +4406,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 61,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -4441,10 +4441,10 @@
         },
         "method": {
           "shortName": "ListOperations",
-          "fullName": "google.cloud.dialogflow.cx.v3beta1.Pages.ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
           "service": {
-            "shortName": "Pages",
-            "fullName": "google.cloud.dialogflow.cx.v3beta1.Pages"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -4452,7 +4452,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 61,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -4526,7 +4526,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "cxpb.Page",
+        "resultType": "*cxpb.Page",
         "client": {
           "shortName": "PagesClient",
           "fullName": "google.cloud.dialogflow.cx.v3beta1.PagesClient"
@@ -4578,10 +4578,10 @@
         },
         "method": {
           "shortName": "CancelOperation",
-          "fullName": "google.cloud.dialogflow.cx.v3beta1.SecuritySettingsService.CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
           "service": {
-            "shortName": "SecuritySettingsService",
-            "fullName": "google.cloud.dialogflow.cx.v3beta1.SecuritySettingsService"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -4589,7 +4589,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -4617,7 +4617,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "cxpb.SecuritySettings",
+        "resultType": "*cxpb.SecuritySettings",
         "client": {
           "shortName": "SecuritySettingsClient",
           "fullName": "google.cloud.dialogflow.cx.v3beta1.SecuritySettingsClient"
@@ -4643,7 +4643,7 @@
     {
       "regionTag": "dialogflow_v3beta1_generated_SecuritySettingsService_DeleteSecuritySettings_sync",
       "title": "dialogflow DeleteSecuritySettings Sample",
-      "description": "DeleteSecuritySettings deletes the specified\nSecuritySettings.",
+      "description": "DeleteSecuritySettings deletes the specified\n[SecuritySettings][google.cloud.dialogflow.cx.v3beta1.SecuritySettings].",
       "file": "SecuritySettingsClient/DeleteSecuritySettings/main.go",
       "language": "GO",
       "clientMethod": {
@@ -4708,17 +4708,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "locationpb.Location",
+        "resultType": "*locationpb.Location",
         "client": {
           "shortName": "SecuritySettingsClient",
           "fullName": "google.cloud.dialogflow.cx.v3beta1.SecuritySettingsClient"
         },
         "method": {
           "shortName": "GetLocation",
-          "fullName": "google.cloud.dialogflow.cx.v3beta1.SecuritySettingsService.GetLocation",
+          "fullName": "google.cloud.location.Locations.GetLocation",
           "service": {
-            "shortName": "SecuritySettingsService",
-            "fullName": "google.cloud.dialogflow.cx.v3beta1.SecuritySettingsService"
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
           }
         }
       },
@@ -4726,7 +4726,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -4754,17 +4754,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "longrunningpb.Operation",
+        "resultType": "*longrunningpb.Operation",
         "client": {
           "shortName": "SecuritySettingsClient",
           "fullName": "google.cloud.dialogflow.cx.v3beta1.SecuritySettingsClient"
         },
         "method": {
           "shortName": "GetOperation",
-          "fullName": "google.cloud.dialogflow.cx.v3beta1.SecuritySettingsService.GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
           "service": {
-            "shortName": "SecuritySettingsService",
-            "fullName": "google.cloud.dialogflow.cx.v3beta1.SecuritySettingsService"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -4772,7 +4772,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -4780,7 +4780,7 @@
     {
       "regionTag": "dialogflow_v3beta1_generated_SecuritySettingsService_GetSecuritySettings_sync",
       "title": "dialogflow GetSecuritySettings Sample",
-      "description": "GetSecuritySettings retrieves the specified\nSecuritySettings.\nThe returned settings may be stale by up to 1 minute.",
+      "description": "GetSecuritySettings retrieves the specified\n[SecuritySettings][google.cloud.dialogflow.cx.v3beta1.SecuritySettings].\nThe returned settings may be stale by up to 1 minute.",
       "file": "SecuritySettingsClient/GetSecuritySettings/main.go",
       "language": "GO",
       "clientMethod": {
@@ -4800,7 +4800,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "cxpb.SecuritySettings",
+        "resultType": "*cxpb.SecuritySettings",
         "client": {
           "shortName": "SecuritySettingsClient",
           "fullName": "google.cloud.dialogflow.cx.v3beta1.SecuritySettingsClient"
@@ -4853,10 +4853,10 @@
         },
         "method": {
           "shortName": "ListLocations",
-          "fullName": "google.cloud.dialogflow.cx.v3beta1.SecuritySettingsService.ListLocations",
+          "fullName": "google.cloud.location.Locations.ListLocations",
           "service": {
-            "shortName": "SecuritySettingsService",
-            "fullName": "google.cloud.dialogflow.cx.v3beta1.SecuritySettingsService"
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
           }
         }
       },
@@ -4864,7 +4864,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 61,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -4899,10 +4899,10 @@
         },
         "method": {
           "shortName": "ListOperations",
-          "fullName": "google.cloud.dialogflow.cx.v3beta1.SecuritySettingsService.ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
           "service": {
-            "shortName": "SecuritySettingsService",
-            "fullName": "google.cloud.dialogflow.cx.v3beta1.SecuritySettingsService"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -4910,7 +4910,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 61,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -4964,7 +4964,7 @@
     {
       "regionTag": "dialogflow_v3beta1_generated_SecuritySettingsService_UpdateSecuritySettings_sync",
       "title": "dialogflow UpdateSecuritySettings Sample",
-      "description": "UpdateSecuritySettings updates the specified\nSecuritySettings.",
+      "description": "UpdateSecuritySettings updates the specified\n[SecuritySettings][google.cloud.dialogflow.cx.v3beta1.SecuritySettings].",
       "file": "SecuritySettingsClient/UpdateSecuritySettings/main.go",
       "language": "GO",
       "clientMethod": {
@@ -4984,7 +4984,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "cxpb.SecuritySettings",
+        "resultType": "*cxpb.SecuritySettings",
         "client": {
           "shortName": "SecuritySettingsClient",
           "fullName": "google.cloud.dialogflow.cx.v3beta1.SecuritySettingsClient"
@@ -5036,10 +5036,10 @@
         },
         "method": {
           "shortName": "CancelOperation",
-          "fullName": "google.cloud.dialogflow.cx.v3beta1.SessionEntityTypes.CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
           "service": {
-            "shortName": "SessionEntityTypes",
-            "fullName": "google.cloud.dialogflow.cx.v3beta1.SessionEntityTypes"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -5047,7 +5047,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -5075,7 +5075,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "cxpb.SessionEntityType",
+        "resultType": "*cxpb.SessionEntityType",
         "client": {
           "shortName": "SessionEntityTypesClient",
           "fullName": "google.cloud.dialogflow.cx.v3beta1.SessionEntityTypesClient"
@@ -5166,17 +5166,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "locationpb.Location",
+        "resultType": "*locationpb.Location",
         "client": {
           "shortName": "SessionEntityTypesClient",
           "fullName": "google.cloud.dialogflow.cx.v3beta1.SessionEntityTypesClient"
         },
         "method": {
           "shortName": "GetLocation",
-          "fullName": "google.cloud.dialogflow.cx.v3beta1.SessionEntityTypes.GetLocation",
+          "fullName": "google.cloud.location.Locations.GetLocation",
           "service": {
-            "shortName": "SessionEntityTypes",
-            "fullName": "google.cloud.dialogflow.cx.v3beta1.SessionEntityTypes"
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
           }
         }
       },
@@ -5184,7 +5184,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -5212,17 +5212,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "longrunningpb.Operation",
+        "resultType": "*longrunningpb.Operation",
         "client": {
           "shortName": "SessionEntityTypesClient",
           "fullName": "google.cloud.dialogflow.cx.v3beta1.SessionEntityTypesClient"
         },
         "method": {
           "shortName": "GetOperation",
-          "fullName": "google.cloud.dialogflow.cx.v3beta1.SessionEntityTypes.GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
           "service": {
-            "shortName": "SessionEntityTypes",
-            "fullName": "google.cloud.dialogflow.cx.v3beta1.SessionEntityTypes"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -5230,7 +5230,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -5258,7 +5258,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "cxpb.SessionEntityType",
+        "resultType": "*cxpb.SessionEntityType",
         "client": {
           "shortName": "SessionEntityTypesClient",
           "fullName": "google.cloud.dialogflow.cx.v3beta1.SessionEntityTypesClient"
@@ -5311,10 +5311,10 @@
         },
         "method": {
           "shortName": "ListLocations",
-          "fullName": "google.cloud.dialogflow.cx.v3beta1.SessionEntityTypes.ListLocations",
+          "fullName": "google.cloud.location.Locations.ListLocations",
           "service": {
-            "shortName": "SessionEntityTypes",
-            "fullName": "google.cloud.dialogflow.cx.v3beta1.SessionEntityTypes"
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
           }
         }
       },
@@ -5322,7 +5322,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 61,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -5357,10 +5357,10 @@
         },
         "method": {
           "shortName": "ListOperations",
-          "fullName": "google.cloud.dialogflow.cx.v3beta1.SessionEntityTypes.ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
           "service": {
-            "shortName": "SessionEntityTypes",
-            "fullName": "google.cloud.dialogflow.cx.v3beta1.SessionEntityTypes"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -5368,7 +5368,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 61,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -5442,7 +5442,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "cxpb.SessionEntityType",
+        "resultType": "*cxpb.SessionEntityType",
         "client": {
           "shortName": "SessionEntityTypesClient",
           "fullName": "google.cloud.dialogflow.cx.v3beta1.SessionEntityTypesClient"
@@ -5494,10 +5494,10 @@
         },
         "method": {
           "shortName": "CancelOperation",
-          "fullName": "google.cloud.dialogflow.cx.v3beta1.Sessions.CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
           "service": {
-            "shortName": "Sessions",
-            "fullName": "google.cloud.dialogflow.cx.v3beta1.Sessions"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -5505,7 +5505,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -5513,7 +5513,7 @@
     {
       "regionTag": "dialogflow_v3beta1_generated_Sessions_DetectIntent_sync",
       "title": "dialogflow DetectIntent Sample",
-      "description": "DetectIntent processes a natural language query and returns structured, actionable data\nas a result. This method is not idempotent, because it may cause session\nentity types to be updated, which in turn might affect results of future\nqueries.\n\nNote: Always use agent versions for production traffic.\nSee Versions and\nenvironments (at https: //cloud.google.com/dialogflow/cx/docs/concept/version).",
+      "description": "DetectIntent processes a natural language query and returns structured, actionable data\nas a result. This method is not idempotent, because it may cause session\nentity types to be updated, which in turn might affect results of future\nqueries.\n\nNote: Always use agent versions for production traffic.\nSee [Versions and\nenvironments](https: //cloud.google.com/dialogflow/cx/docs/concept/version).",
       "file": "SessionsClient/DetectIntent/main.go",
       "language": "GO",
       "clientMethod": {
@@ -5533,7 +5533,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "cxpb.DetectIntentResponse",
+        "resultType": "*cxpb.DetectIntentResponse",
         "client": {
           "shortName": "SessionsClient",
           "fullName": "google.cloud.dialogflow.cx.v3beta1.SessionsClient"
@@ -5559,7 +5559,7 @@
     {
       "regionTag": "dialogflow_v3beta1_generated_Sessions_FulfillIntent_sync",
       "title": "dialogflow FulfillIntent Sample",
-      "description": "FulfillIntent fulfills a matched intent returned by\nMatchIntent.\nMust be called after\nMatchIntent,\nwith input from\nMatchIntentResponse.\nOtherwise, the behavior is undefined.",
+      "description": "FulfillIntent fulfills a matched intent returned by\n[MatchIntent][google.cloud.dialogflow.cx.v3beta1.Sessions.MatchIntent].\nMust be called after\n[MatchIntent][google.cloud.dialogflow.cx.v3beta1.Sessions.MatchIntent],\nwith input from\n[MatchIntentResponse][google.cloud.dialogflow.cx.v3beta1.MatchIntentResponse].\nOtherwise, the behavior is undefined.",
       "file": "SessionsClient/FulfillIntent/main.go",
       "language": "GO",
       "clientMethod": {
@@ -5579,7 +5579,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "cxpb.FulfillIntentResponse",
+        "resultType": "*cxpb.FulfillIntentResponse",
         "client": {
           "shortName": "SessionsClient",
           "fullName": "google.cloud.dialogflow.cx.v3beta1.SessionsClient"
@@ -5625,17 +5625,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "locationpb.Location",
+        "resultType": "*locationpb.Location",
         "client": {
           "shortName": "SessionsClient",
           "fullName": "google.cloud.dialogflow.cx.v3beta1.SessionsClient"
         },
         "method": {
           "shortName": "GetLocation",
-          "fullName": "google.cloud.dialogflow.cx.v3beta1.Sessions.GetLocation",
+          "fullName": "google.cloud.location.Locations.GetLocation",
           "service": {
-            "shortName": "Sessions",
-            "fullName": "google.cloud.dialogflow.cx.v3beta1.Sessions"
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
           }
         }
       },
@@ -5643,7 +5643,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -5671,17 +5671,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "longrunningpb.Operation",
+        "resultType": "*longrunningpb.Operation",
         "client": {
           "shortName": "SessionsClient",
           "fullName": "google.cloud.dialogflow.cx.v3beta1.SessionsClient"
         },
         "method": {
           "shortName": "GetOperation",
-          "fullName": "google.cloud.dialogflow.cx.v3beta1.Sessions.GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
           "service": {
-            "shortName": "Sessions",
-            "fullName": "google.cloud.dialogflow.cx.v3beta1.Sessions"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -5689,7 +5689,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -5724,10 +5724,10 @@
         },
         "method": {
           "shortName": "ListLocations",
-          "fullName": "google.cloud.dialogflow.cx.v3beta1.Sessions.ListLocations",
+          "fullName": "google.cloud.location.Locations.ListLocations",
           "service": {
-            "shortName": "Sessions",
-            "fullName": "google.cloud.dialogflow.cx.v3beta1.Sessions"
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
           }
         }
       },
@@ -5735,7 +5735,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 61,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -5770,10 +5770,10 @@
         },
         "method": {
           "shortName": "ListOperations",
-          "fullName": "google.cloud.dialogflow.cx.v3beta1.Sessions.ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
           "service": {
-            "shortName": "Sessions",
-            "fullName": "google.cloud.dialogflow.cx.v3beta1.Sessions"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -5781,7 +5781,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 61,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -5789,7 +5789,7 @@
     {
       "regionTag": "dialogflow_v3beta1_generated_Sessions_MatchIntent_sync",
       "title": "dialogflow MatchIntent Sample",
-      "description": "MatchIntent returns preliminary intent match results, doesn’t change the session\nstatus.",
+      "description": "MatchIntent returns preliminary intent match results, doesn't change the session\nstatus.",
       "file": "SessionsClient/MatchIntent/main.go",
       "language": "GO",
       "clientMethod": {
@@ -5809,7 +5809,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "cxpb.MatchIntentResponse",
+        "resultType": "*cxpb.MatchIntentResponse",
         "client": {
           "shortName": "SessionsClient",
           "fullName": "google.cloud.dialogflow.cx.v3beta1.SessionsClient"
@@ -5835,7 +5835,7 @@
     {
       "regionTag": "dialogflow_v3beta1_generated_Sessions_StreamingDetectIntent_sync",
       "title": "dialogflow StreamingDetectIntent Sample",
-      "description": "StreamingDetectIntent processes a natural language query in audio format in a streaming fashion\nand returns structured, actionable data as a result. This method is only\navailable via the gRPC API (not REST).\n\nNote: Always use agent versions for production traffic.\nSee Versions and\nenvironments (at https: //cloud.google.com/dialogflow/cx/docs/concept/version).\n\nThis method is not supported for the REST transport.",
+      "description": "StreamingDetectIntent processes a natural language query in audio format in a streaming fashion\nand returns structured, actionable data as a result. This method is only\navailable via the gRPC API (not REST).\n\nNote: Always use agent versions for production traffic.\nSee [Versions and\nenvironments](https: //cloud.google.com/dialogflow/cx/docs/concept/version).\n\n\nThis method is not supported for the REST transport.",
       "file": "SessionsClient/StreamingDetectIntent/main.go",
       "language": "GO",
       "clientMethod": {
@@ -5851,6 +5851,7 @@
             "name": "opts"
           }
         ],
+        "resultType": "cxpb.Sessions_StreamingDetectIntentClient",
         "client": {
           "shortName": "SessionsClient",
           "fullName": "google.cloud.dialogflow.cx.v3beta1.SessionsClient"
@@ -5921,7 +5922,7 @@
     {
       "regionTag": "dialogflow_v3beta1_generated_TestCases_BatchRunTestCases_sync",
       "title": "dialogflow BatchRunTestCases Sample",
-      "description": "BatchRunTestCases kicks off a batch run of test cases.\n\nThis method is a long-running\noperation (at https: //cloud.google.com/dialogflow/cx/docs/how/long-running-operation).\nThe returned Operation type has the following method-specific fields: \n\n\tmetadata: \n\tBatchRunTestCasesMetadata\n\n\tresponse: \n\tBatchRunTestCasesResponse",
+      "description": "BatchRunTestCases kicks off a batch run of test cases.\n\nThis method is a [long-running\noperation](https: //cloud.google.com/dialogflow/cx/docs/how/long-running-operation).\nThe returned `Operation` type has the following method-specific fields: \n\n- `metadata`: \n[BatchRunTestCasesMetadata][google.cloud.dialogflow.cx.v3beta1.BatchRunTestCasesMetadata]\n- `response`: \n[BatchRunTestCasesResponse][google.cloud.dialogflow.cx.v3beta1.BatchRunTestCasesResponse]",
       "file": "TestCasesClient/BatchRunTestCases/main.go",
       "language": "GO",
       "clientMethod": {
@@ -5987,7 +5988,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "cxpb.CalculateCoverageResponse",
+        "resultType": "*cxpb.CalculateCoverageResponse",
         "client": {
           "shortName": "TestCasesClient",
           "fullName": "google.cloud.dialogflow.cx.v3beta1.TestCasesClient"
@@ -6039,10 +6040,10 @@
         },
         "method": {
           "shortName": "CancelOperation",
-          "fullName": "google.cloud.dialogflow.cx.v3beta1.TestCases.CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
           "service": {
-            "shortName": "TestCases",
-            "fullName": "google.cloud.dialogflow.cx.v3beta1.TestCases"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -6050,7 +6051,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -6078,7 +6079,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "cxpb.TestCase",
+        "resultType": "*cxpb.TestCase",
         "client": {
           "shortName": "TestCasesClient",
           "fullName": "google.cloud.dialogflow.cx.v3beta1.TestCasesClient"
@@ -6104,7 +6105,7 @@
     {
       "regionTag": "dialogflow_v3beta1_generated_TestCases_ExportTestCases_sync",
       "title": "dialogflow ExportTestCases Sample",
-      "description": "ExportTestCases exports the test cases under the agent to a Cloud Storage bucket or a local\nfile. Filter can be applied to export a subset of test cases.\n\nThis method is a long-running\noperation (at https: //cloud.google.com/dialogflow/cx/docs/how/long-running-operation).\nThe returned Operation type has the following method-specific fields: \n\n\tmetadata: \n\tExportTestCasesMetadata\n\n\tresponse: \n\tExportTestCasesResponse",
+      "description": "ExportTestCases exports the test cases under the agent to a Cloud Storage bucket or a local\nfile. Filter can be applied to export a subset of test cases.\n\nThis method is a [long-running\noperation](https: //cloud.google.com/dialogflow/cx/docs/how/long-running-operation).\nThe returned `Operation` type has the following method-specific fields: \n\n- `metadata`: \n[ExportTestCasesMetadata][google.cloud.dialogflow.cx.v3beta1.ExportTestCasesMetadata]\n- `response`: \n[ExportTestCasesResponse][google.cloud.dialogflow.cx.v3beta1.ExportTestCasesResponse]",
       "file": "TestCasesClient/ExportTestCases/main.go",
       "language": "GO",
       "clientMethod": {
@@ -6170,17 +6171,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "locationpb.Location",
+        "resultType": "*locationpb.Location",
         "client": {
           "shortName": "TestCasesClient",
           "fullName": "google.cloud.dialogflow.cx.v3beta1.TestCasesClient"
         },
         "method": {
           "shortName": "GetLocation",
-          "fullName": "google.cloud.dialogflow.cx.v3beta1.TestCases.GetLocation",
+          "fullName": "google.cloud.location.Locations.GetLocation",
           "service": {
-            "shortName": "TestCases",
-            "fullName": "google.cloud.dialogflow.cx.v3beta1.TestCases"
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
           }
         }
       },
@@ -6188,7 +6189,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -6216,17 +6217,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "longrunningpb.Operation",
+        "resultType": "*longrunningpb.Operation",
         "client": {
           "shortName": "TestCasesClient",
           "fullName": "google.cloud.dialogflow.cx.v3beta1.TestCasesClient"
         },
         "method": {
           "shortName": "GetOperation",
-          "fullName": "google.cloud.dialogflow.cx.v3beta1.TestCases.GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
           "service": {
-            "shortName": "TestCases",
-            "fullName": "google.cloud.dialogflow.cx.v3beta1.TestCases"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -6234,7 +6235,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -6262,7 +6263,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "cxpb.TestCase",
+        "resultType": "*cxpb.TestCase",
         "client": {
           "shortName": "TestCasesClient",
           "fullName": "google.cloud.dialogflow.cx.v3beta1.TestCasesClient"
@@ -6308,7 +6309,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "cxpb.TestCaseResult",
+        "resultType": "*cxpb.TestCaseResult",
         "client": {
           "shortName": "TestCasesClient",
           "fullName": "google.cloud.dialogflow.cx.v3beta1.TestCasesClient"
@@ -6334,7 +6335,7 @@
     {
       "regionTag": "dialogflow_v3beta1_generated_TestCases_ImportTestCases_sync",
       "title": "dialogflow ImportTestCases Sample",
-      "description": "ImportTestCases imports the test cases from a Cloud Storage bucket or a local file. It\nalways creates new test cases and won’t overwrite any existing ones. The\nprovided ID in the imported test case is neglected.\n\nThis method is a long-running\noperation (at https: //cloud.google.com/dialogflow/cx/docs/how/long-running-operation).\nThe returned Operation type has the following method-specific fields: \n\n\tmetadata: \n\tImportTestCasesMetadata\n\n\tresponse: \n\tImportTestCasesResponse",
+      "description": "ImportTestCases imports the test cases from a Cloud Storage bucket or a local file. It\nalways creates new test cases and won't overwrite any existing ones. The\nprovided ID in the imported test case is neglected.\n\nThis method is a [long-running\noperation](https: //cloud.google.com/dialogflow/cx/docs/how/long-running-operation).\nThe returned `Operation` type has the following method-specific fields: \n\n- `metadata`: \n[ImportTestCasesMetadata][google.cloud.dialogflow.cx.v3beta1.ImportTestCasesMetadata]\n- `response`: \n[ImportTestCasesResponse][google.cloud.dialogflow.cx.v3beta1.ImportTestCasesResponse]",
       "file": "TestCasesClient/ImportTestCases/main.go",
       "language": "GO",
       "clientMethod": {
@@ -6407,10 +6408,10 @@
         },
         "method": {
           "shortName": "ListLocations",
-          "fullName": "google.cloud.dialogflow.cx.v3beta1.TestCases.ListLocations",
+          "fullName": "google.cloud.location.Locations.ListLocations",
           "service": {
-            "shortName": "TestCases",
-            "fullName": "google.cloud.dialogflow.cx.v3beta1.TestCases"
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
           }
         }
       },
@@ -6418,7 +6419,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 61,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -6453,10 +6454,10 @@
         },
         "method": {
           "shortName": "ListOperations",
-          "fullName": "google.cloud.dialogflow.cx.v3beta1.TestCases.ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
           "service": {
-            "shortName": "TestCases",
-            "fullName": "google.cloud.dialogflow.cx.v3beta1.TestCases"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -6464,7 +6465,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 61,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -6564,7 +6565,7 @@
     {
       "regionTag": "dialogflow_v3beta1_generated_TestCases_RunTestCase_sync",
       "title": "dialogflow RunTestCase Sample",
-      "description": "RunTestCase kicks off a test case run.\n\nThis method is a long-running\noperation (at https: //cloud.google.com/dialogflow/cx/docs/how/long-running-operation).\nThe returned Operation type has the following method-specific fields: \n\n\tmetadata: \n\tRunTestCaseMetadata\n\n\tresponse: \n\tRunTestCaseResponse",
+      "description": "RunTestCase kicks off a test case run.\n\nThis method is a [long-running\noperation](https: //cloud.google.com/dialogflow/cx/docs/how/long-running-operation).\nThe returned `Operation` type has the following method-specific fields: \n\n- `metadata`: \n[RunTestCaseMetadata][google.cloud.dialogflow.cx.v3beta1.RunTestCaseMetadata]\n- `response`: \n[RunTestCaseResponse][google.cloud.dialogflow.cx.v3beta1.RunTestCaseResponse]",
       "file": "TestCasesClient/RunTestCase/main.go",
       "language": "GO",
       "clientMethod": {
@@ -6630,7 +6631,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "cxpb.TestCase",
+        "resultType": "*cxpb.TestCase",
         "client": {
           "shortName": "TestCasesClient",
           "fullName": "google.cloud.dialogflow.cx.v3beta1.TestCasesClient"
@@ -6682,10 +6683,10 @@
         },
         "method": {
           "shortName": "CancelOperation",
-          "fullName": "google.cloud.dialogflow.cx.v3beta1.TransitionRouteGroups.CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
           "service": {
-            "shortName": "TransitionRouteGroups",
-            "fullName": "google.cloud.dialogflow.cx.v3beta1.TransitionRouteGroups"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -6693,7 +6694,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -6701,7 +6702,7 @@
     {
       "regionTag": "dialogflow_v3beta1_generated_TransitionRouteGroups_CreateTransitionRouteGroup_sync",
       "title": "dialogflow CreateTransitionRouteGroup Sample",
-      "description": "CreateTransitionRouteGroup creates an\nTransitionRouteGroup\nin the specified flow.\n\nNote: You should always train a flow prior to sending it queries. See the\ntraining\ndocumentation (at https: //cloud.google.com/dialogflow/cx/docs/concept/training).",
+      "description": "CreateTransitionRouteGroup creates an\n[TransitionRouteGroup][google.cloud.dialogflow.cx.v3beta1.TransitionRouteGroup]\nin the specified flow.\n\nNote: You should always train a flow prior to sending it queries. See the\n[training\ndocumentation](https: //cloud.google.com/dialogflow/cx/docs/concept/training).",
       "file": "TransitionRouteGroupsClient/CreateTransitionRouteGroup/main.go",
       "language": "GO",
       "clientMethod": {
@@ -6721,7 +6722,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "cxpb.TransitionRouteGroup",
+        "resultType": "*cxpb.TransitionRouteGroup",
         "client": {
           "shortName": "TransitionRouteGroupsClient",
           "fullName": "google.cloud.dialogflow.cx.v3beta1.TransitionRouteGroupsClient"
@@ -6747,7 +6748,7 @@
     {
       "regionTag": "dialogflow_v3beta1_generated_TransitionRouteGroups_DeleteTransitionRouteGroup_sync",
       "title": "dialogflow DeleteTransitionRouteGroup Sample",
-      "description": "DeleteTransitionRouteGroup deletes the specified\nTransitionRouteGroup.\n\nNote: You should always train a flow prior to sending it queries. See the\ntraining\ndocumentation (at https: //cloud.google.com/dialogflow/cx/docs/concept/training).",
+      "description": "DeleteTransitionRouteGroup deletes the specified\n[TransitionRouteGroup][google.cloud.dialogflow.cx.v3beta1.TransitionRouteGroup].\n\nNote: You should always train a flow prior to sending it queries. See the\n[training\ndocumentation](https: //cloud.google.com/dialogflow/cx/docs/concept/training).",
       "file": "TransitionRouteGroupsClient/DeleteTransitionRouteGroup/main.go",
       "language": "GO",
       "clientMethod": {
@@ -6812,17 +6813,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "locationpb.Location",
+        "resultType": "*locationpb.Location",
         "client": {
           "shortName": "TransitionRouteGroupsClient",
           "fullName": "google.cloud.dialogflow.cx.v3beta1.TransitionRouteGroupsClient"
         },
         "method": {
           "shortName": "GetLocation",
-          "fullName": "google.cloud.dialogflow.cx.v3beta1.TransitionRouteGroups.GetLocation",
+          "fullName": "google.cloud.location.Locations.GetLocation",
           "service": {
-            "shortName": "TransitionRouteGroups",
-            "fullName": "google.cloud.dialogflow.cx.v3beta1.TransitionRouteGroups"
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
           }
         }
       },
@@ -6830,7 +6831,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -6858,17 +6859,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "longrunningpb.Operation",
+        "resultType": "*longrunningpb.Operation",
         "client": {
           "shortName": "TransitionRouteGroupsClient",
           "fullName": "google.cloud.dialogflow.cx.v3beta1.TransitionRouteGroupsClient"
         },
         "method": {
           "shortName": "GetOperation",
-          "fullName": "google.cloud.dialogflow.cx.v3beta1.TransitionRouteGroups.GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
           "service": {
-            "shortName": "TransitionRouteGroups",
-            "fullName": "google.cloud.dialogflow.cx.v3beta1.TransitionRouteGroups"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -6876,7 +6877,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -6884,7 +6885,7 @@
     {
       "regionTag": "dialogflow_v3beta1_generated_TransitionRouteGroups_GetTransitionRouteGroup_sync",
       "title": "dialogflow GetTransitionRouteGroup Sample",
-      "description": "GetTransitionRouteGroup retrieves the specified\nTransitionRouteGroup.",
+      "description": "GetTransitionRouteGroup retrieves the specified\n[TransitionRouteGroup][google.cloud.dialogflow.cx.v3beta1.TransitionRouteGroup].",
       "file": "TransitionRouteGroupsClient/GetTransitionRouteGroup/main.go",
       "language": "GO",
       "clientMethod": {
@@ -6904,7 +6905,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "cxpb.TransitionRouteGroup",
+        "resultType": "*cxpb.TransitionRouteGroup",
         "client": {
           "shortName": "TransitionRouteGroupsClient",
           "fullName": "google.cloud.dialogflow.cx.v3beta1.TransitionRouteGroupsClient"
@@ -6957,10 +6958,10 @@
         },
         "method": {
           "shortName": "ListLocations",
-          "fullName": "google.cloud.dialogflow.cx.v3beta1.TransitionRouteGroups.ListLocations",
+          "fullName": "google.cloud.location.Locations.ListLocations",
           "service": {
-            "shortName": "TransitionRouteGroups",
-            "fullName": "google.cloud.dialogflow.cx.v3beta1.TransitionRouteGroups"
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
           }
         }
       },
@@ -6968,7 +6969,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 61,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -7003,10 +7004,10 @@
         },
         "method": {
           "shortName": "ListOperations",
-          "fullName": "google.cloud.dialogflow.cx.v3beta1.TransitionRouteGroups.ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
           "service": {
-            "shortName": "TransitionRouteGroups",
-            "fullName": "google.cloud.dialogflow.cx.v3beta1.TransitionRouteGroups"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -7014,7 +7015,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 61,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -7068,7 +7069,7 @@
     {
       "regionTag": "dialogflow_v3beta1_generated_TransitionRouteGroups_UpdateTransitionRouteGroup_sync",
       "title": "dialogflow UpdateTransitionRouteGroup Sample",
-      "description": "UpdateTransitionRouteGroup updates the specified\nTransitionRouteGroup.\n\nNote: You should always train a flow prior to sending it queries. See the\ntraining\ndocumentation (at https: //cloud.google.com/dialogflow/cx/docs/concept/training).",
+      "description": "UpdateTransitionRouteGroup updates the specified\n[TransitionRouteGroup][google.cloud.dialogflow.cx.v3beta1.TransitionRouteGroup].\n\nNote: You should always train a flow prior to sending it queries. See the\n[training\ndocumentation](https: //cloud.google.com/dialogflow/cx/docs/concept/training).",
       "file": "TransitionRouteGroupsClient/UpdateTransitionRouteGroup/main.go",
       "language": "GO",
       "clientMethod": {
@@ -7088,7 +7089,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "cxpb.TransitionRouteGroup",
+        "resultType": "*cxpb.TransitionRouteGroup",
         "client": {
           "shortName": "TransitionRouteGroupsClient",
           "fullName": "google.cloud.dialogflow.cx.v3beta1.TransitionRouteGroupsClient"
@@ -7140,10 +7141,10 @@
         },
         "method": {
           "shortName": "CancelOperation",
-          "fullName": "google.cloud.dialogflow.cx.v3beta1.Versions.CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
           "service": {
-            "shortName": "Versions",
-            "fullName": "google.cloud.dialogflow.cx.v3beta1.Versions"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -7151,7 +7152,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -7179,7 +7180,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "cxpb.CompareVersionsResponse",
+        "resultType": "*cxpb.CompareVersionsResponse",
         "client": {
           "shortName": "VersionsClient",
           "fullName": "google.cloud.dialogflow.cx.v3beta1.VersionsClient"
@@ -7205,7 +7206,7 @@
     {
       "regionTag": "dialogflow_v3beta1_generated_Versions_CreateVersion_sync",
       "title": "dialogflow CreateVersion Sample",
-      "description": "CreateVersion creates a Version in the\nspecified Flow.\n\nThis method is a long-running\noperation (at https: //cloud.google.com/dialogflow/cx/docs/how/long-running-operation).\nThe returned Operation type has the following method-specific fields: \n\n\tmetadata: \n\tCreateVersionOperationMetadata\n\n\tresponse: Version",
+      "description": "CreateVersion creates a [Version][google.cloud.dialogflow.cx.v3beta1.Version] in the\nspecified [Flow][google.cloud.dialogflow.cx.v3beta1.Flow].\n\nThis method is a [long-running\noperation](https: //cloud.google.com/dialogflow/cx/docs/how/long-running-operation).\nThe returned `Operation` type has the following method-specific fields: \n\n- `metadata`: \n[CreateVersionOperationMetadata][google.cloud.dialogflow.cx.v3beta1.CreateVersionOperationMetadata]\n- `response`: [Version][google.cloud.dialogflow.cx.v3beta1.Version]",
       "file": "VersionsClient/CreateVersion/main.go",
       "language": "GO",
       "clientMethod": {
@@ -7251,7 +7252,7 @@
     {
       "regionTag": "dialogflow_v3beta1_generated_Versions_DeleteVersion_sync",
       "title": "dialogflow DeleteVersion Sample",
-      "description": "DeleteVersion deletes the specified\nVersion.",
+      "description": "DeleteVersion deletes the specified\n[Version][google.cloud.dialogflow.cx.v3beta1.Version].",
       "file": "VersionsClient/DeleteVersion/main.go",
       "language": "GO",
       "clientMethod": {
@@ -7316,17 +7317,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "locationpb.Location",
+        "resultType": "*locationpb.Location",
         "client": {
           "shortName": "VersionsClient",
           "fullName": "google.cloud.dialogflow.cx.v3beta1.VersionsClient"
         },
         "method": {
           "shortName": "GetLocation",
-          "fullName": "google.cloud.dialogflow.cx.v3beta1.Versions.GetLocation",
+          "fullName": "google.cloud.location.Locations.GetLocation",
           "service": {
-            "shortName": "Versions",
-            "fullName": "google.cloud.dialogflow.cx.v3beta1.Versions"
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
           }
         }
       },
@@ -7334,7 +7335,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -7362,17 +7363,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "longrunningpb.Operation",
+        "resultType": "*longrunningpb.Operation",
         "client": {
           "shortName": "VersionsClient",
           "fullName": "google.cloud.dialogflow.cx.v3beta1.VersionsClient"
         },
         "method": {
           "shortName": "GetOperation",
-          "fullName": "google.cloud.dialogflow.cx.v3beta1.Versions.GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
           "service": {
-            "shortName": "Versions",
-            "fullName": "google.cloud.dialogflow.cx.v3beta1.Versions"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -7380,7 +7381,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -7388,7 +7389,7 @@
     {
       "regionTag": "dialogflow_v3beta1_generated_Versions_GetVersion_sync",
       "title": "dialogflow GetVersion Sample",
-      "description": "GetVersion retrieves the specified\nVersion.",
+      "description": "GetVersion retrieves the specified\n[Version][google.cloud.dialogflow.cx.v3beta1.Version].",
       "file": "VersionsClient/GetVersion/main.go",
       "language": "GO",
       "clientMethod": {
@@ -7408,7 +7409,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "cxpb.Version",
+        "resultType": "*cxpb.Version",
         "client": {
           "shortName": "VersionsClient",
           "fullName": "google.cloud.dialogflow.cx.v3beta1.VersionsClient"
@@ -7461,10 +7462,10 @@
         },
         "method": {
           "shortName": "ListLocations",
-          "fullName": "google.cloud.dialogflow.cx.v3beta1.Versions.ListLocations",
+          "fullName": "google.cloud.location.Locations.ListLocations",
           "service": {
-            "shortName": "Versions",
-            "fullName": "google.cloud.dialogflow.cx.v3beta1.Versions"
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
           }
         }
       },
@@ -7472,7 +7473,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 61,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -7507,10 +7508,10 @@
         },
         "method": {
           "shortName": "ListOperations",
-          "fullName": "google.cloud.dialogflow.cx.v3beta1.Versions.ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
           "service": {
-            "shortName": "Versions",
-            "fullName": "google.cloud.dialogflow.cx.v3beta1.Versions"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -7518,7 +7519,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 61,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -7526,7 +7527,7 @@
     {
       "regionTag": "dialogflow_v3beta1_generated_Versions_ListVersions_sync",
       "title": "dialogflow ListVersions Sample",
-      "description": "ListVersions returns the list of all versions in the specified\nFlow.",
+      "description": "ListVersions returns the list of all versions in the specified\n[Flow][google.cloud.dialogflow.cx.v3beta1.Flow].",
       "file": "VersionsClient/ListVersions/main.go",
       "language": "GO",
       "clientMethod": {
@@ -7572,7 +7573,7 @@
     {
       "regionTag": "dialogflow_v3beta1_generated_Versions_LoadVersion_sync",
       "title": "dialogflow LoadVersion Sample",
-      "description": "LoadVersion loads resources in the specified version to the draft flow.\n\nThis method is a long-running\noperation (at https: //cloud.google.com/dialogflow/cx/docs/how/long-running-operation).\nThe returned Operation type has the following method-specific fields: \n\n\tmetadata: An empty Struct\n\tmessage (at https: //developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)\n\n\tresponse: An Empty\n\tmessage (at https: //developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)",
+      "description": "LoadVersion loads resources in the specified version to the draft flow.\n\nThis method is a [long-running\noperation](https: //cloud.google.com/dialogflow/cx/docs/how/long-running-operation).\nThe returned `Operation` type has the following method-specific fields: \n\n- `metadata`: An empty [Struct\nmessage](https: //developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)\n- `response`: An [Empty\nmessage](https: //developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)",
       "file": "VersionsClient/LoadVersion/main.go",
       "language": "GO",
       "clientMethod": {
@@ -7618,7 +7619,7 @@
     {
       "regionTag": "dialogflow_v3beta1_generated_Versions_UpdateVersion_sync",
       "title": "dialogflow UpdateVersion Sample",
-      "description": "UpdateVersion updates the specified\nVersion.",
+      "description": "UpdateVersion updates the specified\n[Version][google.cloud.dialogflow.cx.v3beta1.Version].",
       "file": "VersionsClient/UpdateVersion/main.go",
       "language": "GO",
       "clientMethod": {
@@ -7638,7 +7639,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "cxpb.Version",
+        "resultType": "*cxpb.Version",
         "client": {
           "shortName": "VersionsClient",
           "fullName": "google.cloud.dialogflow.cx.v3beta1.VersionsClient"
@@ -7690,10 +7691,10 @@
         },
         "method": {
           "shortName": "CancelOperation",
-          "fullName": "google.cloud.dialogflow.cx.v3beta1.Webhooks.CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
           "service": {
-            "shortName": "Webhooks",
-            "fullName": "google.cloud.dialogflow.cx.v3beta1.Webhooks"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -7701,7 +7702,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -7729,7 +7730,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "cxpb.Webhook",
+        "resultType": "*cxpb.Webhook",
         "client": {
           "shortName": "WebhooksClient",
           "fullName": "google.cloud.dialogflow.cx.v3beta1.WebhooksClient"
@@ -7820,17 +7821,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "locationpb.Location",
+        "resultType": "*locationpb.Location",
         "client": {
           "shortName": "WebhooksClient",
           "fullName": "google.cloud.dialogflow.cx.v3beta1.WebhooksClient"
         },
         "method": {
           "shortName": "GetLocation",
-          "fullName": "google.cloud.dialogflow.cx.v3beta1.Webhooks.GetLocation",
+          "fullName": "google.cloud.location.Locations.GetLocation",
           "service": {
-            "shortName": "Webhooks",
-            "fullName": "google.cloud.dialogflow.cx.v3beta1.Webhooks"
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
           }
         }
       },
@@ -7838,7 +7839,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -7866,17 +7867,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "longrunningpb.Operation",
+        "resultType": "*longrunningpb.Operation",
         "client": {
           "shortName": "WebhooksClient",
           "fullName": "google.cloud.dialogflow.cx.v3beta1.WebhooksClient"
         },
         "method": {
           "shortName": "GetOperation",
-          "fullName": "google.cloud.dialogflow.cx.v3beta1.Webhooks.GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
           "service": {
-            "shortName": "Webhooks",
-            "fullName": "google.cloud.dialogflow.cx.v3beta1.Webhooks"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -7884,7 +7885,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -7912,7 +7913,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "cxpb.Webhook",
+        "resultType": "*cxpb.Webhook",
         "client": {
           "shortName": "WebhooksClient",
           "fullName": "google.cloud.dialogflow.cx.v3beta1.WebhooksClient"
@@ -7965,10 +7966,10 @@
         },
         "method": {
           "shortName": "ListLocations",
-          "fullName": "google.cloud.dialogflow.cx.v3beta1.Webhooks.ListLocations",
+          "fullName": "google.cloud.location.Locations.ListLocations",
           "service": {
-            "shortName": "Webhooks",
-            "fullName": "google.cloud.dialogflow.cx.v3beta1.Webhooks"
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
           }
         }
       },
@@ -7976,7 +7977,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 61,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -8011,10 +8012,10 @@
         },
         "method": {
           "shortName": "ListOperations",
-          "fullName": "google.cloud.dialogflow.cx.v3beta1.Webhooks.ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
           "service": {
-            "shortName": "Webhooks",
-            "fullName": "google.cloud.dialogflow.cx.v3beta1.Webhooks"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -8022,7 +8023,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 61,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -8096,7 +8097,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "cxpb.Webhook",
+        "resultType": "*cxpb.Webhook",
         "client": {
           "shortName": "WebhooksClient",
           "fullName": "google.cloud.dialogflow.cx.v3beta1.WebhooksClient"

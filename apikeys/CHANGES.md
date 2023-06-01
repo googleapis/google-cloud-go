@@ -1,6 +1,28 @@
 # Changelog
 
 
+## [1.1.0](https://github.com/googleapis/google-cloud-go/compare/apikeys/v1.0.1...apikeys/v1.1.0) (2023-05-30)
+
+
+### Features
+
+* **apikeys:** Update all direct dependencies ([b340d03](https://github.com/googleapis/google-cloud-go/commit/b340d030f2b52a4ce48846ce63984b28583abde6))
+
+## [1.0.1](https://github.com/googleapis/google-cloud-go/compare/apikeys/v1.0.0...apikeys/v1.0.1) (2023-05-08)
+
+
+### Bug Fixes
+
+* **apikeys:** Update grpc to v1.55.0 ([1147ce0](https://github.com/googleapis/google-cloud-go/commit/1147ce02a990276ca4f8ab7a1ab65c14da4450ef))
+
+## [1.0.0](https://github.com/googleapis/google-cloud-go/compare/apikeys/v0.6.0...apikeys/v1.0.0) (2023-04-04)
+
+
+### Features
+
+* **apikeys:** Promote to GA ([fce42e0](https://github.com/googleapis/google-cloud-go/commit/fce42e0e6764e27760cf6f137b66fed45145ebf8))
+* **apikeys:** Promote to GA ([#7640](https://github.com/googleapis/google-cloud-go/issues/7640)) ([b0e4c65](https://github.com/googleapis/google-cloud-go/commit/b0e4c65df0600f02afd2d4881b1a597a874a4c81))
+
 ## [0.6.0](https://github.com/googleapis/google-cloud-go/compare/apikeys/v0.5.0...apikeys/v0.6.0) (2023-03-15)
 
 

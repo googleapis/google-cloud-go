@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/iap/apiv1",
-    "version": "1.6.0",
+    "version": "1.8.0",
     "language": "GO",
     "apis": [
       {
@@ -34,7 +34,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "iappb.TunnelDestGroup",
+        "resultType": "*iappb.TunnelDestGroup",
         "client": {
           "shortName": "IdentityAwareProxyAdminClient",
           "fullName": "google.cloud.iap.v1.IdentityAwareProxyAdminClient"
@@ -105,7 +105,7 @@
     {
       "regionTag": "iap_v1_generated_IdentityAwareProxyAdminService_GetIamPolicy_sync",
       "title": "iap GetIamPolicy Sample",
-      "description": "GetIamPolicy gets the access control policy for an Identity-Aware Proxy protected\nresource.\nMore information about managing access via IAP can be found at: \nhttps: //cloud.google.com/iap/docs/managing-access#managing_access_via_the_api (at https: //cloud.google.com/iap/docs/managing-access#managing_access_via_the_api)",
+      "description": "GetIamPolicy gets the access control policy for an Identity-Aware Proxy protected\nresource.\nMore information about managing access via IAP can be found at: \nhttps: //cloud.google.com/iap/docs/managing-access#managing_access_via_the_api",
       "file": "IdentityAwareProxyAdminClient/GetIamPolicy/main.go",
       "language": "GO",
       "clientMethod": {
@@ -125,7 +125,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "iampb.Policy",
+        "resultType": "*iampb.Policy",
         "client": {
           "shortName": "IdentityAwareProxyAdminClient",
           "fullName": "google.cloud.iap.v1.IdentityAwareProxyAdminClient"
@@ -143,7 +143,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -171,7 +171,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "iappb.IapSettings",
+        "resultType": "*iappb.IapSettings",
         "client": {
           "shortName": "IdentityAwareProxyAdminClient",
           "fullName": "google.cloud.iap.v1.IdentityAwareProxyAdminClient"
@@ -217,7 +217,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "iappb.TunnelDestGroup",
+        "resultType": "*iappb.TunnelDestGroup",
         "client": {
           "shortName": "IdentityAwareProxyAdminClient",
           "fullName": "google.cloud.iap.v1.IdentityAwareProxyAdminClient"
@@ -243,7 +243,7 @@
     {
       "regionTag": "iap_v1_generated_IdentityAwareProxyAdminService_ListTunnelDestGroups_sync",
       "title": "iap ListTunnelDestGroups Sample",
-      "description": "ListTunnelDestGroups lists the existing TunnelDestGroups. To group across all locations, use a\n- as the location ID. For example: \n/v1/projects/123/iap_tunnel/locations/-/destGroups",
+      "description": "ListTunnelDestGroups lists the existing TunnelDestGroups. To group across all locations, use a\n`-` as the location ID. For example: \n`/v1/projects/123/iap_tunnel/locations/-/destGroups`",
       "file": "IdentityAwareProxyAdminClient/ListTunnelDestGroups/main.go",
       "language": "GO",
       "clientMethod": {
@@ -289,7 +289,7 @@
     {
       "regionTag": "iap_v1_generated_IdentityAwareProxyAdminService_SetIamPolicy_sync",
       "title": "iap SetIamPolicy Sample",
-      "description": "SetIamPolicy sets the access control policy for an Identity-Aware Proxy protected\nresource. Replaces any existing policy.\nMore information about managing access via IAP can be found at: \nhttps: //cloud.google.com/iap/docs/managing-access#managing_access_via_the_api (at https: //cloud.google.com/iap/docs/managing-access#managing_access_via_the_api)",
+      "description": "SetIamPolicy sets the access control policy for an Identity-Aware Proxy protected\nresource. Replaces any existing policy.\nMore information about managing access via IAP can be found at: \nhttps: //cloud.google.com/iap/docs/managing-access#managing_access_via_the_api",
       "file": "IdentityAwareProxyAdminClient/SetIamPolicy/main.go",
       "language": "GO",
       "clientMethod": {
@@ -309,7 +309,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "iampb.Policy",
+        "resultType": "*iampb.Policy",
         "client": {
           "shortName": "IdentityAwareProxyAdminClient",
           "fullName": "google.cloud.iap.v1.IdentityAwareProxyAdminClient"
@@ -327,7 +327,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -335,7 +335,7 @@
     {
       "regionTag": "iap_v1_generated_IdentityAwareProxyAdminService_TestIamPermissions_sync",
       "title": "iap TestIamPermissions Sample",
-      "description": "TestIamPermissions returns permissions that a caller has on the Identity-Aware Proxy protected\nresource.\nMore information about managing access via IAP can be found at: \nhttps: //cloud.google.com/iap/docs/managing-access#managing_access_via_the_api (at https: //cloud.google.com/iap/docs/managing-access#managing_access_via_the_api)",
+      "description": "TestIamPermissions returns permissions that a caller has on the Identity-Aware Proxy protected\nresource.\nMore information about managing access via IAP can be found at: \nhttps: //cloud.google.com/iap/docs/managing-access#managing_access_via_the_api",
       "file": "IdentityAwareProxyAdminClient/TestIamPermissions/main.go",
       "language": "GO",
       "clientMethod": {
@@ -355,7 +355,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "iampb.TestIamPermissionsResponse",
+        "resultType": "*iampb.TestIamPermissionsResponse",
         "client": {
           "shortName": "IdentityAwareProxyAdminClient",
           "fullName": "google.cloud.iap.v1.IdentityAwareProxyAdminClient"
@@ -373,7 +373,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -381,7 +381,7 @@
     {
       "regionTag": "iap_v1_generated_IdentityAwareProxyAdminService_UpdateIapSettings_sync",
       "title": "iap UpdateIapSettings Sample",
-      "description": "UpdateIapSettings updates the IAP settings on a particular IAP protected resource. It\nreplaces all fields unless the update_mask is set.",
+      "description": "UpdateIapSettings updates the IAP settings on a particular IAP protected resource. It\nreplaces all fields unless the `update_mask` is set.",
       "file": "IdentityAwareProxyAdminClient/UpdateIapSettings/main.go",
       "language": "GO",
       "clientMethod": {
@@ -401,7 +401,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "iappb.IapSettings",
+        "resultType": "*iappb.IapSettings",
         "client": {
           "shortName": "IdentityAwareProxyAdminClient",
           "fullName": "google.cloud.iap.v1.IdentityAwareProxyAdminClient"
@@ -447,7 +447,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "iappb.TunnelDestGroup",
+        "resultType": "*iappb.TunnelDestGroup",
         "client": {
           "shortName": "IdentityAwareProxyAdminClient",
           "fullName": "google.cloud.iap.v1.IdentityAwareProxyAdminClient"
@@ -473,7 +473,7 @@
     {
       "regionTag": "iap_v1_generated_IdentityAwareProxyOAuthService_CreateBrand_sync",
       "title": "iap CreateBrand Sample",
-      "description": "CreateBrand constructs a new OAuth brand for the project if one does not exist.\nThe created brand is “internal only”, meaning that OAuth clients created\nunder it only accept requests from users who belong to the same Google\nWorkspace organization as the project. The brand is created in an\nun-reviewed status. NOTE: The “internal only” status can be manually\nchanged in the Google Cloud Console. Requires that a brand does not already\nexist for the project, and that the specified support email is owned by the\ncaller.",
+      "description": "CreateBrand constructs a new OAuth brand for the project if one does not exist.\nThe created brand is \"internal only\", meaning that OAuth clients created\nunder it only accept requests from users who belong to the same Google\nWorkspace organization as the project. The brand is created in an\nun-reviewed status. NOTE: The \"internal only\" status can be manually\nchanged in the Google Cloud Console. Requires that a brand does not already\nexist for the project, and that the specified support email is owned by the\ncaller.",
       "file": "IdentityAwareProxyOAuthClient/CreateBrand/main.go",
       "language": "GO",
       "clientMethod": {
@@ -493,7 +493,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "iappb.Brand",
+        "resultType": "*iappb.Brand",
         "client": {
           "shortName": "IdentityAwareProxyOAuthClient",
           "fullName": "google.cloud.iap.v1.IdentityAwareProxyOAuthClient"
@@ -539,7 +539,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "iappb.IdentityAwareProxyClient",
+        "resultType": "*iappb.IdentityAwareProxyClient",
         "client": {
           "shortName": "IdentityAwareProxyOAuthClient",
           "fullName": "google.cloud.iap.v1.IdentityAwareProxyOAuthClient"
@@ -630,7 +630,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "iappb.Brand",
+        "resultType": "*iappb.Brand",
         "client": {
           "shortName": "IdentityAwareProxyOAuthClient",
           "fullName": "google.cloud.iap.v1.IdentityAwareProxyOAuthClient"
@@ -676,7 +676,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "iappb.IdentityAwareProxyClient",
+        "resultType": "*iappb.IdentityAwareProxyClient",
         "client": {
           "shortName": "IdentityAwareProxyOAuthClient",
           "fullName": "google.cloud.iap.v1.IdentityAwareProxyOAuthClient"
@@ -722,7 +722,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "iappb.ListBrandsResponse",
+        "resultType": "*iappb.ListBrandsResponse",
         "client": {
           "shortName": "IdentityAwareProxyOAuthClient",
           "fullName": "google.cloud.iap.v1.IdentityAwareProxyOAuthClient"
@@ -814,7 +814,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "iappb.IdentityAwareProxyClient",
+        "resultType": "*iappb.IdentityAwareProxyClient",
         "client": {
           "shortName": "IdentityAwareProxyOAuthClient",
           "fullName": "google.cloud.iap.v1.IdentityAwareProxyOAuthClient"

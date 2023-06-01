@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/securitycenter/apiv1p1beta1",
-    "version": "1.18.1",
+    "version": "1.21.0",
     "language": "GO",
     "apis": [
       {
@@ -34,7 +34,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "securitycenterpb.Finding",
+        "resultType": "*securitycenterpb.Finding",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.securitycenter.v1p1beta1.Client"
@@ -80,7 +80,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "securitycenterpb.NotificationConfig",
+        "resultType": "*securitycenterpb.NotificationConfig",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.securitycenter.v1p1beta1.Client"
@@ -126,7 +126,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "securitycenterpb.Source",
+        "resultType": "*securitycenterpb.Source",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.securitycenter.v1p1beta1.Client"
@@ -217,7 +217,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "iampb.Policy",
+        "resultType": "*iampb.Policy",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.securitycenter.v1p1beta1.Client"
@@ -235,7 +235,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -263,7 +263,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "securitycenterpb.NotificationConfig",
+        "resultType": "*securitycenterpb.NotificationConfig",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.securitycenter.v1p1beta1.Client"
@@ -309,7 +309,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "securitycenterpb.OrganizationSettings",
+        "resultType": "*securitycenterpb.OrganizationSettings",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.securitycenter.v1p1beta1.Client"
@@ -355,7 +355,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "securitycenterpb.Source",
+        "resultType": "*securitycenterpb.Source",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.securitycenter.v1p1beta1.Client"
@@ -381,7 +381,7 @@
     {
       "regionTag": "securitycenter_v1p1beta1_generated_SecurityCenter_GroupAssets_sync",
       "title": "securitycenter GroupAssets Sample",
-      "description": "GroupAssets filters an organization’s assets and  groups them by their specified\nproperties.",
+      "description": "GroupAssets filters an organization's assets and  groups them by their specified\nproperties.",
       "file": "Client/GroupAssets/main.go",
       "language": "GO",
       "clientMethod": {
@@ -427,7 +427,7 @@
     {
       "regionTag": "securitycenter_v1p1beta1_generated_SecurityCenter_GroupFindings_sync",
       "title": "securitycenter GroupFindings Sample",
-      "description": "GroupFindings filters an organization or source’s findings and  groups them by their\nspecified properties.\n\nTo group across all sources provide a - as the source id.\nExample: /v1/organizations/{organization_id}/sources/-/findings,\n/v1/folders/{folder_id}/sources/-/findings,\n/v1/projects/{project_id}/sources/-/findings",
+      "description": "GroupFindings filters an organization or source's findings and  groups them by their\nspecified properties.\n\nTo group across all sources provide a `-` as the source id.\nExample: /v1/organizations/{organization_id}/sources/-/findings,\n/v1/folders/{folder_id}/sources/-/findings,\n/v1/projects/{project_id}/sources/-/findings",
       "file": "Client/GroupFindings/main.go",
       "language": "GO",
       "clientMethod": {
@@ -473,7 +473,7 @@
     {
       "regionTag": "securitycenter_v1p1beta1_generated_SecurityCenter_ListAssets_sync",
       "title": "securitycenter ListAssets Sample",
-      "description": "ListAssets lists an organization’s assets.",
+      "description": "ListAssets lists an organization's assets.",
       "file": "Client/ListAssets/main.go",
       "language": "GO",
       "clientMethod": {
@@ -519,7 +519,7 @@
     {
       "regionTag": "securitycenter_v1p1beta1_generated_SecurityCenter_ListFindings_sync",
       "title": "securitycenter ListFindings Sample",
-      "description": "ListFindings lists an organization or source’s findings.\n\nTo list across all sources provide a - as the source id.\nExample: /v1p1beta1/organizations/{organization_id}/sources/-/findings",
+      "description": "ListFindings lists an organization or source's findings.\n\nTo list across all sources provide a `-` as the source id.\nExample: /v1p1beta1/organizations/{organization_id}/sources/-/findings",
       "file": "Client/ListFindings/main.go",
       "language": "GO",
       "clientMethod": {
@@ -723,7 +723,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "securitycenterpb.Finding",
+        "resultType": "*securitycenterpb.Finding",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.securitycenter.v1p1beta1.Client"
@@ -769,7 +769,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "iampb.Policy",
+        "resultType": "*iampb.Policy",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.securitycenter.v1p1beta1.Client"
@@ -787,7 +787,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -815,7 +815,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "iampb.TestIamPermissionsResponse",
+        "resultType": "*iampb.TestIamPermissionsResponse",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.securitycenter.v1p1beta1.Client"
@@ -833,7 +833,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -861,7 +861,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "securitycenterpb.Finding",
+        "resultType": "*securitycenterpb.Finding",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.securitycenter.v1p1beta1.Client"
@@ -907,7 +907,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "securitycenterpb.NotificationConfig",
+        "resultType": "*securitycenterpb.NotificationConfig",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.securitycenter.v1p1beta1.Client"
@@ -933,7 +933,7 @@
     {
       "regionTag": "securitycenter_v1p1beta1_generated_SecurityCenter_UpdateOrganizationSettings_sync",
       "title": "securitycenter UpdateOrganizationSettings Sample",
-      "description": "UpdateOrganizationSettings updates an organization’s settings.",
+      "description": "UpdateOrganizationSettings updates an organization's settings.",
       "file": "Client/UpdateOrganizationSettings/main.go",
       "language": "GO",
       "clientMethod": {
@@ -953,7 +953,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "securitycenterpb.OrganizationSettings",
+        "resultType": "*securitycenterpb.OrganizationSettings",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.securitycenter.v1p1beta1.Client"
@@ -999,7 +999,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "securitycenterpb.SecurityMarks",
+        "resultType": "*securitycenterpb.SecurityMarks",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.securitycenter.v1p1beta1.Client"
@@ -1045,7 +1045,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "securitycenterpb.Source",
+        "resultType": "*securitycenterpb.Source",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.securitycenter.v1p1beta1.Client"

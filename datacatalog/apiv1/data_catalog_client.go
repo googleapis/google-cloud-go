@@ -107,6 +107,8 @@ func defaultCallOptions() *CallOptions {
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
+					codes.ResourceExhausted,
+					codes.Internal,
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
 					Max:        60000 * time.Millisecond,
@@ -114,11 +116,25 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
-		CreateEntryGroup: []gax.CallOption{},
+		CreateEntryGroup: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.ResourceExhausted,
+					codes.Internal,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 		GetEntryGroup: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
+					codes.ResourceExhausted,
+					codes.Internal,
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
 					Max:        60000 * time.Millisecond,
@@ -126,12 +142,38 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
-		UpdateEntryGroup: []gax.CallOption{},
-		DeleteEntryGroup: []gax.CallOption{},
+		UpdateEntryGroup: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.ResourceExhausted,
+					codes.Internal,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		DeleteEntryGroup: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.ResourceExhausted,
+					codes.Internal,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 		ListEntryGroups: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
+					codes.ResourceExhausted,
+					codes.Internal,
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
 					Max:        60000 * time.Millisecond,
@@ -139,13 +181,51 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
-		CreateEntry: []gax.CallOption{},
-		UpdateEntry: []gax.CallOption{},
-		DeleteEntry: []gax.CallOption{},
+		CreateEntry: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.ResourceExhausted,
+					codes.Internal,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		UpdateEntry: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.ResourceExhausted,
+					codes.Internal,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		DeleteEntry: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.ResourceExhausted,
+					codes.Internal,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 		GetEntry: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
+					codes.ResourceExhausted,
+					codes.Internal,
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
 					Max:        60000 * time.Millisecond,
@@ -157,6 +237,8 @@ func defaultCallOptions() *CallOptions {
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
+					codes.ResourceExhausted,
+					codes.Internal,
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
 					Max:        60000 * time.Millisecond,
@@ -168,6 +250,8 @@ func defaultCallOptions() *CallOptions {
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
+					codes.ResourceExhausted,
+					codes.Internal,
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
 					Max:        60000 * time.Millisecond,
@@ -175,24 +259,194 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
-		ModifyEntryOverview:             []gax.CallOption{},
-		ModifyEntryContacts:             []gax.CallOption{},
-		CreateTagTemplate:               []gax.CallOption{},
-		GetTagTemplate:                  []gax.CallOption{},
-		UpdateTagTemplate:               []gax.CallOption{},
-		DeleteTagTemplate:               []gax.CallOption{},
-		CreateTagTemplateField:          []gax.CallOption{},
-		UpdateTagTemplateField:          []gax.CallOption{},
-		RenameTagTemplateField:          []gax.CallOption{},
-		RenameTagTemplateFieldEnumValue: []gax.CallOption{},
-		DeleteTagTemplateField:          []gax.CallOption{},
-		CreateTag:                       []gax.CallOption{},
-		UpdateTag:                       []gax.CallOption{},
-		DeleteTag:                       []gax.CallOption{},
+		ModifyEntryOverview: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.ResourceExhausted,
+					codes.Internal,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		ModifyEntryContacts: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.ResourceExhausted,
+					codes.Internal,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		CreateTagTemplate: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.ResourceExhausted,
+					codes.Internal,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		GetTagTemplate: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.ResourceExhausted,
+					codes.Internal,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		UpdateTagTemplate: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.ResourceExhausted,
+					codes.Internal,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		DeleteTagTemplate: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.ResourceExhausted,
+					codes.Internal,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		CreateTagTemplateField: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.ResourceExhausted,
+					codes.Internal,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		UpdateTagTemplateField: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.ResourceExhausted,
+					codes.Internal,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		RenameTagTemplateField: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.ResourceExhausted,
+					codes.Internal,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		RenameTagTemplateFieldEnumValue: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.ResourceExhausted,
+					codes.Internal,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		DeleteTagTemplateField: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.ResourceExhausted,
+					codes.Internal,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		CreateTag: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.ResourceExhausted,
+					codes.Internal,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		UpdateTag: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.ResourceExhausted,
+					codes.Internal,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		DeleteTag: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.ResourceExhausted,
+					codes.Internal,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 		ListTags: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
+					codes.ResourceExhausted,
+					codes.Internal,
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
 					Max:        60000 * time.Millisecond,
@@ -200,14 +454,64 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
-		ReconcileTags: []gax.CallOption{},
-		StarEntry:     []gax.CallOption{},
-		UnstarEntry:   []gax.CallOption{},
-		SetIamPolicy:  []gax.CallOption{},
+		ReconcileTags: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.ResourceExhausted,
+					codes.Internal,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		StarEntry: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.ResourceExhausted,
+					codes.Internal,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		UnstarEntry: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.ResourceExhausted,
+					codes.Internal,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		SetIamPolicy: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.ResourceExhausted,
+					codes.Internal,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 		GetIamPolicy: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
+					codes.ResourceExhausted,
+					codes.Internal,
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
 					Max:        60000 * time.Millisecond,
@@ -215,11 +519,25 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
-		TestIamPermissions: []gax.CallOption{},
+		TestIamPermissions: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.ResourceExhausted,
+					codes.Internal,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 		ImportEntries: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
+					codes.ResourceExhausted,
+					codes.Internal,
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
 					Max:        60000 * time.Millisecond,
@@ -243,10 +561,23 @@ func defaultRESTCallOptions() *CallOptions {
 					Max:        60000 * time.Millisecond,
 					Multiplier: 1.30,
 				},
-					http.StatusServiceUnavailable)
+					http.StatusServiceUnavailable,
+					http.StatusTooManyRequests,
+					http.StatusInternalServerError)
 			}),
 		},
-		CreateEntryGroup: []gax.CallOption{},
+		CreateEntryGroup: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusTooManyRequests,
+					http.StatusInternalServerError)
+			}),
+		},
 		GetEntryGroup: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
@@ -254,11 +585,35 @@ func defaultRESTCallOptions() *CallOptions {
 					Max:        60000 * time.Millisecond,
 					Multiplier: 1.30,
 				},
-					http.StatusServiceUnavailable)
+					http.StatusServiceUnavailable,
+					http.StatusTooManyRequests,
+					http.StatusInternalServerError)
 			}),
 		},
-		UpdateEntryGroup: []gax.CallOption{},
-		DeleteEntryGroup: []gax.CallOption{},
+		UpdateEntryGroup: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusTooManyRequests,
+					http.StatusInternalServerError)
+			}),
+		},
+		DeleteEntryGroup: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusTooManyRequests,
+					http.StatusInternalServerError)
+			}),
+		},
 		ListEntryGroups: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
@@ -266,12 +621,47 @@ func defaultRESTCallOptions() *CallOptions {
 					Max:        60000 * time.Millisecond,
 					Multiplier: 1.30,
 				},
-					http.StatusServiceUnavailable)
+					http.StatusServiceUnavailable,
+					http.StatusTooManyRequests,
+					http.StatusInternalServerError)
 			}),
 		},
-		CreateEntry: []gax.CallOption{},
-		UpdateEntry: []gax.CallOption{},
-		DeleteEntry: []gax.CallOption{},
+		CreateEntry: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusTooManyRequests,
+					http.StatusInternalServerError)
+			}),
+		},
+		UpdateEntry: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusTooManyRequests,
+					http.StatusInternalServerError)
+			}),
+		},
+		DeleteEntry: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusTooManyRequests,
+					http.StatusInternalServerError)
+			}),
+		},
 		GetEntry: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
@@ -279,7 +669,9 @@ func defaultRESTCallOptions() *CallOptions {
 					Max:        60000 * time.Millisecond,
 					Multiplier: 1.30,
 				},
-					http.StatusServiceUnavailable)
+					http.StatusServiceUnavailable,
+					http.StatusTooManyRequests,
+					http.StatusInternalServerError)
 			}),
 		},
 		LookupEntry: []gax.CallOption{
@@ -289,7 +681,9 @@ func defaultRESTCallOptions() *CallOptions {
 					Max:        60000 * time.Millisecond,
 					Multiplier: 1.30,
 				},
-					http.StatusServiceUnavailable)
+					http.StatusServiceUnavailable,
+					http.StatusTooManyRequests,
+					http.StatusInternalServerError)
 			}),
 		},
 		ListEntries: []gax.CallOption{
@@ -299,23 +693,179 @@ func defaultRESTCallOptions() *CallOptions {
 					Max:        60000 * time.Millisecond,
 					Multiplier: 1.30,
 				},
-					http.StatusServiceUnavailable)
+					http.StatusServiceUnavailable,
+					http.StatusTooManyRequests,
+					http.StatusInternalServerError)
 			}),
 		},
-		ModifyEntryOverview:             []gax.CallOption{},
-		ModifyEntryContacts:             []gax.CallOption{},
-		CreateTagTemplate:               []gax.CallOption{},
-		GetTagTemplate:                  []gax.CallOption{},
-		UpdateTagTemplate:               []gax.CallOption{},
-		DeleteTagTemplate:               []gax.CallOption{},
-		CreateTagTemplateField:          []gax.CallOption{},
-		UpdateTagTemplateField:          []gax.CallOption{},
-		RenameTagTemplateField:          []gax.CallOption{},
-		RenameTagTemplateFieldEnumValue: []gax.CallOption{},
-		DeleteTagTemplateField:          []gax.CallOption{},
-		CreateTag:                       []gax.CallOption{},
-		UpdateTag:                       []gax.CallOption{},
-		DeleteTag:                       []gax.CallOption{},
+		ModifyEntryOverview: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusTooManyRequests,
+					http.StatusInternalServerError)
+			}),
+		},
+		ModifyEntryContacts: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusTooManyRequests,
+					http.StatusInternalServerError)
+			}),
+		},
+		CreateTagTemplate: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusTooManyRequests,
+					http.StatusInternalServerError)
+			}),
+		},
+		GetTagTemplate: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusTooManyRequests,
+					http.StatusInternalServerError)
+			}),
+		},
+		UpdateTagTemplate: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusTooManyRequests,
+					http.StatusInternalServerError)
+			}),
+		},
+		DeleteTagTemplate: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusTooManyRequests,
+					http.StatusInternalServerError)
+			}),
+		},
+		CreateTagTemplateField: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusTooManyRequests,
+					http.StatusInternalServerError)
+			}),
+		},
+		UpdateTagTemplateField: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusTooManyRequests,
+					http.StatusInternalServerError)
+			}),
+		},
+		RenameTagTemplateField: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusTooManyRequests,
+					http.StatusInternalServerError)
+			}),
+		},
+		RenameTagTemplateFieldEnumValue: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusTooManyRequests,
+					http.StatusInternalServerError)
+			}),
+		},
+		DeleteTagTemplateField: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusTooManyRequests,
+					http.StatusInternalServerError)
+			}),
+		},
+		CreateTag: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusTooManyRequests,
+					http.StatusInternalServerError)
+			}),
+		},
+		UpdateTag: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusTooManyRequests,
+					http.StatusInternalServerError)
+			}),
+		},
+		DeleteTag: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusTooManyRequests,
+					http.StatusInternalServerError)
+			}),
+		},
 		ListTags: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
@@ -323,13 +873,59 @@ func defaultRESTCallOptions() *CallOptions {
 					Max:        60000 * time.Millisecond,
 					Multiplier: 1.30,
 				},
-					http.StatusServiceUnavailable)
+					http.StatusServiceUnavailable,
+					http.StatusTooManyRequests,
+					http.StatusInternalServerError)
 			}),
 		},
-		ReconcileTags: []gax.CallOption{},
-		StarEntry:     []gax.CallOption{},
-		UnstarEntry:   []gax.CallOption{},
-		SetIamPolicy:  []gax.CallOption{},
+		ReconcileTags: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusTooManyRequests,
+					http.StatusInternalServerError)
+			}),
+		},
+		StarEntry: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusTooManyRequests,
+					http.StatusInternalServerError)
+			}),
+		},
+		UnstarEntry: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusTooManyRequests,
+					http.StatusInternalServerError)
+			}),
+		},
+		SetIamPolicy: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusTooManyRequests,
+					http.StatusInternalServerError)
+			}),
+		},
 		GetIamPolicy: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
@@ -337,10 +933,23 @@ func defaultRESTCallOptions() *CallOptions {
 					Max:        60000 * time.Millisecond,
 					Multiplier: 1.30,
 				},
-					http.StatusServiceUnavailable)
+					http.StatusServiceUnavailable,
+					http.StatusTooManyRequests,
+					http.StatusInternalServerError)
 			}),
 		},
-		TestIamPermissions: []gax.CallOption{},
+		TestIamPermissions: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusTooManyRequests,
+					http.StatusInternalServerError)
+			}),
+		},
 		ImportEntries: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
@@ -348,7 +957,9 @@ func defaultRESTCallOptions() *CallOptions {
 					Max:        60000 * time.Millisecond,
 					Multiplier: 1.30,
 				},
-					http.StatusServiceUnavailable)
+					http.StatusServiceUnavailable,
+					http.StatusTooManyRequests,
+					http.StatusInternalServerError)
 			}),
 		},
 		CancelOperation: []gax.CallOption{},
@@ -2699,6 +3310,12 @@ func (c *restClient) LookupEntry(ctx context.Context, req *datacatalogpb.LookupE
 	if req.GetLinkedResource() != "" {
 		params.Add("linkedResource", fmt.Sprintf("%v", req.GetLinkedResource()))
 	}
+	if req.GetLocation() != "" {
+		params.Add("location", fmt.Sprintf("%v", req.GetLocation()))
+	}
+	if req.GetProject() != "" {
+		params.Add("project", fmt.Sprintf("%v", req.GetProject()))
+	}
 	if req.GetSqlResource() != "" {
 		params.Add("sqlResource", fmt.Sprintf("%v", req.GetSqlResource()))
 	}
@@ -4774,6 +5391,53 @@ func (it *EntryIterator) bufLen() int {
 }
 
 func (it *EntryIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// OperationIterator manages a stream of *longrunningpb.Operation.
+type OperationIterator struct {
+	items    []*longrunningpb.Operation
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*longrunningpb.Operation, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *OperationIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *OperationIterator) Next() (*longrunningpb.Operation, error) {
+	var item *longrunningpb.Operation
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *OperationIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *OperationIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b

@@ -456,6 +456,11 @@ func (c *versionsGRPCClient) ListVersions(ctx context.Context, req *appenginepb.
 }
 
 func (c *versionsGRPCClient) GetVersion(ctx context.Context, req *appenginepb.GetVersionRequest, opts ...gax.CallOption) (*appenginepb.Version, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -473,6 +478,11 @@ func (c *versionsGRPCClient) GetVersion(ctx context.Context, req *appenginepb.Ge
 }
 
 func (c *versionsGRPCClient) CreateVersion(ctx context.Context, req *appenginepb.CreateVersionRequest, opts ...gax.CallOption) (*CreateVersionOperation, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -492,6 +502,11 @@ func (c *versionsGRPCClient) CreateVersion(ctx context.Context, req *appenginepb
 }
 
 func (c *versionsGRPCClient) UpdateVersion(ctx context.Context, req *appenginepb.UpdateVersionRequest, opts ...gax.CallOption) (*UpdateVersionOperation, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -511,6 +526,11 @@ func (c *versionsGRPCClient) UpdateVersion(ctx context.Context, req *appenginepb
 }
 
 func (c *versionsGRPCClient) DeleteVersion(ctx context.Context, req *appenginepb.DeleteVersionRequest, opts ...gax.CallOption) (*DeleteVersionOperation, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)

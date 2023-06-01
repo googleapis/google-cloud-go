@@ -1,5 +1,38 @@
 # Changes
 
+## [1.35.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.34.0...dialogflow/v1.35.0) (2023-05-30)
+
+
+### Features
+
+* **dialogflow:** Update all direct dependencies ([b340d03](https://github.com/googleapis/google-cloud-go/commit/b340d030f2b52a4ce48846ce63984b28583abde6))
+
+## [1.34.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.33.0...dialogflow/v1.34.0) (2023-05-16)
+
+
+### Features
+
+* **dialogflow:** Add baseline model configuration for conversation summarization ([31421d5](https://github.com/googleapis/google-cloud-go/commit/31421d52c3bf3b7baa235fb6cb18bb8a786398df))
+* **dialogflow:** Add baseline model configuration for conversation summarization ([31421d5](https://github.com/googleapis/google-cloud-go/commit/31421d52c3bf3b7baa235fb6cb18bb8a786398df))
+
+## [1.33.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.32.1...dialogflow/v1.33.0) (2023-05-10)
+
+
+### Features
+
+* **dialogflow/cx:** Extended CreateAgent timeout to 180 seconds feat: added debug info to StreamingDetectIntent ([31c3766](https://github.com/googleapis/google-cloud-go/commit/31c3766c9c4cab411669c14fc1a30bd6d2e3f2dd))
+* **dialogflow/cx:** Extended CreateAgent timeout to 180 seconds feat: added debug info to StreamingDetectIntent ([31c3766](https://github.com/googleapis/google-cloud-go/commit/31c3766c9c4cab411669c14fc1a30bd6d2e3f2dd))
+* **dialogflow:** Extended StreamingListCallCompanionEvents timeout to 600 seconds ([#7880](https://github.com/googleapis/google-cloud-go/issues/7880)) ([0d5df81](https://github.com/googleapis/google-cloud-go/commit/0d5df8160fc6368d916c18aabf1a8b7bcebb4d3c))
+* **dialogflow:** Extended StreamingListCallCompanionEvents timeout to 600 seconds feat: added debug info for StreamingDetectIntent ([31c3766](https://github.com/googleapis/google-cloud-go/commit/31c3766c9c4cab411669c14fc1a30bd6d2e3f2dd))
+* **dialogflow:** Extended StreamingListCallCompanionEvents timeout to 600 seconds feat: added debug info for StreamingDetectIntent ([31c3766](https://github.com/googleapis/google-cloud-go/commit/31c3766c9c4cab411669c14fc1a30bd6d2e3f2dd))
+
+## [1.32.1](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.32.0...dialogflow/v1.32.1) (2023-05-08)
+
+
+### Bug Fixes
+
+* **dialogflow:** Update grpc to v1.55.0 ([1147ce0](https://github.com/googleapis/google-cloud-go/commit/1147ce02a990276ca4f8ab7a1ab65c14da4450ef))
+
 ## [1.32.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.31.0...dialogflow/v1.32.0) (2023-03-15)
 
 

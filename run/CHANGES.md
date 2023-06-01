@@ -1,6 +1,28 @@
 # Changelog
 
 
+## [1.1.0](https://github.com/googleapis/google-cloud-go/compare/run/v1.0.1...run/v1.1.0) (2023-05-30)
+
+
+### Features
+
+* **run:** Update all direct dependencies ([b340d03](https://github.com/googleapis/google-cloud-go/commit/b340d030f2b52a4ce48846ce63984b28583abde6))
+
+## [1.0.1](https://github.com/googleapis/google-cloud-go/compare/run/v1.0.0...run/v1.0.1) (2023-05-08)
+
+
+### Bug Fixes
+
+* **run:** Update grpc to v1.55.0 ([1147ce0](https://github.com/googleapis/google-cloud-go/commit/1147ce02a990276ca4f8ab7a1ab65c14da4450ef))
+
+## [1.0.0](https://github.com/googleapis/google-cloud-go/compare/run/v0.9.0...run/v1.0.0) (2023-04-04)
+
+
+### Features
+
+* **run:** Promote to GA ([#7617](https://github.com/googleapis/google-cloud-go/issues/7617)) ([4cb997e](https://github.com/googleapis/google-cloud-go/commit/4cb997e9805872d8084432f209c629e40dc55cf7))
+* **run:** Promote to GA ([#7641](https://github.com/googleapis/google-cloud-go/issues/7641)) ([a1280ef](https://github.com/googleapis/google-cloud-go/commit/a1280ef3f8627b52492ae8c25e64197451b8807c))
+
 ## [0.9.0](https://github.com/googleapis/google-cloud-go/compare/run/v0.8.0...run/v0.9.0) (2023-03-15)
 
 
