@@ -30,10 +30,10 @@ import (
 	"cloud.google.com/go/pubsub/internal/scheduler"
 	gax "github.com/googleapis/gax-go/v2"
 	"golang.org/x/sync/errgroup"
-	fmpb "google.golang.org/genproto/protobuf/field_mask"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	durpb "google.golang.org/protobuf/types/known/durationpb"
+	fmpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 
 	vkit "cloud.google.com/go/pubsub/apiv1"
 )
