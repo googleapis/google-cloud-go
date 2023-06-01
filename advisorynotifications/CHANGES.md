@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.0](https://github.com/googleapis/google-cloud-go/compare/advisorynotifications/v0.2.1...advisorynotifications/v0.3.0) (2023-05-30)
+
+
+### Features
+
+* **advisorynotifications:** Update all direct dependencies ([b340d03](https://github.com/googleapis/google-cloud-go/commit/b340d030f2b52a4ce48846ce63984b28583abde6))
+
 ## [0.2.1](https://github.com/googleapis/google-cloud-go/compare/advisorynotifications/v0.2.0...advisorynotifications/v0.2.1) (2023-05-08)
 
 

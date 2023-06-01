@@ -106,8 +106,8 @@ use (
 	./profiler
 	./pubsub
 	./pubsublite
+	./rapidmigrationassessment
 	./recaptchaenterprise
-	./recaptchaenterprise/v2
 	./recommendationengine
 	./recommender
 	./redis
@@ -128,7 +128,9 @@ use (
 	./speech
 	./storage
 	./storage/internal/benchmarks
+	./storageinsights
 	./storagetransfer
+	./support
 	./talent
 	./texttospeech
 	./tpu

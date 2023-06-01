@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.4.0](https://github.com/googleapis/google-cloud-go/compare/discoveryengine/v0.3.1...discoveryengine/v0.4.0) (2023-05-30)
+
+
+### Features
+
+* **discoveryengine:** Allow users to specify id field in documents gcs import ([ca94e27](https://github.com/googleapis/google-cloud-go/commit/ca94e2724f9e2610b46aefd0a3b5ddc06102e91b))
+* **discoveryengine:** Update all direct dependencies ([b340d03](https://github.com/googleapis/google-cloud-go/commit/b340d030f2b52a4ce48846ce63984b28583abde6))
+
+
+### Bug Fixes
+
+* **discoveryengine:** Fix the field name typo for search service user_labels ([2b3e7d9](https://github.com/googleapis/google-cloud-go/commit/2b3e7d9af7d2f500e736e3db77487127cb44ca23))
+
 ## [0.3.1](https://github.com/googleapis/google-cloud-go/compare/discoveryengine/v0.3.0...discoveryengine/v0.3.1) (2023-05-08)
 
 

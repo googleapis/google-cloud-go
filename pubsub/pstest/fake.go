@@ -362,8 +362,7 @@ func (s *GServer) UpdateTopic(_ context.Context, req *pb.UpdateTopicRequest) (*p
 			}
 			t.proto.MessageRetentionDuration = req.Topic.MessageRetentionDuration
 		case "schema_settings":
-			// Clear this field.
-			t.proto.SchemaSettings = &pb.SchemaSettings{}
+			t.proto.SchemaSettings = req.Topic.SchemaSettings
 		case "schema_settings.schema":
 			if t.proto.SchemaSettings == nil {
 				t.proto.SchemaSettings = &pb.SchemaSettings{}

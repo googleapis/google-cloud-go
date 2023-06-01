@@ -1,6 +1,14 @@
 # Changes
 
 
+## [1.43.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.42.0...aiplatform/v1.43.0) (2023-05-30)
+
+
+### Features
+
+* **aiplatform:** Add match service in aiplatform v1 ([2b3e7d9](https://github.com/googleapis/google-cloud-go/commit/2b3e7d9af7d2f500e736e3db77487127cb44ca23))
+* **aiplatform:** Add updateSchedule method to ScheduleService ([2b3e7d9](https://github.com/googleapis/google-cloud-go/commit/2b3e7d9af7d2f500e736e3db77487127cb44ca23))
+
 ## [1.42.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.41.0...aiplatform/v1.42.0) (2023-05-16)
 
 

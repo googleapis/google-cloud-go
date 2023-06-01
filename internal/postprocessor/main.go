@@ -33,7 +33,7 @@ import (
 	"time"
 
 	"cloud.google.com/go/internal/postprocessor/execv/gocmd"
-	"github.com/google/go-github/v50/github"
+	"github.com/google/go-github/v52/github"
 )
 
 const (
@@ -159,6 +159,9 @@ func (p *postProcessor) run(ctx context.Context) error {
 	if err := p.TidyAffectedMods(); err != nil {
 		return err
 	}
+	if err := p.UpdateReleaseFiles(); err != nil {
+		return err
+	}
 	if err := gocmd.Vet(p.googleCloudDir); err != nil {
 		return err
 	}
@@ -175,10 +178,7 @@ func (p *postProcessor) InitializeNewModules(manifest map[string]ManifestEntry) 
 	log.Println("checking for new modules and clients")
 	for _, moduleName := range p.config.Modules {
 		modulePath := filepath.Join(p.googleCloudDir, moduleName)
-		importPath, err := gocmd.ListModName(modulePath)
-		if err != nil {
-			return err
-		}
+		importPath := filepath.Join("cloud.google.com/go", moduleName)
 
 		pathToModVersionFile := filepath.Join(modulePath, "internal/version.go")
 		// Check if <module>/internal/version.go file exists
@@ -204,7 +204,7 @@ func (p *postProcessor) InitializeNewModules(manifest map[string]ManifestEntry) 
 			}
 		}
 		// Check if version.go files exist for each client
-		err = filepath.WalkDir(modulePath, func(path string, d fs.DirEntry, err error) error {
+		err := filepath.WalkDir(modulePath, func(path string, d fs.DirEntry, err error) error {
 			if err != nil {
 				return err
 			}
@@ -250,7 +250,11 @@ func (p *postProcessor) generateModule(modPath, importPath string) error {
 		return err
 	}
 	log.Printf("Creating %s/go.mod", modPath)
-	return gocmd.ModInit(modPath, importPath)
+	if err := gocmd.ModInit(modPath, importPath); err != nil {
+		return err
+	}
+	log.Print("Updating workspace")
+	return gocmd.WorkUse(p.googleCloudDir)
 }
 
 func (p *postProcessor) generateVersionFile(moduleName, path string) error {

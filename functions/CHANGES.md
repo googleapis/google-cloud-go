@@ -1,6 +1,15 @@
 # Changes
 
 
+## [1.15.0](https://github.com/googleapis/google-cloud-go/compare/functions/v1.14.0...functions/v1.15.0) (2023-05-30)
+
+
+### Features
+
+* **functions:** ListFunctions now include metadata which indicates whether a function is a `GEN_1` or `GEN_2` function ([ca94e27](https://github.com/googleapis/google-cloud-go/commit/ca94e2724f9e2610b46aefd0a3b5ddc06102e91b))
+* **functions:** ListFunctions now include metadata which indicates whether a function is a `GEN_1` or `GEN_2` function ([#7984](https://github.com/googleapis/google-cloud-go/issues/7984)) ([ca94e27](https://github.com/googleapis/google-cloud-go/commit/ca94e2724f9e2610b46aefd0a3b5ddc06102e91b))
+* **functions:** Update all direct dependencies ([b340d03](https://github.com/googleapis/google-cloud-go/commit/b340d030f2b52a4ce48846ce63984b28583abde6))
+
 ## [1.14.0](https://github.com/googleapis/google-cloud-go/compare/functions/v1.13.1...functions/v1.14.0) (2023-05-16)
 
 

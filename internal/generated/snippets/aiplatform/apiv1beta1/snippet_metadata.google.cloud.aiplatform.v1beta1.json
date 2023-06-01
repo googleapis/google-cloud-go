@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/aiplatform/apiv1beta1",
-    "version": "1.41.0",
+    "version": "1.43.0",
     "language": "GO",
     "apis": [
       {
@@ -15182,6 +15182,52 @@
           "service": {
             "shortName": "IAMPolicy",
             "fullName": "google.iam.v1.IAMPolicy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_ScheduleService_UpdateSchedule_sync",
+      "title": "aiplatform UpdateSchedule Sample",
+      "description": "UpdateSchedule updates an active or paused Schedule.\n\nWhen the Schedule is updated, new runs will be scheduled starting from the\nupdated next execution time after the update time based on the\ntime_specification in the updated Schedule. All unstarted runs before the\nupdate time will be skipped while already created runs will NOT be paused\nor canceled.",
+      "file": "ScheduleClient/UpdateSchedule/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateSchedule",
+        "fullName": "google.cloud.aiplatform.v1beta1.ScheduleClient.UpdateSchedule",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.UpdateScheduleRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*aiplatformpb.Schedule",
+        "client": {
+          "shortName": "ScheduleClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.ScheduleClient"
+        },
+        "method": {
+          "shortName": "UpdateSchedule",
+          "fullName": "google.cloud.aiplatform.v1beta1.ScheduleService.UpdateSchedule",
+          "service": {
+            "shortName": "ScheduleService",
+            "fullName": "google.cloud.aiplatform.v1beta1.ScheduleService"
           }
         }
       },

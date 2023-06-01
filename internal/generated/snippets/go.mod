@@ -31,7 +31,7 @@ require (
 	cloud.google.com/go/cloudbuild v1.9.0
 	cloud.google.com/go/clouddms v1.5.0
 	cloud.google.com/go/cloudtasks v1.10.0
-	cloud.google.com/go/compute v1.19.2
+	cloud.google.com/go/compute v1.19.3
 	cloud.google.com/go/confidentialcomputing v0.1.0
 	cloud.google.com/go/contactcenterinsights v1.6.0
 	cloud.google.com/go/container v1.15.0
@@ -94,7 +94,6 @@ require (
 	cloud.google.com/go/privatecatalog v0.8.0
 	cloud.google.com/go/pubsub v1.30.1
 	cloud.google.com/go/pubsublite v1.7.0
-	cloud.google.com/go/recaptchaenterprise v1.3.1
 	cloud.google.com/go/recaptchaenterprise/v2 v2.7.1
 	cloud.google.com/go/recommendationengine v0.7.0
 	cloud.google.com/go/recommender v1.9.0
@@ -124,7 +123,6 @@ require (
 	cloud.google.com/go/translate v1.7.0
 	cloud.google.com/go/video v1.15.0
 	cloud.google.com/go/videointelligence v1.10.0
-	cloud.google.com/go/vision v1.2.0
 	cloud.google.com/go/vision/v2 v2.7.1
 	cloud.google.com/go/vmmigration v1.6.0
 	cloud.google.com/go/vmwareengine v0.3.0
@@ -134,8 +132,14 @@ require (
 	cloud.google.com/go/workflows v1.10.0
 	cloud.google.com/go/workstations v0.0.0-00010101000000-000000000000
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
-	google.golang.org/api v0.122.0
-	google.golang.org/genproto v0.0.0-20230410155749-daa745c078e1
+	google.golang.org/api v0.125.0
+	google.golang.org/genproto v0.0.0-20230530153820-e85fd2cbaebc
+)
+
+require (
+	cloud.google.com/go/rapidmigrationassessment v0.0.0-00010101000000-000000000000
+	cloud.google.com/go/recaptchaenterprise v1.3.1
+	google.golang.org/genproto/googleapis/api v0.0.0-20230530153820-e85fd2cbaebc
 )
 
 require (
@@ -143,16 +147,17 @@ require (
 	cloud.google.com/go/dataproc v1.12.0 // indirect
 	github.com/golang/protobuf v1.5.3 // indirect
 	github.com/google/go-cmp v0.5.9 // indirect
-	github.com/google/s2a-go v0.1.3 // indirect
+	github.com/google/s2a-go v0.1.4 // indirect
 	github.com/googleapis/enterprise-certificate-proxy v0.2.3 // indirect
-	github.com/googleapis/gax-go/v2 v2.8.0 // indirect
+	github.com/googleapis/gax-go/v2 v2.10.0 // indirect
 	go.opencensus.io v0.24.0 // indirect
-	golang.org/x/crypto v0.7.0 // indirect
+	golang.org/x/crypto v0.9.0 // indirect
 	golang.org/x/net v0.10.0 // indirect
 	golang.org/x/oauth2 v0.8.0 // indirect
 	golang.org/x/sys v0.8.0 // indirect
 	golang.org/x/text v0.9.0 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20230530153820-e85fd2cbaebc // indirect
 	google.golang.org/grpc v1.55.0 // indirect
 	google.golang.org/protobuf v1.30.0 // indirect
 )
@@ -264,8 +269,6 @@ replace cloud.google.com/go/policytroubleshooter => ../../../policytroubleshoote
 replace cloud.google.com/go/privatecatalog => ../../../privatecatalog
 
 replace cloud.google.com/go/profiler => ../../../profiler
-
-replace cloud.google.com/go/recaptchaenterprise => ../../../recaptchaenterprise
 
 replace cloud.google.com/go/recommendationengine => ../../../recommendationengine
 
@@ -389,7 +392,7 @@ replace cloud.google.com/go/gkebackup => ../../../gkebackup
 
 replace cloud.google.com/go/gkemulticloud => ../../../gkemulticloud
 
-replace cloud.google.com/go/recaptchaenterprise/v2 => ../../../recaptchaenterprise/v2
+replace cloud.google.com/go/recaptchaenterprise/v2 => ../../../recaptchaenterprise
 
 replace cloud.google.com/go/baremetalsolution => ../../../baremetalsolution
 
@@ -424,3 +427,5 @@ replace cloud.google.com/go/workstations => ../../../workstations
 replace cloud.google.com/go/confidentialcomputing => ../../../confidentialcomputing
 
 replace cloud.google.com/go/support => ../../../support
+
+replace cloud.google.com/go/rapidmigrationassessment => ../../../rapidmigrationassessment

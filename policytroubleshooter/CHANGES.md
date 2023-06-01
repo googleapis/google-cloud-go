@@ -1,5 +1,12 @@
 # Changes
 
+## [1.7.0](https://github.com/googleapis/google-cloud-go/compare/policytroubleshooter/v1.6.1...policytroubleshooter/v1.7.0) (2023-05-30)
+
+
+### Features
+
+* **policytroubleshooter:** Update all direct dependencies ([b340d03](https://github.com/googleapis/google-cloud-go/commit/b340d030f2b52a4ce48846ce63984b28583abde6))
+
 ## [1.6.1](https://github.com/googleapis/google-cloud-go/compare/policytroubleshooter/v1.6.0...policytroubleshooter/v1.6.1) (2023-05-08)
 
 
