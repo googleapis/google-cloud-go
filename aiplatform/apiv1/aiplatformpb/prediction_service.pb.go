@@ -22,9 +22,6 @@ package aiplatformpb
 
 import (
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	httpbody "google.golang.org/genproto/googleapis/api/httpbody"
 	grpc "google.golang.org/grpc"
@@ -33,6 +30,8 @@ import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	structpb "google.golang.org/protobuf/types/known/structpb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -814,8 +813,7 @@ type PredictionServiceClient interface {
 	// [deployed_model_id][google.cloud.aiplatform.v1.ExplainRequest.deployed_model_id]
 	// is not specified, all DeployedModels must have
 	// [explanation_spec][google.cloud.aiplatform.v1.DeployedModel.explanation_spec]
-	// populated. Only deployed AutoML tabular Models have
-	// explanation_spec.
+	// populated.
 	Explain(ctx context.Context, in *ExplainRequest, opts ...grpc.CallOption) (*ExplainResponse, error)
 }
 
@@ -880,8 +878,7 @@ type PredictionServiceServer interface {
 	// [deployed_model_id][google.cloud.aiplatform.v1.ExplainRequest.deployed_model_id]
 	// is not specified, all DeployedModels must have
 	// [explanation_spec][google.cloud.aiplatform.v1.DeployedModel.explanation_spec]
-	// populated. Only deployed AutoML tabular Models have
-	// explanation_spec.
+	// populated.
 	Explain(context.Context, *ExplainRequest) (*ExplainResponse, error)
 }
 
