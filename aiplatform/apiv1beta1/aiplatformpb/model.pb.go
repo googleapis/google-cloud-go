@@ -707,8 +707,8 @@ type LargeModelReference struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Required. The unique name of the large Foundation or pre-built model. Like
-	// "chat-panda", "text-panda". Or model name with version ID, like
-	// "chat-panda-001", "text-panda-005", etc.
+	// "chat-bison", "text-bison". Or model name with version ID, like
+	// "chat-bison@001", "text-bison@005", etc.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 }
 

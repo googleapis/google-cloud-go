@@ -814,8 +814,7 @@ type PredictionServiceClient interface {
 	// [deployed_model_id][google.cloud.aiplatform.v1.ExplainRequest.deployed_model_id]
 	// is not specified, all DeployedModels must have
 	// [explanation_spec][google.cloud.aiplatform.v1.DeployedModel.explanation_spec]
-	// populated. Only deployed AutoML tabular Models have
-	// explanation_spec.
+	// populated.
 	Explain(ctx context.Context, in *ExplainRequest, opts ...grpc.CallOption) (*ExplainResponse, error)
 }
 
@@ -880,8 +879,7 @@ type PredictionServiceServer interface {
 	// [deployed_model_id][google.cloud.aiplatform.v1.ExplainRequest.deployed_model_id]
 	// is not specified, all DeployedModels must have
 	// [explanation_spec][google.cloud.aiplatform.v1.DeployedModel.explanation_spec]
-	// populated. Only deployed AutoML tabular Models have
-	// explanation_spec.
+	// populated.
 	Explain(context.Context, *ExplainRequest) (*ExplainResponse, error)
 }
 

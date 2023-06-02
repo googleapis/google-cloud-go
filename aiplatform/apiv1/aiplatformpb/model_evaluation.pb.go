@@ -59,8 +59,9 @@ type ModelEvaluation struct {
 	Metrics *structpb.Value `protobuf:"bytes,3,opt,name=metrics,proto3" json:"metrics,omitempty"`
 	// Output only. Timestamp when this ModelEvaluation was created.
 	CreateTime *timestamppb.Timestamp `protobuf:"bytes,4,opt,name=create_time,json=createTime,proto3" json:"create_time,omitempty"`
-	// All possible [dimensions][ModelEvaluationSlice.slice.dimension] of
-	// ModelEvaluationSlices. The dimensions can be used as the filter of the
+	// All possible
+	// [dimensions][google.cloud.aiplatform.v1.ModelEvaluationSlice.Slice.dimension]
+	// of ModelEvaluationSlices. The dimensions can be used as the filter of the
 	// [ModelService.ListModelEvaluationSlices][google.cloud.aiplatform.v1.ModelService.ListModelEvaluationSlices]
 	// request, in the form of `slice.dimension = <dimension>`.
 	SliceDimensions []string `protobuf:"bytes,5,rep,name=slice_dimensions,json=sliceDimensions,proto3" json:"slice_dimensions,omitempty"`
