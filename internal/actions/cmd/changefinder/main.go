@@ -15,14 +15,13 @@
 package main
 
 import (
-	"bytes"
 	"encoding/json"
 	"flag"
 	"fmt"
 	"os"
-	"os/exec"
 	"strings"
 
+	"cloud.google.com/go/internal/actions/changes"
 	"cloud.google.com/go/internal/actions/logg"
 )
 
@@ -45,38 +44,15 @@ func main() {
 	}
 	logg.Printf("Root dir: %q", rootDir)
 
-	submodulesDirs, err := modDirs(rootDir)
+	updatedSubmoduleDirs, err := changes.GatherChangedModuleDirs(rootDir, *base)
 	if err != nil {
 		logg.Fatal(err)
-	}
-
-	changes, err := gitFilesChanges(rootDir)
-	if err != nil {
-		logg.Fatalf("unable to get files changed: %v", err)
-	}
-
-	modulesSeen := map[string]bool{}
-	updatedSubmoduleDirs := []string{}
-	for _, change := range changes {
-		if strings.HasPrefix(change, "internal") {
-			continue
-		}
-		submodDir, ok := owner(change, submodulesDirs)
-		if !ok {
-			logg.Printf("no module for: %s", change)
-			continue
-		}
-		if _, seen := modulesSeen[submodDir]; !seen {
-			logg.Printf("changes in submodule: %s", submodDir)
-			updatedSubmoduleDirs = append(updatedSubmoduleDirs, submodDir)
-			modulesSeen[submodDir] = true
-		}
 	}
 
 	output(updatedSubmoduleDirs)
 }
 
-func output(s []string) error {
+func output(s []string) {
 	switch *format {
 	case "github":
 		b, err := json.Marshal(s)
@@ -89,52 +65,4 @@ func output(s []string) error {
 	default:
 		fmt.Println(strings.Join(s, "\n"))
 	}
-	return nil
-}
-
-func owner(file string, submoduleDirs []string) (string, bool) {
-	submod := ""
-	for _, mod := range submoduleDirs {
-		if strings.HasPrefix(file, mod) && len(mod) > len(submod) {
-			submod = mod
-		}
-	}
-
-	return submod, submod != ""
-}
-
-func modDirs(dir string) (submodulesDirs []string, err error) {
-	c := exec.Command("go", "list", "-m", "-f", "{{.Dir}}")
-	c.Dir = dir
-	b, err := c.Output()
-	if err != nil {
-		return submodulesDirs, err
-	}
-	// Skip the root mod
-	list := strings.Split(strings.TrimSpace(string(b)), "\n")[1:]
-
-	submodulesDirs = []string{}
-	for _, modPath := range list {
-		// Skip non-submodule or internal submodules.
-		if strings.Contains(modPath, "internal") {
-			continue
-		}
-		logg.Printf("found module: %s", modPath)
-		modPath = strings.TrimPrefix(modPath, dir+"/")
-		submodulesDirs = append(submodulesDirs, modPath)
-	}
-
-	return submodulesDirs, nil
-}
-
-func gitFilesChanges(dir string) ([]string, error) {
-	c := exec.Command("git", "diff", "--name-only", *base)
-	c.Dir = dir
-	b, err := c.Output()
-	if err != nil {
-		return nil, err
-	}
-	b = bytes.TrimSpace(b)
-	logg.Printf("Files changed:\n%s", b)
-	return strings.Split(string(b), "\n"), nil
 }
