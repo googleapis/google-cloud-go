@@ -8,7 +8,7 @@ require (
 	cloud.google.com/go/storage v1.30.1
 	github.com/golang/mock v1.6.0
 	github.com/golang/protobuf v1.5.3
-	github.com/google/pprof v0.0.0-20230510103437-eeec1cb781c3
+	github.com/google/pprof v0.0.0-20230602010524-ada837c32108
 	github.com/googleapis/gax-go/v2 v2.10.0
 	golang.org/x/oauth2 v0.8.0
 	google.golang.org/api v0.125.0
