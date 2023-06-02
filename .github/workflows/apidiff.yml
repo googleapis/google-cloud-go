@@ -96,11 +96,11 @@ jobs:
     needs: scan_changes
     if: "!needs.scan_changes.outputs.skip"
     steps:
+    - uses: actions/checkout@v3
     - uses: actions/setup-go@v4
       with:
         go-version: '1.20.1'
     - name: Install latest apidiff
       run: go install golang.org/x/exp/cmd/apidiff@latest
-    - uses: actions/checkout@v3
     - name: Summarize changes
       run: go run ./internal/actions/cmd/changesummary -q
