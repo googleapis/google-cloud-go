@@ -45,6 +45,7 @@ const (
 
 // Represents the type of enrollment for a given service to Access Approval.
 type EnrollmentLevel int32
+type Foo int32
 
 const (
 	// Default value for proto, shouldn't be used.
