@@ -790,9 +790,10 @@ func (c *httpStorageClient) NewRangeReader(ctx context.Context, params *newRange
 
 func (c *httpStorageClient) newRangeReaderXML(ctx context.Context, params *newRangeReaderParams, s *settings) (r *Reader, err error) {
 	u := &url.URL{
-		Scheme: c.scheme,
-		Host:   c.readHost,
-		Path:   fmt.Sprintf("/%s/%s", params.bucket, params.object),
+		Scheme:  c.scheme,
+		Host:    c.readHost,
+		Path:    fmt.Sprintf("/%s/%s", params.bucket, params.object),
+		RawPath: fmt.Sprintf("/%s/%s", params.bucket, url.PathEscape(params.object)),
 	}
 	verb := "GET"
 	if params.length == 0 {

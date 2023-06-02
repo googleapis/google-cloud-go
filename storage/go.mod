@@ -7,7 +7,7 @@ retract [v1.25.0, v1.27.0] // due to https://github.com/googleapis/google-cloud-
 require (
 	cloud.google.com/go v0.110.2
 	cloud.google.com/go/compute/metadata v0.2.3
-	cloud.google.com/go/iam v1.0.1
+	cloud.google.com/go/iam v1.1.0
 	github.com/golang/protobuf v1.5.3
 	github.com/google/go-cmp v0.5.9
 	github.com/google/uuid v1.3.0

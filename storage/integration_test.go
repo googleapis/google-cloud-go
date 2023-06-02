@@ -4002,7 +4002,8 @@ func TestIntegration_Reader(t *testing.T) {
 			"obj2",
 			"obj/with/slashes",
 			"obj/",
-			// "./obj", // does not work with XML
+			"./obj",
+			"!#$&'()*+,/:;=,?@,[] and spaces",
 		}
 		contents := make(map[string][]byte)
 
