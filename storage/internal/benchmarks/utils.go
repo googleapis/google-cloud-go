@@ -177,10 +177,12 @@ func errorIsDeadLineExceeded(err error) bool {
 		return true
 	}
 
-	for err = errors.Unwrap(err); err != nil; {
+	err = errors.Unwrap(err)
+	for err != nil {
 		if status.Code(err) == codes.DeadlineExceeded {
 			return true
 		}
+		err = errors.Unwrap(err)
 	}
 	return false
 }
