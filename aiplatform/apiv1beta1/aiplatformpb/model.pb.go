@@ -21,14 +21,13 @@
 package aiplatformpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	structpb "google.golang.org/protobuf/types/known/structpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -707,8 +706,8 @@ type LargeModelReference struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Required. The unique name of the large Foundation or pre-built model. Like
-	// "chat-panda", "text-panda". Or model name with version ID, like
-	// "chat-panda-001", "text-panda-005", etc.
+	// "chat-bison", "text-bison". Or model name with version ID, like
+	// "chat-bison@001", "text-bison@005", etc.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 }
 

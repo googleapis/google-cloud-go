@@ -21,11 +21,8 @@
 package aiplatformpb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -34,6 +31,8 @@ import (
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	_ "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -643,6 +642,9 @@ type ListArtifactsRequest struct {
 	//     To filter on metadata fields use traversal operation as follows:
 	//     `metadata.<field_name>.<type_value>`.
 	//     For example: `metadata.field_1.number_value = 10.0`
+	//     In case the field name contains special characters (such as colon), one
+	//     can embed it inside double quote.
+	//     For example: `metadata."field:1".number_value = 10.0`
 	// *   **Context based filtering**:
 	//     To filter Artifacts based on the contexts to which they belong, use the
 	//     function operator with the full resource name
@@ -808,7 +810,6 @@ type UpdateArtifactRequest struct {
 	// `projects/{project}/locations/{location}/metadataStores/{metadatastore}/artifacts/{artifact}`
 	Artifact *Artifact `protobuf:"bytes,1,opt,name=artifact,proto3" json:"artifact,omitempty"`
 	// Optional. A FieldMask indicating which fields should be updated.
-	// Functionality of this field is not yet supported.
 	UpdateMask *fieldmaskpb.FieldMask `protobuf:"bytes,2,opt,name=update_mask,json=updateMask,proto3" json:"update_mask,omitempty"`
 	// If set to true, and the
 	// [Artifact][google.cloud.aiplatform.v1beta1.Artifact] is not found, a new
@@ -1283,6 +1284,9 @@ type ListContextsRequest struct {
 	//    To filter on metadata fields use traversal operation as follows:
 	//    `metadata.<field_name>.<type_value>`.
 	//    For example: `metadata.field_1.number_value = 10.0`.
+	//    In case the field name contains special characters (such as colon), one
+	//    can embed it inside double quote.
+	//    For example: `metadata."field:1".number_value = 10.0`
 	// *  **Parent Child filtering**:
 	//    To filter Contexts based on parent-child relationship use the HAS
 	//    operator as follows:
@@ -1451,7 +1455,6 @@ type UpdateContextRequest struct {
 	// `projects/{project}/locations/{location}/metadataStores/{metadatastore}/contexts/{context}`
 	Context *Context `protobuf:"bytes,1,opt,name=context,proto3" json:"context,omitempty"`
 	// Optional. A FieldMask indicating which fields should be updated.
-	// Functionality of this field is not yet supported.
 	UpdateMask *fieldmaskpb.FieldMask `protobuf:"bytes,2,opt,name=update_mask,json=updateMask,proto3" json:"update_mask,omitempty"`
 	// If set to true, and the [Context][google.cloud.aiplatform.v1beta1.Context]
 	// is not found, a new [Context][google.cloud.aiplatform.v1beta1.Context] is
@@ -2316,6 +2319,9 @@ type ListExecutionsRequest struct {
 	//    To filter on metadata fields use traversal operation as follows:
 	//    `metadata.<field_name>.<type_value>`
 	//    For example: `metadata.field_1.number_value = 10.0`
+	//    In case the field name contains special characters (such as colon), one
+	//    can embed it inside double quote.
+	//    For example: `metadata."field:1".number_value = 10.0`
 	// *  **Context based filtering**:
 	//    To filter Executions based on the contexts to which they belong use
 	//    the function operator with the full resource name:
@@ -2481,7 +2487,6 @@ type UpdateExecutionRequest struct {
 	// `projects/{project}/locations/{location}/metadataStores/{metadatastore}/executions/{execution}`
 	Execution *Execution `protobuf:"bytes,1,opt,name=execution,proto3" json:"execution,omitempty"`
 	// Optional. A FieldMask indicating which fields should be updated.
-	// Functionality of this field is not yet supported.
 	UpdateMask *fieldmaskpb.FieldMask `protobuf:"bytes,2,opt,name=update_mask,json=updateMask,proto3" json:"update_mask,omitempty"`
 	// If set to true, and the
 	// [Execution][google.cloud.aiplatform.v1beta1.Execution] is not found, a new
@@ -3260,6 +3265,9 @@ type QueryArtifactLineageSubgraphRequest struct {
 	//    To filter on metadata fields use traversal operation as follows:
 	//    `metadata.<field_name>.<type_value>`.
 	//    For example: `metadata.field_1.number_value = 10.0`
+	//    In case the field name contains special characters (such as colon), one
+	//    can embed it inside double quote.
+	//    For example: `metadata."field:1".number_value = 10.0`
 	//
 	// Each of the above supported filter types can be combined together using
 	// logical operators (`AND` & `OR`). Maximum nested expression depth allowed

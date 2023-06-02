@@ -21,13 +21,12 @@
 package aiplatformpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -56,7 +55,8 @@ type TensorboardExperiment struct {
 	CreateTime *timestamppb.Timestamp `protobuf:"bytes,4,opt,name=create_time,json=createTime,proto3" json:"create_time,omitempty"`
 	// Output only. Timestamp when this TensorboardExperiment was last updated.
 	UpdateTime *timestamppb.Timestamp `protobuf:"bytes,5,opt,name=update_time,json=updateTime,proto3" json:"update_time,omitempty"`
-	// The labels with user-defined metadata to organize your Datasets.
+	// The labels with user-defined metadata to organize your
+	// TensorboardExperiment.
 	//
 	// Label keys and values cannot be longer than 64 characters
 	// (Unicode codepoints), can only contain lowercase letters, numeric
