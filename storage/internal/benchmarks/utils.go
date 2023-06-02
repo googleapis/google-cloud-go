@@ -23,7 +23,6 @@ import (
 	"log"
 	"math/rand"
 	"os"
-	"path"
 	"runtime/debug"
 	"strings"
 
@@ -109,39 +108,23 @@ func generateRandomFile(path string, size int64) (string, error) {
 	return f.Name(), err
 }
 
-// fillDirectoryRandomly fills the directory with up to 1000 different files and
-// subdirectories. Files may be located in any of the subdirectories.
-// The number of bytes in the created files is returned.
-func fillDirectoryRandomly(dirPath string, size int64) (int64, error) {
-	currDirectoryLevel := 0
-	currPath := dirPath
+// fillDirectoryRandomly fills the directory with the number of different files
+// specified on the command line.
+// The number of bytes across all created files is returned.
+func fillDirectoryRandomly(dirPath string) (int64, error) {
 	currNumBytes := int64(0)
 
-	// directory contains a random number of objects =< 1000
-	for i := randomInt(1, 1000); i > 0; i-- {
-		// choose at random whether to create a directory or a file
-		if randomInt(0, 1) == 1 {
-			if _, err := generateRandomFile(currPath, size); err != nil {
-				return 0, err
-			}
-			currNumBytes += size
-		} else {
-			d, err := os.MkdirTemp(currPath, "")
-			if err != nil {
-				return 0, err
-			}
-			currPath = d
-			currDirectoryLevel++
+	for i := opts.numObjectsPerDirectory; i > 0; i-- {
+		size := opts.objectSize
+		if size == 0 {
+			// Choose a different random object size for each file
+			size = randomInt64(opts.minObjectSize, opts.maxObjectSize)
 		}
 
-		// choose at random whether to step out of current subdirectory
-		if currDirectoryLevel > 0 {
-			if randomInt(0, 1) == 1 {
-				// step out
-				currPath = path.Dir(currPath)
-				currDirectoryLevel--
-			}
+		if _, err := generateRandomFile(dirPath, size); err != nil {
+			return 0, err
 		}
+		currNumBytes += size
 	}
 
 	return currNumBytes, nil

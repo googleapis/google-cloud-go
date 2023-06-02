@@ -35,24 +35,44 @@ import (
 //
 // SET UP
 //   - Initialize structs to populate with the benchmark results.
-//   - Select a random API to use to upload/download the object, unless it is
+//   - Select a random API to upload/download the directory, unless an API is
 //     set in the command-line,
 //   - Select a random size for the objects that will be uploaded; this size will
 //     be between two values configured in the command-line.
-//   - Create a directory with 1 to 1000 files of that size and subdirectories.
+//   - Create a directory with objects_per_directory number of files of that size.
 //   - Select, for the upload and the download separately, the following parameters:
 //   - the application buffer size set in the command-line
 //   - the chunksize (only for uploads) set in the command-line,
 //   - if the client library will perform CRC32C and/or MD5 hashes on the data.
 //
 // BENCHMARK
-//   - Grab a storage client from the pool.
+//
 //   - Take a snapshot of the current memory stats.
-//   - Upload the entire directory, capturing the time taken.
+//
+//   - Walk through the entire directory and upload, capturing the time taken.
+//     For each file:
+//     1. Extract the object name from the path.
+//     2. Grab a storage client from the pool.
+//     3. Initiate a goroutine to upload the object. If it can run without
+//     causing the number of goroutines to exceed numWorkers, it starts uploading
+//     right away. Otherwise, it waits until less than numWorkers goroutines are
+//     currently uploading a file in the directory to start.
+//
 //   - Take another snapshot of memory stats.
-//   - Download the same directory sequentially with the same client, capturing
-//     the elapsed time and taking memory snapshots before and after the
-//     download.
+//
+//   - After the entire directory is uploaded, it starts downloading the same
+//     to a copy of the directory, tracking time to completion:
+//
+//   - Get an iterator over the bucket, using the directory path as a filter.
+//
+//   - Iterate over all objects, doing the same process as the upload:
+//     1. Specify range size, if applicable.
+//     2. Grab a storage client from the pool.
+//     3. Initiate a goroutine to download the object using that client. As
+//     with uploads, the number of concurrently running goroutines is
+//     always kept at or below -workers.
+//
+//   - Another memory snapshot is taken.
 type directoryBenchmark struct {
 	opts                  *benchmarkOptions
 	bucketName            string
@@ -87,14 +107,6 @@ func (r *directoryBenchmark) setup(ctx context.Context) error {
 		}
 	}
 
-	// Select object size
-	objectSize := opts.objectSize
-	if objectSize == 0 {
-		objectSize = randomInt64(opts.minObjectSize, opts.maxObjectSize)
-	}
-	r.writeResult = &benchmarkResult{objectSize: objectSize}
-	r.readResult = &benchmarkResult{objectSize: objectSize}
-
 	// Select write params
 	r.writeResult.selectWriteParams(*r.opts, api)
 
@@ -110,7 +122,7 @@ func (r *directoryBenchmark) setup(ctx context.Context) error {
 	}
 
 	// Create contents
-	totalBytes, err := fillDirectoryRandomly(dir, objectSize)
+	totalBytes, err := fillDirectoryRandomly(dir)
 	if err != nil {
 		return err
 	}
@@ -160,7 +172,7 @@ func (r *directoryBenchmark) cleanup() error {
 	return nil
 }
 
-func (r *directoryBenchmark) uploadDirectory(ctx context.Context, client *storage.Client, numWorkers int) (elapsedTime time.Duration, err error) {
+func (r *directoryBenchmark) uploadDirectory(ctx context.Context, numWorkers int) (elapsedTime time.Duration, err error) {
 	benchGroup, ctx := errgroup.WithContext(ctx)
 	benchGroup.SetLimit(numWorkers)
 
@@ -174,14 +186,12 @@ func (r *directoryBenchmark) uploadDirectory(ctx context.Context, client *storag
 			return err
 		}
 
-		if d.IsDir() {
-			return nil // skip directories for now
-		}
-
 		objectName, err := filepath.Rel(path.Dir(r.uploadDirectoryPath), filePath)
 		if err != nil {
 			return err
 		}
+
+		client := getClient(ctx, r.writeResult.params.api)
 
 		benchGroup.Go(func() error {
 			// Do the upload
@@ -205,7 +215,7 @@ func (r *directoryBenchmark) uploadDirectory(ctx context.Context, client *storag
 	return
 }
 
-func (r *directoryBenchmark) downloadDirectory(ctx context.Context, client *storage.Client, numWorkers int) (elapsedTime time.Duration, err error) {
+func (r *directoryBenchmark) downloadDirectory(ctx context.Context, numWorkers int) (elapsedTime time.Duration, err error) {
 	benchGroup, ctx := errgroup.WithContext(ctx)
 	benchGroup.SetLimit(numWorkers)
 
@@ -213,17 +223,25 @@ func (r *directoryBenchmark) downloadDirectory(ctx context.Context, client *stor
 	start := time.Now()
 	defer func() { elapsedTime = time.Since(start) }()
 
+	client := nonBenchmarkingClients.Get()
+
 	// Get an iterator to list all objects under the directory
-	it := client.Bucket(r.bucketName).Objects(context.Background(), &storage.Query{
-		Prefix:     path.Base(r.uploadDirectoryPath),
-		Projection: storage.ProjectionNoACL,
-	})
+	query := &storage.Query{
+		Prefix: path.Base(r.uploadDirectoryPath),
+	}
+	err = query.SetAttrSelection([]string{"Name"})
+	if err != nil {
+		return
+	}
+	it := client.Bucket(r.bucketName).Objects(context.Background(), query)
 
 	attrs, err := it.Next()
 
 	for err == nil {
+		object := attrs.Name
+
 		// first, make sure all folders in path exist
-		fullPathToObj := path.Join(r.downloadDirectoryPath, filepath.Dir(attrs.Name))
+		fullPathToObj := path.Join(r.downloadDirectoryPath, filepath.Dir(object))
 		err = os.MkdirAll(fullPathToObj, fs.ModeDir|fs.ModePerm)
 		if err != nil {
 			return
@@ -239,12 +257,10 @@ func (r *directoryBenchmark) downloadDirectory(ctx context.Context, client *stor
 		}
 		r.readResult.readOffset = rangeStart
 
-		object := attrs.Name
-
 		// download the object
 		benchGroup.Go(func() error {
 			_, err = downloadBenchmark(ctx, downloadOpts{
-				client:              client,
+				client:              getClient(ctx, r.readResult.params.api),
 				objectSize:          r.readResult.objectSize,
 				bucket:              r.bucketName,
 				object:              object,
@@ -270,12 +286,9 @@ func (r *directoryBenchmark) downloadDirectory(ctx context.Context, client *stor
 }
 
 func (r *directoryBenchmark) run(ctx context.Context) error {
-	// Use the same client for write and reads as the api is the same
-	client := getClient(ctx, r.writeResult.params.api)
-
 	// Upload
 	err := runOneOp(ctx, r.writeResult, func() (time.Duration, error) {
-		return r.uploadDirectory(ctx, client, r.numWorkers)
+		return r.uploadDirectory(ctx, r.numWorkers)
 	})
 
 	// Do not attempt to read from a failed upload
@@ -285,7 +298,7 @@ func (r *directoryBenchmark) run(ctx context.Context) error {
 
 	// Download
 	err = runOneOp(ctx, r.readResult, func() (time.Duration, error) {
-		return r.downloadDirectory(ctx, client, r.numWorkers)
+		return r.downloadDirectory(ctx, r.numWorkers)
 	})
 	if err != nil {
 		return fmt.Errorf("download directory: %w", err)

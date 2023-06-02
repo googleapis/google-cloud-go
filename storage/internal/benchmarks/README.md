@@ -20,7 +20,7 @@ This runs 1000 iterations on 512kib to 2Gib files in the background, sending out
 | -workers | number of goroutines to run at once; set to 1 for no concurrency | any positive integer | `16` |
 | -clients | total number of Storage clients to be used; <br> if Mixed APIs, then x3 the number are created | any positive integer | `1` |
 | -api | which API to use | `JSON`: use JSON <br> `XML`: use JSON to upload and XML to download <br> `GRPC`: use GRPC without directpath enabled <br> `Mixed`: select an API at random for each object <br> `DirectPath`: use GRPC with directpath | `Mixed` |
-| -object_size | object size in bytes; can be a range min..max | any positive integer | `1 048 576` (1 MiB) |
+| -object_size | object size in bytes; can be a range min..max <br> for workload 6, a range will apply to objects within a directory | any positive integer | `1 048 576` (1 MiB) |
 | -range_read_size | size of the range to read in bytes | any positive integer <br> <=0 reads the full object | `0` |
 | -minimum_read_offset | minimum offset for the start of the range to be read in bytes | any integer >0 | `0` |
 | -maximum_read_offset | maximum offset for the start of the range to be read in bytes | any integer >0 | `0` |
@@ -31,6 +31,7 @@ This runs 1000 iterations on 512kib to 2Gib files in the background, sending out
 | -connection_pool_size | GRPC connection pool size | any positive integer | 4 |
 | -force_garbage_collection | whether to force garbage collection <br> before every write or read benchmark |  `true` or `false` (present/not present) | `false` |
 | -timeout | timeout (maximum time running benchmarks) <br> the program may run for longer while it finishes running processes | any [time.Duration](https://pkg.go.dev/time#Duration) | `1h` |
-| -directory | upload and download an entire directory | `true`/`false` | `false` |
+| -workload | `1` will run a w1r3 (write 1 read 3) benchmark <br> `6` will run a benchmark uploading and downloading a directory (once each) | `1` or `6` | `1` |
+| -objects_per_directory | total number of objects in a directory; <br> only applies to workload 6 | any positive integer | `1000` |
 
 \* required values
