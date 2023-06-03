@@ -41,8 +41,9 @@ jobs:
       id: summarize
       if: "!steps.changed_dirs.outputs.skip"
       run: |
+        sum=$(go run ./internal/actions/cmd/changesummary -q)
         echo "summary<<EOF" >> $GITHUB_OUTPUT
-        go run ./internal/actions/cmd/changesummary -q >> $GITHUB_OUTPUT
+        echo "$sum" >> $GITHUB_OUTPUT
         echo "EOF" >> $GITHUB_OUTPUT
     - name: Post summary
       if: "!steps.changed_dirs.outputs.skip"
