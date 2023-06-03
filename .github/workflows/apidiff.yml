@@ -9,6 +9,9 @@ permissions:
 
 jobs:
   scan_changes:
+    permissions:
+      contents: read
+      pull-requests: write
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
@@ -53,7 +56,7 @@ jobs:
             issue_number: context.issue.number,
             owner: context.repo.owner,
             repo: context.repo.repo,
-            body: '${{ steps.summarize.outputs.summary }}'
+            body: `${{ steps.summarize.outputs.summary }}`
           })
     outputs:
       changed_dirs: ${{ steps.changed_dirs.outputs.changed }}
