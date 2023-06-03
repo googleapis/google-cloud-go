@@ -9,9 +9,6 @@ permissions:
 
 jobs:
   scan_changes:
-    permissions:
-      contents: read
-      pull-requests: write
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
@@ -45,7 +42,7 @@ jobs:
       if: "!steps.changed_dirs.outputs.skip"
       run: |
         sum=$(go run ./internal/actions/cmd/changesummary -q)
-        echo "summary="${sum//$'\n'/'%0A'}"" >> $GITHUB_OUTPUT
+        echo "summary="${sum}<<EOF"" >> $GITHUB_OUTPUT
     - name: Post summary
       if: "!steps.changed_dirs.outputs.skip"
       uses: actions/github-script@v3
