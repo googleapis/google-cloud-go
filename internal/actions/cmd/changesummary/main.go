@@ -113,7 +113,7 @@ func main() {
 			findings = append(findings, l)
 		}
 		if len(findings) > 0 {
-			summary = append(summary, fmt.Sprintf("# %s", d))
+			summary = append(summary, fmt.Sprintf("## %s", d))
 			summary = append(summary, findings...)
 		}
 	}

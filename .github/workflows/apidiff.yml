@@ -35,17 +35,23 @@ jobs:
           echo "changed={\"changed\":[${list#,}]}" >> $GITHUB_OUTPUT
           echo "skip=" >> $GITHUB_OUTPUT
         fi
+    outputs:
+      changed_dirs: ${{ steps.changed_dirs.outputs.changed }}
+      skip: ${{ steps.changed_dirs.outputs.skip }}
+  summarize:
+    needs: scan_changes
+    runs-on: ubuntu-latest
+    if: "!needs.scan_changes.outputs.skip"
+    steps:
     - name: Install latest apidiff
       run: go install golang.org/x/exp/cmd/apidiff@latest
     - name: Summarize changes
       id: summarize
-      if: "!steps.changed_dirs.outputs.skip"
       run: |
         echo "summary<<EOF" >> $GITHUB_OUTPUT
         go run ./internal/actions/cmd/changesummary -q >> $GITHUB_OUTPUT
         echo "EOF" >> $GITHUB_OUTPUT
     - name: Post summary
-      if: "!steps.changed_dirs.outputs.skip"
       uses: actions/github-script@v3
       with:
         github-token: ${{secrets.GITHUB_TOKEN}}
@@ -56,22 +62,6 @@ jobs:
             repo: context.repo.repo,
             body: `${{ steps.summarize.outputs.summary }}`
           })
-    outputs:
-      changed_dirs: ${{ steps.changed_dirs.outputs.changed }}
-      skip: ${{ steps.changed_dirs.outputs.skip }}
-  # summarize:
-  #   runs-on: ubuntu-latest
-  #   needs: scan_changes
-  #   if: "!needs.scan_changes.outputs.skip"
-  #   steps:
-  #   - uses: actions/checkout@v3
-  #   - uses: actions/setup-go@v4
-  #     with:
-  #       go-version: '1.20.1'
-  #   - name: Install latest apidiff
-  #     run: go install golang.org/x/exp/cmd/apidiff@latest
-  #   - name: Summarize changes
-  #     run: go run ./internal/actions/cmd/changesummary -q
   apidiff:
     needs: scan_changes
     runs-on: ubuntu-latest
