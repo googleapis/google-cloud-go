@@ -1047,19 +1047,14 @@ func (tm *TableMetadataToUpdate) toBQ() (*bq.Table, error) {
 	}
 	if tm.PrimaryKey != nil || len(tm.ForeignKeys) > 0 {
 		t.TableConstraints = &bq.TableConstraints{}
-		//forceSend("TableConstraints")
 		if tm.PrimaryKey != nil {
 			t.TableConstraints.PrimaryKey = tm.PrimaryKey.toBQ()
-			//forceSend("TableConstraints.PrimaryKey")
-			//forceSend("TableConstraints.PrimaryKey.Columns")
 		}
 		if len(tm.ForeignKeys) > 0 {
 			t.TableConstraints.ForeignKeys = make([]*bq.TableConstraintsForeignKeys, len(tm.ForeignKeys))
 			for i, fk := range tm.ForeignKeys {
 				t.TableConstraints.ForeignKeys[i] = fk.toBQ()
 			}
-			//t.TableConstraints.ForceSendFields = append(t.TableConstraints.ForceSendFields, "ForeignKeys")
-			//forceSend("TableConstraints.ForeignKeys")
 		}
 	}
 	labels, forces, nulls := tm.update()
