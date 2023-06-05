@@ -72,6 +72,11 @@ func TestBQToTableMetadata(t *testing.T) {
 				ExternalDataConfiguration: &bq.ExternalDataConfiguration{
 					SourceFormat: "GOOGLE_SHEETS",
 				},
+				TableConstraints: &bq.TableConstraints{
+					PrimaryKey: &bq.TableConstraintsPrimaryKey{
+						Columns: []string{"id"},
+					},
+				},
 			},
 			&TableMetadata{
 				Description:        "desc",
@@ -110,6 +115,10 @@ func TestBQToTableMetadata(t *testing.T) {
 				},
 				EncryptionConfig: &EncryptionConfig{KMSKeyName: "keyName"},
 				ETag:             "etag",
+				PrimaryKey: &PrimaryKey{
+					Columns: []string{"id"},
+				},
+				ForeignKeys: []*ForeignKey{},
 			},
 		},
 	} {
@@ -403,6 +412,56 @@ func TestTableMetadataToUpdateToBQ(t *testing.T) {
 			tm: TableMetadataToUpdate{Clustering: &Clustering{Fields: []string{"foo", "bar"}}},
 			want: &bq.Table{
 				Clustering: &bq.Clustering{Fields: []string{"foo", "bar"}},
+			},
+		},
+		{
+			tm: TableMetadataToUpdate{PrimaryKey: &PrimaryKey{Columns: []string{"name"}}},
+			want: &bq.Table{
+				TableConstraints: &bq.TableConstraints{
+					PrimaryKey: &bq.TableConstraintsPrimaryKey{
+						Columns: []string{"name"},
+					},
+				},
+			},
+		},
+		{
+			tm: TableMetadataToUpdate{
+				ForeignKeys: []*ForeignKey{
+					{
+						Name: "fk",
+						ReferencedTable: &Table{
+							ProjectID: "projectID",
+							DatasetID: "datasetID",
+							TableID:   "tableID",
+						},
+						ColumnReferences: []*ForeignKeyColumnReference{
+							{
+								ReferencedColumn:  "id",
+								ReferencingColumn: "other_table_id",
+							},
+						},
+					},
+				},
+			},
+			want: &bq.Table{
+				TableConstraints: &bq.TableConstraints{
+					ForeignKeys: []*bq.TableConstraintsForeignKeys{
+						{
+							Name: "fk",
+							ReferencedTable: &bq.TableConstraintsForeignKeysReferencedTable{
+								ProjectId: "projectID",
+								DatasetId: "datasetID",
+								TableId:   "tableID",
+							},
+							ColumnReferences: []*bq.TableConstraintsForeignKeysColumnReferences{
+								{
+									ReferencedColumn:  "id",
+									ReferencingColumn: "other_table_id",
+								},
+							},
+						},
+					},
+				},
 			},
 		},
 	} {

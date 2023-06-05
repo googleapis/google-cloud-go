@@ -661,3 +661,153 @@ func TestIntegration_TableDefaultCollation(t *testing.T) {
 		}
 	}
 }
+
+func TestIntegration_TableConstraintsPK(t *testing.T) {
+	// Test Primary Keys for Table.Create and Table.Update
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
+	ctx := context.Background()
+	table := dataset.Table(tableIDs.New())
+	err := table.Create(context.Background(), &TableMetadata{
+		Schema: schema,
+		PrimaryKey: &PrimaryKey{
+			Columns: []string{"name"},
+		},
+		ExpirationTime: testTableExpiration,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer table.Delete(ctx)
+	md, err := table.Metadata(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if md.PrimaryKey.Columns[0] != "name" {
+		t.Fatalf("expected table primary key to contain column `name`, but found %q", md.PrimaryKey.Columns)
+	}
+
+	tableNoPK := dataset.Table(tableIDs.New())
+	err = tableNoPK.Create(context.Background(), &TableMetadata{
+		Schema:         schema,
+		ExpirationTime: testTableExpiration,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer tableNoPK.Delete(ctx)
+	md, err = tableNoPK.Metadata(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if md.PrimaryKey != nil {
+		t.Fatalf("expected table to not have a PK, but found %v", md.PrimaryKey.Columns)
+	}
+
+	md, err = tableNoPK.Update(ctx, TableMetadataToUpdate{
+		PrimaryKey: &PrimaryKey{
+			Columns: []string{"name"},
+		},
+	}, "")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if md.PrimaryKey == nil || md.PrimaryKey.Columns[0] != "name" {
+		t.Fatalf("expected table primary key to contain column `name`, but found %v", md.PrimaryKey)
+	}
+}
+
+func TestIntegration_TableConstraintsFK(t *testing.T) {
+	// Test Foreign keys for Table.Create and Table.Update
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
+	ctx := context.Background()
+	tableA := dataset.Table(tableIDs.New())
+	schemaA := []*FieldSchema{
+		{Name: "id", Type: IntegerFieldType},
+		{Name: "name", Type: StringFieldType},
+	}
+	err := tableA.Create(context.Background(), &TableMetadata{
+		Schema: schemaA,
+		PrimaryKey: &PrimaryKey{
+			Columns: []string{"id"},
+		},
+		ExpirationTime: testTableExpiration,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer tableA.Delete(ctx)
+
+	tableB := dataset.Table(tableIDs.New())
+	schemaB := []*FieldSchema{
+		{Name: "id", Type: IntegerFieldType},
+		{Name: "name", Type: StringFieldType},
+		{Name: "parent", Type: IntegerFieldType},
+	}
+	err = tableB.Create(context.Background(), &TableMetadata{
+		Schema: schemaB,
+		PrimaryKey: &PrimaryKey{
+			Columns: []string{"id"},
+		},
+		ForeignKeys: []*ForeignKey{
+			{
+				Name:            "table_a_fk",
+				ReferencedTable: tableA,
+				ColumnReferences: []*ForeignKeyColumnReference{
+					{
+						ReferencedColumn:  "id",
+						ReferencingColumn: "parent",
+					},
+				},
+			},
+		},
+		ExpirationTime: testTableExpiration,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer tableB.Delete(ctx)
+	md, err := tableB.Metadata(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(md.ForeignKeys) == 0 || md.ForeignKeys[0].Name != "table_a_fk" {
+		t.Fatalf("expected table to contains fk `self`, but found %v", md.ForeignKeys)
+	}
+
+	tableNoFK := dataset.Table(tableIDs.New())
+	err = tableNoFK.Create(context.Background(), &TableMetadata{
+		Schema: schemaB,
+		PrimaryKey: &PrimaryKey{
+			Columns: []string{"id"},
+		},
+		ExpirationTime: testTableExpiration,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer tableNoFK.Delete(ctx)
+	md, err = tableNoFK.Update(ctx, TableMetadataToUpdate{
+		ForeignKeys: []*ForeignKey{
+			{
+				Name:            "table_a_fk",
+				ReferencedTable: tableA,
+				ColumnReferences: []*ForeignKeyColumnReference{
+					{
+						ReferencedColumn:  "id",
+						ReferencingColumn: "parent",
+					},
+				},
+			},
+		},
+	}, "")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(md.ForeignKeys) == 0 || md.ForeignKeys[0].Name != "table_a_fk" {
+		t.Fatalf("expected table to contains fk `self`, but found %v", md.ForeignKeys)
+	}
+}

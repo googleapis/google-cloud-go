@@ -147,6 +147,87 @@ type TableMetadata struct {
 	//   - '': empty string. Default to case-sensitive behavior.
 	// More information: https://cloud.google.com/bigquery/docs/reference/standard-sql/collation-concepts
 	DefaultCollation string
+
+	// Optionally specifies a PrimaryKey of the table.
+	PrimaryKey *PrimaryKey
+
+	// Optionally specifies ForeignKeys of the tables.
+	ForeignKeys []*ForeignKey
+}
+
+// PrimaryKey represents constrains for the primary key of the table
+type PrimaryKey struct {
+	Columns []string
+}
+
+func (pk *PrimaryKey) toBQ() *bq.TableConstraintsPrimaryKey {
+	return &bq.TableConstraintsPrimaryKey{
+		Columns: pk.Columns,
+	}
+}
+
+func bqToPrimaryKey(tc *bq.TableConstraints) *PrimaryKey {
+	if tc.PrimaryKey == nil {
+		return nil
+	}
+	return &PrimaryKey{
+		Columns: tc.PrimaryKey.Columns,
+	}
+}
+
+// ForeignKey represents constrains for the foreign keys of the table
+type ForeignKey struct {
+	Name             string
+	ReferencedTable  *Table
+	ColumnReferences []*ForeignKeyColumnReference
+}
+
+func (fk *ForeignKey) toBQ() *bq.TableConstraintsForeignKeys {
+	colRefs := []*bq.TableConstraintsForeignKeysColumnReferences{}
+	for _, colRef := range fk.ColumnReferences {
+		colRefs = append(colRefs, colRef.toBQ())
+	}
+	return &bq.TableConstraintsForeignKeys{
+		Name: fk.Name,
+		ReferencedTable: &bq.TableConstraintsForeignKeysReferencedTable{
+			DatasetId: fk.ReferencedTable.DatasetID,
+			ProjectId: fk.ReferencedTable.ProjectID,
+			TableId:   fk.ReferencedTable.TableID,
+		},
+		ColumnReferences: colRefs,
+	}
+}
+
+func bqToForeignKeys(tc *bq.TableConstraints, c *Client) []*ForeignKey {
+	fks := []*ForeignKey{}
+	for _, fk := range tc.ForeignKeys {
+		colRefs := []*ForeignKeyColumnReference{}
+		for _, colRef := range fk.ColumnReferences {
+			colRefs = append(colRefs, &ForeignKeyColumnReference{
+				ReferencedColumn:  colRef.ReferencedColumn,
+				ReferencingColumn: colRef.ReferencingColumn,
+			})
+		}
+		fks = append(fks, &ForeignKey{
+			Name:             fk.Name,
+			ReferencedTable:  c.DatasetInProject(fk.ReferencedTable.DatasetId, fk.ReferencedTable.ProjectId).Table(fk.ReferencedTable.TableId),
+			ColumnReferences: colRefs,
+		})
+	}
+	return fks
+}
+
+// ForeignKeyColumnReference represents which columns are target on the current table and foreign table.
+type ForeignKeyColumnReference struct {
+	ReferencedColumn  string
+	ReferencingColumn string
+}
+
+func (colRef *ForeignKeyColumnReference) toBQ() *bq.TableConstraintsForeignKeysColumnReferences {
+	return &bq.TableConstraintsForeignKeysColumnReferences{
+		ReferencedColumn:  colRef.ReferencedColumn,
+		ReferencingColumn: colRef.ReferencingColumn,
+	}
 }
 
 // TableCreateDisposition specifies the circumstances under which destination table will be created.
@@ -675,6 +756,19 @@ func (tm *TableMetadata) toBQ() (*bq.Table, error) {
 		return nil, errors.New("cannot set ETag on create")
 	}
 	t.DefaultCollation = string(tm.DefaultCollation)
+
+	if tm.PrimaryKey != nil || len(tm.ForeignKeys) > 0 {
+		t.TableConstraints = &bq.TableConstraints{}
+		if tm.PrimaryKey != nil {
+			t.TableConstraints.PrimaryKey = tm.PrimaryKey.toBQ()
+		}
+		if len(tm.ForeignKeys) > 0 {
+			t.TableConstraints.ForeignKeys = make([]*bq.TableConstraintsForeignKeys, len(tm.ForeignKeys))
+			for i, fk := range tm.ForeignKeys {
+				t.TableConstraints.ForeignKeys[i] = fk.toBQ()
+			}
+		}
+	}
 	return t, nil
 }
 
@@ -787,6 +881,10 @@ func bqToTableMetadata(t *bq.Table, c *Client) (*TableMetadata, error) {
 			return nil, err
 		}
 		md.ExternalDataConfig = edc
+	}
+	if t.TableConstraints != nil {
+		md.PrimaryKey = bqToPrimaryKey(t.TableConstraints)
+		md.ForeignKeys = bqToForeignKeys(t.TableConstraints, c)
 	}
 	return md, nil
 }
@@ -947,6 +1045,23 @@ func (tm *TableMetadataToUpdate) toBQ() (*bq.Table, error) {
 		t.DefaultCollation = optional.ToString(tm.DefaultCollation)
 		forceSend("DefaultCollation")
 	}
+	if tm.PrimaryKey != nil || len(tm.ForeignKeys) > 0 {
+		t.TableConstraints = &bq.TableConstraints{}
+		//forceSend("TableConstraints")
+		if tm.PrimaryKey != nil {
+			t.TableConstraints.PrimaryKey = tm.PrimaryKey.toBQ()
+			//forceSend("TableConstraints.PrimaryKey")
+			//forceSend("TableConstraints.PrimaryKey.Columns")
+		}
+		if len(tm.ForeignKeys) > 0 {
+			t.TableConstraints.ForeignKeys = make([]*bq.TableConstraintsForeignKeys, len(tm.ForeignKeys))
+			for i, fk := range tm.ForeignKeys {
+				t.TableConstraints.ForeignKeys[i] = fk.toBQ()
+			}
+			//t.TableConstraints.ForceSendFields = append(t.TableConstraints.ForceSendFields, "ForeignKeys")
+			//forceSend("TableConstraints.ForeignKeys")
+		}
+	}
 	labels, forces, nulls := tm.update()
 	t.Labels = labels
 	t.ForceSendFields = append(t.ForceSendFields, forces...)
@@ -1023,6 +1138,12 @@ type TableMetadataToUpdate struct {
 	// Defines the default collation specification of new STRING fields
 	// in the table.
 	DefaultCollation optional.String
+
+	// Optionally specifies a PrimaryKey of the table.
+	PrimaryKey *PrimaryKey
+
+	// Optionally specifies ForeignKeys for the table.
+	ForeignKeys []*ForeignKey
 
 	labelUpdater
 }
