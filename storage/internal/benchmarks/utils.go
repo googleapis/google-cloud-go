@@ -108,10 +108,12 @@ func generateRandomFile(path string, size int64) (string, error) {
 	return f.Name(), err
 }
 
-// fillDirectoryRandomly fills the directory with the number of different files
-// specified on the command line.
+// fillDirectory fills the directory with the number of different files
+// specified on the command line. Each file created will contain random bytes,
+// and will be of the size specified on the command line. No subdirectories are
+// created.
 // The number of bytes across all created files is returned.
-func fillDirectoryRandomly(dirPath string) (int64, error) {
+func fillDirectory(dirPath string) (int64, error) {
 	currNumBytes := int64(0)
 
 	for i := opts.numObjectsPerDirectory; i > 0; i-- {
