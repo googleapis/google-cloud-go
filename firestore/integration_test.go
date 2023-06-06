@@ -61,6 +61,8 @@ var (
 	iAdminClient  *apiv1.FirestoreAdminClient
 	iColl         *CollectionRef
 	collectionIDs = uid.NewSpace("go-integration-test", nil)
+	wantDBPath    string
+	indexNames    []string
 )
 
 func initIntegrationTest() {
@@ -81,7 +83,7 @@ func initIntegrationTest() {
 		log.Fatal("The project key must be set. See CONTRIBUTING.md for details")
 	}
 	projectPath := "projects/" + testProjectID
-	wantDBPath := projectPath + "/databases/(default)"
+	wantDBPath = projectPath + "/databases/(default)"
 
 	ti := &testutil.HeadersEnforcer{
 		Checkers: []*testutil.HeaderChecker{
@@ -131,10 +133,11 @@ func createIndexes(ctx context.Context, dbPath string) {
 	var createIndexWg sync.WaitGroup
 
 	indexFields := [][]string{{"updatedAt", "weight", "height"}, {"weight", "height"}}
+	indexNames = make([]string, len(indexFields))
 	indexParent := fmt.Sprintf("%s/collectionGroups/%s", dbPath, iColl.ID)
 
 	createIndexWg.Add(len(indexFields))
-	for _, fields := range indexFields {
+	for i, fields := range indexFields {
 		var adminPbIndexFields []*adminpb.Index_IndexField
 		for _, field := range fields {
 			adminPbIndexFields = append(adminPbIndexFields, &adminpb.Index_IndexField{
@@ -151,25 +154,42 @@ func createIndexes(ctx context.Context, dbPath string) {
 				Fields:     adminPbIndexFields,
 			},
 		}
-		go func(req *adminpb.CreateIndexRequest) {
-			op, err := iAdminClient.CreateIndex(ctx, req)
-			if err != nil {
-				log.Fatalf("CreateIndex: %v", err)
+		go func(req *adminpb.CreateIndexRequest, i int) {
+			op, createErr := iAdminClient.CreateIndex(ctx, req)
+			if createErr != nil {
+				log.Fatalf("CreateIndex: %v", createErr)
 			}
 
-			_, err = op.Wait(ctx)
-			if err != nil {
-				log.Fatalf("Wait: %v", err)
+			createdIndex, waitErr := op.Wait(ctx)
+			if waitErr != nil {
+				log.Fatalf("Wait: %v", waitErr)
+			} else {
+				indexNames[i] = createdIndex.Name
 			}
 			createIndexWg.Done()
-		}(req)
+		}(req, i)
 	}
 	createIndexWg.Wait()
+}
+
+// deleteIndexes deletes composite indexes created in createIndexes function
+func deleteIndexes() {
+	ctx := context.Background()
+
+	for _, indexName := range indexNames {
+		err := iAdminClient.DeleteIndex(ctx, &adminpb.DeleteIndexRequest{
+			Name: indexName,
+		})
+		if err != nil {
+			log.Printf("Failed to delete index \"%s\": %+v\n", indexName, err)
+		}
+	}
 }
 
 func cleanupIntegrationTest() {
 	if iClient != nil {
 		// TODO(jba): delete everything in integrationColl.
+		deleteIndexes()
 		iClient.Close()
 	}
 
