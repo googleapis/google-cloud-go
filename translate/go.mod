@@ -4,7 +4,7 @@ go 1.19
 
 require (
 	cloud.google.com/go v0.110.2
-	cloud.google.com/go/longrunning v0.4.2
+	cloud.google.com/go/longrunning v0.5.0
 	github.com/googleapis/gax-go/v2 v2.10.0
 	golang.org/x/text v0.9.0
 	google.golang.org/api v0.125.0
