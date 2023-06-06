@@ -1,5 +1,12 @@
 # Changes
 
+## [1.17.0](https://github.com/googleapis/google-cloud-go/compare/speech/v1.16.0...speech/v1.17.0) (2023-05-30)
+
+
+### Features
+
+* **speech:** Update all direct dependencies ([b340d03](https://github.com/googleapis/google-cloud-go/commit/b340d030f2b52a4ce48846ce63984b28583abde6))
+
 ## [1.16.0](https://github.com/googleapis/google-cloud-go/compare/speech/v1.15.1...speech/v1.16.0) (2023-05-16)
 
 

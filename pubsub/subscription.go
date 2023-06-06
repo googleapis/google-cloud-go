@@ -265,6 +265,11 @@ func (bc *BigQueryConfig) toProto() *pb.BigQueryConfig {
 	if bc == nil {
 		return nil
 	}
+	// If the config is zero valued, this is the sentinel for
+	// clearing bigquery config and switch back to pull.
+	if *bc == (BigQueryConfig{}) {
+		return nil
+	}
 	pbCfg := &pb.BigQueryConfig{
 		Table:             bc.Table,
 		UseTopicSchema:    bc.UseTopicSchema,
