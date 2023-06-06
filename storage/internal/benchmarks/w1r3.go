@@ -32,12 +32,12 @@ import (
 //
 // SET UP
 //   - Initialize structs to populate with the benchmark results.
+//   - Select a random API to use to upload and download the object, unless an
+//     API is set in the command-line,
 //   - Select a random size for the object that will be uploaded; this size will
 //     be between two values configured in the command-line.
 //   - Create an object of that size on disk, and fill with random contents.
 //   - Select, for the upload and each download separately, the following parameters:
-//   - a random API to use to upload/download the object, unless it is set in
-//     the command-line,
 //   - the application buffer size set in the command-line
 //   - the chunksize (only for uploads) set in the command-line,
 //   - if the client library will perform CRC32C and/or MD5 hashes on the data.
