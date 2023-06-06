@@ -19,6 +19,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"path"
 	"time"
 
 	"cloud.google.com/go/storage"
@@ -47,8 +48,10 @@ func downloadBenchmark(ctx context.Context, dopts downloadOpts) (elapsedTime tim
 	ctx, cancel := context.WithTimeout(ctx, time.Minute*2)
 	defer cancel()
 
+	o := dopts.client.Bucket(dopts.bucket).Object(dopts.object)
+
 	// Create file to download to
-	f, err := os.CreateTemp(dopts.downloadToDirectory, objectPrefix)
+	f, err := os.Create(path.Join(dopts.downloadToDirectory, o.ObjectName()))
 	if err != nil {
 		rerr = fmt.Errorf("os.Create: %w", err)
 		return
@@ -62,7 +65,6 @@ func downloadBenchmark(ctx context.Context, dopts downloadOpts) (elapsedTime tim
 	}()
 
 	// Get reader from object
-	o := dopts.client.Bucket(dopts.bucket).Object(dopts.object)
 	objectReader, err := o.NewRangeReader(ctx, dopts.rangeStart, dopts.rangeLength)
 	if err != nil {
 		rerr = fmt.Errorf("Object(%q).NewReader: %w", o.ObjectName(), err)

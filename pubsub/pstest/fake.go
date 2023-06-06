@@ -605,9 +605,15 @@ func (s *GServer) UpdateSubscription(_ context.Context, req *pb.UpdateSubscripti
 			sub.proto.PushConfig = req.Subscription.PushConfig
 
 		case "bigquery_config":
+			// If bq config is nil here, it will have been cleared.
+			// Otherwise, we'll consider the subscription active if any table is set.
 			sub.proto.BigqueryConfig = req.GetSubscription().GetBigqueryConfig()
-			if sub.proto.GetBigqueryConfig().GetTable() != "" {
-				sub.proto.GetBigqueryConfig().State = pb.BigQueryConfig_ACTIVE
+			if sub.proto.GetBigqueryConfig() != nil {
+				if sub.proto.GetBigqueryConfig().GetTable() != "" {
+					sub.proto.BigqueryConfig.State = pb.BigQueryConfig_ACTIVE
+				} else {
+					return nil, status.Errorf(codes.InvalidArgument, "table must be provided")
+				}
 			}
 
 		case "ack_deadline_seconds":

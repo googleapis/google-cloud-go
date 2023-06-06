@@ -196,8 +196,7 @@ func (c *PredictionClient) RawPredict(ctx context.Context, req *aiplatformpb.Raw
 // deployed_model_id
 // is not specified, all DeployedModels must have
 // explanation_spec
-// populated. Only deployed AutoML tabular Models have
-// explanation_spec.
+// populated.
 func (c *PredictionClient) Explain(ctx context.Context, req *aiplatformpb.ExplainRequest, opts ...gax.CallOption) (*aiplatformpb.ExplainResponse, error) {
 	return c.internalClient.Explain(ctx, req, opts...)
 }
@@ -838,8 +837,7 @@ func (c *predictionRESTClient) RawPredict(ctx context.Context, req *aiplatformpb
 // deployed_model_id
 // is not specified, all DeployedModels must have
 // explanation_spec
-// populated. Only deployed AutoML tabular Models have
-// explanation_spec.
+// populated.
 func (c *predictionRESTClient) Explain(ctx context.Context, req *aiplatformpb.ExplainRequest, opts ...gax.CallOption) (*aiplatformpb.ExplainResponse, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
