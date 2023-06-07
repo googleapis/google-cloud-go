@@ -80,7 +80,6 @@ type directoryBenchmark struct {
 	downloadDirectoryPath string
 	writeResult           *benchmarkResult
 	readResult            *benchmarkResult
-	bytesInDir            int64
 	numWorkers            int
 }
 
@@ -126,8 +125,12 @@ func (r *directoryBenchmark) setup(ctx context.Context) error {
 	if err != nil {
 		return err
 	}
+	r.writeResult.directorySize = totalBytes
 	r.readResult.directorySize = totalBytes
-	r.bytesInDir = totalBytes
+
+	r.uploadDirectoryPath = dir
+	r.downloadDirectoryPath = dir + "-copy"
+
 	return nil
 }
 
