@@ -50,11 +50,13 @@ type BatchReadOnlyTransaction struct {
 	dataBoostEnabled bool
 }
 
+// A BatchReadOnlyTransactionOption is an option for BatchReadOnlyTransaction requests.
 type BatchReadOnlyTransactionOption func(txn *BatchReadOnlyTransaction)
 
+// WithDataBoostEnabled returns a BatchReadOnlyTransactionOption that specifies dataBoostEnabled
+// value to be used for partition read and query requests.
 func WithDataBoostEnabled(val bool) BatchReadOnlyTransactionOption {
-	// this is the BatchReadOnlyTransactionOption to set dataBoostEnabled an optional parameter
-	// which will be used for partition read and query to execute the request via spanner independent compute resources.
+	// if enabled will execute the partition read and query request via spanner independent compute resources.
 	return func(txn *BatchReadOnlyTransaction) {
 		txn.dataBoostEnabled = val
 	}
