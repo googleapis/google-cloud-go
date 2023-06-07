@@ -337,6 +337,24 @@ type randomizedParams struct {
 	rangeOffset   int64
 }
 
+var csvHeader = []string{
+	"Op", "ObjectSize", "AppBufferSize", "LibBufferSize",
+	"Crc32cEnabled", "MD5Enabled", "ApiName",
+	"ElapsedTimeUs", "CpuTimeUs", "Status",
+	"HeapSys", "HeapAlloc", "StackInUse", "HeapAllocDiff", "MallocsDiff",
+	"StartTime", "EndTime", "NumWorkers",
+	"CodeVersion", "BucketName",
+}
+
+var csvHeaderWorkload6 = []string{
+	"Op", "DirectorySize", "AppBufferSize", "LibBufferSize",
+	"Crc32cEnabled", "MD5Enabled", "ApiName",
+	"ElapsedTimeUs", "CpuTimeUs", "Status",
+	"HeapSys", "HeapAlloc", "StackInUse", "HeapAllocDiff", "MallocsDiff",
+	"StartTime", "EndTime", "NumWorkers",
+	"CodeVersion", "BucketName",
+}
+
 type benchmarkAPI string
 
 const (
@@ -354,24 +372,6 @@ func (api benchmarkAPI) validate() error {
 	default:
 		return fmt.Errorf("no such api: %s", api)
 	}
-}
-
-var csvHeader = []string{
-	"Op", "ObjectSize", "AppBufferSize", "LibBufferSize",
-	"Crc32cEnabled", "MD5Enabled", "ApiName",
-	"ElapsedTimeUs", "CpuTimeUs", "Status",
-	"HeapSys", "HeapAlloc", "StackInUse", "HeapAllocDiff", "MallocsDiff",
-	"StartTime", "EndTime", "NumWorkers",
-	"CodeVersion", "BucketName",
-}
-
-var csvHeaderWorkload6 = []string{
-	"Op", "DirectorySize", "AppBufferSize", "LibBufferSize",
-	"Crc32cEnabled", "MD5Enabled", "ApiName",
-	"ElapsedTimeUs", "CpuTimeUs", "Status",
-	"HeapSys", "HeapAlloc", "StackInUse", "HeapAllocDiff", "MallocsDiff",
-	"StartTime", "EndTime", "NumWorkers",
-	"CodeVersion", "BucketName",
 }
 
 func writeHeader(w io.Writer) {
