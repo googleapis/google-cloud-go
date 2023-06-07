@@ -94,8 +94,8 @@ func (opt PartitionOptions) toProto() *sppb.PartitionOptions {
 // the database. These partitions can be executed across multiple processes,
 // even across different machines. The partition size and count hints can be
 // configured using PartitionOptions.
-func (t *BatchReadOnlyTransaction) PartitionRead(ctx context.Context, table string, keys KeySet, columns []string, opt PartitionOptions) ([]*Partition, error) {
-	return t.PartitionReadUsingIndex(ctx, table, "", keys, columns, opt)
+func (t *BatchReadOnlyTransaction) PartitionRead(ctx context.Context, table string, keys KeySet, columns []string, opt PartitionOptions, dataBoostEnabled bool) ([]*Partition, error) {
+	return t.PartitionReadUsingIndex(ctx, table, "", keys, columns, opt, dataBoostEnabled)
 }
 
 // PartitionReadWithOptions returns a list of Partitions that can be used to
@@ -103,20 +103,20 @@ func (t *BatchReadOnlyTransaction) PartitionRead(ctx context.Context, table stri
 // processes, even across different machines. The partition size and count hints
 // can be configured using PartitionOptions. Pass a ReadOptions to modify the
 // read operation.
-func (t *BatchReadOnlyTransaction) PartitionReadWithOptions(ctx context.Context, table string, keys KeySet, columns []string, opt PartitionOptions, readOptions ReadOptions) ([]*Partition, error) {
-	return t.PartitionReadUsingIndexWithOptions(ctx, table, "", keys, columns, opt, t.ReadOnlyTransaction.txReadOnly.ro.merge(readOptions))
+func (t *BatchReadOnlyTransaction) PartitionReadWithOptions(ctx context.Context, table string, keys KeySet, columns []string, opt PartitionOptions, readOptions ReadOptions, dataBoostEnabled bool) ([]*Partition, error) {
+	return t.PartitionReadUsingIndexWithOptions(ctx, table, "", keys, columns, opt, t.ReadOnlyTransaction.txReadOnly.ro.merge(readOptions), dataBoostEnabled)
 }
 
 // PartitionReadUsingIndex returns a list of Partitions that can be used to read
 // rows from the database using an index.
-func (t *BatchReadOnlyTransaction) PartitionReadUsingIndex(ctx context.Context, table, index string, keys KeySet, columns []string, opt PartitionOptions) ([]*Partition, error) {
-	return t.PartitionReadUsingIndexWithOptions(ctx, table, index, keys, columns, opt, t.ReadOnlyTransaction.txReadOnly.ro)
+func (t *BatchReadOnlyTransaction) PartitionReadUsingIndex(ctx context.Context, table, index string, keys KeySet, columns []string, opt PartitionOptions, dataBoostEnabled bool) ([]*Partition, error) {
+	return t.PartitionReadUsingIndexWithOptions(ctx, table, index, keys, columns, opt, t.ReadOnlyTransaction.txReadOnly.ro, dataBoostEnabled)
 }
 
 // PartitionReadUsingIndexWithOptions returns a list of Partitions that can be
 // used to read rows from the database using an index. Pass a ReadOptions to
 // modify the read operation.
-func (t *BatchReadOnlyTransaction) PartitionReadUsingIndexWithOptions(ctx context.Context, table, index string, keys KeySet, columns []string, opt PartitionOptions, readOptions ReadOptions) ([]*Partition, error) {
+func (t *BatchReadOnlyTransaction) PartitionReadUsingIndexWithOptions(ctx context.Context, table, index string, keys KeySet, columns []string, opt PartitionOptions, readOptions ReadOptions, dataBoostEnabled bool) ([]*Partition, error) {
 	sh, ts, err := t.acquire(ctx)
 	if err != nil {
 		return nil, err
@@ -150,13 +150,14 @@ func (t *BatchReadOnlyTransaction) PartitionReadUsingIndexWithOptions(ctx contex
 	}
 	// Prepare ReadRequest.
 	req := &sppb.ReadRequest{
-		Session:        sid,
-		Transaction:    ts,
-		Table:          table,
-		Index:          index,
-		Columns:        columns,
-		KeySet:         kset,
-		RequestOptions: createRequestOptions(readOptions.Priority, readOptions.RequestTag, ""),
+		Session:          sid,
+		Transaction:      ts,
+		Table:            table,
+		Index:            index,
+		Columns:          columns,
+		KeySet:           kset,
+		RequestOptions:   createRequestOptions(readOptions.Priority, readOptions.RequestTag, ""),
+		DataBoostEnabled: dataBoostEnabled,
 	}
 	// Generate partitions.
 	for _, p := range resp.GetPartitions() {
@@ -170,18 +171,18 @@ func (t *BatchReadOnlyTransaction) PartitionReadUsingIndexWithOptions(ctx contex
 
 // PartitionQuery returns a list of Partitions that can be used to execute a
 // query against the database.
-func (t *BatchReadOnlyTransaction) PartitionQuery(ctx context.Context, statement Statement, opt PartitionOptions) ([]*Partition, error) {
-	return t.partitionQuery(ctx, statement, opt, t.ReadOnlyTransaction.txReadOnly.qo)
+func (t *BatchReadOnlyTransaction) PartitionQuery(ctx context.Context, statement Statement, opt PartitionOptions, dataBoostEnabled bool) ([]*Partition, error) {
+	return t.partitionQuery(ctx, statement, opt, t.ReadOnlyTransaction.txReadOnly.qo, dataBoostEnabled)
 }
 
 // PartitionQueryWithOptions returns a list of Partitions that can be used to
 // execute a query against the database. The sql query execution will be
 // optimized based on the given query options.
-func (t *BatchReadOnlyTransaction) PartitionQueryWithOptions(ctx context.Context, statement Statement, opt PartitionOptions, qOpts QueryOptions) ([]*Partition, error) {
-	return t.partitionQuery(ctx, statement, opt, t.ReadOnlyTransaction.txReadOnly.qo.merge(qOpts))
+func (t *BatchReadOnlyTransaction) PartitionQueryWithOptions(ctx context.Context, statement Statement, opt PartitionOptions, qOpts QueryOptions, dataBoostEnabled bool) ([]*Partition, error) {
+	return t.partitionQuery(ctx, statement, opt, t.ReadOnlyTransaction.txReadOnly.qo.merge(qOpts), dataBoostEnabled)
 }
 
-func (t *BatchReadOnlyTransaction) partitionQuery(ctx context.Context, statement Statement, opt PartitionOptions, qOpts QueryOptions) ([]*Partition, error) {
+func (t *BatchReadOnlyTransaction) partitionQuery(ctx context.Context, statement Statement, opt PartitionOptions, qOpts QueryOptions, dataBoostEnabled bool) ([]*Partition, error) {
 	sh, ts, err := t.acquire(ctx)
 	if err != nil {
 		return nil, err
@@ -212,13 +213,14 @@ func (t *BatchReadOnlyTransaction) partitionQuery(ctx context.Context, statement
 
 	// prepare ExecuteSqlRequest
 	r := &sppb.ExecuteSqlRequest{
-		Session:        sid,
-		Transaction:    ts,
-		Sql:            statement.SQL,
-		Params:         params,
-		ParamTypes:     paramTypes,
-		QueryOptions:   qOpts.Options,
-		RequestOptions: createRequestOptions(qOpts.Priority, qOpts.RequestTag, ""),
+		Session:          sid,
+		Transaction:      ts,
+		Sql:              statement.SQL,
+		Params:           params,
+		ParamTypes:       paramTypes,
+		QueryOptions:     qOpts.Options,
+		RequestOptions:   createRequestOptions(qOpts.Priority, qOpts.RequestTag, ""),
+		DataBoostEnabled: dataBoostEnabled,
 	}
 
 	// generate Partitions
@@ -308,15 +310,16 @@ func (t *BatchReadOnlyTransaction) Execute(ctx context.Context, p *Partition) *R
 	if p.rreq != nil {
 		rpc = func(ctx context.Context, resumeToken []byte) (streamingReceiver, error) {
 			client, err := client.StreamingRead(ctx, &sppb.ReadRequest{
-				Session:        p.rreq.Session,
-				Transaction:    p.rreq.Transaction,
-				Table:          p.rreq.Table,
-				Index:          p.rreq.Index,
-				Columns:        p.rreq.Columns,
-				KeySet:         p.rreq.KeySet,
-				PartitionToken: p.pt,
-				RequestOptions: p.rreq.RequestOptions,
-				ResumeToken:    resumeToken,
+				Session:          p.rreq.Session,
+				Transaction:      p.rreq.Transaction,
+				Table:            p.rreq.Table,
+				Index:            p.rreq.Index,
+				Columns:          p.rreq.Columns,
+				KeySet:           p.rreq.KeySet,
+				PartitionToken:   p.pt,
+				RequestOptions:   p.rreq.RequestOptions,
+				ResumeToken:      resumeToken,
+				DataBoostEnabled: p.rreq.DataBoostEnabled,
 			})
 			if err != nil {
 				return client, err
@@ -332,15 +335,16 @@ func (t *BatchReadOnlyTransaction) Execute(ctx context.Context, p *Partition) *R
 	} else {
 		rpc = func(ctx context.Context, resumeToken []byte) (streamingReceiver, error) {
 			client, err := client.ExecuteStreamingSql(ctx, &sppb.ExecuteSqlRequest{
-				Session:        p.qreq.Session,
-				Transaction:    p.qreq.Transaction,
-				Sql:            p.qreq.Sql,
-				Params:         p.qreq.Params,
-				ParamTypes:     p.qreq.ParamTypes,
-				QueryOptions:   p.qreq.QueryOptions,
-				PartitionToken: p.pt,
-				RequestOptions: p.qreq.RequestOptions,
-				ResumeToken:    resumeToken,
+				Session:          p.qreq.Session,
+				Transaction:      p.qreq.Transaction,
+				Sql:              p.qreq.Sql,
+				Params:           p.qreq.Params,
+				ParamTypes:       p.qreq.ParamTypes,
+				QueryOptions:     p.qreq.QueryOptions,
+				PartitionToken:   p.pt,
+				RequestOptions:   p.qreq.RequestOptions,
+				ResumeToken:      resumeToken,
+				DataBoostEnabled: p.qreq.DataBoostEnabled,
 			})
 			if err != nil {
 				return client, err

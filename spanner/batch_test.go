@@ -101,9 +101,9 @@ func TestPartitionQuery_QueryOptions(t *testing.T) {
 			defer txn.Cleanup(ctx)
 
 			if tt.query.Options == nil {
-				ps, err = txn.PartitionQuery(ctx, stmt, PartitionOptions{0, 3})
+				ps, err = txn.PartitionQuery(ctx, stmt, PartitionOptions{0, 3}, false)
 			} else {
-				ps, err = txn.PartitionQueryWithOptions(ctx, stmt, PartitionOptions{0, 3}, tt.query)
+				ps, err = txn.PartitionQueryWithOptions(ctx, stmt, PartitionOptions{0, 3}, tt.query, false)
 			}
 			if err != nil {
 				t.Fatal(err)
@@ -163,9 +163,9 @@ func TestPartitionQuery_ReadOptions(t *testing.T) {
 			defer txn.Cleanup(ctx)
 
 			if tt.read == nil {
-				ps, err = txn.PartitionRead(ctx, "Albums", KeySets(Key{"foo"}), []string{"SingerId", "AlbumId", "AlbumTitle"}, PartitionOptions{0, 3})
+				ps, err = txn.PartitionRead(ctx, "Albums", KeySets(Key{"foo"}), []string{"SingerId", "AlbumId", "AlbumTitle"}, PartitionOptions{0, 3}, false)
 			} else {
-				ps, err = txn.PartitionReadWithOptions(ctx, "Albums", KeySets(Key{"foo"}), []string{"SingerId", "AlbumId", "AlbumTitle"}, PartitionOptions{0, 3}, *tt.read)
+				ps, err = txn.PartitionReadWithOptions(ctx, "Albums", KeySets(Key{"foo"}), []string{"SingerId", "AlbumId", "AlbumTitle"}, PartitionOptions{0, 3}, *tt.read, false)
 			}
 			if err != nil {
 				t.Fatal(err)
@@ -202,7 +202,7 @@ func TestPartitionQuery_Parallel(t *testing.T) {
 		t.Fatal(err)
 	}
 	defer txn.Cleanup(ctx)
-	ps, err := txn.PartitionQuery(ctx, NewStatement(SelectSingerIDAlbumIDAlbumTitleFromAlbums), PartitionOptions{0, 10})
+	ps, err := txn.PartitionQuery(ctx, NewStatement(SelectSingerIDAlbumIDAlbumTitleFromAlbums), PartitionOptions{0, 10}, false)
 	if err != nil {
 		t.Fatal(err)
 	}
