@@ -29,7 +29,7 @@ import (
 	emptypb "github.com/golang/protobuf/ptypes/empty"
 	tspb "github.com/golang/protobuf/ptypes/timestamp"
 	statuspb "google.golang.org/genproto/googleapis/rpc/status"
-	fmpb "google.golang.org/genproto/protobuf/field_mask"
+	fmpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 )
 
 func newTestAdminClient(t *testing.T) *AdminClient {
