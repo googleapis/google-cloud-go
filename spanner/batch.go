@@ -46,7 +46,18 @@ import (
 // concurrently active BatchReadOnlyTransactions you expect to have.
 type BatchReadOnlyTransaction struct {
 	ReadOnlyTransaction
-	ID BatchReadOnlyTransactionID
+	ID               BatchReadOnlyTransactionID
+	dataBoostEnabled bool
+}
+
+type BatchReadOnlyTransactionOption func(txn *BatchReadOnlyTransaction)
+
+func WithDataBoostEnabled(val bool) BatchReadOnlyTransactionOption {
+	// this is the BatchReadOnlyTransactionOption to set dataBoostEnabled an optional parameter
+	// which will be used for partition read and query to execute the request via spanner independent compute resources.
+	return func(txn *BatchReadOnlyTransaction) {
+		txn.dataBoostEnabled = val
+	}
 }
 
 // BatchReadOnlyTransactionID is a unique identifier for a
@@ -94,8 +105,8 @@ func (opt PartitionOptions) toProto() *sppb.PartitionOptions {
 // the database. These partitions can be executed across multiple processes,
 // even across different machines. The partition size and count hints can be
 // configured using PartitionOptions.
-func (t *BatchReadOnlyTransaction) PartitionRead(ctx context.Context, table string, keys KeySet, columns []string, opt PartitionOptions, dataBoostEnabled bool) ([]*Partition, error) {
-	return t.PartitionReadUsingIndex(ctx, table, "", keys, columns, opt, dataBoostEnabled)
+func (t *BatchReadOnlyTransaction) PartitionRead(ctx context.Context, table string, keys KeySet, columns []string, opt PartitionOptions, opts ...BatchReadOnlyTransactionOption) ([]*Partition, error) {
+	return t.PartitionReadUsingIndex(ctx, table, "", keys, columns, opt, opts...)
 }
 
 // PartitionReadWithOptions returns a list of Partitions that can be used to
@@ -103,20 +114,23 @@ func (t *BatchReadOnlyTransaction) PartitionRead(ctx context.Context, table stri
 // processes, even across different machines. The partition size and count hints
 // can be configured using PartitionOptions. Pass a ReadOptions to modify the
 // read operation.
-func (t *BatchReadOnlyTransaction) PartitionReadWithOptions(ctx context.Context, table string, keys KeySet, columns []string, opt PartitionOptions, readOptions ReadOptions, dataBoostEnabled bool) ([]*Partition, error) {
-	return t.PartitionReadUsingIndexWithOptions(ctx, table, "", keys, columns, opt, t.ReadOnlyTransaction.txReadOnly.ro.merge(readOptions), dataBoostEnabled)
+func (t *BatchReadOnlyTransaction) PartitionReadWithOptions(ctx context.Context, table string, keys KeySet, columns []string, opt PartitionOptions, readOptions ReadOptions, opts ...BatchReadOnlyTransactionOption) ([]*Partition, error) {
+	return t.PartitionReadUsingIndexWithOptions(ctx, table, "", keys, columns, opt, t.ReadOnlyTransaction.txReadOnly.ro.merge(readOptions), opts...)
 }
 
 // PartitionReadUsingIndex returns a list of Partitions that can be used to read
 // rows from the database using an index.
-func (t *BatchReadOnlyTransaction) PartitionReadUsingIndex(ctx context.Context, table, index string, keys KeySet, columns []string, opt PartitionOptions, dataBoostEnabled bool) ([]*Partition, error) {
-	return t.PartitionReadUsingIndexWithOptions(ctx, table, index, keys, columns, opt, t.ReadOnlyTransaction.txReadOnly.ro, dataBoostEnabled)
+func (t *BatchReadOnlyTransaction) PartitionReadUsingIndex(ctx context.Context, table, index string, keys KeySet, columns []string, opt PartitionOptions, opts ...BatchReadOnlyTransactionOption) ([]*Partition, error) {
+	return t.PartitionReadUsingIndexWithOptions(ctx, table, index, keys, columns, opt, t.ReadOnlyTransaction.txReadOnly.ro, opts...)
 }
 
 // PartitionReadUsingIndexWithOptions returns a list of Partitions that can be
 // used to read rows from the database using an index. Pass a ReadOptions to
 // modify the read operation.
-func (t *BatchReadOnlyTransaction) PartitionReadUsingIndexWithOptions(ctx context.Context, table, index string, keys KeySet, columns []string, opt PartitionOptions, readOptions ReadOptions, dataBoostEnabled bool) ([]*Partition, error) {
+func (t *BatchReadOnlyTransaction) PartitionReadUsingIndexWithOptions(ctx context.Context, table, index string, keys KeySet, columns []string, opt PartitionOptions, readOptions ReadOptions, opts ...BatchReadOnlyTransactionOption) ([]*Partition, error) {
+	for _, o := range opts {
+		o(t)
+	}
 	sh, ts, err := t.acquire(ctx)
 	if err != nil {
 		return nil, err
@@ -157,7 +171,7 @@ func (t *BatchReadOnlyTransaction) PartitionReadUsingIndexWithOptions(ctx contex
 		Columns:          columns,
 		KeySet:           kset,
 		RequestOptions:   createRequestOptions(readOptions.Priority, readOptions.RequestTag, ""),
-		DataBoostEnabled: dataBoostEnabled,
+		DataBoostEnabled: t.dataBoostEnabled,
 	}
 	// Generate partitions.
 	for _, p := range resp.GetPartitions() {
@@ -171,18 +185,21 @@ func (t *BatchReadOnlyTransaction) PartitionReadUsingIndexWithOptions(ctx contex
 
 // PartitionQuery returns a list of Partitions that can be used to execute a
 // query against the database.
-func (t *BatchReadOnlyTransaction) PartitionQuery(ctx context.Context, statement Statement, opt PartitionOptions, dataBoostEnabled bool) ([]*Partition, error) {
-	return t.partitionQuery(ctx, statement, opt, t.ReadOnlyTransaction.txReadOnly.qo, dataBoostEnabled)
+func (t *BatchReadOnlyTransaction) PartitionQuery(ctx context.Context, statement Statement, opt PartitionOptions, opts ...BatchReadOnlyTransactionOption) ([]*Partition, error) {
+	return t.partitionQuery(ctx, statement, opt, t.ReadOnlyTransaction.txReadOnly.qo, opts...)
 }
 
 // PartitionQueryWithOptions returns a list of Partitions that can be used to
 // execute a query against the database. The sql query execution will be
 // optimized based on the given query options.
-func (t *BatchReadOnlyTransaction) PartitionQueryWithOptions(ctx context.Context, statement Statement, opt PartitionOptions, qOpts QueryOptions, dataBoostEnabled bool) ([]*Partition, error) {
-	return t.partitionQuery(ctx, statement, opt, t.ReadOnlyTransaction.txReadOnly.qo.merge(qOpts), dataBoostEnabled)
+func (t *BatchReadOnlyTransaction) PartitionQueryWithOptions(ctx context.Context, statement Statement, opt PartitionOptions, qOpts QueryOptions, opts ...BatchReadOnlyTransactionOption) ([]*Partition, error) {
+	return t.partitionQuery(ctx, statement, opt, t.ReadOnlyTransaction.txReadOnly.qo.merge(qOpts), opts...)
 }
 
-func (t *BatchReadOnlyTransaction) partitionQuery(ctx context.Context, statement Statement, opt PartitionOptions, qOpts QueryOptions, dataBoostEnabled bool) ([]*Partition, error) {
+func (t *BatchReadOnlyTransaction) partitionQuery(ctx context.Context, statement Statement, opt PartitionOptions, qOpts QueryOptions, opts ...BatchReadOnlyTransactionOption) ([]*Partition, error) {
+	for _, o := range opts {
+		o(t)
+	}
 	sh, ts, err := t.acquire(ctx)
 	if err != nil {
 		return nil, err
@@ -220,7 +237,7 @@ func (t *BatchReadOnlyTransaction) partitionQuery(ctx context.Context, statement
 		ParamTypes:       paramTypes,
 		QueryOptions:     qOpts.Options,
 		RequestOptions:   createRequestOptions(qOpts.Priority, qOpts.RequestTag, ""),
-		DataBoostEnabled: dataBoostEnabled,
+		DataBoostEnabled: t.dataBoostEnabled,
 	}
 
 	// generate Partitions

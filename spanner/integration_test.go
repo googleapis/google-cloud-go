@@ -3141,7 +3141,7 @@ func TestIntegration_BatchQuery(t *testing.T) {
 		t.Fatal(err)
 	}
 	defer txn.Cleanup(ctx)
-	if partitions, err = txn.PartitionQuery(ctx, stmt, PartitionOptions{0, 3}, true); err != nil {
+	if partitions, err = txn.PartitionQuery(ctx, stmt, PartitionOptions{0, 3}, WithDataBoostEnabled(true)); err != nil {
 		t.Fatal(err)
 	}
 
@@ -3224,7 +3224,7 @@ func TestIntegration_BatchRead(t *testing.T) {
 		t.Fatal(err)
 	}
 	defer txn.Cleanup(ctx)
-	if partitions, err = txn.PartitionRead(ctx, "test", AllKeys(), simpleDBTableColumns, PartitionOptions{0, 3}, true); err != nil {
+	if partitions, err = txn.PartitionRead(ctx, "test", AllKeys(), simpleDBTableColumns, PartitionOptions{0, 3}, WithDataBoostEnabled(true)); err != nil {
 		t.Fatal(err)
 	}
 
@@ -3296,7 +3296,7 @@ func TestIntegration_BROTNormal(t *testing.T) {
 		t.Fatal(err)
 	}
 	defer txn.Cleanup(ctx)
-	if _, err := txn.PartitionRead(ctx, "test", AllKeys(), simpleDBTableColumns, PartitionOptions{0, 3}, false); err != nil {
+	if _, err := txn.PartitionRead(ctx, "test", AllKeys(), simpleDBTableColumns, PartitionOptions{0, 3}); err != nil {
 		t.Fatal(err)
 	}
 	// Normal query should work with BatchReadOnlyTransaction.
