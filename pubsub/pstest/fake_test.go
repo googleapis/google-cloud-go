@@ -1575,7 +1575,7 @@ func TestSubscriptionPushPull(t *testing.T) {
 	}
 
 	// Switch back to a pull subscription.
-	updateSub.BigqueryConfig = &pb.BigQueryConfig{}
+	updateSub.BigqueryConfig = nil
 	got = mustUpdateSubscription(ctx, t, sclient, &pb.UpdateSubscriptionRequest{
 		Subscription: updateSub,
 		UpdateMask:   &field_mask.FieldMask{Paths: []string{"bigquery_config"}},
