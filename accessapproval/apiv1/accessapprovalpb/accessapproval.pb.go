@@ -2533,6 +2533,8 @@ const _ = grpc.SupportPackageIsVersion6
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type AccessApprovalClient interface {
+	Test()
+
 	// Lists approval requests associated with a project, folder, or organization.
 	// Approval requests can be filtered by state (pending, active, dismissed).
 	// The order is reverse chronological.
@@ -2588,6 +2590,8 @@ type accessApprovalClient struct {
 func NewAccessApprovalClient(cc grpc.ClientConnInterface) AccessApprovalClient {
 	return &accessApprovalClient{cc}
 }
+
+func (c *accessApprovalClient) Test()
 
 func (c *accessApprovalClient) ListApprovalRequests(ctx context.Context, in *ListApprovalRequestsMessage, opts ...grpc.CallOption) (*ListApprovalRequestsResponse, error) {
 	out := new(ListApprovalRequestsResponse)
