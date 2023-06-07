@@ -1,5 +1,12 @@
 # Changes
 
+## [1.9.0](https://github.com/googleapis/google-cloud-go/compare/contactcenterinsights/v1.8.0...contactcenterinsights/v1.9.0) (2023-06-07)
+
+
+### Features
+
+* **contactcenterinsights:** Add the resource definition of a STT recognizer ([#8035](https://github.com/googleapis/google-cloud-go/issues/8035)) ([b119cd0](https://github.com/googleapis/google-cloud-go/commit/b119cd08924ce9b4b26c6343686a76137de7375d))
+
 ## [1.8.0](https://github.com/googleapis/google-cloud-go/compare/contactcenterinsights/v1.7.1...contactcenterinsights/v1.8.0) (2023-05-30)
 
 
