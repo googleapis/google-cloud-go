@@ -79,7 +79,6 @@ jobs:
       # non-breaking.
       run: |
         cd ${{ matrix.changed }} && apidiff -m -incompatible ${{ steps.baseline.outputs.pkg }} . > diff.txt
-        echo "Looking at branch ${{ github.event.pull_request.base.ref }}"
         if [[ ${{ github.event.pull_request.base.ref }} == *owl-bot-copy ]]; then
           sed -i '/: added/d' ./diff.txt
         fi
