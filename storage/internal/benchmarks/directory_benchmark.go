@@ -126,11 +126,7 @@ func (r *directoryBenchmark) setup(ctx context.Context) error {
 	if err != nil {
 		return err
 	}
-	r.writeResult.directorySize = totalBytes
 	r.readResult.directorySize = totalBytes
-
-	r.uploadDirectoryPath = dir
-	r.downloadDirectoryPath = dir + "-copy"
 	r.bytesInDir = totalBytes
 	return nil
 }
