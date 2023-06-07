@@ -171,8 +171,6 @@ func (br *benchmarkResult) cloudMonitoring() []byte {
 	if br.directorySize > 0 {
 		sb.WriteString(makeStringUnquoted("directory_size", br.directorySize))
 		sb.WriteString(",")
-		sb.WriteString(makeStringUnquoted("num_objects", opts.numObjectsPerDirectory))
-		sb.WriteString(",")
 	} else {
 		// object_size is not reliable for directories as they can have a mix of
 		// object sizes; therefore, we do not output it
@@ -213,11 +211,6 @@ func (br *benchmarkResult) cloudMonitoring() []byte {
 	sb.WriteString(makeStringUnquoted("app_buffer_size", br.params.appBufferSize))
 	sb.WriteString(",")
 
-	if br.params.api == directPath || br.params.api == grpcAPI {
-		sb.WriteString(makeStringUnquoted("connection_pool_size", opts.connPoolSize))
-		sb.WriteString(",")
-	}
-
 	sb.WriteString(makeStringQuoted("code_version", codeVersion))
 	sb.WriteString(",")
 	sb.WriteString(makeStringQuoted("go_version", goVersion))
@@ -252,15 +245,9 @@ func (br *benchmarkResult) csv() []string {
 	record["Op"] = op
 	if br.directorySize > 0 {
 		record["DirectorySize"] = strconv.FormatInt(br.directorySize, 10)
-		record["NumObjects"] = strconv.Itoa(opts.numObjectsPerDirectory)
 	} else {
 		record["ObjectSize"] = strconv.FormatInt(br.objectSize, 10)
 	}
-	if opts.rangeSize > 0 {
-		record["TransferSize"] = strconv.Itoa(int(opts.rangeSize))
-		record["TransferOffset"] = strconv.Itoa(int(br.params.rangeOffset))
-	}
-
 	record["AppBufferSize"] = strconv.Itoa(br.params.appBufferSize)
 	record["LibBufferSize"] = strconv.Itoa(int(br.params.chunkSize))
 	record["Crc32cEnabled"] = strconv.FormatBool(br.params.crc32cEnabled)
@@ -275,7 +262,6 @@ func (br *benchmarkResult) csv() []string {
 	// commented out to avoid large numbers messing up BigQuery imports
 	record["HeapAllocDiff"] = "-1" //strconv.FormatUint(br.endMem.HeapAlloc-br.startMem.HeapAlloc, 10),
 	record["MallocsDiff"] = strconv.FormatUint(br.endMem.Mallocs-br.startMem.Mallocs, 10)
-	record["ConnectionPoolSize"] = strconv.Itoa(opts.connPoolSize)
 	record["StartTime"] = strconv.FormatInt(br.start.Unix(), 10)
 	record["EndTime"] = strconv.FormatInt(br.start.Add(br.elapsedTime).Unix(), 10)
 	record["NumWorkers"] = strconv.Itoa(opts.numWorkers)
@@ -284,47 +270,9 @@ func (br *benchmarkResult) csv() []string {
 
 	var result []string
 
-	for _, h := range *selectHeader() {
+	for _, h := range csvHeader {
 		result = append(result, record[h])
 	}
 
 	return result
-}
-
-var (
-	csvHeader = []string{
-		"Op", "ObjectSize", "AppBufferSize", "LibBufferSize",
-		"Crc32cEnabled", "MD5Enabled", "ApiName",
-		"ElapsedTimeUs", "CpuTimeUs", "Status",
-		"HeapSys", "HeapAlloc", "StackInUse", "HeapAllocDiff", "MallocsDiff",
-		"ConnectionPoolSize", "StartTime", "EndTime", "NumWorkers",
-		"CodeVersion", "BucketName",
-	}
-	csvHeaderRangeReads = []string{
-		"Op", "ObjectSize", "TransferSize", "TransferOffset",
-		"AppBufferSize", "LibBufferSize",
-		"Crc32cEnabled", "MD5Enabled", "ApiName",
-		"ElapsedTimeUs", "CpuTimeUs", "Status",
-		"HeapSys", "HeapAlloc", "StackInUse", "HeapAllocDiff", "MallocsDiff",
-		"ConnectionPoolSize", "StartTime", "EndTime", "NumWorkers",
-		"CodeVersion", "BucketName",
-	}
-	csvHeaderWorkload6 = []string{
-		"Op", "DirectorySize", "NumObjects", "AppBufferSize", "LibBufferSize",
-		"Crc32cEnabled", "MD5Enabled", "ApiName",
-		"ElapsedTimeUs", "CpuTimeUs", "Status",
-		"HeapSys", "HeapAlloc", "StackInUse", "HeapAllocDiff", "MallocsDiff",
-		"ConnectionPoolSize", "StartTime", "EndTime", "NumWorkers",
-		"CodeVersion", "BucketName",
-	}
-)
-
-func selectHeader() *[]string {
-	header := &csvHeader
-	if opts.workload == 6 {
-		header = &csvHeaderWorkload6
-	} else if opts.rangeSize > 0 {
-		header = &csvHeaderRangeReads
-	}
-	return header
 }

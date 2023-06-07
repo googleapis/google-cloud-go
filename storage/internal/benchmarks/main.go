@@ -356,10 +356,31 @@ func (api benchmarkAPI) validate() error {
 	}
 }
 
+var csvHeader = []string{
+	"Op", "ObjectSize", "AppBufferSize", "LibBufferSize",
+	"Crc32cEnabled", "MD5Enabled", "ApiName",
+	"ElapsedTimeUs", "CpuTimeUs", "Status",
+	"HeapSys", "HeapAlloc", "StackInUse", "HeapAllocDiff", "MallocsDiff",
+	"StartTime", "EndTime", "NumWorkers",
+	"CodeVersion", "BucketName",
+}
+
+var csvHeaderWorkload6 = []string{
+	"Op", "DirectorySize", "AppBufferSize", "LibBufferSize",
+	"Crc32cEnabled", "MD5Enabled", "ApiName",
+	"ElapsedTimeUs", "CpuTimeUs", "Status",
+	"HeapSys", "HeapAlloc", "StackInUse", "HeapAllocDiff", "MallocsDiff",
+	"StartTime", "EndTime", "NumWorkers",
+	"CodeVersion", "BucketName",
+}
+
 func writeHeader(w io.Writer) {
-	header := selectHeader()
+	header := csvHeader
+	if opts.workload == 6 {
+		header = csvHeaderWorkload6
+	}
 	cw := csv.NewWriter(w)
-	if err := cw.Write(*header); err != nil {
+	if err := cw.Write(header); err != nil {
 		log.Fatalf("error writing csv header: %v", err)
 	}
 	cw.Flush()
