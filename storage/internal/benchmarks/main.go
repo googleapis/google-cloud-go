@@ -36,7 +36,7 @@ import (
 )
 
 const (
-	codeVersion = "0.9.0" // to keep track of which version of the code a benchmark ran on
+	codeVersion = "0.9.1" // to keep track of which version of the code a benchmark ran on
 	useDefault  = -1
 )
 
@@ -169,7 +169,7 @@ func parseFlags() {
 	flag.IntVar(&opts.numClients, "clients", 1, "number of storage clients to be used; if Mixed APIs, then twice the clients are created")
 
 	flag.IntVar(&opts.workload, "workload", 1, "which workload to run")
-	flag.IntVar(&opts.workload, "directory_num_objects", 1000, "total number of objects in directory")
+	flag.IntVar(&opts.numObjectsPerDirectory, "directory_num_objects", 1000, "total number of objects in directory")
 
 	flag.Parse()
 
