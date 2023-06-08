@@ -36,7 +36,7 @@ import (
 )
 
 const (
-	codeVersion = "0.9.0" // to keep track of which version of the code a benchmark ran on
+	codeVersion = "0.9.1" // to keep track of which version of the code a benchmark ran on
 	useDefault  = -1
 )
 
@@ -169,7 +169,7 @@ func parseFlags() {
 	flag.IntVar(&opts.numClients, "clients", 1, "number of storage clients to be used; if Mixed APIs, then twice the clients are created")
 
 	flag.IntVar(&opts.workload, "workload", 1, "which workload to run")
-	flag.IntVar(&opts.workload, "directory_num_objects", 1000, "total number of objects in directory")
+	flag.IntVar(&opts.numObjectsPerDirectory, "directory_num_objects", 1000, "total number of objects in directory")
 
 	flag.Parse()
 
@@ -337,24 +337,6 @@ type randomizedParams struct {
 	rangeOffset   int64
 }
 
-var csvHeader = []string{
-	"Op", "ObjectSize", "AppBufferSize", "LibBufferSize",
-	"Crc32cEnabled", "MD5Enabled", "ApiName",
-	"ElapsedTimeUs", "CpuTimeUs", "Status",
-	"HeapSys", "HeapAlloc", "StackInUse", "HeapAllocDiff", "MallocsDiff",
-	"StartTime", "EndTime", "NumWorkers",
-	"CodeVersion", "BucketName",
-}
-
-var csvHeaderWorkload6 = []string{
-	"Op", "DirectorySize", "AppBufferSize", "LibBufferSize",
-	"Crc32cEnabled", "MD5Enabled", "ApiName",
-	"ElapsedTimeUs", "CpuTimeUs", "Status",
-	"HeapSys", "HeapAlloc", "StackInUse", "HeapAllocDiff", "MallocsDiff",
-	"StartTime", "EndTime", "NumWorkers",
-	"CodeVersion", "BucketName",
-}
-
 type benchmarkAPI string
 
 const (
@@ -375,12 +357,9 @@ func (api benchmarkAPI) validate() error {
 }
 
 func writeHeader(w io.Writer) {
-	header := csvHeader
-	if opts.workload == 6 {
-		header = csvHeaderWorkload6
-	}
+	header := selectHeader()
 	cw := csv.NewWriter(w)
-	if err := cw.Write(header); err != nil {
+	if err := cw.Write(*header); err != nil {
 		log.Fatalf("error writing csv header: %v", err)
 	}
 	cw.Flush()

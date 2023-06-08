@@ -80,7 +80,6 @@ type directoryBenchmark struct {
 	downloadDirectoryPath string
 	writeResult           *benchmarkResult
 	readResult            *benchmarkResult
-	bytesInDir            int64
 	numWorkers            int
 }
 
@@ -108,11 +107,11 @@ func (r *directoryBenchmark) setup(ctx context.Context) error {
 	}
 
 	// Select write params
+	r.writeResult = &benchmarkResult{}
 	r.writeResult.selectWriteParams(*r.opts, api)
 
 	// Select read params
-	r.readResult.isRead = true
-	r.readResult.readIteration = 0
+	r.readResult = &benchmarkResult{isRead: true}
 	r.readResult.selectReadParams(*r.opts, api)
 
 	// Make a temp dir for this run
@@ -122,7 +121,7 @@ func (r *directoryBenchmark) setup(ctx context.Context) error {
 	}
 
 	// Create contents
-	totalBytes, err := fillDirectoryRandomly(dir)
+	totalBytes, err := fillDirectory(dir)
 	if err != nil {
 		return err
 	}
@@ -131,7 +130,7 @@ func (r *directoryBenchmark) setup(ctx context.Context) error {
 
 	r.uploadDirectoryPath = dir
 	r.downloadDirectoryPath = dir + "-copy"
-	r.bytesInDir = totalBytes
+
 	return nil
 }
 
@@ -184,6 +183,10 @@ func (r *directoryBenchmark) uploadDirectory(ctx context.Context, numWorkers int
 	err = filepath.WalkDir(r.uploadDirectoryPath, func(filePath string, d fs.DirEntry, err error) error {
 		if err != nil {
 			return err
+		}
+
+		if d.IsDir() {
+			return nil // skip directories
 		}
 
 		objectName, err := filepath.Rel(path.Dir(r.uploadDirectoryPath), filePath)
@@ -257,11 +260,19 @@ func (r *directoryBenchmark) downloadDirectory(ctx context.Context, numWorkers i
 		}
 		r.readResult.readOffset = rangeStart
 
+		// get the expected size by checking the size in the upload directory
+		var fs fs.FileInfo
+		fs, err = os.Stat(path.Join(r.uploadDirectoryPath, filepath.Base(object)))
+		if err != nil {
+			return
+		}
+		objectSize := fs.Size()
+
 		// download the object
 		benchGroup.Go(func() error {
 			_, err = downloadBenchmark(ctx, downloadOpts{
 				client:              getClient(ctx, r.readResult.params.api),
-				objectSize:          r.readResult.objectSize,
+				objectSize:          objectSize,
 				bucket:              r.bucketName,
 				object:              object,
 				downloadToDirectory: r.downloadDirectoryPath,

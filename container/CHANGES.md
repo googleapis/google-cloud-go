@@ -1,5 +1,12 @@
 # Changes
 
+## [1.21.0](https://github.com/googleapis/google-cloud-go/compare/container/v1.20.0...container/v1.21.0) (2023-06-07)
+
+
+### Features
+
+* **container:** Add a API field to enable FQDN Network Policy on clusters ([79eac77](https://github.com/googleapis/google-cloud-go/commit/79eac771ecf99172157cc4499ba95536778354e6))
+
 ## [1.20.0](https://github.com/googleapis/google-cloud-go/compare/container/v1.19.0...container/v1.20.0) (2023-05-31)
 
 
