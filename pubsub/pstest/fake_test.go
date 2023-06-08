@@ -1583,8 +1583,8 @@ func TestSubscriptionPushPull(t *testing.T) {
 	if diff := testutil.Diff(got.PushConfig, new(pb.PushConfig)); diff != "" {
 		t.Errorf("sub.PushConfig should be zero value\n%s", diff)
 	}
-	if diff := testutil.Diff(got.BigqueryConfig, new(pb.BigQueryConfig)); diff != "" {
-		t.Errorf("sub.BigqueryConfig should be zero value\n%s", diff)
+	if got.BigqueryConfig != nil {
+		t.Errorf("sub.BigqueryConfig should be nil, got %s", got.BigqueryConfig)
 	}
 }
 
