@@ -219,6 +219,9 @@
         "metastore": {
             "component": "metastore"
         },
+        "migrationcenter": {
+            "component": "migrationcenter"
+        },
         "monitoring": {
             "component": "monitoring"
         },
