@@ -38,6 +38,7 @@ import (
 	"cloud.google.com/go/internal/uid"
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
+	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/genproto/googleapis/type/latlng"
 	"google.golang.org/grpc/codes"
@@ -163,9 +164,8 @@ func createIndexes(ctx context.Context, dbPath string) {
 			createdIndex, waitErr := op.Wait(ctx)
 			if waitErr != nil {
 				log.Fatalf("Wait: %v", waitErr)
-			} else {
-				indexNames[i] = createdIndex.Name
 			}
+			indexNames[i] = createdIndex.Name
 			createIndexWg.Done()
 		}(req, i)
 	}
@@ -173,9 +173,7 @@ func createIndexes(ctx context.Context, dbPath string) {
 }
 
 // deleteIndexes deletes composite indexes created in createIndexes function
-func deleteIndexes() {
-	ctx := context.Background()
-
+func deleteIndexes(ctx context.Context) {
 	for _, indexName := range indexNames {
 		err := iAdminClient.DeleteIndex(ctx, &adminpb.DeleteIndexRequest{
 			Name: indexName,
@@ -186,10 +184,42 @@ func deleteIndexes() {
 	}
 }
 
+// deleteCollection recursively deletes the documents in the specified collection
+func deleteCollection(ctx context.Context, coll *CollectionRef) error {
+	bulkwriter := iClient.BulkWriter(ctx)
+
+	// Get  documents
+	iter := coll.Documents(ctx)
+
+	// Iterate through the documents, adding
+	// a delete operation for each one to the BulkWriter.
+	for {
+		doc, err := iter.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			log.Printf("Failed to get next document: %+v\n", err)
+			return err
+		}
+
+		_, err = bulkwriter.Delete(doc.Ref)
+		if err != nil {
+			log.Printf("Failed to delete document: %+v, err: %+v\n", doc.Ref, err)
+		}
+	}
+
+	bulkwriter.End()
+	bulkwriter.Flush()
+
+	return nil
+}
+
 func cleanupIntegrationTest() {
 	if iClient != nil {
-		// TODO(jba): delete everything in integrationColl.
-		deleteIndexes()
+		ctx := context.Background()
+		deleteIndexes(ctx)
+		deleteCollection(ctx, iColl)
 		iClient.Close()
 	}
 
