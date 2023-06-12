@@ -21,11 +21,10 @@
 package securitycenterpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -35,10 +34,10 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-// Exfiltration represents a data exfiltration attempt of one or more
-// sources to one or more targets. Sources represent the source
-// of data that is exfiltrated, and Targets represents the destination the
-// data was copied to.
+// Exfiltration represents a data exfiltration attempt from one or more sources
+// to one or more targets. The `sources` attribute lists the sources of the
+// exfiltrated data. The `targets` attribute lists the destinations the data was
+// copied to.
 type Exfiltration struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -99,18 +98,20 @@ func (x *Exfiltration) GetTargets() []*ExfilResource {
 	return nil
 }
 
-// Resource that has been exfiltrated or exfiltrated_to.
+// Resource where data was exfiltrated from or exfiltrated to.
 type ExfilResource struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Resource's URI (https://google.aip.dev/122#full-resource-names)
+	// The resource's [full resource
+	// name](https://cloud.google.com/apis/design/resource_names#full_resource_name).
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	// Subcomponents of the asset that is exfiltrated - these could be
-	// URIs used during exfiltration, table names, databases, filenames, etc.
-	// For example, multiple tables may be exfiltrated from the same CloudSQL
-	// instance, or multiple files from the same Cloud Storage bucket.
+	// Subcomponents of the asset that was exfiltrated, like URIs used during
+	// exfiltration, table names, databases, and filenames. For example, multiple
+	// tables might have been exfiltrated from the same Cloud SQL instance, or
+	// multiple files might have been exfiltrated from the same Cloud Storage
+	// bucket.
 	Components []string `protobuf:"bytes,2,rep,name=components,proto3" json:"components,omitempty"`
 }
 

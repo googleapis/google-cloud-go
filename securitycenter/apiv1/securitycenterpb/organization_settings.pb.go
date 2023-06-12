@@ -21,12 +21,11 @@
 package securitycenterpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -112,9 +111,9 @@ type OrganizationSettings struct {
 	// "organizations/{organization_id}/organizationSettings".
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// A flag that indicates if Asset Discovery should be enabled. If the flag is
-	// set to `true`, then discovery of assets will occur. If it is set to `false,
-	// all historical assets will remain, but discovery of future assets will not
-	// occur.
+	// set to `true`, then discovery of assets will occur. If it is set to
+	// `false`, all historical assets will remain, but discovery of future assets
+	// will not occur.
 	EnableAssetDiscovery bool `protobuf:"varint,2,opt,name=enable_asset_discovery,json=enableAssetDiscovery,proto3" json:"enable_asset_discovery,omitempty"`
 	// The configuration used for Asset Discovery runs.
 	AssetDiscoveryConfig *OrganizationSettings_AssetDiscoveryConfig `protobuf:"bytes,3,opt,name=asset_discovery_config,json=assetDiscoveryConfig,proto3" json:"asset_discovery_config,omitempty"`

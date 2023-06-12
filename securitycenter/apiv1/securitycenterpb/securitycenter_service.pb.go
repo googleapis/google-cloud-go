@@ -21,12 +21,9 @@
 package securitycenterpb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	iampb "cloud.google.com/go/iam/apiv1/iampb"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -38,6 +35,8 @@ import (
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	structpb "google.golang.org/protobuf/types/known/structpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -400,9 +399,9 @@ type CreateMuteConfigRequest struct {
 	// Required. The mute config being created.
 	MuteConfig *MuteConfig `protobuf:"bytes,2,opt,name=mute_config,json=muteConfig,proto3" json:"mute_config,omitempty"`
 	// Required. Unique identifier provided by the client within the parent scope.
-	// It must consist of lower case letters, numbers, and hyphen, with the first
-	// character a letter, the last a letter or a number, and a 63 character
-	// maximum.
+	// It must consist of only lowercase letters, numbers, and hyphens, must start
+	// with a letter, must end with either a letter or a number, and must be 63
+	// characters or less.
 	MuteConfigId string `protobuf:"bytes,3,opt,name=mute_config_id,json=muteConfigId,proto3" json:"mute_config_id,omitempty"`
 }
 
@@ -3928,9 +3927,9 @@ type CreateBigQueryExportRequest struct {
 	// Required. The BigQuery export being created.
 	BigQueryExport *BigQueryExport `protobuf:"bytes,2,opt,name=big_query_export,json=bigQueryExport,proto3" json:"big_query_export,omitempty"`
 	// Required. Unique identifier provided by the client within the parent scope.
-	// It must consist of lower case letters, numbers, and hyphen, with the first
-	// character a letter, the last a letter or a number, and a 63 character
-	// maximum.
+	// It must consist of only lowercase letters, numbers, and hyphens, must start
+	// with a letter, must end with either a letter or a number, and must be 63
+	// characters or less.
 	BigQueryExportId string `protobuf:"bytes,3,opt,name=big_query_export_id,json=bigQueryExportId,proto3" json:"big_query_export_id,omitempty"`
 }
 

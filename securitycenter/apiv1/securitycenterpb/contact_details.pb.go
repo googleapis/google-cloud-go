@@ -21,11 +21,10 @@
 package securitycenterpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -35,7 +34,7 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-// The details pertaining to specific contacts
+// Details about specific contacts
 type ContactDetails struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache

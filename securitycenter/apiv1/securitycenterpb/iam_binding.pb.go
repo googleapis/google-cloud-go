@@ -21,11 +21,10 @@
 package securitycenterpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -100,8 +99,8 @@ type IamBinding struct {
 	// Role that is assigned to "members".
 	// For example, "roles/viewer", "roles/editor", or "roles/owner".
 	Role string `protobuf:"bytes,2,opt,name=role,proto3" json:"role,omitempty"`
-	// A single identity requesting access for a Cloud Platform resource,
-	// e.g. "foo@google.com".
+	// A single identity requesting access for a Cloud Platform resource, for
+	// example, "foo@google.com".
 	Member string `protobuf:"bytes,3,opt,name=member,proto3" json:"member,omitempty"`
 }
 
