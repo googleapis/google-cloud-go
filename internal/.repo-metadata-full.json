@@ -589,7 +589,7 @@
     "description": "Container Analysis API",
     "language": "Go",
     "client_library_type": "generated",
-    "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/containeranalysis/latest/apiv1beta1",
+    "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/latest/containeranalysis/apiv1beta1",
     "release_level": "beta",
     "library_type": "GAPIC_AUTO"
   },
@@ -1247,6 +1247,15 @@
     "language": "Go",
     "client_library_type": "generated",
     "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/metastore/latest/apiv1beta",
+    "release_level": "beta",
+    "library_type": "GAPIC_AUTO"
+  },
+  "cloud.google.com/go/migrationcenter/apiv1": {
+    "distribution_name": "cloud.google.com/go/migrationcenter/apiv1",
+    "description": "Migration Center API",
+    "language": "Go",
+    "client_library_type": "generated",
+    "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/migrationcenter/latest/apiv1",
     "release_level": "beta",
     "library_type": "GAPIC_AUTO"
   },
