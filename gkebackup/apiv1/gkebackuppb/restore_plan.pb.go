@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -21,13 +21,12 @@
 package gkebackuppb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -46,7 +45,7 @@ type RestorePlan struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Output only. The full name of the RestorePlan resource.
-	// Format: projects/*/locations/*/restorePlans/*.
+	// Format: `projects/*/locations/*/restorePlans/*`.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Output only. Server generated global unique identifier of
 	// [UUID](https://en.wikipedia.org/wiki/Universally_unique_identifier) format.
@@ -59,24 +58,24 @@ type RestorePlan struct {
 	UpdateTime *timestamppb.Timestamp `protobuf:"bytes,4,opt,name=update_time,json=updateTime,proto3" json:"update_time,omitempty"`
 	// User specified descriptive string for this RestorePlan.
 	Description string `protobuf:"bytes,5,opt,name=description,proto3" json:"description,omitempty"`
-	// Required. Immutable. A reference to the [BackupPlan][google.cloud.gkebackup.v1.BackupPlan] from which Backups may be used as the
-	// source for Restores created via this RestorePlan.
-	// Format: projects/*/locations/*/backupPlans/*.
+	// Required. Immutable. A reference to the
+	// [BackupPlan][google.cloud.gkebackup.v1.BackupPlan] from which Backups may
+	// be used as the source for Restores created via this RestorePlan. Format:
+	// `projects/*/locations/*/backupPlans/*`.
 	BackupPlan string `protobuf:"bytes,6,opt,name=backup_plan,json=backupPlan,proto3" json:"backup_plan,omitempty"`
-	// Required. Immutable. The target cluster into which Restores created via this RestorePlan
-	// will restore data. NOTE: the cluster's region must be the same as the
-	// RestorePlan.
-	// Valid formats:
+	// Required. Immutable. The target cluster into which Restores created via
+	// this RestorePlan will restore data. NOTE: the cluster's region must be the
+	// same as the RestorePlan. Valid formats:
 	//
-	//   - projects/*/locations/*/clusters/*
-	//   - projects/*/zones/*/clusters/*
+	//   - `projects/*/locations/*/clusters/*`
+	//   - `projects/*/zones/*/clusters/*`
 	Cluster string `protobuf:"bytes,7,opt,name=cluster,proto3" json:"cluster,omitempty"`
 	// Required. Configuration of Restores created via this RestorePlan.
 	RestoreConfig *RestoreConfig `protobuf:"bytes,8,opt,name=restore_config,json=restoreConfig,proto3" json:"restore_config,omitempty"`
 	// A set of custom labels supplied by user.
 	Labels map[string]string `protobuf:"bytes,9,rep,name=labels,proto3" json:"labels,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
-	// Output only. `etag` is used for optimistic concurrency control as a way to help
-	// prevent simultaneous updates of a restore from overwriting each other.
+	// Output only. `etag` is used for optimistic concurrency control as a way to
+	// help prevent simultaneous updates of a restore from overwriting each other.
 	// It is strongly suggested that systems make use of the `etag` in the
 	// read-modify-write cycle to perform restore updates in order to avoid
 	// race conditions: An `etag` is returned in the response to `GetRestorePlan`,
