@@ -21,13 +21,12 @@
 package cxpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -755,6 +754,9 @@ type OutputAudioConfig struct {
 	// desired sample rate (which might result in worse audio quality).
 	SampleRateHertz int32 `protobuf:"varint,2,opt,name=sample_rate_hertz,json=sampleRateHertz,proto3" json:"sample_rate_hertz,omitempty"`
 	// Optional. Configuration of how speech should be synthesized.
+	// If not specified,
+	// [Agent.text_to_speech_settings][google.cloud.dialogflow.cx.v3.Agent.text_to_speech_settings]
+	// is applied.
 	SynthesizeSpeechConfig *SynthesizeSpeechConfig `protobuf:"bytes,3,opt,name=synthesize_speech_config,json=synthesizeSpeechConfig,proto3" json:"synthesize_speech_config,omitempty"`
 }
 
@@ -823,13 +825,17 @@ type TextToSpeechSettings struct {
 	//
 	// These settings affect:
 	//
-	//  - The synthesize configuration used in [phone
-	//    gateway](https://cloud.google.com/dialogflow/cx/docs/concept/integration/phone-gateway).
+	//  - The [phone
+	//  gateway](https://cloud.google.com/dialogflow/cx/docs/concept/integration/phone-gateway)
+	//    synthesize configuration set via
+	//    [Agent.text_to_speech_settings][google.cloud.dialogflow.cx.v3.Agent.text_to_speech_settings].
 	//
-	//  - You no longer need to specify
+	//  - How speech is synthesized when invoking
+	//  [session][google.cloud.dialogflow.cx.v3.Sessions] APIs.
+	//    [Agent.text_to_speech_settings][google.cloud.dialogflow.cx.v3.Agent.text_to_speech_settings]
+	//    only applies if
 	//    [OutputAudioConfig.synthesize_speech_config][google.cloud.dialogflow.cx.v3.OutputAudioConfig.synthesize_speech_config]
-	//    when invoking API calls. Your agent will use the pre-configured options
-	//    for speech synthesizing.
+	//    is not specified.
 	SynthesizeSpeechConfigs map[string]*SynthesizeSpeechConfig `protobuf:"bytes,1,rep,name=synthesize_speech_configs,json=synthesizeSpeechConfigs,proto3" json:"synthesize_speech_configs,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 }
 
