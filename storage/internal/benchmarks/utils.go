@@ -108,6 +108,30 @@ func generateRandomFile(path string, size int64) (string, error) {
 	return f.Name(), err
 }
 
+// fillDirectory fills the directory with the number of different files
+// specified on the command line. Each file created will contain random bytes,
+// and will be of the size specified on the command line. No subdirectories are
+// created.
+// The number of bytes across all created files is returned.
+func fillDirectory(dirPath string) (int64, error) {
+	currNumBytes := int64(0)
+
+	for i := opts.numObjectsPerDirectory; i > 0; i-- {
+		size := opts.objectSize
+		if size == 0 {
+			// Choose a different random object size for each file
+			size = randomInt64(opts.minObjectSize, opts.maxObjectSize)
+		}
+
+		if _, err := generateRandomFile(dirPath, size); err != nil {
+			return 0, err
+		}
+		currNumBytes += size
+	}
+
+	return currNumBytes, nil
+}
+
 var goVersion string
 var dependencyVersions = map[string]string{
 	"cloud.google.com/go/storage": "",
@@ -138,10 +162,12 @@ func errorIsDeadLineExceeded(err error) bool {
 		return true
 	}
 
-	for err = errors.Unwrap(err); err != nil; {
+	err = errors.Unwrap(err)
+	for err != nil {
 		if status.Code(err) == codes.DeadlineExceeded {
 			return true
 		}
+		err = errors.Unwrap(err)
 	}
 	return false
 }

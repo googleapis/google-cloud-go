@@ -499,7 +499,10 @@ func (s *GServer) CreateSubscription(_ context.Context, ps *pb.Subscription) (*p
 	if ps.PushConfig == nil {
 		ps.PushConfig = &pb.PushConfig{}
 	}
-	if ps.BigqueryConfig != nil && ps.BigqueryConfig.Table != "" {
+	// Consider any table set to mean the config is active.
+	// We don't convert nil config to empty like with PushConfig above
+	// as this mimics the live service behavior.
+	if ps.GetBigqueryConfig() != nil && ps.GetBigqueryConfig().GetTable() != "" {
 		ps.BigqueryConfig.State = pb.BigQueryConfig_ACTIVE
 	}
 	if ps.CloudStorageConfig != nil && ps.CloudStorageConfig.Bucket != "" {
@@ -606,11 +609,14 @@ func (s *GServer) UpdateSubscription(_ context.Context, req *pb.UpdateSubscripti
 			sub.proto.PushConfig = req.Subscription.PushConfig
 
 		case "bigquery_config":
-			sub.proto.BigqueryConfig = req.GetSubscription().GetBigqueryConfig()
-			// As long as the bq config is not nil, we assume it's valid
-			// without additional checks.
+			// If bq config is nil here, it will be cleared.
+			// Otherwise, we'll consider the subscription active if any table is set.
 			if sub.proto.GetBigqueryConfig() != nil {
-				sub.proto.GetBigqueryConfig().State = pb.BigQueryConfig_ACTIVE
+				if sub.proto.GetBigqueryConfig().GetTable() != "" {
+					sub.proto.BigqueryConfig.State = pb.BigQueryConfig_ACTIVE
+				} else {
+					return nil, status.Errorf(codes.InvalidArgument, "table must be provided")
+				}
 			}
 
 		case "cloud_storage_config":

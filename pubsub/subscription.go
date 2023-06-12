@@ -30,11 +30,11 @@ import (
 	"cloud.google.com/go/pubsub/internal/scheduler"
 	gax "github.com/googleapis/gax-go/v2"
 	"golang.org/x/sync/errgroup"
-	fmpb "google.golang.org/genproto/protobuf/field_mask"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/durationpb"
 	durpb "google.golang.org/protobuf/types/known/durationpb"
+	fmpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 
 	vkit "cloud.google.com/go/pubsub/apiv1"
 )
@@ -264,6 +264,11 @@ type BigQueryConfig struct {
 
 func (bc *BigQueryConfig) toProto() *pb.BigQueryConfig {
 	if bc == nil {
+		return nil
+	}
+	// If the config is zero valued, this is the sentinel for
+	// clearing bigquery config and switch back to pull.
+	if *bc == (BigQueryConfig{}) {
 		return nil
 	}
 	pbCfg := &pb.BigQueryConfig{

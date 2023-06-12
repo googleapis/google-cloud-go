@@ -317,6 +317,18 @@ func TestLoadEntityNested(t *testing.T) {
 			},
 		},
 		{
+			desc: "nested simple with nil slice",
+			src: &pb.Entity{
+				Properties: map[string]*pb.Value{
+					"A": {ValueType: &pb.Value_NullValue{}},
+				},
+			},
+
+			want: &NestedSliceOfSimple{
+				A: nil,
+			},
+		},
+		{
 			desc: "nested with multiple anonymous fields",
 			src: &pb.Entity{
 				Properties: map[string]*pb.Value{

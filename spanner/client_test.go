@@ -2678,6 +2678,38 @@ func TestClient_WithGRPCConnectionPoolAndNumChannels_Misconfigured(t *testing.T)
 	}
 }
 
+func TestClient_WithCustomBatchTimeout(t *testing.T) {
+	t.Parallel()
+
+	_, opts, serverTeardown := NewMockedSpannerInMemTestServer(t)
+	defer serverTeardown()
+
+	wantBatchTimeout := time.Second * 42
+	client, err := NewClientWithConfig(context.Background(), "projects/p/instances/i/databases/d", ClientConfig{BatchTimeout: wantBatchTimeout}, opts...)
+	if err != nil {
+		t.Fatalf("failed to get a client: %v", err)
+	}
+	if wantBatchTimeout != client.sc.batchTimeout {
+		t.Fatalf("mismatch in client configuration for property BatchTimeout: got %v, want %v", client.sc.batchTimeout, wantBatchTimeout)
+	}
+}
+
+func TestClient_WithoutCustomBatchTimeout(t *testing.T) {
+	t.Parallel()
+
+	_, opts, serverTeardown := NewMockedSpannerInMemTestServer(t)
+	defer serverTeardown()
+
+	wantBatchTimeout := time.Minute
+	client, err := NewClientWithConfig(context.Background(), "projects/p/instances/i/databases/d", ClientConfig{}, opts...)
+	if err != nil {
+		t.Fatalf("failed to get a client: %v", err)
+	}
+	if wantBatchTimeout != client.sc.batchTimeout {
+		t.Fatalf("mismatch in client configuration for property BatchTimeout: got %v, want %v", client.sc.batchTimeout, wantBatchTimeout)
+	}
+}
+
 func TestClient_CallOptions(t *testing.T) {
 	t.Parallel()
 	co := &vkit.CallOptions{

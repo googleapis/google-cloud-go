@@ -22,6 +22,7 @@ import (
 	"time"
 
 	"cloud.google.com/go/internal/testutil"
+	"github.com/google/go-cmp/cmp"
 	"google.golang.org/api/iterator"
 )
 
@@ -233,10 +234,22 @@ func TestIntegration_StorageReadQueryOrdering(t *testing.T) {
 			t.Fatal(err)
 		}
 
+		var firstValue S
+		err = it.Next(&firstValue)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if cmp.Equal(firstValue, S{}) {
+			t.Fatalf("user defined struct was not filled with data")
+		}
+
 		total, err := countIteratorRows(it)
 		if err != nil {
 			t.Fatal(err)
 		}
+		total++ // as we read the first value separately
+
 		bqSession := it.arrowIterator.session.bqSession
 		if len(bqSession.Streams) == 0 {
 			t.Fatalf("%s: expected to use at least one stream but found %d", tc.name, len(bqSession.Streams))
@@ -260,6 +273,56 @@ func TestIntegration_StorageReadQueryOrdering(t *testing.T) {
 		if !it.IsAccelerated() {
 			t.Fatalf("%s: expected query to be accelerated by Storage API", tc.name)
 		}
+	}
+}
+
+func TestIntegration_StorageReadQueryStruct(t *testing.T) {
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
+	ctx := context.Background()
+	table := "`bigquery-public-data.samples.wikipedia`"
+	sql := fmt.Sprintf(`SELECT id, title, timestamp, comment FROM %s LIMIT 1000`, table)
+	q := storageOptimizedClient.Query(sql)
+	q.forceStorageAPI = true
+	q.DisableQueryCache = true
+	it, err := q.Read(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !it.IsAccelerated() {
+		t.Fatal("expected query to use Storage API")
+	}
+
+	type S struct {
+		ID        int64
+		Title     string
+		Timestamp int64
+		Comment   NullString
+	}
+
+	total := uint64(0)
+	for {
+		var dst S
+		err := it.Next(&dst)
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			t.Fatalf("failed to fetch via storage API: %v", err)
+		}
+		if cmp.Equal(dst, S{}) {
+			t.Fatalf("user defined struct was not filled with data")
+		}
+		total++
+	}
+
+	bqSession := it.arrowIterator.session.bqSession
+	if len(bqSession.Streams) == 0 {
+		t.Fatalf("should use more than one stream but found %d", len(bqSession.Streams))
+	}
+	if total != it.TotalRows {
+		t.Fatalf("should have read %d rows, but read %d", it.TotalRows, total)
 	}
 }
 
@@ -287,10 +350,22 @@ func TestIntegration_StorageReadQueryMorePages(t *testing.T) {
 		Forks NullInt64
 	}
 
+	var firstValue S
+	err = it.Next(&firstValue)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if cmp.Equal(firstValue, S{}) {
+		t.Fatalf("user defined struct was not filled with data")
+	}
+
 	total, err := countIteratorRows(it)
 	if err != nil {
 		t.Fatal(err)
 	}
+	total++ // as we read the first value separately
+
 	bqSession := it.arrowIterator.session.bqSession
 	if len(bqSession.Streams) == 0 {
 		t.Fatalf("should use more than one stream but found %d", len(bqSession.Streams))

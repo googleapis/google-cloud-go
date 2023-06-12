@@ -1,5 +1,12 @@
 # Changes
 
+## [1.9.0](https://github.com/googleapis/google-cloud-go/compare/resourcemanager/v1.8.2...resourcemanager/v1.9.0) (2023-05-30)
+
+
+### Features
+
+* **resourcemanager:** Update all direct dependencies ([b340d03](https://github.com/googleapis/google-cloud-go/commit/b340d030f2b52a4ce48846ce63984b28583abde6))
+
 ## [1.8.2](https://github.com/googleapis/google-cloud-go/compare/resourcemanager/v1.8.1...resourcemanager/v1.8.2) (2023-05-10)
 
 

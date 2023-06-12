@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/vmwareengine/apiv1",
-    "version": "0.3.1",
+    "version": "0.4.0",
     "language": "GO",
     "apis": [
       {
@@ -180,6 +180,52 @@
         "method": {
           "shortName": "CreatePrivateCloud",
           "fullName": "google.cloud.vmwareengine.v1.VmwareEngine.CreatePrivateCloud",
+          "service": {
+            "shortName": "VmwareEngine",
+            "fullName": "google.cloud.vmwareengine.v1.VmwareEngine"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "vmwareengine_v1_generated_VmwareEngine_CreatePrivateConnection_sync",
+      "title": "vmwareengine CreatePrivateConnection Sample",
+      "description": "CreatePrivateConnection creates a new private connection that can be used for accessing private\nClouds.",
+      "file": "Client/CreatePrivateConnection/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreatePrivateConnection",
+        "fullName": "google.cloud.vmwareengine.v1.Client.CreatePrivateConnection",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "vmwareenginepb.CreatePrivateConnectionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreatePrivateConnectionOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.vmwareengine.v1.Client"
+        },
+        "method": {
+          "shortName": "CreatePrivateConnection",
+          "fullName": "google.cloud.vmwareengine.v1.VmwareEngine.CreatePrivateConnection",
           "service": {
             "shortName": "VmwareEngine",
             "fullName": "google.cloud.vmwareengine.v1.VmwareEngine"
@@ -420,6 +466,52 @@
         {
           "start": 18,
           "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "vmwareengine_v1_generated_VmwareEngine_DeletePrivateConnection_sync",
+      "title": "vmwareengine DeletePrivateConnection Sample",
+      "description": "DeletePrivateConnection deletes a `PrivateConnection` resource. When a private connection is\ndeleted for a VMware Engine network, the connected network becomes\ninaccessible to that VMware Engine network.",
+      "file": "Client/DeletePrivateConnection/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeletePrivateConnection",
+        "fullName": "google.cloud.vmwareengine.v1.Client.DeletePrivateConnection",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "vmwareenginepb.DeletePrivateConnectionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeletePrivateConnectionOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.vmwareengine.v1.Client"
+        },
+        "method": {
+          "shortName": "DeletePrivateConnection",
+          "fullName": "google.cloud.vmwareengine.v1.VmwareEngine.DeletePrivateConnection",
+          "service": {
+            "shortName": "VmwareEngine",
+            "fullName": "google.cloud.vmwareengine.v1.VmwareEngine"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
           "type": "FULL"
         }
       ]
@@ -839,6 +931,98 @@
       ]
     },
     {
+      "regionTag": "vmwareengine_v1_generated_VmwareEngine_GetPrivateConnection_sync",
+      "title": "vmwareengine GetPrivateConnection Sample",
+      "description": "GetPrivateConnection retrieves a `PrivateConnection` resource by its resource name. The resource\ncontains details of the private connection, such as connected\nnetwork, routing mode and state.",
+      "file": "Client/GetPrivateConnection/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetPrivateConnection",
+        "fullName": "google.cloud.vmwareengine.v1.Client.GetPrivateConnection",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "vmwareenginepb.GetPrivateConnectionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*vmwareenginepb.PrivateConnection",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.vmwareengine.v1.Client"
+        },
+        "method": {
+          "shortName": "GetPrivateConnection",
+          "fullName": "google.cloud.vmwareengine.v1.VmwareEngine.GetPrivateConnection",
+          "service": {
+            "shortName": "VmwareEngine",
+            "fullName": "google.cloud.vmwareengine.v1.VmwareEngine"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "vmwareengine_v1_generated_VmwareEngine_GetSubnet_sync",
+      "title": "vmwareengine GetSubnet Sample",
+      "description": "GetSubnet gets details of a single subnet.",
+      "file": "Client/GetSubnet/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetSubnet",
+        "fullName": "google.cloud.vmwareengine.v1.Client.GetSubnet",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "vmwareenginepb.GetSubnetRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*vmwareenginepb.Subnet",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.vmwareengine.v1.Client"
+        },
+        "method": {
+          "shortName": "GetSubnet",
+          "fullName": "google.cloud.vmwareengine.v1.VmwareEngine.GetSubnet",
+          "service": {
+            "shortName": "VmwareEngine",
+            "fullName": "google.cloud.vmwareengine.v1.VmwareEngine"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "vmwareengine_v1_generated_VmwareEngine_GetVmwareEngineNetwork_sync",
       "title": "vmwareengine GetVmwareEngineNetwork Sample",
       "description": "GetVmwareEngineNetwork retrieves a `VmwareEngineNetwork` resource by its resource name. The\nresource contains details of the VMware Engine network, such as its VMware\nEngine network type, peered networks in a service project, and state\n(for example, `CREATING`, `ACTIVE`, `DELETING`).",
@@ -1191,6 +1375,98 @@
         "method": {
           "shortName": "ListPrivateClouds",
           "fullName": "google.cloud.vmwareengine.v1.VmwareEngine.ListPrivateClouds",
+          "service": {
+            "shortName": "VmwareEngine",
+            "fullName": "google.cloud.vmwareengine.v1.VmwareEngine"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 60,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "vmwareengine_v1_generated_VmwareEngine_ListPrivateConnectionPeeringRoutes_sync",
+      "title": "vmwareengine ListPrivateConnectionPeeringRoutes Sample",
+      "description": "ListPrivateConnectionPeeringRoutes lists the private connection routes exchanged over a peering connection.",
+      "file": "Client/ListPrivateConnectionPeeringRoutes/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListPrivateConnectionPeeringRoutes",
+        "fullName": "google.cloud.vmwareengine.v1.Client.ListPrivateConnectionPeeringRoutes",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "vmwareenginepb.ListPrivateConnectionPeeringRoutesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "PeeringRouteIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.vmwareengine.v1.Client"
+        },
+        "method": {
+          "shortName": "ListPrivateConnectionPeeringRoutes",
+          "fullName": "google.cloud.vmwareengine.v1.VmwareEngine.ListPrivateConnectionPeeringRoutes",
+          "service": {
+            "shortName": "VmwareEngine",
+            "fullName": "google.cloud.vmwareengine.v1.VmwareEngine"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 60,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "vmwareengine_v1_generated_VmwareEngine_ListPrivateConnections_sync",
+      "title": "vmwareengine ListPrivateConnections Sample",
+      "description": "ListPrivateConnections lists `PrivateConnection` resources in a given project and location.",
+      "file": "Client/ListPrivateConnections/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListPrivateConnections",
+        "fullName": "google.cloud.vmwareengine.v1.Client.ListPrivateConnections",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "vmwareenginepb.ListPrivateConnectionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "PrivateConnectionIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.vmwareengine.v1.Client"
+        },
+        "method": {
+          "shortName": "ListPrivateConnections",
+          "fullName": "google.cloud.vmwareengine.v1.VmwareEngine.ListPrivateConnections",
           "service": {
             "shortName": "VmwareEngine",
             "fullName": "google.cloud.vmwareengine.v1.VmwareEngine"
@@ -1743,6 +2019,98 @@
         "method": {
           "shortName": "UpdatePrivateCloud",
           "fullName": "google.cloud.vmwareengine.v1.VmwareEngine.UpdatePrivateCloud",
+          "service": {
+            "shortName": "VmwareEngine",
+            "fullName": "google.cloud.vmwareengine.v1.VmwareEngine"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "vmwareengine_v1_generated_VmwareEngine_UpdatePrivateConnection_sync",
+      "title": "vmwareengine UpdatePrivateConnection Sample",
+      "description": "UpdatePrivateConnection modifies a `PrivateConnection` resource. Only `description` and\n`routing_mode` fields can be updated. Only fields specified in `updateMask`\nare applied.",
+      "file": "Client/UpdatePrivateConnection/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdatePrivateConnection",
+        "fullName": "google.cloud.vmwareengine.v1.Client.UpdatePrivateConnection",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "vmwareenginepb.UpdatePrivateConnectionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdatePrivateConnectionOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.vmwareengine.v1.Client"
+        },
+        "method": {
+          "shortName": "UpdatePrivateConnection",
+          "fullName": "google.cloud.vmwareengine.v1.VmwareEngine.UpdatePrivateConnection",
+          "service": {
+            "shortName": "VmwareEngine",
+            "fullName": "google.cloud.vmwareengine.v1.VmwareEngine"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "vmwareengine_v1_generated_VmwareEngine_UpdateSubnet_sync",
+      "title": "vmwareengine UpdateSubnet Sample",
+      "description": "UpdateSubnet updates the parameters of a single subnet. Only fields specified in\n`update_mask` are applied.\n\n*Note*: This API is synchronous and always returns a successful\n`google.longrunning.Operation` (LRO). The returned LRO will only have\n`done` and `response` fields.",
+      "file": "Client/UpdateSubnet/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateSubnet",
+        "fullName": "google.cloud.vmwareengine.v1.Client.UpdateSubnet",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "vmwareenginepb.UpdateSubnetRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateSubnetOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.vmwareengine.v1.Client"
+        },
+        "method": {
+          "shortName": "UpdateSubnet",
+          "fullName": "google.cloud.vmwareengine.v1.VmwareEngine.UpdateSubnet",
           "service": {
             "shortName": "VmwareEngine",
             "fullName": "google.cloud.vmwareengine.v1.VmwareEngine"

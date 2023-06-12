@@ -246,6 +246,7 @@ deep-remove-regex:
   - /internal/generated/snippets/metastore/apiv1/
   - /internal/generated/snippets/metastore/apiv1alpha/
   - /internal/generated/snippets/metastore/apiv1beta/
+  - /internal/generated/snippets/migrationcenter/apiv1/
   - /internal/generated/snippets/monitoring/apiv3/v2/
   - /internal/generated/snippets/monitoring/dashboard/apiv1/
   - /internal/generated/snippets/monitoring/metricsscope/apiv1/
@@ -357,6 +358,7 @@ deep-remove-regex:
   - /metastore/apiv1/
   - /metastore/apiv1alpha/
   - /metastore/apiv1beta/
+  - /migrationcenter/apiv1/
   - /monitoring/apiv3/v2/
   - /monitoring/dashboard/apiv1/
   - /monitoring/metricsscope/apiv1/
@@ -755,6 +757,8 @@ deep-copy-regex:
   - source: /google/cloud/metastore/v1alpha/cloud.google.com/go
     dest: /
   - source: /google/cloud/metastore/v1beta/cloud.google.com/go
+    dest: /
+  - source: /google/cloud/migrationcenter/v1/cloud.google.com/go
     dest: /
   - source: /google/monitoring/v3/cloud.google.com/go
     dest: /

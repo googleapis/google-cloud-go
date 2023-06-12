@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.19.0](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.18.1...documentai/v1.19.0) (2023-05-30)
+
+
+### Features
+
+* **documentai:** Update all direct dependencies ([b340d03](https://github.com/googleapis/google-cloud-go/commit/b340d030f2b52a4ce48846ce63984b28583abde6))
+
 ## [1.18.1](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.18.0...documentai/v1.18.1) (2023-05-08)
 
 
