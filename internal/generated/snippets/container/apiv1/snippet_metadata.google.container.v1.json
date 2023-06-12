@@ -57,6 +57,52 @@
       ]
     },
     {
+      "regionTag": "container_v1_generated_ClusterManager_CheckAutopilotCompatibility_sync",
+      "title": "container CheckAutopilotCompatibility Sample",
+      "description": "CheckAutopilotCompatibility checks the cluster compatibility with Autopilot mode, and returns a list of\ncompatibility issues.",
+      "file": "ClusterManagerClient/CheckAutopilotCompatibility/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CheckAutopilotCompatibility",
+        "fullName": "google.container.v1.ClusterManagerClient.CheckAutopilotCompatibility",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "containerpb.CheckAutopilotCompatibilityRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*containerpb.CheckAutopilotCompatibilityResponse",
+        "client": {
+          "shortName": "ClusterManagerClient",
+          "fullName": "google.container.v1.ClusterManagerClient"
+        },
+        "method": {
+          "shortName": "CheckAutopilotCompatibility",
+          "fullName": "google.container.v1.ClusterManager.CheckAutopilotCompatibility",
+          "service": {
+            "shortName": "ClusterManager",
+            "fullName": "google.container.v1.ClusterManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "container_v1_generated_ClusterManager_CompleteIPRotation_sync",
       "title": "container CompleteIPRotation Sample",
       "description": "CompleteIPRotation completes master IP rotation.",

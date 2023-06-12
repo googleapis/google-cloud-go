@@ -1979,6 +1979,8 @@ func TestIntegration_ColGroupRefPartitionsLarge(t *testing.T) {
 		t.Errorf("Unexpected number of documents across partitions: got %d, want %d", got, want)
 	}
 }
+
+// TestIntegration_BulkWriter_Set tests setting values and serverTimeStamp in single write.
 func TestIntegration_BulkWriter_Set(t *testing.T) {
 	doc := iColl.NewDoc()
 	c := integrationClient(t)

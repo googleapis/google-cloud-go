@@ -14005,7 +14005,7 @@
     {
       "regionTag": "aiplatform_v1beta1_generated_PredictionService_Explain_sync",
       "title": "aiplatform Explain Sample",
-      "description": "Explain perform an online explanation.\n\nIf\n[deployed_model_id][google.cloud.aiplatform.v1beta1.ExplainRequest.deployed_model_id]\nis specified, the corresponding DeployModel must have\n[explanation_spec][google.cloud.aiplatform.v1beta1.DeployedModel.explanation_spec]\npopulated. If\n[deployed_model_id][google.cloud.aiplatform.v1beta1.ExplainRequest.deployed_model_id]\nis not specified, all DeployedModels must have\n[explanation_spec][google.cloud.aiplatform.v1beta1.DeployedModel.explanation_spec]\npopulated. Only deployed AutoML tabular Models have\nexplanation_spec.",
+      "description": "Explain perform an online explanation.\n\nIf\n[deployed_model_id][google.cloud.aiplatform.v1beta1.ExplainRequest.deployed_model_id]\nis specified, the corresponding DeployModel must have\n[explanation_spec][google.cloud.aiplatform.v1beta1.DeployedModel.explanation_spec]\npopulated. If\n[deployed_model_id][google.cloud.aiplatform.v1beta1.ExplainRequest.deployed_model_id]\nis not specified, all DeployedModels must have\n[explanation_spec][google.cloud.aiplatform.v1beta1.DeployedModel.explanation_spec]\npopulated.",
       "file": "PredictionClient/Explain/main.go",
       "language": "GO",
       "clientMethod": {
@@ -18731,7 +18731,7 @@
     {
       "regionTag": "aiplatform_v1beta1_generated_VizierService_SuggestTrials_sync",
       "title": "aiplatform SuggestTrials Sample",
-      "description": "SuggestTrials adds one or more Trials to a Study, with parameter values\nsuggested by Vertex AI Vizier. Returns a long-running\noperation associated with the generation of Trial suggestions.\nWhen this long-running operation succeeds, it will contain\na [SuggestTrialsResponse][google.cloud.ml.v1.SuggestTrialsResponse].",
+      "description": "SuggestTrials adds one or more Trials to a Study, with parameter values\nsuggested by Vertex AI Vizier. Returns a long-running\noperation associated with the generation of Trial suggestions.\nWhen this long-running operation succeeds, it will contain\na\n[SuggestTrialsResponse][google.cloud.aiplatform.v1beta1.SuggestTrialsResponse].",
       "file": "VizierClient/SuggestTrials/main.go",
       "language": "GO",
       "clientMethod": {
