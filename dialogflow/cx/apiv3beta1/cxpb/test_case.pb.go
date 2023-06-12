@@ -21,11 +21,8 @@
 package cxpb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	grpc "google.golang.org/grpc"
@@ -37,6 +34,8 @@ import (
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	structpb "google.golang.org/protobuf/types/known/structpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -687,7 +686,8 @@ type TestRunDifference struct {
 
 	// The type of diff.
 	Type TestRunDifference_DiffType `protobuf:"varint,1,opt,name=type,proto3,enum=google.cloud.dialogflow.cx.v3beta1.TestRunDifference_DiffType" json:"type,omitempty"`
-	// A description of the diff, showing the actual output vs expected output.
+	// A human readable description of the diff, showing the actual output vs
+	// expected output.
 	Description string `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty"`
 }
 
