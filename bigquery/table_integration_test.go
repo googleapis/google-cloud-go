@@ -756,10 +756,10 @@ func TestIntegration_TableConstraintsFK(t *testing.T) {
 			{
 				Name:            "table_a_fk",
 				ReferencedTable: tableA,
-				ColumnReferences: []*ForeignKeyColumnReference{
+				ColumnReferences: []*ColumnReference{
 					{
-						ReferencedColumn:  "id",
 						ReferencingColumn: "parent",
+						ReferencedColumn:  "id",
 					},
 				},
 			},
@@ -795,7 +795,7 @@ func TestIntegration_TableConstraintsFK(t *testing.T) {
 			{
 				Name:            "table_a_fk",
 				ReferencedTable: tableA,
-				ColumnReferences: []*ForeignKeyColumnReference{
+				ColumnReferences: []*ColumnReference{
 					{
 						ReferencedColumn:  "id",
 						ReferencingColumn: "parent",

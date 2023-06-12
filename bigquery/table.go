@@ -148,15 +148,19 @@ type TableMetadata struct {
 	// More information: https://cloud.google.com/bigquery/docs/reference/standard-sql/collation-concepts
 	DefaultCollation string
 
-	// Optionally specifies a PrimaryKey of the table.
+	// PrimaryKey constraint on a table's columns.
+	// Present only if the table has a primary key.
+	// The primary key is not enforced.
 	PrimaryKey *PrimaryKey
 
-	// Optionally specifies ForeignKeys of the tables.
+	// ForeignKeys represent a list of foreign keys constraints.
+	// The foreign key is not enforced.
 	ForeignKeys []*ForeignKey
 }
 
-// PrimaryKey represents constrains for the primary key of the table
+// PrimaryKey represents the primary key constraint on a table's columns.
 type PrimaryKey struct {
+	// Columns that compose the primary key constraint.
 	Columns []string
 }
 
@@ -175,11 +179,16 @@ func bqToPrimaryKey(tc *bq.TableConstraints) *PrimaryKey {
 	}
 }
 
-// ForeignKey represents constrains for the foreign keys of the table
+// ForeignKey represents a foreign key constraint on a table's columns.
 type ForeignKey struct {
-	Name             string
-	ReferencedTable  *Table
-	ColumnReferences []*ForeignKeyColumnReference
+	// Foreign key constraint name.
+	Name string
+
+	// Table that holds the primary key and is referenced by this foreign key.
+	ReferencedTable *Table
+
+	// Columns that compose the foreign key.
+	ColumnReferences []*ColumnReference
 }
 
 func (fk *ForeignKey) toBQ() *bq.TableConstraintsForeignKeys {
@@ -201,9 +210,9 @@ func (fk *ForeignKey) toBQ() *bq.TableConstraintsForeignKeys {
 func bqToForeignKeys(tc *bq.TableConstraints, c *Client) []*ForeignKey {
 	fks := []*ForeignKey{}
 	for _, fk := range tc.ForeignKeys {
-		colRefs := []*ForeignKeyColumnReference{}
+		colRefs := []*ColumnReference{}
 		for _, colRef := range fk.ColumnReferences {
-			colRefs = append(colRefs, &ForeignKeyColumnReference{
+			colRefs = append(colRefs, &ColumnReference{
 				ReferencedColumn:  colRef.ReferencedColumn,
 				ReferencingColumn: colRef.ReferencingColumn,
 			})
@@ -217,13 +226,16 @@ func bqToForeignKeys(tc *bq.TableConstraints, c *Client) []*ForeignKey {
 	return fks
 }
 
-// ForeignKeyColumnReference represents which columns are target on the current table and foreign table.
-type ForeignKeyColumnReference struct {
-	ReferencedColumn  string
+// ColumnReference represents the pair of the foreign key column and primary key column.
+type ColumnReference struct {
+	// ReferencingColumn is the column in the current table that composes the foreign key.
 	ReferencingColumn string
+	// ReferencedColumn is the column in the primary key of the foreign table that
+	// is referenced by the ReferencingColumn.
+	ReferencedColumn string
 }
 
-func (colRef *ForeignKeyColumnReference) toBQ() *bq.TableConstraintsForeignKeysColumnReferences {
+func (colRef *ColumnReference) toBQ() *bq.TableConstraintsForeignKeysColumnReferences {
 	return &bq.TableConstraintsForeignKeysColumnReferences{
 		ReferencedColumn:  colRef.ReferencedColumn,
 		ReferencingColumn: colRef.ReferencingColumn,
@@ -1134,10 +1146,13 @@ type TableMetadataToUpdate struct {
 	// in the table.
 	DefaultCollation optional.String
 
-	// Optionally specifies a PrimaryKey of the table.
+	// Optionally specifies a PrimaryKey constraint on a table's columns.
+	// Updated only if present.
+	// The primary key is not enforced.
 	PrimaryKey *PrimaryKey
 
-	// Optionally specifies ForeignKeys for the table.
+	// ForeignKeys represent a list of foreign keys constraints.
+	// The foreign key is not enforced.
 	ForeignKeys []*ForeignKey
 
 	labelUpdater

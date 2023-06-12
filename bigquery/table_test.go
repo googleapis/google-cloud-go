@@ -434,7 +434,7 @@ func TestTableMetadataToUpdateToBQ(t *testing.T) {
 							DatasetID: "datasetID",
 							TableID:   "tableID",
 						},
-						ColumnReferences: []*ForeignKeyColumnReference{
+						ColumnReferences: []*ColumnReference{
 							{
 								ReferencedColumn:  "id",
 								ReferencingColumn: "other_table_id",
