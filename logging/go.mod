@@ -5,8 +5,8 @@ go 1.19
 require (
 	cloud.google.com/go v0.110.2
 	cloud.google.com/go/compute/metadata v0.2.3
-	cloud.google.com/go/iam v1.0.1
-	cloud.google.com/go/longrunning v0.4.2
+	cloud.google.com/go/iam v1.1.0
+	cloud.google.com/go/longrunning v0.5.0
 	cloud.google.com/go/storage v1.30.1
 	github.com/golang/protobuf v1.5.3
 	github.com/google/go-cmp v0.5.9

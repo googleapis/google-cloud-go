@@ -9,7 +9,7 @@ require (
 	cloud.google.com/go/storage v1.30.1
 	github.com/google/go-cmp v0.5.9
 	golang.org/x/sync v0.2.0
-	golang.org/x/tools v0.9.1
+	golang.org/x/tools v0.9.3
 	gopkg.in/yaml.v2 v2.2.4
 )
 

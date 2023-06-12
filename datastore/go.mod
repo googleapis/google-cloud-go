@@ -4,7 +4,7 @@ go 1.19
 
 require (
 	cloud.google.com/go v0.110.2
-	cloud.google.com/go/longrunning v0.4.2
+	cloud.google.com/go/longrunning v0.5.0
 	github.com/golang/protobuf v1.5.3
 	github.com/google/go-cmp v0.5.9
 	github.com/googleapis/gax-go/v2 v2.10.0

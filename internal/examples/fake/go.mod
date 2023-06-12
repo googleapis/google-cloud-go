@@ -3,16 +3,16 @@ module cloud.google.com/go/internal/examples/fake
 go 1.19
 
 require (
-	cloud.google.com/go/translate v1.7.1
+	cloud.google.com/go/translate v1.8.0
 	google.golang.org/api v0.125.0
 	google.golang.org/grpc v1.55.0
 )
 
 require (
-	cloud.google.com/go v0.110.0 // indirect
+	cloud.google.com/go v0.110.2 // indirect
 	cloud.google.com/go/compute v1.19.3 // indirect
 	cloud.google.com/go/compute/metadata v0.2.3 // indirect
-	cloud.google.com/go/longrunning v0.4.1 // indirect
+	cloud.google.com/go/longrunning v0.4.2 // indirect
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
 	github.com/golang/protobuf v1.5.3 // indirect
 	github.com/google/go-cmp v0.5.9 // indirect

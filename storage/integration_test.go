@@ -1420,11 +1420,11 @@ func TestIntegration_ObjectChecksums(t *testing.T) {
 			wc := b.Object(c.name + uidSpaceObjects.New()).NewWriter(ctx)
 			for _, data := range c.contents {
 				if _, err := wc.Write(data); err != nil {
-					t.Errorf("Write(%q) failed with %q", data, err)
+					t.Fatalf("Write(%q) failed with %q", data, err)
 				}
 			}
 			if err := wc.Close(); err != nil {
-				t.Errorf("%q: close failed with %q", c.name, err)
+				t.Fatalf("%q: close failed with %q", c.name, err)
 			}
 			obj := wc.Attrs()
 			if got, want := obj.Size, c.size; got != want {
@@ -4002,7 +4002,8 @@ func TestIntegration_Reader(t *testing.T) {
 			"obj2",
 			"obj/with/slashes",
 			"obj/",
-			// "./obj", // does not work with XML
+			"./obj",
+			"!#$&'()*+,/:;=,?@,[] and spaces",
 		}
 		contents := make(map[string][]byte)
 
