@@ -3,6 +3,7 @@ module cloud.google.com/go/gkebackup
 go 1.19
 
 require (
+	cloud.google.com/go/iam v0.13.0
 	cloud.google.com/go/longrunning v0.5.0
 	github.com/googleapis/gax-go/v2 v2.10.0
 	google.golang.org/api v0.125.0
