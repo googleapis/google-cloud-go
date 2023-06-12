@@ -21,12 +21,11 @@
 package firestorepb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -599,6 +598,9 @@ type ExistenceFilter struct {
 	//
 	// If different from the count of documents in the client that match, the
 	// client must manually determine which documents no longer match the target.
+	//
+	// The client can use the `unchanged_names` bloom filter to assist with
+	// this determination.
 	Count int32 `protobuf:"varint,2,opt,name=count,proto3" json:"count,omitempty"`
 	// A bloom filter that contains the UTF-8 byte encodings of the resource names
 	// of the documents that match
