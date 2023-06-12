@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -200,7 +200,7 @@ type EncryptionKey struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Google Cloud KMS encryption key. Format:
-	// projects/*/locations/*/keyRings/*/cryptoKeys/*
+	// `projects/*/locations/*/keyRings/*/cryptoKeys/*`
 	GcpKmsEncryptionKey string `protobuf:"bytes,1,opt,name=gcp_kms_encryption_key,json=gcpKmsEncryptionKey,proto3" json:"gcp_kms_encryption_key,omitempty"`
 }
 
