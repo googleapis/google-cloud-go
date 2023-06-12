@@ -747,7 +747,7 @@ func (c *Client) Run(ctx context.Context, q *Query) *Iterator {
 func (c *Client) RunAggregationQuery(ctx context.Context, aq *AggregationQuery) (AggregationResult, error) {
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/datastore.Query.RunAggregationQuery")
 	defer func() { trace.EndSpan(ctx, err) }()
-  
+
 	if aq == nil {
 		return nil, errors.New("datastore: aggregation query cannot be nil")
 	}
