@@ -74,9 +74,12 @@ jobs:
         name: ${{ steps.baseline.outputs.pkg }}
         path: ${{ matrix.changed }}
     - name: Compare regenerated code to baseline
+      # Only ignore Go interface additions when the PR is from OwlBot as it is
+      # likely a new method added to the gRPC client stub interface, which is
+      # non-breaking.
       run: |
         cd ${{ matrix.changed }} && apidiff -m -incompatible ${{ steps.baseline.outputs.pkg }} . > diff.txt
-        if [[ ${{ matrix.changed }} == *pb ]]; then
+        if [[ ${{ github.event.pull_request.head.ref }} == owl-bot-copy ]]; then
           sed -i '/: added/d' ./diff.txt
         fi
         cat diff.txt && ! [ -s diff.txt ]

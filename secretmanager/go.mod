@@ -3,7 +3,7 @@ module cloud.google.com/go/secretmanager
 go 1.19
 
 require (
-	cloud.google.com/go/iam v1.0.1
+	cloud.google.com/go/iam v1.1.0
 	github.com/googleapis/gax-go/v2 v2.10.0
 	google.golang.org/api v0.125.0
 	google.golang.org/genproto v0.0.0-20230530153820-e85fd2cbaebc

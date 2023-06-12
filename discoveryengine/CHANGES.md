@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.1](https://github.com/googleapis/google-cloud-go/compare/discoveryengine/v0.4.0...discoveryengine/v0.4.1) (2023-06-07)
+
+
+### Bug Fixes
+
+* **discoveryengine:** Remove the summarization feature from v1 version ([#8056](https://github.com/googleapis/google-cloud-go/issues/8056)) ([79eac77](https://github.com/googleapis/google-cloud-go/commit/79eac771ecf99172157cc4499ba95536778354e6))
+
 ## [0.4.0](https://github.com/googleapis/google-cloud-go/compare/discoveryengine/v0.3.1...discoveryengine/v0.4.0) (2023-05-30)
 
 

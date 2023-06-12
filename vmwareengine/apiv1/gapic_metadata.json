@@ -30,6 +30,11 @@
                 "CreatePrivateCloud"
               ]
             },
+            "CreatePrivateConnection": {
+              "methods": [
+                "CreatePrivateConnection"
+              ]
+            },
             "CreateVmwareEngineNetwork": {
               "methods": [
                 "CreateVmwareEngineNetwork"
@@ -53,6 +58,11 @@
             "DeletePrivateCloud": {
               "methods": [
                 "DeletePrivateCloud"
+              ]
+            },
+            "DeletePrivateConnection": {
+              "methods": [
+                "DeletePrivateConnection"
               ]
             },
             "DeleteVmwareEngineNetwork": {
@@ -100,6 +110,16 @@
                 "GetPrivateCloud"
               ]
             },
+            "GetPrivateConnection": {
+              "methods": [
+                "GetPrivateConnection"
+              ]
+            },
+            "GetSubnet": {
+              "methods": [
+                "GetSubnet"
+              ]
+            },
             "GetVmwareEngineNetwork": {
               "methods": [
                 "GetVmwareEngineNetwork"
@@ -138,6 +158,16 @@
             "ListPrivateClouds": {
               "methods": [
                 "ListPrivateClouds"
+              ]
+            },
+            "ListPrivateConnectionPeeringRoutes": {
+              "methods": [
+                "ListPrivateConnectionPeeringRoutes"
+              ]
+            },
+            "ListPrivateConnections": {
+              "methods": [
+                "ListPrivateConnections"
               ]
             },
             "ListSubnets": {
@@ -198,6 +228,16 @@
             "UpdatePrivateCloud": {
               "methods": [
                 "UpdatePrivateCloud"
+              ]
+            },
+            "UpdatePrivateConnection": {
+              "methods": [
+                "UpdatePrivateConnection"
+              ]
+            },
+            "UpdateSubnet": {
+              "methods": [
+                "UpdateSubnet"
               ]
             },
             "UpdateVmwareEngineNetwork": {
@@ -230,6 +270,11 @@
                 "CreatePrivateCloud"
               ]
             },
+            "CreatePrivateConnection": {
+              "methods": [
+                "CreatePrivateConnection"
+              ]
+            },
             "CreateVmwareEngineNetwork": {
               "methods": [
                 "CreateVmwareEngineNetwork"
@@ -253,6 +298,11 @@
             "DeletePrivateCloud": {
               "methods": [
                 "DeletePrivateCloud"
+              ]
+            },
+            "DeletePrivateConnection": {
+              "methods": [
+                "DeletePrivateConnection"
               ]
             },
             "DeleteVmwareEngineNetwork": {
@@ -300,6 +350,16 @@
                 "GetPrivateCloud"
               ]
             },
+            "GetPrivateConnection": {
+              "methods": [
+                "GetPrivateConnection"
+              ]
+            },
+            "GetSubnet": {
+              "methods": [
+                "GetSubnet"
+              ]
+            },
             "GetVmwareEngineNetwork": {
               "methods": [
                 "GetVmwareEngineNetwork"
@@ -338,6 +398,16 @@
             "ListPrivateClouds": {
               "methods": [
                 "ListPrivateClouds"
+              ]
+            },
+            "ListPrivateConnectionPeeringRoutes": {
+              "methods": [
+                "ListPrivateConnectionPeeringRoutes"
+              ]
+            },
+            "ListPrivateConnections": {
+              "methods": [
+                "ListPrivateConnections"
               ]
             },
             "ListSubnets": {
@@ -398,6 +468,16 @@
             "UpdatePrivateCloud": {
               "methods": [
                 "UpdatePrivateCloud"
+              ]
+            },
+            "UpdatePrivateConnection": {
+              "methods": [
+                "UpdatePrivateConnection"
+              ]
+            },
+            "UpdateSubnet": {
+              "methods": [
+                "UpdateSubnet"
               ]
             },
             "UpdateVmwareEngineNetwork": {

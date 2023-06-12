@@ -40,8 +40,8 @@ import (
 	gtransport "google.golang.org/api/transport/grpc"
 	btapb "google.golang.org/genproto/googleapis/bigtable/admin/v2"
 	"google.golang.org/genproto/googleapis/rpc/status"
-	"google.golang.org/genproto/protobuf/field_mask"
 	"google.golang.org/grpc/metadata"
+	field_mask "google.golang.org/protobuf/types/known/fieldmaskpb"
 )
 
 const adminAddr = "bigtableadmin.googleapis.com:443"
