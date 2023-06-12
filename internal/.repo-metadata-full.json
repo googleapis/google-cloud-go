@@ -1255,7 +1255,7 @@
     "description": "Migration Center API",
     "language": "Go",
     "client_library_type": "generated",
-    "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/latest/migrationcenter/apiv1",
+    "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/migrationcenter/latest/apiv1",
     "release_level": "beta",
     "library_type": "GAPIC_AUTO"
   },
