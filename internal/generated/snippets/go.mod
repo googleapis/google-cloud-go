@@ -429,3 +429,5 @@ replace cloud.google.com/go/confidentialcomputing => ../../../confidentialcomput
 replace cloud.google.com/go/support => ../../../support
 
 replace cloud.google.com/go/rapidmigrationassessment => ../../../rapidmigrationassessment
+
+replace cloud.google.com/go/migrationcenter => ../../../migrationcenter
