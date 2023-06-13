@@ -1,5 +1,13 @@
 # Changes
 
+## [1.14.0](https://github.com/googleapis/google-cloud-go/compare/datacatalog/v1.13.1...datacatalog/v1.14.0) (2023-05-30)
+
+
+### Features
+
+* **datacatalog:** Add support for entries associated with Spanner and ClougBigTable ([#7992](https://github.com/googleapis/google-cloud-go/issues/7992)) ([ebae64d](https://github.com/googleapis/google-cloud-go/commit/ebae64d53397ec5dfe851f098754eaa1f5df7cb1))
+* **datacatalog:** Update all direct dependencies ([b340d03](https://github.com/googleapis/google-cloud-go/commit/b340d030f2b52a4ce48846ce63984b28583abde6))
+
 ## [1.13.1](https://github.com/googleapis/google-cloud-go/compare/datacatalog/v1.13.0...datacatalog/v1.13.1) (2023-05-08)
 
 

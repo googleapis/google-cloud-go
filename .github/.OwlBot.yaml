@@ -85,6 +85,7 @@ deep-remove-regex:
   - /dialogflow/apiv2beta1/
   - /dialogflow/cx/apiv3/
   - /dialogflow/cx/apiv3beta1/
+  - /discoveryengine/apiv1/
   - /discoveryengine/apiv1beta/
   - /dlp/apiv2/
   - /documentai/apiv1/
@@ -197,6 +198,7 @@ deep-remove-regex:
   - /internal/generated/snippets/dialogflow/apiv2beta1/
   - /internal/generated/snippets/dialogflow/cx/apiv3/
   - /internal/generated/snippets/dialogflow/cx/apiv3beta1/
+  - /internal/generated/snippets/discoveryengine/apiv1/
   - /internal/generated/snippets/discoveryengine/apiv1beta/
   - /internal/generated/snippets/dlp/apiv2/
   - /internal/generated/snippets/documentai/apiv1/
@@ -244,6 +246,7 @@ deep-remove-regex:
   - /internal/generated/snippets/metastore/apiv1/
   - /internal/generated/snippets/metastore/apiv1alpha/
   - /internal/generated/snippets/metastore/apiv1beta/
+  - /internal/generated/snippets/migrationcenter/apiv1/
   - /internal/generated/snippets/monitoring/apiv3/v2/
   - /internal/generated/snippets/monitoring/dashboard/apiv1/
   - /internal/generated/snippets/monitoring/metricsscope/apiv1/
@@ -268,6 +271,7 @@ deep-remove-regex:
   - /internal/generated/snippets/privatecatalog/apiv1beta1/
   - /internal/generated/snippets/pubsub/apiv1/
   - /internal/generated/snippets/pubsublite/apiv1/
+  - /internal/generated/snippets/rapidmigrationassessment/apiv1/
   - /internal/generated/snippets/recaptchaenterprise/v2/apiv1/
   - /internal/generated/snippets/recaptchaenterprise/v2/apiv1beta1/
   - /internal/generated/snippets/recommendationengine/apiv1beta1/
@@ -354,6 +358,7 @@ deep-remove-regex:
   - /metastore/apiv1/
   - /metastore/apiv1alpha/
   - /metastore/apiv1beta/
+  - /migrationcenter/apiv1/
   - /monitoring/apiv3/v2/
   - /monitoring/dashboard/apiv1/
   - /monitoring/metricsscope/apiv1/
@@ -380,6 +385,7 @@ deep-remove-regex:
   - /privatecatalog/apiv1beta1/
   - /pubsub/apiv1/
   - /pubsublite/apiv1/
+  - /rapidmigrationassessment/apiv1/
   - /recaptchaenterprise/apiv1/
   - /recaptchaenterprise/apiv1beta1/
   - /recommendationengine/apiv1beta1/
@@ -656,6 +662,8 @@ deep-copy-regex:
     dest: /
   - source: /google/cloud/dialogflow/cx/v3beta1/cloud.google.com/go
     dest: /
+  - source: /google/cloud/discoveryengine/v1/cloud.google.com/go
+    dest: /
   - source: /google/cloud/discoveryengine/v1beta/cloud.google.com/go
     dest: /
   - source: /google/privacy/dlp/v2/cloud.google.com/go
@@ -750,6 +758,8 @@ deep-copy-regex:
     dest: /
   - source: /google/cloud/metastore/v1beta/cloud.google.com/go
     dest: /
+  - source: /google/cloud/migrationcenter/v1/cloud.google.com/go
+    dest: /
   - source: /google/monitoring/v3/cloud.google.com/go
     dest: /
   - source: /google/monitoring/dashboard/v1/cloud.google.com/go
@@ -801,6 +811,8 @@ deep-copy-regex:
   - source: /google/pubsub/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/pubsublite/v1/cloud.google.com/go
+    dest: /
+  - source: /google/cloud/rapidmigrationassessment/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/recaptchaenterprise/v1/cloud.google.com/go/recaptchaenterprise/v2/apiv1
     dest: /recaptchaenterprise/apiv1

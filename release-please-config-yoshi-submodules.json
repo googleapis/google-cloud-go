@@ -219,6 +219,9 @@
         "metastore": {
             "component": "metastore"
         },
+        "migrationcenter": {
+            "component": "migrationcenter"
+        },
         "monitoring": {
             "component": "monitoring"
         },
@@ -257,6 +260,9 @@
         },
         "privatecatalog": {
             "component": "privatecatalog"
+        },
+        "rapidmigrationassessment": {
+            "component": "rapidmigrationassessment"
         },
         "recaptchaenterprise": {
             "component": "recaptchaenterprise"
@@ -318,11 +324,11 @@
         "storagetransfer": {
             "component": "storagetransfer"
         },
-        "talent": {
-            "component": "talent"
-        },
         "support": {
             "component": "support"
+        },
+        "talent": {
+            "component": "talent"
         },
         "texttospeech": {
             "component": "texttospeech"

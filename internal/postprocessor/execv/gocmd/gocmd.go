@@ -138,3 +138,10 @@ func EditReplace(dir, mod, modPath string) error {
 	}
 	return c.Run()
 }
+
+// WorkUse updates the go.work file for added modules.
+func WorkUse(dir string) error {
+	c := execv.Command("go", "work", "use", "-r", ".")
+	c.Dir = dir
+	return c.Run()
+}

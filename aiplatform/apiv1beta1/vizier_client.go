@@ -257,7 +257,8 @@ func (c *VizierClient) LookupStudy(ctx context.Context, req *aiplatformpb.Lookup
 // suggested by Vertex AI Vizier. Returns a long-running
 // operation associated with the generation of Trial suggestions.
 // When this long-running operation succeeds, it will contain
-// a SuggestTrialsResponse.
+// a
+// SuggestTrialsResponse.
 func (c *VizierClient) SuggestTrials(ctx context.Context, req *aiplatformpb.SuggestTrialsRequest, opts ...gax.CallOption) (*SuggestTrialsOperation, error) {
 	return c.internalClient.SuggestTrials(ctx, req, opts...)
 }
@@ -1474,7 +1475,8 @@ func (c *vizierRESTClient) LookupStudy(ctx context.Context, req *aiplatformpb.Lo
 // suggested by Vertex AI Vizier. Returns a long-running
 // operation associated with the generation of Trial suggestions.
 // When this long-running operation succeeds, it will contain
-// a SuggestTrialsResponse.
+// a
+// SuggestTrialsResponse.
 func (c *vizierRESTClient) SuggestTrials(ctx context.Context, req *aiplatformpb.SuggestTrialsRequest, opts ...gax.CallOption) (*SuggestTrialsOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)

@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.0](https://github.com/googleapis/google-cloud-go/compare/vmwareengine/v0.3.1...vmwareengine/v0.4.0) (2023-05-30)
+
+
+### Features
+
+* **vmwareengine:** Update all direct dependencies ([b340d03](https://github.com/googleapis/google-cloud-go/commit/b340d030f2b52a4ce48846ce63984b28583abde6))
+
 ## [0.3.1](https://github.com/googleapis/google-cloud-go/compare/vmwareengine/v0.3.0...vmwareengine/v0.3.1) (2023-05-08)
 
 

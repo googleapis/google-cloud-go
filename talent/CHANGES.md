@@ -1,6 +1,20 @@
 # Changes
 
 
+## [1.6.1](https://github.com/googleapis/google-cloud-go/compare/talent/v1.6.0...talent/v1.6.1) (2023-05-31)
+
+
+### Documentation
+
+* **talent:** Add three per company option to diversification levels ([01eff11](https://github.com/googleapis/google-cloud-go/commit/01eff11eedb3edde69cc33db23e26be6a7e42f10))
+
+## [1.6.0](https://github.com/googleapis/google-cloud-go/compare/talent/v1.5.2...talent/v1.6.0) (2023-05-30)
+
+
+### Features
+
+* **talent:** Update all direct dependencies ([b340d03](https://github.com/googleapis/google-cloud-go/commit/b340d030f2b52a4ce48846ce63984b28583abde6))
+
 ## [1.5.2](https://github.com/googleapis/google-cloud-go/compare/talent/v1.5.1...talent/v1.5.2) (2023-05-08)
 
 

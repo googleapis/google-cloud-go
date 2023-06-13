@@ -893,7 +893,9 @@ func (o *ObjectHandle) Generation(gen int64) *ObjectHandle {
 }
 
 // If returns a new ObjectHandle that applies a set of preconditions.
-// Preconditions already set on the ObjectHandle are ignored.
+// Preconditions already set on the ObjectHandle are ignored. The supplied
+// Conditions must have at least one field set to a non-default value;
+// otherwise an error will be returned from any operation on the ObjectHandle.
 // Operations on the new handle will return an error if the preconditions are not
 // satisfied. See https://cloud.google.com/storage/docs/generations-preconditions
 // for more details.

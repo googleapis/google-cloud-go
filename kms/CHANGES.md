@@ -1,5 +1,12 @@
 # Changes
 
+## [1.11.0](https://github.com/googleapis/google-cloud-go/compare/kms/v1.10.2...kms/v1.11.0) (2023-05-30)
+
+
+### Features
+
+* **kms:** Update all direct dependencies ([b340d03](https://github.com/googleapis/google-cloud-go/commit/b340d030f2b52a4ce48846ce63984b28583abde6))
+
 ## [1.10.2](https://github.com/googleapis/google-cloud-go/compare/kms/v1.10.1...kms/v1.10.2) (2023-05-08)
 
 

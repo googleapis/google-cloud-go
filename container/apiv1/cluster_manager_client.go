@@ -39,39 +39,40 @@ var newClusterManagerClientHook clientHook
 
 // ClusterManagerCallOptions contains the retry settings for each method of ClusterManagerClient.
 type ClusterManagerCallOptions struct {
-	ListClusters            []gax.CallOption
-	GetCluster              []gax.CallOption
-	CreateCluster           []gax.CallOption
-	UpdateCluster           []gax.CallOption
-	UpdateNodePool          []gax.CallOption
-	SetNodePoolAutoscaling  []gax.CallOption
-	SetLoggingService       []gax.CallOption
-	SetMonitoringService    []gax.CallOption
-	SetAddonsConfig         []gax.CallOption
-	SetLocations            []gax.CallOption
-	UpdateMaster            []gax.CallOption
-	SetMasterAuth           []gax.CallOption
-	DeleteCluster           []gax.CallOption
-	ListOperations          []gax.CallOption
-	GetOperation            []gax.CallOption
-	CancelOperation         []gax.CallOption
-	GetServerConfig         []gax.CallOption
-	GetJSONWebKeys          []gax.CallOption
-	ListNodePools           []gax.CallOption
-	GetNodePool             []gax.CallOption
-	CreateNodePool          []gax.CallOption
-	DeleteNodePool          []gax.CallOption
-	CompleteNodePoolUpgrade []gax.CallOption
-	RollbackNodePoolUpgrade []gax.CallOption
-	SetNodePoolManagement   []gax.CallOption
-	SetLabels               []gax.CallOption
-	SetLegacyAbac           []gax.CallOption
-	StartIPRotation         []gax.CallOption
-	CompleteIPRotation      []gax.CallOption
-	SetNodePoolSize         []gax.CallOption
-	SetNetworkPolicy        []gax.CallOption
-	SetMaintenancePolicy    []gax.CallOption
-	ListUsableSubnetworks   []gax.CallOption
+	ListClusters                []gax.CallOption
+	GetCluster                  []gax.CallOption
+	CreateCluster               []gax.CallOption
+	UpdateCluster               []gax.CallOption
+	UpdateNodePool              []gax.CallOption
+	SetNodePoolAutoscaling      []gax.CallOption
+	SetLoggingService           []gax.CallOption
+	SetMonitoringService        []gax.CallOption
+	SetAddonsConfig             []gax.CallOption
+	SetLocations                []gax.CallOption
+	UpdateMaster                []gax.CallOption
+	SetMasterAuth               []gax.CallOption
+	DeleteCluster               []gax.CallOption
+	ListOperations              []gax.CallOption
+	GetOperation                []gax.CallOption
+	CancelOperation             []gax.CallOption
+	GetServerConfig             []gax.CallOption
+	GetJSONWebKeys              []gax.CallOption
+	ListNodePools               []gax.CallOption
+	GetNodePool                 []gax.CallOption
+	CreateNodePool              []gax.CallOption
+	DeleteNodePool              []gax.CallOption
+	CompleteNodePoolUpgrade     []gax.CallOption
+	RollbackNodePoolUpgrade     []gax.CallOption
+	SetNodePoolManagement       []gax.CallOption
+	SetLabels                   []gax.CallOption
+	SetLegacyAbac               []gax.CallOption
+	StartIPRotation             []gax.CallOption
+	CompleteIPRotation          []gax.CallOption
+	SetNodePoolSize             []gax.CallOption
+	SetNetworkPolicy            []gax.CallOption
+	SetMaintenancePolicy        []gax.CallOption
+	ListUsableSubnetworks       []gax.CallOption
+	CheckAutopilotCompatibility []gax.CallOption
 }
 
 func defaultClusterManagerGRPCClientOptions() []option.ClientOption {
@@ -209,17 +210,18 @@ func defaultClusterManagerCallOptions() *ClusterManagerCallOptions {
 				})
 			}),
 		},
-		CompleteNodePoolUpgrade: []gax.CallOption{},
-		RollbackNodePoolUpgrade: []gax.CallOption{},
-		SetNodePoolManagement:   []gax.CallOption{},
-		SetLabels:               []gax.CallOption{},
-		SetLegacyAbac:           []gax.CallOption{},
-		StartIPRotation:         []gax.CallOption{},
-		CompleteIPRotation:      []gax.CallOption{},
-		SetNodePoolSize:         []gax.CallOption{},
-		SetNetworkPolicy:        []gax.CallOption{},
-		SetMaintenancePolicy:    []gax.CallOption{},
-		ListUsableSubnetworks:   []gax.CallOption{},
+		CompleteNodePoolUpgrade:     []gax.CallOption{},
+		RollbackNodePoolUpgrade:     []gax.CallOption{},
+		SetNodePoolManagement:       []gax.CallOption{},
+		SetLabels:                   []gax.CallOption{},
+		SetLegacyAbac:               []gax.CallOption{},
+		StartIPRotation:             []gax.CallOption{},
+		CompleteIPRotation:          []gax.CallOption{},
+		SetNodePoolSize:             []gax.CallOption{},
+		SetNetworkPolicy:            []gax.CallOption{},
+		SetMaintenancePolicy:        []gax.CallOption{},
+		ListUsableSubnetworks:       []gax.CallOption{},
+		CheckAutopilotCompatibility: []gax.CallOption{},
 	}
 }
 
@@ -261,6 +263,7 @@ type internalClusterManagerClient interface {
 	SetNetworkPolicy(context.Context, *containerpb.SetNetworkPolicyRequest, ...gax.CallOption) (*containerpb.Operation, error)
 	SetMaintenancePolicy(context.Context, *containerpb.SetMaintenancePolicyRequest, ...gax.CallOption) (*containerpb.Operation, error)
 	ListUsableSubnetworks(context.Context, *containerpb.ListUsableSubnetworksRequest, ...gax.CallOption) *UsableSubnetworkIterator
+	CheckAutopilotCompatibility(context.Context, *containerpb.CheckAutopilotCompatibilityRequest, ...gax.CallOption) (*containerpb.CheckAutopilotCompatibilityResponse, error)
 }
 
 // ClusterManagerClient is a client for interacting with Kubernetes Engine API.
@@ -497,6 +500,12 @@ func (c *ClusterManagerClient) SetMaintenancePolicy(ctx context.Context, req *co
 // ListUsableSubnetworks lists subnetworks that are usable for creating clusters in a project.
 func (c *ClusterManagerClient) ListUsableSubnetworks(ctx context.Context, req *containerpb.ListUsableSubnetworksRequest, opts ...gax.CallOption) *UsableSubnetworkIterator {
 	return c.internalClient.ListUsableSubnetworks(ctx, req, opts...)
+}
+
+// CheckAutopilotCompatibility checks the cluster compatibility with Autopilot mode, and returns a list of
+// compatibility issues.
+func (c *ClusterManagerClient) CheckAutopilotCompatibility(ctx context.Context, req *containerpb.CheckAutopilotCompatibilityRequest, opts ...gax.CallOption) (*containerpb.CheckAutopilotCompatibilityResponse, error) {
+	return c.internalClient.CheckAutopilotCompatibility(ctx, req, opts...)
 }
 
 // clusterManagerGRPCClient is a client for interacting with Kubernetes Engine API over gRPC transport.
@@ -1309,6 +1318,23 @@ func (c *clusterManagerGRPCClient) ListUsableSubnetworks(ctx context.Context, re
 	it.pageInfo.Token = req.GetPageToken()
 
 	return it
+}
+
+func (c *clusterManagerGRPCClient) CheckAutopilotCompatibility(ctx context.Context, req *containerpb.CheckAutopilotCompatibilityRequest, opts ...gax.CallOption) (*containerpb.CheckAutopilotCompatibilityResponse, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).CheckAutopilotCompatibility[0:len((*c.CallOptions).CheckAutopilotCompatibility):len((*c.CallOptions).CheckAutopilotCompatibility)], opts...)
+	var resp *containerpb.CheckAutopilotCompatibilityResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.clusterManagerClient.CheckAutopilotCompatibility(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
 }
 
 // UsableSubnetworkIterator manages a stream of *containerpb.UsableSubnetwork.

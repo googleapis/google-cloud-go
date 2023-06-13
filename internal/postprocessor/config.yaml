@@ -44,6 +44,7 @@ modules:
   - datastream
   - deploy
   - dialogflow
+  - discoveryengine
   - dlp
   - documentai
   - domains
@@ -75,6 +76,7 @@ modules:
   - mediatranslation
   - memcache
   - metastore
+  - migrationcenter
   - monitoring
   - networkconnectivity
   - networkmanagement
@@ -91,6 +93,7 @@ modules:
   - profiler
   - pubsub
   - pubsublite
+  - rapidmigrationassessment
   - recaptchaenterprise
   - recommendationengine
   - recommender
@@ -450,6 +453,9 @@ service-configs:
   - input-directory: google/cloud/dialogflow/v2beta1
     service-config: dialogflow_v2beta1.yaml
     import-path: cloud.google.com/go/dialogflow/apiv2beta1
+  - input-directory: google/cloud/discoveryengine/v1
+    service-config: discoveryengine_v1.yaml
+    import-path: cloud.google.com/go/discoveryengine/apiv1
   - input-directory: google/cloud/discoveryengine/v1beta
     service-config: discoveryengine_v1beta.yaml
     import-path: cloud.google.com/go/discoveryengine/apiv1beta
@@ -552,6 +558,9 @@ service-configs:
   - input-directory: google/cloud/metastore/v1beta
     service-config: metastore_v1beta.yaml
     import-path: cloud.google.com/go/metastore/apiv1beta
+  - input-directory: google/cloud/migrationcenter/v1
+    service-config: migrationcenter_v1.yaml
+    import-path: cloud.google.com/go/migrationcenter/apiv1
   - input-directory: google/cloud/networkconnectivity/v1
     service-config: networkconnectivity_v1.yaml
     import-path: cloud.google.com/go/networkconnectivity/apiv1
@@ -618,6 +627,9 @@ service-configs:
   - input-directory: google/cloud/pubsublite/v1
     service-config: pubsublite_v1.yaml
     import-path: cloud.google.com/go/pubsublite/apiv1
+  - input-directory: google/cloud/rapidmigrationassessment/v1
+    service-config: rapidmigrationassessment_v1.yaml
+    import-path: cloud.google.com/go/rapidmigrationassessment/apiv1
   - input-directory: google/cloud/recaptchaenterprise/v1
     service-config: recaptchaenterprise_v1.yaml
     import-path: cloud.google.com/go/recaptchaenterprise/v2/apiv1

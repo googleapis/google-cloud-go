@@ -1,5 +1,31 @@
 # Changes
 
+## [1.21.0](https://github.com/googleapis/google-cloud-go/compare/container/v1.20.0...container/v1.21.0) (2023-06-07)
+
+
+### Features
+
+* **container:** Add a API field to enable FQDN Network Policy on clusters ([79eac77](https://github.com/googleapis/google-cloud-go/commit/79eac771ecf99172157cc4499ba95536778354e6))
+
+## [1.20.0](https://github.com/googleapis/google-cloud-go/compare/container/v1.19.0...container/v1.20.0) (2023-05-31)
+
+
+### Features
+
+* **container:** Add SoleTenantConfig API ([#8015](https://github.com/googleapis/google-cloud-go/issues/8015)) ([01eff11](https://github.com/googleapis/google-cloud-go/commit/01eff11eedb3edde69cc33db23e26be6a7e42f10))
+
+## [1.19.0](https://github.com/googleapis/google-cloud-go/compare/container/v1.18.1...container/v1.19.0) (2023-05-30)
+
+
+### Features
+
+* **container:** Update all direct dependencies ([b340d03](https://github.com/googleapis/google-cloud-go/commit/b340d030f2b52a4ce48846ce63984b28583abde6))
+
+
+### Documentation
+
+* **container:** Clarified release channel defaulting behavior for create cluster requests when release channel is unspecified ([2b3e7d9](https://github.com/googleapis/google-cloud-go/commit/2b3e7d9af7d2f500e736e3db77487127cb44ca23))
+
 ## [1.18.1](https://github.com/googleapis/google-cloud-go/compare/container/v1.18.0...container/v1.18.1) (2023-05-08)
 
 
