@@ -204,6 +204,36 @@ func ExampleAlloyDBAdminClient_DeleteCluster() {
 	}
 }
 
+func ExampleAlloyDBAdminClient_PromoteCluster() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := alloydb.NewAlloyDBAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &alloydbpb.PromoteClusterRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/alloydb/apiv1/alloydbpb#PromoteClusterRequest.
+	}
+	op, err := c.PromoteCluster(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleAlloyDBAdminClient_RestoreCluster() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
@@ -222,6 +252,36 @@ func ExampleAlloyDBAdminClient_RestoreCluster() {
 		// See https://pkg.go.dev/cloud.google.com/go/alloydb/apiv1/alloydbpb#RestoreClusterRequest.
 	}
 	op, err := c.RestoreCluster(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleAlloyDBAdminClient_CreateSecondaryCluster() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := alloydb.NewAlloyDBAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &alloydbpb.CreateSecondaryClusterRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/alloydb/apiv1/alloydbpb#CreateSecondaryClusterRequest.
+	}
+	op, err := c.CreateSecondaryCluster(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -308,6 +368,36 @@ func ExampleAlloyDBAdminClient_CreateInstance() {
 		// See https://pkg.go.dev/cloud.google.com/go/alloydb/apiv1/alloydbpb#CreateInstanceRequest.
 	}
 	op, err := c.CreateInstance(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleAlloyDBAdminClient_CreateSecondaryInstance() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := alloydb.NewAlloyDBAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &alloydbpb.CreateSecondaryInstanceRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/alloydb/apiv1/alloydbpb#CreateSecondaryInstanceRequest.
+	}
+	op, err := c.CreateSecondaryInstance(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -426,6 +516,36 @@ func ExampleAlloyDBAdminClient_FailoverInstance() {
 		// See https://pkg.go.dev/cloud.google.com/go/alloydb/apiv1/alloydbpb#FailoverInstanceRequest.
 	}
 	op, err := c.FailoverInstance(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleAlloyDBAdminClient_InjectFault() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := alloydb.NewAlloyDBAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &alloydbpb.InjectFaultRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/alloydb/apiv1/alloydbpb#InjectFaultRequest.
+	}
+	op, err := c.InjectFault(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -640,6 +760,135 @@ func ExampleAlloyDBAdminClient_ListSupportedDatabaseFlags() {
 		}
 		// TODO: Use resp.
 		_ = resp
+	}
+}
+
+func ExampleAlloyDBAdminClient_ListUsers() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := alloydb.NewAlloyDBAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &alloydbpb.ListUsersRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/alloydb/apiv1/alloydbpb#ListUsersRequest.
+	}
+	it := c.ListUsers(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
+}
+
+func ExampleAlloyDBAdminClient_GetUser() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := alloydb.NewAlloyDBAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &alloydbpb.GetUserRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/alloydb/apiv1/alloydbpb#GetUserRequest.
+	}
+	resp, err := c.GetUser(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleAlloyDBAdminClient_CreateUser() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := alloydb.NewAlloyDBAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &alloydbpb.CreateUserRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/alloydb/apiv1/alloydbpb#CreateUserRequest.
+	}
+	resp, err := c.CreateUser(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleAlloyDBAdminClient_UpdateUser() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := alloydb.NewAlloyDBAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &alloydbpb.UpdateUserRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/alloydb/apiv1/alloydbpb#UpdateUserRequest.
+	}
+	resp, err := c.UpdateUser(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleAlloyDBAdminClient_DeleteUser() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := alloydb.NewAlloyDBAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &alloydbpb.DeleteUserRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/alloydb/apiv1/alloydbpb#DeleteUserRequest.
+	}
+	err = c.DeleteUser(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
 	}
 }
 
