@@ -1054,7 +1054,13 @@ func (it *queryDocumentIterator) next() (_ *DocumentSnapshot, err error) {
 	client := it.q.c
 	if it.streamClient == nil {
 		it.ctx = trace.StartSpan(it.ctx, "cloud.google.com/go/firestore.Query.RunQuery")
-		defer func() { trace.EndSpan(it.ctx, err) }()
+		defer func() {
+			if errors.Is(err, iterator.Done) {
+				trace.EndSpan(it.ctx, nil)
+			} else {
+				trace.EndSpan(it.ctx, err)
+			}
+		}()
 
 		sq, err := it.q.toProto()
 		if err != nil {
