@@ -499,9 +499,10 @@ func (s *GServer) CreateSubscription(_ context.Context, ps *pb.Subscription) (*p
 	if ps.PushConfig == nil {
 		ps.PushConfig = &pb.PushConfig{}
 	}
-	if ps.BigqueryConfig == nil {
-		ps.BigqueryConfig = &pb.BigQueryConfig{}
-	} else if ps.BigqueryConfig.Table != "" {
+	// Consider any table set to mean the config is active.
+	// We don't convert nil config to empty like with PushConfig above
+	// as this mimics the live service behavior.
+	if ps.GetBigqueryConfig() != nil && ps.GetBigqueryConfig().GetTable() != "" {
 		ps.BigqueryConfig.State = pb.BigQueryConfig_ACTIVE
 	}
 	ps.TopicMessageRetentionDuration = top.proto.MessageRetentionDuration
@@ -605,7 +606,7 @@ func (s *GServer) UpdateSubscription(_ context.Context, req *pb.UpdateSubscripti
 			sub.proto.PushConfig = req.Subscription.PushConfig
 
 		case "bigquery_config":
-			// If bq config is nil here, it will have been cleared.
+			// If bq config is nil here, it will be cleared.
 			// Otherwise, we'll consider the subscription active if any table is set.
 			sub.proto.BigqueryConfig = req.GetSubscription().GetBigqueryConfig()
 			if sub.proto.GetBigqueryConfig() != nil {

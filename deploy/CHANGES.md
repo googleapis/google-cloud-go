@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.10.0](https://github.com/googleapis/google-cloud-go/compare/deploy/v1.9.0...deploy/v1.10.0) (2023-06-07)
+
+
+### Features
+
+* **deploy:** Add support for disabling Pod overprovisioning in the progressive deployment strategy configuration for a Kubernetes Target ([#8052](https://github.com/googleapis/google-cloud-go/issues/8052)) ([f2c3dd3](https://github.com/googleapis/google-cloud-go/commit/f2c3dd38fce43f15f4d3a4da5d621de79e174475))
+
 ## [1.9.0](https://github.com/googleapis/google-cloud-go/compare/deploy/v1.8.1...deploy/v1.9.0) (2023-05-30)
 
 
