@@ -1,6 +1,15 @@
 # Changelog
 
 
+## [1.2.0](https://github.com/googleapis/google-cloud-go/compare/alloydb-v1.1.0...alloydb/v1.2.0) (2023-06-13)
+
+
+### Features
+
+* **alloydb:** Added ClusterView supporting more granular view of continuous backups ([3abdfa1](https://github.com/googleapis/google-cloud-go/commit/3abdfa14dd56cf773c477f289a7f888e20bbbd9a))
+* **alloydb:** Added ClusterView supporting more granular view of continuous backups ([3abdfa1](https://github.com/googleapis/google-cloud-go/commit/3abdfa14dd56cf773c477f289a7f888e20bbbd9a))
+* **alloydb:** Added new SSL modes ALLOW_UNENCRYPTED_AND_ENCRYPTED, ENCRYPTED_ONLY ([3abdfa1](https://github.com/googleapis/google-cloud-go/commit/3abdfa14dd56cf773c477f289a7f888e20bbbd9a))
+
 ## [1.1.0](https://github.com/googleapis/google-cloud-go/compare/alloydb/v1.0.1...alloydb/v1.1.0) (2023-05-30)
 
 
