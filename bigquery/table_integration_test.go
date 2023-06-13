@@ -688,6 +688,18 @@ func TestIntegration_TableConstraintsPK(t *testing.T) {
 		t.Fatalf("expected table primary key to contain column `name`, but found %q", md.PrimaryKey.Columns)
 	}
 
+	md, err = table.Update(ctx, TableMetadataToUpdate{
+		PrimaryKey: &PrimaryKey{
+			Columns: []string{}, // clean primary keys
+		},
+	}, "")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if md.PrimaryKey != nil {
+		t.Fatalf("expected table primary keys to be removed, but found %v", md.PrimaryKey)
+	}
+
 	tableNoPK := dataset.Table(tableIDs.New())
 	err = tableNoPK.Create(context.Background(), &TableMetadata{
 		Schema:         schema,
@@ -774,8 +786,18 @@ func TestIntegration_TableConstraintsFK(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if len(md.ForeignKeys) == 0 || md.ForeignKeys[0].Name != "table_a_fk" {
-		t.Fatalf("expected table to contains fk `self`, but found %v", md.ForeignKeys)
+	if len(md.ForeignKeys) >= 0 && md.ForeignKeys[0].Name != "table_a_fk" {
+		t.Fatalf("expected table to contains fk `table_a_fk`, but found %v", md.ForeignKeys)
+	}
+
+	md, err = tableB.Update(ctx, TableMetadataToUpdate{
+		ForeignKeys: []*ForeignKey{}, // clean foreign keys
+	}, "")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(md.ForeignKeys) > 0 {
+		t.Fatalf("expected table foreign keys to be removed, but found %v", md.ForeignKeys)
 	}
 
 	tableNoFK := dataset.Table(tableIDs.New())

@@ -154,7 +154,7 @@ type TableMetadata struct {
 	PrimaryKey *PrimaryKey
 
 	// ForeignKeys represent a list of foreign keys constraints.
-	// The foreign key is not enforced.
+	// The foreign key are not enforced.
 	ForeignKeys []*ForeignKey
 }
 
@@ -769,7 +769,7 @@ func (tm *TableMetadata) toBQ() (*bq.Table, error) {
 	}
 	t.DefaultCollation = string(tm.DefaultCollation)
 
-	if tm.PrimaryKey != nil || len(tm.ForeignKeys) > 0 {
+	if tm.PrimaryKey != nil || tm.ForeignKeys != nil {
 		t.TableConstraints = &bq.TableConstraints{}
 		if tm.PrimaryKey != nil {
 			t.TableConstraints.PrimaryKey = tm.PrimaryKey.toBQ()
@@ -1057,16 +1057,22 @@ func (tm *TableMetadataToUpdate) toBQ() (*bq.Table, error) {
 		t.DefaultCollation = optional.ToString(tm.DefaultCollation)
 		forceSend("DefaultCollation")
 	}
-	if tm.PrimaryKey != nil || len(tm.ForeignKeys) > 0 {
+	if tm.PrimaryKey != nil || tm.ForeignKeys != nil {
 		t.TableConstraints = &bq.TableConstraints{}
 		if tm.PrimaryKey != nil {
 			t.TableConstraints.PrimaryKey = tm.PrimaryKey.toBQ()
+			if len(t.TableConstraints.PrimaryKey.Columns) == 0 {
+				t.TableConstraints.PrimaryKey = nil
+				t.TableConstraints.NullFields = append(t.TableConstraints.NullFields, "PrimaryKey")
+			}
+			t.TableConstraints.ForceSendFields = append(t.TableConstraints.ForceSendFields, "PrimaryKey")
 		}
-		if len(tm.ForeignKeys) > 0 {
+		if tm.ForeignKeys != nil {
 			t.TableConstraints.ForeignKeys = make([]*bq.TableConstraintsForeignKeys, len(tm.ForeignKeys))
 			for i, fk := range tm.ForeignKeys {
 				t.TableConstraints.ForeignKeys[i] = fk.toBQ()
 			}
+			t.TableConstraints.ForceSendFields = append(t.TableConstraints.ForceSendFields, "ForeignKeys")
 		}
 	}
 	labels, forces, nulls := tm.update()
@@ -1152,7 +1158,8 @@ type TableMetadataToUpdate struct {
 	PrimaryKey *PrimaryKey
 
 	// ForeignKeys represent a list of foreign keys constraints.
-	// The foreign key is not enforced.
+	// Updated only if a non nil value is present.
+	// The foreign keys are not enforced.
 	ForeignKeys []*ForeignKey
 
 	labelUpdater

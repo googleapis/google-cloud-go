@@ -421,6 +421,7 @@ func TestTableMetadataToUpdateToBQ(t *testing.T) {
 					PrimaryKey: &bq.TableConstraintsPrimaryKey{
 						Columns: []string{"name"},
 					},
+					ForceSendFields: []string{"PrimaryKey"},
 				},
 			},
 		},
@@ -445,6 +446,7 @@ func TestTableMetadataToUpdateToBQ(t *testing.T) {
 			},
 			want: &bq.Table{
 				TableConstraints: &bq.TableConstraints{
+					ForceSendFields: []string{"ForeignKeys"},
 					ForeignKeys: []*bq.TableConstraintsForeignKeys{
 						{
 							Name: "fk",
