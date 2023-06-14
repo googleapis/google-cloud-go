@@ -267,9 +267,6 @@ type policyBasedRoutingGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing PolicyBasedRoutingClient
 	CallOptions **PolicyBasedRoutingCallOptions
 
@@ -306,11 +303,6 @@ func NewPolicyBasedRoutingClient(ctx context.Context, opts ...option.ClientOptio
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -319,7 +311,6 @@ func NewPolicyBasedRoutingClient(ctx context.Context, opts ...option.ClientOptio
 
 	c := &policyBasedRoutingGRPCClient{
 		connPool:                 connPool,
-		disableDeadlines:         disableDeadlines,
 		policyBasedRoutingClient: networkconnectivitypb.NewPolicyBasedRoutingServiceClient(connPool),
 		CallOptions:              &client.CallOptions,
 		operationsClient:         longrunningpb.NewOperationsClient(connPool),
@@ -413,7 +404,7 @@ func (c *policyBasedRoutingGRPCClient) ListPolicyBasedRoutes(ctx context.Context
 }
 
 func (c *policyBasedRoutingGRPCClient) GetPolicyBasedRoute(ctx context.Context, req *networkconnectivitypb.GetPolicyBasedRouteRequest, opts ...gax.CallOption) (*networkconnectivitypb.PolicyBasedRoute, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+	if _, ok := ctx.Deadline(); !ok {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
@@ -435,7 +426,7 @@ func (c *policyBasedRoutingGRPCClient) GetPolicyBasedRoute(ctx context.Context, 
 }
 
 func (c *policyBasedRoutingGRPCClient) CreatePolicyBasedRoute(ctx context.Context, req *networkconnectivitypb.CreatePolicyBasedRouteRequest, opts ...gax.CallOption) (*CreatePolicyBasedRouteOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+	if _, ok := ctx.Deadline(); !ok {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
@@ -459,7 +450,7 @@ func (c *policyBasedRoutingGRPCClient) CreatePolicyBasedRoute(ctx context.Contex
 }
 
 func (c *policyBasedRoutingGRPCClient) DeletePolicyBasedRoute(ctx context.Context, req *networkconnectivitypb.DeletePolicyBasedRouteRequest, opts ...gax.CallOption) (*DeletePolicyBasedRouteOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+	if _, ok := ctx.Deadline(); !ok {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
