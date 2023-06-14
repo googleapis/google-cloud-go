@@ -84,6 +84,7 @@ func defaultGkeHubMembershipGRPCClientOptions() []option.ClientOption {
 func defaultGkeHubMembershipCallOptions() *GkeHubMembershipCallOptions {
 	return &GkeHubMembershipCallOptions{
 		ListMemberships: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -95,6 +96,7 @@ func defaultGkeHubMembershipCallOptions() *GkeHubMembershipCallOptions {
 			}),
 		},
 		GetMembership: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -106,6 +108,7 @@ func defaultGkeHubMembershipCallOptions() *GkeHubMembershipCallOptions {
 			}),
 		},
 		CreateMembership: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -117,6 +120,7 @@ func defaultGkeHubMembershipCallOptions() *GkeHubMembershipCallOptions {
 			}),
 		},
 		DeleteMembership: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -128,6 +132,7 @@ func defaultGkeHubMembershipCallOptions() *GkeHubMembershipCallOptions {
 			}),
 		},
 		UpdateMembership: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -139,6 +144,7 @@ func defaultGkeHubMembershipCallOptions() *GkeHubMembershipCallOptions {
 			}),
 		},
 		GenerateConnectManifest: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -150,6 +156,7 @@ func defaultGkeHubMembershipCallOptions() *GkeHubMembershipCallOptions {
 			}),
 		},
 		ValidateExclusivity: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -161,6 +168,7 @@ func defaultGkeHubMembershipCallOptions() *GkeHubMembershipCallOptions {
 			}),
 		},
 		GenerateExclusivityManifest: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -186,6 +194,7 @@ func defaultGkeHubMembershipCallOptions() *GkeHubMembershipCallOptions {
 func defaultGkeHubMembershipRESTCallOptions() *GkeHubMembershipCallOptions {
 	return &GkeHubMembershipCallOptions{
 		ListMemberships: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -196,6 +205,7 @@ func defaultGkeHubMembershipRESTCallOptions() *GkeHubMembershipCallOptions {
 			}),
 		},
 		GetMembership: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -206,6 +216,7 @@ func defaultGkeHubMembershipRESTCallOptions() *GkeHubMembershipCallOptions {
 			}),
 		},
 		CreateMembership: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -216,6 +227,7 @@ func defaultGkeHubMembershipRESTCallOptions() *GkeHubMembershipCallOptions {
 			}),
 		},
 		DeleteMembership: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -226,6 +238,7 @@ func defaultGkeHubMembershipRESTCallOptions() *GkeHubMembershipCallOptions {
 			}),
 		},
 		UpdateMembership: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -236,6 +249,7 @@ func defaultGkeHubMembershipRESTCallOptions() *GkeHubMembershipCallOptions {
 			}),
 		},
 		GenerateConnectManifest: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -246,6 +260,7 @@ func defaultGkeHubMembershipRESTCallOptions() *GkeHubMembershipCallOptions {
 			}),
 		},
 		ValidateExclusivity: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -256,6 +271,7 @@ func defaultGkeHubMembershipRESTCallOptions() *GkeHubMembershipCallOptions {
 			}),
 		},
 		GenerateExclusivityManifest: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -497,9 +513,6 @@ type gkeHubMembershipGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing GkeHubMembershipClient
 	CallOptions **GkeHubMembershipCallOptions
 
@@ -544,11 +557,6 @@ func NewGkeHubMembershipClient(ctx context.Context, opts ...option.ClientOption)
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -557,7 +565,6 @@ func NewGkeHubMembershipClient(ctx context.Context, opts ...option.ClientOption)
 
 	c := &gkeHubMembershipGRPCClient{
 		connPool:               connPool,
-		disableDeadlines:       disableDeadlines,
 		gkeHubMembershipClient: gkehubpb.NewGkeHubMembershipServiceClient(connPool),
 		CallOptions:            &client.CallOptions,
 		operationsClient:       longrunningpb.NewOperationsClient(connPool),
@@ -743,11 +750,6 @@ func (c *gkeHubMembershipGRPCClient) ListMemberships(ctx context.Context, req *g
 }
 
 func (c *gkeHubMembershipGRPCClient) GetMembership(ctx context.Context, req *gkehubpb.GetMembershipRequest, opts ...gax.CallOption) (*gkehubpb.Membership, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -765,11 +767,6 @@ func (c *gkeHubMembershipGRPCClient) GetMembership(ctx context.Context, req *gke
 }
 
 func (c *gkeHubMembershipGRPCClient) CreateMembership(ctx context.Context, req *gkehubpb.CreateMembershipRequest, opts ...gax.CallOption) (*CreateMembershipOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -789,11 +786,6 @@ func (c *gkeHubMembershipGRPCClient) CreateMembership(ctx context.Context, req *
 }
 
 func (c *gkeHubMembershipGRPCClient) DeleteMembership(ctx context.Context, req *gkehubpb.DeleteMembershipRequest, opts ...gax.CallOption) (*DeleteMembershipOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -813,11 +805,6 @@ func (c *gkeHubMembershipGRPCClient) DeleteMembership(ctx context.Context, req *
 }
 
 func (c *gkeHubMembershipGRPCClient) UpdateMembership(ctx context.Context, req *gkehubpb.UpdateMembershipRequest, opts ...gax.CallOption) (*UpdateMembershipOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -837,11 +824,6 @@ func (c *gkeHubMembershipGRPCClient) UpdateMembership(ctx context.Context, req *
 }
 
 func (c *gkeHubMembershipGRPCClient) GenerateConnectManifest(ctx context.Context, req *gkehubpb.GenerateConnectManifestRequest, opts ...gax.CallOption) (*gkehubpb.GenerateConnectManifestResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -859,11 +841,6 @@ func (c *gkeHubMembershipGRPCClient) GenerateConnectManifest(ctx context.Context
 }
 
 func (c *gkeHubMembershipGRPCClient) ValidateExclusivity(ctx context.Context, req *gkehubpb.ValidateExclusivityRequest, opts ...gax.CallOption) (*gkehubpb.ValidateExclusivityResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -881,11 +858,6 @@ func (c *gkeHubMembershipGRPCClient) ValidateExclusivity(ctx context.Context, re
 }
 
 func (c *gkeHubMembershipGRPCClient) GenerateExclusivityManifest(ctx context.Context, req *gkehubpb.GenerateExclusivityManifestRequest, opts ...gax.CallOption) (*gkehubpb.GenerateExclusivityManifestResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)

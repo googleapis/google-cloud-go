@@ -74,6 +74,7 @@ func defaultGRPCClientOptions() []option.ClientOption {
 func defaultCallOptions() *CallOptions {
 	return &CallOptions{
 		ExecutePatchJob: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -85,6 +86,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		GetPatchJob: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -96,6 +98,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		CancelPatchJob: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -107,6 +110,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		ListPatchJobs: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -118,6 +122,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		ListPatchJobInstanceDetails: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -129,6 +134,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		CreatePatchDeployment: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -140,6 +146,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		GetPatchDeployment: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -151,6 +158,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		ListPatchDeployments: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -162,6 +170,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		DeletePatchDeployment: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -173,6 +182,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		UpdatePatchDeployment: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -184,6 +194,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		PausePatchDeployment: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -195,6 +206,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		ResumePatchDeployment: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -211,6 +223,7 @@ func defaultCallOptions() *CallOptions {
 func defaultRESTCallOptions() *CallOptions {
 	return &CallOptions{
 		ExecutePatchJob: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -221,6 +234,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		GetPatchJob: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -231,6 +245,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		CancelPatchJob: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -241,6 +256,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		ListPatchJobs: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -251,6 +267,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		ListPatchJobInstanceDetails: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -261,6 +278,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		CreatePatchDeployment: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -271,6 +289,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		GetPatchDeployment: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -281,6 +300,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		ListPatchDeployments: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -291,6 +311,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		DeletePatchDeployment: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -301,6 +322,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		UpdatePatchDeployment: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -311,6 +333,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		PausePatchDeployment: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -321,6 +344,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		ResumePatchDeployment: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -461,9 +485,6 @@ type gRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing Client
 	CallOptions **CallOptions
 
@@ -491,11 +512,6 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -503,10 +519,9 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 	client := Client{CallOptions: defaultCallOptions()}
 
 	c := &gRPCClient{
-		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
-		client:           osconfigpb.NewOsConfigServiceClient(connPool),
-		CallOptions:      &client.CallOptions,
+		connPool:    connPool,
+		client:      osconfigpb.NewOsConfigServiceClient(connPool),
+		CallOptions: &client.CallOptions,
 	}
 	c.setGoogleClientInfo()
 
@@ -610,11 +625,6 @@ func (c *restClient) Connection() *grpc.ClientConn {
 	return nil
 }
 func (c *gRPCClient) ExecutePatchJob(ctx context.Context, req *osconfigpb.ExecutePatchJobRequest, opts ...gax.CallOption) (*osconfigpb.PatchJob, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -632,11 +642,6 @@ func (c *gRPCClient) ExecutePatchJob(ctx context.Context, req *osconfigpb.Execut
 }
 
 func (c *gRPCClient) GetPatchJob(ctx context.Context, req *osconfigpb.GetPatchJobRequest, opts ...gax.CallOption) (*osconfigpb.PatchJob, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -654,11 +659,6 @@ func (c *gRPCClient) GetPatchJob(ctx context.Context, req *osconfigpb.GetPatchJo
 }
 
 func (c *gRPCClient) CancelPatchJob(ctx context.Context, req *osconfigpb.CancelPatchJobRequest, opts ...gax.CallOption) (*osconfigpb.PatchJob, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -766,11 +766,6 @@ func (c *gRPCClient) ListPatchJobInstanceDetails(ctx context.Context, req *oscon
 }
 
 func (c *gRPCClient) CreatePatchDeployment(ctx context.Context, req *osconfigpb.CreatePatchDeploymentRequest, opts ...gax.CallOption) (*osconfigpb.PatchDeployment, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -788,11 +783,6 @@ func (c *gRPCClient) CreatePatchDeployment(ctx context.Context, req *osconfigpb.
 }
 
 func (c *gRPCClient) GetPatchDeployment(ctx context.Context, req *osconfigpb.GetPatchDeploymentRequest, opts ...gax.CallOption) (*osconfigpb.PatchDeployment, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -855,11 +845,6 @@ func (c *gRPCClient) ListPatchDeployments(ctx context.Context, req *osconfigpb.L
 }
 
 func (c *gRPCClient) DeletePatchDeployment(ctx context.Context, req *osconfigpb.DeletePatchDeploymentRequest, opts ...gax.CallOption) error {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -873,11 +858,6 @@ func (c *gRPCClient) DeletePatchDeployment(ctx context.Context, req *osconfigpb.
 }
 
 func (c *gRPCClient) UpdatePatchDeployment(ctx context.Context, req *osconfigpb.UpdatePatchDeploymentRequest, opts ...gax.CallOption) (*osconfigpb.PatchDeployment, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "patch_deployment.name", url.QueryEscape(req.GetPatchDeployment().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -895,11 +875,6 @@ func (c *gRPCClient) UpdatePatchDeployment(ctx context.Context, req *osconfigpb.
 }
 
 func (c *gRPCClient) PausePatchDeployment(ctx context.Context, req *osconfigpb.PausePatchDeploymentRequest, opts ...gax.CallOption) (*osconfigpb.PatchDeployment, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -917,11 +892,6 @@ func (c *gRPCClient) PausePatchDeployment(ctx context.Context, req *osconfigpb.P
 }
 
 func (c *gRPCClient) ResumePatchDeployment(ctx context.Context, req *osconfigpb.ResumePatchDeploymentRequest, opts ...gax.CallOption) (*osconfigpb.PatchDeployment, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)

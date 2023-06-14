@@ -56,8 +56,11 @@ type TargetSslProxiesCallOptions struct {
 
 func defaultTargetSslProxiesRESTCallOptions() *TargetSslProxiesCallOptions {
 	return &TargetSslProxiesCallOptions{
-		Delete: []gax.CallOption{},
+		Delete: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
 		Get: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -68,8 +71,11 @@ func defaultTargetSslProxiesRESTCallOptions() *TargetSslProxiesCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
-		Insert: []gax.CallOption{},
+		Insert: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
 		List: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -80,11 +86,21 @@ func defaultTargetSslProxiesRESTCallOptions() *TargetSslProxiesCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
-		SetBackendService:  []gax.CallOption{},
-		SetCertificateMap:  []gax.CallOption{},
-		SetProxyHeader:     []gax.CallOption{},
-		SetSslCertificates: []gax.CallOption{},
-		SetSslPolicy:       []gax.CallOption{},
+		SetBackendService: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		SetCertificateMap: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		SetProxyHeader: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		SetSslCertificates: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		SetSslPolicy: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
 	}
 }
 

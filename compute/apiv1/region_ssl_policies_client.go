@@ -53,8 +53,11 @@ type RegionSslPoliciesCallOptions struct {
 
 func defaultRegionSslPoliciesRESTCallOptions() *RegionSslPoliciesCallOptions {
 	return &RegionSslPoliciesCallOptions{
-		Delete: []gax.CallOption{},
+		Delete: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
 		Get: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -65,8 +68,11 @@ func defaultRegionSslPoliciesRESTCallOptions() *RegionSslPoliciesCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
-		Insert: []gax.CallOption{},
+		Insert: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
 		List: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -78,6 +84,7 @@ func defaultRegionSslPoliciesRESTCallOptions() *RegionSslPoliciesCallOptions {
 			}),
 		},
 		ListAvailableFeatures: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -88,7 +95,9 @@ func defaultRegionSslPoliciesRESTCallOptions() *RegionSslPoliciesCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
-		Patch: []gax.CallOption{},
+		Patch: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
 	}
 }
 

@@ -63,6 +63,7 @@ func defaultGRPCClientOptions() []option.ClientOption {
 func defaultCallOptions() *CallOptions {
 	return &CallOptions{
 		ListNotifications: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -74,6 +75,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		GetNotification: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -90,6 +92,7 @@ func defaultCallOptions() *CallOptions {
 func defaultRESTCallOptions() *CallOptions {
 	return &CallOptions{
 		ListNotifications: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -100,6 +103,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		GetNotification: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -173,9 +177,6 @@ type gRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing Client
 	CallOptions **CallOptions
 
@@ -200,11 +201,6 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -212,10 +208,9 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 	client := Client{CallOptions: defaultCallOptions()}
 
 	c := &gRPCClient{
-		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
-		client:           advisorynotificationspb.NewAdvisoryNotificationsServiceClient(connPool),
-		CallOptions:      &client.CallOptions,
+		connPool:    connPool,
+		client:      advisorynotificationspb.NewAdvisoryNotificationsServiceClient(connPool),
+		CallOptions: &client.CallOptions,
 	}
 	c.setGoogleClientInfo()
 
@@ -361,11 +356,6 @@ func (c *gRPCClient) ListNotifications(ctx context.Context, req *advisorynotific
 }
 
 func (c *gRPCClient) GetNotification(ctx context.Context, req *advisorynotificationspb.GetNotificationRequest, opts ...gax.CallOption) (*advisorynotificationspb.Notification, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)

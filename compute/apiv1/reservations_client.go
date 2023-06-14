@@ -59,6 +59,7 @@ type ReservationsCallOptions struct {
 func defaultReservationsRESTCallOptions() *ReservationsCallOptions {
 	return &ReservationsCallOptions{
 		AggregatedList: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -69,8 +70,11 @@ func defaultReservationsRESTCallOptions() *ReservationsCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
-		Delete: []gax.CallOption{},
+		Delete: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
 		Get: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -82,6 +86,7 @@ func defaultReservationsRESTCallOptions() *ReservationsCallOptions {
 			}),
 		},
 		GetIamPolicy: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -92,8 +97,11 @@ func defaultReservationsRESTCallOptions() *ReservationsCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
-		Insert: []gax.CallOption{},
+		Insert: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
 		List: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -104,10 +112,18 @@ func defaultReservationsRESTCallOptions() *ReservationsCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
-		Resize:             []gax.CallOption{},
-		SetIamPolicy:       []gax.CallOption{},
-		TestIamPermissions: []gax.CallOption{},
-		Update:             []gax.CallOption{},
+		Resize: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		SetIamPolicy: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		TestIamPermissions: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		Update: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
 	}
 }
 

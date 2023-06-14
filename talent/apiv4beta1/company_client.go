@@ -68,8 +68,11 @@ func defaultCompanyGRPCClientOptions() []option.ClientOption {
 
 func defaultCompanyCallOptions() *CompanyCallOptions {
 	return &CompanyCallOptions{
-		CreateCompany: []gax.CallOption{},
+		CreateCompany: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+		},
 		GetCompany: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -81,8 +84,11 @@ func defaultCompanyCallOptions() *CompanyCallOptions {
 				})
 			}),
 		},
-		UpdateCompany: []gax.CallOption{},
+		UpdateCompany: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+		},
 		DeleteCompany: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -95,6 +101,7 @@ func defaultCompanyCallOptions() *CompanyCallOptions {
 			}),
 		},
 		ListCompanies: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -112,8 +119,11 @@ func defaultCompanyCallOptions() *CompanyCallOptions {
 
 func defaultCompanyRESTCallOptions() *CompanyCallOptions {
 	return &CompanyCallOptions{
-		CreateCompany: []gax.CallOption{},
+		CreateCompany: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+		},
 		GetCompany: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -124,8 +134,11 @@ func defaultCompanyRESTCallOptions() *CompanyCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
-		UpdateCompany: []gax.CallOption{},
+		UpdateCompany: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+		},
 		DeleteCompany: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -137,6 +150,7 @@ func defaultCompanyRESTCallOptions() *CompanyCallOptions {
 			}),
 		},
 		ListCompanies: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -237,9 +251,6 @@ type companyGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing CompanyClient
 	CallOptions **CompanyCallOptions
 
@@ -266,11 +277,6 @@ func NewCompanyClient(ctx context.Context, opts ...option.ClientOption) (*Compan
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -279,7 +285,6 @@ func NewCompanyClient(ctx context.Context, opts ...option.ClientOption) (*Compan
 
 	c := &companyGRPCClient{
 		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
 		companyClient:    talentpb.NewCompanyServiceClient(connPool),
 		CallOptions:      &client.CallOptions,
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
@@ -383,11 +388,6 @@ func (c *companyRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 func (c *companyGRPCClient) CreateCompany(ctx context.Context, req *talentpb.CreateCompanyRequest, opts ...gax.CallOption) (*talentpb.Company, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -405,11 +405,6 @@ func (c *companyGRPCClient) CreateCompany(ctx context.Context, req *talentpb.Cre
 }
 
 func (c *companyGRPCClient) GetCompany(ctx context.Context, req *talentpb.GetCompanyRequest, opts ...gax.CallOption) (*talentpb.Company, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -427,11 +422,6 @@ func (c *companyGRPCClient) GetCompany(ctx context.Context, req *talentpb.GetCom
 }
 
 func (c *companyGRPCClient) UpdateCompany(ctx context.Context, req *talentpb.UpdateCompanyRequest, opts ...gax.CallOption) (*talentpb.Company, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "company.name", url.QueryEscape(req.GetCompany().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -449,11 +439,6 @@ func (c *companyGRPCClient) UpdateCompany(ctx context.Context, req *talentpb.Upd
 }
 
 func (c *companyGRPCClient) DeleteCompany(ctx context.Context, req *talentpb.DeleteCompanyRequest, opts ...gax.CallOption) error {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)

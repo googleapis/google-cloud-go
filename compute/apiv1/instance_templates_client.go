@@ -57,6 +57,7 @@ type InstanceTemplatesCallOptions struct {
 func defaultInstanceTemplatesRESTCallOptions() *InstanceTemplatesCallOptions {
 	return &InstanceTemplatesCallOptions{
 		AggregatedList: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -67,8 +68,11 @@ func defaultInstanceTemplatesRESTCallOptions() *InstanceTemplatesCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
-		Delete: []gax.CallOption{},
+		Delete: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
 		Get: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -80,6 +84,7 @@ func defaultInstanceTemplatesRESTCallOptions() *InstanceTemplatesCallOptions {
 			}),
 		},
 		GetIamPolicy: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -90,8 +95,11 @@ func defaultInstanceTemplatesRESTCallOptions() *InstanceTemplatesCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
-		Insert: []gax.CallOption{},
+		Insert: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
 		List: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -102,8 +110,12 @@ func defaultInstanceTemplatesRESTCallOptions() *InstanceTemplatesCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
-		SetIamPolicy:       []gax.CallOption{},
-		TestIamPermissions: []gax.CallOption{},
+		SetIamPolicy: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		TestIamPermissions: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
 	}
 }
 

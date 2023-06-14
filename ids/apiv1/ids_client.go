@@ -69,6 +69,7 @@ func defaultGRPCClientOptions() []option.ClientOption {
 func defaultCallOptions() *CallOptions {
 	return &CallOptions{
 		ListEndpoints: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -80,6 +81,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		GetEndpoint: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -90,14 +92,19 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
-		CreateEndpoint: []gax.CallOption{},
-		DeleteEndpoint: []gax.CallOption{},
+		CreateEndpoint: []gax.CallOption{
+			gax.WithTimeout(3600000 * time.Millisecond),
+		},
+		DeleteEndpoint: []gax.CallOption{
+			gax.WithTimeout(3600000 * time.Millisecond),
+		},
 	}
 }
 
 func defaultRESTCallOptions() *CallOptions {
 	return &CallOptions{
 		ListEndpoints: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    250 * time.Millisecond,
@@ -108,6 +115,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		GetEndpoint: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    250 * time.Millisecond,
@@ -117,8 +125,12 @@ func defaultRESTCallOptions() *CallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
-		CreateEndpoint: []gax.CallOption{},
-		DeleteEndpoint: []gax.CallOption{},
+		CreateEndpoint: []gax.CallOption{
+			gax.WithTimeout(3600000 * time.Millisecond),
+		},
+		DeleteEndpoint: []gax.CallOption{
+			gax.WithTimeout(3600000 * time.Millisecond),
+		},
 	}
 }
 
@@ -214,9 +226,6 @@ type gRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing Client
 	CallOptions **CallOptions
 
@@ -246,11 +255,6 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -258,10 +262,9 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 	client := Client{CallOptions: defaultCallOptions()}
 
 	c := &gRPCClient{
-		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
-		client:           idspb.NewIDSClient(connPool),
-		CallOptions:      &client.CallOptions,
+		connPool:    connPool,
+		client:      idspb.NewIDSClient(connPool),
+		CallOptions: &client.CallOptions,
 	}
 	c.setGoogleClientInfo()
 
@@ -433,11 +436,6 @@ func (c *gRPCClient) ListEndpoints(ctx context.Context, req *idspb.ListEndpoints
 }
 
 func (c *gRPCClient) GetEndpoint(ctx context.Context, req *idspb.GetEndpointRequest, opts ...gax.CallOption) (*idspb.Endpoint, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -455,11 +453,6 @@ func (c *gRPCClient) GetEndpoint(ctx context.Context, req *idspb.GetEndpointRequ
 }
 
 func (c *gRPCClient) CreateEndpoint(ctx context.Context, req *idspb.CreateEndpointRequest, opts ...gax.CallOption) (*CreateEndpointOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 3600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -479,11 +472,6 @@ func (c *gRPCClient) CreateEndpoint(ctx context.Context, req *idspb.CreateEndpoi
 }
 
 func (c *gRPCClient) DeleteEndpoint(ctx context.Context, req *idspb.DeleteEndpointRequest, opts ...gax.CallOption) (*DeleteEndpointOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 3600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)

@@ -74,6 +74,7 @@ func defaultGameServerDeploymentsGRPCClientOptions() []option.ClientOption {
 func defaultGameServerDeploymentsCallOptions() *GameServerDeploymentsCallOptions {
 	return &GameServerDeploymentsCallOptions{
 		ListGameServerDeployments: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -85,6 +86,7 @@ func defaultGameServerDeploymentsCallOptions() *GameServerDeploymentsCallOptions
 			}),
 		},
 		GetGameServerDeployment: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -95,10 +97,17 @@ func defaultGameServerDeploymentsCallOptions() *GameServerDeploymentsCallOptions
 				})
 			}),
 		},
-		CreateGameServerDeployment: []gax.CallOption{},
-		DeleteGameServerDeployment: []gax.CallOption{},
-		UpdateGameServerDeployment: []gax.CallOption{},
+		CreateGameServerDeployment: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteGameServerDeployment: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateGameServerDeployment: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		GetGameServerDeploymentRollout: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -109,8 +118,11 @@ func defaultGameServerDeploymentsCallOptions() *GameServerDeploymentsCallOptions
 				})
 			}),
 		},
-		UpdateGameServerDeploymentRollout: []gax.CallOption{},
+		UpdateGameServerDeploymentRollout: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		PreviewGameServerDeploymentRollout: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -122,6 +134,7 @@ func defaultGameServerDeploymentsCallOptions() *GameServerDeploymentsCallOptions
 			}),
 		},
 		FetchDeploymentState: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -138,6 +151,7 @@ func defaultGameServerDeploymentsCallOptions() *GameServerDeploymentsCallOptions
 func defaultGameServerDeploymentsRESTCallOptions() *GameServerDeploymentsCallOptions {
 	return &GameServerDeploymentsCallOptions{
 		ListGameServerDeployments: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -148,6 +162,7 @@ func defaultGameServerDeploymentsRESTCallOptions() *GameServerDeploymentsCallOpt
 			}),
 		},
 		GetGameServerDeployment: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -157,10 +172,17 @@ func defaultGameServerDeploymentsRESTCallOptions() *GameServerDeploymentsCallOpt
 					http.StatusServiceUnavailable)
 			}),
 		},
-		CreateGameServerDeployment: []gax.CallOption{},
-		DeleteGameServerDeployment: []gax.CallOption{},
-		UpdateGameServerDeployment: []gax.CallOption{},
+		CreateGameServerDeployment: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteGameServerDeployment: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateGameServerDeployment: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		GetGameServerDeploymentRollout: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -170,8 +192,11 @@ func defaultGameServerDeploymentsRESTCallOptions() *GameServerDeploymentsCallOpt
 					http.StatusServiceUnavailable)
 			}),
 		},
-		UpdateGameServerDeploymentRollout: []gax.CallOption{},
+		UpdateGameServerDeploymentRollout: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		PreviewGameServerDeploymentRollout: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -182,6 +207,7 @@ func defaultGameServerDeploymentsRESTCallOptions() *GameServerDeploymentsCallOpt
 			}),
 		},
 		FetchDeploymentState: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -339,9 +365,6 @@ type gameServerDeploymentsGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing GameServerDeploymentsClient
 	CallOptions **GameServerDeploymentsCallOptions
 
@@ -372,11 +395,6 @@ func NewGameServerDeploymentsClient(ctx context.Context, opts ...option.ClientOp
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -385,7 +403,6 @@ func NewGameServerDeploymentsClient(ctx context.Context, opts ...option.ClientOp
 
 	c := &gameServerDeploymentsGRPCClient{
 		connPool:                    connPool,
-		disableDeadlines:            disableDeadlines,
 		gameServerDeploymentsClient: gamingpb.NewGameServerDeploymentsServiceClient(connPool),
 		CallOptions:                 &client.CallOptions,
 	}
@@ -560,11 +577,6 @@ func (c *gameServerDeploymentsGRPCClient) ListGameServerDeployments(ctx context.
 }
 
 func (c *gameServerDeploymentsGRPCClient) GetGameServerDeployment(ctx context.Context, req *gamingpb.GetGameServerDeploymentRequest, opts ...gax.CallOption) (*gamingpb.GameServerDeployment, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -582,11 +594,6 @@ func (c *gameServerDeploymentsGRPCClient) GetGameServerDeployment(ctx context.Co
 }
 
 func (c *gameServerDeploymentsGRPCClient) CreateGameServerDeployment(ctx context.Context, req *gamingpb.CreateGameServerDeploymentRequest, opts ...gax.CallOption) (*CreateGameServerDeploymentOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -606,11 +613,6 @@ func (c *gameServerDeploymentsGRPCClient) CreateGameServerDeployment(ctx context
 }
 
 func (c *gameServerDeploymentsGRPCClient) DeleteGameServerDeployment(ctx context.Context, req *gamingpb.DeleteGameServerDeploymentRequest, opts ...gax.CallOption) (*DeleteGameServerDeploymentOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -630,11 +632,6 @@ func (c *gameServerDeploymentsGRPCClient) DeleteGameServerDeployment(ctx context
 }
 
 func (c *gameServerDeploymentsGRPCClient) UpdateGameServerDeployment(ctx context.Context, req *gamingpb.UpdateGameServerDeploymentRequest, opts ...gax.CallOption) (*UpdateGameServerDeploymentOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "game_server_deployment.name", url.QueryEscape(req.GetGameServerDeployment().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -654,11 +651,6 @@ func (c *gameServerDeploymentsGRPCClient) UpdateGameServerDeployment(ctx context
 }
 
 func (c *gameServerDeploymentsGRPCClient) GetGameServerDeploymentRollout(ctx context.Context, req *gamingpb.GetGameServerDeploymentRolloutRequest, opts ...gax.CallOption) (*gamingpb.GameServerDeploymentRollout, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -676,11 +668,6 @@ func (c *gameServerDeploymentsGRPCClient) GetGameServerDeploymentRollout(ctx con
 }
 
 func (c *gameServerDeploymentsGRPCClient) UpdateGameServerDeploymentRollout(ctx context.Context, req *gamingpb.UpdateGameServerDeploymentRolloutRequest, opts ...gax.CallOption) (*UpdateGameServerDeploymentRolloutOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "rollout.name", url.QueryEscape(req.GetRollout().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -700,11 +687,6 @@ func (c *gameServerDeploymentsGRPCClient) UpdateGameServerDeploymentRollout(ctx 
 }
 
 func (c *gameServerDeploymentsGRPCClient) PreviewGameServerDeploymentRollout(ctx context.Context, req *gamingpb.PreviewGameServerDeploymentRolloutRequest, opts ...gax.CallOption) (*gamingpb.PreviewGameServerDeploymentRolloutResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "rollout.name", url.QueryEscape(req.GetRollout().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -722,11 +704,6 @@ func (c *gameServerDeploymentsGRPCClient) PreviewGameServerDeploymentRollout(ctx
 }
 
 func (c *gameServerDeploymentsGRPCClient) FetchDeploymentState(ctx context.Context, req *gamingpb.FetchDeploymentStateRequest, opts ...gax.CallOption) (*gamingpb.FetchDeploymentStateResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)

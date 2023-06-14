@@ -332,9 +332,6 @@ type datasetGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing DatasetClient
 	CallOptions **DatasetCallOptions
 
@@ -371,11 +368,6 @@ func NewDatasetClient(ctx context.Context, opts ...option.ClientOption) (*Datase
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -384,7 +376,6 @@ func NewDatasetClient(ctx context.Context, opts ...option.ClientOption) (*Datase
 
 	c := &datasetGRPCClient{
 		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
 		datasetClient:    aiplatformpb.NewDatasetServiceClient(connPool),
 		CallOptions:      &client.CallOptions,
 		operationsClient: longrunningpb.NewOperationsClient(connPool),

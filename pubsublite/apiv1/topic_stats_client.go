@@ -64,6 +64,7 @@ func defaultTopicStatsGRPCClientOptions() []option.ClientOption {
 func defaultTopicStatsCallOptions() *TopicStatsCallOptions {
 	return &TopicStatsCallOptions{
 		ComputeMessageStats: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -79,6 +80,7 @@ func defaultTopicStatsCallOptions() *TopicStatsCallOptions {
 			}),
 		},
 		ComputeHeadCursor: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -94,6 +96,7 @@ func defaultTopicStatsCallOptions() *TopicStatsCallOptions {
 			}),
 		},
 		ComputeTimeCursor: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -111,6 +114,7 @@ func defaultTopicStatsCallOptions() *TopicStatsCallOptions {
 		CancelOperation: []gax.CallOption{},
 		DeleteOperation: []gax.CallOption{},
 		GetOperation: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -126,6 +130,7 @@ func defaultTopicStatsCallOptions() *TopicStatsCallOptions {
 			}),
 		},
 		ListOperations: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -241,9 +246,6 @@ type topicStatsGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing TopicStatsClient
 	CallOptions **TopicStatsCallOptions
 
@@ -270,11 +272,6 @@ func NewTopicStatsClient(ctx context.Context, opts ...option.ClientOption) (*Top
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -283,7 +280,6 @@ func NewTopicStatsClient(ctx context.Context, opts ...option.ClientOption) (*Top
 
 	c := &topicStatsGRPCClient{
 		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
 		topicStatsClient: pubsublitepb.NewTopicStatsServiceClient(connPool),
 		CallOptions:      &client.CallOptions,
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
@@ -319,11 +315,6 @@ func (c *topicStatsGRPCClient) Close() error {
 }
 
 func (c *topicStatsGRPCClient) ComputeMessageStats(ctx context.Context, req *pubsublitepb.ComputeMessageStatsRequest, opts ...gax.CallOption) (*pubsublitepb.ComputeMessageStatsResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "topic", url.QueryEscape(req.GetTopic())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -341,11 +332,6 @@ func (c *topicStatsGRPCClient) ComputeMessageStats(ctx context.Context, req *pub
 }
 
 func (c *topicStatsGRPCClient) ComputeHeadCursor(ctx context.Context, req *pubsublitepb.ComputeHeadCursorRequest, opts ...gax.CallOption) (*pubsublitepb.ComputeHeadCursorResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "topic", url.QueryEscape(req.GetTopic())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -363,11 +349,6 @@ func (c *topicStatsGRPCClient) ComputeHeadCursor(ctx context.Context, req *pubsu
 }
 
 func (c *topicStatsGRPCClient) ComputeTimeCursor(ctx context.Context, req *pubsublitepb.ComputeTimeCursorRequest, opts ...gax.CallOption) (*pubsublitepb.ComputeTimeCursorResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "topic", url.QueryEscape(req.GetTopic())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -411,11 +392,6 @@ func (c *topicStatsGRPCClient) DeleteOperation(ctx context.Context, req *longrun
 }
 
 func (c *topicStatsGRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)

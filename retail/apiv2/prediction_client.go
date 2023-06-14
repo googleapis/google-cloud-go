@@ -60,6 +60,7 @@ func defaultPredictionGRPCClientOptions() []option.ClientOption {
 func defaultPredictionCallOptions() *PredictionCallOptions {
 	return &PredictionCallOptions{
 		Predict: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -73,6 +74,7 @@ func defaultPredictionCallOptions() *PredictionCallOptions {
 		},
 		GetOperation: []gax.CallOption{},
 		ListOperations: []gax.CallOption{
+			gax.WithTimeout(300000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -154,9 +156,6 @@ type predictionGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing PredictionClient
 	CallOptions **PredictionCallOptions
 
@@ -183,11 +182,6 @@ func NewPredictionClient(ctx context.Context, opts ...option.ClientOption) (*Pre
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -196,7 +190,6 @@ func NewPredictionClient(ctx context.Context, opts ...option.ClientOption) (*Pre
 
 	c := &predictionGRPCClient{
 		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
 		predictionClient: retailpb.NewPredictionServiceClient(connPool),
 		CallOptions:      &client.CallOptions,
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
@@ -232,11 +225,6 @@ func (c *predictionGRPCClient) Close() error {
 }
 
 func (c *predictionGRPCClient) Predict(ctx context.Context, req *retailpb.PredictRequest, opts ...gax.CallOption) (*retailpb.PredictResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "placement", url.QueryEscape(req.GetPlacement())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)

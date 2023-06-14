@@ -118,119 +118,311 @@ func defaultGRPCClientOptions() []option.ClientOption {
 
 func defaultCallOptions() *CallOptions {
 	return &CallOptions{
-		ListAssets:            []gax.CallOption{},
-		GetAsset:              []gax.CallOption{},
-		UpdateAsset:           []gax.CallOption{},
-		BatchUpdateAssets:     []gax.CallOption{},
-		DeleteAsset:           []gax.CallOption{},
-		BatchDeleteAssets:     []gax.CallOption{},
-		ReportAssetFrames:     []gax.CallOption{},
-		AggregateAssetsValues: []gax.CallOption{},
-		CreateImportJob:       []gax.CallOption{},
-		ListImportJobs:        []gax.CallOption{},
-		GetImportJob:          []gax.CallOption{},
-		DeleteImportJob:       []gax.CallOption{},
-		UpdateImportJob:       []gax.CallOption{},
-		ValidateImportJob:     []gax.CallOption{},
-		RunImportJob:          []gax.CallOption{},
-		GetImportDataFile:     []gax.CallOption{},
-		ListImportDataFiles:   []gax.CallOption{},
-		CreateImportDataFile:  []gax.CallOption{},
-		DeleteImportDataFile:  []gax.CallOption{},
-		ListGroups:            []gax.CallOption{},
-		GetGroup:              []gax.CallOption{},
-		CreateGroup:           []gax.CallOption{},
-		UpdateGroup:           []gax.CallOption{},
-		DeleteGroup:           []gax.CallOption{},
-		AddAssetsToGroup:      []gax.CallOption{},
-		RemoveAssetsFromGroup: []gax.CallOption{},
-		ListErrorFrames:       []gax.CallOption{},
-		GetErrorFrame:         []gax.CallOption{},
-		ListSources:           []gax.CallOption{},
-		GetSource:             []gax.CallOption{},
-		CreateSource:          []gax.CallOption{},
-		UpdateSource:          []gax.CallOption{},
-		DeleteSource:          []gax.CallOption{},
-		ListPreferenceSets:    []gax.CallOption{},
-		GetPreferenceSet:      []gax.CallOption{},
-		CreatePreferenceSet:   []gax.CallOption{},
-		UpdatePreferenceSet:   []gax.CallOption{},
-		DeletePreferenceSet:   []gax.CallOption{},
-		GetSettings:           []gax.CallOption{},
-		UpdateSettings:        []gax.CallOption{},
-		CreateReportConfig:    []gax.CallOption{},
-		GetReportConfig:       []gax.CallOption{},
-		ListReportConfigs:     []gax.CallOption{},
-		DeleteReportConfig:    []gax.CallOption{},
-		CreateReport:          []gax.CallOption{},
-		GetReport:             []gax.CallOption{},
-		ListReports:           []gax.CallOption{},
-		DeleteReport:          []gax.CallOption{},
-		GetLocation:           []gax.CallOption{},
-		ListLocations:         []gax.CallOption{},
-		CancelOperation:       []gax.CallOption{},
-		DeleteOperation:       []gax.CallOption{},
-		GetOperation:          []gax.CallOption{},
-		ListOperations:        []gax.CallOption{},
+		ListAssets: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetAsset: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateAsset: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		BatchUpdateAssets: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteAsset: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		BatchDeleteAssets: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ReportAssetFrames: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		AggregateAssetsValues: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		CreateImportJob: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ListImportJobs: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetImportJob: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteImportJob: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateImportJob: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ValidateImportJob: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		RunImportJob: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetImportDataFile: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ListImportDataFiles: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		CreateImportDataFile: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteImportDataFile: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ListGroups: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetGroup: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		CreateGroup: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateGroup: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteGroup: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		AddAssetsToGroup: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		RemoveAssetsFromGroup: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ListErrorFrames: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetErrorFrame: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ListSources: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetSource: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		CreateSource: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateSource: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteSource: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		ListPreferenceSets: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetPreferenceSet: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		CreatePreferenceSet: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdatePreferenceSet: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeletePreferenceSet: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetSettings: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateSettings: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		CreateReportConfig: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetReportConfig: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ListReportConfigs: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteReportConfig: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		CreateReport: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetReport: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ListReports: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteReport: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetLocation:     []gax.CallOption{},
+		ListLocations:   []gax.CallOption{},
+		CancelOperation: []gax.CallOption{},
+		DeleteOperation: []gax.CallOption{},
+		GetOperation:    []gax.CallOption{},
+		ListOperations:  []gax.CallOption{},
 	}
 }
 
 func defaultRESTCallOptions() *CallOptions {
 	return &CallOptions{
-		ListAssets:            []gax.CallOption{},
-		GetAsset:              []gax.CallOption{},
-		UpdateAsset:           []gax.CallOption{},
-		BatchUpdateAssets:     []gax.CallOption{},
-		DeleteAsset:           []gax.CallOption{},
-		BatchDeleteAssets:     []gax.CallOption{},
-		ReportAssetFrames:     []gax.CallOption{},
-		AggregateAssetsValues: []gax.CallOption{},
-		CreateImportJob:       []gax.CallOption{},
-		ListImportJobs:        []gax.CallOption{},
-		GetImportJob:          []gax.CallOption{},
-		DeleteImportJob:       []gax.CallOption{},
-		UpdateImportJob:       []gax.CallOption{},
-		ValidateImportJob:     []gax.CallOption{},
-		RunImportJob:          []gax.CallOption{},
-		GetImportDataFile:     []gax.CallOption{},
-		ListImportDataFiles:   []gax.CallOption{},
-		CreateImportDataFile:  []gax.CallOption{},
-		DeleteImportDataFile:  []gax.CallOption{},
-		ListGroups:            []gax.CallOption{},
-		GetGroup:              []gax.CallOption{},
-		CreateGroup:           []gax.CallOption{},
-		UpdateGroup:           []gax.CallOption{},
-		DeleteGroup:           []gax.CallOption{},
-		AddAssetsToGroup:      []gax.CallOption{},
-		RemoveAssetsFromGroup: []gax.CallOption{},
-		ListErrorFrames:       []gax.CallOption{},
-		GetErrorFrame:         []gax.CallOption{},
-		ListSources:           []gax.CallOption{},
-		GetSource:             []gax.CallOption{},
-		CreateSource:          []gax.CallOption{},
-		UpdateSource:          []gax.CallOption{},
-		DeleteSource:          []gax.CallOption{},
-		ListPreferenceSets:    []gax.CallOption{},
-		GetPreferenceSet:      []gax.CallOption{},
-		CreatePreferenceSet:   []gax.CallOption{},
-		UpdatePreferenceSet:   []gax.CallOption{},
-		DeletePreferenceSet:   []gax.CallOption{},
-		GetSettings:           []gax.CallOption{},
-		UpdateSettings:        []gax.CallOption{},
-		CreateReportConfig:    []gax.CallOption{},
-		GetReportConfig:       []gax.CallOption{},
-		ListReportConfigs:     []gax.CallOption{},
-		DeleteReportConfig:    []gax.CallOption{},
-		CreateReport:          []gax.CallOption{},
-		GetReport:             []gax.CallOption{},
-		ListReports:           []gax.CallOption{},
-		DeleteReport:          []gax.CallOption{},
-		GetLocation:           []gax.CallOption{},
-		ListLocations:         []gax.CallOption{},
-		CancelOperation:       []gax.CallOption{},
-		DeleteOperation:       []gax.CallOption{},
-		GetOperation:          []gax.CallOption{},
-		ListOperations:        []gax.CallOption{},
+		ListAssets: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetAsset: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateAsset: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		BatchUpdateAssets: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteAsset: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		BatchDeleteAssets: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ReportAssetFrames: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		AggregateAssetsValues: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		CreateImportJob: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ListImportJobs: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetImportJob: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteImportJob: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateImportJob: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ValidateImportJob: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		RunImportJob: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetImportDataFile: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ListImportDataFiles: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		CreateImportDataFile: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteImportDataFile: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ListGroups: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetGroup: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		CreateGroup: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateGroup: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteGroup: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		AddAssetsToGroup: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		RemoveAssetsFromGroup: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ListErrorFrames: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetErrorFrame: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ListSources: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetSource: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		CreateSource: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateSource: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteSource: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		ListPreferenceSets: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetPreferenceSet: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		CreatePreferenceSet: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdatePreferenceSet: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeletePreferenceSet: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetSettings: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateSettings: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		CreateReportConfig: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetReportConfig: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ListReportConfigs: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteReportConfig: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		CreateReport: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetReport: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ListReports: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteReport: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetLocation:     []gax.CallOption{},
+		ListLocations:   []gax.CallOption{},
+		CancelOperation: []gax.CallOption{},
+		DeleteOperation: []gax.CallOption{},
+		GetOperation:    []gax.CallOption{},
+		ListOperations:  []gax.CallOption{},
 	}
 }
 
@@ -773,9 +965,6 @@ type gRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing Client
 	CallOptions **CallOptions
 
@@ -809,11 +998,6 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -822,7 +1006,6 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 
 	c := &gRPCClient{
 		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
 		client:           migrationcenterpb.NewMigrationCenterClient(connPool),
 		CallOptions:      &client.CallOptions,
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
@@ -998,11 +1181,6 @@ func (c *gRPCClient) ListAssets(ctx context.Context, req *migrationcenterpb.List
 }
 
 func (c *gRPCClient) GetAsset(ctx context.Context, req *migrationcenterpb.GetAssetRequest, opts ...gax.CallOption) (*migrationcenterpb.Asset, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1020,11 +1198,6 @@ func (c *gRPCClient) GetAsset(ctx context.Context, req *migrationcenterpb.GetAss
 }
 
 func (c *gRPCClient) UpdateAsset(ctx context.Context, req *migrationcenterpb.UpdateAssetRequest, opts ...gax.CallOption) (*migrationcenterpb.Asset, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "asset.name", url.QueryEscape(req.GetAsset().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1042,11 +1215,6 @@ func (c *gRPCClient) UpdateAsset(ctx context.Context, req *migrationcenterpb.Upd
 }
 
 func (c *gRPCClient) BatchUpdateAssets(ctx context.Context, req *migrationcenterpb.BatchUpdateAssetsRequest, opts ...gax.CallOption) (*migrationcenterpb.BatchUpdateAssetsResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1064,11 +1232,6 @@ func (c *gRPCClient) BatchUpdateAssets(ctx context.Context, req *migrationcenter
 }
 
 func (c *gRPCClient) DeleteAsset(ctx context.Context, req *migrationcenterpb.DeleteAssetRequest, opts ...gax.CallOption) error {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1082,11 +1245,6 @@ func (c *gRPCClient) DeleteAsset(ctx context.Context, req *migrationcenterpb.Del
 }
 
 func (c *gRPCClient) BatchDeleteAssets(ctx context.Context, req *migrationcenterpb.BatchDeleteAssetsRequest, opts ...gax.CallOption) error {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1100,11 +1258,6 @@ func (c *gRPCClient) BatchDeleteAssets(ctx context.Context, req *migrationcenter
 }
 
 func (c *gRPCClient) ReportAssetFrames(ctx context.Context, req *migrationcenterpb.ReportAssetFramesRequest, opts ...gax.CallOption) (*migrationcenterpb.ReportAssetFramesResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1122,11 +1275,6 @@ func (c *gRPCClient) ReportAssetFrames(ctx context.Context, req *migrationcenter
 }
 
 func (c *gRPCClient) AggregateAssetsValues(ctx context.Context, req *migrationcenterpb.AggregateAssetsValuesRequest, opts ...gax.CallOption) (*migrationcenterpb.AggregateAssetsValuesResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1144,11 +1292,6 @@ func (c *gRPCClient) AggregateAssetsValues(ctx context.Context, req *migrationce
 }
 
 func (c *gRPCClient) CreateImportJob(ctx context.Context, req *migrationcenterpb.CreateImportJobRequest, opts ...gax.CallOption) (*CreateImportJobOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1213,11 +1356,6 @@ func (c *gRPCClient) ListImportJobs(ctx context.Context, req *migrationcenterpb.
 }
 
 func (c *gRPCClient) GetImportJob(ctx context.Context, req *migrationcenterpb.GetImportJobRequest, opts ...gax.CallOption) (*migrationcenterpb.ImportJob, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1235,11 +1373,6 @@ func (c *gRPCClient) GetImportJob(ctx context.Context, req *migrationcenterpb.Ge
 }
 
 func (c *gRPCClient) DeleteImportJob(ctx context.Context, req *migrationcenterpb.DeleteImportJobRequest, opts ...gax.CallOption) (*DeleteImportJobOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1259,11 +1392,6 @@ func (c *gRPCClient) DeleteImportJob(ctx context.Context, req *migrationcenterpb
 }
 
 func (c *gRPCClient) UpdateImportJob(ctx context.Context, req *migrationcenterpb.UpdateImportJobRequest, opts ...gax.CallOption) (*UpdateImportJobOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "import_job.name", url.QueryEscape(req.GetImportJob().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1283,11 +1411,6 @@ func (c *gRPCClient) UpdateImportJob(ctx context.Context, req *migrationcenterpb
 }
 
 func (c *gRPCClient) ValidateImportJob(ctx context.Context, req *migrationcenterpb.ValidateImportJobRequest, opts ...gax.CallOption) (*ValidateImportJobOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1307,11 +1430,6 @@ func (c *gRPCClient) ValidateImportJob(ctx context.Context, req *migrationcenter
 }
 
 func (c *gRPCClient) RunImportJob(ctx context.Context, req *migrationcenterpb.RunImportJobRequest, opts ...gax.CallOption) (*RunImportJobOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1331,11 +1449,6 @@ func (c *gRPCClient) RunImportJob(ctx context.Context, req *migrationcenterpb.Ru
 }
 
 func (c *gRPCClient) GetImportDataFile(ctx context.Context, req *migrationcenterpb.GetImportDataFileRequest, opts ...gax.CallOption) (*migrationcenterpb.ImportDataFile, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1398,11 +1511,6 @@ func (c *gRPCClient) ListImportDataFiles(ctx context.Context, req *migrationcent
 }
 
 func (c *gRPCClient) CreateImportDataFile(ctx context.Context, req *migrationcenterpb.CreateImportDataFileRequest, opts ...gax.CallOption) (*CreateImportDataFileOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1422,11 +1530,6 @@ func (c *gRPCClient) CreateImportDataFile(ctx context.Context, req *migrationcen
 }
 
 func (c *gRPCClient) DeleteImportDataFile(ctx context.Context, req *migrationcenterpb.DeleteImportDataFileRequest, opts ...gax.CallOption) (*DeleteImportDataFileOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1491,11 +1594,6 @@ func (c *gRPCClient) ListGroups(ctx context.Context, req *migrationcenterpb.List
 }
 
 func (c *gRPCClient) GetGroup(ctx context.Context, req *migrationcenterpb.GetGroupRequest, opts ...gax.CallOption) (*migrationcenterpb.Group, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1513,11 +1611,6 @@ func (c *gRPCClient) GetGroup(ctx context.Context, req *migrationcenterpb.GetGro
 }
 
 func (c *gRPCClient) CreateGroup(ctx context.Context, req *migrationcenterpb.CreateGroupRequest, opts ...gax.CallOption) (*CreateGroupOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1537,11 +1630,6 @@ func (c *gRPCClient) CreateGroup(ctx context.Context, req *migrationcenterpb.Cre
 }
 
 func (c *gRPCClient) UpdateGroup(ctx context.Context, req *migrationcenterpb.UpdateGroupRequest, opts ...gax.CallOption) (*UpdateGroupOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "group.name", url.QueryEscape(req.GetGroup().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1561,11 +1649,6 @@ func (c *gRPCClient) UpdateGroup(ctx context.Context, req *migrationcenterpb.Upd
 }
 
 func (c *gRPCClient) DeleteGroup(ctx context.Context, req *migrationcenterpb.DeleteGroupRequest, opts ...gax.CallOption) (*DeleteGroupOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1585,11 +1668,6 @@ func (c *gRPCClient) DeleteGroup(ctx context.Context, req *migrationcenterpb.Del
 }
 
 func (c *gRPCClient) AddAssetsToGroup(ctx context.Context, req *migrationcenterpb.AddAssetsToGroupRequest, opts ...gax.CallOption) (*AddAssetsToGroupOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "group", url.QueryEscape(req.GetGroup())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1609,11 +1687,6 @@ func (c *gRPCClient) AddAssetsToGroup(ctx context.Context, req *migrationcenterp
 }
 
 func (c *gRPCClient) RemoveAssetsFromGroup(ctx context.Context, req *migrationcenterpb.RemoveAssetsFromGroupRequest, opts ...gax.CallOption) (*RemoveAssetsFromGroupOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "group", url.QueryEscape(req.GetGroup())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1678,11 +1751,6 @@ func (c *gRPCClient) ListErrorFrames(ctx context.Context, req *migrationcenterpb
 }
 
 func (c *gRPCClient) GetErrorFrame(ctx context.Context, req *migrationcenterpb.GetErrorFrameRequest, opts ...gax.CallOption) (*migrationcenterpb.ErrorFrame, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1745,11 +1813,6 @@ func (c *gRPCClient) ListSources(ctx context.Context, req *migrationcenterpb.Lis
 }
 
 func (c *gRPCClient) GetSource(ctx context.Context, req *migrationcenterpb.GetSourceRequest, opts ...gax.CallOption) (*migrationcenterpb.Source, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1767,11 +1830,6 @@ func (c *gRPCClient) GetSource(ctx context.Context, req *migrationcenterpb.GetSo
 }
 
 func (c *gRPCClient) CreateSource(ctx context.Context, req *migrationcenterpb.CreateSourceRequest, opts ...gax.CallOption) (*CreateSourceOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1791,11 +1849,6 @@ func (c *gRPCClient) CreateSource(ctx context.Context, req *migrationcenterpb.Cr
 }
 
 func (c *gRPCClient) UpdateSource(ctx context.Context, req *migrationcenterpb.UpdateSourceRequest, opts ...gax.CallOption) (*UpdateSourceOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "source.name", url.QueryEscape(req.GetSource().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1815,11 +1868,6 @@ func (c *gRPCClient) UpdateSource(ctx context.Context, req *migrationcenterpb.Up
 }
 
 func (c *gRPCClient) DeleteSource(ctx context.Context, req *migrationcenterpb.DeleteSourceRequest, opts ...gax.CallOption) (*DeleteSourceOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1884,11 +1932,6 @@ func (c *gRPCClient) ListPreferenceSets(ctx context.Context, req *migrationcente
 }
 
 func (c *gRPCClient) GetPreferenceSet(ctx context.Context, req *migrationcenterpb.GetPreferenceSetRequest, opts ...gax.CallOption) (*migrationcenterpb.PreferenceSet, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1906,11 +1949,6 @@ func (c *gRPCClient) GetPreferenceSet(ctx context.Context, req *migrationcenterp
 }
 
 func (c *gRPCClient) CreatePreferenceSet(ctx context.Context, req *migrationcenterpb.CreatePreferenceSetRequest, opts ...gax.CallOption) (*CreatePreferenceSetOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1930,11 +1968,6 @@ func (c *gRPCClient) CreatePreferenceSet(ctx context.Context, req *migrationcent
 }
 
 func (c *gRPCClient) UpdatePreferenceSet(ctx context.Context, req *migrationcenterpb.UpdatePreferenceSetRequest, opts ...gax.CallOption) (*UpdatePreferenceSetOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "preference_set.name", url.QueryEscape(req.GetPreferenceSet().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1954,11 +1987,6 @@ func (c *gRPCClient) UpdatePreferenceSet(ctx context.Context, req *migrationcent
 }
 
 func (c *gRPCClient) DeletePreferenceSet(ctx context.Context, req *migrationcenterpb.DeletePreferenceSetRequest, opts ...gax.CallOption) (*DeletePreferenceSetOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1978,11 +2006,6 @@ func (c *gRPCClient) DeletePreferenceSet(ctx context.Context, req *migrationcent
 }
 
 func (c *gRPCClient) GetSettings(ctx context.Context, req *migrationcenterpb.GetSettingsRequest, opts ...gax.CallOption) (*migrationcenterpb.Settings, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -2000,11 +2023,6 @@ func (c *gRPCClient) GetSettings(ctx context.Context, req *migrationcenterpb.Get
 }
 
 func (c *gRPCClient) UpdateSettings(ctx context.Context, req *migrationcenterpb.UpdateSettingsRequest, opts ...gax.CallOption) (*UpdateSettingsOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "settings.name", url.QueryEscape(req.GetSettings().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -2024,11 +2042,6 @@ func (c *gRPCClient) UpdateSettings(ctx context.Context, req *migrationcenterpb.
 }
 
 func (c *gRPCClient) CreateReportConfig(ctx context.Context, req *migrationcenterpb.CreateReportConfigRequest, opts ...gax.CallOption) (*CreateReportConfigOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -2048,11 +2061,6 @@ func (c *gRPCClient) CreateReportConfig(ctx context.Context, req *migrationcente
 }
 
 func (c *gRPCClient) GetReportConfig(ctx context.Context, req *migrationcenterpb.GetReportConfigRequest, opts ...gax.CallOption) (*migrationcenterpb.ReportConfig, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -2115,11 +2123,6 @@ func (c *gRPCClient) ListReportConfigs(ctx context.Context, req *migrationcenter
 }
 
 func (c *gRPCClient) DeleteReportConfig(ctx context.Context, req *migrationcenterpb.DeleteReportConfigRequest, opts ...gax.CallOption) (*DeleteReportConfigOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -2139,11 +2142,6 @@ func (c *gRPCClient) DeleteReportConfig(ctx context.Context, req *migrationcente
 }
 
 func (c *gRPCClient) CreateReport(ctx context.Context, req *migrationcenterpb.CreateReportRequest, opts ...gax.CallOption) (*CreateReportOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -2163,11 +2161,6 @@ func (c *gRPCClient) CreateReport(ctx context.Context, req *migrationcenterpb.Cr
 }
 
 func (c *gRPCClient) GetReport(ctx context.Context, req *migrationcenterpb.GetReportRequest, opts ...gax.CallOption) (*migrationcenterpb.Report, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -2230,11 +2223,6 @@ func (c *gRPCClient) ListReports(ctx context.Context, req *migrationcenterpb.Lis
 }
 
 func (c *gRPCClient) DeleteReport(ctx context.Context, req *migrationcenterpb.DeleteReportRequest, opts ...gax.CallOption) (*DeleteReportOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)

@@ -81,6 +81,7 @@ func defaultCloudFunctionsGRPCClientOptions() []option.ClientOption {
 func defaultCloudFunctionsCallOptions() *CloudFunctionsCallOptions {
 	return &CloudFunctionsCallOptions{
 		ListFunctions: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -93,6 +94,7 @@ func defaultCloudFunctionsCallOptions() *CloudFunctionsCallOptions {
 			}),
 		},
 		GetFunction: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -104,8 +106,11 @@ func defaultCloudFunctionsCallOptions() *CloudFunctionsCallOptions {
 				})
 			}),
 		},
-		CreateFunction: []gax.CallOption{},
+		CreateFunction: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
 		UpdateFunction: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -118,6 +123,7 @@ func defaultCloudFunctionsCallOptions() *CloudFunctionsCallOptions {
 			}),
 		},
 		DeleteFunction: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -129,7 +135,9 @@ func defaultCloudFunctionsCallOptions() *CloudFunctionsCallOptions {
 				})
 			}),
 		},
-		CallFunction:        []gax.CallOption{},
+		CallFunction: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
 		GenerateUploadUrl:   []gax.CallOption{},
 		GenerateDownloadUrl: []gax.CallOption{},
 		SetIamPolicy:        []gax.CallOption{},
@@ -144,6 +152,7 @@ func defaultCloudFunctionsCallOptions() *CloudFunctionsCallOptions {
 func defaultCloudFunctionsRESTCallOptions() *CloudFunctionsCallOptions {
 	return &CloudFunctionsCallOptions{
 		ListFunctions: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -155,6 +164,7 @@ func defaultCloudFunctionsRESTCallOptions() *CloudFunctionsCallOptions {
 			}),
 		},
 		GetFunction: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -165,8 +175,11 @@ func defaultCloudFunctionsRESTCallOptions() *CloudFunctionsCallOptions {
 					http.StatusGatewayTimeout)
 			}),
 		},
-		CreateFunction: []gax.CallOption{},
+		CreateFunction: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
 		UpdateFunction: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -178,6 +191,7 @@ func defaultCloudFunctionsRESTCallOptions() *CloudFunctionsCallOptions {
 			}),
 		},
 		DeleteFunction: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -188,7 +202,9 @@ func defaultCloudFunctionsRESTCallOptions() *CloudFunctionsCallOptions {
 					http.StatusGatewayTimeout)
 			}),
 		},
-		CallFunction:        []gax.CallOption{},
+		CallFunction: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
 		GenerateUploadUrl:   []gax.CallOption{},
 		GenerateDownloadUrl: []gax.CallOption{},
 		SetIamPolicy:        []gax.CallOption{},
@@ -403,9 +419,6 @@ type cloudFunctionsGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing CloudFunctionsClient
 	CallOptions **CloudFunctionsCallOptions
 
@@ -439,11 +452,6 @@ func NewCloudFunctionsClient(ctx context.Context, opts ...option.ClientOption) (
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -452,7 +460,6 @@ func NewCloudFunctionsClient(ctx context.Context, opts ...option.ClientOption) (
 
 	c := &cloudFunctionsGRPCClient{
 		connPool:             connPool,
-		disableDeadlines:     disableDeadlines,
 		cloudFunctionsClient: functionspb.NewCloudFunctionsServiceClient(connPool),
 		CallOptions:          &client.CallOptions,
 		operationsClient:     longrunningpb.NewOperationsClient(connPool),
@@ -628,11 +635,6 @@ func (c *cloudFunctionsGRPCClient) ListFunctions(ctx context.Context, req *funct
 }
 
 func (c *cloudFunctionsGRPCClient) GetFunction(ctx context.Context, req *functionspb.GetFunctionRequest, opts ...gax.CallOption) (*functionspb.CloudFunction, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -650,11 +652,6 @@ func (c *cloudFunctionsGRPCClient) GetFunction(ctx context.Context, req *functio
 }
 
 func (c *cloudFunctionsGRPCClient) CreateFunction(ctx context.Context, req *functionspb.CreateFunctionRequest, opts ...gax.CallOption) (*CreateFunctionOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "location", url.QueryEscape(req.GetLocation())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -674,11 +671,6 @@ func (c *cloudFunctionsGRPCClient) CreateFunction(ctx context.Context, req *func
 }
 
 func (c *cloudFunctionsGRPCClient) UpdateFunction(ctx context.Context, req *functionspb.UpdateFunctionRequest, opts ...gax.CallOption) (*UpdateFunctionOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "function.name", url.QueryEscape(req.GetFunction().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -698,11 +690,6 @@ func (c *cloudFunctionsGRPCClient) UpdateFunction(ctx context.Context, req *func
 }
 
 func (c *cloudFunctionsGRPCClient) DeleteFunction(ctx context.Context, req *functionspb.DeleteFunctionRequest, opts ...gax.CallOption) (*DeleteFunctionOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -722,11 +709,6 @@ func (c *cloudFunctionsGRPCClient) DeleteFunction(ctx context.Context, req *func
 }
 
 func (c *cloudFunctionsGRPCClient) CallFunction(ctx context.Context, req *functionspb.CallFunctionRequest, opts ...gax.CallOption) (*functionspb.CallFunctionResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)

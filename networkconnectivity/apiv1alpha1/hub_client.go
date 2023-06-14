@@ -75,6 +75,7 @@ func defaultHubGRPCClientOptions() []option.ClientOption {
 func defaultHubCallOptions() *HubCallOptions {
 	return &HubCallOptions{
 		ListHubs: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -86,6 +87,7 @@ func defaultHubCallOptions() *HubCallOptions {
 			}),
 		},
 		GetHub: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -96,10 +98,17 @@ func defaultHubCallOptions() *HubCallOptions {
 				})
 			}),
 		},
-		CreateHub: []gax.CallOption{},
-		UpdateHub: []gax.CallOption{},
-		DeleteHub: []gax.CallOption{},
+		CreateHub: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateHub: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteHub: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		ListSpokes: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -111,6 +120,7 @@ func defaultHubCallOptions() *HubCallOptions {
 			}),
 		},
 		GetSpoke: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -121,15 +131,22 @@ func defaultHubCallOptions() *HubCallOptions {
 				})
 			}),
 		},
-		CreateSpoke: []gax.CallOption{},
-		UpdateSpoke: []gax.CallOption{},
-		DeleteSpoke: []gax.CallOption{},
+		CreateSpoke: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateSpoke: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteSpoke: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 	}
 }
 
 func defaultHubRESTCallOptions() *HubCallOptions {
 	return &HubCallOptions{
 		ListHubs: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -140,6 +157,7 @@ func defaultHubRESTCallOptions() *HubCallOptions {
 			}),
 		},
 		GetHub: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -149,10 +167,17 @@ func defaultHubRESTCallOptions() *HubCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
-		CreateHub: []gax.CallOption{},
-		UpdateHub: []gax.CallOption{},
-		DeleteHub: []gax.CallOption{},
+		CreateHub: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateHub: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteHub: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		ListSpokes: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -163,6 +188,7 @@ func defaultHubRESTCallOptions() *HubCallOptions {
 			}),
 		},
 		GetSpoke: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -172,9 +198,15 @@ func defaultHubRESTCallOptions() *HubCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
-		CreateSpoke: []gax.CallOption{},
-		UpdateSpoke: []gax.CallOption{},
-		DeleteSpoke: []gax.CallOption{},
+		CreateSpoke: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateSpoke: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteSpoke: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 	}
 }
 
@@ -337,9 +369,6 @@ type hubGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing HubClient
 	CallOptions **HubCallOptions
 
@@ -372,11 +401,6 @@ func NewHubClient(ctx context.Context, opts ...option.ClientOption) (*HubClient,
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -384,10 +408,9 @@ func NewHubClient(ctx context.Context, opts ...option.ClientOption) (*HubClient,
 	client := HubClient{CallOptions: defaultHubCallOptions()}
 
 	c := &hubGRPCClient{
-		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
-		hubClient:        networkconnectivitypb.NewHubServiceClient(connPool),
-		CallOptions:      &client.CallOptions,
+		connPool:    connPool,
+		hubClient:   networkconnectivitypb.NewHubServiceClient(connPool),
+		CallOptions: &client.CallOptions,
 	}
 	c.setGoogleClientInfo()
 
@@ -562,11 +585,6 @@ func (c *hubGRPCClient) ListHubs(ctx context.Context, req *networkconnectivitypb
 }
 
 func (c *hubGRPCClient) GetHub(ctx context.Context, req *networkconnectivitypb.GetHubRequest, opts ...gax.CallOption) (*networkconnectivitypb.Hub, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -584,11 +602,6 @@ func (c *hubGRPCClient) GetHub(ctx context.Context, req *networkconnectivitypb.G
 }
 
 func (c *hubGRPCClient) CreateHub(ctx context.Context, req *networkconnectivitypb.CreateHubRequest, opts ...gax.CallOption) (*CreateHubOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -608,11 +621,6 @@ func (c *hubGRPCClient) CreateHub(ctx context.Context, req *networkconnectivityp
 }
 
 func (c *hubGRPCClient) UpdateHub(ctx context.Context, req *networkconnectivitypb.UpdateHubRequest, opts ...gax.CallOption) (*UpdateHubOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "hub.name", url.QueryEscape(req.GetHub().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -632,11 +640,6 @@ func (c *hubGRPCClient) UpdateHub(ctx context.Context, req *networkconnectivityp
 }
 
 func (c *hubGRPCClient) DeleteHub(ctx context.Context, req *networkconnectivitypb.DeleteHubRequest, opts ...gax.CallOption) (*DeleteHubOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -701,11 +704,6 @@ func (c *hubGRPCClient) ListSpokes(ctx context.Context, req *networkconnectivity
 }
 
 func (c *hubGRPCClient) GetSpoke(ctx context.Context, req *networkconnectivitypb.GetSpokeRequest, opts ...gax.CallOption) (*networkconnectivitypb.Spoke, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -723,11 +721,6 @@ func (c *hubGRPCClient) GetSpoke(ctx context.Context, req *networkconnectivitypb
 }
 
 func (c *hubGRPCClient) CreateSpoke(ctx context.Context, req *networkconnectivitypb.CreateSpokeRequest, opts ...gax.CallOption) (*CreateSpokeOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -747,11 +740,6 @@ func (c *hubGRPCClient) CreateSpoke(ctx context.Context, req *networkconnectivit
 }
 
 func (c *hubGRPCClient) UpdateSpoke(ctx context.Context, req *networkconnectivitypb.UpdateSpokeRequest, opts ...gax.CallOption) (*UpdateSpokeOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "spoke.name", url.QueryEscape(req.GetSpoke().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -771,11 +759,6 @@ func (c *hubGRPCClient) UpdateSpoke(ctx context.Context, req *networkconnectivit
 }
 
 func (c *hubGRPCClient) DeleteSpoke(ctx context.Context, req *networkconnectivitypb.DeleteSpokeRequest, opts ...gax.CallOption) (*DeleteSpokeOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
