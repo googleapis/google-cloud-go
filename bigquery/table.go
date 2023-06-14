@@ -148,13 +148,20 @@ type TableMetadata struct {
 	// More information: https://cloud.google.com/bigquery/docs/reference/standard-sql/collation-concepts
 	DefaultCollation string
 
+	// TableConstraints contains table primary and foreign keys constraints.
+	// Present only if the table has primary or foreign keys.
+	TableConstraints *TableConstraints
+}
+
+// TableConstraints defines the primary key and foreign key of a table.
+type TableConstraints struct {
 	// PrimaryKey constraint on a table's columns.
 	// Present only if the table has a primary key.
 	// The primary key is not enforced.
 	PrimaryKey *PrimaryKey
 
 	// ForeignKeys represent a list of foreign keys constraints.
-	// The foreign key are not enforced.
+	// Foreign keys are not enforced.
 	ForeignKeys []*ForeignKey
 }
 
@@ -769,14 +776,14 @@ func (tm *TableMetadata) toBQ() (*bq.Table, error) {
 	}
 	t.DefaultCollation = string(tm.DefaultCollation)
 
-	if tm.PrimaryKey != nil || tm.ForeignKeys != nil {
+	if tm.TableConstraints != nil {
 		t.TableConstraints = &bq.TableConstraints{}
-		if tm.PrimaryKey != nil {
-			t.TableConstraints.PrimaryKey = tm.PrimaryKey.toBQ()
+		if tm.TableConstraints.PrimaryKey != nil {
+			t.TableConstraints.PrimaryKey = tm.TableConstraints.PrimaryKey.toBQ()
 		}
-		if len(tm.ForeignKeys) > 0 {
-			t.TableConstraints.ForeignKeys = make([]*bq.TableConstraintsForeignKeys, len(tm.ForeignKeys))
-			for i, fk := range tm.ForeignKeys {
+		if len(tm.TableConstraints.ForeignKeys) > 0 {
+			t.TableConstraints.ForeignKeys = make([]*bq.TableConstraintsForeignKeys, len(tm.TableConstraints.ForeignKeys))
+			for i, fk := range tm.TableConstraints.ForeignKeys {
 				t.TableConstraints.ForeignKeys[i] = fk.toBQ()
 			}
 		}
@@ -895,8 +902,10 @@ func bqToTableMetadata(t *bq.Table, c *Client) (*TableMetadata, error) {
 		md.ExternalDataConfig = edc
 	}
 	if t.TableConstraints != nil {
-		md.PrimaryKey = bqToPrimaryKey(t.TableConstraints)
-		md.ForeignKeys = bqToForeignKeys(t.TableConstraints, c)
+		md.TableConstraints = &TableConstraints{
+			PrimaryKey:  bqToPrimaryKey(t.TableConstraints),
+			ForeignKeys: bqToForeignKeys(t.TableConstraints, c),
+		}
 	}
 	return md, nil
 }
@@ -1057,19 +1066,16 @@ func (tm *TableMetadataToUpdate) toBQ() (*bq.Table, error) {
 		t.DefaultCollation = optional.ToString(tm.DefaultCollation)
 		forceSend("DefaultCollation")
 	}
-	if tm.PrimaryKey != nil || tm.ForeignKeys != nil {
+	if tm.TableConstraints != nil {
 		t.TableConstraints = &bq.TableConstraints{}
-		if tm.PrimaryKey != nil {
-			t.TableConstraints.PrimaryKey = tm.PrimaryKey.toBQ()
-			if len(t.TableConstraints.PrimaryKey.Columns) == 0 {
-				t.TableConstraints.PrimaryKey = nil
-				t.TableConstraints.NullFields = append(t.TableConstraints.NullFields, "PrimaryKey")
-			}
+		if tm.TableConstraints.PrimaryKey != nil {
+			t.TableConstraints.PrimaryKey = tm.TableConstraints.PrimaryKey.toBQ()
+			t.TableConstraints.PrimaryKey.ForceSendFields = append(t.TableConstraints.PrimaryKey.ForceSendFields, "Columns")
 			t.TableConstraints.ForceSendFields = append(t.TableConstraints.ForceSendFields, "PrimaryKey")
 		}
-		if tm.ForeignKeys != nil {
-			t.TableConstraints.ForeignKeys = make([]*bq.TableConstraintsForeignKeys, len(tm.ForeignKeys))
-			for i, fk := range tm.ForeignKeys {
+		if tm.TableConstraints.ForeignKeys != nil {
+			t.TableConstraints.ForeignKeys = make([]*bq.TableConstraintsForeignKeys, len(tm.TableConstraints.ForeignKeys))
+			for i, fk := range tm.TableConstraints.ForeignKeys {
 				t.TableConstraints.ForeignKeys[i] = fk.toBQ()
 			}
 			t.TableConstraints.ForceSendFields = append(t.TableConstraints.ForceSendFields, "ForeignKeys")
@@ -1152,15 +1158,9 @@ type TableMetadataToUpdate struct {
 	// in the table.
 	DefaultCollation optional.String
 
-	// Optionally specifies a PrimaryKey constraint on a table's columns.
-	// Updated only if present.
-	// The primary key is not enforced.
-	PrimaryKey *PrimaryKey
-
-	// ForeignKeys represent a list of foreign keys constraints.
-	// Updated only if a non nil value is present.
-	// The foreign keys are not enforced.
-	ForeignKeys []*ForeignKey
+	// TableConstraints allows modification of table constraints
+	// such as primary and foreign keys.
+	TableConstraints *TableConstraints
 
 	labelUpdater
 }

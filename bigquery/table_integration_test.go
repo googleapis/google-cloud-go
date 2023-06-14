@@ -671,8 +671,10 @@ func TestIntegration_TableConstraintsPK(t *testing.T) {
 	table := dataset.Table(tableIDs.New())
 	err := table.Create(context.Background(), &TableMetadata{
 		Schema: schema,
-		PrimaryKey: &PrimaryKey{
-			Columns: []string{"name"},
+		TableConstraints: &TableConstraints{
+			PrimaryKey: &PrimaryKey{
+				Columns: []string{"name"},
+			},
 		},
 		ExpirationTime: testTableExpiration,
 	})
@@ -684,18 +686,20 @@ func TestIntegration_TableConstraintsPK(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if md.PrimaryKey.Columns[0] != "name" {
-		t.Fatalf("expected table primary key to contain column `name`, but found %q", md.PrimaryKey.Columns)
+	if md.TableConstraints.PrimaryKey.Columns[0] != "name" {
+		t.Fatalf("expected table primary key to contain column `name`, but found %q", md.TableConstraints.PrimaryKey.Columns)
 	}
 
 	md, err = table.Update(ctx, TableMetadataToUpdate{
-		PrimaryKey: &PrimaryKey{}, // clean primary keys
+		TableConstraints: &TableConstraints{
+			PrimaryKey: &PrimaryKey{}, // clean primary keys
+		},
 	}, "")
 	if err != nil {
 		t.Fatal(err)
 	}
-	if md.PrimaryKey != nil {
-		t.Fatalf("expected table primary keys to be removed, but found %v", md.PrimaryKey)
+	if md.TableConstraints != nil {
+		t.Fatalf("expected table primary keys to be removed, but found %v", md.TableConstraints.PrimaryKey)
 	}
 
 	tableNoPK := dataset.Table(tableIDs.New())
@@ -711,20 +715,22 @@ func TestIntegration_TableConstraintsPK(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if md.PrimaryKey != nil {
-		t.Fatalf("expected table to not have a PK, but found %v", md.PrimaryKey.Columns)
+	if md.TableConstraints != nil {
+		t.Fatalf("expected table to not have a PK, but found %v", md.TableConstraints.PrimaryKey.Columns)
 	}
 
 	md, err = tableNoPK.Update(ctx, TableMetadataToUpdate{
-		PrimaryKey: &PrimaryKey{
-			Columns: []string{"name"},
+		TableConstraints: &TableConstraints{
+			PrimaryKey: &PrimaryKey{
+				Columns: []string{"name"},
+			},
 		},
 	}, "")
 	if err != nil {
 		t.Fatal(err)
 	}
-	if md.PrimaryKey == nil || md.PrimaryKey.Columns[0] != "name" {
-		t.Fatalf("expected table primary key to contain column `name`, but found %v", md.PrimaryKey)
+	if md.TableConstraints.PrimaryKey == nil || md.TableConstraints.PrimaryKey.Columns[0] != "name" {
+		t.Fatalf("expected table primary key to contain column `name`, but found %v", md.TableConstraints.PrimaryKey)
 	}
 }
 
@@ -741,8 +747,10 @@ func TestIntegration_TableConstraintsFK(t *testing.T) {
 	}
 	err := tableA.Create(context.Background(), &TableMetadata{
 		Schema: schemaA,
-		PrimaryKey: &PrimaryKey{
-			Columns: []string{"id"},
+		TableConstraints: &TableConstraints{
+			PrimaryKey: &PrimaryKey{
+				Columns: []string{"id"},
+			},
 		},
 		ExpirationTime: testTableExpiration,
 	})
@@ -759,17 +767,19 @@ func TestIntegration_TableConstraintsFK(t *testing.T) {
 	}
 	err = tableB.Create(context.Background(), &TableMetadata{
 		Schema: schemaB,
-		PrimaryKey: &PrimaryKey{
-			Columns: []string{"id"},
-		},
-		ForeignKeys: []*ForeignKey{
-			{
-				Name:            "table_a_fk",
-				ReferencedTable: tableA,
-				ColumnReferences: []*ColumnReference{
-					{
-						ReferencingColumn: "parent",
-						ReferencedColumn:  "id",
+		TableConstraints: &TableConstraints{
+			PrimaryKey: &PrimaryKey{
+				Columns: []string{"id"},
+			},
+			ForeignKeys: []*ForeignKey{
+				{
+					Name:            "table_a_fk",
+					ReferencedTable: tableA,
+					ColumnReferences: []*ColumnReference{
+						{
+							ReferencingColumn: "parent",
+							ReferencedColumn:  "id",
+						},
 					},
 				},
 			},
@@ -784,25 +794,29 @@ func TestIntegration_TableConstraintsFK(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if len(md.ForeignKeys) >= 0 && md.ForeignKeys[0].Name != "table_a_fk" {
-		t.Fatalf("expected table to contains fk `table_a_fk`, but found %v", md.ForeignKeys)
+	if len(md.TableConstraints.ForeignKeys) >= 0 && md.TableConstraints.ForeignKeys[0].Name != "table_a_fk" {
+		t.Fatalf("expected table to contains fk `table_a_fk`, but found %v", md.TableConstraints.ForeignKeys)
 	}
 
 	md, err = tableB.Update(ctx, TableMetadataToUpdate{
-		ForeignKeys: []*ForeignKey{}, // clean foreign keys
+		TableConstraints: &TableConstraints{
+			ForeignKeys: []*ForeignKey{}, // clean foreign keys
+		},
 	}, "")
 	if err != nil {
 		t.Fatal(err)
 	}
-	if len(md.ForeignKeys) > 0 {
-		t.Fatalf("expected table foreign keys to be removed, but found %v", md.ForeignKeys)
+	if len(md.TableConstraints.ForeignKeys) > 0 {
+		t.Fatalf("expected table foreign keys to be removed, but found %v", md.TableConstraints.ForeignKeys)
 	}
 
 	tableNoFK := dataset.Table(tableIDs.New())
 	err = tableNoFK.Create(context.Background(), &TableMetadata{
 		Schema: schemaB,
-		PrimaryKey: &PrimaryKey{
-			Columns: []string{"id"},
+		TableConstraints: &TableConstraints{
+			PrimaryKey: &PrimaryKey{
+				Columns: []string{"id"},
+			},
 		},
 		ExpirationTime: testTableExpiration,
 	})
@@ -811,14 +825,16 @@ func TestIntegration_TableConstraintsFK(t *testing.T) {
 	}
 	defer tableNoFK.Delete(ctx)
 	md, err = tableNoFK.Update(ctx, TableMetadataToUpdate{
-		ForeignKeys: []*ForeignKey{
-			{
-				Name:            "table_a_fk",
-				ReferencedTable: tableA,
-				ColumnReferences: []*ColumnReference{
-					{
-						ReferencedColumn:  "id",
-						ReferencingColumn: "parent",
+		TableConstraints: &TableConstraints{
+			ForeignKeys: []*ForeignKey{
+				{
+					Name:            "table_a_fk",
+					ReferencedTable: tableA,
+					ColumnReferences: []*ColumnReference{
+						{
+							ReferencedColumn:  "id",
+							ReferencingColumn: "parent",
+						},
 					},
 				},
 			},
@@ -827,7 +843,7 @@ func TestIntegration_TableConstraintsFK(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if len(md.ForeignKeys) == 0 || md.ForeignKeys[0].Name != "table_a_fk" {
-		t.Fatalf("expected table to contains fk `self`, but found %v", md.ForeignKeys)
+	if len(md.TableConstraints.ForeignKeys) == 0 || md.TableConstraints.ForeignKeys[0].Name != "table_a_fk" {
+		t.Fatalf("expected table to contains fk `table_a_fk`, but found %v", md.TableConstraints.ForeignKeys)
 	}
 }

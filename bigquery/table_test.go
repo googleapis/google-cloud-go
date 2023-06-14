@@ -115,10 +115,12 @@ func TestBQToTableMetadata(t *testing.T) {
 				},
 				EncryptionConfig: &EncryptionConfig{KMSKeyName: "keyName"},
 				ETag:             "etag",
-				PrimaryKey: &PrimaryKey{
-					Columns: []string{"id"},
+				TableConstraints: &TableConstraints{
+					PrimaryKey: &PrimaryKey{
+						Columns: []string{"id"},
+					},
+					ForeignKeys: []*ForeignKey{},
 				},
-				ForeignKeys: []*ForeignKey{},
 			},
 		},
 	} {
@@ -415,11 +417,18 @@ func TestTableMetadataToUpdateToBQ(t *testing.T) {
 			},
 		},
 		{
-			tm: TableMetadataToUpdate{PrimaryKey: &PrimaryKey{Columns: []string{"name"}}},
+			tm: TableMetadataToUpdate{
+				TableConstraints: &TableConstraints{
+					PrimaryKey: &PrimaryKey{
+						Columns: []string{"name"},
+					},
+				},
+			},
 			want: &bq.Table{
 				TableConstraints: &bq.TableConstraints{
 					PrimaryKey: &bq.TableConstraintsPrimaryKey{
-						Columns: []string{"name"},
+						Columns:         []string{"name"},
+						ForceSendFields: []string{"Columns"},
 					},
 					ForceSendFields: []string{"PrimaryKey"},
 				},
@@ -427,18 +436,20 @@ func TestTableMetadataToUpdateToBQ(t *testing.T) {
 		},
 		{
 			tm: TableMetadataToUpdate{
-				ForeignKeys: []*ForeignKey{
-					{
-						Name: "fk",
-						ReferencedTable: &Table{
-							ProjectID: "projectID",
-							DatasetID: "datasetID",
-							TableID:   "tableID",
-						},
-						ColumnReferences: []*ColumnReference{
-							{
-								ReferencedColumn:  "id",
-								ReferencingColumn: "other_table_id",
+				TableConstraints: &TableConstraints{
+					ForeignKeys: []*ForeignKey{
+						{
+							Name: "fk",
+							ReferencedTable: &Table{
+								ProjectID: "projectID",
+								DatasetID: "datasetID",
+								TableID:   "tableID",
+							},
+							ColumnReferences: []*ColumnReference{
+								{
+									ReferencedColumn:  "id",
+									ReferencingColumn: "other_table_id",
+								},
 							},
 						},
 					},
