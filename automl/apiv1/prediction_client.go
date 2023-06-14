@@ -63,15 +63,23 @@ func defaultPredictionGRPCClientOptions() []option.ClientOption {
 
 func defaultPredictionCallOptions() *PredictionCallOptions {
 	return &PredictionCallOptions{
-		Predict:      []gax.CallOption{},
-		BatchPredict: []gax.CallOption{},
+		Predict: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		BatchPredict: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 	}
 }
 
 func defaultPredictionRESTCallOptions() *PredictionCallOptions {
 	return &PredictionCallOptions{
-		Predict:      []gax.CallOption{},
-		BatchPredict: []gax.CallOption{},
+		Predict: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		BatchPredict: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 	}
 }
 
@@ -206,9 +214,6 @@ type predictionGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing PredictionClient
 	CallOptions **PredictionCallOptions
 
@@ -241,11 +246,6 @@ func NewPredictionClient(ctx context.Context, opts ...option.ClientOption) (*Pre
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -254,7 +254,6 @@ func NewPredictionClient(ctx context.Context, opts ...option.ClientOption) (*Pre
 
 	c := &predictionGRPCClient{
 		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
 		predictionClient: automlpb.NewPredictionServiceClient(connPool),
 		CallOptions:      &client.CallOptions,
 	}
@@ -386,11 +385,6 @@ func (c *predictionRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 func (c *predictionGRPCClient) Predict(ctx context.Context, req *automlpb.PredictRequest, opts ...gax.CallOption) (*automlpb.PredictResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -408,11 +402,6 @@ func (c *predictionGRPCClient) Predict(ctx context.Context, req *automlpb.Predic
 }
 
 func (c *predictionGRPCClient) BatchPredict(ctx context.Context, req *automlpb.BatchPredictRequest, opts ...gax.CallOption) (*BatchPredictOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)

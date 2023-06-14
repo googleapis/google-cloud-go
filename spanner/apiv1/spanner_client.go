@@ -77,6 +77,7 @@ func defaultGRPCClientOptions() []option.ClientOption {
 func defaultCallOptions() *CallOptions {
 	return &CallOptions{
 		CreateSession: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -88,6 +89,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		BatchCreateSessions: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -99,6 +101,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		GetSession: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -110,6 +113,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		ListSessions: []gax.CallOption{
+			gax.WithTimeout(3600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -121,6 +125,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		DeleteSession: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -132,6 +137,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		ExecuteSql: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -144,6 +150,7 @@ func defaultCallOptions() *CallOptions {
 		},
 		ExecuteStreamingSql: []gax.CallOption{},
 		ExecuteBatchDml: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -155,6 +162,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		Read: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -167,6 +175,7 @@ func defaultCallOptions() *CallOptions {
 		},
 		StreamingRead: []gax.CallOption{},
 		BeginTransaction: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -178,6 +187,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		Commit: []gax.CallOption{
+			gax.WithTimeout(3600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -189,6 +199,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		Rollback: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -200,6 +211,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		PartitionQuery: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -211,6 +223,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		PartitionRead: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -227,6 +240,7 @@ func defaultCallOptions() *CallOptions {
 func defaultRESTCallOptions() *CallOptions {
 	return &CallOptions{
 		CreateSession: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    250 * time.Millisecond,
@@ -237,6 +251,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		BatchCreateSessions: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    250 * time.Millisecond,
@@ -247,6 +262,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		GetSession: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    250 * time.Millisecond,
@@ -257,6 +273,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		ListSessions: []gax.CallOption{
+			gax.WithTimeout(3600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    250 * time.Millisecond,
@@ -267,6 +284,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		DeleteSession: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    250 * time.Millisecond,
@@ -277,6 +295,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		ExecuteSql: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    250 * time.Millisecond,
@@ -286,8 +305,11 @@ func defaultRESTCallOptions() *CallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
-		ExecuteStreamingSql: []gax.CallOption{},
+		ExecuteStreamingSql: []gax.CallOption{
+			gax.WithTimeout(3600000 * time.Millisecond),
+		},
 		ExecuteBatchDml: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    250 * time.Millisecond,
@@ -298,6 +320,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		Read: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    250 * time.Millisecond,
@@ -307,8 +330,11 @@ func defaultRESTCallOptions() *CallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
-		StreamingRead: []gax.CallOption{},
+		StreamingRead: []gax.CallOption{
+			gax.WithTimeout(3600000 * time.Millisecond),
+		},
 		BeginTransaction: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    250 * time.Millisecond,
@@ -319,6 +345,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		Commit: []gax.CallOption{
+			gax.WithTimeout(3600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    250 * time.Millisecond,
@@ -329,6 +356,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		Rollback: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    250 * time.Millisecond,
@@ -339,6 +367,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		PartitionQuery: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    250 * time.Millisecond,
@@ -349,6 +378,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		PartitionRead: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    250 * time.Millisecond,
@@ -613,9 +643,6 @@ type gRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing Client
 	CallOptions **CallOptions
 
@@ -643,11 +670,6 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -655,10 +677,9 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 	client := Client{CallOptions: defaultCallOptions()}
 
 	c := &gRPCClient{
-		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
-		client:           spannerpb.NewSpannerClient(connPool),
-		CallOptions:      &client.CallOptions,
+		connPool:    connPool,
+		client:      spannerpb.NewSpannerClient(connPool),
+		CallOptions: &client.CallOptions,
 	}
 	c.setGoogleClientInfo()
 
@@ -762,11 +783,6 @@ func (c *restClient) Connection() *grpc.ClientConn {
 	return nil
 }
 func (c *gRPCClient) CreateSession(ctx context.Context, req *spannerpb.CreateSessionRequest, opts ...gax.CallOption) (*spannerpb.Session, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "database", url.QueryEscape(req.GetDatabase())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -784,11 +800,6 @@ func (c *gRPCClient) CreateSession(ctx context.Context, req *spannerpb.CreateSes
 }
 
 func (c *gRPCClient) BatchCreateSessions(ctx context.Context, req *spannerpb.BatchCreateSessionsRequest, opts ...gax.CallOption) (*spannerpb.BatchCreateSessionsResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "database", url.QueryEscape(req.GetDatabase())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -806,11 +817,6 @@ func (c *gRPCClient) BatchCreateSessions(ctx context.Context, req *spannerpb.Bat
 }
 
 func (c *gRPCClient) GetSession(ctx context.Context, req *spannerpb.GetSessionRequest, opts ...gax.CallOption) (*spannerpb.Session, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -873,11 +879,6 @@ func (c *gRPCClient) ListSessions(ctx context.Context, req *spannerpb.ListSessio
 }
 
 func (c *gRPCClient) DeleteSession(ctx context.Context, req *spannerpb.DeleteSessionRequest, opts ...gax.CallOption) error {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -891,11 +892,6 @@ func (c *gRPCClient) DeleteSession(ctx context.Context, req *spannerpb.DeleteSes
 }
 
 func (c *gRPCClient) ExecuteSql(ctx context.Context, req *spannerpb.ExecuteSqlRequest, opts ...gax.CallOption) (*spannerpb.ResultSet, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "session", url.QueryEscape(req.GetSession())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -930,11 +926,6 @@ func (c *gRPCClient) ExecuteStreamingSql(ctx context.Context, req *spannerpb.Exe
 }
 
 func (c *gRPCClient) ExecuteBatchDml(ctx context.Context, req *spannerpb.ExecuteBatchDmlRequest, opts ...gax.CallOption) (*spannerpb.ExecuteBatchDmlResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "session", url.QueryEscape(req.GetSession())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -952,11 +943,6 @@ func (c *gRPCClient) ExecuteBatchDml(ctx context.Context, req *spannerpb.Execute
 }
 
 func (c *gRPCClient) Read(ctx context.Context, req *spannerpb.ReadRequest, opts ...gax.CallOption) (*spannerpb.ResultSet, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "session", url.QueryEscape(req.GetSession())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -991,11 +977,6 @@ func (c *gRPCClient) StreamingRead(ctx context.Context, req *spannerpb.ReadReque
 }
 
 func (c *gRPCClient) BeginTransaction(ctx context.Context, req *spannerpb.BeginTransactionRequest, opts ...gax.CallOption) (*spannerpb.Transaction, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "session", url.QueryEscape(req.GetSession())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1013,11 +994,6 @@ func (c *gRPCClient) BeginTransaction(ctx context.Context, req *spannerpb.BeginT
 }
 
 func (c *gRPCClient) Commit(ctx context.Context, req *spannerpb.CommitRequest, opts ...gax.CallOption) (*spannerpb.CommitResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 3600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "session", url.QueryEscape(req.GetSession())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1035,11 +1011,6 @@ func (c *gRPCClient) Commit(ctx context.Context, req *spannerpb.CommitRequest, o
 }
 
 func (c *gRPCClient) Rollback(ctx context.Context, req *spannerpb.RollbackRequest, opts ...gax.CallOption) error {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "session", url.QueryEscape(req.GetSession())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1053,11 +1024,6 @@ func (c *gRPCClient) Rollback(ctx context.Context, req *spannerpb.RollbackReques
 }
 
 func (c *gRPCClient) PartitionQuery(ctx context.Context, req *spannerpb.PartitionQueryRequest, opts ...gax.CallOption) (*spannerpb.PartitionResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "session", url.QueryEscape(req.GetSession())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1075,11 +1041,6 @@ func (c *gRPCClient) PartitionQuery(ctx context.Context, req *spannerpb.Partitio
 }
 
 func (c *gRPCClient) PartitionRead(ctx context.Context, req *spannerpb.PartitionReadRequest, opts ...gax.CallOption) (*spannerpb.PartitionResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "session", url.QueryEscape(req.GetSession())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)

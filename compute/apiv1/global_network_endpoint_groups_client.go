@@ -54,10 +54,17 @@ type GlobalNetworkEndpointGroupsCallOptions struct {
 
 func defaultGlobalNetworkEndpointGroupsRESTCallOptions() *GlobalNetworkEndpointGroupsCallOptions {
 	return &GlobalNetworkEndpointGroupsCallOptions{
-		AttachNetworkEndpoints: []gax.CallOption{},
-		Delete:                 []gax.CallOption{},
-		DetachNetworkEndpoints: []gax.CallOption{},
+		AttachNetworkEndpoints: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		Delete: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		DetachNetworkEndpoints: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
 		Get: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -68,8 +75,11 @@ func defaultGlobalNetworkEndpointGroupsRESTCallOptions() *GlobalNetworkEndpointG
 					http.StatusServiceUnavailable)
 			}),
 		},
-		Insert: []gax.CallOption{},
+		Insert: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
 		List: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -80,7 +90,9 @@ func defaultGlobalNetworkEndpointGroupsRESTCallOptions() *GlobalNetworkEndpointG
 					http.StatusServiceUnavailable)
 			}),
 		},
-		ListNetworkEndpoints: []gax.CallOption{},
+		ListNetworkEndpoints: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
 	}
 }
 

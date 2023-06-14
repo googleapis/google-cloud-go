@@ -67,6 +67,7 @@ func defaultGRPCClientOptions() []option.ClientOption {
 func defaultCallOptions() *CallOptions {
 	return &CallOptions{
 		DeleteLog: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -80,6 +81,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		WriteLogEntries: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -93,6 +95,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		ListLogEntries: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -106,6 +109,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		ListMonitoredResourceDescriptors: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -119,6 +123,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		ListLogs: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -267,9 +272,6 @@ type gRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing Client
 	CallOptions **CallOptions
 
@@ -296,11 +298,6 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -309,7 +306,6 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 
 	c := &gRPCClient{
 		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
 		client:           loggingpb.NewLoggingServiceV2Client(connPool),
 		CallOptions:      &client.CallOptions,
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
@@ -345,11 +341,6 @@ func (c *gRPCClient) Close() error {
 }
 
 func (c *gRPCClient) DeleteLog(ctx context.Context, req *loggingpb.DeleteLogRequest, opts ...gax.CallOption) error {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "log_name", url.QueryEscape(req.GetLogName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -363,11 +354,6 @@ func (c *gRPCClient) DeleteLog(ctx context.Context, req *loggingpb.DeleteLogRequ
 }
 
 func (c *gRPCClient) WriteLogEntries(ctx context.Context, req *loggingpb.WriteLogEntriesRequest, opts ...gax.CallOption) (*loggingpb.WriteLogEntriesResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
 	opts = append((*c.CallOptions).WriteLogEntries[0:len((*c.CallOptions).WriteLogEntries):len((*c.CallOptions).WriteLogEntries)], opts...)
 	var resp *loggingpb.WriteLogEntriesResponse

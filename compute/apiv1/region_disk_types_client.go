@@ -49,6 +49,7 @@ type RegionDiskTypesCallOptions struct {
 func defaultRegionDiskTypesRESTCallOptions() *RegionDiskTypesCallOptions {
 	return &RegionDiskTypesCallOptions{
 		Get: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -60,6 +61,7 @@ func defaultRegionDiskTypesRESTCallOptions() *RegionDiskTypesCallOptions {
 			}),
 		},
 		List: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,

@@ -69,23 +69,47 @@ func defaultReachabilityGRPCClientOptions() []option.ClientOption {
 
 func defaultReachabilityCallOptions() *ReachabilityCallOptions {
 	return &ReachabilityCallOptions{
-		ListConnectivityTests:  []gax.CallOption{},
-		GetConnectivityTest:    []gax.CallOption{},
-		CreateConnectivityTest: []gax.CallOption{},
-		UpdateConnectivityTest: []gax.CallOption{},
-		RerunConnectivityTest:  []gax.CallOption{},
-		DeleteConnectivityTest: []gax.CallOption{},
+		ListConnectivityTests: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetConnectivityTest: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		CreateConnectivityTest: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateConnectivityTest: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		RerunConnectivityTest: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteConnectivityTest: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 	}
 }
 
 func defaultReachabilityRESTCallOptions() *ReachabilityCallOptions {
 	return &ReachabilityCallOptions{
-		ListConnectivityTests:  []gax.CallOption{},
-		GetConnectivityTest:    []gax.CallOption{},
-		CreateConnectivityTest: []gax.CallOption{},
-		UpdateConnectivityTest: []gax.CallOption{},
-		RerunConnectivityTest:  []gax.CallOption{},
-		DeleteConnectivityTest: []gax.CallOption{},
+		ListConnectivityTests: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetConnectivityTest: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		CreateConnectivityTest: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateConnectivityTest: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		RerunConnectivityTest: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteConnectivityTest: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 	}
 }
 
@@ -250,9 +274,6 @@ type reachabilityGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing ReachabilityClient
 	CallOptions **ReachabilityCallOptions
 
@@ -289,11 +310,6 @@ func NewReachabilityClient(ctx context.Context, opts ...option.ClientOption) (*R
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -302,7 +318,6 @@ func NewReachabilityClient(ctx context.Context, opts ...option.ClientOption) (*R
 
 	c := &reachabilityGRPCClient{
 		connPool:           connPool,
-		disableDeadlines:   disableDeadlines,
 		reachabilityClient: networkmanagementpb.NewReachabilityServiceClient(connPool),
 		CallOptions:        &client.CallOptions,
 	}
@@ -483,11 +498,6 @@ func (c *reachabilityGRPCClient) ListConnectivityTests(ctx context.Context, req 
 }
 
 func (c *reachabilityGRPCClient) GetConnectivityTest(ctx context.Context, req *networkmanagementpb.GetConnectivityTestRequest, opts ...gax.CallOption) (*networkmanagementpb.ConnectivityTest, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -505,11 +515,6 @@ func (c *reachabilityGRPCClient) GetConnectivityTest(ctx context.Context, req *n
 }
 
 func (c *reachabilityGRPCClient) CreateConnectivityTest(ctx context.Context, req *networkmanagementpb.CreateConnectivityTestRequest, opts ...gax.CallOption) (*CreateConnectivityTestOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -529,11 +534,6 @@ func (c *reachabilityGRPCClient) CreateConnectivityTest(ctx context.Context, req
 }
 
 func (c *reachabilityGRPCClient) UpdateConnectivityTest(ctx context.Context, req *networkmanagementpb.UpdateConnectivityTestRequest, opts ...gax.CallOption) (*UpdateConnectivityTestOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource.name", url.QueryEscape(req.GetResource().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -553,11 +553,6 @@ func (c *reachabilityGRPCClient) UpdateConnectivityTest(ctx context.Context, req
 }
 
 func (c *reachabilityGRPCClient) RerunConnectivityTest(ctx context.Context, req *networkmanagementpb.RerunConnectivityTestRequest, opts ...gax.CallOption) (*RerunConnectivityTestOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -577,11 +572,6 @@ func (c *reachabilityGRPCClient) RerunConnectivityTest(ctx context.Context, req 
 }
 
 func (c *reachabilityGRPCClient) DeleteConnectivityTest(ctx context.Context, req *networkmanagementpb.DeleteConnectivityTestRequest, opts ...gax.CallOption) (*DeleteConnectivityTestOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)

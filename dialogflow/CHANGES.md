@@ -1,5 +1,13 @@
 # Changes
 
+## [1.36.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.35.0...dialogflow/v1.36.0) (2023-06-13)
+
+
+### Features
+
+* **dialogflow/cx:** Add support for flexible webhook ([3abdfa1](https://github.com/googleapis/google-cloud-go/commit/3abdfa14dd56cf773c477f289a7f888e20bbbd9a))
+* **dialogflow/cx:** Add support for flexible webhook ([3abdfa1](https://github.com/googleapis/google-cloud-go/commit/3abdfa14dd56cf773c477f289a7f888e20bbbd9a))
+
 ## [1.35.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.34.0...dialogflow/v1.35.0) (2023-05-30)
 
 

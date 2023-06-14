@@ -58,9 +58,14 @@ type NetworksCallOptions struct {
 
 func defaultNetworksRESTCallOptions() *NetworksCallOptions {
 	return &NetworksCallOptions{
-		AddPeering: []gax.CallOption{},
-		Delete:     []gax.CallOption{},
+		AddPeering: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		Delete: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
 		Get: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -72,6 +77,7 @@ func defaultNetworksRESTCallOptions() *NetworksCallOptions {
 			}),
 		},
 		GetEffectiveFirewalls: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -82,8 +88,11 @@ func defaultNetworksRESTCallOptions() *NetworksCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
-		Insert: []gax.CallOption{},
+		Insert: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
 		List: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -95,6 +104,7 @@ func defaultNetworksRESTCallOptions() *NetworksCallOptions {
 			}),
 		},
 		ListPeeringRoutes: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -105,10 +115,18 @@ func defaultNetworksRESTCallOptions() *NetworksCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
-		Patch:              []gax.CallOption{},
-		RemovePeering:      []gax.CallOption{},
-		SwitchToCustomMode: []gax.CallOption{},
-		UpdatePeering:      []gax.CallOption{},
+		Patch: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		RemovePeering: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		SwitchToCustomMode: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		UpdatePeering: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
 	}
 }
 

@@ -69,23 +69,47 @@ func defaultGRPCClientOptions() []option.ClientOption {
 
 func defaultCallOptions() *CallOptions {
 	return &CallOptions{
-		EnableService:       []gax.CallOption{},
-		DisableService:      []gax.CallOption{},
-		GetService:          []gax.CallOption{},
-		ListServices:        []gax.CallOption{},
-		BatchEnableServices: []gax.CallOption{},
-		BatchGetServices:    []gax.CallOption{},
+		EnableService: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DisableService: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetService: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ListServices: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		BatchEnableServices: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		BatchGetServices: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 	}
 }
 
 func defaultRESTCallOptions() *CallOptions {
 	return &CallOptions{
-		EnableService:       []gax.CallOption{},
-		DisableService:      []gax.CallOption{},
-		GetService:          []gax.CallOption{},
-		ListServices:        []gax.CallOption{},
-		BatchEnableServices: []gax.CallOption{},
-		BatchGetServices:    []gax.CallOption{},
+		EnableService: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DisableService: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetService: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ListServices: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		BatchEnableServices: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		BatchGetServices: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 	}
 }
 
@@ -225,9 +249,6 @@ type gRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing Client
 	CallOptions **CallOptions
 
@@ -261,11 +282,6 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -273,10 +289,9 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 	client := Client{CallOptions: defaultCallOptions()}
 
 	c := &gRPCClient{
-		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
-		client:           serviceusagepb.NewServiceUsageClient(connPool),
-		CallOptions:      &client.CallOptions,
+		connPool:    connPool,
+		client:      serviceusagepb.NewServiceUsageClient(connPool),
+		CallOptions: &client.CallOptions,
 	}
 	c.setGoogleClientInfo()
 
@@ -407,11 +422,6 @@ func (c *restClient) Connection() *grpc.ClientConn {
 	return nil
 }
 func (c *gRPCClient) EnableService(ctx context.Context, req *serviceusagepb.EnableServiceRequest, opts ...gax.CallOption) (*EnableServiceOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -431,11 +441,6 @@ func (c *gRPCClient) EnableService(ctx context.Context, req *serviceusagepb.Enab
 }
 
 func (c *gRPCClient) DisableService(ctx context.Context, req *serviceusagepb.DisableServiceRequest, opts ...gax.CallOption) (*DisableServiceOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -455,11 +460,6 @@ func (c *gRPCClient) DisableService(ctx context.Context, req *serviceusagepb.Dis
 }
 
 func (c *gRPCClient) GetService(ctx context.Context, req *serviceusagepb.GetServiceRequest, opts ...gax.CallOption) (*serviceusagepb.Service, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -522,11 +522,6 @@ func (c *gRPCClient) ListServices(ctx context.Context, req *serviceusagepb.ListS
 }
 
 func (c *gRPCClient) BatchEnableServices(ctx context.Context, req *serviceusagepb.BatchEnableServicesRequest, opts ...gax.CallOption) (*BatchEnableServicesOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -546,11 +541,6 @@ func (c *gRPCClient) BatchEnableServices(ctx context.Context, req *serviceusagep
 }
 
 func (c *gRPCClient) BatchGetServices(ctx context.Context, req *serviceusagepb.BatchGetServicesRequest, opts ...gax.CallOption) (*serviceusagepb.BatchGetServicesResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)

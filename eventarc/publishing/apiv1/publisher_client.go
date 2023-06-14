@@ -60,15 +60,19 @@ func defaultPublisherGRPCClientOptions() []option.ClientOption {
 
 func defaultPublisherCallOptions() *PublisherCallOptions {
 	return &PublisherCallOptions{
-		PublishChannelConnectionEvents: []gax.CallOption{},
-		PublishEvents:                  []gax.CallOption{},
+		PublishChannelConnectionEvents: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		PublishEvents: []gax.CallOption{},
 	}
 }
 
 func defaultPublisherRESTCallOptions() *PublisherCallOptions {
 	return &PublisherCallOptions{
-		PublishChannelConnectionEvents: []gax.CallOption{},
-		PublishEvents:                  []gax.CallOption{},
+		PublishChannelConnectionEvents: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		PublishEvents: []gax.CallOption{},
 	}
 }
 
@@ -156,9 +160,6 @@ type publisherGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing PublisherClient
 	CallOptions **PublisherCallOptions
 
@@ -206,11 +207,6 @@ func NewPublisherClient(ctx context.Context, opts ...option.ClientOption) (*Publ
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -218,10 +214,9 @@ func NewPublisherClient(ctx context.Context, opts ...option.ClientOption) (*Publ
 	client := PublisherClient{CallOptions: defaultPublisherCallOptions()}
 
 	c := &publisherGRPCClient{
-		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
-		publisherClient:  publishingpb.NewPublisherClient(connPool),
-		CallOptions:      &client.CallOptions,
+		connPool:        connPool,
+		publisherClient: publishingpb.NewPublisherClient(connPool),
+		CallOptions:     &client.CallOptions,
 	}
 	c.setGoogleClientInfo()
 
@@ -345,11 +340,6 @@ func (c *publisherRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 func (c *publisherGRPCClient) PublishChannelConnectionEvents(ctx context.Context, req *publishingpb.PublishChannelConnectionEventsRequest, opts ...gax.CallOption) (*publishingpb.PublishChannelConnectionEventsResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "channel_connection", url.QueryEscape(req.GetChannelConnection())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)

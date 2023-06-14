@@ -52,6 +52,7 @@ type RegionInstanceGroupsCallOptions struct {
 func defaultRegionInstanceGroupsRESTCallOptions() *RegionInstanceGroupsCallOptions {
 	return &RegionInstanceGroupsCallOptions{
 		Get: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -63,6 +64,7 @@ func defaultRegionInstanceGroupsRESTCallOptions() *RegionInstanceGroupsCallOptio
 			}),
 		},
 		List: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -73,8 +75,12 @@ func defaultRegionInstanceGroupsRESTCallOptions() *RegionInstanceGroupsCallOptio
 					http.StatusServiceUnavailable)
 			}),
 		},
-		ListInstances: []gax.CallOption{},
-		SetNamedPorts: []gax.CallOption{},
+		ListInstances: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		SetNamedPorts: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
 	}
 }
 

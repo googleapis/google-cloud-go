@@ -75,8 +75,11 @@ func defaultAutoscalingPolicyGRPCClientOptions() []option.ClientOption {
 
 func defaultAutoscalingPolicyCallOptions() *AutoscalingPolicyCallOptions {
 	return &AutoscalingPolicyCallOptions{
-		CreateAutoscalingPolicy: []gax.CallOption{},
+		CreateAutoscalingPolicy: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
 		UpdateAutoscalingPolicy: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -89,6 +92,7 @@ func defaultAutoscalingPolicyCallOptions() *AutoscalingPolicyCallOptions {
 			}),
 		},
 		GetAutoscalingPolicy: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -101,6 +105,7 @@ func defaultAutoscalingPolicyCallOptions() *AutoscalingPolicyCallOptions {
 			}),
 		},
 		ListAutoscalingPolicies: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -112,21 +117,26 @@ func defaultAutoscalingPolicyCallOptions() *AutoscalingPolicyCallOptions {
 				})
 			}),
 		},
-		DeleteAutoscalingPolicy: []gax.CallOption{},
-		GetIamPolicy:            []gax.CallOption{},
-		SetIamPolicy:            []gax.CallOption{},
-		TestIamPermissions:      []gax.CallOption{},
-		CancelOperation:         []gax.CallOption{},
-		DeleteOperation:         []gax.CallOption{},
-		GetOperation:            []gax.CallOption{},
-		ListOperations:          []gax.CallOption{},
+		DeleteAutoscalingPolicy: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		GetIamPolicy:       []gax.CallOption{},
+		SetIamPolicy:       []gax.CallOption{},
+		TestIamPermissions: []gax.CallOption{},
+		CancelOperation:    []gax.CallOption{},
+		DeleteOperation:    []gax.CallOption{},
+		GetOperation:       []gax.CallOption{},
+		ListOperations:     []gax.CallOption{},
 	}
 }
 
 func defaultAutoscalingPolicyRESTCallOptions() *AutoscalingPolicyCallOptions {
 	return &AutoscalingPolicyCallOptions{
-		CreateAutoscalingPolicy: []gax.CallOption{},
+		CreateAutoscalingPolicy: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
 		UpdateAutoscalingPolicy: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -138,6 +148,7 @@ func defaultAutoscalingPolicyRESTCallOptions() *AutoscalingPolicyCallOptions {
 			}),
 		},
 		GetAutoscalingPolicy: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -149,6 +160,7 @@ func defaultAutoscalingPolicyRESTCallOptions() *AutoscalingPolicyCallOptions {
 			}),
 		},
 		ListAutoscalingPolicies: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -159,14 +171,16 @@ func defaultAutoscalingPolicyRESTCallOptions() *AutoscalingPolicyCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
-		DeleteAutoscalingPolicy: []gax.CallOption{},
-		GetIamPolicy:            []gax.CallOption{},
-		SetIamPolicy:            []gax.CallOption{},
-		TestIamPermissions:      []gax.CallOption{},
-		CancelOperation:         []gax.CallOption{},
-		DeleteOperation:         []gax.CallOption{},
-		GetOperation:            []gax.CallOption{},
-		ListOperations:          []gax.CallOption{},
+		DeleteAutoscalingPolicy: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		GetIamPolicy:       []gax.CallOption{},
+		SetIamPolicy:       []gax.CallOption{},
+		TestIamPermissions: []gax.CallOption{},
+		CancelOperation:    []gax.CallOption{},
+		DeleteOperation:    []gax.CallOption{},
+		GetOperation:       []gax.CallOption{},
+		ListOperations:     []gax.CallOption{},
 	}
 }
 
@@ -307,9 +321,6 @@ type autoscalingPolicyGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing AutoscalingPolicyClient
 	CallOptions **AutoscalingPolicyCallOptions
 
@@ -339,11 +350,6 @@ func NewAutoscalingPolicyClient(ctx context.Context, opts ...option.ClientOption
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -352,7 +358,6 @@ func NewAutoscalingPolicyClient(ctx context.Context, opts ...option.ClientOption
 
 	c := &autoscalingPolicyGRPCClient{
 		connPool:                connPool,
-		disableDeadlines:        disableDeadlines,
 		autoscalingPolicyClient: dataprocpb.NewAutoscalingPolicyServiceClient(connPool),
 		CallOptions:             &client.CallOptions,
 		operationsClient:        longrunningpb.NewOperationsClient(connPool),
@@ -458,11 +463,6 @@ func (c *autoscalingPolicyRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 func (c *autoscalingPolicyGRPCClient) CreateAutoscalingPolicy(ctx context.Context, req *dataprocpb.CreateAutoscalingPolicyRequest, opts ...gax.CallOption) (*dataprocpb.AutoscalingPolicy, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -480,11 +480,6 @@ func (c *autoscalingPolicyGRPCClient) CreateAutoscalingPolicy(ctx context.Contex
 }
 
 func (c *autoscalingPolicyGRPCClient) UpdateAutoscalingPolicy(ctx context.Context, req *dataprocpb.UpdateAutoscalingPolicyRequest, opts ...gax.CallOption) (*dataprocpb.AutoscalingPolicy, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "policy.name", url.QueryEscape(req.GetPolicy().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -502,11 +497,6 @@ func (c *autoscalingPolicyGRPCClient) UpdateAutoscalingPolicy(ctx context.Contex
 }
 
 func (c *autoscalingPolicyGRPCClient) GetAutoscalingPolicy(ctx context.Context, req *dataprocpb.GetAutoscalingPolicyRequest, opts ...gax.CallOption) (*dataprocpb.AutoscalingPolicy, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -569,11 +559,6 @@ func (c *autoscalingPolicyGRPCClient) ListAutoscalingPolicies(ctx context.Contex
 }
 
 func (c *autoscalingPolicyGRPCClient) DeleteAutoscalingPolicy(ctx context.Context, req *dataprocpb.DeleteAutoscalingPolicyRequest, opts ...gax.CallOption) error {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)

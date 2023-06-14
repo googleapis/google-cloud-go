@@ -68,8 +68,11 @@ func defaultTenantGRPCClientOptions() []option.ClientOption {
 
 func defaultTenantCallOptions() *TenantCallOptions {
 	return &TenantCallOptions{
-		CreateTenant: []gax.CallOption{},
+		CreateTenant: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+		},
 		GetTenant: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -81,8 +84,11 @@ func defaultTenantCallOptions() *TenantCallOptions {
 				})
 			}),
 		},
-		UpdateTenant: []gax.CallOption{},
+		UpdateTenant: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+		},
 		DeleteTenant: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -95,6 +101,7 @@ func defaultTenantCallOptions() *TenantCallOptions {
 			}),
 		},
 		ListTenants: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -112,8 +119,11 @@ func defaultTenantCallOptions() *TenantCallOptions {
 
 func defaultTenantRESTCallOptions() *TenantCallOptions {
 	return &TenantCallOptions{
-		CreateTenant: []gax.CallOption{},
+		CreateTenant: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+		},
 		GetTenant: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -124,8 +134,11 @@ func defaultTenantRESTCallOptions() *TenantCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
-		UpdateTenant: []gax.CallOption{},
+		UpdateTenant: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+		},
 		DeleteTenant: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -137,6 +150,7 @@ func defaultTenantRESTCallOptions() *TenantCallOptions {
 			}),
 		},
 		ListTenants: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -236,9 +250,6 @@ type tenantGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing TenantClient
 	CallOptions **TenantCallOptions
 
@@ -265,11 +276,6 @@ func NewTenantClient(ctx context.Context, opts ...option.ClientOption) (*TenantC
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -278,7 +284,6 @@ func NewTenantClient(ctx context.Context, opts ...option.ClientOption) (*TenantC
 
 	c := &tenantGRPCClient{
 		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
 		tenantClient:     talentpb.NewTenantServiceClient(connPool),
 		CallOptions:      &client.CallOptions,
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
@@ -382,11 +387,6 @@ func (c *tenantRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 func (c *tenantGRPCClient) CreateTenant(ctx context.Context, req *talentpb.CreateTenantRequest, opts ...gax.CallOption) (*talentpb.Tenant, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -404,11 +404,6 @@ func (c *tenantGRPCClient) CreateTenant(ctx context.Context, req *talentpb.Creat
 }
 
 func (c *tenantGRPCClient) GetTenant(ctx context.Context, req *talentpb.GetTenantRequest, opts ...gax.CallOption) (*talentpb.Tenant, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -426,11 +421,6 @@ func (c *tenantGRPCClient) GetTenant(ctx context.Context, req *talentpb.GetTenan
 }
 
 func (c *tenantGRPCClient) UpdateTenant(ctx context.Context, req *talentpb.UpdateTenantRequest, opts ...gax.CallOption) (*talentpb.Tenant, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "tenant.name", url.QueryEscape(req.GetTenant().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -448,11 +438,6 @@ func (c *tenantGRPCClient) UpdateTenant(ctx context.Context, req *talentpb.Updat
 }
 
 func (c *tenantGRPCClient) DeleteTenant(ctx context.Context, req *talentpb.DeleteTenantRequest, opts ...gax.CallOption) error {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)

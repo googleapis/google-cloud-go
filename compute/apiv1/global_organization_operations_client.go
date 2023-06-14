@@ -49,8 +49,11 @@ type GlobalOrganizationOperationsCallOptions struct {
 
 func defaultGlobalOrganizationOperationsRESTCallOptions() *GlobalOrganizationOperationsCallOptions {
 	return &GlobalOrganizationOperationsCallOptions{
-		Delete: []gax.CallOption{},
+		Delete: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
 		Get: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -62,6 +65,7 @@ func defaultGlobalOrganizationOperationsRESTCallOptions() *GlobalOrganizationOpe
 			}),
 		},
 		List: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,

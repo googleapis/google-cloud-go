@@ -76,6 +76,7 @@ func defaultTagKeysGRPCClientOptions() []option.ClientOption {
 func defaultTagKeysCallOptions() *TagKeysCallOptions {
 	return &TagKeysCallOptions{
 		ListTagKeys: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -87,6 +88,7 @@ func defaultTagKeysCallOptions() *TagKeysCallOptions {
 			}),
 		},
 		GetTagKey: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -98,10 +100,17 @@ func defaultTagKeysCallOptions() *TagKeysCallOptions {
 			}),
 		},
 		GetNamespacedTagKey: []gax.CallOption{},
-		CreateTagKey:        []gax.CallOption{},
-		UpdateTagKey:        []gax.CallOption{},
-		DeleteTagKey:        []gax.CallOption{},
+		CreateTagKey: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateTagKey: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteTagKey: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		GetIamPolicy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -112,7 +121,9 @@ func defaultTagKeysCallOptions() *TagKeysCallOptions {
 				})
 			}),
 		},
-		SetIamPolicy:       []gax.CallOption{},
+		SetIamPolicy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		TestIamPermissions: []gax.CallOption{},
 		GetOperation:       []gax.CallOption{},
 	}
@@ -121,6 +132,7 @@ func defaultTagKeysCallOptions() *TagKeysCallOptions {
 func defaultTagKeysRESTCallOptions() *TagKeysCallOptions {
 	return &TagKeysCallOptions{
 		ListTagKeys: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -131,6 +143,7 @@ func defaultTagKeysRESTCallOptions() *TagKeysCallOptions {
 			}),
 		},
 		GetTagKey: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -141,10 +154,17 @@ func defaultTagKeysRESTCallOptions() *TagKeysCallOptions {
 			}),
 		},
 		GetNamespacedTagKey: []gax.CallOption{},
-		CreateTagKey:        []gax.CallOption{},
-		UpdateTagKey:        []gax.CallOption{},
-		DeleteTagKey:        []gax.CallOption{},
+		CreateTagKey: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateTagKey: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteTagKey: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		GetIamPolicy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -154,7 +174,9 @@ func defaultTagKeysRESTCallOptions() *TagKeysCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
-		SetIamPolicy:       []gax.CallOption{},
+		SetIamPolicy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		TestIamPermissions: []gax.CallOption{},
 		GetOperation:       []gax.CallOption{},
 	}
@@ -315,9 +337,6 @@ type tagKeysGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing TagKeysClient
 	CallOptions **TagKeysCallOptions
 
@@ -349,11 +368,6 @@ func NewTagKeysClient(ctx context.Context, opts ...option.ClientOption) (*TagKey
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -362,7 +376,6 @@ func NewTagKeysClient(ctx context.Context, opts ...option.ClientOption) (*TagKey
 
 	c := &tagKeysGRPCClient{
 		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
 		tagKeysClient:    resourcemanagerpb.NewTagKeysClient(connPool),
 		CallOptions:      &client.CallOptions,
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
@@ -535,11 +548,6 @@ func (c *tagKeysGRPCClient) ListTagKeys(ctx context.Context, req *resourcemanage
 }
 
 func (c *tagKeysGRPCClient) GetTagKey(ctx context.Context, req *resourcemanagerpb.GetTagKeyRequest, opts ...gax.CallOption) (*resourcemanagerpb.TagKey, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -572,11 +580,6 @@ func (c *tagKeysGRPCClient) GetNamespacedTagKey(ctx context.Context, req *resour
 }
 
 func (c *tagKeysGRPCClient) CreateTagKey(ctx context.Context, req *resourcemanagerpb.CreateTagKeyRequest, opts ...gax.CallOption) (*CreateTagKeyOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
 	opts = append((*c.CallOptions).CreateTagKey[0:len((*c.CallOptions).CreateTagKey):len((*c.CallOptions).CreateTagKey)], opts...)
 	var resp *longrunningpb.Operation
@@ -594,11 +597,6 @@ func (c *tagKeysGRPCClient) CreateTagKey(ctx context.Context, req *resourcemanag
 }
 
 func (c *tagKeysGRPCClient) UpdateTagKey(ctx context.Context, req *resourcemanagerpb.UpdateTagKeyRequest, opts ...gax.CallOption) (*UpdateTagKeyOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "tag_key.name", url.QueryEscape(req.GetTagKey().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -618,11 +616,6 @@ func (c *tagKeysGRPCClient) UpdateTagKey(ctx context.Context, req *resourcemanag
 }
 
 func (c *tagKeysGRPCClient) DeleteTagKey(ctx context.Context, req *resourcemanagerpb.DeleteTagKeyRequest, opts ...gax.CallOption) (*DeleteTagKeyOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -642,11 +635,6 @@ func (c *tagKeysGRPCClient) DeleteTagKey(ctx context.Context, req *resourcemanag
 }
 
 func (c *tagKeysGRPCClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -664,11 +652,6 @@ func (c *tagKeysGRPCClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamP
 }
 
 func (c *tagKeysGRPCClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)

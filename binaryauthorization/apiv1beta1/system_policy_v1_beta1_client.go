@@ -122,9 +122,6 @@ type systemPolicyV1Beta1GRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing SystemPolicyV1Beta1Client
 	CallOptions **SystemPolicyV1Beta1CallOptions
 
@@ -149,11 +146,6 @@ func NewSystemPolicyV1Beta1Client(ctx context.Context, opts ...option.ClientOpti
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -162,7 +154,6 @@ func NewSystemPolicyV1Beta1Client(ctx context.Context, opts ...option.ClientOpti
 
 	c := &systemPolicyV1Beta1GRPCClient{
 		connPool:                  connPool,
-		disableDeadlines:          disableDeadlines,
 		systemPolicyV1Beta1Client: binaryauthorizationpb.NewSystemPolicyV1Beta1Client(connPool),
 		CallOptions:               &client.CallOptions,
 	}

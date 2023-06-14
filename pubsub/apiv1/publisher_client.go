@@ -75,6 +75,7 @@ func defaultPublisherGRPCClientOptions() []option.ClientOption {
 func defaultPublisherCallOptions() *PublisherCallOptions {
 	return &PublisherCallOptions{
 		CreateTopic: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -86,6 +87,7 @@ func defaultPublisherCallOptions() *PublisherCallOptions {
 			}),
 		},
 		UpdateTopic: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -97,6 +99,7 @@ func defaultPublisherCallOptions() *PublisherCallOptions {
 			}),
 		},
 		Publish: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Aborted,
@@ -114,6 +117,7 @@ func defaultPublisherCallOptions() *PublisherCallOptions {
 			}),
 		},
 		GetTopic: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unknown,
@@ -127,6 +131,7 @@ func defaultPublisherCallOptions() *PublisherCallOptions {
 			}),
 		},
 		ListTopics: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unknown,
@@ -140,6 +145,7 @@ func defaultPublisherCallOptions() *PublisherCallOptions {
 			}),
 		},
 		ListTopicSubscriptions: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unknown,
@@ -153,6 +159,7 @@ func defaultPublisherCallOptions() *PublisherCallOptions {
 			}),
 		},
 		ListTopicSnapshots: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unknown,
@@ -166,6 +173,7 @@ func defaultPublisherCallOptions() *PublisherCallOptions {
 			}),
 		},
 		DeleteTopic: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -177,6 +185,7 @@ func defaultPublisherCallOptions() *PublisherCallOptions {
 			}),
 		},
 		DetachSubscription: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -196,6 +205,7 @@ func defaultPublisherCallOptions() *PublisherCallOptions {
 func defaultPublisherRESTCallOptions() *PublisherCallOptions {
 	return &PublisherCallOptions{
 		CreateTopic: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -206,6 +216,7 @@ func defaultPublisherRESTCallOptions() *PublisherCallOptions {
 			}),
 		},
 		UpdateTopic: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -216,6 +227,7 @@ func defaultPublisherRESTCallOptions() *PublisherCallOptions {
 			}),
 		},
 		Publish: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -232,6 +244,7 @@ func defaultPublisherRESTCallOptions() *PublisherCallOptions {
 			}),
 		},
 		GetTopic: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -244,6 +257,7 @@ func defaultPublisherRESTCallOptions() *PublisherCallOptions {
 			}),
 		},
 		ListTopics: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -256,6 +270,7 @@ func defaultPublisherRESTCallOptions() *PublisherCallOptions {
 			}),
 		},
 		ListTopicSubscriptions: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -268,6 +283,7 @@ func defaultPublisherRESTCallOptions() *PublisherCallOptions {
 			}),
 		},
 		ListTopicSnapshots: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -280,6 +296,7 @@ func defaultPublisherRESTCallOptions() *PublisherCallOptions {
 			}),
 		},
 		DeleteTopic: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -290,6 +307,7 @@ func defaultPublisherRESTCallOptions() *PublisherCallOptions {
 			}),
 		},
 		DetachSubscription: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -452,9 +470,6 @@ type publisherGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing PublisherClient
 	CallOptions **PublisherCallOptions
 
@@ -482,11 +497,6 @@ func NewPublisherClient(ctx context.Context, opts ...option.ClientOption) (*Publ
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -494,11 +504,10 @@ func NewPublisherClient(ctx context.Context, opts ...option.ClientOption) (*Publ
 	client := PublisherClient{CallOptions: defaultPublisherCallOptions()}
 
 	c := &publisherGRPCClient{
-		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
-		publisherClient:  pubsubpb.NewPublisherClient(connPool),
-		CallOptions:      &client.CallOptions,
-		iamPolicyClient:  iampb.NewIAMPolicyClient(connPool),
+		connPool:        connPool,
+		publisherClient: pubsubpb.NewPublisherClient(connPool),
+		CallOptions:     &client.CallOptions,
+		iamPolicyClient: iampb.NewIAMPolicyClient(connPool),
 	}
 	c.setGoogleClientInfo()
 
@@ -600,11 +609,6 @@ func (c *publisherRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 func (c *publisherGRPCClient) CreateTopic(ctx context.Context, req *pubsubpb.Topic, opts ...gax.CallOption) (*pubsubpb.Topic, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -622,11 +626,6 @@ func (c *publisherGRPCClient) CreateTopic(ctx context.Context, req *pubsubpb.Top
 }
 
 func (c *publisherGRPCClient) UpdateTopic(ctx context.Context, req *pubsubpb.UpdateTopicRequest, opts ...gax.CallOption) (*pubsubpb.Topic, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "topic.name", url.QueryEscape(req.GetTopic().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -644,11 +643,6 @@ func (c *publisherGRPCClient) UpdateTopic(ctx context.Context, req *pubsubpb.Upd
 }
 
 func (c *publisherGRPCClient) Publish(ctx context.Context, req *pubsubpb.PublishRequest, opts ...gax.CallOption) (*pubsubpb.PublishResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "topic", url.QueryEscape(req.GetTopic())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -666,11 +660,6 @@ func (c *publisherGRPCClient) Publish(ctx context.Context, req *pubsubpb.Publish
 }
 
 func (c *publisherGRPCClient) GetTopic(ctx context.Context, req *pubsubpb.GetTopicRequest, opts ...gax.CallOption) (*pubsubpb.Topic, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "topic", url.QueryEscape(req.GetTopic())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -823,11 +812,6 @@ func (c *publisherGRPCClient) ListTopicSnapshots(ctx context.Context, req *pubsu
 }
 
 func (c *publisherGRPCClient) DeleteTopic(ctx context.Context, req *pubsubpb.DeleteTopicRequest, opts ...gax.CallOption) error {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "topic", url.QueryEscape(req.GetTopic())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -841,11 +825,6 @@ func (c *publisherGRPCClient) DeleteTopic(ctx context.Context, req *pubsubpb.Del
 }
 
 func (c *publisherGRPCClient) DetachSubscription(ctx context.Context, req *pubsubpb.DetachSubscriptionRequest, opts ...gax.CallOption) (*pubsubpb.DetachSubscriptionResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "subscription", url.QueryEscape(req.GetSubscription())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)

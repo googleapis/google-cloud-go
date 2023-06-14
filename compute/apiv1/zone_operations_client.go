@@ -50,8 +50,11 @@ type ZoneOperationsCallOptions struct {
 
 func defaultZoneOperationsRESTCallOptions() *ZoneOperationsCallOptions {
 	return &ZoneOperationsCallOptions{
-		Delete: []gax.CallOption{},
+		Delete: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
 		Get: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -63,6 +66,7 @@ func defaultZoneOperationsRESTCallOptions() *ZoneOperationsCallOptions {
 			}),
 		},
 		List: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -73,7 +77,9 @@ func defaultZoneOperationsRESTCallOptions() *ZoneOperationsCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
-		Wait: []gax.CallOption{},
+		Wait: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
 	}
 }
 

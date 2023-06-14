@@ -74,6 +74,7 @@ func defaultGRPCClientOptions() []option.ClientOption {
 func defaultCallOptions() *CallOptions {
 	return &CallOptions{
 		ListInsights: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -86,6 +87,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		GetInsight: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -97,8 +99,11 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
-		MarkInsightAccepted: []gax.CallOption{},
+		MarkInsightAccepted: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		ListRecommendations: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -111,6 +116,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		GetRecommendation: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -122,19 +128,26 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
-		MarkRecommendationClaimed:   []gax.CallOption{},
-		MarkRecommendationSucceeded: []gax.CallOption{},
-		MarkRecommendationFailed:    []gax.CallOption{},
-		GetRecommenderConfig:        []gax.CallOption{},
-		UpdateRecommenderConfig:     []gax.CallOption{},
-		GetInsightTypeConfig:        []gax.CallOption{},
-		UpdateInsightTypeConfig:     []gax.CallOption{},
+		MarkRecommendationClaimed: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		MarkRecommendationSucceeded: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		MarkRecommendationFailed: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetRecommenderConfig:    []gax.CallOption{},
+		UpdateRecommenderConfig: []gax.CallOption{},
+		GetInsightTypeConfig:    []gax.CallOption{},
+		UpdateInsightTypeConfig: []gax.CallOption{},
 	}
 }
 
 func defaultRESTCallOptions() *CallOptions {
 	return &CallOptions{
 		ListInsights: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -146,6 +159,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		GetInsight: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -156,8 +170,11 @@ func defaultRESTCallOptions() *CallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
-		MarkInsightAccepted: []gax.CallOption{},
+		MarkInsightAccepted: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		ListRecommendations: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -169,6 +186,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		GetRecommendation: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -179,13 +197,19 @@ func defaultRESTCallOptions() *CallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
-		MarkRecommendationClaimed:   []gax.CallOption{},
-		MarkRecommendationSucceeded: []gax.CallOption{},
-		MarkRecommendationFailed:    []gax.CallOption{},
-		GetRecommenderConfig:        []gax.CallOption{},
-		UpdateRecommenderConfig:     []gax.CallOption{},
-		GetInsightTypeConfig:        []gax.CallOption{},
-		UpdateInsightTypeConfig:     []gax.CallOption{},
+		MarkRecommendationClaimed: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		MarkRecommendationSucceeded: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		MarkRecommendationFailed: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetRecommenderConfig:    []gax.CallOption{},
+		UpdateRecommenderConfig: []gax.CallOption{},
+		GetInsightTypeConfig:    []gax.CallOption{},
+		UpdateInsightTypeConfig: []gax.CallOption{},
 	}
 }
 
@@ -355,9 +379,6 @@ type gRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing Client
 	CallOptions **CallOptions
 
@@ -385,11 +406,6 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -397,10 +413,9 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 	client := Client{CallOptions: defaultCallOptions()}
 
 	c := &gRPCClient{
-		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
-		client:           recommenderpb.NewRecommenderClient(connPool),
-		CallOptions:      &client.CallOptions,
+		connPool:    connPool,
+		client:      recommenderpb.NewRecommenderClient(connPool),
+		CallOptions: &client.CallOptions,
 	}
 	c.setGoogleClientInfo()
 
@@ -549,11 +564,6 @@ func (c *gRPCClient) ListInsights(ctx context.Context, req *recommenderpb.ListIn
 }
 
 func (c *gRPCClient) GetInsight(ctx context.Context, req *recommenderpb.GetInsightRequest, opts ...gax.CallOption) (*recommenderpb.Insight, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -571,11 +581,6 @@ func (c *gRPCClient) GetInsight(ctx context.Context, req *recommenderpb.GetInsig
 }
 
 func (c *gRPCClient) MarkInsightAccepted(ctx context.Context, req *recommenderpb.MarkInsightAcceptedRequest, opts ...gax.CallOption) (*recommenderpb.Insight, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -638,11 +643,6 @@ func (c *gRPCClient) ListRecommendations(ctx context.Context, req *recommenderpb
 }
 
 func (c *gRPCClient) GetRecommendation(ctx context.Context, req *recommenderpb.GetRecommendationRequest, opts ...gax.CallOption) (*recommenderpb.Recommendation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -660,11 +660,6 @@ func (c *gRPCClient) GetRecommendation(ctx context.Context, req *recommenderpb.G
 }
 
 func (c *gRPCClient) MarkRecommendationClaimed(ctx context.Context, req *recommenderpb.MarkRecommendationClaimedRequest, opts ...gax.CallOption) (*recommenderpb.Recommendation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -682,11 +677,6 @@ func (c *gRPCClient) MarkRecommendationClaimed(ctx context.Context, req *recomme
 }
 
 func (c *gRPCClient) MarkRecommendationSucceeded(ctx context.Context, req *recommenderpb.MarkRecommendationSucceededRequest, opts ...gax.CallOption) (*recommenderpb.Recommendation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -704,11 +694,6 @@ func (c *gRPCClient) MarkRecommendationSucceeded(ctx context.Context, req *recom
 }
 
 func (c *gRPCClient) MarkRecommendationFailed(ctx context.Context, req *recommenderpb.MarkRecommendationFailedRequest, opts ...gax.CallOption) (*recommenderpb.Recommendation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)

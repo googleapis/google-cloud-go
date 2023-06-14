@@ -1,5 +1,12 @@
 # Changes
 
+## [1.12.0](https://github.com/googleapis/google-cloud-go/compare/kms/v1.11.0...kms/v1.12.0) (2023-06-13)
+
+
+### Features
+
+* **kms/inventory:** Promote to GA ([3abdfa1](https://github.com/googleapis/google-cloud-go/commit/3abdfa14dd56cf773c477f289a7f888e20bbbd9a))
+
 ## [1.11.0](https://github.com/googleapis/google-cloud-go/compare/kms/v1.10.2...kms/v1.11.0) (2023-05-30)
 
 

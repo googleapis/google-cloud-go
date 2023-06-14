@@ -54,8 +54,11 @@ type RegionTargetHttpsProxiesCallOptions struct {
 
 func defaultRegionTargetHttpsProxiesRESTCallOptions() *RegionTargetHttpsProxiesCallOptions {
 	return &RegionTargetHttpsProxiesCallOptions{
-		Delete: []gax.CallOption{},
+		Delete: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
 		Get: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -66,8 +69,11 @@ func defaultRegionTargetHttpsProxiesRESTCallOptions() *RegionTargetHttpsProxiesC
 					http.StatusServiceUnavailable)
 			}),
 		},
-		Insert: []gax.CallOption{},
+		Insert: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
 		List: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -78,9 +84,15 @@ func defaultRegionTargetHttpsProxiesRESTCallOptions() *RegionTargetHttpsProxiesC
 					http.StatusServiceUnavailable)
 			}),
 		},
-		Patch:              []gax.CallOption{},
-		SetSslCertificates: []gax.CallOption{},
-		SetUrlMap:          []gax.CallOption{},
+		Patch: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		SetSslCertificates: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		SetUrlMap: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
 	}
 }
 

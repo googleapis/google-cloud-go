@@ -64,6 +64,7 @@ func defaultIamCredentialsGRPCClientOptions() []option.ClientOption {
 func defaultIamCredentialsCallOptions() *IamCredentialsCallOptions {
 	return &IamCredentialsCallOptions{
 		GenerateAccessToken: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -76,6 +77,7 @@ func defaultIamCredentialsCallOptions() *IamCredentialsCallOptions {
 			}),
 		},
 		GenerateIdToken: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -88,6 +90,7 @@ func defaultIamCredentialsCallOptions() *IamCredentialsCallOptions {
 			}),
 		},
 		SignBlob: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -100,6 +103,7 @@ func defaultIamCredentialsCallOptions() *IamCredentialsCallOptions {
 			}),
 		},
 		SignJwt: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -117,6 +121,7 @@ func defaultIamCredentialsCallOptions() *IamCredentialsCallOptions {
 func defaultIamCredentialsRESTCallOptions() *IamCredentialsCallOptions {
 	return &IamCredentialsCallOptions{
 		GenerateAccessToken: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -128,6 +133,7 @@ func defaultIamCredentialsRESTCallOptions() *IamCredentialsCallOptions {
 			}),
 		},
 		GenerateIdToken: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -139,6 +145,7 @@ func defaultIamCredentialsRESTCallOptions() *IamCredentialsCallOptions {
 			}),
 		},
 		SignBlob: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -150,6 +157,7 @@ func defaultIamCredentialsRESTCallOptions() *IamCredentialsCallOptions {
 			}),
 		},
 		SignJwt: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -244,9 +252,6 @@ type iamCredentialsGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing IamCredentialsClient
 	CallOptions **IamCredentialsCallOptions
 
@@ -279,11 +284,6 @@ func NewIamCredentialsClient(ctx context.Context, opts ...option.ClientOption) (
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -292,7 +292,6 @@ func NewIamCredentialsClient(ctx context.Context, opts ...option.ClientOption) (
 
 	c := &iamCredentialsGRPCClient{
 		connPool:             connPool,
-		disableDeadlines:     disableDeadlines,
 		iamCredentialsClient: credentialspb.NewIAMCredentialsClient(connPool),
 		CallOptions:          &client.CallOptions,
 	}
@@ -403,11 +402,6 @@ func (c *iamCredentialsRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 func (c *iamCredentialsGRPCClient) GenerateAccessToken(ctx context.Context, req *credentialspb.GenerateAccessTokenRequest, opts ...gax.CallOption) (*credentialspb.GenerateAccessTokenResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -425,11 +419,6 @@ func (c *iamCredentialsGRPCClient) GenerateAccessToken(ctx context.Context, req 
 }
 
 func (c *iamCredentialsGRPCClient) GenerateIdToken(ctx context.Context, req *credentialspb.GenerateIdTokenRequest, opts ...gax.CallOption) (*credentialspb.GenerateIdTokenResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -447,11 +436,6 @@ func (c *iamCredentialsGRPCClient) GenerateIdToken(ctx context.Context, req *cre
 }
 
 func (c *iamCredentialsGRPCClient) SignBlob(ctx context.Context, req *credentialspb.SignBlobRequest, opts ...gax.CallOption) (*credentialspb.SignBlobResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -469,11 +453,6 @@ func (c *iamCredentialsGRPCClient) SignBlob(ctx context.Context, req *credential
 }
 
 func (c *iamCredentialsGRPCClient) SignJwt(ctx context.Context, req *credentialspb.SignJwtRequest, opts ...gax.CallOption) (*credentialspb.SignJwtResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)

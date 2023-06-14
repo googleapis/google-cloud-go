@@ -66,8 +66,11 @@ func defaultDashboardsGRPCClientOptions() []option.ClientOption {
 
 func defaultDashboardsCallOptions() *DashboardsCallOptions {
 	return &DashboardsCallOptions{
-		CreateDashboard: []gax.CallOption{},
+		CreateDashboard: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+		},
 		ListDashboards: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -80,6 +83,7 @@ func defaultDashboardsCallOptions() *DashboardsCallOptions {
 			}),
 		},
 		GetDashboard: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -91,15 +95,22 @@ func defaultDashboardsCallOptions() *DashboardsCallOptions {
 				})
 			}),
 		},
-		DeleteDashboard: []gax.CallOption{},
-		UpdateDashboard: []gax.CallOption{},
+		DeleteDashboard: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+		},
+		UpdateDashboard: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+		},
 	}
 }
 
 func defaultDashboardsRESTCallOptions() *DashboardsCallOptions {
 	return &DashboardsCallOptions{
-		CreateDashboard: []gax.CallOption{},
+		CreateDashboard: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+		},
 		ListDashboards: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -111,6 +122,7 @@ func defaultDashboardsRESTCallOptions() *DashboardsCallOptions {
 			}),
 		},
 		GetDashboard: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -121,8 +133,12 @@ func defaultDashboardsRESTCallOptions() *DashboardsCallOptions {
 					http.StatusInternalServerError)
 			}),
 		},
-		DeleteDashboard: []gax.CallOption{},
-		UpdateDashboard: []gax.CallOption{},
+		DeleteDashboard: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+		},
+		UpdateDashboard: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+		},
 	}
 }
 
@@ -227,9 +243,6 @@ type dashboardsGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing DashboardsClient
 	CallOptions **DashboardsCallOptions
 
@@ -255,11 +268,6 @@ func NewDashboardsClient(ctx context.Context, opts ...option.ClientOption) (*Das
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -268,7 +276,6 @@ func NewDashboardsClient(ctx context.Context, opts ...option.ClientOption) (*Das
 
 	c := &dashboardsGRPCClient{
 		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
 		dashboardsClient: dashboardpb.NewDashboardsServiceClient(connPool),
 		CallOptions:      &client.CallOptions,
 	}
@@ -372,11 +379,6 @@ func (c *dashboardsRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 func (c *dashboardsGRPCClient) CreateDashboard(ctx context.Context, req *dashboardpb.CreateDashboardRequest, opts ...gax.CallOption) (*dashboardpb.Dashboard, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -439,11 +441,6 @@ func (c *dashboardsGRPCClient) ListDashboards(ctx context.Context, req *dashboar
 }
 
 func (c *dashboardsGRPCClient) GetDashboard(ctx context.Context, req *dashboardpb.GetDashboardRequest, opts ...gax.CallOption) (*dashboardpb.Dashboard, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -461,11 +458,6 @@ func (c *dashboardsGRPCClient) GetDashboard(ctx context.Context, req *dashboardp
 }
 
 func (c *dashboardsGRPCClient) DeleteDashboard(ctx context.Context, req *dashboardpb.DeleteDashboardRequest, opts ...gax.CallOption) error {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -479,11 +471,6 @@ func (c *dashboardsGRPCClient) DeleteDashboard(ctx context.Context, req *dashboa
 }
 
 func (c *dashboardsGRPCClient) UpdateDashboard(ctx context.Context, req *dashboardpb.UpdateDashboardRequest, opts ...gax.CallOption) (*dashboardpb.Dashboard, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "dashboard.name", url.QueryEscape(req.GetDashboard().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
