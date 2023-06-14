@@ -265,7 +265,7 @@ func NewIamPolicyClient(ctx context.Context, opts ...option.ClientOption) (*IamP
 
 	c := &iamPolicyGRPCClient{
 		connPool:         connPool,
-				iamPolicyClient:  iampb.NewIAMPolicyClient(connPool),
+		iamPolicyClient:  iampb.NewIAMPolicyClient(connPool),
 		CallOptions:      &client.CallOptions,
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
 	}

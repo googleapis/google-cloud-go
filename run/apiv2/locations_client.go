@@ -209,7 +209,7 @@ func NewLocationsClient(ctx context.Context, opts ...option.ClientOption) (*Loca
 
 	c := &locationsGRPCClient{
 		connPool:         connPool,
-				locationsClient:  locationpb.NewLocationsClient(connPool),
+		locationsClient:  locationpb.NewLocationsClient(connPool),
 		CallOptions:      &client.CallOptions,
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
 	}
