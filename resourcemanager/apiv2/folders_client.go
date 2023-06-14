@@ -206,16 +206,16 @@ func (c *FoldersClient) GetFolder(ctx context.Context, req *resourcemanagerpb.Ge
 // In order to succeed, the addition of this new Folder must not violate
 // the Folder naming, height or fanout constraints.
 //
-//	The Folder’s display_name must be distinct from all other Folder’s that
-//	share its parent.
+//   The Folder’s display_name must be distinct from all other Folder’s that
+//   share its parent.
 //
-//	The addition of the Folder must not cause the active Folder hierarchy
-//	to exceed a height of 4. Note, the full active + deleted Folder hierarchy
-//	is allowed to reach a height of 8; this provides additional headroom when
-//	moving folders that contain deleted folders.
+//   The addition of the Folder must not cause the active Folder hierarchy
+//   to exceed a height of 4. Note, the full active + deleted Folder hierarchy
+//   is allowed to reach a height of 8; this provides additional headroom when
+//   moving folders that contain deleted folders.
 //
-//	The addition of the Folder must not cause the total number of Folders
-//	under its parent to exceed 100.
+//   The addition of the Folder must not cause the total number of Folders
+//   under its parent to exceed 100.
 //
 // If the operation fails due to a folder constraint violation, some errors
 // may be returned by the CreateFolder request, with status code
@@ -343,9 +343,6 @@ type foldersGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing FoldersClient
 	CallOptions **FoldersCallOptions
 
@@ -377,11 +374,6 @@ func NewFoldersClient(ctx context.Context, opts ...option.ClientOption) (*Folder
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -389,10 +381,9 @@ func NewFoldersClient(ctx context.Context, opts ...option.ClientOption) (*Folder
 	client := FoldersClient{CallOptions: defaultFoldersCallOptions()}
 
 	c := &foldersGRPCClient{
-		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
-		foldersClient:    resourcemanagerpb.NewFoldersClient(connPool),
-		CallOptions:      &client.CallOptions,
+		connPool:      connPool,
+		foldersClient: resourcemanagerpb.NewFoldersClient(connPool),
+		CallOptions:   &client.CallOptions,
 	}
 	c.setGoogleClientInfo()
 
@@ -1023,16 +1014,16 @@ func (c *foldersRESTClient) GetFolder(ctx context.Context, req *resourcemanagerp
 // In order to succeed, the addition of this new Folder must not violate
 // the Folder naming, height or fanout constraints.
 //
-//	The Folder’s display_name must be distinct from all other Folder’s that
-//	share its parent.
+//   The Folder’s display_name must be distinct from all other Folder’s that
+//   share its parent.
 //
-//	The addition of the Folder must not cause the active Folder hierarchy
-//	to exceed a height of 4. Note, the full active + deleted Folder hierarchy
-//	is allowed to reach a height of 8; this provides additional headroom when
-//	moving folders that contain deleted folders.
+//   The addition of the Folder must not cause the active Folder hierarchy
+//   to exceed a height of 4. Note, the full active + deleted Folder hierarchy
+//   is allowed to reach a height of 8; this provides additional headroom when
+//   moving folders that contain deleted folders.
 //
-//	The addition of the Folder must not cause the total number of Folders
-//	under its parent to exceed 100.
+//   The addition of the Folder must not cause the total number of Folders
+//   under its parent to exceed 100.
 //
 // If the operation fails due to a folder constraint violation, some errors
 // may be returned by the CreateFolder request, with status code

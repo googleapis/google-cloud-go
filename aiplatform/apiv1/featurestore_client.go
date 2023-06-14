@@ -357,15 +357,15 @@ func (c *FeaturestoreClient) DeleteFeatureOperation(name string) *DeleteFeatureO
 //
 // There are also scenarios where the caller can cause inconsistency.
 //
-//	Source data for import contains multiple distinct Feature values for
-//	the same entity ID and timestamp.
+//   Source data for import contains multiple distinct Feature values for
+//   the same entity ID and timestamp.
 //
-//	Source is modified during an import. This includes adding, updating, or
-//	removing source data and/or metadata. Examples of updating metadata
-//	include but are not limited to changing storage location, storage class,
-//	or retention policy.
+//   Source is modified during an import. This includes adding, updating, or
+//   removing source data and/or metadata. Examples of updating metadata
+//   include but are not limited to changing storage location, storage class,
+//   or retention policy.
 //
-//	Online serving cluster is under-provisioned.
+//   Online serving cluster is under-provisioned.
 func (c *FeaturestoreClient) ImportFeatureValues(ctx context.Context, req *aiplatformpb.ImportFeatureValuesRequest, opts ...gax.CallOption) (*ImportFeatureValuesOperation, error) {
 	return c.internalClient.ImportFeatureValues(ctx, req, opts...)
 }
@@ -496,9 +496,6 @@ type featurestoreGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing FeaturestoreClient
 	CallOptions **FeaturestoreCallOptions
 
@@ -534,11 +531,6 @@ func NewFeaturestoreClient(ctx context.Context, opts ...option.ClientOption) (*F
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -547,7 +539,6 @@ func NewFeaturestoreClient(ctx context.Context, opts ...option.ClientOption) (*F
 
 	c := &featurestoreGRPCClient{
 		connPool:           connPool,
-		disableDeadlines:   disableDeadlines,
 		featurestoreClient: aiplatformpb.NewFeaturestoreServiceClient(connPool),
 		CallOptions:        &client.CallOptions,
 		operationsClient:   longrunningpb.NewOperationsClient(connPool),

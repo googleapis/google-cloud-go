@@ -81,45 +81,89 @@ func defaultCloudRedisGRPCClientOptions() []option.ClientOption {
 
 func defaultCloudRedisCallOptions() *CloudRedisCallOptions {
 	return &CloudRedisCallOptions{
-		ListInstances:         []gax.CallOption{},
-		GetInstance:           []gax.CallOption{},
-		GetInstanceAuthString: []gax.CallOption{},
-		CreateInstance:        []gax.CallOption{},
-		UpdateInstance:        []gax.CallOption{},
-		UpgradeInstance:       []gax.CallOption{},
-		ImportInstance:        []gax.CallOption{},
-		ExportInstance:        []gax.CallOption{},
-		FailoverInstance:      []gax.CallOption{},
-		DeleteInstance:        []gax.CallOption{},
-		RescheduleMaintenance: []gax.CallOption{},
-		GetLocation:           []gax.CallOption{},
-		ListLocations:         []gax.CallOption{},
-		CancelOperation:       []gax.CallOption{},
-		DeleteOperation:       []gax.CallOption{},
-		GetOperation:          []gax.CallOption{},
-		ListOperations:        []gax.CallOption{},
+		ListInstances: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		GetInstance: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		GetInstanceAuthString: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		CreateInstance: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		UpdateInstance: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		UpgradeInstance: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		ImportInstance: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		ExportInstance: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		FailoverInstance: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		DeleteInstance: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		RescheduleMaintenance: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		GetLocation:     []gax.CallOption{},
+		ListLocations:   []gax.CallOption{},
+		CancelOperation: []gax.CallOption{},
+		DeleteOperation: []gax.CallOption{},
+		GetOperation:    []gax.CallOption{},
+		ListOperations:  []gax.CallOption{},
 	}
 }
 
 func defaultCloudRedisRESTCallOptions() *CloudRedisCallOptions {
 	return &CloudRedisCallOptions{
-		ListInstances:         []gax.CallOption{},
-		GetInstance:           []gax.CallOption{},
-		GetInstanceAuthString: []gax.CallOption{},
-		CreateInstance:        []gax.CallOption{},
-		UpdateInstance:        []gax.CallOption{},
-		UpgradeInstance:       []gax.CallOption{},
-		ImportInstance:        []gax.CallOption{},
-		ExportInstance:        []gax.CallOption{},
-		FailoverInstance:      []gax.CallOption{},
-		DeleteInstance:        []gax.CallOption{},
-		RescheduleMaintenance: []gax.CallOption{},
-		GetLocation:           []gax.CallOption{},
-		ListLocations:         []gax.CallOption{},
-		CancelOperation:       []gax.CallOption{},
-		DeleteOperation:       []gax.CallOption{},
-		GetOperation:          []gax.CallOption{},
-		ListOperations:        []gax.CallOption{},
+		ListInstances: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		GetInstance: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		GetInstanceAuthString: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		CreateInstance: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		UpdateInstance: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		UpgradeInstance: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		ImportInstance: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		ExportInstance: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		FailoverInstance: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		DeleteInstance: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		RescheduleMaintenance: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		GetLocation:     []gax.CallOption{},
+		ListLocations:   []gax.CallOption{},
+		CancelOperation: []gax.CallOption{},
+		DeleteOperation: []gax.CallOption{},
+		GetOperation:    []gax.CallOption{},
+		ListOperations:  []gax.CallOption{},
 	}
 }
 
@@ -158,26 +202,26 @@ type internalCloudRedisClient interface {
 // CloudRedisClient is a client for interacting with Google Cloud Memorystore for Redis API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
-// # Configures and manages Cloud Memorystore for Redis instances
+// Configures and manages Cloud Memorystore for Redis instances
 //
-// # Google Cloud Memorystore for Redis v1
+// Google Cloud Memorystore for Redis v1
 //
 // The redis.googleapis.com service implements the Google Cloud Memorystore
 // for Redis API and defines the following resource model for managing Redis
 // instances:
 //
-//	The service works with a collection of cloud projects, named: /projects/*
+//   The service works with a collection of cloud projects, named: /projects/*
 //
-//	Each project has a collection of available locations, named: /locations/*
+//   Each project has a collection of available locations, named: /locations/*
 //
-//	Each location has a collection of Redis instances, named: /instances/*
+//   Each location has a collection of Redis instances, named: /instances/*
 //
-//	As such, Redis instances are resources of the form:
-//	/projects/{project_id}/locations/{location_id}/instances/{instance_id}
+//   As such, Redis instances are resources of the form:
+//   /projects/{project_id}/locations/{location_id}/instances/{instance_id}
 //
 // Note that location_id must be referring to a GCP region; for example:
 //
-//	projects/redpepper-1290/locations/us-central1/instances/my-redis
+//   projects/redpepper-1290/locations/us-central1/instances/my-redis
 type CloudRedisClient struct {
 	// The internal transport-dependent client.
 	internalClient internalCloudRedisClient
@@ -219,7 +263,7 @@ func (c *CloudRedisClient) Connection() *grpc.ClientConn {
 //
 // The location should have the following format:
 //
-//	projects/{project_id}/locations/{location_id}
+//   projects/{project_id}/locations/{location_id}
 //
 // If location_id is specified as - (wildcard), then all regions
 // available to the project are queried, and the results are aggregated.
@@ -395,9 +439,6 @@ type cloudRedisGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing CloudRedisClient
 	CallOptions **CloudRedisCallOptions
 
@@ -420,26 +461,26 @@ type cloudRedisGRPCClient struct {
 // NewCloudRedisClient creates a new cloud redis client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
-// # Configures and manages Cloud Memorystore for Redis instances
+// Configures and manages Cloud Memorystore for Redis instances
 //
-// # Google Cloud Memorystore for Redis v1
+// Google Cloud Memorystore for Redis v1
 //
 // The redis.googleapis.com service implements the Google Cloud Memorystore
 // for Redis API and defines the following resource model for managing Redis
 // instances:
 //
-//	The service works with a collection of cloud projects, named: /projects/*
+//   The service works with a collection of cloud projects, named: /projects/*
 //
-//	Each project has a collection of available locations, named: /locations/*
+//   Each project has a collection of available locations, named: /locations/*
 //
-//	Each location has a collection of Redis instances, named: /instances/*
+//   Each location has a collection of Redis instances, named: /instances/*
 //
-//	As such, Redis instances are resources of the form:
-//	/projects/{project_id}/locations/{location_id}/instances/{instance_id}
+//   As such, Redis instances are resources of the form:
+//   /projects/{project_id}/locations/{location_id}/instances/{instance_id}
 //
 // Note that location_id must be referring to a GCP region; for example:
 //
-//	projects/redpepper-1290/locations/us-central1/instances/my-redis
+//   projects/redpepper-1290/locations/us-central1/instances/my-redis
 func NewCloudRedisClient(ctx context.Context, opts ...option.ClientOption) (*CloudRedisClient, error) {
 	clientOpts := defaultCloudRedisGRPCClientOptions()
 	if newCloudRedisClientHook != nil {
@@ -450,11 +491,6 @@ func NewCloudRedisClient(ctx context.Context, opts ...option.ClientOption) (*Clo
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -463,7 +499,6 @@ func NewCloudRedisClient(ctx context.Context, opts ...option.ClientOption) (*Clo
 
 	c := &cloudRedisGRPCClient{
 		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
 		cloudRedisClient: redispb.NewCloudRedisClient(connPool),
 		CallOptions:      &client.CallOptions,
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
@@ -532,26 +567,26 @@ type cloudRedisRESTClient struct {
 
 // NewCloudRedisRESTClient creates a new cloud redis rest client.
 //
-// # Configures and manages Cloud Memorystore for Redis instances
+// Configures and manages Cloud Memorystore for Redis instances
 //
-// # Google Cloud Memorystore for Redis v1
+// Google Cloud Memorystore for Redis v1
 //
 // The redis.googleapis.com service implements the Google Cloud Memorystore
 // for Redis API and defines the following resource model for managing Redis
 // instances:
 //
-//	The service works with a collection of cloud projects, named: /projects/*
+//   The service works with a collection of cloud projects, named: /projects/*
 //
-//	Each project has a collection of available locations, named: /locations/*
+//   Each project has a collection of available locations, named: /locations/*
 //
-//	Each location has a collection of Redis instances, named: /instances/*
+//   Each location has a collection of Redis instances, named: /instances/*
 //
-//	As such, Redis instances are resources of the form:
-//	/projects/{project_id}/locations/{location_id}/instances/{instance_id}
+//   As such, Redis instances are resources of the form:
+//   /projects/{project_id}/locations/{location_id}/instances/{instance_id}
 //
 // Note that location_id must be referring to a GCP region; for example:
 //
-//	projects/redpepper-1290/locations/us-central1/instances/my-redis
+//   projects/redpepper-1290/locations/us-central1/instances/my-redis
 func NewCloudRedisRESTClient(ctx context.Context, opts ...option.ClientOption) (*CloudRedisClient, error) {
 	clientOpts := append(defaultCloudRedisRESTClientOptions(), opts...)
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
@@ -658,11 +693,6 @@ func (c *cloudRedisGRPCClient) ListInstances(ctx context.Context, req *redispb.L
 }
 
 func (c *cloudRedisGRPCClient) GetInstance(ctx context.Context, req *redispb.GetInstanceRequest, opts ...gax.CallOption) (*redispb.Instance, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -680,11 +710,6 @@ func (c *cloudRedisGRPCClient) GetInstance(ctx context.Context, req *redispb.Get
 }
 
 func (c *cloudRedisGRPCClient) GetInstanceAuthString(ctx context.Context, req *redispb.GetInstanceAuthStringRequest, opts ...gax.CallOption) (*redispb.InstanceAuthString, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -702,11 +727,6 @@ func (c *cloudRedisGRPCClient) GetInstanceAuthString(ctx context.Context, req *r
 }
 
 func (c *cloudRedisGRPCClient) CreateInstance(ctx context.Context, req *redispb.CreateInstanceRequest, opts ...gax.CallOption) (*CreateInstanceOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -726,11 +746,6 @@ func (c *cloudRedisGRPCClient) CreateInstance(ctx context.Context, req *redispb.
 }
 
 func (c *cloudRedisGRPCClient) UpdateInstance(ctx context.Context, req *redispb.UpdateInstanceRequest, opts ...gax.CallOption) (*UpdateInstanceOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "instance.name", url.QueryEscape(req.GetInstance().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -750,11 +765,6 @@ func (c *cloudRedisGRPCClient) UpdateInstance(ctx context.Context, req *redispb.
 }
 
 func (c *cloudRedisGRPCClient) UpgradeInstance(ctx context.Context, req *redispb.UpgradeInstanceRequest, opts ...gax.CallOption) (*UpgradeInstanceOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -774,11 +784,6 @@ func (c *cloudRedisGRPCClient) UpgradeInstance(ctx context.Context, req *redispb
 }
 
 func (c *cloudRedisGRPCClient) ImportInstance(ctx context.Context, req *redispb.ImportInstanceRequest, opts ...gax.CallOption) (*ImportInstanceOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -798,11 +803,6 @@ func (c *cloudRedisGRPCClient) ImportInstance(ctx context.Context, req *redispb.
 }
 
 func (c *cloudRedisGRPCClient) ExportInstance(ctx context.Context, req *redispb.ExportInstanceRequest, opts ...gax.CallOption) (*ExportInstanceOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -822,11 +822,6 @@ func (c *cloudRedisGRPCClient) ExportInstance(ctx context.Context, req *redispb.
 }
 
 func (c *cloudRedisGRPCClient) FailoverInstance(ctx context.Context, req *redispb.FailoverInstanceRequest, opts ...gax.CallOption) (*FailoverInstanceOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -846,11 +841,6 @@ func (c *cloudRedisGRPCClient) FailoverInstance(ctx context.Context, req *redisp
 }
 
 func (c *cloudRedisGRPCClient) DeleteInstance(ctx context.Context, req *redispb.DeleteInstanceRequest, opts ...gax.CallOption) (*DeleteInstanceOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -870,11 +860,6 @@ func (c *cloudRedisGRPCClient) DeleteInstance(ctx context.Context, req *redispb.
 }
 
 func (c *cloudRedisGRPCClient) RescheduleMaintenance(ctx context.Context, req *redispb.RescheduleMaintenanceRequest, opts ...gax.CallOption) (*RescheduleMaintenanceOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1048,7 +1033,7 @@ func (c *cloudRedisGRPCClient) ListOperations(ctx context.Context, req *longrunn
 //
 // The location should have the following format:
 //
-//	projects/{project_id}/locations/{location_id}
+//   projects/{project_id}/locations/{location_id}
 //
 // If location_id is specified as - (wildcard), then all regions
 // available to the project are queried, and the results are aggregated.

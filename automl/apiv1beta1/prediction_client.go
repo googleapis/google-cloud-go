@@ -63,15 +63,23 @@ func defaultPredictionGRPCClientOptions() []option.ClientOption {
 
 func defaultPredictionCallOptions() *PredictionCallOptions {
 	return &PredictionCallOptions{
-		Predict:      []gax.CallOption{},
-		BatchPredict: []gax.CallOption{},
+		Predict: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		BatchPredict: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 	}
 }
 
 func defaultPredictionRESTCallOptions() *PredictionCallOptions {
 	return &PredictionCallOptions{
-		Predict:      []gax.CallOption{},
-		BatchPredict: []gax.CallOption{},
+		Predict: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		BatchPredict: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 	}
 }
 
@@ -132,28 +140,28 @@ func (c *PredictionClient) Connection() *grpc.ClientConn {
 // returned in the response.
 // Available for following ML problems, and their expected request payloads:
 //
-//	Image Classification - Image in .JPEG, .GIF or .PNG format, image_bytes
-//	up to 30MB.
+//   Image Classification - Image in .JPEG, .GIF or .PNG format, image_bytes
+//   up to 30MB.
 //
-//	Image Object Detection - Image in .JPEG, .GIF or .PNG format, image_bytes
-//	up to 30MB.
+//   Image Object Detection - Image in .JPEG, .GIF or .PNG format, image_bytes
+//   up to 30MB.
 //
-//	Text Classification - TextSnippet, content up to 60,000 characters,
-//	UTF-8 encoded.
+//   Text Classification - TextSnippet, content up to 60,000 characters,
+//   UTF-8 encoded.
 //
-//	Text Extraction - TextSnippet, content up to 30,000 characters,
-//	UTF-8 NFC encoded.
+//   Text Extraction - TextSnippet, content up to 30,000 characters,
+//   UTF-8 NFC encoded.
 //
-//	Translation - TextSnippet, content up to 25,000 characters, UTF-8
-//	encoded.
+//   Translation - TextSnippet, content up to 25,000 characters, UTF-8
+//   encoded.
 //
-//	Tables - Row, with column values matching the columns of the model,
-//	up to 5MB. Not available for FORECASTING
+//   Tables - Row, with column values matching the columns of the model,
+//   up to 5MB. Not available for FORECASTING
 //
 // prediction_type.
 //
-//	Text Sentiment - TextSnippet, content up 500 characters, UTF-8
-//	encoded.
+//   Text Sentiment - TextSnippet, content up 500 characters, UTF-8
+//   encoded.
 func (c *PredictionClient) Predict(ctx context.Context, req *automlpb.PredictRequest, opts ...gax.CallOption) (*automlpb.PredictResponse, error) {
 	return c.internalClient.Predict(ctx, req, opts...)
 }
@@ -166,15 +174,15 @@ func (c *PredictionClient) Predict(ctx context.Context, req *automlpb.PredictReq
 // the response field.
 // Available for following ML problems:
 //
-//	Image Classification
+//   Image Classification
 //
-//	Image Object Detection
+//   Image Object Detection
 //
-//	Video Classification
+//   Video Classification
 //
-//	Video Object Tracking * Text Extraction
+//   Video Object Tracking * Text Extraction
 //
-//	Tables
+//   Tables
 func (c *PredictionClient) BatchPredict(ctx context.Context, req *automlpb.BatchPredictRequest, opts ...gax.CallOption) (*BatchPredictOperation, error) {
 	return c.internalClient.BatchPredict(ctx, req, opts...)
 }
@@ -191,9 +199,6 @@ func (c *PredictionClient) BatchPredictOperation(name string) *BatchPredictOpera
 type predictionGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
-
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
 
 	// Points back to the CallOptions field of the containing PredictionClient
 	CallOptions **PredictionCallOptions
@@ -227,11 +232,6 @@ func NewPredictionClient(ctx context.Context, opts ...option.ClientOption) (*Pre
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -240,7 +240,6 @@ func NewPredictionClient(ctx context.Context, opts ...option.ClientOption) (*Pre
 
 	c := &predictionGRPCClient{
 		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
 		predictionClient: automlpb.NewPredictionServiceClient(connPool),
 		CallOptions:      &client.CallOptions,
 	}
@@ -372,11 +371,6 @@ func (c *predictionRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 func (c *predictionGRPCClient) Predict(ctx context.Context, req *automlpb.PredictRequest, opts ...gax.CallOption) (*automlpb.PredictResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -394,11 +388,6 @@ func (c *predictionGRPCClient) Predict(ctx context.Context, req *automlpb.Predic
 }
 
 func (c *predictionGRPCClient) BatchPredict(ctx context.Context, req *automlpb.BatchPredictRequest, opts ...gax.CallOption) (*BatchPredictOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -421,28 +410,28 @@ func (c *predictionGRPCClient) BatchPredict(ctx context.Context, req *automlpb.B
 // returned in the response.
 // Available for following ML problems, and their expected request payloads:
 //
-//	Image Classification - Image in .JPEG, .GIF or .PNG format, image_bytes
-//	up to 30MB.
+//   Image Classification - Image in .JPEG, .GIF or .PNG format, image_bytes
+//   up to 30MB.
 //
-//	Image Object Detection - Image in .JPEG, .GIF or .PNG format, image_bytes
-//	up to 30MB.
+//   Image Object Detection - Image in .JPEG, .GIF or .PNG format, image_bytes
+//   up to 30MB.
 //
-//	Text Classification - TextSnippet, content up to 60,000 characters,
-//	UTF-8 encoded.
+//   Text Classification - TextSnippet, content up to 60,000 characters,
+//   UTF-8 encoded.
 //
-//	Text Extraction - TextSnippet, content up to 30,000 characters,
-//	UTF-8 NFC encoded.
+//   Text Extraction - TextSnippet, content up to 30,000 characters,
+//   UTF-8 NFC encoded.
 //
-//	Translation - TextSnippet, content up to 25,000 characters, UTF-8
-//	encoded.
+//   Translation - TextSnippet, content up to 25,000 characters, UTF-8
+//   encoded.
 //
-//	Tables - Row, with column values matching the columns of the model,
-//	up to 5MB. Not available for FORECASTING
+//   Tables - Row, with column values matching the columns of the model,
+//   up to 5MB. Not available for FORECASTING
 //
 // prediction_type.
 //
-//	Text Sentiment - TextSnippet, content up 500 characters, UTF-8
-//	encoded.
+//   Text Sentiment - TextSnippet, content up 500 characters, UTF-8
+//   encoded.
 func (c *predictionRESTClient) Predict(ctx context.Context, req *automlpb.PredictRequest, opts ...gax.CallOption) (*automlpb.PredictResponse, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -514,15 +503,15 @@ func (c *predictionRESTClient) Predict(ctx context.Context, req *automlpb.Predic
 // the response field.
 // Available for following ML problems:
 //
-//	Image Classification
+//   Image Classification
 //
-//	Image Object Detection
+//   Image Object Detection
 //
-//	Video Classification
+//   Video Classification
 //
-//	Video Object Tracking * Text Extraction
+//   Video Object Tracking * Text Extraction
 //
-//	Tables
+//   Tables
 func (c *predictionRESTClient) BatchPredict(ctx context.Context, req *automlpb.BatchPredictRequest, opts ...gax.CallOption) (*BatchPredictOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)

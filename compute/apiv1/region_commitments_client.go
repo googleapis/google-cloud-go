@@ -54,6 +54,7 @@ type RegionCommitmentsCallOptions struct {
 func defaultRegionCommitmentsRESTCallOptions() *RegionCommitmentsCallOptions {
 	return &RegionCommitmentsCallOptions{
 		AggregatedList: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -65,6 +66,7 @@ func defaultRegionCommitmentsRESTCallOptions() *RegionCommitmentsCallOptions {
 			}),
 		},
 		Get: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -75,8 +77,11 @@ func defaultRegionCommitmentsRESTCallOptions() *RegionCommitmentsCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
-		Insert: []gax.CallOption{},
+		Insert: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
 		List: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -87,7 +92,9 @@ func defaultRegionCommitmentsRESTCallOptions() *RegionCommitmentsCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
-		Update: []gax.CallOption{},
+		Update: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
 	}
 }
 

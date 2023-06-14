@@ -104,6 +104,7 @@ func defaultGRPCClientOptions() []option.ClientOption {
 func defaultCallOptions() *CallOptions {
 	return &CallOptions{
 		SearchCatalog: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -117,6 +118,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		CreateEntryGroup: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -130,6 +132,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		GetEntryGroup: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -143,6 +146,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		UpdateEntryGroup: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -156,6 +160,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		DeleteEntryGroup: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -169,6 +174,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		ListEntryGroups: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -182,6 +188,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		CreateEntry: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -195,6 +202,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		UpdateEntry: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -208,6 +216,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		DeleteEntry: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -221,6 +230,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		GetEntry: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -234,6 +244,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		LookupEntry: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -247,6 +258,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		ListEntries: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -260,6 +272,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		ModifyEntryOverview: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -273,6 +286,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		ModifyEntryContacts: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -286,6 +300,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		CreateTagTemplate: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -299,6 +314,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		GetTagTemplate: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -312,6 +328,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		UpdateTagTemplate: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -325,6 +342,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		DeleteTagTemplate: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -338,6 +356,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		CreateTagTemplateField: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -351,6 +370,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		UpdateTagTemplateField: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -364,6 +384,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		RenameTagTemplateField: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -377,6 +398,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		RenameTagTemplateFieldEnumValue: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -390,6 +412,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		DeleteTagTemplateField: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -403,6 +426,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		CreateTag: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -416,6 +440,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		UpdateTag: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -429,6 +454,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		DeleteTag: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -442,6 +468,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		ListTags: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -455,6 +482,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		ReconcileTags: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -468,6 +496,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		StarEntry: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -481,6 +510,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		UnstarEntry: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -494,6 +524,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		SetIamPolicy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -507,6 +538,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		GetIamPolicy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -520,6 +552,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		TestIamPermissions: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -533,6 +566,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		ImportEntries: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -555,6 +589,7 @@ func defaultCallOptions() *CallOptions {
 func defaultRESTCallOptions() *CallOptions {
 	return &CallOptions{
 		SearchCatalog: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -567,6 +602,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		CreateEntryGroup: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -579,6 +615,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		GetEntryGroup: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -591,6 +628,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		UpdateEntryGroup: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -603,6 +641,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		DeleteEntryGroup: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -615,6 +654,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		ListEntryGroups: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -627,6 +667,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		CreateEntry: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -639,6 +680,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		UpdateEntry: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -651,6 +693,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		DeleteEntry: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -663,6 +706,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		GetEntry: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -675,6 +719,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		LookupEntry: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -687,6 +732,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		ListEntries: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -699,6 +745,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		ModifyEntryOverview: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -711,6 +758,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		ModifyEntryContacts: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -723,6 +771,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		CreateTagTemplate: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -735,6 +784,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		GetTagTemplate: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -747,6 +797,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		UpdateTagTemplate: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -759,6 +810,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		DeleteTagTemplate: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -771,6 +823,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		CreateTagTemplateField: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -783,6 +836,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		UpdateTagTemplateField: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -795,6 +849,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		RenameTagTemplateField: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -807,6 +862,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		RenameTagTemplateFieldEnumValue: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -819,6 +875,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		DeleteTagTemplateField: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -831,6 +888,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		CreateTag: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -843,6 +901,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		UpdateTag: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -855,6 +914,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		DeleteTag: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -867,6 +927,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		ListTags: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -879,6 +940,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		ReconcileTags: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -891,6 +953,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		StarEntry: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -903,6 +966,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		UnstarEntry: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -915,6 +979,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		SetIamPolicy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -927,6 +992,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		GetIamPolicy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -939,6 +1005,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		TestIamPermissions: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -951,6 +1018,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		ImportEntries: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -1086,11 +1154,11 @@ func (c *Client) SearchCatalog(ctx context.Context, req *datacatalogpb.SearchCat
 // Data Catalog automatically creates entry groups with names that start with
 // the @ symbol for the following resources:
 //
-//	BigQuery entries (@bigquery)
+//   BigQuery entries (@bigquery)
 //
-//	Pub/Sub topics (@pubsub)
+//   Pub/Sub topics (@pubsub)
 //
-//	Dataproc Metastore services (@dataproc_metastore_{SERVICE_NAME_HASH})
+//   Dataproc Metastore services (@dataproc_metastore_{SERVICE_NAME_HASH})
 //
 // You can create your own entry groups for Cloud Storage fileset entries
 // and custom entries together with the corresponding IAM policies.
@@ -1303,11 +1371,11 @@ func (c *Client) DeleteTagTemplateField(ctx context.Context, req *datacatalogpb.
 
 // CreateTag creates a tag and assigns it to:
 //
-//	An Entry if the method name is
-//	projects.locations.entryGroups.entries.tags.create.
+//   An Entry if the method name is
+//   projects.locations.entryGroups.entries.tags.create.
 //
-//	Or EntryGroupif the method
-//	name is projects.locations.entryGroups.tags.create.
+//   Or EntryGroupif the method
+//   name is projects.locations.entryGroups.tags.create.
 //
 // Note: The project identified by the parent parameter for the [tag]
 // (https://cloud.google.com/data-catalog/docs/reference/rest/v1/projects.locations.entryGroups.entries.tags/create#path-parameters (at https://cloud.google.com/data-catalog/docs/reference/rest/v1/projects.locations.entryGroups.entries.tags/create#path-parameters))
@@ -1375,9 +1443,9 @@ func (c *Client) UnstarEntry(ctx context.Context, req *datacatalogpb.UnstarEntry
 //
 // Supported resources are:
 //
-//	Tag templates
+//   Tag templates
 //
-//	Entry groups
+//   Entry groups
 //
 // Note: This method sets policies only within Data Catalog and can’t be
 // used to manage policies in BigQuery, Pub/Sub, Dataproc Metastore, and any
@@ -1385,10 +1453,10 @@ func (c *Client) UnstarEntry(ctx context.Context, req *datacatalogpb.UnstarEntry
 //
 // To call this method, you must have the following Google IAM permissions:
 //
-//	datacatalog.tagTemplates.setIamPolicy to set policies on tag
-//	templates.
+//   datacatalog.tagTemplates.setIamPolicy to set policies on tag
+//   templates.
 //
-//	datacatalog.entryGroups.setIamPolicy to set policies on entry groups.
+//   datacatalog.entryGroups.setIamPolicy to set policies on entry groups.
 func (c *Client) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
 	return c.internalClient.SetIamPolicy(ctx, req, opts...)
 }
@@ -1397,26 +1465,26 @@ func (c *Client) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyReques
 //
 // May return:
 //
-//	ANOT_FOUND error if the resource doesn’t exist or you don’t have the
-//	permission to view it.
+//   ANOT_FOUND error if the resource doesn’t exist or you don’t have the
+//   permission to view it.
 //
-//	An empty policy if the resource exists but doesn’t have a set policy.
+//   An empty policy if the resource exists but doesn’t have a set policy.
 //
 // Supported resources are:
 //
-//	Tag templates
+//   Tag templates
 //
-//	Entry groups
+//   Entry groups
 //
 // Note: This method doesn’t get policies from Google Cloud Platform
 // resources ingested into Data Catalog.
 //
 // To call this method, you must have the following Google IAM permissions:
 //
-//	datacatalog.tagTemplates.getIamPolicy to get policies on tag
-//	templates.
+//   datacatalog.tagTemplates.getIamPolicy to get policies on tag
+//   templates.
 //
-//	datacatalog.entryGroups.getIamPolicy to get policies on entry groups.
+//   datacatalog.entryGroups.getIamPolicy to get policies on entry groups.
 func (c *Client) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
 	return c.internalClient.GetIamPolicy(ctx, req, opts...)
 }
@@ -1427,9 +1495,9 @@ func (c *Client) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyReques
 //
 // Supported resources are:
 //
-//	Tag templates
+//   Tag templates
 //
-//	Entry groups
+//   Entry groups
 //
 // Note: This method gets policies only within Data Catalog and can’t be
 // used to get policies from BigQuery, Pub/Sub, Dataproc Metastore, and any
@@ -1495,9 +1563,6 @@ type gRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing Client
 	CallOptions **CallOptions
 
@@ -1530,11 +1595,6 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -1543,7 +1603,6 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 
 	c := &gRPCClient{
 		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
 		client:           datacatalogpb.NewDataCatalogClient(connPool),
 		CallOptions:      &client.CallOptions,
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
@@ -1717,11 +1776,6 @@ func (c *gRPCClient) SearchCatalog(ctx context.Context, req *datacatalogpb.Searc
 }
 
 func (c *gRPCClient) CreateEntryGroup(ctx context.Context, req *datacatalogpb.CreateEntryGroupRequest, opts ...gax.CallOption) (*datacatalogpb.EntryGroup, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1739,11 +1793,6 @@ func (c *gRPCClient) CreateEntryGroup(ctx context.Context, req *datacatalogpb.Cr
 }
 
 func (c *gRPCClient) GetEntryGroup(ctx context.Context, req *datacatalogpb.GetEntryGroupRequest, opts ...gax.CallOption) (*datacatalogpb.EntryGroup, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1761,11 +1810,6 @@ func (c *gRPCClient) GetEntryGroup(ctx context.Context, req *datacatalogpb.GetEn
 }
 
 func (c *gRPCClient) UpdateEntryGroup(ctx context.Context, req *datacatalogpb.UpdateEntryGroupRequest, opts ...gax.CallOption) (*datacatalogpb.EntryGroup, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "entry_group.name", url.QueryEscape(req.GetEntryGroup().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1783,11 +1827,6 @@ func (c *gRPCClient) UpdateEntryGroup(ctx context.Context, req *datacatalogpb.Up
 }
 
 func (c *gRPCClient) DeleteEntryGroup(ctx context.Context, req *datacatalogpb.DeleteEntryGroupRequest, opts ...gax.CallOption) error {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1846,11 +1885,6 @@ func (c *gRPCClient) ListEntryGroups(ctx context.Context, req *datacatalogpb.Lis
 }
 
 func (c *gRPCClient) CreateEntry(ctx context.Context, req *datacatalogpb.CreateEntryRequest, opts ...gax.CallOption) (*datacatalogpb.Entry, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1868,11 +1902,6 @@ func (c *gRPCClient) CreateEntry(ctx context.Context, req *datacatalogpb.CreateE
 }
 
 func (c *gRPCClient) UpdateEntry(ctx context.Context, req *datacatalogpb.UpdateEntryRequest, opts ...gax.CallOption) (*datacatalogpb.Entry, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "entry.name", url.QueryEscape(req.GetEntry().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1890,11 +1919,6 @@ func (c *gRPCClient) UpdateEntry(ctx context.Context, req *datacatalogpb.UpdateE
 }
 
 func (c *gRPCClient) DeleteEntry(ctx context.Context, req *datacatalogpb.DeleteEntryRequest, opts ...gax.CallOption) error {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1908,11 +1932,6 @@ func (c *gRPCClient) DeleteEntry(ctx context.Context, req *datacatalogpb.DeleteE
 }
 
 func (c *gRPCClient) GetEntry(ctx context.Context, req *datacatalogpb.GetEntryRequest, opts ...gax.CallOption) (*datacatalogpb.Entry, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1930,11 +1949,6 @@ func (c *gRPCClient) GetEntry(ctx context.Context, req *datacatalogpb.GetEntryRe
 }
 
 func (c *gRPCClient) LookupEntry(ctx context.Context, req *datacatalogpb.LookupEntryRequest, opts ...gax.CallOption) (*datacatalogpb.Entry, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
 	opts = append((*c.CallOptions).LookupEntry[0:len((*c.CallOptions).LookupEntry):len((*c.CallOptions).LookupEntry)], opts...)
 	var resp *datacatalogpb.Entry
@@ -1995,11 +2009,6 @@ func (c *gRPCClient) ListEntries(ctx context.Context, req *datacatalogpb.ListEnt
 }
 
 func (c *gRPCClient) ModifyEntryOverview(ctx context.Context, req *datacatalogpb.ModifyEntryOverviewRequest, opts ...gax.CallOption) (*datacatalogpb.EntryOverview, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -2017,11 +2026,6 @@ func (c *gRPCClient) ModifyEntryOverview(ctx context.Context, req *datacatalogpb
 }
 
 func (c *gRPCClient) ModifyEntryContacts(ctx context.Context, req *datacatalogpb.ModifyEntryContactsRequest, opts ...gax.CallOption) (*datacatalogpb.Contacts, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -2039,11 +2043,6 @@ func (c *gRPCClient) ModifyEntryContacts(ctx context.Context, req *datacatalogpb
 }
 
 func (c *gRPCClient) CreateTagTemplate(ctx context.Context, req *datacatalogpb.CreateTagTemplateRequest, opts ...gax.CallOption) (*datacatalogpb.TagTemplate, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -2061,11 +2060,6 @@ func (c *gRPCClient) CreateTagTemplate(ctx context.Context, req *datacatalogpb.C
 }
 
 func (c *gRPCClient) GetTagTemplate(ctx context.Context, req *datacatalogpb.GetTagTemplateRequest, opts ...gax.CallOption) (*datacatalogpb.TagTemplate, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -2083,11 +2077,6 @@ func (c *gRPCClient) GetTagTemplate(ctx context.Context, req *datacatalogpb.GetT
 }
 
 func (c *gRPCClient) UpdateTagTemplate(ctx context.Context, req *datacatalogpb.UpdateTagTemplateRequest, opts ...gax.CallOption) (*datacatalogpb.TagTemplate, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "tag_template.name", url.QueryEscape(req.GetTagTemplate().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -2105,11 +2094,6 @@ func (c *gRPCClient) UpdateTagTemplate(ctx context.Context, req *datacatalogpb.U
 }
 
 func (c *gRPCClient) DeleteTagTemplate(ctx context.Context, req *datacatalogpb.DeleteTagTemplateRequest, opts ...gax.CallOption) error {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -2123,11 +2107,6 @@ func (c *gRPCClient) DeleteTagTemplate(ctx context.Context, req *datacatalogpb.D
 }
 
 func (c *gRPCClient) CreateTagTemplateField(ctx context.Context, req *datacatalogpb.CreateTagTemplateFieldRequest, opts ...gax.CallOption) (*datacatalogpb.TagTemplateField, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -2145,11 +2124,6 @@ func (c *gRPCClient) CreateTagTemplateField(ctx context.Context, req *datacatalo
 }
 
 func (c *gRPCClient) UpdateTagTemplateField(ctx context.Context, req *datacatalogpb.UpdateTagTemplateFieldRequest, opts ...gax.CallOption) (*datacatalogpb.TagTemplateField, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -2167,11 +2141,6 @@ func (c *gRPCClient) UpdateTagTemplateField(ctx context.Context, req *datacatalo
 }
 
 func (c *gRPCClient) RenameTagTemplateField(ctx context.Context, req *datacatalogpb.RenameTagTemplateFieldRequest, opts ...gax.CallOption) (*datacatalogpb.TagTemplateField, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -2189,11 +2158,6 @@ func (c *gRPCClient) RenameTagTemplateField(ctx context.Context, req *datacatalo
 }
 
 func (c *gRPCClient) RenameTagTemplateFieldEnumValue(ctx context.Context, req *datacatalogpb.RenameTagTemplateFieldEnumValueRequest, opts ...gax.CallOption) (*datacatalogpb.TagTemplateField, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -2211,11 +2175,6 @@ func (c *gRPCClient) RenameTagTemplateFieldEnumValue(ctx context.Context, req *d
 }
 
 func (c *gRPCClient) DeleteTagTemplateField(ctx context.Context, req *datacatalogpb.DeleteTagTemplateFieldRequest, opts ...gax.CallOption) error {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -2229,11 +2188,6 @@ func (c *gRPCClient) DeleteTagTemplateField(ctx context.Context, req *datacatalo
 }
 
 func (c *gRPCClient) CreateTag(ctx context.Context, req *datacatalogpb.CreateTagRequest, opts ...gax.CallOption) (*datacatalogpb.Tag, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -2251,11 +2205,6 @@ func (c *gRPCClient) CreateTag(ctx context.Context, req *datacatalogpb.CreateTag
 }
 
 func (c *gRPCClient) UpdateTag(ctx context.Context, req *datacatalogpb.UpdateTagRequest, opts ...gax.CallOption) (*datacatalogpb.Tag, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "tag.name", url.QueryEscape(req.GetTag().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -2273,11 +2222,6 @@ func (c *gRPCClient) UpdateTag(ctx context.Context, req *datacatalogpb.UpdateTag
 }
 
 func (c *gRPCClient) DeleteTag(ctx context.Context, req *datacatalogpb.DeleteTagRequest, opts ...gax.CallOption) error {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -2336,11 +2280,6 @@ func (c *gRPCClient) ListTags(ctx context.Context, req *datacatalogpb.ListTagsRe
 }
 
 func (c *gRPCClient) ReconcileTags(ctx context.Context, req *datacatalogpb.ReconcileTagsRequest, opts ...gax.CallOption) (*ReconcileTagsOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -2360,11 +2299,6 @@ func (c *gRPCClient) ReconcileTags(ctx context.Context, req *datacatalogpb.Recon
 }
 
 func (c *gRPCClient) StarEntry(ctx context.Context, req *datacatalogpb.StarEntryRequest, opts ...gax.CallOption) (*datacatalogpb.StarEntryResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -2382,11 +2316,6 @@ func (c *gRPCClient) StarEntry(ctx context.Context, req *datacatalogpb.StarEntry
 }
 
 func (c *gRPCClient) UnstarEntry(ctx context.Context, req *datacatalogpb.UnstarEntryRequest, opts ...gax.CallOption) (*datacatalogpb.UnstarEntryResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -2404,11 +2333,6 @@ func (c *gRPCClient) UnstarEntry(ctx context.Context, req *datacatalogpb.UnstarE
 }
 
 func (c *gRPCClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -2426,11 +2350,6 @@ func (c *gRPCClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRe
 }
 
 func (c *gRPCClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -2448,11 +2367,6 @@ func (c *gRPCClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRe
 }
 
 func (c *gRPCClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermissionsRequest, opts ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -2470,11 +2384,6 @@ func (c *gRPCClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamP
 }
 
 func (c *gRPCClient) ImportEntries(ctx context.Context, req *datacatalogpb.ImportEntriesRequest, opts ...gax.CallOption) (*ImportEntriesOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -2688,11 +2597,11 @@ func (c *restClient) SearchCatalog(ctx context.Context, req *datacatalogpb.Searc
 // Data Catalog automatically creates entry groups with names that start with
 // the @ symbol for the following resources:
 //
-//	BigQuery entries (@bigquery)
+//   BigQuery entries (@bigquery)
 //
-//	Pub/Sub topics (@pubsub)
+//   Pub/Sub topics (@pubsub)
 //
-//	Dataproc Metastore services (@dataproc_metastore_{SERVICE_NAME_HASH})
+//   Dataproc Metastore services (@dataproc_metastore_{SERVICE_NAME_HASH})
 //
 // You can create your own entry groups for Cloud Storage fileset entries
 // and custom entries together with the corresponding IAM policies.
@@ -4153,11 +4062,11 @@ func (c *restClient) DeleteTagTemplateField(ctx context.Context, req *datacatalo
 
 // CreateTag creates a tag and assigns it to:
 //
-//	An Entry if the method name is
-//	projects.locations.entryGroups.entries.tags.create.
+//   An Entry if the method name is
+//   projects.locations.entryGroups.entries.tags.create.
 //
-//	Or EntryGroupif the method
-//	name is projects.locations.entryGroups.tags.create.
+//   Or EntryGroupif the method
+//   name is projects.locations.entryGroups.tags.create.
 //
 // Note: The project identified by the parent parameter for the [tag]
 // (https://cloud.google.com/data-catalog/docs/reference/rest/v1/projects.locations.entryGroups.entries.tags/create#path-parameters (at https://cloud.google.com/data-catalog/docs/reference/rest/v1/projects.locations.entryGroups.entries.tags/create#path-parameters))
@@ -4618,9 +4527,9 @@ func (c *restClient) UnstarEntry(ctx context.Context, req *datacatalogpb.UnstarE
 //
 // Supported resources are:
 //
-//	Tag templates
+//   Tag templates
 //
-//	Entry groups
+//   Entry groups
 //
 // Note: This method sets policies only within Data Catalog and can’t be
 // used to manage policies in BigQuery, Pub/Sub, Dataproc Metastore, and any
@@ -4628,10 +4537,10 @@ func (c *restClient) UnstarEntry(ctx context.Context, req *datacatalogpb.UnstarE
 //
 // To call this method, you must have the following Google IAM permissions:
 //
-//	datacatalog.tagTemplates.setIamPolicy to set policies on tag
-//	templates.
+//   datacatalog.tagTemplates.setIamPolicy to set policies on tag
+//   templates.
 //
-//	datacatalog.entryGroups.setIamPolicy to set policies on entry groups.
+//   datacatalog.entryGroups.setIamPolicy to set policies on entry groups.
 func (c *restClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -4694,26 +4603,26 @@ func (c *restClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRe
 //
 // May return:
 //
-//	ANOT_FOUND error if the resource doesn’t exist or you don’t have the
-//	permission to view it.
+//   ANOT_FOUND error if the resource doesn’t exist or you don’t have the
+//   permission to view it.
 //
-//	An empty policy if the resource exists but doesn’t have a set policy.
+//   An empty policy if the resource exists but doesn’t have a set policy.
 //
 // Supported resources are:
 //
-//	Tag templates
+//   Tag templates
 //
-//	Entry groups
+//   Entry groups
 //
 // Note: This method doesn’t get policies from Google Cloud Platform
 // resources ingested into Data Catalog.
 //
 // To call this method, you must have the following Google IAM permissions:
 //
-//	datacatalog.tagTemplates.getIamPolicy to get policies on tag
-//	templates.
+//   datacatalog.tagTemplates.getIamPolicy to get policies on tag
+//   templates.
 //
-//	datacatalog.entryGroups.getIamPolicy to get policies on entry groups.
+//   datacatalog.entryGroups.getIamPolicy to get policies on entry groups.
 func (c *restClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -4778,9 +4687,9 @@ func (c *restClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRe
 //
 // Supported resources are:
 //
-//	Tag templates
+//   Tag templates
 //
-//	Entry groups
+//   Entry groups
 //
 // Note: This method gets policies only within Data Catalog and can’t be
 // used to get policies from BigQuery, Pub/Sub, Dataproc Metastore, and any

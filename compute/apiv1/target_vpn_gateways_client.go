@@ -55,6 +55,7 @@ type TargetVpnGatewaysCallOptions struct {
 func defaultTargetVpnGatewaysRESTCallOptions() *TargetVpnGatewaysCallOptions {
 	return &TargetVpnGatewaysCallOptions{
 		AggregatedList: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -65,8 +66,11 @@ func defaultTargetVpnGatewaysRESTCallOptions() *TargetVpnGatewaysCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
-		Delete: []gax.CallOption{},
+		Delete: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
 		Get: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -77,8 +81,11 @@ func defaultTargetVpnGatewaysRESTCallOptions() *TargetVpnGatewaysCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
-		Insert: []gax.CallOption{},
+		Insert: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
 		List: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -89,7 +96,9 @@ func defaultTargetVpnGatewaysRESTCallOptions() *TargetVpnGatewaysCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
-		SetLabels: []gax.CallOption{},
+		SetLabels: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
 	}
 }
 

@@ -51,8 +51,11 @@ type RegionTargetTcpProxiesCallOptions struct {
 
 func defaultRegionTargetTcpProxiesRESTCallOptions() *RegionTargetTcpProxiesCallOptions {
 	return &RegionTargetTcpProxiesCallOptions{
-		Delete: []gax.CallOption{},
+		Delete: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
 		Get: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -63,8 +66,11 @@ func defaultRegionTargetTcpProxiesRESTCallOptions() *RegionTargetTcpProxiesCallO
 					http.StatusServiceUnavailable)
 			}),
 		},
-		Insert: []gax.CallOption{},
+		Insert: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
 		List: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,

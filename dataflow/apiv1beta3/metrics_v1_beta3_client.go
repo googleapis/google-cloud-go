@@ -62,17 +62,29 @@ func defaultMetricsV1Beta3GRPCClientOptions() []option.ClientOption {
 
 func defaultMetricsV1Beta3CallOptions() *MetricsV1Beta3CallOptions {
 	return &MetricsV1Beta3CallOptions{
-		GetJobMetrics:            []gax.CallOption{},
-		GetJobExecutionDetails:   []gax.CallOption{},
-		GetStageExecutionDetails: []gax.CallOption{},
+		GetJobMetrics: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetJobExecutionDetails: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetStageExecutionDetails: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 	}
 }
 
 func defaultMetricsV1Beta3RESTCallOptions() *MetricsV1Beta3CallOptions {
 	return &MetricsV1Beta3CallOptions{
-		GetJobMetrics:            []gax.CallOption{},
-		GetJobExecutionDetails:   []gax.CallOption{},
-		GetStageExecutionDetails: []gax.CallOption{},
+		GetJobMetrics: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetJobExecutionDetails: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetStageExecutionDetails: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 	}
 }
 
@@ -155,9 +167,6 @@ type metricsV1Beta3GRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing MetricsV1Beta3Client
 	CallOptions **MetricsV1Beta3CallOptions
 
@@ -183,11 +192,6 @@ func NewMetricsV1Beta3Client(ctx context.Context, opts ...option.ClientOption) (
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -196,7 +200,6 @@ func NewMetricsV1Beta3Client(ctx context.Context, opts ...option.ClientOption) (
 
 	c := &metricsV1Beta3GRPCClient{
 		connPool:             connPool,
-		disableDeadlines:     disableDeadlines,
 		metricsV1Beta3Client: dataflowpb.NewMetricsV1Beta3Client(connPool),
 		CallOptions:          &client.CallOptions,
 	}
@@ -300,11 +303,6 @@ func (c *metricsV1Beta3RESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 func (c *metricsV1Beta3GRPCClient) GetJobMetrics(ctx context.Context, req *dataflowpb.GetJobMetricsRequest, opts ...gax.CallOption) (*dataflowpb.JobMetrics, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project_id", url.QueryEscape(req.GetProjectId()), "location", url.QueryEscape(req.GetLocation()), "job_id", url.QueryEscape(req.GetJobId())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)

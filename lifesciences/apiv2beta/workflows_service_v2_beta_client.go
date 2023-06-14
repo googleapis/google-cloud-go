@@ -70,7 +70,9 @@ func defaultWorkflowsServiceV2BetaGRPCClientOptions() []option.ClientOption {
 
 func defaultWorkflowsServiceV2BetaCallOptions() *WorkflowsServiceV2BetaCallOptions {
 	return &WorkflowsServiceV2BetaCallOptions{
-		RunPipeline:     []gax.CallOption{},
+		RunPipeline: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		GetLocation:     []gax.CallOption{},
 		ListLocations:   []gax.CallOption{},
 		CancelOperation: []gax.CallOption{},
@@ -81,7 +83,9 @@ func defaultWorkflowsServiceV2BetaCallOptions() *WorkflowsServiceV2BetaCallOptio
 
 func defaultWorkflowsServiceV2BetaRESTCallOptions() *WorkflowsServiceV2BetaCallOptions {
 	return &WorkflowsServiceV2BetaCallOptions{
-		RunPipeline:     []gax.CallOption{},
+		RunPipeline: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		GetLocation:     []gax.CallOption{},
 		ListLocations:   []gax.CallOption{},
 		CancelOperation: []gax.CallOption{},
@@ -161,7 +165,7 @@ func (c *WorkflowsServiceV2BetaClient) Connection() *grpc.ClientConn {
 // Authorization requires the following Google
 // IAM (at https://cloud.google.com/iam/) permission:
 //
-//	lifesciences.workflows.run
+//   lifesciences.workflows.run
 func (c *WorkflowsServiceV2BetaClient) RunPipeline(ctx context.Context, req *lifesciencespb.RunPipelineRequest, opts ...gax.CallOption) (*RunPipelineOperation, error) {
 	return c.internalClient.RunPipeline(ctx, req, opts...)
 }
@@ -192,7 +196,7 @@ func (c *WorkflowsServiceV2BetaClient) ListLocations(ctx context.Context, req *l
 // Authorization requires the following Google
 // IAM (at https://cloud.google.com/iam) permission:
 //
-//	lifesciences.operations.cancel
+//   lifesciences.operations.cancel
 func (c *WorkflowsServiceV2BetaClient) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
 	return c.internalClient.CancelOperation(ctx, req, opts...)
 }
@@ -203,7 +207,7 @@ func (c *WorkflowsServiceV2BetaClient) CancelOperation(ctx context.Context, req 
 // Authorization requires the following Google
 // IAM (at https://cloud.google.com/iam) permission:
 //
-//	lifesciences.operations.get
+//   lifesciences.operations.get
 func (c *WorkflowsServiceV2BetaClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	return c.internalClient.GetOperation(ctx, req, opts...)
 }
@@ -212,7 +216,7 @@ func (c *WorkflowsServiceV2BetaClient) GetOperation(ctx context.Context, req *lo
 // request. Authorization requires the following Google
 // IAM (at https://cloud.google.com/iam) permission:
 //
-//	lifesciences.operations.list
+//   lifesciences.operations.list
 func (c *WorkflowsServiceV2BetaClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	return c.internalClient.ListOperations(ctx, req, opts...)
 }
@@ -223,9 +227,6 @@ func (c *WorkflowsServiceV2BetaClient) ListOperations(ctx context.Context, req *
 type workflowsServiceV2BetaGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
-
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
 
 	// Points back to the CallOptions field of the containing WorkflowsServiceV2BetaClient
 	CallOptions **WorkflowsServiceV2BetaCallOptions
@@ -261,11 +262,6 @@ func NewWorkflowsServiceV2BetaClient(ctx context.Context, opts ...option.ClientO
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -274,7 +270,6 @@ func NewWorkflowsServiceV2BetaClient(ctx context.Context, opts ...option.ClientO
 
 	c := &workflowsServiceV2BetaGRPCClient{
 		connPool:                     connPool,
-		disableDeadlines:             disableDeadlines,
 		workflowsServiceV2BetaClient: lifesciencespb.NewWorkflowsServiceV2BetaClient(connPool),
 		CallOptions:                  &client.CallOptions,
 		operationsClient:             longrunningpb.NewOperationsClient(connPool),
@@ -406,11 +401,6 @@ func (c *workflowsServiceV2BetaRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 func (c *workflowsServiceV2BetaGRPCClient) RunPipeline(ctx context.Context, req *lifesciencespb.RunPipelineRequest, opts ...gax.CallOption) (*RunPipelineOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -582,7 +572,7 @@ func (c *workflowsServiceV2BetaGRPCClient) ListOperations(ctx context.Context, r
 // Authorization requires the following Google
 // IAM (at https://cloud.google.com/iam/) permission:
 //
-//	lifesciences.workflows.run
+//   lifesciences.workflows.run
 func (c *workflowsServiceV2BetaRESTClient) RunPipeline(ctx context.Context, req *lifesciencespb.RunPipelineRequest, opts ...gax.CallOption) (*RunPipelineOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -809,7 +799,7 @@ func (c *workflowsServiceV2BetaRESTClient) ListLocations(ctx context.Context, re
 // Authorization requires the following Google
 // IAM (at https://cloud.google.com/iam) permission:
 //
-//	lifesciences.operations.cancel
+//   lifesciences.operations.cancel
 func (c *workflowsServiceV2BetaRESTClient) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -861,7 +851,7 @@ func (c *workflowsServiceV2BetaRESTClient) CancelOperation(ctx context.Context, 
 // Authorization requires the following Google
 // IAM (at https://cloud.google.com/iam) permission:
 //
-//	lifesciences.operations.get
+//   lifesciences.operations.get
 func (c *workflowsServiceV2BetaRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -923,7 +913,7 @@ func (c *workflowsServiceV2BetaRESTClient) GetOperation(ctx context.Context, req
 // request. Authorization requires the following Google
 // IAM (at https://cloud.google.com/iam) permission:
 //
-//	lifesciences.operations.list
+//   lifesciences.operations.list
 func (c *workflowsServiceV2BetaRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
 	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)

@@ -73,6 +73,7 @@ func defaultCloudSchedulerGRPCClientOptions() []option.ClientOption {
 func defaultCloudSchedulerCallOptions() *CloudSchedulerCallOptions {
 	return &CloudSchedulerCallOptions{
 		ListJobs: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -85,6 +86,7 @@ func defaultCloudSchedulerCallOptions() *CloudSchedulerCallOptions {
 			}),
 		},
 		GetJob: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -96,9 +98,14 @@ func defaultCloudSchedulerCallOptions() *CloudSchedulerCallOptions {
 				})
 			}),
 		},
-		CreateJob: []gax.CallOption{},
-		UpdateJob: []gax.CallOption{},
+		CreateJob: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		UpdateJob: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
 		DeleteJob: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -110,9 +117,15 @@ func defaultCloudSchedulerCallOptions() *CloudSchedulerCallOptions {
 				})
 			}),
 		},
-		PauseJob:      []gax.CallOption{},
-		ResumeJob:     []gax.CallOption{},
-		RunJob:        []gax.CallOption{},
+		PauseJob: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		ResumeJob: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		RunJob: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
 		GetLocation:   []gax.CallOption{},
 		ListLocations: []gax.CallOption{},
 	}
@@ -121,6 +134,7 @@ func defaultCloudSchedulerCallOptions() *CloudSchedulerCallOptions {
 func defaultCloudSchedulerRESTCallOptions() *CloudSchedulerCallOptions {
 	return &CloudSchedulerCallOptions{
 		ListJobs: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -132,6 +146,7 @@ func defaultCloudSchedulerRESTCallOptions() *CloudSchedulerCallOptions {
 			}),
 		},
 		GetJob: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -142,9 +157,14 @@ func defaultCloudSchedulerRESTCallOptions() *CloudSchedulerCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
-		CreateJob: []gax.CallOption{},
-		UpdateJob: []gax.CallOption{},
+		CreateJob: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		UpdateJob: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
 		DeleteJob: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -155,9 +175,15 @@ func defaultCloudSchedulerRESTCallOptions() *CloudSchedulerCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
-		PauseJob:      []gax.CallOption{},
-		ResumeJob:     []gax.CallOption{},
-		RunJob:        []gax.CallOption{},
+		PauseJob: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		ResumeJob: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		RunJob: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
 		GetLocation:   []gax.CallOption{},
 		ListLocations: []gax.CallOption{},
 	}
@@ -302,9 +328,6 @@ type cloudSchedulerGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing CloudSchedulerClient
 	CallOptions **CloudSchedulerCallOptions
 
@@ -332,11 +355,6 @@ func NewCloudSchedulerClient(ctx context.Context, opts ...option.ClientOption) (
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -345,7 +363,6 @@ func NewCloudSchedulerClient(ctx context.Context, opts ...option.ClientOption) (
 
 	c := &cloudSchedulerGRPCClient{
 		connPool:             connPool,
-		disableDeadlines:     disableDeadlines,
 		cloudSchedulerClient: schedulerpb.NewCloudSchedulerClient(connPool),
 		CallOptions:          &client.CallOptions,
 		locationsClient:      locationpb.NewLocationsClient(connPool),
@@ -495,11 +512,6 @@ func (c *cloudSchedulerGRPCClient) ListJobs(ctx context.Context, req *schedulerp
 }
 
 func (c *cloudSchedulerGRPCClient) GetJob(ctx context.Context, req *schedulerpb.GetJobRequest, opts ...gax.CallOption) (*schedulerpb.Job, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -517,11 +529,6 @@ func (c *cloudSchedulerGRPCClient) GetJob(ctx context.Context, req *schedulerpb.
 }
 
 func (c *cloudSchedulerGRPCClient) CreateJob(ctx context.Context, req *schedulerpb.CreateJobRequest, opts ...gax.CallOption) (*schedulerpb.Job, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -539,11 +546,6 @@ func (c *cloudSchedulerGRPCClient) CreateJob(ctx context.Context, req *scheduler
 }
 
 func (c *cloudSchedulerGRPCClient) UpdateJob(ctx context.Context, req *schedulerpb.UpdateJobRequest, opts ...gax.CallOption) (*schedulerpb.Job, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "job.name", url.QueryEscape(req.GetJob().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -561,11 +563,6 @@ func (c *cloudSchedulerGRPCClient) UpdateJob(ctx context.Context, req *scheduler
 }
 
 func (c *cloudSchedulerGRPCClient) DeleteJob(ctx context.Context, req *schedulerpb.DeleteJobRequest, opts ...gax.CallOption) error {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -579,11 +576,6 @@ func (c *cloudSchedulerGRPCClient) DeleteJob(ctx context.Context, req *scheduler
 }
 
 func (c *cloudSchedulerGRPCClient) PauseJob(ctx context.Context, req *schedulerpb.PauseJobRequest, opts ...gax.CallOption) (*schedulerpb.Job, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -601,11 +593,6 @@ func (c *cloudSchedulerGRPCClient) PauseJob(ctx context.Context, req *schedulerp
 }
 
 func (c *cloudSchedulerGRPCClient) ResumeJob(ctx context.Context, req *schedulerpb.ResumeJobRequest, opts ...gax.CallOption) (*schedulerpb.Job, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -623,11 +610,6 @@ func (c *cloudSchedulerGRPCClient) ResumeJob(ctx context.Context, req *scheduler
 }
 
 func (c *cloudSchedulerGRPCClient) RunJob(ctx context.Context, req *schedulerpb.RunJobRequest, opts ...gax.CallOption) (*schedulerpb.Job, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)

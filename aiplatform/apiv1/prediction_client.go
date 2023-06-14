@@ -150,13 +150,13 @@ func (c *PredictionClient) Predict(ctx context.Context, req *aiplatformpb.Predic
 //
 // The response includes the following HTTP headers:
 //
-//	X-Vertex-AI-Endpoint-Id: ID of the
-//	Endpoint that served this
-//	prediction.
+//   X-Vertex-AI-Endpoint-Id: ID of the
+//   Endpoint that served this
+//   prediction.
 //
-//	X-Vertex-AI-Deployed-Model-Id: ID of the Endpoint’s
-//	DeployedModel that served this
-//	prediction.
+//   X-Vertex-AI-Deployed-Model-Id: ID of the Endpoint’s
+//   DeployedModel that served this
+//   prediction.
 func (c *PredictionClient) RawPredict(ctx context.Context, req *aiplatformpb.RawPredictRequest, opts ...gax.CallOption) (*httpbodypb.HttpBody, error) {
 	return c.internalClient.RawPredict(ctx, req, opts...)
 }
@@ -244,9 +244,6 @@ type predictionGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing PredictionClient
 	CallOptions **PredictionCallOptions
 
@@ -277,11 +274,6 @@ func NewPredictionClient(ctx context.Context, opts ...option.ClientOption) (*Pre
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -290,7 +282,6 @@ func NewPredictionClient(ctx context.Context, opts ...option.ClientOption) (*Pre
 
 	c := &predictionGRPCClient{
 		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
 		predictionClient: aiplatformpb.NewPredictionServiceClient(connPool),
 		CallOptions:      &client.CallOptions,
 		operationsClient: longrunningpb.NewOperationsClient(connPool),

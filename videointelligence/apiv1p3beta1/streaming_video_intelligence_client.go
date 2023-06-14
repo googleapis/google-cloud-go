@@ -124,9 +124,6 @@ type streamingVideoIntelligenceGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing StreamingVideoIntelligenceClient
 	CallOptions **StreamingVideoIntelligenceCallOptions
 
@@ -151,11 +148,6 @@ func NewStreamingVideoIntelligenceClient(ctx context.Context, opts ...option.Cli
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -164,7 +156,6 @@ func NewStreamingVideoIntelligenceClient(ctx context.Context, opts ...option.Cli
 
 	c := &streamingVideoIntelligenceGRPCClient{
 		connPool:                         connPool,
-		disableDeadlines:                 disableDeadlines,
 		streamingVideoIntelligenceClient: videointelligencepb.NewStreamingVideoIntelligenceServiceClient(connPool),
 		CallOptions:                      &client.CallOptions,
 	}

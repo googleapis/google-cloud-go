@@ -59,13 +59,17 @@ func defaultPhishingProtectionServiceV1Beta1GRPCClientOptions() []option.ClientO
 
 func defaultPhishingProtectionServiceV1Beta1CallOptions() *PhishingProtectionServiceV1Beta1CallOptions {
 	return &PhishingProtectionServiceV1Beta1CallOptions{
-		ReportPhishing: []gax.CallOption{},
+		ReportPhishing: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
 	}
 }
 
 func defaultPhishingProtectionServiceV1Beta1RESTCallOptions() *PhishingProtectionServiceV1Beta1CallOptions {
 	return &PhishingProtectionServiceV1Beta1CallOptions{
-		ReportPhishing: []gax.CallOption{},
+		ReportPhishing: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
 	}
 }
 
@@ -130,9 +134,6 @@ type phishingProtectionServiceV1Beta1GRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing PhishingProtectionServiceV1Beta1Client
 	CallOptions **PhishingProtectionServiceV1Beta1CallOptions
 
@@ -157,11 +158,6 @@ func NewPhishingProtectionServiceV1Beta1Client(ctx context.Context, opts ...opti
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -170,7 +166,6 @@ func NewPhishingProtectionServiceV1Beta1Client(ctx context.Context, opts ...opti
 
 	c := &phishingProtectionServiceV1Beta1GRPCClient{
 		connPool:                               connPool,
-		disableDeadlines:                       disableDeadlines,
 		phishingProtectionServiceV1Beta1Client: phishingprotectionpb.NewPhishingProtectionServiceV1Beta1Client(connPool),
 		CallOptions:                            &client.CallOptions,
 	}
@@ -273,11 +268,6 @@ func (c *phishingProtectionServiceV1Beta1RESTClient) Connection() *grpc.ClientCo
 	return nil
 }
 func (c *phishingProtectionServiceV1Beta1GRPCClient) ReportPhishing(ctx context.Context, req *phishingprotectionpb.ReportPhishingRequest, opts ...gax.CallOption) (*phishingprotectionpb.ReportPhishingResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)

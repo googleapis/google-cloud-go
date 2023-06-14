@@ -72,35 +72,83 @@ func defaultGRPCClientOptions() []option.ClientOption {
 
 func defaultCallOptions() *CallOptions {
 	return &CallOptions{
-		GetTable:        []gax.CallOption{},
-		ListTables:      []gax.CallOption{},
-		GetWorkspace:    []gax.CallOption{},
-		ListWorkspaces:  []gax.CallOption{},
-		GetRow:          []gax.CallOption{},
-		ListRows:        []gax.CallOption{},
-		CreateRow:       []gax.CallOption{},
-		BatchCreateRows: []gax.CallOption{},
-		UpdateRow:       []gax.CallOption{},
-		BatchUpdateRows: []gax.CallOption{},
-		DeleteRow:       []gax.CallOption{},
-		BatchDeleteRows: []gax.CallOption{},
+		GetTable: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ListTables: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetWorkspace: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ListWorkspaces: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetRow: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ListRows: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		CreateRow: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		BatchCreateRows: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateRow: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		BatchUpdateRows: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteRow: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		BatchDeleteRows: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 	}
 }
 
 func defaultRESTCallOptions() *CallOptions {
 	return &CallOptions{
-		GetTable:        []gax.CallOption{},
-		ListTables:      []gax.CallOption{},
-		GetWorkspace:    []gax.CallOption{},
-		ListWorkspaces:  []gax.CallOption{},
-		GetRow:          []gax.CallOption{},
-		ListRows:        []gax.CallOption{},
-		CreateRow:       []gax.CallOption{},
-		BatchCreateRows: []gax.CallOption{},
-		UpdateRow:       []gax.CallOption{},
-		BatchUpdateRows: []gax.CallOption{},
-		DeleteRow:       []gax.CallOption{},
-		BatchDeleteRows: []gax.CallOption{},
+		GetTable: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ListTables: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetWorkspace: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ListWorkspaces: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetRow: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ListRows: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		CreateRow: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		BatchCreateRows: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateRow: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		BatchUpdateRows: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteRow: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		BatchDeleteRows: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 	}
 }
 
@@ -129,15 +177,15 @@ type internalClient interface {
 // The Tables Service provides an API for reading and updating tables.
 // It defines the following resource model:
 //
-//	The API has a collection of [Table][google.area120.tables.v1alpha1.Table]
-//	resources, named tables/*
+//   The API has a collection of [Table][google.area120.tables.v1alpha1.Table]
+//   resources, named tables/*
 //
-//	Each Table has a collection of [Row][google.area120.tables.v1alpha1.Row]
-//	resources, named tables/*/rows/*
+//   Each Table has a collection of [Row][google.area120.tables.v1alpha1.Row]
+//   resources, named tables/*/rows/*
 //
-//	The API has a collection of
-//	[Workspace][google.area120.tables.v1alpha1.Workspace]
-//	resources, named workspaces/*.
+//   The API has a collection of
+//   [Workspace][google.area120.tables.v1alpha1.Workspace]
+//   resources, named workspaces/*.
 type Client struct {
 	// The internal transport-dependent client.
 	internalClient internalClient
@@ -236,9 +284,6 @@ type gRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing Client
 	CallOptions **CallOptions
 
@@ -255,15 +300,15 @@ type gRPCClient struct {
 // The Tables Service provides an API for reading and updating tables.
 // It defines the following resource model:
 //
-//	The API has a collection of [Table][google.area120.tables.v1alpha1.Table]
-//	resources, named tables/*
+//   The API has a collection of [Table][google.area120.tables.v1alpha1.Table]
+//   resources, named tables/*
 //
-//	Each Table has a collection of [Row][google.area120.tables.v1alpha1.Row]
-//	resources, named tables/*/rows/*
+//   Each Table has a collection of [Row][google.area120.tables.v1alpha1.Row]
+//   resources, named tables/*/rows/*
 //
-//	The API has a collection of
-//	[Workspace][google.area120.tables.v1alpha1.Workspace]
-//	resources, named workspaces/*.
+//   The API has a collection of
+//   [Workspace][google.area120.tables.v1alpha1.Workspace]
+//   resources, named workspaces/*.
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := defaultGRPCClientOptions()
 	if newClientHook != nil {
@@ -274,11 +319,6 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -286,10 +326,9 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 	client := Client{CallOptions: defaultCallOptions()}
 
 	c := &gRPCClient{
-		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
-		client:           tablespb.NewTablesServiceClient(connPool),
-		CallOptions:      &client.CallOptions,
+		connPool:    connPool,
+		client:      tablespb.NewTablesServiceClient(connPool),
+		CallOptions: &client.CallOptions,
 	}
 	c.setGoogleClientInfo()
 
@@ -341,15 +380,15 @@ type restClient struct {
 // The Tables Service provides an API for reading and updating tables.
 // It defines the following resource model:
 //
-//	The API has a collection of [Table][google.area120.tables.v1alpha1.Table]
-//	resources, named tables/*
+//   The API has a collection of [Table][google.area120.tables.v1alpha1.Table]
+//   resources, named tables/*
 //
-//	Each Table has a collection of [Row][google.area120.tables.v1alpha1.Row]
-//	resources, named tables/*/rows/*
+//   Each Table has a collection of [Row][google.area120.tables.v1alpha1.Row]
+//   resources, named tables/*/rows/*
 //
-//	The API has a collection of
-//	[Workspace][google.area120.tables.v1alpha1.Workspace]
-//	resources, named workspaces/*.
+//   The API has a collection of
+//   [Workspace][google.area120.tables.v1alpha1.Workspace]
+//   resources, named workspaces/*.
 func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := append(defaultRESTClientOptions(), opts...)
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
@@ -401,11 +440,6 @@ func (c *restClient) Connection() *grpc.ClientConn {
 	return nil
 }
 func (c *gRPCClient) GetTable(ctx context.Context, req *tablespb.GetTableRequest, opts ...gax.CallOption) (*tablespb.Table, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -466,11 +500,6 @@ func (c *gRPCClient) ListTables(ctx context.Context, req *tablespb.ListTablesReq
 }
 
 func (c *gRPCClient) GetWorkspace(ctx context.Context, req *tablespb.GetWorkspaceRequest, opts ...gax.CallOption) (*tablespb.Workspace, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -531,11 +560,6 @@ func (c *gRPCClient) ListWorkspaces(ctx context.Context, req *tablespb.ListWorks
 }
 
 func (c *gRPCClient) GetRow(ctx context.Context, req *tablespb.GetRowRequest, opts ...gax.CallOption) (*tablespb.Row, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -598,11 +622,6 @@ func (c *gRPCClient) ListRows(ctx context.Context, req *tablespb.ListRowsRequest
 }
 
 func (c *gRPCClient) CreateRow(ctx context.Context, req *tablespb.CreateRowRequest, opts ...gax.CallOption) (*tablespb.Row, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -620,11 +639,6 @@ func (c *gRPCClient) CreateRow(ctx context.Context, req *tablespb.CreateRowReque
 }
 
 func (c *gRPCClient) BatchCreateRows(ctx context.Context, req *tablespb.BatchCreateRowsRequest, opts ...gax.CallOption) (*tablespb.BatchCreateRowsResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -642,11 +656,6 @@ func (c *gRPCClient) BatchCreateRows(ctx context.Context, req *tablespb.BatchCre
 }
 
 func (c *gRPCClient) UpdateRow(ctx context.Context, req *tablespb.UpdateRowRequest, opts ...gax.CallOption) (*tablespb.Row, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "row.name", url.QueryEscape(req.GetRow().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -664,11 +673,6 @@ func (c *gRPCClient) UpdateRow(ctx context.Context, req *tablespb.UpdateRowReque
 }
 
 func (c *gRPCClient) BatchUpdateRows(ctx context.Context, req *tablespb.BatchUpdateRowsRequest, opts ...gax.CallOption) (*tablespb.BatchUpdateRowsResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -686,11 +690,6 @@ func (c *gRPCClient) BatchUpdateRows(ctx context.Context, req *tablespb.BatchUpd
 }
 
 func (c *gRPCClient) DeleteRow(ctx context.Context, req *tablespb.DeleteRowRequest, opts ...gax.CallOption) error {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -704,11 +703,6 @@ func (c *gRPCClient) DeleteRow(ctx context.Context, req *tablespb.DeleteRowReque
 }
 
 func (c *gRPCClient) BatchDeleteRows(ctx context.Context, req *tablespb.BatchDeleteRowsRequest, opts ...gax.CallOption) error {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)

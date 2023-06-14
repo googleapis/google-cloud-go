@@ -99,8 +99,11 @@ func defaultBackupForGKEGRPCClientOptions() []option.ClientOption {
 
 func defaultBackupForGKECallOptions() *BackupForGKECallOptions {
 	return &BackupForGKECallOptions{
-		CreateBackupPlan: []gax.CallOption{},
+		CreateBackupPlan: []gax.CallOption{
+			gax.WithTimeout(300000 * time.Millisecond),
+		},
 		ListBackupPlans: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -112,6 +115,7 @@ func defaultBackupForGKECallOptions() *BackupForGKECallOptions {
 			}),
 		},
 		GetBackupPlan: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -122,10 +126,17 @@ func defaultBackupForGKECallOptions() *BackupForGKECallOptions {
 				})
 			}),
 		},
-		UpdateBackupPlan: []gax.CallOption{},
-		DeleteBackupPlan: []gax.CallOption{},
-		CreateBackup:     []gax.CallOption{},
+		UpdateBackupPlan: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteBackupPlan: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		CreateBackup: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
+		},
 		ListBackups: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -137,6 +148,7 @@ func defaultBackupForGKECallOptions() *BackupForGKECallOptions {
 			}),
 		},
 		GetBackup: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -147,9 +159,14 @@ func defaultBackupForGKECallOptions() *BackupForGKECallOptions {
 				})
 			}),
 		},
-		UpdateBackup: []gax.CallOption{},
-		DeleteBackup: []gax.CallOption{},
+		UpdateBackup: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteBackup: []gax.CallOption{
+			gax.WithTimeout(300000 * time.Millisecond),
+		},
 		ListVolumeBackups: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -161,6 +178,7 @@ func defaultBackupForGKECallOptions() *BackupForGKECallOptions {
 			}),
 		},
 		GetVolumeBackup: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -171,8 +189,11 @@ func defaultBackupForGKECallOptions() *BackupForGKECallOptions {
 				})
 			}),
 		},
-		CreateRestorePlan: []gax.CallOption{},
+		CreateRestorePlan: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
+		},
 		ListRestorePlans: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -184,6 +205,7 @@ func defaultBackupForGKECallOptions() *BackupForGKECallOptions {
 			}),
 		},
 		GetRestorePlan: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -194,10 +216,17 @@ func defaultBackupForGKECallOptions() *BackupForGKECallOptions {
 				})
 			}),
 		},
-		UpdateRestorePlan: []gax.CallOption{},
-		DeleteRestorePlan: []gax.CallOption{},
-		CreateRestore:     []gax.CallOption{},
+		UpdateRestorePlan: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteRestorePlan: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		CreateRestore: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
+		},
 		ListRestores: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -209,6 +238,7 @@ func defaultBackupForGKECallOptions() *BackupForGKECallOptions {
 			}),
 		},
 		GetRestore: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -219,9 +249,14 @@ func defaultBackupForGKECallOptions() *BackupForGKECallOptions {
 				})
 			}),
 		},
-		UpdateRestore: []gax.CallOption{},
-		DeleteRestore: []gax.CallOption{},
+		UpdateRestore: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteRestore: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		ListVolumeRestores: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -233,6 +268,7 @@ func defaultBackupForGKECallOptions() *BackupForGKECallOptions {
 			}),
 		},
 		GetVolumeRestore: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -257,8 +293,11 @@ func defaultBackupForGKECallOptions() *BackupForGKECallOptions {
 
 func defaultBackupForGKERESTCallOptions() *BackupForGKECallOptions {
 	return &BackupForGKECallOptions{
-		CreateBackupPlan: []gax.CallOption{},
+		CreateBackupPlan: []gax.CallOption{
+			gax.WithTimeout(300000 * time.Millisecond),
+		},
 		ListBackupPlans: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -269,6 +308,7 @@ func defaultBackupForGKERESTCallOptions() *BackupForGKECallOptions {
 			}),
 		},
 		GetBackupPlan: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -278,10 +318,17 @@ func defaultBackupForGKERESTCallOptions() *BackupForGKECallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
-		UpdateBackupPlan: []gax.CallOption{},
-		DeleteBackupPlan: []gax.CallOption{},
-		CreateBackup:     []gax.CallOption{},
+		UpdateBackupPlan: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteBackupPlan: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		CreateBackup: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
+		},
 		ListBackups: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -292,6 +339,7 @@ func defaultBackupForGKERESTCallOptions() *BackupForGKECallOptions {
 			}),
 		},
 		GetBackup: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -301,9 +349,14 @@ func defaultBackupForGKERESTCallOptions() *BackupForGKECallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
-		UpdateBackup: []gax.CallOption{},
-		DeleteBackup: []gax.CallOption{},
+		UpdateBackup: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteBackup: []gax.CallOption{
+			gax.WithTimeout(300000 * time.Millisecond),
+		},
 		ListVolumeBackups: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -314,6 +367,7 @@ func defaultBackupForGKERESTCallOptions() *BackupForGKECallOptions {
 			}),
 		},
 		GetVolumeBackup: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -323,8 +377,11 @@ func defaultBackupForGKERESTCallOptions() *BackupForGKECallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
-		CreateRestorePlan: []gax.CallOption{},
+		CreateRestorePlan: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
+		},
 		ListRestorePlans: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -335,6 +392,7 @@ func defaultBackupForGKERESTCallOptions() *BackupForGKECallOptions {
 			}),
 		},
 		GetRestorePlan: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -344,10 +402,17 @@ func defaultBackupForGKERESTCallOptions() *BackupForGKECallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
-		UpdateRestorePlan: []gax.CallOption{},
-		DeleteRestorePlan: []gax.CallOption{},
-		CreateRestore:     []gax.CallOption{},
+		UpdateRestorePlan: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteRestorePlan: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		CreateRestore: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
+		},
 		ListRestores: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -358,6 +423,7 @@ func defaultBackupForGKERESTCallOptions() *BackupForGKECallOptions {
 			}),
 		},
 		GetRestore: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -367,9 +433,14 @@ func defaultBackupForGKERESTCallOptions() *BackupForGKECallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
-		UpdateRestore: []gax.CallOption{},
-		DeleteRestore: []gax.CallOption{},
+		UpdateRestore: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteRestore: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		ListVolumeRestores: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -380,6 +451,7 @@ func defaultBackupForGKERESTCallOptions() *BackupForGKECallOptions {
 			}),
 		},
 		GetVolumeRestore: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -749,9 +821,6 @@ type backupForGKEGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing BackupForGKEClient
 	CallOptions **BackupForGKECallOptions
 
@@ -788,11 +857,6 @@ func NewBackupForGKEClient(ctx context.Context, opts ...option.ClientOption) (*B
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -801,7 +865,6 @@ func NewBackupForGKEClient(ctx context.Context, opts ...option.ClientOption) (*B
 
 	c := &backupForGKEGRPCClient{
 		connPool:           connPool,
-		disableDeadlines:   disableDeadlines,
 		backupForGKEClient: gkebackuppb.NewBackupForGKEClient(connPool),
 		CallOptions:        &client.CallOptions,
 		operationsClient:   longrunningpb.NewOperationsClient(connPool),
@@ -934,11 +997,6 @@ func (c *backupForGKERESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 func (c *backupForGKEGRPCClient) CreateBackupPlan(ctx context.Context, req *gkebackuppb.CreateBackupPlanRequest, opts ...gax.CallOption) (*CreateBackupPlanOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 300000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1003,11 +1061,6 @@ func (c *backupForGKEGRPCClient) ListBackupPlans(ctx context.Context, req *gkeba
 }
 
 func (c *backupForGKEGRPCClient) GetBackupPlan(ctx context.Context, req *gkebackuppb.GetBackupPlanRequest, opts ...gax.CallOption) (*gkebackuppb.BackupPlan, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1025,11 +1078,6 @@ func (c *backupForGKEGRPCClient) GetBackupPlan(ctx context.Context, req *gkeback
 }
 
 func (c *backupForGKEGRPCClient) UpdateBackupPlan(ctx context.Context, req *gkebackuppb.UpdateBackupPlanRequest, opts ...gax.CallOption) (*UpdateBackupPlanOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "backup_plan.name", url.QueryEscape(req.GetBackupPlan().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1049,11 +1097,6 @@ func (c *backupForGKEGRPCClient) UpdateBackupPlan(ctx context.Context, req *gkeb
 }
 
 func (c *backupForGKEGRPCClient) DeleteBackupPlan(ctx context.Context, req *gkebackuppb.DeleteBackupPlanRequest, opts ...gax.CallOption) (*DeleteBackupPlanOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1073,11 +1116,6 @@ func (c *backupForGKEGRPCClient) DeleteBackupPlan(ctx context.Context, req *gkeb
 }
 
 func (c *backupForGKEGRPCClient) CreateBackup(ctx context.Context, req *gkebackuppb.CreateBackupRequest, opts ...gax.CallOption) (*CreateBackupOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 120000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1142,11 +1180,6 @@ func (c *backupForGKEGRPCClient) ListBackups(ctx context.Context, req *gkebackup
 }
 
 func (c *backupForGKEGRPCClient) GetBackup(ctx context.Context, req *gkebackuppb.GetBackupRequest, opts ...gax.CallOption) (*gkebackuppb.Backup, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1164,11 +1197,6 @@ func (c *backupForGKEGRPCClient) GetBackup(ctx context.Context, req *gkebackuppb
 }
 
 func (c *backupForGKEGRPCClient) UpdateBackup(ctx context.Context, req *gkebackuppb.UpdateBackupRequest, opts ...gax.CallOption) (*UpdateBackupOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "backup.name", url.QueryEscape(req.GetBackup().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1188,11 +1216,6 @@ func (c *backupForGKEGRPCClient) UpdateBackup(ctx context.Context, req *gkebacku
 }
 
 func (c *backupForGKEGRPCClient) DeleteBackup(ctx context.Context, req *gkebackuppb.DeleteBackupRequest, opts ...gax.CallOption) (*DeleteBackupOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 300000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1257,11 +1280,6 @@ func (c *backupForGKEGRPCClient) ListVolumeBackups(ctx context.Context, req *gke
 }
 
 func (c *backupForGKEGRPCClient) GetVolumeBackup(ctx context.Context, req *gkebackuppb.GetVolumeBackupRequest, opts ...gax.CallOption) (*gkebackuppb.VolumeBackup, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1279,11 +1297,6 @@ func (c *backupForGKEGRPCClient) GetVolumeBackup(ctx context.Context, req *gkeba
 }
 
 func (c *backupForGKEGRPCClient) CreateRestorePlan(ctx context.Context, req *gkebackuppb.CreateRestorePlanRequest, opts ...gax.CallOption) (*CreateRestorePlanOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 120000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1348,11 +1361,6 @@ func (c *backupForGKEGRPCClient) ListRestorePlans(ctx context.Context, req *gkeb
 }
 
 func (c *backupForGKEGRPCClient) GetRestorePlan(ctx context.Context, req *gkebackuppb.GetRestorePlanRequest, opts ...gax.CallOption) (*gkebackuppb.RestorePlan, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1370,11 +1378,6 @@ func (c *backupForGKEGRPCClient) GetRestorePlan(ctx context.Context, req *gkebac
 }
 
 func (c *backupForGKEGRPCClient) UpdateRestorePlan(ctx context.Context, req *gkebackuppb.UpdateRestorePlanRequest, opts ...gax.CallOption) (*UpdateRestorePlanOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "restore_plan.name", url.QueryEscape(req.GetRestorePlan().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1394,11 +1397,6 @@ func (c *backupForGKEGRPCClient) UpdateRestorePlan(ctx context.Context, req *gke
 }
 
 func (c *backupForGKEGRPCClient) DeleteRestorePlan(ctx context.Context, req *gkebackuppb.DeleteRestorePlanRequest, opts ...gax.CallOption) (*DeleteRestorePlanOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1418,11 +1416,6 @@ func (c *backupForGKEGRPCClient) DeleteRestorePlan(ctx context.Context, req *gke
 }
 
 func (c *backupForGKEGRPCClient) CreateRestore(ctx context.Context, req *gkebackuppb.CreateRestoreRequest, opts ...gax.CallOption) (*CreateRestoreOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 120000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1487,11 +1480,6 @@ func (c *backupForGKEGRPCClient) ListRestores(ctx context.Context, req *gkebacku
 }
 
 func (c *backupForGKEGRPCClient) GetRestore(ctx context.Context, req *gkebackuppb.GetRestoreRequest, opts ...gax.CallOption) (*gkebackuppb.Restore, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1509,11 +1497,6 @@ func (c *backupForGKEGRPCClient) GetRestore(ctx context.Context, req *gkebackupp
 }
 
 func (c *backupForGKEGRPCClient) UpdateRestore(ctx context.Context, req *gkebackuppb.UpdateRestoreRequest, opts ...gax.CallOption) (*UpdateRestoreOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "restore.name", url.QueryEscape(req.GetRestore().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1533,11 +1516,6 @@ func (c *backupForGKEGRPCClient) UpdateRestore(ctx context.Context, req *gkeback
 }
 
 func (c *backupForGKEGRPCClient) DeleteRestore(ctx context.Context, req *gkebackuppb.DeleteRestoreRequest, opts ...gax.CallOption) (*DeleteRestoreOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1602,11 +1580,6 @@ func (c *backupForGKEGRPCClient) ListVolumeRestores(ctx context.Context, req *gk
 }
 
 func (c *backupForGKEGRPCClient) GetVolumeRestore(ctx context.Context, req *gkebackuppb.GetVolumeRestoreRequest, opts ...gax.CallOption) (*gkebackuppb.VolumeRestore, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)

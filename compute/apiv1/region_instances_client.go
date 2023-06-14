@@ -23,6 +23,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
+	"time"
 
 	computepb "cloud.google.com/go/compute/apiv1/computepb"
 	gax "github.com/googleapis/gax-go/v2"
@@ -44,7 +45,9 @@ type RegionInstancesCallOptions struct {
 
 func defaultRegionInstancesRESTCallOptions() *RegionInstancesCallOptions {
 	return &RegionInstancesCallOptions{
-		BulkInsert: []gax.CallOption{},
+		BulkInsert: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
 	}
 }
 

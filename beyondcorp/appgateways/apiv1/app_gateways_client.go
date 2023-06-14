@@ -122,8 +122,8 @@ type internalClient interface {
 //
 // The AppGatewaysService exposes the following resources:
 //
-//	AppGateways, named as follows:
-//	projects/{project_id}/locations/{location_id}/appGateways/{app_gateway_id}.
+//   AppGateways, named as follows:
+//   projects/{project_id}/locations/{location_id}/appGateways/{app_gateway_id}.
 //
 // The AppGatewaysService service provides methods to manage
 // (create/read/update/delete) BeyondCorp AppGateways.
@@ -258,9 +258,6 @@ type gRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing Client
 	CallOptions **CallOptions
 
@@ -294,8 +291,8 @@ type gRPCClient struct {
 //
 // The AppGatewaysService exposes the following resources:
 //
-//	AppGateways, named as follows:
-//	projects/{project_id}/locations/{location_id}/appGateways/{app_gateway_id}.
+//   AppGateways, named as follows:
+//   projects/{project_id}/locations/{location_id}/appGateways/{app_gateway_id}.
 //
 // The AppGatewaysService service provides methods to manage
 // (create/read/update/delete) BeyondCorp AppGateways.
@@ -309,11 +306,6 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -322,7 +314,6 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 
 	c := &gRPCClient{
 		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
 		client:           appgatewayspb.NewAppGatewaysServiceClient(connPool),
 		CallOptions:      &client.CallOptions,
 		operationsClient: longrunningpb.NewOperationsClient(connPool),

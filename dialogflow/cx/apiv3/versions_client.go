@@ -79,6 +79,7 @@ func defaultVersionsGRPCClientOptions() []option.ClientOption {
 func defaultVersionsCallOptions() *VersionsCallOptions {
 	return &VersionsCallOptions{
 		ListVersions: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -90,6 +91,7 @@ func defaultVersionsCallOptions() *VersionsCallOptions {
 			}),
 		},
 		GetVersion: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -101,6 +103,7 @@ func defaultVersionsCallOptions() *VersionsCallOptions {
 			}),
 		},
 		CreateVersion: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -112,6 +115,7 @@ func defaultVersionsCallOptions() *VersionsCallOptions {
 			}),
 		},
 		UpdateVersion: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -123,6 +127,7 @@ func defaultVersionsCallOptions() *VersionsCallOptions {
 			}),
 		},
 		DeleteVersion: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -134,6 +139,7 @@ func defaultVersionsCallOptions() *VersionsCallOptions {
 			}),
 		},
 		LoadVersion: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -145,6 +151,7 @@ func defaultVersionsCallOptions() *VersionsCallOptions {
 			}),
 		},
 		CompareVersions: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -166,6 +173,7 @@ func defaultVersionsCallOptions() *VersionsCallOptions {
 func defaultVersionsRESTCallOptions() *VersionsCallOptions {
 	return &VersionsCallOptions{
 		ListVersions: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -176,6 +184,7 @@ func defaultVersionsRESTCallOptions() *VersionsCallOptions {
 			}),
 		},
 		GetVersion: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -186,6 +195,7 @@ func defaultVersionsRESTCallOptions() *VersionsCallOptions {
 			}),
 		},
 		CreateVersion: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -196,6 +206,7 @@ func defaultVersionsRESTCallOptions() *VersionsCallOptions {
 			}),
 		},
 		UpdateVersion: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -206,6 +217,7 @@ func defaultVersionsRESTCallOptions() *VersionsCallOptions {
 			}),
 		},
 		DeleteVersion: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -216,6 +228,7 @@ func defaultVersionsRESTCallOptions() *VersionsCallOptions {
 			}),
 		},
 		LoadVersion: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -226,6 +239,7 @@ func defaultVersionsRESTCallOptions() *VersionsCallOptions {
 			}),
 		},
 		CompareVersions: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -322,10 +336,10 @@ func (c *VersionsClient) GetVersion(ctx context.Context, req *cxpb.GetVersionReq
 // operation (at https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 // The returned Operation type has the following method-specific fields:
 //
-//	metadata:
-//	CreateVersionOperationMetadata
+//   metadata:
+//   CreateVersionOperationMetadata
 //
-//	response: Version
+//   response: Version
 func (c *VersionsClient) CreateVersion(ctx context.Context, req *cxpb.CreateVersionRequest, opts ...gax.CallOption) (*CreateVersionOperation, error) {
 	return c.internalClient.CreateVersion(ctx, req, opts...)
 }
@@ -352,11 +366,11 @@ func (c *VersionsClient) DeleteVersion(ctx context.Context, req *cxpb.DeleteVers
 // operation (at https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 // The returned Operation type has the following method-specific fields:
 //
-//	metadata: An empty Struct
-//	message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
+//   metadata: An empty Struct
+//   message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
 //
-//	response: An Empty
-//	message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
+//   response: An Empty
+//   message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
 func (c *VersionsClient) LoadVersion(ctx context.Context, req *cxpb.LoadVersionRequest, opts ...gax.CallOption) (*LoadVersionOperation, error) {
 	return c.internalClient.LoadVersion(ctx, req, opts...)
 }
@@ -404,9 +418,6 @@ type versionsGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing VersionsClient
 	CallOptions **VersionsCallOptions
 
@@ -440,11 +451,6 @@ func NewVersionsClient(ctx context.Context, opts ...option.ClientOption) (*Versi
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -453,7 +459,6 @@ func NewVersionsClient(ctx context.Context, opts ...option.ClientOption) (*Versi
 
 	c := &versionsGRPCClient{
 		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
 		versionsClient:   cxpb.NewVersionsClient(connPool),
 		CallOptions:      &client.CallOptions,
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
@@ -629,11 +634,6 @@ func (c *versionsGRPCClient) ListVersions(ctx context.Context, req *cxpb.ListVer
 }
 
 func (c *versionsGRPCClient) GetVersion(ctx context.Context, req *cxpb.GetVersionRequest, opts ...gax.CallOption) (*cxpb.Version, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -651,11 +651,6 @@ func (c *versionsGRPCClient) GetVersion(ctx context.Context, req *cxpb.GetVersio
 }
 
 func (c *versionsGRPCClient) CreateVersion(ctx context.Context, req *cxpb.CreateVersionRequest, opts ...gax.CallOption) (*CreateVersionOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -675,11 +670,6 @@ func (c *versionsGRPCClient) CreateVersion(ctx context.Context, req *cxpb.Create
 }
 
 func (c *versionsGRPCClient) UpdateVersion(ctx context.Context, req *cxpb.UpdateVersionRequest, opts ...gax.CallOption) (*cxpb.Version, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "version.name", url.QueryEscape(req.GetVersion().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -697,11 +687,6 @@ func (c *versionsGRPCClient) UpdateVersion(ctx context.Context, req *cxpb.Update
 }
 
 func (c *versionsGRPCClient) DeleteVersion(ctx context.Context, req *cxpb.DeleteVersionRequest, opts ...gax.CallOption) error {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -715,11 +700,6 @@ func (c *versionsGRPCClient) DeleteVersion(ctx context.Context, req *cxpb.Delete
 }
 
 func (c *versionsGRPCClient) LoadVersion(ctx context.Context, req *cxpb.LoadVersionRequest, opts ...gax.CallOption) (*LoadVersionOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -739,11 +719,6 @@ func (c *versionsGRPCClient) LoadVersion(ctx context.Context, req *cxpb.LoadVers
 }
 
 func (c *versionsGRPCClient) CompareVersions(ctx context.Context, req *cxpb.CompareVersionsRequest, opts ...gax.CallOption) (*cxpb.CompareVersionsResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "base_version", url.QueryEscape(req.GetBaseVersion())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1051,10 +1026,10 @@ func (c *versionsRESTClient) GetVersion(ctx context.Context, req *cxpb.GetVersio
 // operation (at https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 // The returned Operation type has the following method-specific fields:
 //
-//	metadata:
-//	CreateVersionOperationMetadata
+//   metadata:
+//   CreateVersionOperationMetadata
 //
-//	response: Version
+//   response: Version
 func (c *versionsRESTClient) CreateVersion(ctx context.Context, req *cxpb.CreateVersionRequest, opts ...gax.CallOption) (*CreateVersionOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetVersion()
@@ -1241,11 +1216,11 @@ func (c *versionsRESTClient) DeleteVersion(ctx context.Context, req *cxpb.Delete
 // operation (at https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 // The returned Operation type has the following method-specific fields:
 //
-//	metadata: An empty Struct
-//	message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
+//   metadata: An empty Struct
+//   message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
 //
-//	response: An Empty
-//	message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
+//   response: An Empty
+//   message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
 func (c *versionsRESTClient) LoadVersion(ctx context.Context, req *cxpb.LoadVersionRequest, opts ...gax.CallOption) (*LoadVersionOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)

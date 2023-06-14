@@ -80,6 +80,7 @@ func defaultServingConfigCallOptions() *ServingConfigCallOptions {
 		RemoveControl:       []gax.CallOption{},
 		GetOperation:        []gax.CallOption{},
 		ListOperations: []gax.CallOption{
+			gax.WithTimeout(300000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -105,6 +106,7 @@ func defaultServingConfigRESTCallOptions() *ServingConfigCallOptions {
 		RemoveControl:       []gax.CallOption{},
 		GetOperation:        []gax.CallOption{},
 		ListOperations: []gax.CallOption{
+			gax.WithTimeout(300000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -238,9 +240,6 @@ type servingConfigGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing ServingConfigClient
 	CallOptions **ServingConfigCallOptions
 
@@ -267,11 +266,6 @@ func NewServingConfigClient(ctx context.Context, opts ...option.ClientOption) (*
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -280,7 +274,6 @@ func NewServingConfigClient(ctx context.Context, opts ...option.ClientOption) (*
 
 	c := &servingConfigGRPCClient{
 		connPool:            connPool,
-		disableDeadlines:    disableDeadlines,
 		servingConfigClient: retailpb.NewServingConfigServiceClient(connPool),
 		CallOptions:         &client.CallOptions,
 		operationsClient:    longrunningpb.NewOperationsClient(connPool),

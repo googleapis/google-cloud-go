@@ -79,6 +79,7 @@ func defaultOsConfigZonalGRPCClientOptions() []option.ClientOption {
 func defaultOsConfigZonalCallOptions() *OsConfigZonalCallOptions {
 	return &OsConfigZonalCallOptions{
 		CreateOSPolicyAssignment: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -90,6 +91,7 @@ func defaultOsConfigZonalCallOptions() *OsConfigZonalCallOptions {
 			}),
 		},
 		UpdateOSPolicyAssignment: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -101,6 +103,7 @@ func defaultOsConfigZonalCallOptions() *OsConfigZonalCallOptions {
 			}),
 		},
 		GetOSPolicyAssignment: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -112,6 +115,7 @@ func defaultOsConfigZonalCallOptions() *OsConfigZonalCallOptions {
 			}),
 		},
 		ListOSPolicyAssignments: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -123,6 +127,7 @@ func defaultOsConfigZonalCallOptions() *OsConfigZonalCallOptions {
 			}),
 		},
 		ListOSPolicyAssignmentRevisions: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -134,6 +139,7 @@ func defaultOsConfigZonalCallOptions() *OsConfigZonalCallOptions {
 			}),
 		},
 		DeleteOSPolicyAssignment: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -145,6 +151,7 @@ func defaultOsConfigZonalCallOptions() *OsConfigZonalCallOptions {
 			}),
 		},
 		GetInstanceOSPoliciesCompliance: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -156,6 +163,7 @@ func defaultOsConfigZonalCallOptions() *OsConfigZonalCallOptions {
 			}),
 		},
 		ListInstanceOSPoliciesCompliances: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -167,6 +175,7 @@ func defaultOsConfigZonalCallOptions() *OsConfigZonalCallOptions {
 			}),
 		},
 		GetOSPolicyAssignmentReport: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -178,6 +187,7 @@ func defaultOsConfigZonalCallOptions() *OsConfigZonalCallOptions {
 			}),
 		},
 		ListOSPolicyAssignmentReports: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -189,6 +199,7 @@ func defaultOsConfigZonalCallOptions() *OsConfigZonalCallOptions {
 			}),
 		},
 		GetInventory: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -200,6 +211,7 @@ func defaultOsConfigZonalCallOptions() *OsConfigZonalCallOptions {
 			}),
 		},
 		ListInventories: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -211,6 +223,7 @@ func defaultOsConfigZonalCallOptions() *OsConfigZonalCallOptions {
 			}),
 		},
 		GetVulnerabilityReport: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -222,6 +235,7 @@ func defaultOsConfigZonalCallOptions() *OsConfigZonalCallOptions {
 			}),
 		},
 		ListVulnerabilityReports: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -238,6 +252,7 @@ func defaultOsConfigZonalCallOptions() *OsConfigZonalCallOptions {
 func defaultOsConfigZonalRESTCallOptions() *OsConfigZonalCallOptions {
 	return &OsConfigZonalCallOptions{
 		CreateOSPolicyAssignment: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -248,6 +263,7 @@ func defaultOsConfigZonalRESTCallOptions() *OsConfigZonalCallOptions {
 			}),
 		},
 		UpdateOSPolicyAssignment: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -258,6 +274,7 @@ func defaultOsConfigZonalRESTCallOptions() *OsConfigZonalCallOptions {
 			}),
 		},
 		GetOSPolicyAssignment: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -268,6 +285,7 @@ func defaultOsConfigZonalRESTCallOptions() *OsConfigZonalCallOptions {
 			}),
 		},
 		ListOSPolicyAssignments: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -278,6 +296,7 @@ func defaultOsConfigZonalRESTCallOptions() *OsConfigZonalCallOptions {
 			}),
 		},
 		ListOSPolicyAssignmentRevisions: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -288,6 +307,7 @@ func defaultOsConfigZonalRESTCallOptions() *OsConfigZonalCallOptions {
 			}),
 		},
 		DeleteOSPolicyAssignment: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -298,6 +318,7 @@ func defaultOsConfigZonalRESTCallOptions() *OsConfigZonalCallOptions {
 			}),
 		},
 		GetInstanceOSPoliciesCompliance: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -308,6 +329,7 @@ func defaultOsConfigZonalRESTCallOptions() *OsConfigZonalCallOptions {
 			}),
 		},
 		ListInstanceOSPoliciesCompliances: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -318,6 +340,7 @@ func defaultOsConfigZonalRESTCallOptions() *OsConfigZonalCallOptions {
 			}),
 		},
 		GetOSPolicyAssignmentReport: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -328,6 +351,7 @@ func defaultOsConfigZonalRESTCallOptions() *OsConfigZonalCallOptions {
 			}),
 		},
 		ListOSPolicyAssignmentReports: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -338,6 +362,7 @@ func defaultOsConfigZonalRESTCallOptions() *OsConfigZonalCallOptions {
 			}),
 		},
 		GetInventory: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -348,6 +373,7 @@ func defaultOsConfigZonalRESTCallOptions() *OsConfigZonalCallOptions {
 			}),
 		},
 		ListInventories: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -358,6 +384,7 @@ func defaultOsConfigZonalRESTCallOptions() *OsConfigZonalCallOptions {
 			}),
 		},
 		GetVulnerabilityReport: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -368,6 +395,7 @@ func defaultOsConfigZonalRESTCallOptions() *OsConfigZonalCallOptions {
 			}),
 		},
 		ListVulnerabilityReports: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -407,7 +435,7 @@ type internalOsConfigZonalClient interface {
 // OsConfigZonalClient is a client for interacting with OS Config API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
-// # Zonal OS Config API
+// Zonal OS Config API
 //
 // The OS Config service is the server-side component that allows users to
 // manage package installations and patch jobs for Compute Engine VM instances.
@@ -585,9 +613,6 @@ type osConfigZonalGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing OsConfigZonalClient
 	CallOptions **OsConfigZonalCallOptions
 
@@ -606,7 +631,7 @@ type osConfigZonalGRPCClient struct {
 // NewOsConfigZonalClient creates a new os config zonal service client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
-// # Zonal OS Config API
+// Zonal OS Config API
 //
 // The OS Config service is the server-side component that allows users to
 // manage package installations and patch jobs for Compute Engine VM instances.
@@ -620,11 +645,6 @@ func NewOsConfigZonalClient(ctx context.Context, opts ...option.ClientOption) (*
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -633,7 +653,6 @@ func NewOsConfigZonalClient(ctx context.Context, opts ...option.ClientOption) (*
 
 	c := &osConfigZonalGRPCClient{
 		connPool:            connPool,
-		disableDeadlines:    disableDeadlines,
 		osConfigZonalClient: osconfigpb.NewOsConfigZonalServiceClient(connPool),
 		CallOptions:         &client.CallOptions,
 	}
@@ -700,7 +719,7 @@ type osConfigZonalRESTClient struct {
 
 // NewOsConfigZonalRESTClient creates a new os config zonal service rest client.
 //
-// # Zonal OS Config API
+// Zonal OS Config API
 //
 // The OS Config service is the server-side component that allows users to
 // manage package installations and patch jobs for Compute Engine VM instances.
@@ -765,11 +784,6 @@ func (c *osConfigZonalRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 func (c *osConfigZonalGRPCClient) CreateOSPolicyAssignment(ctx context.Context, req *osconfigpb.CreateOSPolicyAssignmentRequest, opts ...gax.CallOption) (*CreateOSPolicyAssignmentOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -789,11 +803,6 @@ func (c *osConfigZonalGRPCClient) CreateOSPolicyAssignment(ctx context.Context, 
 }
 
 func (c *osConfigZonalGRPCClient) UpdateOSPolicyAssignment(ctx context.Context, req *osconfigpb.UpdateOSPolicyAssignmentRequest, opts ...gax.CallOption) (*UpdateOSPolicyAssignmentOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "os_policy_assignment.name", url.QueryEscape(req.GetOsPolicyAssignment().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -813,11 +822,6 @@ func (c *osConfigZonalGRPCClient) UpdateOSPolicyAssignment(ctx context.Context, 
 }
 
 func (c *osConfigZonalGRPCClient) GetOSPolicyAssignment(ctx context.Context, req *osconfigpb.GetOSPolicyAssignmentRequest, opts ...gax.CallOption) (*osconfigpb.OSPolicyAssignment, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -925,11 +929,6 @@ func (c *osConfigZonalGRPCClient) ListOSPolicyAssignmentRevisions(ctx context.Co
 }
 
 func (c *osConfigZonalGRPCClient) DeleteOSPolicyAssignment(ctx context.Context, req *osconfigpb.DeleteOSPolicyAssignmentRequest, opts ...gax.CallOption) (*DeleteOSPolicyAssignmentOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -949,11 +948,6 @@ func (c *osConfigZonalGRPCClient) DeleteOSPolicyAssignment(ctx context.Context, 
 }
 
 func (c *osConfigZonalGRPCClient) GetInstanceOSPoliciesCompliance(ctx context.Context, req *osconfigpb.GetInstanceOSPoliciesComplianceRequest, opts ...gax.CallOption) (*osconfigpb.InstanceOSPoliciesCompliance, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1016,11 +1010,6 @@ func (c *osConfigZonalGRPCClient) ListInstanceOSPoliciesCompliances(ctx context.
 }
 
 func (c *osConfigZonalGRPCClient) GetOSPolicyAssignmentReport(ctx context.Context, req *osconfigpb.GetOSPolicyAssignmentReportRequest, opts ...gax.CallOption) (*osconfigpb.OSPolicyAssignmentReport, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1083,11 +1072,6 @@ func (c *osConfigZonalGRPCClient) ListOSPolicyAssignmentReports(ctx context.Cont
 }
 
 func (c *osConfigZonalGRPCClient) GetInventory(ctx context.Context, req *osconfigpb.GetInventoryRequest, opts ...gax.CallOption) (*osconfigpb.Inventory, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1150,11 +1134,6 @@ func (c *osConfigZonalGRPCClient) ListInventories(ctx context.Context, req *osco
 }
 
 func (c *osConfigZonalGRPCClient) GetVulnerabilityReport(ctx context.Context, req *osconfigpb.GetVulnerabilityReportRequest, opts ...gax.CallOption) (*osconfigpb.VulnerabilityReport, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)

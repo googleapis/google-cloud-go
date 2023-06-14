@@ -78,6 +78,7 @@ func defaultProjectsGRPCClientOptions() []option.ClientOption {
 func defaultProjectsCallOptions() *ProjectsCallOptions {
 	return &ProjectsCallOptions{
 		GetProject: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -89,6 +90,7 @@ func defaultProjectsCallOptions() *ProjectsCallOptions {
 			}),
 		},
 		ListProjects: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -99,13 +101,26 @@ func defaultProjectsCallOptions() *ProjectsCallOptions {
 				})
 			}),
 		},
-		SearchProjects:  []gax.CallOption{},
-		CreateProject:   []gax.CallOption{},
-		UpdateProject:   []gax.CallOption{},
-		MoveProject:     []gax.CallOption{},
-		DeleteProject:   []gax.CallOption{},
-		UndeleteProject: []gax.CallOption{},
+		SearchProjects: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		CreateProject: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateProject: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		MoveProject: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteProject: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UndeleteProject: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		GetIamPolicy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -116,7 +131,9 @@ func defaultProjectsCallOptions() *ProjectsCallOptions {
 				})
 			}),
 		},
-		SetIamPolicy:       []gax.CallOption{},
+		SetIamPolicy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		TestIamPermissions: []gax.CallOption{},
 		GetOperation:       []gax.CallOption{},
 	}
@@ -125,6 +142,7 @@ func defaultProjectsCallOptions() *ProjectsCallOptions {
 func defaultProjectsRESTCallOptions() *ProjectsCallOptions {
 	return &ProjectsCallOptions{
 		GetProject: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -135,6 +153,7 @@ func defaultProjectsRESTCallOptions() *ProjectsCallOptions {
 			}),
 		},
 		ListProjects: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -144,13 +163,26 @@ func defaultProjectsRESTCallOptions() *ProjectsCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
-		SearchProjects:  []gax.CallOption{},
-		CreateProject:   []gax.CallOption{},
-		UpdateProject:   []gax.CallOption{},
-		MoveProject:     []gax.CallOption{},
-		DeleteProject:   []gax.CallOption{},
-		UndeleteProject: []gax.CallOption{},
+		SearchProjects: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		CreateProject: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateProject: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		MoveProject: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteProject: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UndeleteProject: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		GetIamPolicy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -160,7 +192,9 @@ func defaultProjectsRESTCallOptions() *ProjectsCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
-		SetIamPolicy:       []gax.CallOption{},
+		SetIamPolicy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		TestIamPermissions: []gax.CallOption{},
 		GetOperation:       []gax.CallOption{},
 	}
@@ -399,35 +433,35 @@ func (c *ProjectsClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPoli
 //
 // The following constraints apply when using setIamPolicy():
 //
-//	Project does not support allUsers and allAuthenticatedUsers as
-//	members in a Binding of a Policy.
+//   Project does not support allUsers and allAuthenticatedUsers as
+//   members in a Binding of a Policy.
 //
-//	The owner role can be granted to a user, serviceAccount, or a group
-//	that is part of an organization. For example,
-//	group@myownpersonaldomain.com (at mailto:group@myownpersonaldomain.com) could be added as an owner to a project in
-//	the myownpersonaldomain.com (at http://myownpersonaldomain.com) organization, but not the examplepetstore.com (at http://examplepetstore.com)
-//	organization.
+//   The owner role can be granted to a user, serviceAccount, or a group
+//   that is part of an organization. For example,
+//   group@myownpersonaldomain.com (at mailto:group@myownpersonaldomain.com) could be added as an owner to a project in
+//   the myownpersonaldomain.com (at http://myownpersonaldomain.com) organization, but not the examplepetstore.com (at http://examplepetstore.com)
+//   organization.
 //
-//	Service accounts can be made owners of a project directly
-//	without any restrictions. However, to be added as an owner, a user must be
-//	invited using the Cloud Platform console and must accept the invitation.
+//   Service accounts can be made owners of a project directly
+//   without any restrictions. However, to be added as an owner, a user must be
+//   invited using the Cloud Platform console and must accept the invitation.
 //
-//	A user cannot be granted the owner role using setIamPolicy(). The user
-//	must be granted the owner role using the Cloud Platform Console and must
-//	explicitly accept the invitation.
+//   A user cannot be granted the owner role using setIamPolicy(). The user
+//   must be granted the owner role using the Cloud Platform Console and must
+//   explicitly accept the invitation.
 //
-//	Invitations to grant the owner role cannot be sent using
-//	setIamPolicy();
-//	they must be sent only using the Cloud Platform Console.
+//   Invitations to grant the owner role cannot be sent using
+//   setIamPolicy();
+//   they must be sent only using the Cloud Platform Console.
 //
-//	If the project is not part of an organization, there must be at least
-//	one owner who has accepted the Terms of Service (ToS) agreement in the
-//	policy. Calling setIamPolicy() to remove the last ToS-accepted owner
-//	from the policy will fail. This restriction also applies to legacy
-//	projects that no longer have owners who have accepted the ToS. Edits to
-//	IAM policies will be rejected until the lack of a ToS-accepting owner is
-//	rectified. If the project is part of an organization, you can remove all
-//	owners, potentially making the organization inaccessible.
+//   If the project is not part of an organization, there must be at least
+//   one owner who has accepted the Terms of Service (ToS) agreement in the
+//   policy. Calling setIamPolicy() to remove the last ToS-accepted owner
+//   from the policy will fail. This restriction also applies to legacy
+//   projects that no longer have owners who have accepted the ToS. Edits to
+//   IAM policies will be rejected until the lack of a ToS-accepting owner is
+//   rectified. If the project is part of an organization, you can remove all
+//   owners, potentially making the organization inaccessible.
 func (c *ProjectsClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
 	return c.internalClient.SetIamPolicy(ctx, req, opts...)
 }
@@ -449,9 +483,6 @@ func (c *ProjectsClient) GetOperation(ctx context.Context, req *longrunningpb.Ge
 type projectsGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
-
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
 
 	// Points back to the CallOptions field of the containing ProjectsClient
 	CallOptions **ProjectsCallOptions
@@ -484,11 +515,6 @@ func NewProjectsClient(ctx context.Context, opts ...option.ClientOption) (*Proje
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -497,7 +523,6 @@ func NewProjectsClient(ctx context.Context, opts ...option.ClientOption) (*Proje
 
 	c := &projectsGRPCClient{
 		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
 		projectsClient:   resourcemanagerpb.NewProjectsClient(connPool),
 		CallOptions:      &client.CallOptions,
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
@@ -627,11 +652,6 @@ func (c *projectsRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 func (c *projectsGRPCClient) GetProject(ctx context.Context, req *resourcemanagerpb.GetProjectRequest, opts ...gax.CallOption) (*resourcemanagerpb.Project, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -735,11 +755,6 @@ func (c *projectsGRPCClient) SearchProjects(ctx context.Context, req *resourcema
 }
 
 func (c *projectsGRPCClient) CreateProject(ctx context.Context, req *resourcemanagerpb.CreateProjectRequest, opts ...gax.CallOption) (*CreateProjectOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
 	opts = append((*c.CallOptions).CreateProject[0:len((*c.CallOptions).CreateProject):len((*c.CallOptions).CreateProject)], opts...)
 	var resp *longrunningpb.Operation
@@ -757,11 +772,6 @@ func (c *projectsGRPCClient) CreateProject(ctx context.Context, req *resourceman
 }
 
 func (c *projectsGRPCClient) UpdateProject(ctx context.Context, req *resourcemanagerpb.UpdateProjectRequest, opts ...gax.CallOption) (*UpdateProjectOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "project.name", url.QueryEscape(req.GetProject().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -781,11 +791,6 @@ func (c *projectsGRPCClient) UpdateProject(ctx context.Context, req *resourceman
 }
 
 func (c *projectsGRPCClient) MoveProject(ctx context.Context, req *resourcemanagerpb.MoveProjectRequest, opts ...gax.CallOption) (*MoveProjectOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -805,11 +810,6 @@ func (c *projectsGRPCClient) MoveProject(ctx context.Context, req *resourcemanag
 }
 
 func (c *projectsGRPCClient) DeleteProject(ctx context.Context, req *resourcemanagerpb.DeleteProjectRequest, opts ...gax.CallOption) (*DeleteProjectOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -829,11 +829,6 @@ func (c *projectsGRPCClient) DeleteProject(ctx context.Context, req *resourceman
 }
 
 func (c *projectsGRPCClient) UndeleteProject(ctx context.Context, req *resourcemanagerpb.UndeleteProjectRequest, opts ...gax.CallOption) (*UndeleteProjectOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -853,11 +848,6 @@ func (c *projectsGRPCClient) UndeleteProject(ctx context.Context, req *resourcem
 }
 
 func (c *projectsGRPCClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -875,11 +865,6 @@ func (c *projectsGRPCClient) GetIamPolicy(ctx context.Context, req *iampb.GetIam
 }
 
 func (c *projectsGRPCClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1670,35 +1655,35 @@ func (c *projectsRESTClient) GetIamPolicy(ctx context.Context, req *iampb.GetIam
 //
 // The following constraints apply when using setIamPolicy():
 //
-//	Project does not support allUsers and allAuthenticatedUsers as
-//	members in a Binding of a Policy.
+//   Project does not support allUsers and allAuthenticatedUsers as
+//   members in a Binding of a Policy.
 //
-//	The owner role can be granted to a user, serviceAccount, or a group
-//	that is part of an organization. For example,
-//	group@myownpersonaldomain.com (at mailto:group@myownpersonaldomain.com) could be added as an owner to a project in
-//	the myownpersonaldomain.com (at http://myownpersonaldomain.com) organization, but not the examplepetstore.com (at http://examplepetstore.com)
-//	organization.
+//   The owner role can be granted to a user, serviceAccount, or a group
+//   that is part of an organization. For example,
+//   group@myownpersonaldomain.com (at mailto:group@myownpersonaldomain.com) could be added as an owner to a project in
+//   the myownpersonaldomain.com (at http://myownpersonaldomain.com) organization, but not the examplepetstore.com (at http://examplepetstore.com)
+//   organization.
 //
-//	Service accounts can be made owners of a project directly
-//	without any restrictions. However, to be added as an owner, a user must be
-//	invited using the Cloud Platform console and must accept the invitation.
+//   Service accounts can be made owners of a project directly
+//   without any restrictions. However, to be added as an owner, a user must be
+//   invited using the Cloud Platform console and must accept the invitation.
 //
-//	A user cannot be granted the owner role using setIamPolicy(). The user
-//	must be granted the owner role using the Cloud Platform Console and must
-//	explicitly accept the invitation.
+//   A user cannot be granted the owner role using setIamPolicy(). The user
+//   must be granted the owner role using the Cloud Platform Console and must
+//   explicitly accept the invitation.
 //
-//	Invitations to grant the owner role cannot be sent using
-//	setIamPolicy();
-//	they must be sent only using the Cloud Platform Console.
+//   Invitations to grant the owner role cannot be sent using
+//   setIamPolicy();
+//   they must be sent only using the Cloud Platform Console.
 //
-//	If the project is not part of an organization, there must be at least
-//	one owner who has accepted the Terms of Service (ToS) agreement in the
-//	policy. Calling setIamPolicy() to remove the last ToS-accepted owner
-//	from the policy will fail. This restriction also applies to legacy
-//	projects that no longer have owners who have accepted the ToS. Edits to
-//	IAM policies will be rejected until the lack of a ToS-accepting owner is
-//	rectified. If the project is part of an organization, you can remove all
-//	owners, potentially making the organization inaccessible.
+//   If the project is not part of an organization, there must be at least
+//   one owner who has accepted the Terms of Service (ToS) agreement in the
+//   policy. Calling setIamPolicy() to remove the last ToS-accepted owner
+//   from the policy will fail. This restriction also applies to legacy
+//   projects that no longer have owners who have accepted the ToS. Edits to
+//   IAM policies will be rejected until the lack of a ToS-accepting owner is
+//   rectified. If the project is part of an organization, you can remove all
+//   owners, potentially making the organization inaccessible.
 func (c *projectsRESTClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)

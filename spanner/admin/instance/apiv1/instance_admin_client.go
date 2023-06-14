@@ -80,6 +80,7 @@ func defaultInstanceAdminGRPCClientOptions() []option.ClientOption {
 func defaultInstanceAdminCallOptions() *InstanceAdminCallOptions {
 	return &InstanceAdminCallOptions{
 		ListInstanceConfigs: []gax.CallOption{
+			gax.WithTimeout(3600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -92,6 +93,7 @@ func defaultInstanceAdminCallOptions() *InstanceAdminCallOptions {
 			}),
 		},
 		GetInstanceConfig: []gax.CallOption{
+			gax.WithTimeout(3600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -108,6 +110,7 @@ func defaultInstanceAdminCallOptions() *InstanceAdminCallOptions {
 		DeleteInstanceConfig:         []gax.CallOption{},
 		ListInstanceConfigOperations: []gax.CallOption{},
 		ListInstances: []gax.CallOption{
+			gax.WithTimeout(3600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -120,6 +123,7 @@ func defaultInstanceAdminCallOptions() *InstanceAdminCallOptions {
 			}),
 		},
 		GetInstance: []gax.CallOption{
+			gax.WithTimeout(3600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -131,9 +135,14 @@ func defaultInstanceAdminCallOptions() *InstanceAdminCallOptions {
 				})
 			}),
 		},
-		CreateInstance: []gax.CallOption{},
-		UpdateInstance: []gax.CallOption{},
+		CreateInstance: []gax.CallOption{
+			gax.WithTimeout(3600000 * time.Millisecond),
+		},
+		UpdateInstance: []gax.CallOption{
+			gax.WithTimeout(3600000 * time.Millisecond),
+		},
 		DeleteInstance: []gax.CallOption{
+			gax.WithTimeout(3600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -145,8 +154,11 @@ func defaultInstanceAdminCallOptions() *InstanceAdminCallOptions {
 				})
 			}),
 		},
-		SetIamPolicy: []gax.CallOption{},
+		SetIamPolicy: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+		},
 		GetIamPolicy: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -158,13 +170,16 @@ func defaultInstanceAdminCallOptions() *InstanceAdminCallOptions {
 				})
 			}),
 		},
-		TestIamPermissions: []gax.CallOption{},
+		TestIamPermissions: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+		},
 	}
 }
 
 func defaultInstanceAdminRESTCallOptions() *InstanceAdminCallOptions {
 	return &InstanceAdminCallOptions{
 		ListInstanceConfigs: []gax.CallOption{
+			gax.WithTimeout(3600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -176,6 +191,7 @@ func defaultInstanceAdminRESTCallOptions() *InstanceAdminCallOptions {
 			}),
 		},
 		GetInstanceConfig: []gax.CallOption{
+			gax.WithTimeout(3600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -191,6 +207,7 @@ func defaultInstanceAdminRESTCallOptions() *InstanceAdminCallOptions {
 		DeleteInstanceConfig:         []gax.CallOption{},
 		ListInstanceConfigOperations: []gax.CallOption{},
 		ListInstances: []gax.CallOption{
+			gax.WithTimeout(3600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -202,6 +219,7 @@ func defaultInstanceAdminRESTCallOptions() *InstanceAdminCallOptions {
 			}),
 		},
 		GetInstance: []gax.CallOption{
+			gax.WithTimeout(3600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -212,9 +230,14 @@ func defaultInstanceAdminRESTCallOptions() *InstanceAdminCallOptions {
 					http.StatusGatewayTimeout)
 			}),
 		},
-		CreateInstance: []gax.CallOption{},
-		UpdateInstance: []gax.CallOption{},
+		CreateInstance: []gax.CallOption{
+			gax.WithTimeout(3600000 * time.Millisecond),
+		},
+		UpdateInstance: []gax.CallOption{
+			gax.WithTimeout(3600000 * time.Millisecond),
+		},
 		DeleteInstance: []gax.CallOption{
+			gax.WithTimeout(3600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -225,8 +248,11 @@ func defaultInstanceAdminRESTCallOptions() *InstanceAdminCallOptions {
 					http.StatusGatewayTimeout)
 			}),
 		},
-		SetIamPolicy: []gax.CallOption{},
+		SetIamPolicy: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+		},
 		GetIamPolicy: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -237,7 +263,9 @@ func defaultInstanceAdminRESTCallOptions() *InstanceAdminCallOptions {
 					http.StatusGatewayTimeout)
 			}),
 		},
-		TestIamPermissions: []gax.CallOption{},
+		TestIamPermissions: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+		},
 	}
 }
 
@@ -269,7 +297,7 @@ type internalInstanceAdminClient interface {
 // InstanceAdminClient is a client for interacting with Cloud Spanner Instance Admin API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
-// # Cloud Spanner Instance Admin API
+// Cloud Spanner Instance Admin API
 //
 // The Cloud Spanner Instance Admin API can be used to create, delete,
 // modify and list instances. Instances are dedicated Cloud Spanner serving
@@ -345,26 +373,26 @@ func (c *InstanceAdminClient) GetInstanceConfig(ctx context.Context, req *instan
 //
 // Immediately after the request returns:
 //
-//	The instance config is readable via the API, with all requested
-//	attributes. The instance config’s
-//	reconciling
-//	field is set to true. Its state is CREATING.
+//   The instance config is readable via the API, with all requested
+//   attributes. The instance config’s
+//   reconciling
+//   field is set to true. Its state is CREATING.
 //
 // While the operation is pending:
 //
-//	Cancelling the operation renders the instance config immediately
-//	unreadable via the API.
+//   Cancelling the operation renders the instance config immediately
+//   unreadable via the API.
 //
-//	Except for deleting the creating resource, all other attempts to modify
-//	the instance config are rejected.
+//   Except for deleting the creating resource, all other attempts to modify
+//   the instance config are rejected.
 //
 // Upon completion of the returned operation:
 //
-//	Instances can be created using the instance configuration.
+//   Instances can be created using the instance configuration.
 //
-//	The instance config’s
-//	reconciling
-//	field becomes false. Its state becomes READY.
+//   The instance config’s
+//   reconciling
+//   field becomes false. Its state becomes READY.
 //
 // The returned [long-running operation][google.longrunning.Operation] will
 // have a name of the format
@@ -398,32 +426,32 @@ func (c *InstanceAdminClient) CreateInstanceConfigOperation(name string) *Create
 //
 // Immediately after the request returns:
 //
-//	The instance config’s
-//	reconciling
-//	field is set to true.
+//   The instance config’s
+//   reconciling
+//   field is set to true.
 //
 // While the operation is pending:
 //
-//	Cancelling the operation sets its metadata’s
-//	cancel_time.
-//	The operation is guaranteed to succeed at undoing all changes, after
-//	which point it terminates with a CANCELLED status.
+//   Cancelling the operation sets its metadata’s
+//   cancel_time.
+//   The operation is guaranteed to succeed at undoing all changes, after
+//   which point it terminates with a CANCELLED status.
 //
-//	All other attempts to modify the instance config are rejected.
+//   All other attempts to modify the instance config are rejected.
 //
-//	Reading the instance config via the API continues to give the
-//	pre-request values.
+//   Reading the instance config via the API continues to give the
+//   pre-request values.
 //
 // Upon completion of the returned operation:
 //
-//	Creating instances using the instance configuration uses the new
-//	values.
+//   Creating instances using the instance configuration uses the new
+//   values.
 //
-//	The instance config’s new values are readable via the API.
+//   The instance config’s new values are readable via the API.
 //
-//	The instance config’s
-//	reconciling
-//	field becomes false.
+//   The instance config’s
+//   reconciling
+//   field becomes false.
 //
 // The returned [long-running operation][google.longrunning.Operation] will
 // have a name of the format
@@ -493,28 +521,28 @@ func (c *InstanceAdminClient) GetInstance(ctx context.Context, req *instancepb.G
 //
 // Immediately upon completion of this request:
 //
-//	The instance is readable via the API, with all requested attributes
-//	but no allocated resources. Its state is CREATING.
+//   The instance is readable via the API, with all requested attributes
+//   but no allocated resources. Its state is CREATING.
 //
 // Until completion of the returned operation:
 //
-//	Cancelling the operation renders the instance immediately unreadable
-//	via the API.
+//   Cancelling the operation renders the instance immediately unreadable
+//   via the API.
 //
-//	The instance can be deleted.
+//   The instance can be deleted.
 //
-//	All other attempts to modify the instance are rejected.
+//   All other attempts to modify the instance are rejected.
 //
 // Upon completion of the returned operation:
 //
-//	Billing for all successfully-allocated resources begins (some types
-//	may have lower than the requested levels).
+//   Billing for all successfully-allocated resources begins (some types
+//   may have lower than the requested levels).
 //
-//	Databases can be created in the instance.
+//   Databases can be created in the instance.
 //
-//	The instance’s allocated resource levels are readable via the API.
+//   The instance’s allocated resource levels are readable via the API.
 //
-//	The instance’s state becomes READY.
+//   The instance’s state becomes READY.
 //
 // The returned [long-running operation][google.longrunning.Operation] will
 // have a name of the format <instance_name>/operations/<operation_id> and
@@ -541,31 +569,31 @@ func (c *InstanceAdminClient) CreateInstanceOperation(name string) *CreateInstan
 //
 // Immediately upon completion of this request:
 //
-//	For resource types for which a decrease in the instance’s allocation
-//	has been requested, billing is based on the newly-requested level.
+//   For resource types for which a decrease in the instance’s allocation
+//   has been requested, billing is based on the newly-requested level.
 //
 // Until completion of the returned operation:
 //
-//	Cancelling the operation sets its metadata’s
-//	cancel_time,
-//	and begins restoring resources to their pre-request values. The
-//	operation is guaranteed to succeed at undoing all resource changes,
-//	after which point it terminates with a CANCELLED status.
+//   Cancelling the operation sets its metadata’s
+//   cancel_time,
+//   and begins restoring resources to their pre-request values. The
+//   operation is guaranteed to succeed at undoing all resource changes,
+//   after which point it terminates with a CANCELLED status.
 //
-//	All other attempts to modify the instance are rejected.
+//   All other attempts to modify the instance are rejected.
 //
-//	Reading the instance via the API continues to give the pre-request
-//	resource levels.
+//   Reading the instance via the API continues to give the pre-request
+//   resource levels.
 //
 // Upon completion of the returned operation:
 //
-//	Billing begins for all successfully-allocated resources (some types
-//	may have lower than the requested levels).
+//   Billing begins for all successfully-allocated resources (some types
+//   may have lower than the requested levels).
 //
-//	All newly-reserved resources are available for serving the instance’s
-//	tables.
+//   All newly-reserved resources are available for serving the instance’s
+//   tables.
 //
-//	The instance’s new resource levels are readable via the API.
+//   The instance’s new resource levels are readable via the API.
 //
 // The returned [long-running operation][google.longrunning.Operation] will
 // have a name of the format <instance_name>/operations/<operation_id> and
@@ -591,13 +619,13 @@ func (c *InstanceAdminClient) UpdateInstanceOperation(name string) *UpdateInstan
 //
 // Immediately upon completion of the request:
 //
-//	Billing ceases for all of the instance’s reserved resources.
+//   Billing ceases for all of the instance’s reserved resources.
 //
 // Soon afterward:
 //
-//	The instance and all of its databases immediately and
-//	irrevocably disappear from the API. All data in the databases
-//	is permanently deleted.
+//   The instance and all of its databases immediately and
+//   irrevocably disappear from the API. All data in the databases
+//   is permanently deleted.
 func (c *InstanceAdminClient) DeleteInstance(ctx context.Context, req *instancepb.DeleteInstanceRequest, opts ...gax.CallOption) error {
 	return c.internalClient.DeleteInstance(ctx, req, opts...)
 }
@@ -637,9 +665,6 @@ type instanceAdminGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing InstanceAdminClient
 	CallOptions **InstanceAdminCallOptions
 
@@ -658,7 +683,7 @@ type instanceAdminGRPCClient struct {
 // NewInstanceAdminClient creates a new instance admin client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
-// # Cloud Spanner Instance Admin API
+// Cloud Spanner Instance Admin API
 //
 // The Cloud Spanner Instance Admin API can be used to create, delete,
 // modify and list instances. Instances are dedicated Cloud Spanner serving
@@ -689,11 +714,6 @@ func NewInstanceAdminClient(ctx context.Context, opts ...option.ClientOption) (*
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -702,7 +722,6 @@ func NewInstanceAdminClient(ctx context.Context, opts ...option.ClientOption) (*
 
 	c := &instanceAdminGRPCClient{
 		connPool:            connPool,
-		disableDeadlines:    disableDeadlines,
 		instanceAdminClient: instancepb.NewInstanceAdminClient(connPool),
 		CallOptions:         &client.CallOptions,
 	}
@@ -769,7 +788,7 @@ type instanceAdminRESTClient struct {
 
 // NewInstanceAdminRESTClient creates a new instance admin rest client.
 //
-// # Cloud Spanner Instance Admin API
+// Cloud Spanner Instance Admin API
 //
 // The Cloud Spanner Instance Admin API can be used to create, delete,
 // modify and list instances. Instances are dedicated Cloud Spanner serving
@@ -896,11 +915,6 @@ func (c *instanceAdminGRPCClient) ListInstanceConfigs(ctx context.Context, req *
 }
 
 func (c *instanceAdminGRPCClient) GetInstanceConfig(ctx context.Context, req *instancepb.GetInstanceConfigRequest, opts ...gax.CallOption) (*instancepb.InstanceConfig, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 3600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1059,11 +1073,6 @@ func (c *instanceAdminGRPCClient) ListInstances(ctx context.Context, req *instan
 }
 
 func (c *instanceAdminGRPCClient) GetInstance(ctx context.Context, req *instancepb.GetInstanceRequest, opts ...gax.CallOption) (*instancepb.Instance, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 3600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1081,11 +1090,6 @@ func (c *instanceAdminGRPCClient) GetInstance(ctx context.Context, req *instance
 }
 
 func (c *instanceAdminGRPCClient) CreateInstance(ctx context.Context, req *instancepb.CreateInstanceRequest, opts ...gax.CallOption) (*CreateInstanceOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 3600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1105,11 +1109,6 @@ func (c *instanceAdminGRPCClient) CreateInstance(ctx context.Context, req *insta
 }
 
 func (c *instanceAdminGRPCClient) UpdateInstance(ctx context.Context, req *instancepb.UpdateInstanceRequest, opts ...gax.CallOption) (*UpdateInstanceOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 3600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "instance.name", url.QueryEscape(req.GetInstance().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1129,11 +1128,6 @@ func (c *instanceAdminGRPCClient) UpdateInstance(ctx context.Context, req *insta
 }
 
 func (c *instanceAdminGRPCClient) DeleteInstance(ctx context.Context, req *instancepb.DeleteInstanceRequest, opts ...gax.CallOption) error {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 3600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1147,11 +1141,6 @@ func (c *instanceAdminGRPCClient) DeleteInstance(ctx context.Context, req *insta
 }
 
 func (c *instanceAdminGRPCClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1169,11 +1158,6 @@ func (c *instanceAdminGRPCClient) SetIamPolicy(ctx context.Context, req *iampb.S
 }
 
 func (c *instanceAdminGRPCClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1191,11 +1175,6 @@ func (c *instanceAdminGRPCClient) GetIamPolicy(ctx context.Context, req *iampb.G
 }
 
 func (c *instanceAdminGRPCClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermissionsRequest, opts ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1367,26 +1346,26 @@ func (c *instanceAdminRESTClient) GetInstanceConfig(ctx context.Context, req *in
 //
 // Immediately after the request returns:
 //
-//	The instance config is readable via the API, with all requested
-//	attributes. The instance config’s
-//	reconciling
-//	field is set to true. Its state is CREATING.
+//   The instance config is readable via the API, with all requested
+//   attributes. The instance config’s
+//   reconciling
+//   field is set to true. Its state is CREATING.
 //
 // While the operation is pending:
 //
-//	Cancelling the operation renders the instance config immediately
-//	unreadable via the API.
+//   Cancelling the operation renders the instance config immediately
+//   unreadable via the API.
 //
-//	Except for deleting the creating resource, all other attempts to modify
-//	the instance config are rejected.
+//   Except for deleting the creating resource, all other attempts to modify
+//   the instance config are rejected.
 //
 // Upon completion of the returned operation:
 //
-//	Instances can be created using the instance configuration.
+//   Instances can be created using the instance configuration.
 //
-//	The instance config’s
-//	reconciling
-//	field becomes false. Its state becomes READY.
+//   The instance config’s
+//   reconciling
+//   field becomes false. Its state becomes READY.
 //
 // The returned [long-running operation][google.longrunning.Operation] will
 // have a name of the format
@@ -1477,32 +1456,32 @@ func (c *instanceAdminRESTClient) CreateInstanceConfig(ctx context.Context, req 
 //
 // Immediately after the request returns:
 //
-//	The instance config’s
-//	reconciling
-//	field is set to true.
+//   The instance config’s
+//   reconciling
+//   field is set to true.
 //
 // While the operation is pending:
 //
-//	Cancelling the operation sets its metadata’s
-//	cancel_time.
-//	The operation is guaranteed to succeed at undoing all changes, after
-//	which point it terminates with a CANCELLED status.
+//   Cancelling the operation sets its metadata’s
+//   cancel_time.
+//   The operation is guaranteed to succeed at undoing all changes, after
+//   which point it terminates with a CANCELLED status.
 //
-//	All other attempts to modify the instance config are rejected.
+//   All other attempts to modify the instance config are rejected.
 //
-//	Reading the instance config via the API continues to give the
-//	pre-request values.
+//   Reading the instance config via the API continues to give the
+//   pre-request values.
 //
 // Upon completion of the returned operation:
 //
-//	Creating instances using the instance configuration uses the new
-//	values.
+//   Creating instances using the instance configuration uses the new
+//   values.
 //
-//	The instance config’s new values are readable via the API.
+//   The instance config’s new values are readable via the API.
 //
-//	The instance config’s
-//	reconciling
-//	field becomes false.
+//   The instance config’s
+//   reconciling
+//   field becomes false.
 //
 // The returned [long-running operation][google.longrunning.Operation] will
 // have a name of the format
@@ -1902,28 +1881,28 @@ func (c *instanceAdminRESTClient) GetInstance(ctx context.Context, req *instance
 //
 // Immediately upon completion of this request:
 //
-//	The instance is readable via the API, with all requested attributes
-//	but no allocated resources. Its state is CREATING.
+//   The instance is readable via the API, with all requested attributes
+//   but no allocated resources. Its state is CREATING.
 //
 // Until completion of the returned operation:
 //
-//	Cancelling the operation renders the instance immediately unreadable
-//	via the API.
+//   Cancelling the operation renders the instance immediately unreadable
+//   via the API.
 //
-//	The instance can be deleted.
+//   The instance can be deleted.
 //
-//	All other attempts to modify the instance are rejected.
+//   All other attempts to modify the instance are rejected.
 //
 // Upon completion of the returned operation:
 //
-//	Billing for all successfully-allocated resources begins (some types
-//	may have lower than the requested levels).
+//   Billing for all successfully-allocated resources begins (some types
+//   may have lower than the requested levels).
 //
-//	Databases can be created in the instance.
+//   Databases can be created in the instance.
 //
-//	The instance’s allocated resource levels are readable via the API.
+//   The instance’s allocated resource levels are readable via the API.
 //
-//	The instance’s state becomes READY.
+//   The instance’s state becomes READY.
 //
 // The returned [long-running operation][google.longrunning.Operation] will
 // have a name of the format <instance_name>/operations/<operation_id> and
@@ -2007,31 +1986,31 @@ func (c *instanceAdminRESTClient) CreateInstance(ctx context.Context, req *insta
 //
 // Immediately upon completion of this request:
 //
-//	For resource types for which a decrease in the instance’s allocation
-//	has been requested, billing is based on the newly-requested level.
+//   For resource types for which a decrease in the instance’s allocation
+//   has been requested, billing is based on the newly-requested level.
 //
 // Until completion of the returned operation:
 //
-//	Cancelling the operation sets its metadata’s
-//	cancel_time,
-//	and begins restoring resources to their pre-request values. The
-//	operation is guaranteed to succeed at undoing all resource changes,
-//	after which point it terminates with a CANCELLED status.
+//   Cancelling the operation sets its metadata’s
+//   cancel_time,
+//   and begins restoring resources to their pre-request values. The
+//   operation is guaranteed to succeed at undoing all resource changes,
+//   after which point it terminates with a CANCELLED status.
 //
-//	All other attempts to modify the instance are rejected.
+//   All other attempts to modify the instance are rejected.
 //
-//	Reading the instance via the API continues to give the pre-request
-//	resource levels.
+//   Reading the instance via the API continues to give the pre-request
+//   resource levels.
 //
 // Upon completion of the returned operation:
 //
-//	Billing begins for all successfully-allocated resources (some types
-//	may have lower than the requested levels).
+//   Billing begins for all successfully-allocated resources (some types
+//   may have lower than the requested levels).
 //
-//	All newly-reserved resources are available for serving the instance’s
-//	tables.
+//   All newly-reserved resources are available for serving the instance’s
+//   tables.
 //
-//	The instance’s new resource levels are readable via the API.
+//   The instance’s new resource levels are readable via the API.
 //
 // The returned [long-running operation][google.longrunning.Operation] will
 // have a name of the format <instance_name>/operations/<operation_id> and
@@ -2114,13 +2093,13 @@ func (c *instanceAdminRESTClient) UpdateInstance(ctx context.Context, req *insta
 //
 // Immediately upon completion of the request:
 //
-//	Billing ceases for all of the instance’s reserved resources.
+//   Billing ceases for all of the instance’s reserved resources.
 //
 // Soon afterward:
 //
-//	The instance and all of its databases immediately and
-//	irrevocably disappear from the API. All data in the databases
-//	is permanently deleted.
+//   The instance and all of its databases immediately and
+//   irrevocably disappear from the API. All data in the databases
+//   is permanently deleted.
 func (c *instanceAdminRESTClient) DeleteInstance(ctx context.Context, req *instancepb.DeleteInstanceRequest, opts ...gax.CallOption) error {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {

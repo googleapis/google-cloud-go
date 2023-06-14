@@ -84,6 +84,7 @@ func defaultModelCallOptions() *ModelCallOptions {
 		TuneModel:    []gax.CallOption{},
 		GetOperation: []gax.CallOption{},
 		ListOperations: []gax.CallOption{
+			gax.WithTimeout(300000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -110,6 +111,7 @@ func defaultModelRESTCallOptions() *ModelCallOptions {
 		TuneModel:    []gax.CallOption{},
 		GetOperation: []gax.CallOption{},
 		ListOperations: []gax.CallOption{
+			gax.WithTimeout(300000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -153,13 +155,13 @@ type internalModelClient interface {
 //
 // This service allows you to do the following:
 //
-//	Initiate training of a model.
+//   Initiate training of a model.
 //
-//	Pause training of an existing model.
+//   Pause training of an existing model.
 //
-//	List all the available models along with their metadata.
+//   List all the available models along with their metadata.
 //
-//	Control their tuning schedule.
+//   Control their tuning schedule.
 type ModelClient struct {
 	// The internal transport-dependent client.
 	internalClient internalModelClient
@@ -268,9 +270,6 @@ type modelGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing ModelClient
 	CallOptions **ModelCallOptions
 
@@ -299,13 +298,13 @@ type modelGRPCClient struct {
 //
 // This service allows you to do the following:
 //
-//	Initiate training of a model.
+//   Initiate training of a model.
 //
-//	Pause training of an existing model.
+//   Pause training of an existing model.
 //
-//	List all the available models along with their metadata.
+//   List all the available models along with their metadata.
 //
-//	Control their tuning schedule.
+//   Control their tuning schedule.
 func NewModelClient(ctx context.Context, opts ...option.ClientOption) (*ModelClient, error) {
 	clientOpts := defaultModelGRPCClientOptions()
 	if newModelClientHook != nil {
@@ -316,11 +315,6 @@ func NewModelClient(ctx context.Context, opts ...option.ClientOption) (*ModelCli
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -329,7 +323,6 @@ func NewModelClient(ctx context.Context, opts ...option.ClientOption) (*ModelCli
 
 	c := &modelGRPCClient{
 		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
 		modelClient:      retailpb.NewModelServiceClient(connPool),
 		CallOptions:      &client.CallOptions,
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
@@ -405,13 +398,13 @@ type modelRESTClient struct {
 //
 // This service allows you to do the following:
 //
-//	Initiate training of a model.
+//   Initiate training of a model.
 //
-//	Pause training of an existing model.
+//   Pause training of an existing model.
 //
-//	List all the available models along with their metadata.
+//   List all the available models along with their metadata.
 //
-//	Control their tuning schedule.
+//   Control their tuning schedule.
 func NewModelRESTClient(ctx context.Context, opts ...option.ClientOption) (*ModelClient, error) {
 	clientOpts := append(defaultModelRESTClientOptions(), opts...)
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)

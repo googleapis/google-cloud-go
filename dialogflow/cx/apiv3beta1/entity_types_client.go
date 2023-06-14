@@ -74,6 +74,7 @@ func defaultEntityTypesGRPCClientOptions() []option.ClientOption {
 func defaultEntityTypesCallOptions() *EntityTypesCallOptions {
 	return &EntityTypesCallOptions{
 		ListEntityTypes: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -85,6 +86,7 @@ func defaultEntityTypesCallOptions() *EntityTypesCallOptions {
 			}),
 		},
 		GetEntityType: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -96,6 +98,7 @@ func defaultEntityTypesCallOptions() *EntityTypesCallOptions {
 			}),
 		},
 		CreateEntityType: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -107,6 +110,7 @@ func defaultEntityTypesCallOptions() *EntityTypesCallOptions {
 			}),
 		},
 		UpdateEntityType: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -118,6 +122,7 @@ func defaultEntityTypesCallOptions() *EntityTypesCallOptions {
 			}),
 		},
 		DeleteEntityType: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -139,6 +144,7 @@ func defaultEntityTypesCallOptions() *EntityTypesCallOptions {
 func defaultEntityTypesRESTCallOptions() *EntityTypesCallOptions {
 	return &EntityTypesCallOptions{
 		ListEntityTypes: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -149,6 +155,7 @@ func defaultEntityTypesRESTCallOptions() *EntityTypesCallOptions {
 			}),
 		},
 		GetEntityType: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -159,6 +166,7 @@ func defaultEntityTypesRESTCallOptions() *EntityTypesCallOptions {
 			}),
 		},
 		CreateEntityType: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -169,6 +177,7 @@ func defaultEntityTypesRESTCallOptions() *EntityTypesCallOptions {
 			}),
 		},
 		UpdateEntityType: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -179,6 +188,7 @@ func defaultEntityTypesRESTCallOptions() *EntityTypesCallOptions {
 			}),
 		},
 		DeleteEntityType: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -314,9 +324,6 @@ type entityTypesGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing EntityTypesClient
 	CallOptions **EntityTypesCallOptions
 
@@ -346,11 +353,6 @@ func NewEntityTypesClient(ctx context.Context, opts ...option.ClientOption) (*En
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -359,7 +361,6 @@ func NewEntityTypesClient(ctx context.Context, opts ...option.ClientOption) (*En
 
 	c := &entityTypesGRPCClient{
 		connPool:          connPool,
-		disableDeadlines:  disableDeadlines,
 		entityTypesClient: cxpb.NewEntityTypesClient(connPool),
 		CallOptions:       &client.CallOptions,
 		operationsClient:  longrunningpb.NewOperationsClient(connPool),
@@ -510,11 +511,6 @@ func (c *entityTypesGRPCClient) ListEntityTypes(ctx context.Context, req *cxpb.L
 }
 
 func (c *entityTypesGRPCClient) GetEntityType(ctx context.Context, req *cxpb.GetEntityTypeRequest, opts ...gax.CallOption) (*cxpb.EntityType, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -532,11 +528,6 @@ func (c *entityTypesGRPCClient) GetEntityType(ctx context.Context, req *cxpb.Get
 }
 
 func (c *entityTypesGRPCClient) CreateEntityType(ctx context.Context, req *cxpb.CreateEntityTypeRequest, opts ...gax.CallOption) (*cxpb.EntityType, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -554,11 +545,6 @@ func (c *entityTypesGRPCClient) CreateEntityType(ctx context.Context, req *cxpb.
 }
 
 func (c *entityTypesGRPCClient) UpdateEntityType(ctx context.Context, req *cxpb.UpdateEntityTypeRequest, opts ...gax.CallOption) (*cxpb.EntityType, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "entity_type.name", url.QueryEscape(req.GetEntityType().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -576,11 +562,6 @@ func (c *entityTypesGRPCClient) UpdateEntityType(ctx context.Context, req *cxpb.
 }
 
 func (c *entityTypesGRPCClient) DeleteEntityType(ctx context.Context, req *cxpb.DeleteEntityTypeRequest, opts ...gax.CallOption) error {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)

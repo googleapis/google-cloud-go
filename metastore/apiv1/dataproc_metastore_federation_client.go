@@ -150,15 +150,15 @@ type internalDataprocMetastoreFederationClient interface {
 //
 // The Dataproc Metastore Federation API defines the following resource model:
 //
-//	The service works with a collection of Google Cloud projects.
+//   The service works with a collection of Google Cloud projects.
 //
-//	Each project has a collection of available locations.
+//   Each project has a collection of available locations.
 //
-//	Each location has a collection of federations.
+//   Each location has a collection of federations.
 //
-//	Dataproc Metastore Federations are resources with names of the
-//	form:
-//	projects/{project_number}/locations/{location_id}/federations/{federation_id}.
+//   Dataproc Metastore Federations are resources with names of the
+//   form:
+//   projects/{project_number}/locations/{location_id}/federations/{federation_id}.
 type DataprocMetastoreFederationClient struct {
 	// The internal transport-dependent client.
 	internalClient internalDataprocMetastoreFederationClient
@@ -301,9 +301,6 @@ type dataprocMetastoreFederationGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing DataprocMetastoreFederationClient
 	CallOptions **DataprocMetastoreFederationCallOptions
 
@@ -336,15 +333,15 @@ type dataprocMetastoreFederationGRPCClient struct {
 //
 // The Dataproc Metastore Federation API defines the following resource model:
 //
-//	The service works with a collection of Google Cloud projects.
+//   The service works with a collection of Google Cloud projects.
 //
-//	Each project has a collection of available locations.
+//   Each project has a collection of available locations.
 //
-//	Each location has a collection of federations.
+//   Each location has a collection of federations.
 //
-//	Dataproc Metastore Federations are resources with names of the
-//	form:
-//	projects/{project_number}/locations/{location_id}/federations/{federation_id}.
+//   Dataproc Metastore Federations are resources with names of the
+//   form:
+//   projects/{project_number}/locations/{location_id}/federations/{federation_id}.
 func NewDataprocMetastoreFederationClient(ctx context.Context, opts ...option.ClientOption) (*DataprocMetastoreFederationClient, error) {
 	clientOpts := defaultDataprocMetastoreFederationGRPCClientOptions()
 	if newDataprocMetastoreFederationClientHook != nil {
@@ -355,11 +352,6 @@ func NewDataprocMetastoreFederationClient(ctx context.Context, opts ...option.Cl
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -368,7 +360,6 @@ func NewDataprocMetastoreFederationClient(ctx context.Context, opts ...option.Cl
 
 	c := &dataprocMetastoreFederationGRPCClient{
 		connPool:                          connPool,
-		disableDeadlines:                  disableDeadlines,
 		dataprocMetastoreFederationClient: metastorepb.NewDataprocMetastoreFederationClient(connPool),
 		CallOptions:                       &client.CallOptions,
 		operationsClient:                  longrunningpb.NewOperationsClient(connPool),
@@ -446,15 +437,15 @@ type dataprocMetastoreFederationRESTClient struct {
 //
 // The Dataproc Metastore Federation API defines the following resource model:
 //
-//	The service works with a collection of Google Cloud projects.
+//   The service works with a collection of Google Cloud projects.
 //
-//	Each project has a collection of available locations.
+//   Each project has a collection of available locations.
 //
-//	Each location has a collection of federations.
+//   Each location has a collection of federations.
 //
-//	Dataproc Metastore Federations are resources with names of the
-//	form:
-//	projects/{project_number}/locations/{location_id}/federations/{federation_id}.
+//   Dataproc Metastore Federations are resources with names of the
+//   form:
+//   projects/{project_number}/locations/{location_id}/federations/{federation_id}.
 func NewDataprocMetastoreFederationRESTClient(ctx context.Context, opts ...option.ClientOption) (*DataprocMetastoreFederationClient, error) {
 	clientOpts := append(defaultDataprocMetastoreFederationRESTClientOptions(), opts...)
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)

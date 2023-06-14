@@ -79,41 +79,77 @@ func defaultCloudMemcacheGRPCClientOptions() []option.ClientOption {
 
 func defaultCloudMemcacheCallOptions() *CloudMemcacheCallOptions {
 	return &CloudMemcacheCallOptions{
-		ListInstances:         []gax.CallOption{},
-		GetInstance:           []gax.CallOption{},
-		CreateInstance:        []gax.CallOption{},
-		UpdateInstance:        []gax.CallOption{},
-		UpdateParameters:      []gax.CallOption{},
-		DeleteInstance:        []gax.CallOption{},
-		ApplyParameters:       []gax.CallOption{},
-		ApplySoftwareUpdate:   []gax.CallOption{},
-		RescheduleMaintenance: []gax.CallOption{},
-		GetLocation:           []gax.CallOption{},
-		ListLocations:         []gax.CallOption{},
-		CancelOperation:       []gax.CallOption{},
-		DeleteOperation:       []gax.CallOption{},
-		GetOperation:          []gax.CallOption{},
-		ListOperations:        []gax.CallOption{},
+		ListInstances: []gax.CallOption{
+			gax.WithTimeout(1200000 * time.Millisecond),
+		},
+		GetInstance: []gax.CallOption{
+			gax.WithTimeout(1200000 * time.Millisecond),
+		},
+		CreateInstance: []gax.CallOption{
+			gax.WithTimeout(1200000 * time.Millisecond),
+		},
+		UpdateInstance: []gax.CallOption{
+			gax.WithTimeout(1200000 * time.Millisecond),
+		},
+		UpdateParameters: []gax.CallOption{
+			gax.WithTimeout(1200000 * time.Millisecond),
+		},
+		DeleteInstance: []gax.CallOption{
+			gax.WithTimeout(1200000 * time.Millisecond),
+		},
+		ApplyParameters: []gax.CallOption{
+			gax.WithTimeout(1200000 * time.Millisecond),
+		},
+		ApplySoftwareUpdate: []gax.CallOption{
+			gax.WithTimeout(1200000 * time.Millisecond),
+		},
+		RescheduleMaintenance: []gax.CallOption{
+			gax.WithTimeout(1200000 * time.Millisecond),
+		},
+		GetLocation:     []gax.CallOption{},
+		ListLocations:   []gax.CallOption{},
+		CancelOperation: []gax.CallOption{},
+		DeleteOperation: []gax.CallOption{},
+		GetOperation:    []gax.CallOption{},
+		ListOperations:  []gax.CallOption{},
 	}
 }
 
 func defaultCloudMemcacheRESTCallOptions() *CloudMemcacheCallOptions {
 	return &CloudMemcacheCallOptions{
-		ListInstances:         []gax.CallOption{},
-		GetInstance:           []gax.CallOption{},
-		CreateInstance:        []gax.CallOption{},
-		UpdateInstance:        []gax.CallOption{},
-		UpdateParameters:      []gax.CallOption{},
-		DeleteInstance:        []gax.CallOption{},
-		ApplyParameters:       []gax.CallOption{},
-		ApplySoftwareUpdate:   []gax.CallOption{},
-		RescheduleMaintenance: []gax.CallOption{},
-		GetLocation:           []gax.CallOption{},
-		ListLocations:         []gax.CallOption{},
-		CancelOperation:       []gax.CallOption{},
-		DeleteOperation:       []gax.CallOption{},
-		GetOperation:          []gax.CallOption{},
-		ListOperations:        []gax.CallOption{},
+		ListInstances: []gax.CallOption{
+			gax.WithTimeout(1200000 * time.Millisecond),
+		},
+		GetInstance: []gax.CallOption{
+			gax.WithTimeout(1200000 * time.Millisecond),
+		},
+		CreateInstance: []gax.CallOption{
+			gax.WithTimeout(1200000 * time.Millisecond),
+		},
+		UpdateInstance: []gax.CallOption{
+			gax.WithTimeout(1200000 * time.Millisecond),
+		},
+		UpdateParameters: []gax.CallOption{
+			gax.WithTimeout(1200000 * time.Millisecond),
+		},
+		DeleteInstance: []gax.CallOption{
+			gax.WithTimeout(1200000 * time.Millisecond),
+		},
+		ApplyParameters: []gax.CallOption{
+			gax.WithTimeout(1200000 * time.Millisecond),
+		},
+		ApplySoftwareUpdate: []gax.CallOption{
+			gax.WithTimeout(1200000 * time.Millisecond),
+		},
+		RescheduleMaintenance: []gax.CallOption{
+			gax.WithTimeout(1200000 * time.Millisecond),
+		},
+		GetLocation:     []gax.CallOption{},
+		ListLocations:   []gax.CallOption{},
+		CancelOperation: []gax.CallOption{},
+		DeleteOperation: []gax.CallOption{},
+		GetOperation:    []gax.CallOption{},
+		ListOperations:  []gax.CallOption{},
 	}
 }
 
@@ -155,19 +191,19 @@ type internalCloudMemcacheClient interface {
 // for Memcached API and defines the following resource model for managing
 // Memorystore Memcached (also called Memcached below) instances:
 //
-//	The service works with a collection of cloud projects, named: /projects/*
+//   The service works with a collection of cloud projects, named: /projects/*
 //
-//	Each project has a collection of available locations, named: /locations/*
+//   Each project has a collection of available locations, named: /locations/*
 //
-//	Each location has a collection of Memcached instances, named:
-//	/instances/*
+//   Each location has a collection of Memcached instances, named:
+//   /instances/*
 //
-//	As such, Memcached instances are resources of the form:
-//	/projects/{project_id}/locations/{location_id}/instances/{instance_id}
+//   As such, Memcached instances are resources of the form:
+//   /projects/{project_id}/locations/{location_id}/instances/{instance_id}
 //
 // Note that location_id must be a GCP region; for example:
 //
-//	projects/my-memcached-project/locations/us-central1/instances/my-memcached
+//   projects/my-memcached-project/locations/us-central1/instances/my-memcached
 type CloudMemcacheClient struct {
 	// The internal transport-dependent client.
 	internalClient internalCloudMemcacheClient
@@ -332,9 +368,6 @@ type cloudMemcacheGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing CloudMemcacheClient
 	CallOptions **CloudMemcacheCallOptions
 
@@ -363,19 +396,19 @@ type cloudMemcacheGRPCClient struct {
 // for Memcached API and defines the following resource model for managing
 // Memorystore Memcached (also called Memcached below) instances:
 //
-//	The service works with a collection of cloud projects, named: /projects/*
+//   The service works with a collection of cloud projects, named: /projects/*
 //
-//	Each project has a collection of available locations, named: /locations/*
+//   Each project has a collection of available locations, named: /locations/*
 //
-//	Each location has a collection of Memcached instances, named:
-//	/instances/*
+//   Each location has a collection of Memcached instances, named:
+//   /instances/*
 //
-//	As such, Memcached instances are resources of the form:
-//	/projects/{project_id}/locations/{location_id}/instances/{instance_id}
+//   As such, Memcached instances are resources of the form:
+//   /projects/{project_id}/locations/{location_id}/instances/{instance_id}
 //
 // Note that location_id must be a GCP region; for example:
 //
-//	projects/my-memcached-project/locations/us-central1/instances/my-memcached
+//   projects/my-memcached-project/locations/us-central1/instances/my-memcached
 func NewCloudMemcacheClient(ctx context.Context, opts ...option.ClientOption) (*CloudMemcacheClient, error) {
 	clientOpts := defaultCloudMemcacheGRPCClientOptions()
 	if newCloudMemcacheClientHook != nil {
@@ -386,11 +419,6 @@ func NewCloudMemcacheClient(ctx context.Context, opts ...option.ClientOption) (*
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -399,7 +427,6 @@ func NewCloudMemcacheClient(ctx context.Context, opts ...option.ClientOption) (*
 
 	c := &cloudMemcacheGRPCClient{
 		connPool:            connPool,
-		disableDeadlines:    disableDeadlines,
 		cloudMemcacheClient: memcachepb.NewCloudMemcacheClient(connPool),
 		CallOptions:         &client.CallOptions,
 		operationsClient:    longrunningpb.NewOperationsClient(connPool),
@@ -474,19 +501,19 @@ type cloudMemcacheRESTClient struct {
 // for Memcached API and defines the following resource model for managing
 // Memorystore Memcached (also called Memcached below) instances:
 //
-//	The service works with a collection of cloud projects, named: /projects/*
+//   The service works with a collection of cloud projects, named: /projects/*
 //
-//	Each project has a collection of available locations, named: /locations/*
+//   Each project has a collection of available locations, named: /locations/*
 //
-//	Each location has a collection of Memcached instances, named:
-//	/instances/*
+//   Each location has a collection of Memcached instances, named:
+//   /instances/*
 //
-//	As such, Memcached instances are resources of the form:
-//	/projects/{project_id}/locations/{location_id}/instances/{instance_id}
+//   As such, Memcached instances are resources of the form:
+//   /projects/{project_id}/locations/{location_id}/instances/{instance_id}
 //
 // Note that location_id must be a GCP region; for example:
 //
-//	projects/my-memcached-project/locations/us-central1/instances/my-memcached
+//   projects/my-memcached-project/locations/us-central1/instances/my-memcached
 func NewCloudMemcacheRESTClient(ctx context.Context, opts ...option.ClientOption) (*CloudMemcacheClient, error) {
 	clientOpts := append(defaultCloudMemcacheRESTClientOptions(), opts...)
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
@@ -593,11 +620,6 @@ func (c *cloudMemcacheGRPCClient) ListInstances(ctx context.Context, req *memcac
 }
 
 func (c *cloudMemcacheGRPCClient) GetInstance(ctx context.Context, req *memcachepb.GetInstanceRequest, opts ...gax.CallOption) (*memcachepb.Instance, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 1200000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -615,11 +637,6 @@ func (c *cloudMemcacheGRPCClient) GetInstance(ctx context.Context, req *memcache
 }
 
 func (c *cloudMemcacheGRPCClient) CreateInstance(ctx context.Context, req *memcachepb.CreateInstanceRequest, opts ...gax.CallOption) (*CreateInstanceOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 1200000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -639,11 +656,6 @@ func (c *cloudMemcacheGRPCClient) CreateInstance(ctx context.Context, req *memca
 }
 
 func (c *cloudMemcacheGRPCClient) UpdateInstance(ctx context.Context, req *memcachepb.UpdateInstanceRequest, opts ...gax.CallOption) (*UpdateInstanceOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 1200000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource.name", url.QueryEscape(req.GetResource().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -663,11 +675,6 @@ func (c *cloudMemcacheGRPCClient) UpdateInstance(ctx context.Context, req *memca
 }
 
 func (c *cloudMemcacheGRPCClient) UpdateParameters(ctx context.Context, req *memcachepb.UpdateParametersRequest, opts ...gax.CallOption) (*UpdateParametersOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 1200000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -687,11 +694,6 @@ func (c *cloudMemcacheGRPCClient) UpdateParameters(ctx context.Context, req *mem
 }
 
 func (c *cloudMemcacheGRPCClient) DeleteInstance(ctx context.Context, req *memcachepb.DeleteInstanceRequest, opts ...gax.CallOption) (*DeleteInstanceOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 1200000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -711,11 +713,6 @@ func (c *cloudMemcacheGRPCClient) DeleteInstance(ctx context.Context, req *memca
 }
 
 func (c *cloudMemcacheGRPCClient) ApplyParameters(ctx context.Context, req *memcachepb.ApplyParametersRequest, opts ...gax.CallOption) (*ApplyParametersOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 1200000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -735,11 +732,6 @@ func (c *cloudMemcacheGRPCClient) ApplyParameters(ctx context.Context, req *memc
 }
 
 func (c *cloudMemcacheGRPCClient) ApplySoftwareUpdate(ctx context.Context, req *memcachepb.ApplySoftwareUpdateRequest, opts ...gax.CallOption) (*ApplySoftwareUpdateOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 1200000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "instance", url.QueryEscape(req.GetInstance())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -759,11 +751,6 @@ func (c *cloudMemcacheGRPCClient) ApplySoftwareUpdate(ctx context.Context, req *
 }
 
 func (c *cloudMemcacheGRPCClient) RescheduleMaintenance(ctx context.Context, req *memcachepb.RescheduleMaintenanceRequest, opts ...gax.CallOption) (*RescheduleMaintenanceOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 1200000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "instance", url.QueryEscape(req.GetInstance())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)

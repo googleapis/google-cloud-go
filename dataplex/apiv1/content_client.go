@@ -72,10 +72,17 @@ func defaultContentGRPCClientOptions() []option.ClientOption {
 
 func defaultContentCallOptions() *ContentCallOptions {
 	return &ContentCallOptions{
-		CreateContent: []gax.CallOption{},
-		UpdateContent: []gax.CallOption{},
-		DeleteContent: []gax.CallOption{},
+		CreateContent: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateContent: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteContent: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		GetContent: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -87,6 +94,7 @@ func defaultContentCallOptions() *ContentCallOptions {
 			}),
 		},
 		GetIamPolicy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -97,8 +105,11 @@ func defaultContentCallOptions() *ContentCallOptions {
 				})
 			}),
 		},
-		SetIamPolicy: []gax.CallOption{},
+		SetIamPolicy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		TestIamPermissions: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -110,6 +121,7 @@ func defaultContentCallOptions() *ContentCallOptions {
 			}),
 		},
 		ListContent: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -280,9 +292,6 @@ type contentGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing ContentClient
 	CallOptions **ContentCallOptions
 
@@ -311,11 +320,6 @@ func NewContentClient(ctx context.Context, opts ...option.ClientOption) (*Conten
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -324,7 +328,6 @@ func NewContentClient(ctx context.Context, opts ...option.ClientOption) (*Conten
 
 	c := &contentGRPCClient{
 		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
 		contentClient:    dataplexpb.NewContentServiceClient(connPool),
 		CallOptions:      &client.CallOptions,
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
@@ -361,11 +364,6 @@ func (c *contentGRPCClient) Close() error {
 }
 
 func (c *contentGRPCClient) CreateContent(ctx context.Context, req *dataplexpb.CreateContentRequest, opts ...gax.CallOption) (*dataplexpb.Content, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -383,11 +381,6 @@ func (c *contentGRPCClient) CreateContent(ctx context.Context, req *dataplexpb.C
 }
 
 func (c *contentGRPCClient) UpdateContent(ctx context.Context, req *dataplexpb.UpdateContentRequest, opts ...gax.CallOption) (*dataplexpb.Content, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "content.name", url.QueryEscape(req.GetContent().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -405,11 +398,6 @@ func (c *contentGRPCClient) UpdateContent(ctx context.Context, req *dataplexpb.U
 }
 
 func (c *contentGRPCClient) DeleteContent(ctx context.Context, req *dataplexpb.DeleteContentRequest, opts ...gax.CallOption) error {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -423,11 +411,6 @@ func (c *contentGRPCClient) DeleteContent(ctx context.Context, req *dataplexpb.D
 }
 
 func (c *contentGRPCClient) GetContent(ctx context.Context, req *dataplexpb.GetContentRequest, opts ...gax.CallOption) (*dataplexpb.Content, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -445,11 +428,6 @@ func (c *contentGRPCClient) GetContent(ctx context.Context, req *dataplexpb.GetC
 }
 
 func (c *contentGRPCClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -467,11 +445,6 @@ func (c *contentGRPCClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamP
 }
 
 func (c *contentGRPCClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -489,11 +462,6 @@ func (c *contentGRPCClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamP
 }
 
 func (c *contentGRPCClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermissionsRequest, opts ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
