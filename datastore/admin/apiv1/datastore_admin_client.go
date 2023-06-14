@@ -188,7 +188,7 @@ type internalDatastoreAdminClient interface {
 // DatastoreAdminClient is a client for interacting with Cloud Datastore API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
-// Google Cloud Datastore Admin API
+// # Google Cloud Datastore Admin API
 //
 // The Datastore Admin API provides several admin services for Cloud Datastore.
 //
@@ -408,7 +408,7 @@ type datastoreAdminGRPCClient struct {
 // NewDatastoreAdminClient creates a new datastore admin client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
-// Google Cloud Datastore Admin API
+// # Google Cloud Datastore Admin API
 //
 // The Datastore Admin API provides several admin services for Cloud Datastore.
 //
@@ -541,7 +541,7 @@ type datastoreAdminRESTClient struct {
 
 // NewDatastoreAdminRESTClient creates a new datastore admin rest client.
 //
-// Google Cloud Datastore Admin API
+// # Google Cloud Datastore Admin API
 //
 // The Datastore Admin API provides several admin services for Cloud Datastore.
 //
