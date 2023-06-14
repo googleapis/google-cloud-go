@@ -689,9 +689,7 @@ func TestIntegration_TableConstraintsPK(t *testing.T) {
 	}
 
 	md, err = table.Update(ctx, TableMetadataToUpdate{
-		PrimaryKey: &PrimaryKey{
-			Columns: []string{}, // clean primary keys
-		},
+		PrimaryKey: &PrimaryKey{}, // clean primary keys
 	}, "")
 	if err != nil {
 		t.Fatal(err)
