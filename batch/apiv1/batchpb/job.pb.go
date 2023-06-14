@@ -21,14 +21,13 @@
 package batchpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -276,6 +275,62 @@ func (x AllocationPolicy_ProvisioningModel) Number() protoreflect.EnumNumber {
 // Deprecated: Use AllocationPolicy_ProvisioningModel.Descriptor instead.
 func (AllocationPolicy_ProvisioningModel) EnumDescriptor() ([]byte, []int) {
 	return file_google_cloud_batch_v1_job_proto_rawDescGZIP(), []int{4, 0}
+}
+
+// How Tasks in the TaskGroup should be scheduled relative to each other.
+type TaskGroup_SchedulingPolicy int32
+
+const (
+	// Unspecified.
+	TaskGroup_SCHEDULING_POLICY_UNSPECIFIED TaskGroup_SchedulingPolicy = 0
+	// Run Tasks as soon as resources are available.
+	//
+	// Tasks might be executed in parallel depending on parallelism and
+	// task_count values.
+	TaskGroup_AS_SOON_AS_POSSIBLE TaskGroup_SchedulingPolicy = 1
+	// Run Tasks sequentially with increased task index.
+	TaskGroup_IN_ORDER TaskGroup_SchedulingPolicy = 2
+)
+
+// Enum value maps for TaskGroup_SchedulingPolicy.
+var (
+	TaskGroup_SchedulingPolicy_name = map[int32]string{
+		0: "SCHEDULING_POLICY_UNSPECIFIED",
+		1: "AS_SOON_AS_POSSIBLE",
+		2: "IN_ORDER",
+	}
+	TaskGroup_SchedulingPolicy_value = map[string]int32{
+		"SCHEDULING_POLICY_UNSPECIFIED": 0,
+		"AS_SOON_AS_POSSIBLE":           1,
+		"IN_ORDER":                      2,
+	}
+)
+
+func (x TaskGroup_SchedulingPolicy) Enum() *TaskGroup_SchedulingPolicy {
+	p := new(TaskGroup_SchedulingPolicy)
+	*p = x
+	return p
+}
+
+func (x TaskGroup_SchedulingPolicy) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (TaskGroup_SchedulingPolicy) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_cloud_batch_v1_job_proto_enumTypes[4].Descriptor()
+}
+
+func (TaskGroup_SchedulingPolicy) Type() protoreflect.EnumType {
+	return &file_google_cloud_batch_v1_job_proto_enumTypes[4]
+}
+
+func (x TaskGroup_SchedulingPolicy) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use TaskGroup_SchedulingPolicy.Descriptor instead.
+func (TaskGroup_SchedulingPolicy) EnumDescriptor() ([]byte, []int) {
+	return file_google_cloud_batch_v1_job_proto_rawDescGZIP(), []int{5, 0}
 }
 
 // The Cloud Batch Job description.
@@ -734,8 +789,7 @@ func (x *AllocationPolicy) GetPlacement() *AllocationPolicy_PlacementPolicy {
 	return nil
 }
 
-// A TaskGroup contains one or multiple Tasks that share the same
-// Runnable but with different runtime parameters.
+// A TaskGroup defines one or more Tasks that all share the same TaskSpec.
 type TaskGroup struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -755,6 +809,9 @@ type TaskGroup struct {
 	// Default to min(task_count, 1000).
 	// Field parallelism must be 1 if the scheduling_policy is IN_ORDER.
 	Parallelism int64 `protobuf:"varint,5,opt,name=parallelism,proto3" json:"parallelism,omitempty"`
+	// Scheduling policy for Tasks in the TaskGroup.
+	// The default value is AS_SOON_AS_POSSIBLE.
+	SchedulingPolicy TaskGroup_SchedulingPolicy `protobuf:"varint,6,opt,name=scheduling_policy,json=schedulingPolicy,proto3,enum=google.cloud.batch.v1.TaskGroup_SchedulingPolicy" json:"scheduling_policy,omitempty"`
 	// An array of environment variable mappings, which are passed to Tasks with
 	// matching indices. If task_environments is used then task_count should
 	// not be specified in the request (and will be ignored). Task count will be
@@ -764,8 +821,6 @@ type TaskGroup struct {
 	// addition to any environment variables set in task_environments, specifying
 	// the number of Tasks in the Task's parent TaskGroup, and the specific Task's
 	// index in the TaskGroup (0 through BATCH_TASK_COUNT - 1).
-	//
-	// task_environments supports up to 200 entries.
 	TaskEnvironments []*Environment `protobuf:"bytes,9,rep,name=task_environments,json=taskEnvironments,proto3" json:"task_environments,omitempty"`
 	// Max number of tasks that can be run on a VM at the same time.
 	// If not specified, the system will decide a value based on available
@@ -838,6 +893,13 @@ func (x *TaskGroup) GetParallelism() int64 {
 		return x.Parallelism
 	}
 	return 0
+}
+
+func (x *TaskGroup) GetSchedulingPolicy() TaskGroup_SchedulingPolicy {
+	if x != nil {
+		return x.SchedulingPolicy
+	}
+	return TaskGroup_SCHEDULING_POLICY_UNSPECIFIED
 }
 
 func (x *TaskGroup) GetTaskEnvironments() []*Environment {
@@ -1516,7 +1578,6 @@ type AllocationPolicy_InstancePolicy struct {
 	// The minimum CPU platform.
 	// See
 	// https://cloud.google.com/compute/docs/instances/specify-min-cpu-platform.
-	// Not yet implemented.
 	MinCpuPlatform string `protobuf:"bytes,3,opt,name=min_cpu_platform,json=minCpuPlatform,proto3" json:"min_cpu_platform,omitempty"`
 	// The provisioning model.
 	ProvisioningModel AllocationPolicy_ProvisioningModel `protobuf:"varint,4,opt,name=provisioning_model,json=provisioningModel,proto3,enum=google.cloud.batch.v1.AllocationPolicy_ProvisioningModel" json:"provisioning_model,omitempty"`
@@ -2214,7 +2275,7 @@ var file_google_cloud_batch_v1_job_proto_rawDesc = []byte{
 	0x45, 0x43, 0x49, 0x46, 0x49, 0x45, 0x44, 0x10, 0x00, 0x12, 0x0c, 0x0a, 0x08, 0x53, 0x54, 0x41,
 	0x4e, 0x44, 0x41, 0x52, 0x44, 0x10, 0x01, 0x12, 0x08, 0x0a, 0x04, 0x53, 0x50, 0x4f, 0x54, 0x10,
 	0x02, 0x12, 0x0f, 0x0a, 0x0b, 0x50, 0x52, 0x45, 0x45, 0x4d, 0x50, 0x54, 0x49, 0x42, 0x4c, 0x45,
-	0x10, 0x03, 0x22, 0xee, 0x03, 0x0a, 0x09, 0x54, 0x61, 0x73, 0x6b, 0x47, 0x72, 0x6f, 0x75, 0x70,
+	0x10, 0x03, 0x22, 0xac, 0x05, 0x0a, 0x09, 0x54, 0x61, 0x73, 0x6b, 0x47, 0x72, 0x6f, 0x75, 0x70,
 	0x12, 0x17, 0x0a, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x42, 0x03,
 	0xe0, 0x41, 0x03, 0x52, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x12, 0x41, 0x0a, 0x09, 0x74, 0x61, 0x73,
 	0x6b, 0x5f, 0x73, 0x70, 0x65, 0x63, 0x18, 0x03, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1f, 0x2e, 0x67,
@@ -2224,7 +2285,13 @@ var file_google_cloud_batch_v1_job_proto_rawDesc = []byte{
 	0x74, 0x61, 0x73, 0x6b, 0x5f, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x18, 0x04, 0x20, 0x01, 0x28, 0x03,
 	0x52, 0x09, 0x74, 0x61, 0x73, 0x6b, 0x43, 0x6f, 0x75, 0x6e, 0x74, 0x12, 0x20, 0x0a, 0x0b, 0x70,
 	0x61, 0x72, 0x61, 0x6c, 0x6c, 0x65, 0x6c, 0x69, 0x73, 0x6d, 0x18, 0x05, 0x20, 0x01, 0x28, 0x03,
-	0x52, 0x0b, 0x70, 0x61, 0x72, 0x61, 0x6c, 0x6c, 0x65, 0x6c, 0x69, 0x73, 0x6d, 0x12, 0x4f, 0x0a,
+	0x52, 0x0b, 0x70, 0x61, 0x72, 0x61, 0x6c, 0x6c, 0x65, 0x6c, 0x69, 0x73, 0x6d, 0x12, 0x5e, 0x0a,
+	0x11, 0x73, 0x63, 0x68, 0x65, 0x64, 0x75, 0x6c, 0x69, 0x6e, 0x67, 0x5f, 0x70, 0x6f, 0x6c, 0x69,
+	0x63, 0x79, 0x18, 0x06, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x31, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c,
+	0x65, 0x2e, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x62, 0x61, 0x74, 0x63, 0x68, 0x2e, 0x76, 0x31,
+	0x2e, 0x54, 0x61, 0x73, 0x6b, 0x47, 0x72, 0x6f, 0x75, 0x70, 0x2e, 0x53, 0x63, 0x68, 0x65, 0x64,
+	0x75, 0x6c, 0x69, 0x6e, 0x67, 0x50, 0x6f, 0x6c, 0x69, 0x63, 0x79, 0x52, 0x10, 0x73, 0x63, 0x68,
+	0x65, 0x64, 0x75, 0x6c, 0x69, 0x6e, 0x67, 0x50, 0x6f, 0x6c, 0x69, 0x63, 0x79, 0x12, 0x4f, 0x0a,
 	0x11, 0x74, 0x61, 0x73, 0x6b, 0x5f, 0x65, 0x6e, 0x76, 0x69, 0x72, 0x6f, 0x6e, 0x6d, 0x65, 0x6e,
 	0x74, 0x73, 0x18, 0x09, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x22, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c,
 	0x65, 0x2e, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x62, 0x61, 0x74, 0x63, 0x68, 0x2e, 0x76, 0x31,
@@ -2238,29 +2305,35 @@ var file_google_cloud_batch_v1_job_proto_rawDesc = []byte{
 	0x72, 0x65, 0x48, 0x6f, 0x73, 0x74, 0x73, 0x46, 0x69, 0x6c, 0x65, 0x12, 0x25, 0x0a, 0x0e, 0x70,
 	0x65, 0x72, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x76, 0x65, 0x5f, 0x73, 0x73, 0x68, 0x18, 0x0c, 0x20,
 	0x01, 0x28, 0x08, 0x52, 0x0d, 0x70, 0x65, 0x72, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x76, 0x65, 0x53,
-	0x73, 0x68, 0x3a, 0x6f, 0xea, 0x41, 0x6c, 0x0a, 0x1e, 0x62, 0x61, 0x74, 0x63, 0x68, 0x2e, 0x67,
-	0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x61, 0x70, 0x69, 0x73, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x54, 0x61,
-	0x73, 0x6b, 0x47, 0x72, 0x6f, 0x75, 0x70, 0x12, 0x4a, 0x70, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74,
-	0x73, 0x2f, 0x7b, 0x70, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x7d, 0x2f, 0x6c, 0x6f, 0x63, 0x61,
-	0x74, 0x69, 0x6f, 0x6e, 0x73, 0x2f, 0x7b, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x7d,
-	0x2f, 0x6a, 0x6f, 0x62, 0x73, 0x2f, 0x7b, 0x6a, 0x6f, 0x62, 0x7d, 0x2f, 0x74, 0x61, 0x73, 0x6b,
-	0x47, 0x72, 0x6f, 0x75, 0x70, 0x73, 0x2f, 0x7b, 0x74, 0x61, 0x73, 0x6b, 0x5f, 0x67, 0x72, 0x6f,
-	0x75, 0x70, 0x7d, 0x22, 0x3e, 0x0a, 0x0e, 0x53, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x41, 0x63,
-	0x63, 0x6f, 0x75, 0x6e, 0x74, 0x12, 0x14, 0x0a, 0x05, 0x65, 0x6d, 0x61, 0x69, 0x6c, 0x18, 0x01,
-	0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x65, 0x6d, 0x61, 0x69, 0x6c, 0x12, 0x16, 0x0a, 0x06, 0x73,
-	0x63, 0x6f, 0x70, 0x65, 0x73, 0x18, 0x02, 0x20, 0x03, 0x28, 0x09, 0x52, 0x06, 0x73, 0x63, 0x6f,
-	0x70, 0x65, 0x73, 0x42, 0xa9, 0x01, 0x0a, 0x19, 0x63, 0x6f, 0x6d, 0x2e, 0x67, 0x6f, 0x6f, 0x67,
-	0x6c, 0x65, 0x2e, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x62, 0x61, 0x74, 0x63, 0x68, 0x2e, 0x76,
-	0x31, 0x42, 0x08, 0x4a, 0x6f, 0x62, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x2f, 0x63,
-	0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x63, 0x6f, 0x6d, 0x2f,
-	0x67, 0x6f, 0x2f, 0x62, 0x61, 0x74, 0x63, 0x68, 0x2f, 0x61, 0x70, 0x69, 0x76, 0x31, 0x2f, 0x62,
-	0x61, 0x74, 0x63, 0x68, 0x70, 0x62, 0x3b, 0x62, 0x61, 0x74, 0x63, 0x68, 0x70, 0x62, 0xa2, 0x02,
-	0x03, 0x47, 0x43, 0x42, 0xaa, 0x02, 0x15, 0x47, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x43, 0x6c,
-	0x6f, 0x75, 0x64, 0x2e, 0x42, 0x61, 0x74, 0x63, 0x68, 0x2e, 0x56, 0x31, 0xca, 0x02, 0x15, 0x47,
-	0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x5c, 0x43, 0x6c, 0x6f, 0x75, 0x64, 0x5c, 0x42, 0x61, 0x74, 0x63,
-	0x68, 0x5c, 0x56, 0x31, 0xea, 0x02, 0x18, 0x47, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x3a, 0x3a, 0x43,
-	0x6c, 0x6f, 0x75, 0x64, 0x3a, 0x3a, 0x42, 0x61, 0x74, 0x63, 0x68, 0x3a, 0x3a, 0x56, 0x31, 0x62,
-	0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x73, 0x68, 0x22, 0x5c, 0x0a, 0x10, 0x53, 0x63, 0x68, 0x65, 0x64, 0x75, 0x6c, 0x69, 0x6e, 0x67,
+	0x50, 0x6f, 0x6c, 0x69, 0x63, 0x79, 0x12, 0x21, 0x0a, 0x1d, 0x53, 0x43, 0x48, 0x45, 0x44, 0x55,
+	0x4c, 0x49, 0x4e, 0x47, 0x5f, 0x50, 0x4f, 0x4c, 0x49, 0x43, 0x59, 0x5f, 0x55, 0x4e, 0x53, 0x50,
+	0x45, 0x43, 0x49, 0x46, 0x49, 0x45, 0x44, 0x10, 0x00, 0x12, 0x17, 0x0a, 0x13, 0x41, 0x53, 0x5f,
+	0x53, 0x4f, 0x4f, 0x4e, 0x5f, 0x41, 0x53, 0x5f, 0x50, 0x4f, 0x53, 0x53, 0x49, 0x42, 0x4c, 0x45,
+	0x10, 0x01, 0x12, 0x0c, 0x0a, 0x08, 0x49, 0x4e, 0x5f, 0x4f, 0x52, 0x44, 0x45, 0x52, 0x10, 0x02,
+	0x3a, 0x6f, 0xea, 0x41, 0x6c, 0x0a, 0x1e, 0x62, 0x61, 0x74, 0x63, 0x68, 0x2e, 0x67, 0x6f, 0x6f,
+	0x67, 0x6c, 0x65, 0x61, 0x70, 0x69, 0x73, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x54, 0x61, 0x73, 0x6b,
+	0x47, 0x72, 0x6f, 0x75, 0x70, 0x12, 0x4a, 0x70, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x73, 0x2f,
+	0x7b, 0x70, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x7d, 0x2f, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69,
+	0x6f, 0x6e, 0x73, 0x2f, 0x7b, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x7d, 0x2f, 0x6a,
+	0x6f, 0x62, 0x73, 0x2f, 0x7b, 0x6a, 0x6f, 0x62, 0x7d, 0x2f, 0x74, 0x61, 0x73, 0x6b, 0x47, 0x72,
+	0x6f, 0x75, 0x70, 0x73, 0x2f, 0x7b, 0x74, 0x61, 0x73, 0x6b, 0x5f, 0x67, 0x72, 0x6f, 0x75, 0x70,
+	0x7d, 0x22, 0x3e, 0x0a, 0x0e, 0x53, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x41, 0x63, 0x63, 0x6f,
+	0x75, 0x6e, 0x74, 0x12, 0x14, 0x0a, 0x05, 0x65, 0x6d, 0x61, 0x69, 0x6c, 0x18, 0x01, 0x20, 0x01,
+	0x28, 0x09, 0x52, 0x05, 0x65, 0x6d, 0x61, 0x69, 0x6c, 0x12, 0x16, 0x0a, 0x06, 0x73, 0x63, 0x6f,
+	0x70, 0x65, 0x73, 0x18, 0x02, 0x20, 0x03, 0x28, 0x09, 0x52, 0x06, 0x73, 0x63, 0x6f, 0x70, 0x65,
+	0x73, 0x42, 0xa9, 0x01, 0x0a, 0x19, 0x63, 0x6f, 0x6d, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65,
+	0x2e, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x62, 0x61, 0x74, 0x63, 0x68, 0x2e, 0x76, 0x31, 0x42,
+	0x08, 0x4a, 0x6f, 0x62, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x2f, 0x63, 0x6c, 0x6f,
+	0x75, 0x64, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x67, 0x6f,
+	0x2f, 0x62, 0x61, 0x74, 0x63, 0x68, 0x2f, 0x61, 0x70, 0x69, 0x76, 0x31, 0x2f, 0x62, 0x61, 0x74,
+	0x63, 0x68, 0x70, 0x62, 0x3b, 0x62, 0x61, 0x74, 0x63, 0x68, 0x70, 0x62, 0xa2, 0x02, 0x03, 0x47,
+	0x43, 0x42, 0xaa, 0x02, 0x15, 0x47, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x43, 0x6c, 0x6f, 0x75,
+	0x64, 0x2e, 0x42, 0x61, 0x74, 0x63, 0x68, 0x2e, 0x56, 0x31, 0xca, 0x02, 0x15, 0x47, 0x6f, 0x6f,
+	0x67, 0x6c, 0x65, 0x5c, 0x43, 0x6c, 0x6f, 0x75, 0x64, 0x5c, 0x42, 0x61, 0x74, 0x63, 0x68, 0x5c,
+	0x56, 0x31, 0xea, 0x02, 0x18, 0x47, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x3a, 0x3a, 0x43, 0x6c, 0x6f,
+	0x75, 0x64, 0x3a, 0x3a, 0x42, 0x61, 0x74, 0x63, 0x68, 0x3a, 0x3a, 0x56, 0x31, 0x62, 0x06, 0x70,
+	0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -2275,86 +2348,88 @@ func file_google_cloud_batch_v1_job_proto_rawDescGZIP() []byte {
 	return file_google_cloud_batch_v1_job_proto_rawDescData
 }
 
-var file_google_cloud_batch_v1_job_proto_enumTypes = make([]protoimpl.EnumInfo, 4)
+var file_google_cloud_batch_v1_job_proto_enumTypes = make([]protoimpl.EnumInfo, 5)
 var file_google_cloud_batch_v1_job_proto_msgTypes = make([]protoimpl.MessageInfo, 23)
 var file_google_cloud_batch_v1_job_proto_goTypes = []interface{}{
-	(LogsPolicy_Destination)(0),             // 0: google.cloud.batch.v1.LogsPolicy.Destination
-	(JobStatus_State)(0),                    // 1: google.cloud.batch.v1.JobStatus.State
-	(JobNotification_Type)(0),               // 2: google.cloud.batch.v1.JobNotification.Type
-	(AllocationPolicy_ProvisioningModel)(0), // 3: google.cloud.batch.v1.AllocationPolicy.ProvisioningModel
-	(*Job)(nil),                             // 4: google.cloud.batch.v1.Job
-	(*LogsPolicy)(nil),                      // 5: google.cloud.batch.v1.LogsPolicy
-	(*JobStatus)(nil),                       // 6: google.cloud.batch.v1.JobStatus
-	(*JobNotification)(nil),                 // 7: google.cloud.batch.v1.JobNotification
-	(*AllocationPolicy)(nil),                // 8: google.cloud.batch.v1.AllocationPolicy
-	(*TaskGroup)(nil),                       // 9: google.cloud.batch.v1.TaskGroup
-	(*ServiceAccount)(nil),                  // 10: google.cloud.batch.v1.ServiceAccount
-	nil,                                     // 11: google.cloud.batch.v1.Job.LabelsEntry
-	(*JobStatus_InstanceStatus)(nil),        // 12: google.cloud.batch.v1.JobStatus.InstanceStatus
-	(*JobStatus_TaskGroupStatus)(nil),       // 13: google.cloud.batch.v1.JobStatus.TaskGroupStatus
-	nil,                                     // 14: google.cloud.batch.v1.JobStatus.TaskGroupsEntry
-	nil,                                     // 15: google.cloud.batch.v1.JobStatus.TaskGroupStatus.CountsEntry
-	(*JobNotification_Message)(nil),         // 16: google.cloud.batch.v1.JobNotification.Message
-	(*AllocationPolicy_LocationPolicy)(nil), // 17: google.cloud.batch.v1.AllocationPolicy.LocationPolicy
-	(*AllocationPolicy_Disk)(nil),           // 18: google.cloud.batch.v1.AllocationPolicy.Disk
-	(*AllocationPolicy_AttachedDisk)(nil),   // 19: google.cloud.batch.v1.AllocationPolicy.AttachedDisk
-	(*AllocationPolicy_Accelerator)(nil),    // 20: google.cloud.batch.v1.AllocationPolicy.Accelerator
-	(*AllocationPolicy_InstancePolicy)(nil), // 21: google.cloud.batch.v1.AllocationPolicy.InstancePolicy
-	(*AllocationPolicy_InstancePolicyOrTemplate)(nil), // 22: google.cloud.batch.v1.AllocationPolicy.InstancePolicyOrTemplate
-	(*AllocationPolicy_NetworkInterface)(nil),         // 23: google.cloud.batch.v1.AllocationPolicy.NetworkInterface
-	(*AllocationPolicy_NetworkPolicy)(nil),            // 24: google.cloud.batch.v1.AllocationPolicy.NetworkPolicy
-	(*AllocationPolicy_PlacementPolicy)(nil),          // 25: google.cloud.batch.v1.AllocationPolicy.PlacementPolicy
-	nil,                                               // 26: google.cloud.batch.v1.AllocationPolicy.LabelsEntry
-	(*timestamppb.Timestamp)(nil),                     // 27: google.protobuf.Timestamp
-	(*StatusEvent)(nil),                               // 28: google.cloud.batch.v1.StatusEvent
-	(*durationpb.Duration)(nil),                       // 29: google.protobuf.Duration
-	(*TaskSpec)(nil),                                  // 30: google.cloud.batch.v1.TaskSpec
-	(*Environment)(nil),                               // 31: google.cloud.batch.v1.Environment
-	(TaskStatus_State)(0),                             // 32: google.cloud.batch.v1.TaskStatus.State
+	(LogsPolicy_Destination)(0),                       // 0: google.cloud.batch.v1.LogsPolicy.Destination
+	(JobStatus_State)(0),                              // 1: google.cloud.batch.v1.JobStatus.State
+	(JobNotification_Type)(0),                         // 2: google.cloud.batch.v1.JobNotification.Type
+	(AllocationPolicy_ProvisioningModel)(0),           // 3: google.cloud.batch.v1.AllocationPolicy.ProvisioningModel
+	(TaskGroup_SchedulingPolicy)(0),                   // 4: google.cloud.batch.v1.TaskGroup.SchedulingPolicy
+	(*Job)(nil),                                       // 5: google.cloud.batch.v1.Job
+	(*LogsPolicy)(nil),                                // 6: google.cloud.batch.v1.LogsPolicy
+	(*JobStatus)(nil),                                 // 7: google.cloud.batch.v1.JobStatus
+	(*JobNotification)(nil),                           // 8: google.cloud.batch.v1.JobNotification
+	(*AllocationPolicy)(nil),                          // 9: google.cloud.batch.v1.AllocationPolicy
+	(*TaskGroup)(nil),                                 // 10: google.cloud.batch.v1.TaskGroup
+	(*ServiceAccount)(nil),                            // 11: google.cloud.batch.v1.ServiceAccount
+	nil,                                               // 12: google.cloud.batch.v1.Job.LabelsEntry
+	(*JobStatus_InstanceStatus)(nil),                  // 13: google.cloud.batch.v1.JobStatus.InstanceStatus
+	(*JobStatus_TaskGroupStatus)(nil),                 // 14: google.cloud.batch.v1.JobStatus.TaskGroupStatus
+	nil,                                               // 15: google.cloud.batch.v1.JobStatus.TaskGroupsEntry
+	nil,                                               // 16: google.cloud.batch.v1.JobStatus.TaskGroupStatus.CountsEntry
+	(*JobNotification_Message)(nil),                   // 17: google.cloud.batch.v1.JobNotification.Message
+	(*AllocationPolicy_LocationPolicy)(nil),           // 18: google.cloud.batch.v1.AllocationPolicy.LocationPolicy
+	(*AllocationPolicy_Disk)(nil),                     // 19: google.cloud.batch.v1.AllocationPolicy.Disk
+	(*AllocationPolicy_AttachedDisk)(nil),             // 20: google.cloud.batch.v1.AllocationPolicy.AttachedDisk
+	(*AllocationPolicy_Accelerator)(nil),              // 21: google.cloud.batch.v1.AllocationPolicy.Accelerator
+	(*AllocationPolicy_InstancePolicy)(nil),           // 22: google.cloud.batch.v1.AllocationPolicy.InstancePolicy
+	(*AllocationPolicy_InstancePolicyOrTemplate)(nil), // 23: google.cloud.batch.v1.AllocationPolicy.InstancePolicyOrTemplate
+	(*AllocationPolicy_NetworkInterface)(nil),         // 24: google.cloud.batch.v1.AllocationPolicy.NetworkInterface
+	(*AllocationPolicy_NetworkPolicy)(nil),            // 25: google.cloud.batch.v1.AllocationPolicy.NetworkPolicy
+	(*AllocationPolicy_PlacementPolicy)(nil),          // 26: google.cloud.batch.v1.AllocationPolicy.PlacementPolicy
+	nil,                                               // 27: google.cloud.batch.v1.AllocationPolicy.LabelsEntry
+	(*timestamppb.Timestamp)(nil),                     // 28: google.protobuf.Timestamp
+	(*StatusEvent)(nil),                               // 29: google.cloud.batch.v1.StatusEvent
+	(*durationpb.Duration)(nil),                       // 30: google.protobuf.Duration
+	(*TaskSpec)(nil),                                  // 31: google.cloud.batch.v1.TaskSpec
+	(*Environment)(nil),                               // 32: google.cloud.batch.v1.Environment
+	(TaskStatus_State)(0),                             // 33: google.cloud.batch.v1.TaskStatus.State
 }
 var file_google_cloud_batch_v1_job_proto_depIdxs = []int32{
-	9,  // 0: google.cloud.batch.v1.Job.task_groups:type_name -> google.cloud.batch.v1.TaskGroup
-	8,  // 1: google.cloud.batch.v1.Job.allocation_policy:type_name -> google.cloud.batch.v1.AllocationPolicy
-	11, // 2: google.cloud.batch.v1.Job.labels:type_name -> google.cloud.batch.v1.Job.LabelsEntry
-	6,  // 3: google.cloud.batch.v1.Job.status:type_name -> google.cloud.batch.v1.JobStatus
-	27, // 4: google.cloud.batch.v1.Job.create_time:type_name -> google.protobuf.Timestamp
-	27, // 5: google.cloud.batch.v1.Job.update_time:type_name -> google.protobuf.Timestamp
-	5,  // 6: google.cloud.batch.v1.Job.logs_policy:type_name -> google.cloud.batch.v1.LogsPolicy
-	7,  // 7: google.cloud.batch.v1.Job.notifications:type_name -> google.cloud.batch.v1.JobNotification
+	10, // 0: google.cloud.batch.v1.Job.task_groups:type_name -> google.cloud.batch.v1.TaskGroup
+	9,  // 1: google.cloud.batch.v1.Job.allocation_policy:type_name -> google.cloud.batch.v1.AllocationPolicy
+	12, // 2: google.cloud.batch.v1.Job.labels:type_name -> google.cloud.batch.v1.Job.LabelsEntry
+	7,  // 3: google.cloud.batch.v1.Job.status:type_name -> google.cloud.batch.v1.JobStatus
+	28, // 4: google.cloud.batch.v1.Job.create_time:type_name -> google.protobuf.Timestamp
+	28, // 5: google.cloud.batch.v1.Job.update_time:type_name -> google.protobuf.Timestamp
+	6,  // 6: google.cloud.batch.v1.Job.logs_policy:type_name -> google.cloud.batch.v1.LogsPolicy
+	8,  // 7: google.cloud.batch.v1.Job.notifications:type_name -> google.cloud.batch.v1.JobNotification
 	0,  // 8: google.cloud.batch.v1.LogsPolicy.destination:type_name -> google.cloud.batch.v1.LogsPolicy.Destination
 	1,  // 9: google.cloud.batch.v1.JobStatus.state:type_name -> google.cloud.batch.v1.JobStatus.State
-	28, // 10: google.cloud.batch.v1.JobStatus.status_events:type_name -> google.cloud.batch.v1.StatusEvent
-	14, // 11: google.cloud.batch.v1.JobStatus.task_groups:type_name -> google.cloud.batch.v1.JobStatus.TaskGroupsEntry
-	29, // 12: google.cloud.batch.v1.JobStatus.run_duration:type_name -> google.protobuf.Duration
-	16, // 13: google.cloud.batch.v1.JobNotification.message:type_name -> google.cloud.batch.v1.JobNotification.Message
-	17, // 14: google.cloud.batch.v1.AllocationPolicy.location:type_name -> google.cloud.batch.v1.AllocationPolicy.LocationPolicy
-	22, // 15: google.cloud.batch.v1.AllocationPolicy.instances:type_name -> google.cloud.batch.v1.AllocationPolicy.InstancePolicyOrTemplate
-	10, // 16: google.cloud.batch.v1.AllocationPolicy.service_account:type_name -> google.cloud.batch.v1.ServiceAccount
-	26, // 17: google.cloud.batch.v1.AllocationPolicy.labels:type_name -> google.cloud.batch.v1.AllocationPolicy.LabelsEntry
-	24, // 18: google.cloud.batch.v1.AllocationPolicy.network:type_name -> google.cloud.batch.v1.AllocationPolicy.NetworkPolicy
-	25, // 19: google.cloud.batch.v1.AllocationPolicy.placement:type_name -> google.cloud.batch.v1.AllocationPolicy.PlacementPolicy
-	30, // 20: google.cloud.batch.v1.TaskGroup.task_spec:type_name -> google.cloud.batch.v1.TaskSpec
-	31, // 21: google.cloud.batch.v1.TaskGroup.task_environments:type_name -> google.cloud.batch.v1.Environment
-	3,  // 22: google.cloud.batch.v1.JobStatus.InstanceStatus.provisioning_model:type_name -> google.cloud.batch.v1.AllocationPolicy.ProvisioningModel
-	18, // 23: google.cloud.batch.v1.JobStatus.InstanceStatus.boot_disk:type_name -> google.cloud.batch.v1.AllocationPolicy.Disk
-	15, // 24: google.cloud.batch.v1.JobStatus.TaskGroupStatus.counts:type_name -> google.cloud.batch.v1.JobStatus.TaskGroupStatus.CountsEntry
-	12, // 25: google.cloud.batch.v1.JobStatus.TaskGroupStatus.instances:type_name -> google.cloud.batch.v1.JobStatus.InstanceStatus
-	13, // 26: google.cloud.batch.v1.JobStatus.TaskGroupsEntry.value:type_name -> google.cloud.batch.v1.JobStatus.TaskGroupStatus
-	2,  // 27: google.cloud.batch.v1.JobNotification.Message.type:type_name -> google.cloud.batch.v1.JobNotification.Type
-	1,  // 28: google.cloud.batch.v1.JobNotification.Message.new_job_state:type_name -> google.cloud.batch.v1.JobStatus.State
-	32, // 29: google.cloud.batch.v1.JobNotification.Message.new_task_state:type_name -> google.cloud.batch.v1.TaskStatus.State
-	18, // 30: google.cloud.batch.v1.AllocationPolicy.AttachedDisk.new_disk:type_name -> google.cloud.batch.v1.AllocationPolicy.Disk
-	3,  // 31: google.cloud.batch.v1.AllocationPolicy.InstancePolicy.provisioning_model:type_name -> google.cloud.batch.v1.AllocationPolicy.ProvisioningModel
-	20, // 32: google.cloud.batch.v1.AllocationPolicy.InstancePolicy.accelerators:type_name -> google.cloud.batch.v1.AllocationPolicy.Accelerator
-	18, // 33: google.cloud.batch.v1.AllocationPolicy.InstancePolicy.boot_disk:type_name -> google.cloud.batch.v1.AllocationPolicy.Disk
-	19, // 34: google.cloud.batch.v1.AllocationPolicy.InstancePolicy.disks:type_name -> google.cloud.batch.v1.AllocationPolicy.AttachedDisk
-	21, // 35: google.cloud.batch.v1.AllocationPolicy.InstancePolicyOrTemplate.policy:type_name -> google.cloud.batch.v1.AllocationPolicy.InstancePolicy
-	23, // 36: google.cloud.batch.v1.AllocationPolicy.NetworkPolicy.network_interfaces:type_name -> google.cloud.batch.v1.AllocationPolicy.NetworkInterface
-	37, // [37:37] is the sub-list for method output_type
-	37, // [37:37] is the sub-list for method input_type
-	37, // [37:37] is the sub-list for extension type_name
-	37, // [37:37] is the sub-list for extension extendee
-	0,  // [0:37] is the sub-list for field type_name
+	29, // 10: google.cloud.batch.v1.JobStatus.status_events:type_name -> google.cloud.batch.v1.StatusEvent
+	15, // 11: google.cloud.batch.v1.JobStatus.task_groups:type_name -> google.cloud.batch.v1.JobStatus.TaskGroupsEntry
+	30, // 12: google.cloud.batch.v1.JobStatus.run_duration:type_name -> google.protobuf.Duration
+	17, // 13: google.cloud.batch.v1.JobNotification.message:type_name -> google.cloud.batch.v1.JobNotification.Message
+	18, // 14: google.cloud.batch.v1.AllocationPolicy.location:type_name -> google.cloud.batch.v1.AllocationPolicy.LocationPolicy
+	23, // 15: google.cloud.batch.v1.AllocationPolicy.instances:type_name -> google.cloud.batch.v1.AllocationPolicy.InstancePolicyOrTemplate
+	11, // 16: google.cloud.batch.v1.AllocationPolicy.service_account:type_name -> google.cloud.batch.v1.ServiceAccount
+	27, // 17: google.cloud.batch.v1.AllocationPolicy.labels:type_name -> google.cloud.batch.v1.AllocationPolicy.LabelsEntry
+	25, // 18: google.cloud.batch.v1.AllocationPolicy.network:type_name -> google.cloud.batch.v1.AllocationPolicy.NetworkPolicy
+	26, // 19: google.cloud.batch.v1.AllocationPolicy.placement:type_name -> google.cloud.batch.v1.AllocationPolicy.PlacementPolicy
+	31, // 20: google.cloud.batch.v1.TaskGroup.task_spec:type_name -> google.cloud.batch.v1.TaskSpec
+	4,  // 21: google.cloud.batch.v1.TaskGroup.scheduling_policy:type_name -> google.cloud.batch.v1.TaskGroup.SchedulingPolicy
+	32, // 22: google.cloud.batch.v1.TaskGroup.task_environments:type_name -> google.cloud.batch.v1.Environment
+	3,  // 23: google.cloud.batch.v1.JobStatus.InstanceStatus.provisioning_model:type_name -> google.cloud.batch.v1.AllocationPolicy.ProvisioningModel
+	19, // 24: google.cloud.batch.v1.JobStatus.InstanceStatus.boot_disk:type_name -> google.cloud.batch.v1.AllocationPolicy.Disk
+	16, // 25: google.cloud.batch.v1.JobStatus.TaskGroupStatus.counts:type_name -> google.cloud.batch.v1.JobStatus.TaskGroupStatus.CountsEntry
+	13, // 26: google.cloud.batch.v1.JobStatus.TaskGroupStatus.instances:type_name -> google.cloud.batch.v1.JobStatus.InstanceStatus
+	14, // 27: google.cloud.batch.v1.JobStatus.TaskGroupsEntry.value:type_name -> google.cloud.batch.v1.JobStatus.TaskGroupStatus
+	2,  // 28: google.cloud.batch.v1.JobNotification.Message.type:type_name -> google.cloud.batch.v1.JobNotification.Type
+	1,  // 29: google.cloud.batch.v1.JobNotification.Message.new_job_state:type_name -> google.cloud.batch.v1.JobStatus.State
+	33, // 30: google.cloud.batch.v1.JobNotification.Message.new_task_state:type_name -> google.cloud.batch.v1.TaskStatus.State
+	19, // 31: google.cloud.batch.v1.AllocationPolicy.AttachedDisk.new_disk:type_name -> google.cloud.batch.v1.AllocationPolicy.Disk
+	3,  // 32: google.cloud.batch.v1.AllocationPolicy.InstancePolicy.provisioning_model:type_name -> google.cloud.batch.v1.AllocationPolicy.ProvisioningModel
+	21, // 33: google.cloud.batch.v1.AllocationPolicy.InstancePolicy.accelerators:type_name -> google.cloud.batch.v1.AllocationPolicy.Accelerator
+	19, // 34: google.cloud.batch.v1.AllocationPolicy.InstancePolicy.boot_disk:type_name -> google.cloud.batch.v1.AllocationPolicy.Disk
+	20, // 35: google.cloud.batch.v1.AllocationPolicy.InstancePolicy.disks:type_name -> google.cloud.batch.v1.AllocationPolicy.AttachedDisk
+	22, // 36: google.cloud.batch.v1.AllocationPolicy.InstancePolicyOrTemplate.policy:type_name -> google.cloud.batch.v1.AllocationPolicy.InstancePolicy
+	24, // 37: google.cloud.batch.v1.AllocationPolicy.NetworkPolicy.network_interfaces:type_name -> google.cloud.batch.v1.AllocationPolicy.NetworkInterface
+	38, // [38:38] is the sub-list for method output_type
+	38, // [38:38] is the sub-list for method input_type
+	38, // [38:38] is the sub-list for extension type_name
+	38, // [38:38] is the sub-list for extension extendee
+	0,  // [0:38] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_batch_v1_job_proto_init() }
@@ -2610,7 +2685,7 @@ func file_google_cloud_batch_v1_job_proto_init() {
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_google_cloud_batch_v1_job_proto_rawDesc,
-			NumEnums:      4,
+			NumEnums:      5,
 			NumMessages:   23,
 			NumExtensions: 0,
 			NumServices:   0,
