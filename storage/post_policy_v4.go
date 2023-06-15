@@ -114,6 +114,7 @@ type PostPolicyV4Options struct {
 	Conditions []PostPolicyV4Condition
 
 	shouldHashSignBytes bool
+	endpoint            string
 }
 
 func (opts *PostPolicyV4Options) clone() *PostPolicyV4Options {
@@ -128,6 +129,7 @@ func (opts *PostPolicyV4Options) clone() *PostPolicyV4Options {
 		Fields:              opts.Fields,
 		Conditions:          opts.Conditions,
 		shouldHashSignBytes: opts.shouldHashSignBytes,
+		endpoint:            opts.endpoint,
 	}
 }
 
@@ -370,7 +372,7 @@ func GenerateSignedPostPolicyV4(bucket, object string, opts *PostPolicyV4Options
 	u := &url.URL{
 		Path:    path,
 		RawPath: pathEncodeV4(path),
-		Host:    opts.Style.host(bucket),
+		Host:    opts.Style.host(opts.endpoint, bucket),
 		Scheme:  scheme,
 	}
 

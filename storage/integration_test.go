@@ -4750,11 +4750,9 @@ func TestIntegration_SignedURL_WithCreds(t *testing.T) {
 			t.Fatalf("problem with the signed URL: %v", err)
 		}
 	}, option.WithCredentials(creds))
-
 }
 
 func TestIntegration_SignedURL_DefaultSignBytes(t *testing.T) {
-
 	ctx := context.Background()
 
 	// Create another client to test the sign byte function as well

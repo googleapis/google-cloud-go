@@ -2337,6 +2337,7 @@ func TestSignedURLOptionsClone(t *testing.T) {
 		Style:           VirtualHostedStyle(),
 		Insecure:        true,
 		Scheme:          SigningSchemeV2,
+		endpoint:        "localhost:8000",
 	}
 
 	// Check that all fields are set to a non-zero value, so we can check that
@@ -2360,7 +2361,7 @@ func TestSignedURLOptionsClone(t *testing.T) {
 		return reflect.ValueOf(a) == reflect.ValueOf(b)
 	}
 
-	if diff := cmp.Diff(opts, optsClone, cmp.Comparer(signBytesComp)); diff != "" {
+	if diff := cmp.Diff(opts, optsClone, cmp.Comparer(signBytesComp), cmp.AllowUnexported(SignedURLOptions{})); diff != "" {
 		t.Errorf("clone does not match (original: -, cloned: +):\n%s", diff)
 	}
 }

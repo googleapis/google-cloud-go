@@ -268,7 +268,7 @@ const (
 type URLStyle interface {
 	// host should return the host portion of the signed URL, not including
 	// the scheme (e.g. storage.googleapis.com).
-	host(bucket string) string
+	host(endpoint, bucket string) string
 
 	// path should return the path portion of the signed URL, which may include
 	// both the bucket and object name or only the object name depending on the
@@ -284,23 +284,37 @@ type bucketBoundHostname struct {
 	hostname string
 }
 
-func (s pathStyle) host(bucket string) string {
+func (s pathStyle) host(endpoint, bucket string) string {
+	if endpoint != "" {
+		return stripScheme(endpoint)
+	}
+
+	// This check is needed for clientless calls to SignedURL
 	if host := os.Getenv("STORAGE_EMULATOR_HOST"); host != "" {
 		return stripScheme(host)
 	}
 
+	// Fallback to default endpoint - clientless calls to SignURL/PostPolicy
+	// will not have an endpoint attached
 	return "storage.googleapis.com"
 }
 
-func (s virtualHostedStyle) host(bucket string) string {
+func (s virtualHostedStyle) host(endpoint, bucket string) string {
+	if endpoint != "" {
+		return bucket + "." + stripScheme(endpoint)
+	}
+
+	// This check is needed for clientless calls to SignedURL
 	if host := os.Getenv("STORAGE_EMULATOR_HOST"); host != "" {
 		return bucket + "." + stripScheme(host)
 	}
 
-	return bucket + ".storage.googleapis.com"
+	// Fallback to default endpoint - clientless calls to SignURL/PostPolicy
+	// will not have an endpoint attached
+	return bucket + "." + "storage.googleapis.com"
 }
 
-func (s bucketBoundHostname) host(bucket string) string {
+func (s bucketBoundHostname) host(_, bucket string) string {
 	return s.hostname
 }
 
@@ -442,6 +456,8 @@ type SignedURLOptions struct {
 	// Scheme determines the version of URL signing to use. Default is
 	// SigningSchemeV2.
 	Scheme SigningScheme
+
+	endpoint string
 }
 
 func (opts *SignedURLOptions) clone() *SignedURLOptions {
@@ -458,6 +474,7 @@ func (opts *SignedURLOptions) clone() *SignedURLOptions {
 		Style:           opts.Style,
 		Insecure:        opts.Insecure,
 		Scheme:          opts.Scheme,
+		endpoint:        opts.endpoint,
 	}
 }
 
@@ -716,7 +733,7 @@ func signedURLV4(bucket, name string, opts *SignedURLOptions, now time.Time) (st
 	fmt.Fprintf(buf, "%s\n", escapedQuery)
 
 	// Fill in the hostname based on the desired URL style.
-	u.Host = opts.Style.host(bucket)
+	u.Host = opts.Style.host(opts.endpoint, bucket)
 
 	// Fill in the URL scheme.
 	if opts.Insecure {
@@ -850,7 +867,7 @@ func signedURLV2(bucket, name string, opts *SignedURLOptions) (string, error) {
 	}
 	encoded := base64.StdEncoding.EncodeToString(b)
 	u.Scheme = "https"
-	u.Host = PathStyle().host(bucket)
+	u.Host = PathStyle().host(opts.endpoint, bucket)
 	q := u.Query()
 	q.Set("GoogleAccessId", opts.GoogleAccessID)
 	q.Set("Expires", fmt.Sprintf("%d", opts.Expires.Unix()))
