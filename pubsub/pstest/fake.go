@@ -611,6 +611,7 @@ func (s *GServer) UpdateSubscription(_ context.Context, req *pb.UpdateSubscripti
 		case "bigquery_config":
 			// If bq config is nil here, it will be cleared.
 			// Otherwise, we'll consider the subscription active if any table is set.
+			sub.proto.BigqueryConfig = req.GetSubscription().GetBigqueryConfig()
 			if sub.proto.GetBigqueryConfig() != nil {
 				if sub.proto.GetBigqueryConfig().GetTable() != "" {
 					sub.proto.BigqueryConfig.State = pb.BigQueryConfig_ACTIVE
