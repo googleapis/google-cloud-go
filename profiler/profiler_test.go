@@ -974,14 +974,14 @@ func TestAgentWithServer(t *testing.T) {
 
 	var logs bytes.Buffer
 	if err := Start(Config{
-		Service:         testService,
-		ProjectID:       testProjectID,
-		APIAddr:         srv.Addr,
-		Instance:        testInstance,
-		Zone:            testZone,
-		numProfiles:     2,
-		DebugLogging:    true,
-		DebugLoggingOut: &logs,
+		Service:            testService,
+		ProjectID:          testProjectID,
+		APIAddr:            srv.Addr,
+		Instance:           testInstance,
+		Zone:               testZone,
+		numProfiles:        2,
+		DebugLogging:       true,
+		DebugLoggingOutput: &logs,
 	}); err != nil {
 		t.Fatalf("Start(): %v", err)
 	}

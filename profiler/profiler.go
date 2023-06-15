@@ -131,9 +131,9 @@ type Config struct {
 	// defaults to false.
 	DebugLogging bool
 
-	// DebugLoggingOut is where the logger will write debug logs to, if enabled.
+	// DebugLoggingOutput is where the logger will write debug logs to, if enabled.
 	// It defaults to os.Stderr.
-	DebugLoggingOut io.Writer
+	DebugLoggingOutput io.Writer
 
 	// MutexProfiling enables mutex profiling. It defaults to false.
 	// Note that mutex profiling is not supported by Go versions older
@@ -230,10 +230,10 @@ func Start(cfg Config, options ...option.ClientOption) error {
 }
 
 func start(cfg Config, options ...option.ClientOption) error {
-	if cfg.DebugLoggingOut == nil {
-		cfg.DebugLoggingOut = os.Stderr
+	if cfg.DebugLoggingOutput == nil {
+		cfg.DebugLoggingOutput = os.Stderr
 	}
-	logger = log.New(cfg.DebugLoggingOut, "Cloud Profiler: ", log.LstdFlags)
+	logger = log.New(cfg.DebugLoggingOutput, "Cloud Profiler: ", log.LstdFlags)
 	if err := initializeConfig(cfg); err != nil {
 		debugLog("failed to initialize config: %v", err)
 		return err
