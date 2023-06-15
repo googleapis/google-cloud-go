@@ -4,8 +4,8 @@ go 1.19
 
 require (
 	cloud.google.com/go/iam v1.1.0
-	github.com/googleapis/gax-go/v2 v2.10.0
-	google.golang.org/api v0.125.0
+	github.com/googleapis/gax-go/v2 v2.11.0
+	google.golang.org/api v0.126.0
 	google.golang.org/genproto v0.0.0-20230530153820-e85fd2cbaebc
 	google.golang.org/genproto/googleapis/api v0.0.0-20230530153820-e85fd2cbaebc
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20230530153820-e85fd2cbaebc
