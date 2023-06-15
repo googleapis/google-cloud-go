@@ -140,7 +140,7 @@ manual-clients:
     description: BigQuery
     language: go
     client-library-type: manual
-    client_documentation: https://cloud.google.com/go/docs/reference/cloud.google.com/go/bigquery/latest
+    client-documentation: https://cloud.google.com/go/docs/reference/cloud.google.com/go/bigquery/latest
     release-level: stable
     library-type: GAPIC_MANUAL
   - api-shortname: bigtable
@@ -148,7 +148,7 @@ manual-clients:
     description: Cloud BigTable
     language: go
     client-library-type: manual
-    client_documentation: https://cloud.google.com/go/docs/reference/cloud.google.com/go/bigtable/latest
+    client-documentation: https://cloud.google.com/go/docs/reference/cloud.google.com/go/bigtable/latest
     release-level: stable
     library-type: GAPIC_MANUAL
   - api-shortname: compute-metadata
@@ -156,7 +156,7 @@ manual-clients:
     description: Service Metadata API
     language: go
     client-library-type: manual
-    client_documentation: https://cloud.google.com/go/docs/reference/cloud.google.com/go/compute/latest/metadata
+    client-documentation: https://cloud.google.com/go/docs/reference/cloud.google.com/go/compute/latest/metadata
     release-level: stable
     library-type: CORE
   - api-shortname: datastore
@@ -164,7 +164,7 @@ manual-clients:
     description: Cloud Datastore
     language: go
     client-library-type: manual
-    client_documentation: https://cloud.google.com/go/docs/reference/cloud.google.com/go/datastore/latest
+    client-documentation: https://cloud.google.com/go/docs/reference/cloud.google.com/go/datastore/latest
     release-level: stable
     library-type: GAPIC_MANUAL
   - api-shortname: errorreporting
@@ -172,7 +172,7 @@ manual-clients:
     description: Cloud Error Reporting API
     language: go
     client-library-type: manual
-    client_documentation: https://cloud.google.com/go/docs/reference/cloud.google.com/go/errorreporting/latest
+    client-documentation: https://cloud.google.com/go/docs/reference/cloud.google.com/go/errorreporting/latest
     release-level: preview
     library-type: GAPIC_MANUAL
   - api-shortname: firestore
@@ -180,7 +180,7 @@ manual-clients:
     description: Cloud Firestore API
     language: go
     client-library-type: manual
-    client_documentation: https://cloud.google.com/go/docs/reference/cloud.google.com/go/firestore/latest
+    client-documentation: https://cloud.google.com/go/docs/reference/cloud.google.com/go/firestore/latest
     release-level: stable
     library-type: GAPIC_MANUAL
   - api-shortname: firestore-metadata
@@ -188,7 +188,7 @@ manual-clients:
     description: Cloud Functions
     language: go
     client-library-type: manual
-    client_documentation: https://cloud.google.com/go/docs/reference/cloud.google.com/go/functions/latest/metadata
+    client-documentation: https://cloud.google.com/go/docs/reference/cloud.google.com/go/functions/latest/metadata
     release-level: preview
     library-type: CORE
   - api-shortname: iam
@@ -196,7 +196,7 @@ manual-clients:
     description: Cloud IAM
     language: go
     client-library-type: manual
-    client_documentation: https://cloud.google.com/go/docs/reference/cloud.google.com/go/iam/latest
+    client-documentation: https://cloud.google.com/go/docs/reference/cloud.google.com/go/iam/latest
     release-level: stable
     library-type: CORE
   - api-shortname: logging
@@ -204,7 +204,7 @@ manual-clients:
     description: Cloud Logging API
     language: go
     client-library-type: manual
-    client_documentation: https://cloud.google.com/go/docs/reference/cloud.google.com/go/logging/latest
+    client-documentation: https://cloud.google.com/go/docs/reference/cloud.google.com/go/logging/latest
     release-level: stable
     library-type: GAPIC_MANUAL
   - api-shortname: profiler
@@ -212,7 +212,7 @@ manual-clients:
     description: Cloud Profiler
     language: go
     client-library-type: manual
-    client_documentation: https://cloud.google.com/go/docs/reference/cloud.google.com/go/profiler/latest
+    client-documentation: https://cloud.google.com/go/docs/reference/cloud.google.com/go/profiler/latest
     release-level: stable
     library-type: AGENT
   - api-shortname: pubsub
@@ -220,7 +220,7 @@ manual-clients:
     description: Cloud PubSub
     language: go
     client-library-type: manual
-    client_documentation: https://cloud.google.com/go/docs/reference/cloud.google.com/go/pubsub/latest
+    client-documentation: https://cloud.google.com/go/docs/reference/cloud.google.com/go/pubsub/latest
     release-level: stable
     library-type: GAPIC_MANUAL
   - api-shortname: pubsublite
@@ -228,7 +228,7 @@ manual-clients:
     description: Cloud PubSub Lite
     language: go
     client-library-type: manual
-    client_documentation: https://cloud.google.com/go/docs/reference/cloud.google.com/go/pubsublite/latest
+    client-documentation: https://cloud.google.com/go/docs/reference/cloud.google.com/go/pubsublite/latest
     release-level: stable
     library-type: GAPIC_MANUAL
   - api-shortname: rpcreplay
@@ -236,7 +236,7 @@ manual-clients:
     description: RPC Replay
     language: go
     client-library-type: manual
-    client_documentation: https://cloud.google.com/go/docs/reference/cloud.google.com/go/latest/rpcreplay
+    client-documentation: https://cloud.google.com/go/docs/reference/cloud.google.com/go/latest/rpcreplay
     release-level: stable
     library-type: OTHER
   - api-shortname: spanner
@@ -244,7 +244,7 @@ manual-clients:
     description: Cloud Spanner
     language: go
     client-library-type: manual
-    client_documentation: https://cloud.google.com/go/docs/reference/cloud.google.com/go/spanner/latest
+    client-documentation: https://cloud.google.com/go/docs/reference/cloud.google.com/go/spanner/latest
     release-level: stable
     library-type: GAPIC_MANUAL
   - api-shortname: storage
@@ -252,7 +252,7 @@ manual-clients:
     description: Cloud Storage (GCS)
     language: go
     client-library-type: manual
-    client_documentation: https://cloud.google.com/go/docs/reference/cloud.google.com/go/storage/latest
+    client-documentation: https://cloud.google.com/go/docs/reference/cloud.google.com/go/storage/latest
     release-level: stable
     library-type: GAPIC_MANUAL
 
