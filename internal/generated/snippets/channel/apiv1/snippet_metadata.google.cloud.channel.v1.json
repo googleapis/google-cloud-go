@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/channel/apiv1",
-    "version": "1.15.0",
+    "version": "$VERSION",
     "language": "GO",
     "apis": [
       {
@@ -1875,6 +1875,98 @@
         "method": {
           "shortName": "ListPurchasableSkus",
           "fullName": "google.cloud.channel.v1.CloudChannelService.ListPurchasableSkus",
+          "service": {
+            "shortName": "CloudChannelService",
+            "fullName": "google.cloud.channel.v1.CloudChannelService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 60,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudchannel_v1_generated_CloudChannelService_ListSkuGroupBillableSkus_sync",
+      "title": "cloudchannel ListSkuGroupBillableSkus Sample",
+      "description": "ListSkuGroupBillableSkus lists the Billable SKUs in a given SKU group.\n\nPossible error codes: \nPERMISSION_DENIED: If the account making the request and the account\nbeing queried for are different, or the account doesn't exist.\nINVALID_ARGUMENT: Missing or invalid required parameters in the\nrequest.\nINTERNAL: Any non-user error related to technical issue in the\nbackend. In this case, contact cloud channel support.\n\nReturn Value: \nIf successful, the [BillableSku][google.cloud.channel.v1.BillableSku]\nresources. The data for each resource is displayed in the ascending order\nof: \n\n* [BillableSku.service_display_name][google.cloud.channel.v1.BillableSku.service_display_name]\n* [BillableSku.sku_display_name][google.cloud.channel.v1.BillableSku.sku_display_name]\n\nIf unsuccessful, returns an error.",
+      "file": "CloudChannelClient/ListSkuGroupBillableSkus/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListSkuGroupBillableSkus",
+        "fullName": "google.cloud.channel.v1.CloudChannelClient.ListSkuGroupBillableSkus",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "channelpb.ListSkuGroupBillableSkusRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "BillableSkuIterator",
+        "client": {
+          "shortName": "CloudChannelClient",
+          "fullName": "google.cloud.channel.v1.CloudChannelClient"
+        },
+        "method": {
+          "shortName": "ListSkuGroupBillableSkus",
+          "fullName": "google.cloud.channel.v1.CloudChannelService.ListSkuGroupBillableSkus",
+          "service": {
+            "shortName": "CloudChannelService",
+            "fullName": "google.cloud.channel.v1.CloudChannelService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 60,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudchannel_v1_generated_CloudChannelService_ListSkuGroups_sync",
+      "title": "cloudchannel ListSkuGroups Sample",
+      "description": "ListSkuGroups lists the Rebilling supported SKU groups the account is authorized to\nsell.\nReference: https: //cloud.google.com/skus/sku-groups\n\nPossible Error Codes: \n\n* PERMISSION_DENIED: If the account making the request and the account\nbeing queried are different, or the account doesn't exist.\n* INTERNAL: Any non-user error related to technical issues in the\nbackend. In this case, contact Cloud Channel support.\n\nReturn Value: \nIf successful, the [SkuGroup][google.cloud.channel.v1.SkuGroup] resources.\nThe data for each resource is displayed in the alphabetical order of SKU\ngroup display name.\nThe data for each resource is displayed in the ascending order of\n[SkuGroup.display_name][google.cloud.channel.v1.SkuGroup.display_name]\n\nIf unsuccessful, returns an error.",
+      "file": "CloudChannelClient/ListSkuGroups/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListSkuGroups",
+        "fullName": "google.cloud.channel.v1.CloudChannelClient.ListSkuGroups",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "channelpb.ListSkuGroupsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "SkuGroupIterator",
+        "client": {
+          "shortName": "CloudChannelClient",
+          "fullName": "google.cloud.channel.v1.CloudChannelClient"
+        },
+        "method": {
+          "shortName": "ListSkuGroups",
+          "fullName": "google.cloud.channel.v1.CloudChannelService.ListSkuGroups",
           "service": {
             "shortName": "CloudChannelService",
             "fullName": "google.cloud.channel.v1.CloudChannelService"
