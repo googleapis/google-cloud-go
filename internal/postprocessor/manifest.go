@@ -90,7 +90,7 @@ func (p *postProcessor) Manifest() (map[string]ManifestEntry, error) {
 
 		apiShortname, err := apiShortname(yamlConfig.NameFull)
 		if err != nil {
-			return nil, fmt.Errorf("unable to determine api_shortname from %v", yamlConfig.NameFull, err)
+			return nil, fmt.Errorf("unable to determine api_shortname from %v: %v", yamlConfig.NameFull, err)
 		}
 
 		entry := ManifestEntry{
