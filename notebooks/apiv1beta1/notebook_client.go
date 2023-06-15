@@ -93,67 +93,143 @@ func defaultNotebookGRPCClientOptions() []option.ClientOption {
 
 func defaultNotebookCallOptions() *NotebookCallOptions {
 	return &NotebookCallOptions{
-		ListInstances:           []gax.CallOption{},
-		GetInstance:             []gax.CallOption{},
-		CreateInstance:          []gax.CallOption{},
-		RegisterInstance:        []gax.CallOption{},
-		SetInstanceAccelerator:  []gax.CallOption{},
-		SetInstanceMachineType:  []gax.CallOption{},
-		SetInstanceLabels:       []gax.CallOption{},
-		DeleteInstance:          []gax.CallOption{},
-		StartInstance:           []gax.CallOption{},
-		StopInstance:            []gax.CallOption{},
-		ResetInstance:           []gax.CallOption{},
-		ReportInstanceInfo:      []gax.CallOption{},
-		IsInstanceUpgradeable:   []gax.CallOption{},
-		UpgradeInstance:         []gax.CallOption{},
-		UpgradeInstanceInternal: []gax.CallOption{},
-		ListEnvironments:        []gax.CallOption{},
-		GetEnvironment:          []gax.CallOption{},
-		CreateEnvironment:       []gax.CallOption{},
-		DeleteEnvironment:       []gax.CallOption{},
-		GetLocation:             []gax.CallOption{},
-		ListLocations:           []gax.CallOption{},
-		GetIamPolicy:            []gax.CallOption{},
-		SetIamPolicy:            []gax.CallOption{},
-		TestIamPermissions:      []gax.CallOption{},
-		CancelOperation:         []gax.CallOption{},
-		DeleteOperation:         []gax.CallOption{},
-		GetOperation:            []gax.CallOption{},
-		ListOperations:          []gax.CallOption{},
+		ListInstances: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetInstance: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		CreateInstance: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		RegisterInstance: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		SetInstanceAccelerator: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		SetInstanceMachineType: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		SetInstanceLabels: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteInstance: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		StartInstance: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		StopInstance: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ResetInstance: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ReportInstanceInfo: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		IsInstanceUpgradeable: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpgradeInstance: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpgradeInstanceInternal: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ListEnvironments: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetEnvironment: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		CreateEnvironment: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteEnvironment: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetLocation:        []gax.CallOption{},
+		ListLocations:      []gax.CallOption{},
+		GetIamPolicy:       []gax.CallOption{},
+		SetIamPolicy:       []gax.CallOption{},
+		TestIamPermissions: []gax.CallOption{},
+		CancelOperation:    []gax.CallOption{},
+		DeleteOperation:    []gax.CallOption{},
+		GetOperation:       []gax.CallOption{},
+		ListOperations:     []gax.CallOption{},
 	}
 }
 
 func defaultNotebookRESTCallOptions() *NotebookCallOptions {
 	return &NotebookCallOptions{
-		ListInstances:           []gax.CallOption{},
-		GetInstance:             []gax.CallOption{},
-		CreateInstance:          []gax.CallOption{},
-		RegisterInstance:        []gax.CallOption{},
-		SetInstanceAccelerator:  []gax.CallOption{},
-		SetInstanceMachineType:  []gax.CallOption{},
-		SetInstanceLabels:       []gax.CallOption{},
-		DeleteInstance:          []gax.CallOption{},
-		StartInstance:           []gax.CallOption{},
-		StopInstance:            []gax.CallOption{},
-		ResetInstance:           []gax.CallOption{},
-		ReportInstanceInfo:      []gax.CallOption{},
-		IsInstanceUpgradeable:   []gax.CallOption{},
-		UpgradeInstance:         []gax.CallOption{},
-		UpgradeInstanceInternal: []gax.CallOption{},
-		ListEnvironments:        []gax.CallOption{},
-		GetEnvironment:          []gax.CallOption{},
-		CreateEnvironment:       []gax.CallOption{},
-		DeleteEnvironment:       []gax.CallOption{},
-		GetLocation:             []gax.CallOption{},
-		ListLocations:           []gax.CallOption{},
-		GetIamPolicy:            []gax.CallOption{},
-		SetIamPolicy:            []gax.CallOption{},
-		TestIamPermissions:      []gax.CallOption{},
-		CancelOperation:         []gax.CallOption{},
-		DeleteOperation:         []gax.CallOption{},
-		GetOperation:            []gax.CallOption{},
-		ListOperations:          []gax.CallOption{},
+		ListInstances: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetInstance: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		CreateInstance: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		RegisterInstance: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		SetInstanceAccelerator: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		SetInstanceMachineType: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		SetInstanceLabels: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteInstance: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		StartInstance: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		StopInstance: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ResetInstance: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ReportInstanceInfo: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		IsInstanceUpgradeable: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpgradeInstance: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpgradeInstanceInternal: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ListEnvironments: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetEnvironment: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		CreateEnvironment: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteEnvironment: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetLocation:        []gax.CallOption{},
+		ListLocations:      []gax.CallOption{},
+		GetIamPolicy:       []gax.CallOption{},
+		SetIamPolicy:       []gax.CallOption{},
+		TestIamPermissions: []gax.CallOption{},
+		CancelOperation:    []gax.CallOption{},
+		DeleteOperation:    []gax.CallOption{},
+		GetOperation:       []gax.CallOption{},
+		ListOperations:     []gax.CallOption{},
 	}
 }
 
@@ -504,9 +580,6 @@ type notebookGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing NotebookClient
 	CallOptions **NotebookCallOptions
 
@@ -542,11 +615,6 @@ func NewNotebookClient(ctx context.Context, opts ...option.ClientOption) (*Noteb
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -555,7 +623,6 @@ func NewNotebookClient(ctx context.Context, opts ...option.ClientOption) (*Noteb
 
 	c := &notebookGRPCClient{
 		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
 		notebookClient:   notebookspb.NewNotebookServiceClient(connPool),
 		CallOptions:      &client.CallOptions,
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
@@ -732,11 +799,6 @@ func (c *notebookGRPCClient) ListInstances(ctx context.Context, req *notebookspb
 }
 
 func (c *notebookGRPCClient) GetInstance(ctx context.Context, req *notebookspb.GetInstanceRequest, opts ...gax.CallOption) (*notebookspb.Instance, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -754,11 +816,6 @@ func (c *notebookGRPCClient) GetInstance(ctx context.Context, req *notebookspb.G
 }
 
 func (c *notebookGRPCClient) CreateInstance(ctx context.Context, req *notebookspb.CreateInstanceRequest, opts ...gax.CallOption) (*CreateInstanceOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -778,11 +835,6 @@ func (c *notebookGRPCClient) CreateInstance(ctx context.Context, req *notebooksp
 }
 
 func (c *notebookGRPCClient) RegisterInstance(ctx context.Context, req *notebookspb.RegisterInstanceRequest, opts ...gax.CallOption) (*RegisterInstanceOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -802,11 +854,6 @@ func (c *notebookGRPCClient) RegisterInstance(ctx context.Context, req *notebook
 }
 
 func (c *notebookGRPCClient) SetInstanceAccelerator(ctx context.Context, req *notebookspb.SetInstanceAcceleratorRequest, opts ...gax.CallOption) (*SetInstanceAcceleratorOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -826,11 +873,6 @@ func (c *notebookGRPCClient) SetInstanceAccelerator(ctx context.Context, req *no
 }
 
 func (c *notebookGRPCClient) SetInstanceMachineType(ctx context.Context, req *notebookspb.SetInstanceMachineTypeRequest, opts ...gax.CallOption) (*SetInstanceMachineTypeOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -850,11 +892,6 @@ func (c *notebookGRPCClient) SetInstanceMachineType(ctx context.Context, req *no
 }
 
 func (c *notebookGRPCClient) SetInstanceLabels(ctx context.Context, req *notebookspb.SetInstanceLabelsRequest, opts ...gax.CallOption) (*SetInstanceLabelsOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -874,11 +911,6 @@ func (c *notebookGRPCClient) SetInstanceLabels(ctx context.Context, req *noteboo
 }
 
 func (c *notebookGRPCClient) DeleteInstance(ctx context.Context, req *notebookspb.DeleteInstanceRequest, opts ...gax.CallOption) (*DeleteInstanceOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -898,11 +930,6 @@ func (c *notebookGRPCClient) DeleteInstance(ctx context.Context, req *notebooksp
 }
 
 func (c *notebookGRPCClient) StartInstance(ctx context.Context, req *notebookspb.StartInstanceRequest, opts ...gax.CallOption) (*StartInstanceOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -922,11 +949,6 @@ func (c *notebookGRPCClient) StartInstance(ctx context.Context, req *notebookspb
 }
 
 func (c *notebookGRPCClient) StopInstance(ctx context.Context, req *notebookspb.StopInstanceRequest, opts ...gax.CallOption) (*StopInstanceOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -946,11 +968,6 @@ func (c *notebookGRPCClient) StopInstance(ctx context.Context, req *notebookspb.
 }
 
 func (c *notebookGRPCClient) ResetInstance(ctx context.Context, req *notebookspb.ResetInstanceRequest, opts ...gax.CallOption) (*ResetInstanceOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -970,11 +987,6 @@ func (c *notebookGRPCClient) ResetInstance(ctx context.Context, req *notebookspb
 }
 
 func (c *notebookGRPCClient) ReportInstanceInfo(ctx context.Context, req *notebookspb.ReportInstanceInfoRequest, opts ...gax.CallOption) (*ReportInstanceInfoOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -994,11 +1006,6 @@ func (c *notebookGRPCClient) ReportInstanceInfo(ctx context.Context, req *notebo
 }
 
 func (c *notebookGRPCClient) IsInstanceUpgradeable(ctx context.Context, req *notebookspb.IsInstanceUpgradeableRequest, opts ...gax.CallOption) (*notebookspb.IsInstanceUpgradeableResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "notebook_instance", url.QueryEscape(req.GetNotebookInstance())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1016,11 +1023,6 @@ func (c *notebookGRPCClient) IsInstanceUpgradeable(ctx context.Context, req *not
 }
 
 func (c *notebookGRPCClient) UpgradeInstance(ctx context.Context, req *notebookspb.UpgradeInstanceRequest, opts ...gax.CallOption) (*UpgradeInstanceOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1040,11 +1042,6 @@ func (c *notebookGRPCClient) UpgradeInstance(ctx context.Context, req *notebooks
 }
 
 func (c *notebookGRPCClient) UpgradeInstanceInternal(ctx context.Context, req *notebookspb.UpgradeInstanceInternalRequest, opts ...gax.CallOption) (*UpgradeInstanceInternalOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1109,11 +1106,6 @@ func (c *notebookGRPCClient) ListEnvironments(ctx context.Context, req *notebook
 }
 
 func (c *notebookGRPCClient) GetEnvironment(ctx context.Context, req *notebookspb.GetEnvironmentRequest, opts ...gax.CallOption) (*notebookspb.Environment, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1131,11 +1123,6 @@ func (c *notebookGRPCClient) GetEnvironment(ctx context.Context, req *notebooksp
 }
 
 func (c *notebookGRPCClient) CreateEnvironment(ctx context.Context, req *notebookspb.CreateEnvironmentRequest, opts ...gax.CallOption) (*CreateEnvironmentOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1155,11 +1142,6 @@ func (c *notebookGRPCClient) CreateEnvironment(ctx context.Context, req *noteboo
 }
 
 func (c *notebookGRPCClient) DeleteEnvironment(ctx context.Context, req *notebookspb.DeleteEnvironmentRequest, opts ...gax.CallOption) (*DeleteEnvironmentOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)

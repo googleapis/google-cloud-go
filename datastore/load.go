@@ -161,11 +161,6 @@ func (l *propertyLoader) loadOneElement(codec fields.List, structValue reflect.V
 			structValue = v
 		}
 
-		if v.Kind() == reflect.Slice && p.Value == nil {
-			v.Set(reflect.Zero(v.Type()))
-			return ""
-		}
-
 		// If the element is a slice, we need to accommodate it.
 		if v.Kind() == reflect.Slice && v.Type() != typeOfByteSlice {
 			if l.m == nil {

@@ -79,6 +79,7 @@ func defaultGRPCClientOptions() []option.ClientOption {
 func defaultCallOptions() *CallOptions {
 	return &CallOptions{
 		ListQueues: []gax.CallOption{
+			gax.WithTimeout(20000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -91,6 +92,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		GetQueue: []gax.CallOption{
+			gax.WithTimeout(20000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -102,9 +104,14 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
-		CreateQueue: []gax.CallOption{},
-		UpdateQueue: []gax.CallOption{},
+		CreateQueue: []gax.CallOption{
+			gax.WithTimeout(20000 * time.Millisecond),
+		},
+		UpdateQueue: []gax.CallOption{
+			gax.WithTimeout(20000 * time.Millisecond),
+		},
 		DeleteQueue: []gax.CallOption{
+			gax.WithTimeout(20000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -116,10 +123,17 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
-		PurgeQueue:  []gax.CallOption{},
-		PauseQueue:  []gax.CallOption{},
-		ResumeQueue: []gax.CallOption{},
+		PurgeQueue: []gax.CallOption{
+			gax.WithTimeout(20000 * time.Millisecond),
+		},
+		PauseQueue: []gax.CallOption{
+			gax.WithTimeout(20000 * time.Millisecond),
+		},
+		ResumeQueue: []gax.CallOption{
+			gax.WithTimeout(20000 * time.Millisecond),
+		},
 		GetIamPolicy: []gax.CallOption{
+			gax.WithTimeout(20000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -131,8 +145,11 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
-		SetIamPolicy: []gax.CallOption{},
+		SetIamPolicy: []gax.CallOption{
+			gax.WithTimeout(20000 * time.Millisecond),
+		},
 		TestIamPermissions: []gax.CallOption{
+			gax.WithTimeout(20000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -145,6 +162,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		ListTasks: []gax.CallOption{
+			gax.WithTimeout(20000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -157,6 +175,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		GetTask: []gax.CallOption{
+			gax.WithTimeout(20000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -168,8 +187,11 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
-		CreateTask: []gax.CallOption{},
+		CreateTask: []gax.CallOption{
+			gax.WithTimeout(20000 * time.Millisecond),
+		},
 		DeleteTask: []gax.CallOption{
+			gax.WithTimeout(20000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -181,13 +203,16 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
-		RunTask: []gax.CallOption{},
+		RunTask: []gax.CallOption{
+			gax.WithTimeout(20000 * time.Millisecond),
+		},
 	}
 }
 
 func defaultRESTCallOptions() *CallOptions {
 	return &CallOptions{
 		ListQueues: []gax.CallOption{
+			gax.WithTimeout(20000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -199,6 +224,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		GetQueue: []gax.CallOption{
+			gax.WithTimeout(20000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -209,9 +235,14 @@ func defaultRESTCallOptions() *CallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
-		CreateQueue: []gax.CallOption{},
-		UpdateQueue: []gax.CallOption{},
+		CreateQueue: []gax.CallOption{
+			gax.WithTimeout(20000 * time.Millisecond),
+		},
+		UpdateQueue: []gax.CallOption{
+			gax.WithTimeout(20000 * time.Millisecond),
+		},
 		DeleteQueue: []gax.CallOption{
+			gax.WithTimeout(20000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -222,10 +253,17 @@ func defaultRESTCallOptions() *CallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
-		PurgeQueue:  []gax.CallOption{},
-		PauseQueue:  []gax.CallOption{},
-		ResumeQueue: []gax.CallOption{},
+		PurgeQueue: []gax.CallOption{
+			gax.WithTimeout(20000 * time.Millisecond),
+		},
+		PauseQueue: []gax.CallOption{
+			gax.WithTimeout(20000 * time.Millisecond),
+		},
+		ResumeQueue: []gax.CallOption{
+			gax.WithTimeout(20000 * time.Millisecond),
+		},
 		GetIamPolicy: []gax.CallOption{
+			gax.WithTimeout(20000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -236,8 +274,11 @@ func defaultRESTCallOptions() *CallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
-		SetIamPolicy: []gax.CallOption{},
+		SetIamPolicy: []gax.CallOption{
+			gax.WithTimeout(20000 * time.Millisecond),
+		},
 		TestIamPermissions: []gax.CallOption{
+			gax.WithTimeout(20000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -249,6 +290,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		ListTasks: []gax.CallOption{
+			gax.WithTimeout(20000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -260,6 +302,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		GetTask: []gax.CallOption{
+			gax.WithTimeout(20000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -270,8 +313,11 @@ func defaultRESTCallOptions() *CallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
-		CreateTask: []gax.CallOption{},
+		CreateTask: []gax.CallOption{
+			gax.WithTimeout(20000 * time.Millisecond),
+		},
 		DeleteTask: []gax.CallOption{
+			gax.WithTimeout(20000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -282,7 +328,9 @@ func defaultRESTCallOptions() *CallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
-		RunTask: []gax.CallOption{},
+		RunTask: []gax.CallOption{
+			gax.WithTimeout(20000 * time.Millisecond),
+		},
 	}
 }
 
@@ -557,9 +605,6 @@ type gRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing Client
 	CallOptions **CallOptions
 
@@ -585,11 +630,6 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -597,10 +637,9 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 	client := Client{CallOptions: defaultCallOptions()}
 
 	c := &gRPCClient{
-		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
-		client:           cloudtaskspb.NewCloudTasksClient(connPool),
-		CallOptions:      &client.CallOptions,
+		connPool:    connPool,
+		client:      cloudtaskspb.NewCloudTasksClient(connPool),
+		CallOptions: &client.CallOptions,
 	}
 	c.setGoogleClientInfo()
 
@@ -747,11 +786,6 @@ func (c *gRPCClient) ListQueues(ctx context.Context, req *cloudtaskspb.ListQueue
 }
 
 func (c *gRPCClient) GetQueue(ctx context.Context, req *cloudtaskspb.GetQueueRequest, opts ...gax.CallOption) (*cloudtaskspb.Queue, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 20000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -769,11 +803,6 @@ func (c *gRPCClient) GetQueue(ctx context.Context, req *cloudtaskspb.GetQueueReq
 }
 
 func (c *gRPCClient) CreateQueue(ctx context.Context, req *cloudtaskspb.CreateQueueRequest, opts ...gax.CallOption) (*cloudtaskspb.Queue, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 20000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -791,11 +820,6 @@ func (c *gRPCClient) CreateQueue(ctx context.Context, req *cloudtaskspb.CreateQu
 }
 
 func (c *gRPCClient) UpdateQueue(ctx context.Context, req *cloudtaskspb.UpdateQueueRequest, opts ...gax.CallOption) (*cloudtaskspb.Queue, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 20000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "queue.name", url.QueryEscape(req.GetQueue().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -813,11 +837,6 @@ func (c *gRPCClient) UpdateQueue(ctx context.Context, req *cloudtaskspb.UpdateQu
 }
 
 func (c *gRPCClient) DeleteQueue(ctx context.Context, req *cloudtaskspb.DeleteQueueRequest, opts ...gax.CallOption) error {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 20000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -831,11 +850,6 @@ func (c *gRPCClient) DeleteQueue(ctx context.Context, req *cloudtaskspb.DeleteQu
 }
 
 func (c *gRPCClient) PurgeQueue(ctx context.Context, req *cloudtaskspb.PurgeQueueRequest, opts ...gax.CallOption) (*cloudtaskspb.Queue, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 20000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -853,11 +867,6 @@ func (c *gRPCClient) PurgeQueue(ctx context.Context, req *cloudtaskspb.PurgeQueu
 }
 
 func (c *gRPCClient) PauseQueue(ctx context.Context, req *cloudtaskspb.PauseQueueRequest, opts ...gax.CallOption) (*cloudtaskspb.Queue, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 20000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -875,11 +884,6 @@ func (c *gRPCClient) PauseQueue(ctx context.Context, req *cloudtaskspb.PauseQueu
 }
 
 func (c *gRPCClient) ResumeQueue(ctx context.Context, req *cloudtaskspb.ResumeQueueRequest, opts ...gax.CallOption) (*cloudtaskspb.Queue, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 20000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -897,11 +901,6 @@ func (c *gRPCClient) ResumeQueue(ctx context.Context, req *cloudtaskspb.ResumeQu
 }
 
 func (c *gRPCClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 20000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -919,11 +918,6 @@ func (c *gRPCClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRe
 }
 
 func (c *gRPCClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 20000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -941,11 +935,6 @@ func (c *gRPCClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRe
 }
 
 func (c *gRPCClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermissionsRequest, opts ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 20000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1008,11 +997,6 @@ func (c *gRPCClient) ListTasks(ctx context.Context, req *cloudtaskspb.ListTasksR
 }
 
 func (c *gRPCClient) GetTask(ctx context.Context, req *cloudtaskspb.GetTaskRequest, opts ...gax.CallOption) (*cloudtaskspb.Task, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 20000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1030,11 +1014,6 @@ func (c *gRPCClient) GetTask(ctx context.Context, req *cloudtaskspb.GetTaskReque
 }
 
 func (c *gRPCClient) CreateTask(ctx context.Context, req *cloudtaskspb.CreateTaskRequest, opts ...gax.CallOption) (*cloudtaskspb.Task, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 20000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1052,11 +1031,6 @@ func (c *gRPCClient) CreateTask(ctx context.Context, req *cloudtaskspb.CreateTas
 }
 
 func (c *gRPCClient) DeleteTask(ctx context.Context, req *cloudtaskspb.DeleteTaskRequest, opts ...gax.CallOption) error {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 20000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1070,11 +1044,6 @@ func (c *gRPCClient) DeleteTask(ctx context.Context, req *cloudtaskspb.DeleteTas
 }
 
 func (c *gRPCClient) RunTask(ctx context.Context, req *cloudtaskspb.RunTaskRequest, opts ...gax.CallOption) (*cloudtaskspb.Task, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 20000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)

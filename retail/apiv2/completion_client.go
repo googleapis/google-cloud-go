@@ -63,6 +63,7 @@ func defaultCompletionGRPCClientOptions() []option.ClientOption {
 func defaultCompletionCallOptions() *CompletionCallOptions {
 	return &CompletionCallOptions{
 		CompleteQuery: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -75,6 +76,7 @@ func defaultCompletionCallOptions() *CompletionCallOptions {
 			}),
 		},
 		ImportCompletionData: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -88,6 +90,7 @@ func defaultCompletionCallOptions() *CompletionCallOptions {
 		},
 		GetOperation: []gax.CallOption{},
 		ListOperations: []gax.CallOption{
+			gax.WithTimeout(300000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -201,9 +204,6 @@ type completionGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing CompletionClient
 	CallOptions **CompletionCallOptions
 
@@ -238,11 +238,6 @@ func NewCompletionClient(ctx context.Context, opts ...option.ClientOption) (*Com
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -251,7 +246,6 @@ func NewCompletionClient(ctx context.Context, opts ...option.ClientOption) (*Com
 
 	c := &completionGRPCClient{
 		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
 		completionClient: retailpb.NewCompletionServiceClient(connPool),
 		CallOptions:      &client.CallOptions,
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
@@ -298,11 +292,6 @@ func (c *completionGRPCClient) Close() error {
 }
 
 func (c *completionGRPCClient) CompleteQuery(ctx context.Context, req *retailpb.CompleteQueryRequest, opts ...gax.CallOption) (*retailpb.CompleteQueryResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "catalog", url.QueryEscape(req.GetCatalog())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -320,11 +309,6 @@ func (c *completionGRPCClient) CompleteQuery(ctx context.Context, req *retailpb.
 }
 
 func (c *completionGRPCClient) ImportCompletionData(ctx context.Context, req *retailpb.ImportCompletionDataRequest, opts ...gax.CallOption) (*ImportCompletionDataOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)

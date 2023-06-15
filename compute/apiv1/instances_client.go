@@ -94,9 +94,14 @@ type InstancesCallOptions struct {
 
 func defaultInstancesRESTCallOptions() *InstancesCallOptions {
 	return &InstancesCallOptions{
-		AddAccessConfig:     []gax.CallOption{},
-		AddResourcePolicies: []gax.CallOption{},
+		AddAccessConfig: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		AddResourcePolicies: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
 		AggregatedList: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -107,12 +112,23 @@ func defaultInstancesRESTCallOptions() *InstancesCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
-		AttachDisk:         []gax.CallOption{},
-		BulkInsert:         []gax.CallOption{},
-		Delete:             []gax.CallOption{},
-		DeleteAccessConfig: []gax.CallOption{},
-		DetachDisk:         []gax.CallOption{},
+		AttachDisk: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		BulkInsert: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		Delete: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		DeleteAccessConfig: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		DetachDisk: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
 		Get: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -124,6 +140,7 @@ func defaultInstancesRESTCallOptions() *InstancesCallOptions {
 			}),
 		},
 		GetEffectiveFirewalls: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -135,6 +152,7 @@ func defaultInstancesRESTCallOptions() *InstancesCallOptions {
 			}),
 		},
 		GetGuestAttributes: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -146,6 +164,7 @@ func defaultInstancesRESTCallOptions() *InstancesCallOptions {
 			}),
 		},
 		GetIamPolicy: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -157,6 +176,7 @@ func defaultInstancesRESTCallOptions() *InstancesCallOptions {
 			}),
 		},
 		GetScreenshot: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -168,6 +188,7 @@ func defaultInstancesRESTCallOptions() *InstancesCallOptions {
 			}),
 		},
 		GetSerialPortOutput: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -179,6 +200,7 @@ func defaultInstancesRESTCallOptions() *InstancesCallOptions {
 			}),
 		},
 		GetShieldedInstanceIdentity: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -189,8 +211,11 @@ func defaultInstancesRESTCallOptions() *InstancesCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
-		Insert: []gax.CallOption{},
+		Insert: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
 		List: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -202,6 +227,7 @@ func defaultInstancesRESTCallOptions() *InstancesCallOptions {
 			}),
 		},
 		ListReferrers: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -212,34 +238,90 @@ func defaultInstancesRESTCallOptions() *InstancesCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
-		RemoveResourcePolicies:             []gax.CallOption{},
-		Reset:                              []gax.CallOption{},
-		Resume:                             []gax.CallOption{},
-		SendDiagnosticInterrupt:            []gax.CallOption{},
-		SetDeletionProtection:              []gax.CallOption{},
-		SetDiskAutoDelete:                  []gax.CallOption{},
-		SetIamPolicy:                       []gax.CallOption{},
-		SetLabels:                          []gax.CallOption{},
-		SetMachineResources:                []gax.CallOption{},
-		SetMachineType:                     []gax.CallOption{},
-		SetMetadata:                        []gax.CallOption{},
-		SetMinCpuPlatform:                  []gax.CallOption{},
-		SetName:                            []gax.CallOption{},
-		SetScheduling:                      []gax.CallOption{},
-		SetServiceAccount:                  []gax.CallOption{},
-		SetShieldedInstanceIntegrityPolicy: []gax.CallOption{},
-		SetTags:                            []gax.CallOption{},
-		SimulateMaintenanceEvent:           []gax.CallOption{},
-		Start:                              []gax.CallOption{},
-		StartWithEncryptionKey:             []gax.CallOption{},
-		Stop:                               []gax.CallOption{},
-		Suspend:                            []gax.CallOption{},
-		TestIamPermissions:                 []gax.CallOption{},
-		Update:                             []gax.CallOption{},
-		UpdateAccessConfig:                 []gax.CallOption{},
-		UpdateDisplayDevice:                []gax.CallOption{},
-		UpdateNetworkInterface:             []gax.CallOption{},
-		UpdateShieldedInstanceConfig:       []gax.CallOption{},
+		RemoveResourcePolicies: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		Reset: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		Resume: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		SendDiagnosticInterrupt: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		SetDeletionProtection: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		SetDiskAutoDelete: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		SetIamPolicy: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		SetLabels: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		SetMachineResources: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		SetMachineType: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		SetMetadata: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		SetMinCpuPlatform: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		SetName: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		SetScheduling: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		SetServiceAccount: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		SetShieldedInstanceIntegrityPolicy: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		SetTags: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		SimulateMaintenanceEvent: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		Start: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		StartWithEncryptionKey: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		Stop: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		Suspend: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		TestIamPermissions: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		Update: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		UpdateAccessConfig: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		UpdateDisplayDevice: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		UpdateNetworkInterface: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		UpdateShieldedInstanceConfig: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
 	}
 }
 

@@ -115,9 +115,6 @@ type queryGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing QueryClient
 	CallOptions **QueryCallOptions
 
@@ -144,11 +141,6 @@ func NewQueryClient(ctx context.Context, opts ...option.ClientOption) (*QueryCli
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -156,10 +148,9 @@ func NewQueryClient(ctx context.Context, opts ...option.ClientOption) (*QueryCli
 	client := QueryClient{CallOptions: defaultQueryCallOptions()}
 
 	c := &queryGRPCClient{
-		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
-		queryClient:      monitoringpb.NewQueryServiceClient(connPool),
-		CallOptions:      &client.CallOptions,
+		connPool:    connPool,
+		queryClient: monitoringpb.NewQueryServiceClient(connPool),
+		CallOptions: &client.CallOptions,
 	}
 	c.setGoogleClientInfo()
 

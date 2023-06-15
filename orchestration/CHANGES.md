@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.8.0](https://github.com/googleapis/google-cloud-go/compare/orchestration/v1.7.0...orchestration/v1.8.0) (2023-06-13)
+
+
+### Features
+
+* **orchestration/airflow/service:** Added RPCs StopAirflowCommand, ExecuteAirflowCommand, PollAirflowCommand, DatabaseFailover, FetchDatabaseProperties ([#8081](https://github.com/googleapis/google-cloud-go/issues/8081)) ([3abdfa1](https://github.com/googleapis/google-cloud-go/commit/3abdfa14dd56cf773c477f289a7f888e20bbbd9a))
+
 ## [1.7.0](https://github.com/googleapis/google-cloud-go/compare/orchestration/v1.6.1...orchestration/v1.7.0) (2023-05-30)
 
 

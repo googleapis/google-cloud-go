@@ -54,6 +54,7 @@ type NetworkEdgeSecurityServicesCallOptions struct {
 func defaultNetworkEdgeSecurityServicesRESTCallOptions() *NetworkEdgeSecurityServicesCallOptions {
 	return &NetworkEdgeSecurityServicesCallOptions{
 		AggregatedList: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -64,8 +65,11 @@ func defaultNetworkEdgeSecurityServicesRESTCallOptions() *NetworkEdgeSecuritySer
 					http.StatusServiceUnavailable)
 			}),
 		},
-		Delete: []gax.CallOption{},
+		Delete: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
 		Get: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -76,8 +80,12 @@ func defaultNetworkEdgeSecurityServicesRESTCallOptions() *NetworkEdgeSecuritySer
 					http.StatusServiceUnavailable)
 			}),
 		},
-		Insert: []gax.CallOption{},
-		Patch:  []gax.CallOption{},
+		Insert: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		Patch: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
 	}
 }
 

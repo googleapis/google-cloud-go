@@ -51,6 +51,7 @@ type DiskTypesCallOptions struct {
 func defaultDiskTypesRESTCallOptions() *DiskTypesCallOptions {
 	return &DiskTypesCallOptions{
 		AggregatedList: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -62,6 +63,7 @@ func defaultDiskTypesRESTCallOptions() *DiskTypesCallOptions {
 			}),
 		},
 		Get: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -73,6 +75,7 @@ func defaultDiskTypesRESTCallOptions() *DiskTypesCallOptions {
 			}),
 		},
 		List: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,

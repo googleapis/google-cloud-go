@@ -35,16 +35,18 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-// Label represents a generic name=value label. Label has separate name and
-// value fields to support filtering with contains().
+// Represents a generic name-value label. A label has separate name and value
+// fields to support filtering with the `contains()` function. For more
+// information, see [Filtering on array-type
+// fields](https://cloud.google.com/security-command-center/docs/how-to-api-list-findings#array-contains-filtering).
 type Label struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Label name.
+	// Name of the label.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	// Label value.
+	// Value that corresponds to the label's name.
 	Value string `protobuf:"bytes,2,opt,name=value,proto3" json:"value,omitempty"`
 }
 

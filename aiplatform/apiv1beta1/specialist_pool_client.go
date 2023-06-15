@@ -80,41 +80,61 @@ func defaultSpecialistPoolGRPCClientOptions() []option.ClientOption {
 
 func defaultSpecialistPoolCallOptions() *SpecialistPoolCallOptions {
 	return &SpecialistPoolCallOptions{
-		CreateSpecialistPool: []gax.CallOption{},
-		GetSpecialistPool:    []gax.CallOption{},
-		ListSpecialistPools:  []gax.CallOption{},
-		DeleteSpecialistPool: []gax.CallOption{},
-		UpdateSpecialistPool: []gax.CallOption{},
-		GetLocation:          []gax.CallOption{},
-		ListLocations:        []gax.CallOption{},
-		GetIamPolicy:         []gax.CallOption{},
-		SetIamPolicy:         []gax.CallOption{},
-		TestIamPermissions:   []gax.CallOption{},
-		CancelOperation:      []gax.CallOption{},
-		DeleteOperation:      []gax.CallOption{},
-		GetOperation:         []gax.CallOption{},
-		ListOperations:       []gax.CallOption{},
-		WaitOperation:        []gax.CallOption{},
+		CreateSpecialistPool: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		GetSpecialistPool: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		ListSpecialistPools: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		DeleteSpecialistPool: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		UpdateSpecialistPool: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		GetLocation:        []gax.CallOption{},
+		ListLocations:      []gax.CallOption{},
+		GetIamPolicy:       []gax.CallOption{},
+		SetIamPolicy:       []gax.CallOption{},
+		TestIamPermissions: []gax.CallOption{},
+		CancelOperation:    []gax.CallOption{},
+		DeleteOperation:    []gax.CallOption{},
+		GetOperation:       []gax.CallOption{},
+		ListOperations:     []gax.CallOption{},
+		WaitOperation:      []gax.CallOption{},
 	}
 }
 
 func defaultSpecialistPoolRESTCallOptions() *SpecialistPoolCallOptions {
 	return &SpecialistPoolCallOptions{
-		CreateSpecialistPool: []gax.CallOption{},
-		GetSpecialistPool:    []gax.CallOption{},
-		ListSpecialistPools:  []gax.CallOption{},
-		DeleteSpecialistPool: []gax.CallOption{},
-		UpdateSpecialistPool: []gax.CallOption{},
-		GetLocation:          []gax.CallOption{},
-		ListLocations:        []gax.CallOption{},
-		GetIamPolicy:         []gax.CallOption{},
-		SetIamPolicy:         []gax.CallOption{},
-		TestIamPermissions:   []gax.CallOption{},
-		CancelOperation:      []gax.CallOption{},
-		DeleteOperation:      []gax.CallOption{},
-		GetOperation:         []gax.CallOption{},
-		ListOperations:       []gax.CallOption{},
-		WaitOperation:        []gax.CallOption{},
+		CreateSpecialistPool: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		GetSpecialistPool: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		ListSpecialistPools: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		DeleteSpecialistPool: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		UpdateSpecialistPool: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		GetLocation:        []gax.CallOption{},
+		ListLocations:      []gax.CallOption{},
+		GetIamPolicy:       []gax.CallOption{},
+		SetIamPolicy:       []gax.CallOption{},
+		TestIamPermissions: []gax.CallOption{},
+		CancelOperation:    []gax.CallOption{},
+		DeleteOperation:    []gax.CallOption{},
+		GetOperation:       []gax.CallOption{},
+		ListOperations:     []gax.CallOption{},
+		WaitOperation:      []gax.CallOption{},
 	}
 }
 
@@ -299,9 +319,6 @@ type specialistPoolGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing SpecialistPoolClient
 	CallOptions **SpecialistPoolCallOptions
 
@@ -342,11 +359,6 @@ func NewSpecialistPoolClient(ctx context.Context, opts ...option.ClientOption) (
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -355,7 +367,6 @@ func NewSpecialistPoolClient(ctx context.Context, opts ...option.ClientOption) (
 
 	c := &specialistPoolGRPCClient{
 		connPool:             connPool,
-		disableDeadlines:     disableDeadlines,
 		specialistPoolClient: aiplatformpb.NewSpecialistPoolServiceClient(connPool),
 		CallOptions:          &client.CallOptions,
 		operationsClient:     longrunningpb.NewOperationsClient(connPool),
@@ -492,11 +503,6 @@ func (c *specialistPoolRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 func (c *specialistPoolGRPCClient) CreateSpecialistPool(ctx context.Context, req *aiplatformpb.CreateSpecialistPoolRequest, opts ...gax.CallOption) (*CreateSpecialistPoolOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -516,11 +522,6 @@ func (c *specialistPoolGRPCClient) CreateSpecialistPool(ctx context.Context, req
 }
 
 func (c *specialistPoolGRPCClient) GetSpecialistPool(ctx context.Context, req *aiplatformpb.GetSpecialistPoolRequest, opts ...gax.CallOption) (*aiplatformpb.SpecialistPool, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -583,11 +584,6 @@ func (c *specialistPoolGRPCClient) ListSpecialistPools(ctx context.Context, req 
 }
 
 func (c *specialistPoolGRPCClient) DeleteSpecialistPool(ctx context.Context, req *aiplatformpb.DeleteSpecialistPoolRequest, opts ...gax.CallOption) (*DeleteSpecialistPoolOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -607,11 +603,6 @@ func (c *specialistPoolGRPCClient) DeleteSpecialistPool(ctx context.Context, req
 }
 
 func (c *specialistPoolGRPCClient) UpdateSpecialistPool(ctx context.Context, req *aiplatformpb.UpdateSpecialistPoolRequest, opts ...gax.CallOption) (*UpdateSpecialistPoolOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "specialist_pool.name", url.QueryEscape(req.GetSpecialistPool().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
