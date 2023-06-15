@@ -536,6 +536,20 @@ func TestCloudStorageSubscription(t *testing.T) {
 		t.Fatalf("create cloud storage subscription mismatch: \n%s", diff)
 	}
 
+	csCfg.OutputFormat = &CloudStorageOutputFormatTextConfig{}
+	cfg, err = csSub.Update(ctx, SubscriptionConfigToUpdate{
+		CloudStorageConfig: &csCfg,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	got := cfg.CloudStorageConfig
+	want = csCfg
+	want.State = CloudStorageConfigActive
+	if diff := testutil.Diff(got, want); diff != "" {
+		t.Fatalf("update cloud storage subscription mismatch: \n%s", diff)
+	}
+
 	// Test resetting to a pull based subscription.
 	cfg, err = csSub.Update(ctx, SubscriptionConfigToUpdate{
 		CloudStorageConfig: &CloudStorageConfig{},
@@ -543,12 +557,11 @@ func TestCloudStorageSubscription(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	got := cfg.CloudStorageConfig
+	got = cfg.CloudStorageConfig
 	want = CloudStorageConfig{}
 	if diff := testutil.Diff(got, want); diff != "" {
 		t.Fatalf("remove cloud storage subscription mismatch: \n%s", diff)
 	}
-
 }
 
 func TestExactlyOnceDelivery_AckSuccess(t *testing.T) {

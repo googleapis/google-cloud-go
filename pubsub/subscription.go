@@ -357,23 +357,28 @@ type CloudStorageConfig struct {
 	State CloudStorageConfigState
 }
 
-func (bc *CloudStorageConfig) toProto() *pb.CloudStorageConfig {
-	if bc == nil {
+func (cs *CloudStorageConfig) toProto() *pb.CloudStorageConfig {
+	if cs == nil {
+		return nil
+	}
+	// For the purposes of the live service, an empty/zero-valued config
+	// is treated the same as nil and clearing this setting.
+	if (CloudStorageConfig{}) == *cs {
 		return nil
 	}
 	var dur *durationpb.Duration
-	if bc.MaxDuration != nil {
-		dur = durationpb.New(optional.ToDuration(bc.MaxDuration))
+	if cs.MaxDuration != nil {
+		dur = durationpb.New(optional.ToDuration(cs.MaxDuration))
 	}
 	pbCfg := &pb.CloudStorageConfig{
-		Bucket:         bc.Bucket,
-		FilenamePrefix: bc.FilenamePrefix,
-		FilenameSuffix: bc.FilenameSuffix,
+		Bucket:         cs.Bucket,
+		FilenamePrefix: cs.FilenamePrefix,
+		FilenameSuffix: cs.FilenameSuffix,
 		MaxDuration:    dur,
-		MaxBytes:       bc.MaxBytes,
-		State:          pb.CloudStorageConfig_State(bc.State),
+		MaxBytes:       cs.MaxBytes,
+		State:          pb.CloudStorageConfig_State(cs.State),
 	}
-	if out := bc.OutputFormat; out != nil {
+	if out := cs.OutputFormat; out != nil {
 		if _, ok := out.(*CloudStorageOutputFormatTextConfig); ok {
 			pbCfg.OutputFormat = &pb.CloudStorageConfig_TextConfig_{}
 		} else if cfg, ok := out.(*CloudStorageOutputFormatAvroConfig); ok {
@@ -553,16 +558,8 @@ func (cfg *SubscriptionConfig) toProto(name string) *pb.Subscription {
 	if cfg.PushConfig.Endpoint != "" || len(cfg.PushConfig.Attributes) != 0 || cfg.PushConfig.AuthenticationMethod != nil {
 		pbPushConfig = cfg.PushConfig.toProto()
 	}
-	var pbBigQueryConfig *pb.BigQueryConfig
-	if cfg.BigQueryConfig.Table != "" {
-		pbBigQueryConfig = cfg.BigQueryConfig.toProto()
-	}
-	var pbCloudStorageConfig *pb.CloudStorageConfig
-	// Use the bucket as sentinel value here. If it is blank,
-	// that's equivalent to clearing the config and reverting to pull.
-	if cfg.CloudStorageConfig.Bucket != "" {
-		pbCloudStorageConfig = cfg.CloudStorageConfig.toProto()
-	}
+	pbBigQueryConfig := cfg.BigQueryConfig.toProto()
+	pbCloudStorageConfig := cfg.CloudStorageConfig.toProto()
 	var retentionDuration *durpb.Duration
 	if cfg.RetentionDuration != 0 {
 		retentionDuration = durpb.New(cfg.RetentionDuration)
@@ -1013,11 +1010,7 @@ func (s *Subscription) updateRequest(cfg *SubscriptionConfigToUpdate) *pb.Update
 		paths = append(paths, "bigquery_config")
 	}
 	if cfg.CloudStorageConfig != nil {
-		if cfg.CloudStorageConfig.Bucket == "" {
-			psub.CloudStorageConfig = nil
-		} else {
-			psub.CloudStorageConfig = cfg.CloudStorageConfig.toProto()
-		}
+		psub.CloudStorageConfig = cfg.CloudStorageConfig.toProto()
 		paths = append(paths, "cloud_storage_config")
 	}
 	if cfg.AckDeadline != 0 {
