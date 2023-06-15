@@ -63,3 +63,22 @@ The post-processor initializes new modules by generating the required files
 To add a new module, add the directory name of the module to `modules` in
 `google-cloud-go/internal/postprocessor/config.yaml`. Please maintain
 alphabetical ordering of the module names.
+
+## Updating the postprocessor version used by OwlBot
+
+After making changes to this package land in `main`, a new Docker image will be
+built and pushed automatically. To update the image version used by OwlBot, run
+the following commands (_you will need Docker installed and running_):
+
+```sh
+docker pull gcr.io/cloud-devrel-public-resources/owlbot-go:latest
+LATEST=`docker inspect --format='{{index .RepoDigests 0}}' gcr.io/cloud-devrel-public-resources/owlbot-go:latest`
+sed -i -e 's/sha256.*/'${LATEST#*@}'/g' ./.github/.OwlBot.lock.yaml
+```
+
+_Note: If run on macOS, the `sed -i` flag will need a `''` after it._
+
+Send a pull request with the updated `.github/.OwlBot.lock.yaml`.
+
+_Note: Any open OwlBot PR will need to be caught-up and the postprocessor rerun_
+_to capture the changes._
