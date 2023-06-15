@@ -135,110 +135,125 @@ modules:
   - workstations
 
 manual-clients:
-  - distribution-name: cloud.google.com/go/bigquery
+  - api-shortname: bigquery
+    distribution-name: cloud.google.com/go/bigquery
     description: BigQuery
-    language: Go
+    language: go
     client-library-type: manual
-    docs-url: https://cloud.google.com/go/docs/reference/cloud.google.com/go/bigquery/latest
-    release-level: ga
+    client-documentation: https://cloud.google.com/go/docs/reference/cloud.google.com/go/bigquery/latest
+    release-level: stable
     library-type: GAPIC_MANUAL
-  - distribution-name: cloud.google.com/go/bigtable
+  - api-shortname: bigtable
+    distribution-name: cloud.google.com/go/bigtable
     description: Cloud BigTable
-    language: Go
+    language: go
     client-library-type: manual
-    docs-url: https://cloud.google.com/go/docs/reference/cloud.google.com/go/bigtable/latest
-    release-level: ga
+    client-documentation: https://cloud.google.com/go/docs/reference/cloud.google.com/go/bigtable/latest
+    release-level: stable
     library-type: GAPIC_MANUAL
-  - distribution-name: cloud.google.com/go/compute/metadata
+  - api-shortname: compute-metadata
+    distribution-name: cloud.google.com/go/compute/metadata
     description: Service Metadata API
-    language: Go
+    language: go
     client-library-type: manual
-    docs-url: https://cloud.google.com/go/docs/reference/cloud.google.com/go/compute/latest/metadata
-    release-level: ga
+    client-documentation: https://cloud.google.com/go/docs/reference/cloud.google.com/go/compute/latest/metadata
+    release-level: stable
     library-type: CORE
-  - distribution-name: cloud.google.com/go/datastore
+  - api-shortname: datastore
+    distribution-name: cloud.google.com/go/datastore
     description: Cloud Datastore
-    language: Go
+    language: go
     client-library-type: manual
-    docs-url: https://cloud.google.com/go/docs/reference/cloud.google.com/go/datastore/latest
-    release-level: ga
+    client-documentation: https://cloud.google.com/go/docs/reference/cloud.google.com/go/datastore/latest
+    release-level: stable
     library-type: GAPIC_MANUAL
-  - distribution-name: cloud.google.com/go/errorreporting
+  - api-shortname: errorreporting
+    distribution-name: cloud.google.com/go/errorreporting
     description: Cloud Error Reporting API
-    language: Go
+    language: go
     client-library-type: manual
-    docs-url: https://cloud.google.com/go/docs/reference/cloud.google.com/go/errorreporting/latest
-    release-level: beta
+    client-documentation: https://cloud.google.com/go/docs/reference/cloud.google.com/go/errorreporting/latest
+    release-level: preview
     library-type: GAPIC_MANUAL
-  - distribution-name: cloud.google.com/go/firestore
+  - api-shortname: firestore
+    distribution-name: cloud.google.com/go/firestore
     description: Cloud Firestore API
-    language: Go
+    language: go
     client-library-type: manual
-    docs-url: https://cloud.google.com/go/docs/reference/cloud.google.com/go/firestore/latest
-    release-level: ga
+    client-documentation: https://cloud.google.com/go/docs/reference/cloud.google.com/go/firestore/latest
+    release-level: stable
     library-type: GAPIC_MANUAL
-  - distribution-name: cloud.google.com/go/functions/metadata
+  - api-shortname: firestore-metadata
+    distribution-name: cloud.google.com/go/functions/metadata
     description: Cloud Functions
-    language: Go
+    language: go
     client-library-type: manual
-    docs-url: https://cloud.google.com/go/docs/reference/cloud.google.com/go/functions/latest/metadata
-    release-level: alpha
+    client-documentation: https://cloud.google.com/go/docs/reference/cloud.google.com/go/functions/latest/metadata
+    release-level: preview
     library-type: CORE
-  - distribution-name: cloud.google.com/go/iam
+  - api-shortname: iam
+    distribution-name: cloud.google.com/go/iam
     description: Cloud IAM
-    language: Go
+    language: go
     client-library-type: manual
-    docs-url: https://cloud.google.com/go/docs/reference/cloud.google.com/go/iam/latest
-    release-level: ga
+    client-documentation: https://cloud.google.com/go/docs/reference/cloud.google.com/go/iam/latest
+    release-level: stable
     library-type: CORE
-  - distribution-name: cloud.google.com/go/logging
+  - api-shortname: logging
+    distribution-name: cloud.google.com/go/logging
     description: Cloud Logging API
-    language: Go
+    language: go
     client-library-type: manual
-    docs-url: https://cloud.google.com/go/docs/reference/cloud.google.com/go/logging/latest
-    release-level: ga
+    client-documentation: https://cloud.google.com/go/docs/reference/cloud.google.com/go/logging/latest
+    release-level: stable
     library-type: GAPIC_MANUAL
-  - distribution-name: cloud.google.com/go/profiler
+  - api-shortname: profiler
+    distribution-name: cloud.google.com/go/profiler
     description: Cloud Profiler
-    language: Go
+    language: go
     client-library-type: manual
-    docs-url: https://cloud.google.com/go/docs/reference/cloud.google.com/go/profiler/latest
-    release-level: ga
+    client-documentation: https://cloud.google.com/go/docs/reference/cloud.google.com/go/profiler/latest
+    release-level: stable
     library-type: AGENT
-  - distribution-name: cloud.google.com/go/pubsub
+  - api-shortname: pubsub
+    distribution-name: cloud.google.com/go/pubsub
     description: Cloud PubSub
-    language: Go
+    language: go
     client-library-type: manual
-    docs-url: https://cloud.google.com/go/docs/reference/cloud.google.com/go/pubsub/latest
-    release-level: ga
+    client-documentation: https://cloud.google.com/go/docs/reference/cloud.google.com/go/pubsub/latest
+    release-level: stable
     library-type: GAPIC_MANUAL
-  - distribution-name: cloud.google.com/go/pubsublite
+  - api-shortname: pubsublite
+    distribution-name: cloud.google.com/go/pubsublite
     description: Cloud PubSub Lite
-    language: Go
+    language: go
     client-library-type: manual
-    docs-url: https://cloud.google.com/go/docs/reference/cloud.google.com/go/pubsublite/latest
-    release-level: ga
+    client-documentation: https://cloud.google.com/go/docs/reference/cloud.google.com/go/pubsublite/latest
+    release-level: stable
     library-type: GAPIC_MANUAL
-  - distribution-name: cloud.google.com/go/rpcreplay
+  - api-shortname: rpcreplay
+    distribution-name: cloud.google.com/go/rpcreplay
     description: RPC Replay
-    language: Go
+    language: go
     client-library-type: manual
-    docs-url: https://cloud.google.com/go/docs/reference/cloud.google.com/go/latest/rpcreplay
-    release-level: ga
+    client-documentation: https://cloud.google.com/go/docs/reference/cloud.google.com/go/latest/rpcreplay
+    release-level: stable
     library-type: OTHER
-  - distribution-name: cloud.google.com/go/spanner
+  - api-shortname: spanner
+    distribution-name: cloud.google.com/go/spanner
     description: Cloud Spanner
-    language: Go
+    language: go
     client-library-type: manual
-    docs-url: https://cloud.google.com/go/docs/reference/cloud.google.com/go/spanner/latest
-    release-level: ga
+    client-documentation: https://cloud.google.com/go/docs/reference/cloud.google.com/go/spanner/latest
+    release-level: stable
     library-type: GAPIC_MANUAL
-  - distribution-name: cloud.google.com/go/storage
+  - api-shortname: storage
+    distribution-name: cloud.google.com/go/storage
     description: Cloud Storage (GCS)
-    language: Go
+    language: go
     client-library-type: manual
-    docs-url: https://cloud.google.com/go/docs/reference/cloud.google.com/go/storage/latest
-    release-level: ga
+    client-documentation: https://cloud.google.com/go/docs/reference/cloud.google.com/go/storage/latest
+    release-level: stable
     library-type: GAPIC_MANUAL
 
 service-configs:
