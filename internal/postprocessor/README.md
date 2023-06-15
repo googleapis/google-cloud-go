@@ -51,20 +51,11 @@ the OwlBot lock file.
 4. Clean up any changes made by post-processor test runs in the previous step.
 5. Commit your changes.
 6. Open your PR and respond to feedback.
-7.  After your PR is approved and CI is green, merge your changes. An automated
-    job should update the SHA of the post-processor docker image in
+7. After your PR is approved and CI is green, merge your changes. An automated
+   job should update the SHA of the post-processor docker image in
    `google-cloud-go/.github/.OwlBot.lock.yaml`.
 
-## Initializing new modules
-
-The post-processor initializes new modules by generating the required files
-`internal/version.go`, `go.mod`, `README.md` and `CHANGES.md`.
-
-To add a new module, add the directory name of the module to `modules` in
-`google-cloud-go/internal/postprocessor/config.yaml`. Please maintain
-alphabetical ordering of the module names.
-
-## Updating the postprocessor version used by OwlBot
+### Updating the postprocessor version used by OwlBot
 
 After making changes to this package land in `main`, a new Docker image will be
 built and pushed automatically. To update the image version used by OwlBot, run
@@ -82,3 +73,12 @@ Send a pull request with the updated `.github/.OwlBot.lock.yaml`.
 
 _Note: Any open OwlBot PR will need to be caught-up and the postprocessor rerun_
 _to capture the changes._
+
+## Initializing new modules
+
+The post-processor initializes new modules by generating the required files
+`internal/version.go`, `go.mod`, `README.md` and `CHANGES.md`.
+
+To add a new module, add the directory name of the module to `modules` in
+`google-cloud-go/internal/postprocessor/config.yaml`. Please maintain
+alphabetical ordering of the module names.
