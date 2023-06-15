@@ -415,6 +415,11 @@ func (c *grpcStorageClient) ListObjects(ctx context.Context, bucket string, q *Q
 	}
 	gitr := c.raw.ListObjects(it.ctx, req, s.gax...)
 	fetch := func(pageSize int, pageToken string) (token string, err error) {
+		// MatchGlob not yet supported for gRPC.
+		// TODO: add support when b/287306063 resolved.
+		if q != nil && q.MatchGlob != "" {
+			return "", status.Errorf(codes.Unimplemented, "MatchGlob is not supported for gRPC")
+		}
 		var objects []*storagepb.Object
 		err = run(it.ctx, func() error {
 			objects, token, err = gitr.InternalFetch(pageSize, pageToken)
