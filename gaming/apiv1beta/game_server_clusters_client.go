@@ -73,6 +73,7 @@ func defaultGameServerClustersGRPCClientOptions() []option.ClientOption {
 func defaultGameServerClustersCallOptions() *GameServerClustersCallOptions {
 	return &GameServerClustersCallOptions{
 		ListGameServerClusters: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -84,6 +85,7 @@ func defaultGameServerClustersCallOptions() *GameServerClustersCallOptions {
 			}),
 		},
 		GetGameServerCluster: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -94,8 +96,11 @@ func defaultGameServerClustersCallOptions() *GameServerClustersCallOptions {
 				})
 			}),
 		},
-		CreateGameServerCluster: []gax.CallOption{},
+		CreateGameServerCluster: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
+		},
 		PreviewCreateGameServerCluster: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -106,8 +111,11 @@ func defaultGameServerClustersCallOptions() *GameServerClustersCallOptions {
 				})
 			}),
 		},
-		DeleteGameServerCluster: []gax.CallOption{},
+		DeleteGameServerCluster: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		PreviewDeleteGameServerCluster: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -118,8 +126,11 @@ func defaultGameServerClustersCallOptions() *GameServerClustersCallOptions {
 				})
 			}),
 		},
-		UpdateGameServerCluster: []gax.CallOption{},
+		UpdateGameServerCluster: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		PreviewUpdateGameServerCluster: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -136,6 +147,7 @@ func defaultGameServerClustersCallOptions() *GameServerClustersCallOptions {
 func defaultGameServerClustersRESTCallOptions() *GameServerClustersCallOptions {
 	return &GameServerClustersCallOptions{
 		ListGameServerClusters: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -146,6 +158,7 @@ func defaultGameServerClustersRESTCallOptions() *GameServerClustersCallOptions {
 			}),
 		},
 		GetGameServerCluster: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -155,8 +168,11 @@ func defaultGameServerClustersRESTCallOptions() *GameServerClustersCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
-		CreateGameServerCluster: []gax.CallOption{},
+		CreateGameServerCluster: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
+		},
 		PreviewCreateGameServerCluster: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -166,8 +182,11 @@ func defaultGameServerClustersRESTCallOptions() *GameServerClustersCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
-		DeleteGameServerCluster: []gax.CallOption{},
+		DeleteGameServerCluster: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		PreviewDeleteGameServerCluster: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -177,8 +196,11 @@ func defaultGameServerClustersRESTCallOptions() *GameServerClustersCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
-		UpdateGameServerCluster: []gax.CallOption{},
+		UpdateGameServerCluster: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		PreviewUpdateGameServerCluster: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -316,9 +338,6 @@ type gameServerClustersGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing GameServerClustersClient
 	CallOptions **GameServerClustersCallOptions
 
@@ -349,11 +368,6 @@ func NewGameServerClustersClient(ctx context.Context, opts ...option.ClientOptio
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -362,7 +376,6 @@ func NewGameServerClustersClient(ctx context.Context, opts ...option.ClientOptio
 
 	c := &gameServerClustersGRPCClient{
 		connPool:                 connPool,
-		disableDeadlines:         disableDeadlines,
 		gameServerClustersClient: gamingpb.NewGameServerClustersServiceClient(connPool),
 		CallOptions:              &client.CallOptions,
 	}
@@ -537,11 +550,6 @@ func (c *gameServerClustersGRPCClient) ListGameServerClusters(ctx context.Contex
 }
 
 func (c *gameServerClustersGRPCClient) GetGameServerCluster(ctx context.Context, req *gamingpb.GetGameServerClusterRequest, opts ...gax.CallOption) (*gamingpb.GameServerCluster, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -559,11 +567,6 @@ func (c *gameServerClustersGRPCClient) GetGameServerCluster(ctx context.Context,
 }
 
 func (c *gameServerClustersGRPCClient) CreateGameServerCluster(ctx context.Context, req *gamingpb.CreateGameServerClusterRequest, opts ...gax.CallOption) (*CreateGameServerClusterOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 120000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -583,11 +586,6 @@ func (c *gameServerClustersGRPCClient) CreateGameServerCluster(ctx context.Conte
 }
 
 func (c *gameServerClustersGRPCClient) PreviewCreateGameServerCluster(ctx context.Context, req *gamingpb.PreviewCreateGameServerClusterRequest, opts ...gax.CallOption) (*gamingpb.PreviewCreateGameServerClusterResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -605,11 +603,6 @@ func (c *gameServerClustersGRPCClient) PreviewCreateGameServerCluster(ctx contex
 }
 
 func (c *gameServerClustersGRPCClient) DeleteGameServerCluster(ctx context.Context, req *gamingpb.DeleteGameServerClusterRequest, opts ...gax.CallOption) (*DeleteGameServerClusterOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -629,11 +622,6 @@ func (c *gameServerClustersGRPCClient) DeleteGameServerCluster(ctx context.Conte
 }
 
 func (c *gameServerClustersGRPCClient) PreviewDeleteGameServerCluster(ctx context.Context, req *gamingpb.PreviewDeleteGameServerClusterRequest, opts ...gax.CallOption) (*gamingpb.PreviewDeleteGameServerClusterResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -651,11 +639,6 @@ func (c *gameServerClustersGRPCClient) PreviewDeleteGameServerCluster(ctx contex
 }
 
 func (c *gameServerClustersGRPCClient) UpdateGameServerCluster(ctx context.Context, req *gamingpb.UpdateGameServerClusterRequest, opts ...gax.CallOption) (*UpdateGameServerClusterOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "game_server_cluster.name", url.QueryEscape(req.GetGameServerCluster().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -675,11 +658,6 @@ func (c *gameServerClustersGRPCClient) UpdateGameServerCluster(ctx context.Conte
 }
 
 func (c *gameServerClustersGRPCClient) PreviewUpdateGameServerCluster(ctx context.Context, req *gamingpb.PreviewUpdateGameServerClusterRequest, opts ...gax.CallOption) (*gamingpb.PreviewUpdateGameServerClusterResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "game_server_cluster.name", url.QueryEscape(req.GetGameServerCluster().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)

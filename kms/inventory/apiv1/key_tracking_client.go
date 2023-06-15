@@ -61,15 +61,23 @@ func defaultKeyTrackingGRPCClientOptions() []option.ClientOption {
 
 func defaultKeyTrackingCallOptions() *KeyTrackingCallOptions {
 	return &KeyTrackingCallOptions{
-		GetProtectedResourcesSummary: []gax.CallOption{},
-		SearchProtectedResources:     []gax.CallOption{},
+		GetProtectedResourcesSummary: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		SearchProtectedResources: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 	}
 }
 
 func defaultKeyTrackingRESTCallOptions() *KeyTrackingCallOptions {
 	return &KeyTrackingCallOptions{
-		GetProtectedResourcesSummary: []gax.CallOption{},
-		SearchProtectedResources:     []gax.CallOption{},
+		GetProtectedResourcesSummary: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		SearchProtectedResources: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 	}
 }
 
@@ -140,9 +148,6 @@ type keyTrackingGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing KeyTrackingClient
 	CallOptions **KeyTrackingCallOptions
 
@@ -168,11 +173,6 @@ func NewKeyTrackingClient(ctx context.Context, opts ...option.ClientOption) (*Ke
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -181,7 +181,6 @@ func NewKeyTrackingClient(ctx context.Context, opts ...option.ClientOption) (*Ke
 
 	c := &keyTrackingGRPCClient{
 		connPool:          connPool,
-		disableDeadlines:  disableDeadlines,
 		keyTrackingClient: inventorypb.NewKeyTrackingServiceClient(connPool),
 		CallOptions:       &client.CallOptions,
 	}
@@ -285,11 +284,6 @@ func (c *keyTrackingRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 func (c *keyTrackingGRPCClient) GetProtectedResourcesSummary(ctx context.Context, req *inventorypb.GetProtectedResourcesSummaryRequest, opts ...gax.CallOption) (*inventorypb.ProtectedResourcesSummary, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)

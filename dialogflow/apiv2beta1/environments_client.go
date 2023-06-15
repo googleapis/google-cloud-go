@@ -75,6 +75,7 @@ func defaultEnvironmentsGRPCClientOptions() []option.ClientOption {
 func defaultEnvironmentsCallOptions() *EnvironmentsCallOptions {
 	return &EnvironmentsCallOptions{
 		ListEnvironments: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -86,6 +87,7 @@ func defaultEnvironmentsCallOptions() *EnvironmentsCallOptions {
 			}),
 		},
 		GetEnvironment: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -97,6 +99,7 @@ func defaultEnvironmentsCallOptions() *EnvironmentsCallOptions {
 			}),
 		},
 		CreateEnvironment: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -108,6 +111,7 @@ func defaultEnvironmentsCallOptions() *EnvironmentsCallOptions {
 			}),
 		},
 		UpdateEnvironment: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -119,6 +123,7 @@ func defaultEnvironmentsCallOptions() *EnvironmentsCallOptions {
 			}),
 		},
 		DeleteEnvironment: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -130,6 +135,7 @@ func defaultEnvironmentsCallOptions() *EnvironmentsCallOptions {
 			}),
 		},
 		GetEnvironmentHistory: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -151,6 +157,7 @@ func defaultEnvironmentsCallOptions() *EnvironmentsCallOptions {
 func defaultEnvironmentsRESTCallOptions() *EnvironmentsCallOptions {
 	return &EnvironmentsCallOptions{
 		ListEnvironments: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -161,6 +168,7 @@ func defaultEnvironmentsRESTCallOptions() *EnvironmentsCallOptions {
 			}),
 		},
 		GetEnvironment: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -171,6 +179,7 @@ func defaultEnvironmentsRESTCallOptions() *EnvironmentsCallOptions {
 			}),
 		},
 		CreateEnvironment: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -181,6 +190,7 @@ func defaultEnvironmentsRESTCallOptions() *EnvironmentsCallOptions {
 			}),
 		},
 		UpdateEnvironment: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -191,6 +201,7 @@ func defaultEnvironmentsRESTCallOptions() *EnvironmentsCallOptions {
 			}),
 		},
 		DeleteEnvironment: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -201,6 +212,7 @@ func defaultEnvironmentsRESTCallOptions() *EnvironmentsCallOptions {
 			}),
 		},
 		GetEnvironmentHistory: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -345,9 +357,6 @@ type environmentsGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing EnvironmentsClient
 	CallOptions **EnvironmentsCallOptions
 
@@ -377,11 +386,6 @@ func NewEnvironmentsClient(ctx context.Context, opts ...option.ClientOption) (*E
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -390,7 +394,6 @@ func NewEnvironmentsClient(ctx context.Context, opts ...option.ClientOption) (*E
 
 	c := &environmentsGRPCClient{
 		connPool:           connPool,
-		disableDeadlines:   disableDeadlines,
 		environmentsClient: dialogflowpb.NewEnvironmentsClient(connPool),
 		CallOptions:        &client.CallOptions,
 		operationsClient:   longrunningpb.NewOperationsClient(connPool),
@@ -541,11 +544,6 @@ func (c *environmentsGRPCClient) ListEnvironments(ctx context.Context, req *dial
 }
 
 func (c *environmentsGRPCClient) GetEnvironment(ctx context.Context, req *dialogflowpb.GetEnvironmentRequest, opts ...gax.CallOption) (*dialogflowpb.Environment, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -563,11 +561,6 @@ func (c *environmentsGRPCClient) GetEnvironment(ctx context.Context, req *dialog
 }
 
 func (c *environmentsGRPCClient) CreateEnvironment(ctx context.Context, req *dialogflowpb.CreateEnvironmentRequest, opts ...gax.CallOption) (*dialogflowpb.Environment, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -585,11 +578,6 @@ func (c *environmentsGRPCClient) CreateEnvironment(ctx context.Context, req *dia
 }
 
 func (c *environmentsGRPCClient) UpdateEnvironment(ctx context.Context, req *dialogflowpb.UpdateEnvironmentRequest, opts ...gax.CallOption) (*dialogflowpb.Environment, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "environment.name", url.QueryEscape(req.GetEnvironment().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -607,11 +595,6 @@ func (c *environmentsGRPCClient) UpdateEnvironment(ctx context.Context, req *dia
 }
 
 func (c *environmentsGRPCClient) DeleteEnvironment(ctx context.Context, req *dialogflowpb.DeleteEnvironmentRequest, opts ...gax.CallOption) error {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)

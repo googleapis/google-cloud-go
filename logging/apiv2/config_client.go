@@ -107,6 +107,7 @@ func defaultConfigCallOptions() *ConfigCallOptions {
 		UpdateView:        []gax.CallOption{},
 		DeleteView:        []gax.CallOption{},
 		ListSinks: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -120,6 +121,7 @@ func defaultConfigCallOptions() *ConfigCallOptions {
 			}),
 		},
 		GetSink: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -132,8 +134,11 @@ func defaultConfigCallOptions() *ConfigCallOptions {
 				})
 			}),
 		},
-		CreateSink: []gax.CallOption{},
+		CreateSink: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
+		},
 		UpdateSink: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -147,6 +152,7 @@ func defaultConfigCallOptions() *ConfigCallOptions {
 			}),
 		},
 		DeleteSink: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -164,6 +170,7 @@ func defaultConfigCallOptions() *ConfigCallOptions {
 		ListLinks:  []gax.CallOption{},
 		GetLink:    []gax.CallOption{},
 		ListExclusions: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -177,6 +184,7 @@ func defaultConfigCallOptions() *ConfigCallOptions {
 			}),
 		},
 		GetExclusion: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -189,9 +197,14 @@ func defaultConfigCallOptions() *ConfigCallOptions {
 				})
 			}),
 		},
-		CreateExclusion: []gax.CallOption{},
-		UpdateExclusion: []gax.CallOption{},
+		CreateExclusion: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
+		},
+		UpdateExclusion: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
+		},
 		DeleteExclusion: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -601,9 +614,6 @@ type configGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing ConfigClient
 	CallOptions **ConfigCallOptions
 
@@ -635,11 +645,6 @@ func NewConfigClient(ctx context.Context, opts ...option.ClientOption) (*ConfigC
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -648,7 +653,6 @@ func NewConfigClient(ctx context.Context, opts ...option.ClientOption) (*ConfigC
 
 	c := &configGRPCClient{
 		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
 		configClient:     loggingpb.NewConfigServiceV2Client(connPool),
 		CallOptions:      &client.CallOptions,
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
@@ -1009,11 +1013,6 @@ func (c *configGRPCClient) ListSinks(ctx context.Context, req *loggingpb.ListSin
 }
 
 func (c *configGRPCClient) GetSink(ctx context.Context, req *loggingpb.GetSinkRequest, opts ...gax.CallOption) (*loggingpb.LogSink, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "sink_name", url.QueryEscape(req.GetSinkName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1031,11 +1030,6 @@ func (c *configGRPCClient) GetSink(ctx context.Context, req *loggingpb.GetSinkRe
 }
 
 func (c *configGRPCClient) CreateSink(ctx context.Context, req *loggingpb.CreateSinkRequest, opts ...gax.CallOption) (*loggingpb.LogSink, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 120000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1053,11 +1047,6 @@ func (c *configGRPCClient) CreateSink(ctx context.Context, req *loggingpb.Create
 }
 
 func (c *configGRPCClient) UpdateSink(ctx context.Context, req *loggingpb.UpdateSinkRequest, opts ...gax.CallOption) (*loggingpb.LogSink, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "sink_name", url.QueryEscape(req.GetSinkName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1075,11 +1064,6 @@ func (c *configGRPCClient) UpdateSink(ctx context.Context, req *loggingpb.Update
 }
 
 func (c *configGRPCClient) DeleteSink(ctx context.Context, req *loggingpb.DeleteSinkRequest, opts ...gax.CallOption) error {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "sink_name", url.QueryEscape(req.GetSinkName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1238,11 +1222,6 @@ func (c *configGRPCClient) ListExclusions(ctx context.Context, req *loggingpb.Li
 }
 
 func (c *configGRPCClient) GetExclusion(ctx context.Context, req *loggingpb.GetExclusionRequest, opts ...gax.CallOption) (*loggingpb.LogExclusion, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1260,11 +1239,6 @@ func (c *configGRPCClient) GetExclusion(ctx context.Context, req *loggingpb.GetE
 }
 
 func (c *configGRPCClient) CreateExclusion(ctx context.Context, req *loggingpb.CreateExclusionRequest, opts ...gax.CallOption) (*loggingpb.LogExclusion, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 120000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1282,11 +1256,6 @@ func (c *configGRPCClient) CreateExclusion(ctx context.Context, req *loggingpb.C
 }
 
 func (c *configGRPCClient) UpdateExclusion(ctx context.Context, req *loggingpb.UpdateExclusionRequest, opts ...gax.CallOption) (*loggingpb.LogExclusion, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 120000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1304,11 +1273,6 @@ func (c *configGRPCClient) UpdateExclusion(ctx context.Context, req *loggingpb.U
 }
 
 func (c *configGRPCClient) DeleteExclusion(ctx context.Context, req *loggingpb.DeleteExclusionRequest, opts ...gax.CallOption) error {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)

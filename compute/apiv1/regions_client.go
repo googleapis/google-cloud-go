@@ -49,6 +49,7 @@ type RegionsCallOptions struct {
 func defaultRegionsRESTCallOptions() *RegionsCallOptions {
 	return &RegionsCallOptions{
 		Get: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -60,6 +61,7 @@ func defaultRegionsRESTCallOptions() *RegionsCallOptions {
 			}),
 		},
 		List: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,

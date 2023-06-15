@@ -75,6 +75,7 @@ func defaultSecurityCenterSettingsGRPCClientOptions() []option.ClientOption {
 func defaultSecurityCenterSettingsCallOptions() *SecurityCenterSettingsCallOptions {
 	return &SecurityCenterSettingsCallOptions{
 		GetServiceAccount: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -87,6 +88,7 @@ func defaultSecurityCenterSettingsCallOptions() *SecurityCenterSettingsCallOptio
 			}),
 		},
 		GetSettings: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -99,6 +101,7 @@ func defaultSecurityCenterSettingsCallOptions() *SecurityCenterSettingsCallOptio
 			}),
 		},
 		UpdateSettings: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -111,6 +114,7 @@ func defaultSecurityCenterSettingsCallOptions() *SecurityCenterSettingsCallOptio
 			}),
 		},
 		ResetSettings: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -123,6 +127,7 @@ func defaultSecurityCenterSettingsCallOptions() *SecurityCenterSettingsCallOptio
 			}),
 		},
 		BatchGetSettings: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -135,6 +140,7 @@ func defaultSecurityCenterSettingsCallOptions() *SecurityCenterSettingsCallOptio
 			}),
 		},
 		CalculateEffectiveSettings: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -147,6 +153,7 @@ func defaultSecurityCenterSettingsCallOptions() *SecurityCenterSettingsCallOptio
 			}),
 		},
 		BatchCalculateEffectiveSettings: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -159,6 +166,7 @@ func defaultSecurityCenterSettingsCallOptions() *SecurityCenterSettingsCallOptio
 			}),
 		},
 		GetComponentSettings: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -171,6 +179,7 @@ func defaultSecurityCenterSettingsCallOptions() *SecurityCenterSettingsCallOptio
 			}),
 		},
 		UpdateComponentSettings: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -183,6 +192,7 @@ func defaultSecurityCenterSettingsCallOptions() *SecurityCenterSettingsCallOptio
 			}),
 		},
 		ResetComponentSettings: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -195,6 +205,7 @@ func defaultSecurityCenterSettingsCallOptions() *SecurityCenterSettingsCallOptio
 			}),
 		},
 		CalculateEffectiveComponentSettings: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -207,6 +218,7 @@ func defaultSecurityCenterSettingsCallOptions() *SecurityCenterSettingsCallOptio
 			}),
 		},
 		ListDetectors: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -219,6 +231,7 @@ func defaultSecurityCenterSettingsCallOptions() *SecurityCenterSettingsCallOptio
 			}),
 		},
 		ListComponents: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -236,6 +249,7 @@ func defaultSecurityCenterSettingsCallOptions() *SecurityCenterSettingsCallOptio
 func defaultSecurityCenterSettingsRESTCallOptions() *SecurityCenterSettingsCallOptions {
 	return &SecurityCenterSettingsCallOptions{
 		GetServiceAccount: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -247,6 +261,7 @@ func defaultSecurityCenterSettingsRESTCallOptions() *SecurityCenterSettingsCallO
 			}),
 		},
 		GetSettings: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -258,6 +273,7 @@ func defaultSecurityCenterSettingsRESTCallOptions() *SecurityCenterSettingsCallO
 			}),
 		},
 		UpdateSettings: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -269,6 +285,7 @@ func defaultSecurityCenterSettingsRESTCallOptions() *SecurityCenterSettingsCallO
 			}),
 		},
 		ResetSettings: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -280,6 +297,7 @@ func defaultSecurityCenterSettingsRESTCallOptions() *SecurityCenterSettingsCallO
 			}),
 		},
 		BatchGetSettings: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -291,6 +309,7 @@ func defaultSecurityCenterSettingsRESTCallOptions() *SecurityCenterSettingsCallO
 			}),
 		},
 		CalculateEffectiveSettings: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -302,6 +321,7 @@ func defaultSecurityCenterSettingsRESTCallOptions() *SecurityCenterSettingsCallO
 			}),
 		},
 		BatchCalculateEffectiveSettings: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -313,6 +333,7 @@ func defaultSecurityCenterSettingsRESTCallOptions() *SecurityCenterSettingsCallO
 			}),
 		},
 		GetComponentSettings: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -324,6 +345,7 @@ func defaultSecurityCenterSettingsRESTCallOptions() *SecurityCenterSettingsCallO
 			}),
 		},
 		UpdateComponentSettings: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -335,6 +357,7 @@ func defaultSecurityCenterSettingsRESTCallOptions() *SecurityCenterSettingsCallO
 			}),
 		},
 		ResetComponentSettings: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -346,6 +369,7 @@ func defaultSecurityCenterSettingsRESTCallOptions() *SecurityCenterSettingsCallO
 			}),
 		},
 		CalculateEffectiveComponentSettings: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -357,6 +381,7 @@ func defaultSecurityCenterSettingsRESTCallOptions() *SecurityCenterSettingsCallO
 			}),
 		},
 		ListDetectors: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -368,6 +393,7 @@ func defaultSecurityCenterSettingsRESTCallOptions() *SecurityCenterSettingsCallO
 			}),
 		},
 		ListComponents: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -546,9 +572,6 @@ type securityCenterSettingsGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing SecurityCenterSettingsClient
 	CallOptions **SecurityCenterSettingsCallOptions
 
@@ -576,11 +599,6 @@ func NewSecurityCenterSettingsClient(ctx context.Context, opts ...option.ClientO
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -589,7 +607,6 @@ func NewSecurityCenterSettingsClient(ctx context.Context, opts ...option.ClientO
 
 	c := &securityCenterSettingsGRPCClient{
 		connPool:                     connPool,
-		disableDeadlines:             disableDeadlines,
 		securityCenterSettingsClient: settingspb.NewSecurityCenterSettingsServiceClient(connPool),
 		CallOptions:                  &client.CallOptions,
 	}
@@ -695,11 +712,6 @@ func (c *securityCenterSettingsRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 func (c *securityCenterSettingsGRPCClient) GetServiceAccount(ctx context.Context, req *settingspb.GetServiceAccountRequest, opts ...gax.CallOption) (*settingspb.ServiceAccount, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -717,11 +729,6 @@ func (c *securityCenterSettingsGRPCClient) GetServiceAccount(ctx context.Context
 }
 
 func (c *securityCenterSettingsGRPCClient) GetSettings(ctx context.Context, req *settingspb.GetSettingsRequest, opts ...gax.CallOption) (*settingspb.Settings, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -739,11 +746,6 @@ func (c *securityCenterSettingsGRPCClient) GetSettings(ctx context.Context, req 
 }
 
 func (c *securityCenterSettingsGRPCClient) UpdateSettings(ctx context.Context, req *settingspb.UpdateSettingsRequest, opts ...gax.CallOption) (*settingspb.Settings, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "settings.name", url.QueryEscape(req.GetSettings().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -761,11 +763,6 @@ func (c *securityCenterSettingsGRPCClient) UpdateSettings(ctx context.Context, r
 }
 
 func (c *securityCenterSettingsGRPCClient) ResetSettings(ctx context.Context, req *settingspb.ResetSettingsRequest, opts ...gax.CallOption) error {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -779,11 +776,6 @@ func (c *securityCenterSettingsGRPCClient) ResetSettings(ctx context.Context, re
 }
 
 func (c *securityCenterSettingsGRPCClient) BatchGetSettings(ctx context.Context, req *settingspb.BatchGetSettingsRequest, opts ...gax.CallOption) (*settingspb.BatchGetSettingsResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -801,11 +793,6 @@ func (c *securityCenterSettingsGRPCClient) BatchGetSettings(ctx context.Context,
 }
 
 func (c *securityCenterSettingsGRPCClient) CalculateEffectiveSettings(ctx context.Context, req *settingspb.CalculateEffectiveSettingsRequest, opts ...gax.CallOption) (*settingspb.Settings, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -823,11 +810,6 @@ func (c *securityCenterSettingsGRPCClient) CalculateEffectiveSettings(ctx contex
 }
 
 func (c *securityCenterSettingsGRPCClient) BatchCalculateEffectiveSettings(ctx context.Context, req *settingspb.BatchCalculateEffectiveSettingsRequest, opts ...gax.CallOption) (*settingspb.BatchCalculateEffectiveSettingsResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -845,11 +827,6 @@ func (c *securityCenterSettingsGRPCClient) BatchCalculateEffectiveSettings(ctx c
 }
 
 func (c *securityCenterSettingsGRPCClient) GetComponentSettings(ctx context.Context, req *settingspb.GetComponentSettingsRequest, opts ...gax.CallOption) (*settingspb.ComponentSettings, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -867,11 +844,6 @@ func (c *securityCenterSettingsGRPCClient) GetComponentSettings(ctx context.Cont
 }
 
 func (c *securityCenterSettingsGRPCClient) UpdateComponentSettings(ctx context.Context, req *settingspb.UpdateComponentSettingsRequest, opts ...gax.CallOption) (*settingspb.ComponentSettings, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "component_settings.name", url.QueryEscape(req.GetComponentSettings().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -889,11 +861,6 @@ func (c *securityCenterSettingsGRPCClient) UpdateComponentSettings(ctx context.C
 }
 
 func (c *securityCenterSettingsGRPCClient) ResetComponentSettings(ctx context.Context, req *settingspb.ResetComponentSettingsRequest, opts ...gax.CallOption) error {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -907,11 +874,6 @@ func (c *securityCenterSettingsGRPCClient) ResetComponentSettings(ctx context.Co
 }
 
 func (c *securityCenterSettingsGRPCClient) CalculateEffectiveComponentSettings(ctx context.Context, req *settingspb.CalculateEffectiveComponentSettingsRequest, opts ...gax.CallOption) (*settingspb.ComponentSettings, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)

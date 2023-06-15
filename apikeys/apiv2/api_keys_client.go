@@ -73,28 +73,60 @@ func defaultGRPCClientOptions() []option.ClientOption {
 
 func defaultCallOptions() *CallOptions {
 	return &CallOptions{
-		CreateKey:    []gax.CallOption{},
-		ListKeys:     []gax.CallOption{},
-		GetKey:       []gax.CallOption{},
-		GetKeyString: []gax.CallOption{},
-		UpdateKey:    []gax.CallOption{},
-		DeleteKey:    []gax.CallOption{},
-		UndeleteKey:  []gax.CallOption{},
-		LookupKey:    []gax.CallOption{},
+		CreateKey: []gax.CallOption{
+			gax.WithTimeout(10000 * time.Millisecond),
+		},
+		ListKeys: []gax.CallOption{
+			gax.WithTimeout(10000 * time.Millisecond),
+		},
+		GetKey: []gax.CallOption{
+			gax.WithTimeout(10000 * time.Millisecond),
+		},
+		GetKeyString: []gax.CallOption{
+			gax.WithTimeout(10000 * time.Millisecond),
+		},
+		UpdateKey: []gax.CallOption{
+			gax.WithTimeout(10000 * time.Millisecond),
+		},
+		DeleteKey: []gax.CallOption{
+			gax.WithTimeout(10000 * time.Millisecond),
+		},
+		UndeleteKey: []gax.CallOption{
+			gax.WithTimeout(10000 * time.Millisecond),
+		},
+		LookupKey: []gax.CallOption{
+			gax.WithTimeout(10000 * time.Millisecond),
+		},
 		GetOperation: []gax.CallOption{},
 	}
 }
 
 func defaultRESTCallOptions() *CallOptions {
 	return &CallOptions{
-		CreateKey:    []gax.CallOption{},
-		ListKeys:     []gax.CallOption{},
-		GetKey:       []gax.CallOption{},
-		GetKeyString: []gax.CallOption{},
-		UpdateKey:    []gax.CallOption{},
-		DeleteKey:    []gax.CallOption{},
-		UndeleteKey:  []gax.CallOption{},
-		LookupKey:    []gax.CallOption{},
+		CreateKey: []gax.CallOption{
+			gax.WithTimeout(10000 * time.Millisecond),
+		},
+		ListKeys: []gax.CallOption{
+			gax.WithTimeout(10000 * time.Millisecond),
+		},
+		GetKey: []gax.CallOption{
+			gax.WithTimeout(10000 * time.Millisecond),
+		},
+		GetKeyString: []gax.CallOption{
+			gax.WithTimeout(10000 * time.Millisecond),
+		},
+		UpdateKey: []gax.CallOption{
+			gax.WithTimeout(10000 * time.Millisecond),
+		},
+		DeleteKey: []gax.CallOption{
+			gax.WithTimeout(10000 * time.Millisecond),
+		},
+		UndeleteKey: []gax.CallOption{
+			gax.WithTimeout(10000 * time.Millisecond),
+		},
+		LookupKey: []gax.CallOption{
+			gax.WithTimeout(10000 * time.Millisecond),
+		},
 		GetOperation: []gax.CallOption{},
 	}
 }
@@ -264,9 +296,6 @@ type gRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing Client
 	CallOptions **CallOptions
 
@@ -298,11 +327,6 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -311,7 +335,6 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 
 	c := &gRPCClient{
 		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
 		client:           apikeyspb.NewApiKeysClient(connPool),
 		CallOptions:      &client.CallOptions,
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
@@ -441,11 +464,6 @@ func (c *restClient) Connection() *grpc.ClientConn {
 	return nil
 }
 func (c *gRPCClient) CreateKey(ctx context.Context, req *apikeyspb.CreateKeyRequest, opts ...gax.CallOption) (*CreateKeyOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 10000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -510,11 +528,6 @@ func (c *gRPCClient) ListKeys(ctx context.Context, req *apikeyspb.ListKeysReques
 }
 
 func (c *gRPCClient) GetKey(ctx context.Context, req *apikeyspb.GetKeyRequest, opts ...gax.CallOption) (*apikeyspb.Key, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 10000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -532,11 +545,6 @@ func (c *gRPCClient) GetKey(ctx context.Context, req *apikeyspb.GetKeyRequest, o
 }
 
 func (c *gRPCClient) GetKeyString(ctx context.Context, req *apikeyspb.GetKeyStringRequest, opts ...gax.CallOption) (*apikeyspb.GetKeyStringResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 10000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -554,11 +562,6 @@ func (c *gRPCClient) GetKeyString(ctx context.Context, req *apikeyspb.GetKeyStri
 }
 
 func (c *gRPCClient) UpdateKey(ctx context.Context, req *apikeyspb.UpdateKeyRequest, opts ...gax.CallOption) (*UpdateKeyOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 10000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "key.name", url.QueryEscape(req.GetKey().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -578,11 +581,6 @@ func (c *gRPCClient) UpdateKey(ctx context.Context, req *apikeyspb.UpdateKeyRequ
 }
 
 func (c *gRPCClient) DeleteKey(ctx context.Context, req *apikeyspb.DeleteKeyRequest, opts ...gax.CallOption) (*DeleteKeyOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 10000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -602,11 +600,6 @@ func (c *gRPCClient) DeleteKey(ctx context.Context, req *apikeyspb.DeleteKeyRequ
 }
 
 func (c *gRPCClient) UndeleteKey(ctx context.Context, req *apikeyspb.UndeleteKeyRequest, opts ...gax.CallOption) (*UndeleteKeyOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 10000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -626,11 +619,6 @@ func (c *gRPCClient) UndeleteKey(ctx context.Context, req *apikeyspb.UndeleteKey
 }
 
 func (c *gRPCClient) LookupKey(ctx context.Context, req *apikeyspb.LookupKeyRequest, opts ...gax.CallOption) (*apikeyspb.LookupKeyResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 10000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
 	opts = append((*c.CallOptions).LookupKey[0:len((*c.CallOptions).LookupKey):len((*c.CallOptions).LookupKey)], opts...)
 	var resp *apikeyspb.LookupKeyResponse

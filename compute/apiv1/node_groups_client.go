@@ -62,8 +62,11 @@ type NodeGroupsCallOptions struct {
 
 func defaultNodeGroupsRESTCallOptions() *NodeGroupsCallOptions {
 	return &NodeGroupsCallOptions{
-		AddNodes: []gax.CallOption{},
+		AddNodes: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
 		AggregatedList: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -74,9 +77,14 @@ func defaultNodeGroupsRESTCallOptions() *NodeGroupsCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
-		Delete:      []gax.CallOption{},
-		DeleteNodes: []gax.CallOption{},
+		Delete: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		DeleteNodes: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
 		Get: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -88,6 +96,7 @@ func defaultNodeGroupsRESTCallOptions() *NodeGroupsCallOptions {
 			}),
 		},
 		GetIamPolicy: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -98,8 +107,11 @@ func defaultNodeGroupsRESTCallOptions() *NodeGroupsCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
-		Insert: []gax.CallOption{},
+		Insert: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
 		List: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -110,12 +122,24 @@ func defaultNodeGroupsRESTCallOptions() *NodeGroupsCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
-		ListNodes:                []gax.CallOption{},
-		Patch:                    []gax.CallOption{},
-		SetIamPolicy:             []gax.CallOption{},
-		SetNodeTemplate:          []gax.CallOption{},
-		SimulateMaintenanceEvent: []gax.CallOption{},
-		TestIamPermissions:       []gax.CallOption{},
+		ListNodes: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		Patch: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		SetIamPolicy: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		SetNodeTemplate: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		SimulateMaintenanceEvent: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		TestIamPermissions: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
 	}
 }
 

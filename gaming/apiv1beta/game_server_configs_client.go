@@ -69,6 +69,7 @@ func defaultGameServerConfigsGRPCClientOptions() []option.ClientOption {
 func defaultGameServerConfigsCallOptions() *GameServerConfigsCallOptions {
 	return &GameServerConfigsCallOptions{
 		ListGameServerConfigs: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -80,6 +81,7 @@ func defaultGameServerConfigsCallOptions() *GameServerConfigsCallOptions {
 			}),
 		},
 		GetGameServerConfig: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -90,14 +92,19 @@ func defaultGameServerConfigsCallOptions() *GameServerConfigsCallOptions {
 				})
 			}),
 		},
-		CreateGameServerConfig: []gax.CallOption{},
-		DeleteGameServerConfig: []gax.CallOption{},
+		CreateGameServerConfig: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteGameServerConfig: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 	}
 }
 
 func defaultGameServerConfigsRESTCallOptions() *GameServerConfigsCallOptions {
 	return &GameServerConfigsCallOptions{
 		ListGameServerConfigs: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -108,6 +115,7 @@ func defaultGameServerConfigsRESTCallOptions() *GameServerConfigsCallOptions {
 			}),
 		},
 		GetGameServerConfig: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -117,8 +125,12 @@ func defaultGameServerConfigsRESTCallOptions() *GameServerConfigsCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
-		CreateGameServerConfig: []gax.CallOption{},
-		DeleteGameServerConfig: []gax.CallOption{},
+		CreateGameServerConfig: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteGameServerConfig: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 	}
 }
 
@@ -218,9 +230,6 @@ type gameServerConfigsGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing GameServerConfigsClient
 	CallOptions **GameServerConfigsCallOptions
 
@@ -250,11 +259,6 @@ func NewGameServerConfigsClient(ctx context.Context, opts ...option.ClientOption
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -263,7 +267,6 @@ func NewGameServerConfigsClient(ctx context.Context, opts ...option.ClientOption
 
 	c := &gameServerConfigsGRPCClient{
 		connPool:                connPool,
-		disableDeadlines:        disableDeadlines,
 		gameServerConfigsClient: gamingpb.NewGameServerConfigsServiceClient(connPool),
 		CallOptions:             &client.CallOptions,
 	}
@@ -437,11 +440,6 @@ func (c *gameServerConfigsGRPCClient) ListGameServerConfigs(ctx context.Context,
 }
 
 func (c *gameServerConfigsGRPCClient) GetGameServerConfig(ctx context.Context, req *gamingpb.GetGameServerConfigRequest, opts ...gax.CallOption) (*gamingpb.GameServerConfig, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -459,11 +457,6 @@ func (c *gameServerConfigsGRPCClient) GetGameServerConfig(ctx context.Context, r
 }
 
 func (c *gameServerConfigsGRPCClient) CreateGameServerConfig(ctx context.Context, req *gamingpb.CreateGameServerConfigRequest, opts ...gax.CallOption) (*CreateGameServerConfigOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -483,11 +476,6 @@ func (c *gameServerConfigsGRPCClient) CreateGameServerConfig(ctx context.Context
 }
 
 func (c *gameServerConfigsGRPCClient) DeleteGameServerConfig(ctx context.Context, req *gamingpb.DeleteGameServerConfigRequest, opts ...gax.CallOption) (*DeleteGameServerConfigOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)

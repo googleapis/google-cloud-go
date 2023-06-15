@@ -23,6 +23,7 @@ import (
 	"math"
 	"net/http"
 	"net/url"
+	"time"
 
 	billingpb "cloud.google.com/go/billing/apiv1/billingpb"
 	gax "github.com/googleapis/gax-go/v2"
@@ -60,15 +61,23 @@ func defaultCloudCatalogGRPCClientOptions() []option.ClientOption {
 
 func defaultCloudCatalogCallOptions() *CloudCatalogCallOptions {
 	return &CloudCatalogCallOptions{
-		ListServices: []gax.CallOption{},
-		ListSkus:     []gax.CallOption{},
+		ListServices: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ListSkus: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 	}
 }
 
 func defaultCloudCatalogRESTCallOptions() *CloudCatalogCallOptions {
 	return &CloudCatalogCallOptions{
-		ListServices: []gax.CallOption{},
-		ListSkus:     []gax.CallOption{},
+		ListServices: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ListSkus: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 	}
 }
 
@@ -135,9 +144,6 @@ type cloudCatalogGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing CloudCatalogClient
 	CallOptions **CloudCatalogCallOptions
 
@@ -164,11 +170,6 @@ func NewCloudCatalogClient(ctx context.Context, opts ...option.ClientOption) (*C
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -177,7 +178,6 @@ func NewCloudCatalogClient(ctx context.Context, opts ...option.ClientOption) (*C
 
 	c := &cloudCatalogGRPCClient{
 		connPool:           connPool,
-		disableDeadlines:   disableDeadlines,
 		cloudCatalogClient: billingpb.NewCloudCatalogClient(connPool),
 		CallOptions:        &client.CallOptions,
 	}

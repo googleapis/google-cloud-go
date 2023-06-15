@@ -599,6 +599,9 @@ type ExistenceFilter struct {
 	//
 	// If different from the count of documents in the client that match, the
 	// client must manually determine which documents no longer match the target.
+	//
+	// The client can use the `unchanged_names` bloom filter to assist with
+	// this determination.
 	Count int32 `protobuf:"varint,2,opt,name=count,proto3" json:"count,omitempty"`
 	// A bloom filter that contains the UTF-8 byte encodings of the resource names
 	// of the documents that match

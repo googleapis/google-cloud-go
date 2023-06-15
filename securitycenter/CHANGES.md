@@ -1,5 +1,12 @@
 # Changes
 
+## [1.22.0](https://github.com/googleapis/google-cloud-go/compare/securitycenter/v1.21.0...securitycenter/v1.22.0) (2023-06-13)
+
+
+### Features
+
+* **securitycenter:** Add user agent and DLP parent type fields to finding's list of attributes ([3abdfa1](https://github.com/googleapis/google-cloud-go/commit/3abdfa14dd56cf773c477f289a7f888e20bbbd9a))
+
 ## [1.21.0](https://github.com/googleapis/google-cloud-go/compare/securitycenter/v1.20.1...securitycenter/v1.21.0) (2023-05-30)
 
 

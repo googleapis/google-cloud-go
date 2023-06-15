@@ -74,9 +74,14 @@ func defaultTranslationGRPCClientOptions() []option.ClientOption {
 
 func defaultTranslationCallOptions() *TranslationCallOptions {
 	return &TranslationCallOptions{
-		TranslateText:  []gax.CallOption{},
-		DetectLanguage: []gax.CallOption{},
+		TranslateText: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		DetectLanguage: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
 		GetSupportedLanguages: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -88,11 +93,20 @@ func defaultTranslationCallOptions() *TranslationCallOptions {
 				})
 			}),
 		},
-		TranslateDocument:      []gax.CallOption{},
-		BatchTranslateText:     []gax.CallOption{},
-		BatchTranslateDocument: []gax.CallOption{},
-		CreateGlossary:         []gax.CallOption{},
+		TranslateDocument: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		BatchTranslateText: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		BatchTranslateDocument: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		CreateGlossary: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
 		ListGlossaries: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -105,6 +119,7 @@ func defaultTranslationCallOptions() *TranslationCallOptions {
 			}),
 		},
 		GetGlossary: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -117,6 +132,7 @@ func defaultTranslationCallOptions() *TranslationCallOptions {
 			}),
 		},
 		DeleteGlossary: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -133,9 +149,14 @@ func defaultTranslationCallOptions() *TranslationCallOptions {
 
 func defaultTranslationRESTCallOptions() *TranslationCallOptions {
 	return &TranslationCallOptions{
-		TranslateText:  []gax.CallOption{},
-		DetectLanguage: []gax.CallOption{},
+		TranslateText: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		DetectLanguage: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
 		GetSupportedLanguages: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -146,11 +167,20 @@ func defaultTranslationRESTCallOptions() *TranslationCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
-		TranslateDocument:      []gax.CallOption{},
-		BatchTranslateText:     []gax.CallOption{},
-		BatchTranslateDocument: []gax.CallOption{},
-		CreateGlossary:         []gax.CallOption{},
+		TranslateDocument: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		BatchTranslateText: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		BatchTranslateDocument: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		CreateGlossary: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
 		ListGlossaries: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -162,6 +192,7 @@ func defaultTranslationRESTCallOptions() *TranslationCallOptions {
 			}),
 		},
 		GetGlossary: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -173,6 +204,7 @@ func defaultTranslationRESTCallOptions() *TranslationCallOptions {
 			}),
 		},
 		DeleteGlossary: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -345,9 +377,6 @@ type translationGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing TranslationClient
 	CallOptions **TranslationCallOptions
 
@@ -377,11 +406,6 @@ func NewTranslationClient(ctx context.Context, opts ...option.ClientOption) (*Tr
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -390,7 +414,6 @@ func NewTranslationClient(ctx context.Context, opts ...option.ClientOption) (*Tr
 
 	c := &translationGRPCClient{
 		connPool:          connPool,
-		disableDeadlines:  disableDeadlines,
 		translationClient: translatepb.NewTranslationServiceClient(connPool),
 		CallOptions:       &client.CallOptions,
 	}
@@ -519,11 +542,6 @@ func (c *translationRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 func (c *translationGRPCClient) TranslateText(ctx context.Context, req *translatepb.TranslateTextRequest, opts ...gax.CallOption) (*translatepb.TranslateTextResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -541,11 +559,6 @@ func (c *translationGRPCClient) TranslateText(ctx context.Context, req *translat
 }
 
 func (c *translationGRPCClient) DetectLanguage(ctx context.Context, req *translatepb.DetectLanguageRequest, opts ...gax.CallOption) (*translatepb.DetectLanguageResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -563,11 +576,6 @@ func (c *translationGRPCClient) DetectLanguage(ctx context.Context, req *transla
 }
 
 func (c *translationGRPCClient) GetSupportedLanguages(ctx context.Context, req *translatepb.GetSupportedLanguagesRequest, opts ...gax.CallOption) (*translatepb.SupportedLanguages, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -585,11 +593,6 @@ func (c *translationGRPCClient) GetSupportedLanguages(ctx context.Context, req *
 }
 
 func (c *translationGRPCClient) TranslateDocument(ctx context.Context, req *translatepb.TranslateDocumentRequest, opts ...gax.CallOption) (*translatepb.TranslateDocumentResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -607,11 +610,6 @@ func (c *translationGRPCClient) TranslateDocument(ctx context.Context, req *tran
 }
 
 func (c *translationGRPCClient) BatchTranslateText(ctx context.Context, req *translatepb.BatchTranslateTextRequest, opts ...gax.CallOption) (*BatchTranslateTextOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -631,11 +629,6 @@ func (c *translationGRPCClient) BatchTranslateText(ctx context.Context, req *tra
 }
 
 func (c *translationGRPCClient) BatchTranslateDocument(ctx context.Context, req *translatepb.BatchTranslateDocumentRequest, opts ...gax.CallOption) (*BatchTranslateDocumentOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -655,11 +648,6 @@ func (c *translationGRPCClient) BatchTranslateDocument(ctx context.Context, req 
 }
 
 func (c *translationGRPCClient) CreateGlossary(ctx context.Context, req *translatepb.CreateGlossaryRequest, opts ...gax.CallOption) (*CreateGlossaryOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -724,11 +712,6 @@ func (c *translationGRPCClient) ListGlossaries(ctx context.Context, req *transla
 }
 
 func (c *translationGRPCClient) GetGlossary(ctx context.Context, req *translatepb.GetGlossaryRequest, opts ...gax.CallOption) (*translatepb.Glossary, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -746,11 +729,6 @@ func (c *translationGRPCClient) GetGlossary(ctx context.Context, req *translatep
 }
 
 func (c *translationGRPCClient) DeleteGlossary(ctx context.Context, req *translatepb.DeleteGlossaryRequest, opts ...gax.CallOption) (*DeleteGlossaryOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)

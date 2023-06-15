@@ -70,7 +70,9 @@ func defaultWorkflowsServiceV2BetaGRPCClientOptions() []option.ClientOption {
 
 func defaultWorkflowsServiceV2BetaCallOptions() *WorkflowsServiceV2BetaCallOptions {
 	return &WorkflowsServiceV2BetaCallOptions{
-		RunPipeline:     []gax.CallOption{},
+		RunPipeline: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		GetLocation:     []gax.CallOption{},
 		ListLocations:   []gax.CallOption{},
 		CancelOperation: []gax.CallOption{},
@@ -81,7 +83,9 @@ func defaultWorkflowsServiceV2BetaCallOptions() *WorkflowsServiceV2BetaCallOptio
 
 func defaultWorkflowsServiceV2BetaRESTCallOptions() *WorkflowsServiceV2BetaCallOptions {
 	return &WorkflowsServiceV2BetaCallOptions{
-		RunPipeline:     []gax.CallOption{},
+		RunPipeline: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		GetLocation:     []gax.CallOption{},
 		ListLocations:   []gax.CallOption{},
 		CancelOperation: []gax.CallOption{},
@@ -224,9 +228,6 @@ type workflowsServiceV2BetaGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing WorkflowsServiceV2BetaClient
 	CallOptions **WorkflowsServiceV2BetaCallOptions
 
@@ -261,11 +262,6 @@ func NewWorkflowsServiceV2BetaClient(ctx context.Context, opts ...option.ClientO
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -274,7 +270,6 @@ func NewWorkflowsServiceV2BetaClient(ctx context.Context, opts ...option.ClientO
 
 	c := &workflowsServiceV2BetaGRPCClient{
 		connPool:                     connPool,
-		disableDeadlines:             disableDeadlines,
 		workflowsServiceV2BetaClient: lifesciencespb.NewWorkflowsServiceV2BetaClient(connPool),
 		CallOptions:                  &client.CallOptions,
 		operationsClient:             longrunningpb.NewOperationsClient(connPool),
@@ -406,11 +401,6 @@ func (c *workflowsServiceV2BetaRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 func (c *workflowsServiceV2BetaGRPCClient) RunPipeline(ctx context.Context, req *lifesciencespb.RunPipelineRequest, opts ...gax.CallOption) (*RunPipelineOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)

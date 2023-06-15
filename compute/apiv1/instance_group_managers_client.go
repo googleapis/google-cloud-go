@@ -68,8 +68,11 @@ type InstanceGroupManagersCallOptions struct {
 
 func defaultInstanceGroupManagersRESTCallOptions() *InstanceGroupManagersCallOptions {
 	return &InstanceGroupManagersCallOptions{
-		AbandonInstances: []gax.CallOption{},
+		AbandonInstances: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
 		AggregatedList: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -80,12 +83,23 @@ func defaultInstanceGroupManagersRESTCallOptions() *InstanceGroupManagersCallOpt
 					http.StatusServiceUnavailable)
 			}),
 		},
-		ApplyUpdatesToInstances:  []gax.CallOption{},
-		CreateInstances:          []gax.CallOption{},
-		Delete:                   []gax.CallOption{},
-		DeleteInstances:          []gax.CallOption{},
-		DeletePerInstanceConfigs: []gax.CallOption{},
+		ApplyUpdatesToInstances: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		CreateInstances: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		Delete: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		DeleteInstances: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		DeletePerInstanceConfigs: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
 		Get: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -96,8 +110,11 @@ func defaultInstanceGroupManagersRESTCallOptions() *InstanceGroupManagersCallOpt
 					http.StatusServiceUnavailable)
 			}),
 		},
-		Insert: []gax.CallOption{},
+		Insert: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
 		List: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -109,6 +126,7 @@ func defaultInstanceGroupManagersRESTCallOptions() *InstanceGroupManagersCallOpt
 			}),
 		},
 		ListErrors: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -119,15 +137,33 @@ func defaultInstanceGroupManagersRESTCallOptions() *InstanceGroupManagersCallOpt
 					http.StatusServiceUnavailable)
 			}),
 		},
-		ListManagedInstances:     []gax.CallOption{},
-		ListPerInstanceConfigs:   []gax.CallOption{},
-		Patch:                    []gax.CallOption{},
-		PatchPerInstanceConfigs:  []gax.CallOption{},
-		RecreateInstances:        []gax.CallOption{},
-		Resize:                   []gax.CallOption{},
-		SetInstanceTemplate:      []gax.CallOption{},
-		SetTargetPools:           []gax.CallOption{},
-		UpdatePerInstanceConfigs: []gax.CallOption{},
+		ListManagedInstances: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		ListPerInstanceConfigs: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		Patch: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		PatchPerInstanceConfigs: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		RecreateInstances: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		Resize: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		SetInstanceTemplate: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		SetTargetPools: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		UpdatePerInstanceConfigs: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
 	}
 }
 

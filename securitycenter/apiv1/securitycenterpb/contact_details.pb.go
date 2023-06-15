@@ -35,7 +35,7 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-// The details pertaining to specific contacts
+// Details about specific contacts
 type ContactDetails struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache

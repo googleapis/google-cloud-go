@@ -84,6 +84,8 @@ type CloudChannelCallOptions struct {
 	CreateChannelPartnerRepricingConfig []gax.CallOption
 	UpdateChannelPartnerRepricingConfig []gax.CallOption
 	DeleteChannelPartnerRepricingConfig []gax.CallOption
+	ListSkuGroups                       []gax.CallOption
+	ListSkuGroupBillableSkus            []gax.CallOption
 	LookupOffer                         []gax.CallOption
 	ListProducts                        []gax.CallOption
 	ListSkus                            []gax.CallOption
@@ -115,6 +117,7 @@ func defaultCloudChannelGRPCClientOptions() []option.ClientOption {
 func defaultCloudChannelCallOptions() *CloudChannelCallOptions {
 	return &CloudChannelCallOptions{
 		ListCustomers: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -126,6 +129,7 @@ func defaultCloudChannelCallOptions() *CloudChannelCallOptions {
 			}),
 		},
 		GetCustomer: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -137,6 +141,7 @@ func defaultCloudChannelCallOptions() *CloudChannelCallOptions {
 			}),
 		},
 		CheckCloudIdentityAccountsExist: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -148,6 +153,7 @@ func defaultCloudChannelCallOptions() *CloudChannelCallOptions {
 			}),
 		},
 		CreateCustomer: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -159,6 +165,7 @@ func defaultCloudChannelCallOptions() *CloudChannelCallOptions {
 			}),
 		},
 		UpdateCustomer: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -170,6 +177,7 @@ func defaultCloudChannelCallOptions() *CloudChannelCallOptions {
 			}),
 		},
 		DeleteCustomer: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -181,6 +189,7 @@ func defaultCloudChannelCallOptions() *CloudChannelCallOptions {
 			}),
 		},
 		ImportCustomer: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -191,8 +200,11 @@ func defaultCloudChannelCallOptions() *CloudChannelCallOptions {
 				})
 			}),
 		},
-		ProvisionCloudIdentity: []gax.CallOption{},
+		ProvisionCloudIdentity: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		ListEntitlements: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -204,6 +216,7 @@ func defaultCloudChannelCallOptions() *CloudChannelCallOptions {
 			}),
 		},
 		ListTransferableSkus: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -215,6 +228,7 @@ func defaultCloudChannelCallOptions() *CloudChannelCallOptions {
 			}),
 		},
 		ListTransferableOffers: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -226,6 +240,7 @@ func defaultCloudChannelCallOptions() *CloudChannelCallOptions {
 			}),
 		},
 		GetEntitlement: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -236,17 +251,38 @@ func defaultCloudChannelCallOptions() *CloudChannelCallOptions {
 				})
 			}),
 		},
-		CreateEntitlement:            []gax.CallOption{},
-		ChangeParameters:             []gax.CallOption{},
-		ChangeRenewalSettings:        []gax.CallOption{},
-		ChangeOffer:                  []gax.CallOption{},
-		StartPaidService:             []gax.CallOption{},
-		SuspendEntitlement:           []gax.CallOption{},
-		CancelEntitlement:            []gax.CallOption{},
-		ActivateEntitlement:          []gax.CallOption{},
-		TransferEntitlements:         []gax.CallOption{},
-		TransferEntitlementsToGoogle: []gax.CallOption{},
+		CreateEntitlement: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ChangeParameters: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ChangeRenewalSettings: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ChangeOffer: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		StartPaidService: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		SuspendEntitlement: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		CancelEntitlement: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ActivateEntitlement: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		TransferEntitlements: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		TransferEntitlementsToGoogle: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		ListChannelPartnerLinks: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -258,6 +294,7 @@ func defaultCloudChannelCallOptions() *CloudChannelCallOptions {
 			}),
 		},
 		GetChannelPartnerLink: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -269,6 +306,7 @@ func defaultCloudChannelCallOptions() *CloudChannelCallOptions {
 			}),
 		},
 		CreateChannelPartnerLink: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -280,6 +318,7 @@ func defaultCloudChannelCallOptions() *CloudChannelCallOptions {
 			}),
 		},
 		UpdateChannelPartnerLink: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -291,6 +330,7 @@ func defaultCloudChannelCallOptions() *CloudChannelCallOptions {
 			}),
 		},
 		GetCustomerRepricingConfig: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -302,6 +342,7 @@ func defaultCloudChannelCallOptions() *CloudChannelCallOptions {
 			}),
 		},
 		ListCustomerRepricingConfigs: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -313,6 +354,7 @@ func defaultCloudChannelCallOptions() *CloudChannelCallOptions {
 			}),
 		},
 		CreateCustomerRepricingConfig: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -324,6 +366,7 @@ func defaultCloudChannelCallOptions() *CloudChannelCallOptions {
 			}),
 		},
 		UpdateCustomerRepricingConfig: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -335,6 +378,7 @@ func defaultCloudChannelCallOptions() *CloudChannelCallOptions {
 			}),
 		},
 		DeleteCustomerRepricingConfig: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -346,6 +390,7 @@ func defaultCloudChannelCallOptions() *CloudChannelCallOptions {
 			}),
 		},
 		GetChannelPartnerRepricingConfig: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -357,6 +402,7 @@ func defaultCloudChannelCallOptions() *CloudChannelCallOptions {
 			}),
 		},
 		ListChannelPartnerRepricingConfigs: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -368,6 +414,7 @@ func defaultCloudChannelCallOptions() *CloudChannelCallOptions {
 			}),
 		},
 		CreateChannelPartnerRepricingConfig: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -379,6 +426,7 @@ func defaultCloudChannelCallOptions() *CloudChannelCallOptions {
 			}),
 		},
 		UpdateChannelPartnerRepricingConfig: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -390,6 +438,31 @@ func defaultCloudChannelCallOptions() *CloudChannelCallOptions {
 			}),
 		},
 		DeleteChannelPartnerRepricingConfig: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		ListSkuGroups: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		ListSkuGroupBillableSkus: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -401,6 +474,7 @@ func defaultCloudChannelCallOptions() *CloudChannelCallOptions {
 			}),
 		},
 		LookupOffer: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -412,6 +486,7 @@ func defaultCloudChannelCallOptions() *CloudChannelCallOptions {
 			}),
 		},
 		ListProducts: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -423,6 +498,7 @@ func defaultCloudChannelCallOptions() *CloudChannelCallOptions {
 			}),
 		},
 		ListSkus: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -434,6 +510,7 @@ func defaultCloudChannelCallOptions() *CloudChannelCallOptions {
 			}),
 		},
 		ListOffers: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -445,6 +522,7 @@ func defaultCloudChannelCallOptions() *CloudChannelCallOptions {
 			}),
 		},
 		ListPurchasableSkus: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -456,6 +534,7 @@ func defaultCloudChannelCallOptions() *CloudChannelCallOptions {
 			}),
 		},
 		ListPurchasableOffers: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -467,6 +546,7 @@ func defaultCloudChannelCallOptions() *CloudChannelCallOptions {
 			}),
 		},
 		RegisterSubscriber: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -478,6 +558,7 @@ func defaultCloudChannelCallOptions() *CloudChannelCallOptions {
 			}),
 		},
 		UnregisterSubscriber: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -489,6 +570,7 @@ func defaultCloudChannelCallOptions() *CloudChannelCallOptions {
 			}),
 		},
 		ListSubscribers: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -500,6 +582,7 @@ func defaultCloudChannelCallOptions() *CloudChannelCallOptions {
 			}),
 		},
 		ListEntitlementChanges: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -520,6 +603,7 @@ func defaultCloudChannelCallOptions() *CloudChannelCallOptions {
 func defaultCloudChannelRESTCallOptions() *CloudChannelCallOptions {
 	return &CloudChannelCallOptions{
 		ListCustomers: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -530,6 +614,7 @@ func defaultCloudChannelRESTCallOptions() *CloudChannelCallOptions {
 			}),
 		},
 		GetCustomer: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -540,6 +625,7 @@ func defaultCloudChannelRESTCallOptions() *CloudChannelCallOptions {
 			}),
 		},
 		CheckCloudIdentityAccountsExist: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -550,6 +636,7 @@ func defaultCloudChannelRESTCallOptions() *CloudChannelCallOptions {
 			}),
 		},
 		CreateCustomer: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -560,6 +647,7 @@ func defaultCloudChannelRESTCallOptions() *CloudChannelCallOptions {
 			}),
 		},
 		UpdateCustomer: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -570,6 +658,7 @@ func defaultCloudChannelRESTCallOptions() *CloudChannelCallOptions {
 			}),
 		},
 		DeleteCustomer: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -580,6 +669,7 @@ func defaultCloudChannelRESTCallOptions() *CloudChannelCallOptions {
 			}),
 		},
 		ImportCustomer: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -589,8 +679,11 @@ func defaultCloudChannelRESTCallOptions() *CloudChannelCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
-		ProvisionCloudIdentity: []gax.CallOption{},
+		ProvisionCloudIdentity: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		ListEntitlements: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -601,6 +694,7 @@ func defaultCloudChannelRESTCallOptions() *CloudChannelCallOptions {
 			}),
 		},
 		ListTransferableSkus: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -611,6 +705,7 @@ func defaultCloudChannelRESTCallOptions() *CloudChannelCallOptions {
 			}),
 		},
 		ListTransferableOffers: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -621,6 +716,7 @@ func defaultCloudChannelRESTCallOptions() *CloudChannelCallOptions {
 			}),
 		},
 		GetEntitlement: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -630,17 +726,38 @@ func defaultCloudChannelRESTCallOptions() *CloudChannelCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
-		CreateEntitlement:            []gax.CallOption{},
-		ChangeParameters:             []gax.CallOption{},
-		ChangeRenewalSettings:        []gax.CallOption{},
-		ChangeOffer:                  []gax.CallOption{},
-		StartPaidService:             []gax.CallOption{},
-		SuspendEntitlement:           []gax.CallOption{},
-		CancelEntitlement:            []gax.CallOption{},
-		ActivateEntitlement:          []gax.CallOption{},
-		TransferEntitlements:         []gax.CallOption{},
-		TransferEntitlementsToGoogle: []gax.CallOption{},
+		CreateEntitlement: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ChangeParameters: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ChangeRenewalSettings: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ChangeOffer: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		StartPaidService: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		SuspendEntitlement: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		CancelEntitlement: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ActivateEntitlement: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		TransferEntitlements: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		TransferEntitlementsToGoogle: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		ListChannelPartnerLinks: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -651,6 +768,7 @@ func defaultCloudChannelRESTCallOptions() *CloudChannelCallOptions {
 			}),
 		},
 		GetChannelPartnerLink: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -661,6 +779,7 @@ func defaultCloudChannelRESTCallOptions() *CloudChannelCallOptions {
 			}),
 		},
 		CreateChannelPartnerLink: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -671,6 +790,7 @@ func defaultCloudChannelRESTCallOptions() *CloudChannelCallOptions {
 			}),
 		},
 		UpdateChannelPartnerLink: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -681,6 +801,7 @@ func defaultCloudChannelRESTCallOptions() *CloudChannelCallOptions {
 			}),
 		},
 		GetCustomerRepricingConfig: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -691,6 +812,7 @@ func defaultCloudChannelRESTCallOptions() *CloudChannelCallOptions {
 			}),
 		},
 		ListCustomerRepricingConfigs: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -701,6 +823,7 @@ func defaultCloudChannelRESTCallOptions() *CloudChannelCallOptions {
 			}),
 		},
 		CreateCustomerRepricingConfig: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -711,6 +834,7 @@ func defaultCloudChannelRESTCallOptions() *CloudChannelCallOptions {
 			}),
 		},
 		UpdateCustomerRepricingConfig: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -721,6 +845,7 @@ func defaultCloudChannelRESTCallOptions() *CloudChannelCallOptions {
 			}),
 		},
 		DeleteCustomerRepricingConfig: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -731,6 +856,7 @@ func defaultCloudChannelRESTCallOptions() *CloudChannelCallOptions {
 			}),
 		},
 		GetChannelPartnerRepricingConfig: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -741,6 +867,7 @@ func defaultCloudChannelRESTCallOptions() *CloudChannelCallOptions {
 			}),
 		},
 		ListChannelPartnerRepricingConfigs: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -751,6 +878,7 @@ func defaultCloudChannelRESTCallOptions() *CloudChannelCallOptions {
 			}),
 		},
 		CreateChannelPartnerRepricingConfig: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -761,6 +889,7 @@ func defaultCloudChannelRESTCallOptions() *CloudChannelCallOptions {
 			}),
 		},
 		UpdateChannelPartnerRepricingConfig: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -771,6 +900,29 @@ func defaultCloudChannelRESTCallOptions() *CloudChannelCallOptions {
 			}),
 		},
 		DeleteChannelPartnerRepricingConfig: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		ListSkuGroups: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		ListSkuGroupBillableSkus: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -781,6 +933,7 @@ func defaultCloudChannelRESTCallOptions() *CloudChannelCallOptions {
 			}),
 		},
 		LookupOffer: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -791,6 +944,7 @@ func defaultCloudChannelRESTCallOptions() *CloudChannelCallOptions {
 			}),
 		},
 		ListProducts: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -801,6 +955,7 @@ func defaultCloudChannelRESTCallOptions() *CloudChannelCallOptions {
 			}),
 		},
 		ListSkus: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -811,6 +966,7 @@ func defaultCloudChannelRESTCallOptions() *CloudChannelCallOptions {
 			}),
 		},
 		ListOffers: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -821,6 +977,7 @@ func defaultCloudChannelRESTCallOptions() *CloudChannelCallOptions {
 			}),
 		},
 		ListPurchasableSkus: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -831,6 +988,7 @@ func defaultCloudChannelRESTCallOptions() *CloudChannelCallOptions {
 			}),
 		},
 		ListPurchasableOffers: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -841,6 +999,7 @@ func defaultCloudChannelRESTCallOptions() *CloudChannelCallOptions {
 			}),
 		},
 		RegisterSubscriber: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -851,6 +1010,7 @@ func defaultCloudChannelRESTCallOptions() *CloudChannelCallOptions {
 			}),
 		},
 		UnregisterSubscriber: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -861,6 +1021,7 @@ func defaultCloudChannelRESTCallOptions() *CloudChannelCallOptions {
 			}),
 		},
 		ListSubscribers: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -871,6 +1032,7 @@ func defaultCloudChannelRESTCallOptions() *CloudChannelCallOptions {
 			}),
 		},
 		ListEntitlementChanges: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -939,6 +1101,8 @@ type internalCloudChannelClient interface {
 	CreateChannelPartnerRepricingConfig(context.Context, *channelpb.CreateChannelPartnerRepricingConfigRequest, ...gax.CallOption) (*channelpb.ChannelPartnerRepricingConfig, error)
 	UpdateChannelPartnerRepricingConfig(context.Context, *channelpb.UpdateChannelPartnerRepricingConfigRequest, ...gax.CallOption) (*channelpb.ChannelPartnerRepricingConfig, error)
 	DeleteChannelPartnerRepricingConfig(context.Context, *channelpb.DeleteChannelPartnerRepricingConfigRequest, ...gax.CallOption) error
+	ListSkuGroups(context.Context, *channelpb.ListSkuGroupsRequest, ...gax.CallOption) *SkuGroupIterator
+	ListSkuGroupBillableSkus(context.Context, *channelpb.ListSkuGroupBillableSkusRequest, ...gax.CallOption) *BillableSkuIterator
 	LookupOffer(context.Context, *channelpb.LookupOfferRequest, ...gax.CallOption) (*channelpb.Offer, error)
 	ListProducts(context.Context, *channelpb.ListProductsRequest, ...gax.CallOption) *ProductIterator
 	ListSkus(context.Context, *channelpb.ListSkusRequest, ...gax.CallOption) *SkuIterator
@@ -2159,6 +2323,54 @@ func (c *CloudChannelClient) DeleteChannelPartnerRepricingConfig(ctx context.Con
 	return c.internalClient.DeleteChannelPartnerRepricingConfig(ctx, req, opts...)
 }
 
+// ListSkuGroups lists the Rebilling supported SKU groups the account is authorized to
+// sell.
+// Reference: https://cloud.google.com/skus/sku-groups (at https://cloud.google.com/skus/sku-groups)
+//
+// Possible Error Codes:
+//
+//	PERMISSION_DENIED: If the account making the request and the account
+//	being queried are different, or the account doesn’t exist.
+//
+//	INTERNAL: Any non-user error related to technical issues in the
+//	backend. In this case, contact Cloud Channel support.
+//
+// Return Value:
+// If successful, the SkuGroup resources.
+// The data for each resource is displayed in the alphabetical order of SKU
+// group display name.
+// The data for each resource is displayed in the ascending order of
+// SkuGroup.display_name
+//
+// If unsuccessful, returns an error.
+func (c *CloudChannelClient) ListSkuGroups(ctx context.Context, req *channelpb.ListSkuGroupsRequest, opts ...gax.CallOption) *SkuGroupIterator {
+	return c.internalClient.ListSkuGroups(ctx, req, opts...)
+}
+
+// ListSkuGroupBillableSkus lists the Billable SKUs in a given SKU group.
+//
+// Possible error codes:
+// PERMISSION_DENIED: If the account making the request and the account
+// being queried for are different, or the account doesn’t exist.
+// INVALID_ARGUMENT: Missing or invalid required parameters in the
+// request.
+// INTERNAL: Any non-user error related to technical issue in the
+// backend. In this case, contact cloud channel support.
+//
+// Return Value:
+// If successful, the BillableSku
+// resources. The data for each resource is displayed in the ascending order
+// of:
+//
+//	BillableSku.service_display_name
+//
+//	BillableSku.sku_display_name
+//
+// If unsuccessful, returns an error.
+func (c *CloudChannelClient) ListSkuGroupBillableSkus(ctx context.Context, req *channelpb.ListSkuGroupBillableSkusRequest, opts ...gax.CallOption) *BillableSkuIterator {
+	return c.internalClient.ListSkuGroupBillableSkus(ctx, req, opts...)
+}
+
 // LookupOffer returns the requested Offer resource.
 //
 // Possible error codes:
@@ -2362,9 +2574,6 @@ type cloudChannelGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing CloudChannelClient
 	CallOptions **CloudChannelCallOptions
 
@@ -2419,11 +2628,6 @@ func NewCloudChannelClient(ctx context.Context, opts ...option.ClientOption) (*C
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -2432,7 +2636,6 @@ func NewCloudChannelClient(ctx context.Context, opts ...option.ClientOption) (*C
 
 	c := &cloudChannelGRPCClient{
 		connPool:           connPool,
-		disableDeadlines:   disableDeadlines,
 		cloudChannelClient: channelpb.NewCloudChannelServiceClient(connPool),
 		CallOptions:        &client.CallOptions,
 		operationsClient:   longrunningpb.NewOperationsClient(connPool),
@@ -2630,11 +2833,6 @@ func (c *cloudChannelGRPCClient) ListCustomers(ctx context.Context, req *channel
 }
 
 func (c *cloudChannelGRPCClient) GetCustomer(ctx context.Context, req *channelpb.GetCustomerRequest, opts ...gax.CallOption) (*channelpb.Customer, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -2652,11 +2850,6 @@ func (c *cloudChannelGRPCClient) GetCustomer(ctx context.Context, req *channelpb
 }
 
 func (c *cloudChannelGRPCClient) CheckCloudIdentityAccountsExist(ctx context.Context, req *channelpb.CheckCloudIdentityAccountsExistRequest, opts ...gax.CallOption) (*channelpb.CheckCloudIdentityAccountsExistResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -2674,11 +2867,6 @@ func (c *cloudChannelGRPCClient) CheckCloudIdentityAccountsExist(ctx context.Con
 }
 
 func (c *cloudChannelGRPCClient) CreateCustomer(ctx context.Context, req *channelpb.CreateCustomerRequest, opts ...gax.CallOption) (*channelpb.Customer, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -2696,11 +2884,6 @@ func (c *cloudChannelGRPCClient) CreateCustomer(ctx context.Context, req *channe
 }
 
 func (c *cloudChannelGRPCClient) UpdateCustomer(ctx context.Context, req *channelpb.UpdateCustomerRequest, opts ...gax.CallOption) (*channelpb.Customer, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "customer.name", url.QueryEscape(req.GetCustomer().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -2718,11 +2901,6 @@ func (c *cloudChannelGRPCClient) UpdateCustomer(ctx context.Context, req *channe
 }
 
 func (c *cloudChannelGRPCClient) DeleteCustomer(ctx context.Context, req *channelpb.DeleteCustomerRequest, opts ...gax.CallOption) error {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -2736,11 +2914,6 @@ func (c *cloudChannelGRPCClient) DeleteCustomer(ctx context.Context, req *channe
 }
 
 func (c *cloudChannelGRPCClient) ImportCustomer(ctx context.Context, req *channelpb.ImportCustomerRequest, opts ...gax.CallOption) (*channelpb.Customer, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -2758,11 +2931,6 @@ func (c *cloudChannelGRPCClient) ImportCustomer(ctx context.Context, req *channe
 }
 
 func (c *cloudChannelGRPCClient) ProvisionCloudIdentity(ctx context.Context, req *channelpb.ProvisionCloudIdentityRequest, opts ...gax.CallOption) (*ProvisionCloudIdentityOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "customer", url.QueryEscape(req.GetCustomer())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -2917,11 +3085,6 @@ func (c *cloudChannelGRPCClient) ListTransferableOffers(ctx context.Context, req
 }
 
 func (c *cloudChannelGRPCClient) GetEntitlement(ctx context.Context, req *channelpb.GetEntitlementRequest, opts ...gax.CallOption) (*channelpb.Entitlement, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -2939,11 +3102,6 @@ func (c *cloudChannelGRPCClient) GetEntitlement(ctx context.Context, req *channe
 }
 
 func (c *cloudChannelGRPCClient) CreateEntitlement(ctx context.Context, req *channelpb.CreateEntitlementRequest, opts ...gax.CallOption) (*CreateEntitlementOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -2963,11 +3121,6 @@ func (c *cloudChannelGRPCClient) CreateEntitlement(ctx context.Context, req *cha
 }
 
 func (c *cloudChannelGRPCClient) ChangeParameters(ctx context.Context, req *channelpb.ChangeParametersRequest, opts ...gax.CallOption) (*ChangeParametersOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -2987,11 +3140,6 @@ func (c *cloudChannelGRPCClient) ChangeParameters(ctx context.Context, req *chan
 }
 
 func (c *cloudChannelGRPCClient) ChangeRenewalSettings(ctx context.Context, req *channelpb.ChangeRenewalSettingsRequest, opts ...gax.CallOption) (*ChangeRenewalSettingsOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -3011,11 +3159,6 @@ func (c *cloudChannelGRPCClient) ChangeRenewalSettings(ctx context.Context, req 
 }
 
 func (c *cloudChannelGRPCClient) ChangeOffer(ctx context.Context, req *channelpb.ChangeOfferRequest, opts ...gax.CallOption) (*ChangeOfferOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -3035,11 +3178,6 @@ func (c *cloudChannelGRPCClient) ChangeOffer(ctx context.Context, req *channelpb
 }
 
 func (c *cloudChannelGRPCClient) StartPaidService(ctx context.Context, req *channelpb.StartPaidServiceRequest, opts ...gax.CallOption) (*StartPaidServiceOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -3059,11 +3197,6 @@ func (c *cloudChannelGRPCClient) StartPaidService(ctx context.Context, req *chan
 }
 
 func (c *cloudChannelGRPCClient) SuspendEntitlement(ctx context.Context, req *channelpb.SuspendEntitlementRequest, opts ...gax.CallOption) (*SuspendEntitlementOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -3083,11 +3216,6 @@ func (c *cloudChannelGRPCClient) SuspendEntitlement(ctx context.Context, req *ch
 }
 
 func (c *cloudChannelGRPCClient) CancelEntitlement(ctx context.Context, req *channelpb.CancelEntitlementRequest, opts ...gax.CallOption) (*CancelEntitlementOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -3107,11 +3235,6 @@ func (c *cloudChannelGRPCClient) CancelEntitlement(ctx context.Context, req *cha
 }
 
 func (c *cloudChannelGRPCClient) ActivateEntitlement(ctx context.Context, req *channelpb.ActivateEntitlementRequest, opts ...gax.CallOption) (*ActivateEntitlementOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -3131,11 +3254,6 @@ func (c *cloudChannelGRPCClient) ActivateEntitlement(ctx context.Context, req *c
 }
 
 func (c *cloudChannelGRPCClient) TransferEntitlements(ctx context.Context, req *channelpb.TransferEntitlementsRequest, opts ...gax.CallOption) (*TransferEntitlementsOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -3155,11 +3273,6 @@ func (c *cloudChannelGRPCClient) TransferEntitlements(ctx context.Context, req *
 }
 
 func (c *cloudChannelGRPCClient) TransferEntitlementsToGoogle(ctx context.Context, req *channelpb.TransferEntitlementsToGoogleRequest, opts ...gax.CallOption) (*TransferEntitlementsToGoogleOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -3224,11 +3337,6 @@ func (c *cloudChannelGRPCClient) ListChannelPartnerLinks(ctx context.Context, re
 }
 
 func (c *cloudChannelGRPCClient) GetChannelPartnerLink(ctx context.Context, req *channelpb.GetChannelPartnerLinkRequest, opts ...gax.CallOption) (*channelpb.ChannelPartnerLink, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -3246,11 +3354,6 @@ func (c *cloudChannelGRPCClient) GetChannelPartnerLink(ctx context.Context, req 
 }
 
 func (c *cloudChannelGRPCClient) CreateChannelPartnerLink(ctx context.Context, req *channelpb.CreateChannelPartnerLinkRequest, opts ...gax.CallOption) (*channelpb.ChannelPartnerLink, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -3268,11 +3371,6 @@ func (c *cloudChannelGRPCClient) CreateChannelPartnerLink(ctx context.Context, r
 }
 
 func (c *cloudChannelGRPCClient) UpdateChannelPartnerLink(ctx context.Context, req *channelpb.UpdateChannelPartnerLinkRequest, opts ...gax.CallOption) (*channelpb.ChannelPartnerLink, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -3290,11 +3388,6 @@ func (c *cloudChannelGRPCClient) UpdateChannelPartnerLink(ctx context.Context, r
 }
 
 func (c *cloudChannelGRPCClient) GetCustomerRepricingConfig(ctx context.Context, req *channelpb.GetCustomerRepricingConfigRequest, opts ...gax.CallOption) (*channelpb.CustomerRepricingConfig, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -3357,11 +3450,6 @@ func (c *cloudChannelGRPCClient) ListCustomerRepricingConfigs(ctx context.Contex
 }
 
 func (c *cloudChannelGRPCClient) CreateCustomerRepricingConfig(ctx context.Context, req *channelpb.CreateCustomerRepricingConfigRequest, opts ...gax.CallOption) (*channelpb.CustomerRepricingConfig, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -3379,11 +3467,6 @@ func (c *cloudChannelGRPCClient) CreateCustomerRepricingConfig(ctx context.Conte
 }
 
 func (c *cloudChannelGRPCClient) UpdateCustomerRepricingConfig(ctx context.Context, req *channelpb.UpdateCustomerRepricingConfigRequest, opts ...gax.CallOption) (*channelpb.CustomerRepricingConfig, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "customer_repricing_config.name", url.QueryEscape(req.GetCustomerRepricingConfig().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -3401,11 +3484,6 @@ func (c *cloudChannelGRPCClient) UpdateCustomerRepricingConfig(ctx context.Conte
 }
 
 func (c *cloudChannelGRPCClient) DeleteCustomerRepricingConfig(ctx context.Context, req *channelpb.DeleteCustomerRepricingConfigRequest, opts ...gax.CallOption) error {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -3419,11 +3497,6 @@ func (c *cloudChannelGRPCClient) DeleteCustomerRepricingConfig(ctx context.Conte
 }
 
 func (c *cloudChannelGRPCClient) GetChannelPartnerRepricingConfig(ctx context.Context, req *channelpb.GetChannelPartnerRepricingConfigRequest, opts ...gax.CallOption) (*channelpb.ChannelPartnerRepricingConfig, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -3486,11 +3559,6 @@ func (c *cloudChannelGRPCClient) ListChannelPartnerRepricingConfigs(ctx context.
 }
 
 func (c *cloudChannelGRPCClient) CreateChannelPartnerRepricingConfig(ctx context.Context, req *channelpb.CreateChannelPartnerRepricingConfigRequest, opts ...gax.CallOption) (*channelpb.ChannelPartnerRepricingConfig, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -3508,11 +3576,6 @@ func (c *cloudChannelGRPCClient) CreateChannelPartnerRepricingConfig(ctx context
 }
 
 func (c *cloudChannelGRPCClient) UpdateChannelPartnerRepricingConfig(ctx context.Context, req *channelpb.UpdateChannelPartnerRepricingConfigRequest, opts ...gax.CallOption) (*channelpb.ChannelPartnerRepricingConfig, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "channel_partner_repricing_config.name", url.QueryEscape(req.GetChannelPartnerRepricingConfig().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -3530,11 +3593,6 @@ func (c *cloudChannelGRPCClient) UpdateChannelPartnerRepricingConfig(ctx context
 }
 
 func (c *cloudChannelGRPCClient) DeleteChannelPartnerRepricingConfig(ctx context.Context, req *channelpb.DeleteChannelPartnerRepricingConfigRequest, opts ...gax.CallOption) error {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -3547,12 +3605,97 @@ func (c *cloudChannelGRPCClient) DeleteChannelPartnerRepricingConfig(ctx context
 	return err
 }
 
-func (c *cloudChannelGRPCClient) LookupOffer(ctx context.Context, req *channelpb.LookupOfferRequest, opts ...gax.CallOption) (*channelpb.Offer, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
+func (c *cloudChannelGRPCClient) ListSkuGroups(ctx context.Context, req *channelpb.ListSkuGroupsRequest, opts ...gax.CallOption) *SkuGroupIterator {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).ListSkuGroups[0:len((*c.CallOptions).ListSkuGroups):len((*c.CallOptions).ListSkuGroups)], opts...)
+	it := &SkuGroupIterator{}
+	req = proto.Clone(req).(*channelpb.ListSkuGroupsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*channelpb.SkuGroup, string, error) {
+		resp := &channelpb.ListSkuGroupsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.cloudChannelClient.ListSkuGroups(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetSkuGroups(), resp.GetNextPageToken(), nil
 	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *cloudChannelGRPCClient) ListSkuGroupBillableSkus(ctx context.Context, req *channelpb.ListSkuGroupBillableSkusRequest, opts ...gax.CallOption) *BillableSkuIterator {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).ListSkuGroupBillableSkus[0:len((*c.CallOptions).ListSkuGroupBillableSkus):len((*c.CallOptions).ListSkuGroupBillableSkus)], opts...)
+	it := &BillableSkuIterator{}
+	req = proto.Clone(req).(*channelpb.ListSkuGroupBillableSkusRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*channelpb.BillableSku, string, error) {
+		resp := &channelpb.ListSkuGroupBillableSkusResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.cloudChannelClient.ListSkuGroupBillableSkus(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetBillableSkus(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *cloudChannelGRPCClient) LookupOffer(ctx context.Context, req *channelpb.LookupOfferRequest, opts ...gax.CallOption) (*channelpb.Offer, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "entitlement", url.QueryEscape(req.GetEntitlement())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -3793,11 +3936,6 @@ func (c *cloudChannelGRPCClient) ListPurchasableOffers(ctx context.Context, req 
 }
 
 func (c *cloudChannelGRPCClient) RegisterSubscriber(ctx context.Context, req *channelpb.RegisterSubscriberRequest, opts ...gax.CallOption) (*channelpb.RegisterSubscriberResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "account", url.QueryEscape(req.GetAccount())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -3815,11 +3953,6 @@ func (c *cloudChannelGRPCClient) RegisterSubscriber(ctx context.Context, req *ch
 }
 
 func (c *cloudChannelGRPCClient) UnregisterSubscriber(ctx context.Context, req *channelpb.UnregisterSubscriberRequest, opts ...gax.CallOption) (*channelpb.UnregisterSubscriberResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "account", url.QueryEscape(req.GetAccount())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -7352,6 +7485,220 @@ func (c *cloudChannelRESTClient) DeleteChannelPartnerRepricingConfig(ctx context
 	}, opts...)
 }
 
+// ListSkuGroups lists the Rebilling supported SKU groups the account is authorized to
+// sell.
+// Reference: https://cloud.google.com/skus/sku-groups (at https://cloud.google.com/skus/sku-groups)
+//
+// Possible Error Codes:
+//
+//	PERMISSION_DENIED: If the account making the request and the account
+//	being queried are different, or the account doesn’t exist.
+//
+//	INTERNAL: Any non-user error related to technical issues in the
+//	backend. In this case, contact Cloud Channel support.
+//
+// Return Value:
+// If successful, the SkuGroup resources.
+// The data for each resource is displayed in the alphabetical order of SKU
+// group display name.
+// The data for each resource is displayed in the ascending order of
+// SkuGroup.display_name
+//
+// If unsuccessful, returns an error.
+func (c *cloudChannelRESTClient) ListSkuGroups(ctx context.Context, req *channelpb.ListSkuGroupsRequest, opts ...gax.CallOption) *SkuGroupIterator {
+	it := &SkuGroupIterator{}
+	req = proto.Clone(req).(*channelpb.ListSkuGroupsRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*channelpb.SkuGroup, string, error) {
+		resp := &channelpb.ListSkuGroupsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v/skuGroups", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			httpRsp, err := c.httpClient.Do(httpReq)
+			if err != nil {
+				return err
+			}
+			defer httpRsp.Body.Close()
+
+			if err = googleapi.CheckResponse(httpRsp); err != nil {
+				return err
+			}
+
+			buf, err := ioutil.ReadAll(httpRsp.Body)
+			if err != nil {
+				return err
+			}
+
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return maybeUnknownEnum(err)
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetSkuGroups(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// ListSkuGroupBillableSkus lists the Billable SKUs in a given SKU group.
+//
+// Possible error codes:
+// PERMISSION_DENIED: If the account making the request and the account
+// being queried for are different, or the account doesn’t exist.
+// INVALID_ARGUMENT: Missing or invalid required parameters in the
+// request.
+// INTERNAL: Any non-user error related to technical issue in the
+// backend. In this case, contact cloud channel support.
+//
+// Return Value:
+// If successful, the BillableSku
+// resources. The data for each resource is displayed in the ascending order
+// of:
+//
+//	BillableSku.service_display_name
+//
+//	BillableSku.sku_display_name
+//
+// If unsuccessful, returns an error.
+func (c *cloudChannelRESTClient) ListSkuGroupBillableSkus(ctx context.Context, req *channelpb.ListSkuGroupBillableSkusRequest, opts ...gax.CallOption) *BillableSkuIterator {
+	it := &BillableSkuIterator{}
+	req = proto.Clone(req).(*channelpb.ListSkuGroupBillableSkusRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*channelpb.BillableSku, string, error) {
+		resp := &channelpb.ListSkuGroupBillableSkusResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v/billableSkus", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			httpRsp, err := c.httpClient.Do(httpReq)
+			if err != nil {
+				return err
+			}
+			defer httpRsp.Body.Close()
+
+			if err = googleapi.CheckResponse(httpRsp); err != nil {
+				return err
+			}
+
+			buf, err := ioutil.ReadAll(httpRsp.Body)
+			if err != nil {
+				return err
+			}
+
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return maybeUnknownEnum(err)
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetBillableSkus(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
 // LookupOffer returns the requested Offer resource.
 //
 // Possible error codes:
@@ -9429,6 +9776,53 @@ func (op *TransferEntitlementsToGoogleOperation) Name() string {
 	return op.lro.Name()
 }
 
+// BillableSkuIterator manages a stream of *channelpb.BillableSku.
+type BillableSkuIterator struct {
+	items    []*channelpb.BillableSku
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*channelpb.BillableSku, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *BillableSkuIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *BillableSkuIterator) Next() (*channelpb.BillableSku, error) {
+	var item *channelpb.BillableSku
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *BillableSkuIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *BillableSkuIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
 // ChannelPartnerLinkIterator manages a stream of *channelpb.ChannelPartnerLink.
 type ChannelPartnerLinkIterator struct {
 	items    []*channelpb.ChannelPartnerLink
@@ -9894,6 +10288,53 @@ func (it *PurchasableSkuIterator) bufLen() int {
 }
 
 func (it *PurchasableSkuIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// SkuGroupIterator manages a stream of *channelpb.SkuGroup.
+type SkuGroupIterator struct {
+	items    []*channelpb.SkuGroup
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*channelpb.SkuGroup, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *SkuGroupIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *SkuGroupIterator) Next() (*channelpb.SkuGroup, error) {
+	var item *channelpb.SkuGroup
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *SkuGroupIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *SkuGroupIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
