@@ -310,13 +310,13 @@
     "library_type": "GAPIC_AUTO"
   },
   "cloud.google.com/go/bigquery": {
-    "api_shortname": "",
+    "api_shortname": "bigquery",
     "distribution_name": "cloud.google.com/go/bigquery",
     "description": "BigQuery",
-    "language": "Go",
+    "language": "go",
     "client_library_type": "manual",
-    "client_documentation": "",
-    "release_level": "ga",
+    "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/bigquery/latest",
+    "release_level": "stable",
     "library_type": "GAPIC_MANUAL"
   },
   "cloud.google.com/go/bigquery/analyticshub/apiv1": {
@@ -450,13 +450,13 @@
     "library_type": "GAPIC_AUTO"
   },
   "cloud.google.com/go/bigtable": {
-    "api_shortname": "",
+    "api_shortname": "bigtable",
     "distribution_name": "cloud.google.com/go/bigtable",
     "description": "Cloud BigTable",
-    "language": "Go",
+    "language": "go",
     "client_library_type": "manual",
-    "client_documentation": "",
-    "release_level": "ga",
+    "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/bigtable/latest",
+    "release_level": "stable",
     "library_type": "GAPIC_MANUAL"
   },
   "cloud.google.com/go/billing/apiv1": {
@@ -600,13 +600,13 @@
     "library_type": "GAPIC_AUTO"
   },
   "cloud.google.com/go/compute/metadata": {
-    "api_shortname": "",
+    "api_shortname": "compute-metadata",
     "distribution_name": "cloud.google.com/go/compute/metadata",
     "description": "Service Metadata API",
-    "language": "Go",
+    "language": "go",
     "client_library_type": "manual",
-    "client_documentation": "",
-    "release_level": "ga",
+    "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/compute/latest/metadata",
+    "release_level": "stable",
     "library_type": "CORE"
   },
   "cloud.google.com/go/confidentialcomputing/apiv1": {
@@ -655,7 +655,7 @@
     "description": "Container Analysis API",
     "language": "go",
     "client_library_type": "generated",
-    "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/latest/containeranalysis/apiv1beta1",
+    "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/containeranalysis/latest/apiv1beta1",
     "release_level": "preview",
     "library_type": "GAPIC_AUTO"
   },
@@ -770,13 +770,13 @@
     "library_type": "GAPIC_AUTO"
   },
   "cloud.google.com/go/datastore": {
-    "api_shortname": "",
+    "api_shortname": "datastore",
     "distribution_name": "cloud.google.com/go/datastore",
     "description": "Cloud Datastore",
-    "language": "Go",
+    "language": "go",
     "client_library_type": "manual",
-    "client_documentation": "",
-    "release_level": "ga",
+    "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/datastore/latest",
+    "release_level": "stable",
     "library_type": "GAPIC_MANUAL"
   },
   "cloud.google.com/go/datastore/admin/apiv1": {
@@ -940,13 +940,13 @@
     "library_type": "GAPIC_AUTO"
   },
   "cloud.google.com/go/errorreporting": {
-    "api_shortname": "",
+    "api_shortname": "errorreporting",
     "distribution_name": "cloud.google.com/go/errorreporting",
     "description": "Cloud Error Reporting API",
-    "language": "Go",
+    "language": "go",
     "client_library_type": "manual",
-    "client_documentation": "",
-    "release_level": "beta",
+    "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/errorreporting/latest",
+    "release_level": "preview",
     "library_type": "GAPIC_MANUAL"
   },
   "cloud.google.com/go/errorreporting/apiv1beta1": {
@@ -1000,13 +1000,13 @@
     "library_type": "GAPIC_AUTO"
   },
   "cloud.google.com/go/firestore": {
-    "api_shortname": "",
+    "api_shortname": "firestore",
     "distribution_name": "cloud.google.com/go/firestore",
     "description": "Cloud Firestore API",
-    "language": "Go",
+    "language": "go",
     "client_library_type": "manual",
-    "client_documentation": "",
-    "release_level": "ga",
+    "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/firestore/latest",
+    "release_level": "stable",
     "library_type": "GAPIC_MANUAL"
   },
   "cloud.google.com/go/firestore/apiv1": {
@@ -1050,13 +1050,13 @@
     "library_type": "GAPIC_AUTO"
   },
   "cloud.google.com/go/functions/metadata": {
-    "api_shortname": "",
+    "api_shortname": "firestore-metadata",
     "distribution_name": "cloud.google.com/go/functions/metadata",
     "description": "Cloud Functions",
-    "language": "Go",
+    "language": "go",
     "client_library_type": "manual",
-    "client_documentation": "",
-    "release_level": "alpha",
+    "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/functions/latest/metadata",
+    "release_level": "preview",
     "library_type": "CORE"
   },
   "cloud.google.com/go/gaming/apiv1": {
@@ -1130,13 +1130,13 @@
     "library_type": "GAPIC_AUTO"
   },
   "cloud.google.com/go/iam": {
-    "api_shortname": "",
+    "api_shortname": "iam",
     "distribution_name": "cloud.google.com/go/iam",
     "description": "Cloud IAM",
-    "language": "Go",
+    "language": "go",
     "client_library_type": "manual",
-    "client_documentation": "",
-    "release_level": "ga",
+    "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/iam/latest",
+    "release_level": "stable",
     "library_type": "CORE"
   },
   "cloud.google.com/go/iam/apiv1": {
@@ -1250,13 +1250,13 @@
     "library_type": "GAPIC_AUTO"
   },
   "cloud.google.com/go/logging": {
-    "api_shortname": "",
+    "api_shortname": "logging",
     "distribution_name": "cloud.google.com/go/logging",
     "description": "Cloud Logging API",
-    "language": "Go",
+    "language": "go",
     "client_library_type": "manual",
-    "client_documentation": "",
-    "release_level": "ga",
+    "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/logging/latest",
+    "release_level": "stable",
     "library_type": "GAPIC_MANUAL"
   },
   "cloud.google.com/go/logging/apiv2": {
@@ -1620,23 +1620,23 @@
     "library_type": "GAPIC_AUTO"
   },
   "cloud.google.com/go/profiler": {
-    "api_shortname": "",
+    "api_shortname": "profiler",
     "distribution_name": "cloud.google.com/go/profiler",
     "description": "Cloud Profiler",
-    "language": "Go",
+    "language": "go",
     "client_library_type": "manual",
-    "client_documentation": "",
-    "release_level": "ga",
+    "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/profiler/latest",
+    "release_level": "stable",
     "library_type": "AGENT"
   },
   "cloud.google.com/go/pubsub": {
-    "api_shortname": "",
+    "api_shortname": "pubsub",
     "distribution_name": "cloud.google.com/go/pubsub",
     "description": "Cloud PubSub",
-    "language": "Go",
+    "language": "go",
     "client_library_type": "manual",
-    "client_documentation": "",
-    "release_level": "ga",
+    "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/pubsub/latest",
+    "release_level": "stable",
     "library_type": "GAPIC_MANUAL"
   },
   "cloud.google.com/go/pubsub/apiv1": {
@@ -1650,13 +1650,13 @@
     "library_type": "GAPIC_AUTO"
   },
   "cloud.google.com/go/pubsublite": {
-    "api_shortname": "",
+    "api_shortname": "pubsublite",
     "distribution_name": "cloud.google.com/go/pubsublite",
     "description": "Cloud PubSub Lite",
-    "language": "Go",
+    "language": "go",
     "client_library_type": "manual",
-    "client_documentation": "",
-    "release_level": "ga",
+    "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/pubsublite/latest",
+    "release_level": "stable",
     "library_type": "GAPIC_MANUAL"
   },
   "cloud.google.com/go/pubsublite/apiv1": {
@@ -1810,13 +1810,13 @@
     "library_type": "GAPIC_AUTO"
   },
   "cloud.google.com/go/rpcreplay": {
-    "api_shortname": "",
+    "api_shortname": "rpcreplay",
     "distribution_name": "cloud.google.com/go/rpcreplay",
     "description": "RPC Replay",
-    "language": "Go",
+    "language": "go",
     "client_library_type": "manual",
-    "client_documentation": "",
-    "release_level": "ga",
+    "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/latest/rpcreplay",
+    "release_level": "stable",
     "library_type": "OTHER"
   },
   "cloud.google.com/go/run/apiv2": {
@@ -1980,13 +1980,13 @@
     "library_type": "GAPIC_AUTO"
   },
   "cloud.google.com/go/spanner": {
-    "api_shortname": "",
+    "api_shortname": "spanner",
     "distribution_name": "cloud.google.com/go/spanner",
     "description": "Cloud Spanner",
-    "language": "Go",
+    "language": "go",
     "client_library_type": "manual",
-    "client_documentation": "",
-    "release_level": "ga",
+    "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/spanner/latest",
+    "release_level": "stable",
     "library_type": "GAPIC_MANUAL"
   },
   "cloud.google.com/go/spanner/admin/database/apiv1": {
@@ -2050,13 +2050,13 @@
     "library_type": "GAPIC_AUTO"
   },
   "cloud.google.com/go/storage": {
-    "api_shortname": "",
+    "api_shortname": "storage",
     "distribution_name": "cloud.google.com/go/storage",
     "description": "Cloud Storage (GCS)",
-    "language": "Go",
+    "language": "go",
     "client_library_type": "manual",
-    "client_documentation": "",
-    "release_level": "ga",
+    "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/storage/latest",
+    "release_level": "stable",
     "library_type": "GAPIC_MANUAL"
   },
   "cloud.google.com/go/storage/internal/apiv2": {
