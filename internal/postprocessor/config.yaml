@@ -167,7 +167,7 @@ manual-clients:
     client-documentation: https://cloud.google.com/go/docs/reference/cloud.google.com/go/datastore/latest
     release-level: stable
     library-type: GAPIC_MANUAL
-  - api-shortname: errorreporting
+  - api-shortname: clouderrorreporting
     distribution-name: cloud.google.com/go/errorreporting
     description: Cloud Error Reporting API
     language: go
@@ -207,7 +207,7 @@ manual-clients:
     client-documentation: https://cloud.google.com/go/docs/reference/cloud.google.com/go/logging/latest
     release-level: stable
     library-type: GAPIC_MANUAL
-  - api-shortname: profiler
+  - api-shortname: cloudprofiler
     distribution-name: cloud.google.com/go/profiler
     description: Cloud Profiler
     language: go
