@@ -17,10 +17,10 @@ package internal
 import (
 	"context"
 	"fmt"
-	"google.golang.org/grpc/codes"
 	"time"
 
 	gax "github.com/googleapis/gax-go/v2"
+	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
 
