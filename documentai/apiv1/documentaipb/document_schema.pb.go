@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -21,11 +21,10 @@
 package documentaipb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -196,16 +195,15 @@ type DocumentSchema_EntityType struct {
 	// User defined name for the type.
 	DisplayName string `protobuf:"bytes,13,opt,name=display_name,json=displayName,proto3" json:"display_name,omitempty"`
 	// Name of the type. It must be unique within the schema file and
-	// cannot be a 'Common Type'.  Besides that we use the following naming
-	// conventions:
+	// cannot be a "Common Type".  The following naming conventions are used:
 	//
-	// - *use `snake_casing`*
-	// - name matching is case-sensitive
+	// - Use `snake_casing`.
+	// - Name matching is case-sensitive.
 	// - Maximum 64 characters.
 	// - Must start with a letter.
 	// - Allowed characters: ASCII letters `[a-z0-9_-]`.  (For backward
 	//   compatibility internal infrastructure and tooling can handle any ascii
-	//   character)
+	//   character.)
 	// - The `/` is sometimes used to denote a property of a type.  For example
 	//   `line_item/amount`.  This convention is deprecated, but will still be
 	//   honored for backward compatibility.
@@ -312,8 +310,8 @@ type DocumentSchema_Metadata struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// If true, a `document` entity type can be applied to subdocument (
-	// splitting). Otherwise, it can only be applied to the entire document
+	// If true, a `document` entity type can be applied to subdocument
+	// (splitting). Otherwise, it can only be applied to the entire document
 	// (classification).
 	DocumentSplitter bool `protobuf:"varint,1,opt,name=document_splitter,json=documentSplitter,proto3" json:"document_splitter,omitempty"`
 	// If true, on a given page, there can be multiple `document` annotations
