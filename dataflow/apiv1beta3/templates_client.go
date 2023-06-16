@@ -61,17 +61,29 @@ func defaultTemplatesGRPCClientOptions() []option.ClientOption {
 
 func defaultTemplatesCallOptions() *TemplatesCallOptions {
 	return &TemplatesCallOptions{
-		CreateJobFromTemplate: []gax.CallOption{},
-		LaunchTemplate:        []gax.CallOption{},
-		GetTemplate:           []gax.CallOption{},
+		CreateJobFromTemplate: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		LaunchTemplate: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetTemplate: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 	}
 }
 
 func defaultTemplatesRESTCallOptions() *TemplatesCallOptions {
 	return &TemplatesCallOptions{
-		CreateJobFromTemplate: []gax.CallOption{},
-		LaunchTemplate:        []gax.CallOption{},
-		GetTemplate:           []gax.CallOption{},
+		CreateJobFromTemplate: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		LaunchTemplate: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetTemplate: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 	}
 }
 
@@ -142,9 +154,6 @@ type templatesGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing TemplatesClient
 	CallOptions **TemplatesCallOptions
 
@@ -169,11 +178,6 @@ func NewTemplatesClient(ctx context.Context, opts ...option.ClientOption) (*Temp
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -181,10 +185,9 @@ func NewTemplatesClient(ctx context.Context, opts ...option.ClientOption) (*Temp
 	client := TemplatesClient{CallOptions: defaultTemplatesCallOptions()}
 
 	c := &templatesGRPCClient{
-		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
-		templatesClient:  dataflowpb.NewTemplatesServiceClient(connPool),
-		CallOptions:      &client.CallOptions,
+		connPool:        connPool,
+		templatesClient: dataflowpb.NewTemplatesServiceClient(connPool),
+		CallOptions:     &client.CallOptions,
 	}
 	c.setGoogleClientInfo()
 
@@ -285,11 +288,6 @@ func (c *templatesRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 func (c *templatesGRPCClient) CreateJobFromTemplate(ctx context.Context, req *dataflowpb.CreateJobFromTemplateRequest, opts ...gax.CallOption) (*dataflowpb.Job, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project_id", url.QueryEscape(req.GetProjectId()), "location", url.QueryEscape(req.GetLocation())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -307,11 +305,6 @@ func (c *templatesGRPCClient) CreateJobFromTemplate(ctx context.Context, req *da
 }
 
 func (c *templatesGRPCClient) LaunchTemplate(ctx context.Context, req *dataflowpb.LaunchTemplateRequest, opts ...gax.CallOption) (*dataflowpb.LaunchTemplateResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project_id", url.QueryEscape(req.GetProjectId()), "location", url.QueryEscape(req.GetLocation())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -329,11 +322,6 @@ func (c *templatesGRPCClient) LaunchTemplate(ctx context.Context, req *dataflowp
 }
 
 func (c *templatesGRPCClient) GetTemplate(ctx context.Context, req *dataflowpb.GetTemplateRequest, opts ...gax.CallOption) (*dataflowpb.GetTemplateResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project_id", url.QueryEscape(req.GetProjectId()), "location", url.QueryEscape(req.GetLocation())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)

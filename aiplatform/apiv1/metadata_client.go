@@ -535,9 +535,6 @@ type metadataGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing MetadataClient
 	CallOptions **MetadataCallOptions
 
@@ -573,11 +570,6 @@ func NewMetadataClient(ctx context.Context, opts ...option.ClientOption) (*Metad
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -586,7 +578,6 @@ func NewMetadataClient(ctx context.Context, opts ...option.ClientOption) (*Metad
 
 	c := &metadataGRPCClient{
 		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
 		metadataClient:   aiplatformpb.NewMetadataServiceClient(connPool),
 		CallOptions:      &client.CallOptions,
 		operationsClient: longrunningpb.NewOperationsClient(connPool),

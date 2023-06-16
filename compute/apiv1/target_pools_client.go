@@ -59,9 +59,14 @@ type TargetPoolsCallOptions struct {
 
 func defaultTargetPoolsRESTCallOptions() *TargetPoolsCallOptions {
 	return &TargetPoolsCallOptions{
-		AddHealthCheck: []gax.CallOption{},
-		AddInstance:    []gax.CallOption{},
+		AddHealthCheck: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		AddInstance: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
 		AggregatedList: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -72,8 +77,11 @@ func defaultTargetPoolsRESTCallOptions() *TargetPoolsCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
-		Delete: []gax.CallOption{},
+		Delete: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
 		Get: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -84,9 +92,14 @@ func defaultTargetPoolsRESTCallOptions() *TargetPoolsCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
-		GetHealth: []gax.CallOption{},
-		Insert:    []gax.CallOption{},
+		GetHealth: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		Insert: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
 		List: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -97,9 +110,15 @@ func defaultTargetPoolsRESTCallOptions() *TargetPoolsCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
-		RemoveHealthCheck: []gax.CallOption{},
-		RemoveInstance:    []gax.CallOption{},
-		SetBackup:         []gax.CallOption{},
+		RemoveHealthCheck: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		RemoveInstance: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		SetBackup: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
 	}
 }
 

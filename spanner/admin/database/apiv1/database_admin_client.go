@@ -90,6 +90,7 @@ func defaultDatabaseAdminGRPCClientOptions() []option.ClientOption {
 func defaultDatabaseAdminCallOptions() *DatabaseAdminCallOptions {
 	return &DatabaseAdminCallOptions{
 		ListDatabases: []gax.CallOption{
+			gax.WithTimeout(3600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -101,8 +102,11 @@ func defaultDatabaseAdminCallOptions() *DatabaseAdminCallOptions {
 				})
 			}),
 		},
-		CreateDatabase: []gax.CallOption{},
+		CreateDatabase: []gax.CallOption{
+			gax.WithTimeout(3600000 * time.Millisecond),
+		},
 		GetDatabase: []gax.CallOption{
+			gax.WithTimeout(3600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -115,6 +119,7 @@ func defaultDatabaseAdminCallOptions() *DatabaseAdminCallOptions {
 			}),
 		},
 		UpdateDatabase: []gax.CallOption{
+			gax.WithTimeout(3600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -127,6 +132,7 @@ func defaultDatabaseAdminCallOptions() *DatabaseAdminCallOptions {
 			}),
 		},
 		UpdateDatabaseDdl: []gax.CallOption{
+			gax.WithTimeout(3600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -139,6 +145,7 @@ func defaultDatabaseAdminCallOptions() *DatabaseAdminCallOptions {
 			}),
 		},
 		DropDatabase: []gax.CallOption{
+			gax.WithTimeout(3600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -151,6 +158,7 @@ func defaultDatabaseAdminCallOptions() *DatabaseAdminCallOptions {
 			}),
 		},
 		GetDatabaseDdl: []gax.CallOption{
+			gax.WithTimeout(3600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -162,8 +170,11 @@ func defaultDatabaseAdminCallOptions() *DatabaseAdminCallOptions {
 				})
 			}),
 		},
-		SetIamPolicy: []gax.CallOption{},
+		SetIamPolicy: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+		},
 		GetIamPolicy: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -175,10 +186,17 @@ func defaultDatabaseAdminCallOptions() *DatabaseAdminCallOptions {
 				})
 			}),
 		},
-		TestIamPermissions: []gax.CallOption{},
-		CreateBackup:       []gax.CallOption{},
-		CopyBackup:         []gax.CallOption{},
+		TestIamPermissions: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+		},
+		CreateBackup: []gax.CallOption{
+			gax.WithTimeout(3600000 * time.Millisecond),
+		},
+		CopyBackup: []gax.CallOption{
+			gax.WithTimeout(3600000 * time.Millisecond),
+		},
 		GetBackup: []gax.CallOption{
+			gax.WithTimeout(3600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -191,6 +209,7 @@ func defaultDatabaseAdminCallOptions() *DatabaseAdminCallOptions {
 			}),
 		},
 		UpdateBackup: []gax.CallOption{
+			gax.WithTimeout(3600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -203,6 +222,7 @@ func defaultDatabaseAdminCallOptions() *DatabaseAdminCallOptions {
 			}),
 		},
 		DeleteBackup: []gax.CallOption{
+			gax.WithTimeout(3600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -215,6 +235,7 @@ func defaultDatabaseAdminCallOptions() *DatabaseAdminCallOptions {
 			}),
 		},
 		ListBackups: []gax.CallOption{
+			gax.WithTimeout(3600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -226,8 +247,11 @@ func defaultDatabaseAdminCallOptions() *DatabaseAdminCallOptions {
 				})
 			}),
 		},
-		RestoreDatabase: []gax.CallOption{},
+		RestoreDatabase: []gax.CallOption{
+			gax.WithTimeout(3600000 * time.Millisecond),
+		},
 		ListDatabaseOperations: []gax.CallOption{
+			gax.WithTimeout(3600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -240,6 +264,7 @@ func defaultDatabaseAdminCallOptions() *DatabaseAdminCallOptions {
 			}),
 		},
 		ListBackupOperations: []gax.CallOption{
+			gax.WithTimeout(3600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -252,6 +277,7 @@ func defaultDatabaseAdminCallOptions() *DatabaseAdminCallOptions {
 			}),
 		},
 		ListDatabaseRoles: []gax.CallOption{
+			gax.WithTimeout(3600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -273,6 +299,7 @@ func defaultDatabaseAdminCallOptions() *DatabaseAdminCallOptions {
 func defaultDatabaseAdminRESTCallOptions() *DatabaseAdminCallOptions {
 	return &DatabaseAdminCallOptions{
 		ListDatabases: []gax.CallOption{
+			gax.WithTimeout(3600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -283,8 +310,11 @@ func defaultDatabaseAdminRESTCallOptions() *DatabaseAdminCallOptions {
 					http.StatusGatewayTimeout)
 			}),
 		},
-		CreateDatabase: []gax.CallOption{},
+		CreateDatabase: []gax.CallOption{
+			gax.WithTimeout(3600000 * time.Millisecond),
+		},
 		GetDatabase: []gax.CallOption{
+			gax.WithTimeout(3600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -296,6 +326,7 @@ func defaultDatabaseAdminRESTCallOptions() *DatabaseAdminCallOptions {
 			}),
 		},
 		UpdateDatabase: []gax.CallOption{
+			gax.WithTimeout(3600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -307,6 +338,7 @@ func defaultDatabaseAdminRESTCallOptions() *DatabaseAdminCallOptions {
 			}),
 		},
 		UpdateDatabaseDdl: []gax.CallOption{
+			gax.WithTimeout(3600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -318,6 +350,7 @@ func defaultDatabaseAdminRESTCallOptions() *DatabaseAdminCallOptions {
 			}),
 		},
 		DropDatabase: []gax.CallOption{
+			gax.WithTimeout(3600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -329,6 +362,7 @@ func defaultDatabaseAdminRESTCallOptions() *DatabaseAdminCallOptions {
 			}),
 		},
 		GetDatabaseDdl: []gax.CallOption{
+			gax.WithTimeout(3600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -339,8 +373,11 @@ func defaultDatabaseAdminRESTCallOptions() *DatabaseAdminCallOptions {
 					http.StatusGatewayTimeout)
 			}),
 		},
-		SetIamPolicy: []gax.CallOption{},
+		SetIamPolicy: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+		},
 		GetIamPolicy: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -351,10 +388,17 @@ func defaultDatabaseAdminRESTCallOptions() *DatabaseAdminCallOptions {
 					http.StatusGatewayTimeout)
 			}),
 		},
-		TestIamPermissions: []gax.CallOption{},
-		CreateBackup:       []gax.CallOption{},
-		CopyBackup:         []gax.CallOption{},
+		TestIamPermissions: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+		},
+		CreateBackup: []gax.CallOption{
+			gax.WithTimeout(3600000 * time.Millisecond),
+		},
+		CopyBackup: []gax.CallOption{
+			gax.WithTimeout(3600000 * time.Millisecond),
+		},
 		GetBackup: []gax.CallOption{
+			gax.WithTimeout(3600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -366,6 +410,7 @@ func defaultDatabaseAdminRESTCallOptions() *DatabaseAdminCallOptions {
 			}),
 		},
 		UpdateBackup: []gax.CallOption{
+			gax.WithTimeout(3600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -377,6 +422,7 @@ func defaultDatabaseAdminRESTCallOptions() *DatabaseAdminCallOptions {
 			}),
 		},
 		DeleteBackup: []gax.CallOption{
+			gax.WithTimeout(3600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -388,6 +434,7 @@ func defaultDatabaseAdminRESTCallOptions() *DatabaseAdminCallOptions {
 			}),
 		},
 		ListBackups: []gax.CallOption{
+			gax.WithTimeout(3600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -398,8 +445,11 @@ func defaultDatabaseAdminRESTCallOptions() *DatabaseAdminCallOptions {
 					http.StatusGatewayTimeout)
 			}),
 		},
-		RestoreDatabase: []gax.CallOption{},
+		RestoreDatabase: []gax.CallOption{
+			gax.WithTimeout(3600000 * time.Millisecond),
+		},
 		ListDatabaseOperations: []gax.CallOption{
+			gax.WithTimeout(3600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -411,6 +461,7 @@ func defaultDatabaseAdminRESTCallOptions() *DatabaseAdminCallOptions {
 			}),
 		},
 		ListBackupOperations: []gax.CallOption{
+			gax.WithTimeout(3600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -422,6 +473,7 @@ func defaultDatabaseAdminRESTCallOptions() *DatabaseAdminCallOptions {
 			}),
 		},
 		ListDatabaseRoles: []gax.CallOption{
+			gax.WithTimeout(3600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -825,9 +877,6 @@ type databaseAdminGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing DatabaseAdminClient
 	CallOptions **DatabaseAdminCallOptions
 
@@ -869,11 +918,6 @@ func NewDatabaseAdminClient(ctx context.Context, opts ...option.ClientOption) (*
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -882,7 +926,6 @@ func NewDatabaseAdminClient(ctx context.Context, opts ...option.ClientOption) (*
 
 	c := &databaseAdminGRPCClient{
 		connPool:            connPool,
-		disableDeadlines:    disableDeadlines,
 		databaseAdminClient: databasepb.NewDatabaseAdminClient(connPool),
 		CallOptions:         &client.CallOptions,
 		operationsClient:    longrunningpb.NewOperationsClient(connPool),
@@ -1067,11 +1110,6 @@ func (c *databaseAdminGRPCClient) ListDatabases(ctx context.Context, req *databa
 }
 
 func (c *databaseAdminGRPCClient) CreateDatabase(ctx context.Context, req *databasepb.CreateDatabaseRequest, opts ...gax.CallOption) (*CreateDatabaseOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 3600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1091,11 +1129,6 @@ func (c *databaseAdminGRPCClient) CreateDatabase(ctx context.Context, req *datab
 }
 
 func (c *databaseAdminGRPCClient) GetDatabase(ctx context.Context, req *databasepb.GetDatabaseRequest, opts ...gax.CallOption) (*databasepb.Database, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 3600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1113,11 +1146,6 @@ func (c *databaseAdminGRPCClient) GetDatabase(ctx context.Context, req *database
 }
 
 func (c *databaseAdminGRPCClient) UpdateDatabase(ctx context.Context, req *databasepb.UpdateDatabaseRequest, opts ...gax.CallOption) (*UpdateDatabaseOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 3600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "database.name", url.QueryEscape(req.GetDatabase().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1137,11 +1165,6 @@ func (c *databaseAdminGRPCClient) UpdateDatabase(ctx context.Context, req *datab
 }
 
 func (c *databaseAdminGRPCClient) UpdateDatabaseDdl(ctx context.Context, req *databasepb.UpdateDatabaseDdlRequest, opts ...gax.CallOption) (*UpdateDatabaseDdlOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 3600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "database", url.QueryEscape(req.GetDatabase())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1161,11 +1184,6 @@ func (c *databaseAdminGRPCClient) UpdateDatabaseDdl(ctx context.Context, req *da
 }
 
 func (c *databaseAdminGRPCClient) DropDatabase(ctx context.Context, req *databasepb.DropDatabaseRequest, opts ...gax.CallOption) error {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 3600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "database", url.QueryEscape(req.GetDatabase())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1179,11 +1197,6 @@ func (c *databaseAdminGRPCClient) DropDatabase(ctx context.Context, req *databas
 }
 
 func (c *databaseAdminGRPCClient) GetDatabaseDdl(ctx context.Context, req *databasepb.GetDatabaseDdlRequest, opts ...gax.CallOption) (*databasepb.GetDatabaseDdlResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 3600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "database", url.QueryEscape(req.GetDatabase())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1201,11 +1214,6 @@ func (c *databaseAdminGRPCClient) GetDatabaseDdl(ctx context.Context, req *datab
 }
 
 func (c *databaseAdminGRPCClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1223,11 +1231,6 @@ func (c *databaseAdminGRPCClient) SetIamPolicy(ctx context.Context, req *iampb.S
 }
 
 func (c *databaseAdminGRPCClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1245,11 +1248,6 @@ func (c *databaseAdminGRPCClient) GetIamPolicy(ctx context.Context, req *iampb.G
 }
 
 func (c *databaseAdminGRPCClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermissionsRequest, opts ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1267,11 +1265,6 @@ func (c *databaseAdminGRPCClient) TestIamPermissions(ctx context.Context, req *i
 }
 
 func (c *databaseAdminGRPCClient) CreateBackup(ctx context.Context, req *databasepb.CreateBackupRequest, opts ...gax.CallOption) (*CreateBackupOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 3600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1291,11 +1284,6 @@ func (c *databaseAdminGRPCClient) CreateBackup(ctx context.Context, req *databas
 }
 
 func (c *databaseAdminGRPCClient) CopyBackup(ctx context.Context, req *databasepb.CopyBackupRequest, opts ...gax.CallOption) (*CopyBackupOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 3600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1315,11 +1303,6 @@ func (c *databaseAdminGRPCClient) CopyBackup(ctx context.Context, req *databasep
 }
 
 func (c *databaseAdminGRPCClient) GetBackup(ctx context.Context, req *databasepb.GetBackupRequest, opts ...gax.CallOption) (*databasepb.Backup, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 3600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1337,11 +1320,6 @@ func (c *databaseAdminGRPCClient) GetBackup(ctx context.Context, req *databasepb
 }
 
 func (c *databaseAdminGRPCClient) UpdateBackup(ctx context.Context, req *databasepb.UpdateBackupRequest, opts ...gax.CallOption) (*databasepb.Backup, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 3600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "backup.name", url.QueryEscape(req.GetBackup().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1359,11 +1337,6 @@ func (c *databaseAdminGRPCClient) UpdateBackup(ctx context.Context, req *databas
 }
 
 func (c *databaseAdminGRPCClient) DeleteBackup(ctx context.Context, req *databasepb.DeleteBackupRequest, opts ...gax.CallOption) error {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 3600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1422,11 +1395,6 @@ func (c *databaseAdminGRPCClient) ListBackups(ctx context.Context, req *database
 }
 
 func (c *databaseAdminGRPCClient) RestoreDatabase(ctx context.Context, req *databasepb.RestoreDatabaseRequest, opts ...gax.CallOption) (*RestoreDatabaseOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 3600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)

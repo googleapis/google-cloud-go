@@ -61,6 +61,7 @@ type SubnetworksCallOptions struct {
 func defaultSubnetworksRESTCallOptions() *SubnetworksCallOptions {
 	return &SubnetworksCallOptions{
 		AggregatedList: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -71,9 +72,14 @@ func defaultSubnetworksRESTCallOptions() *SubnetworksCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
-		Delete:            []gax.CallOption{},
-		ExpandIpCidrRange: []gax.CallOption{},
+		Delete: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		ExpandIpCidrRange: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
 		Get: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -85,6 +91,7 @@ func defaultSubnetworksRESTCallOptions() *SubnetworksCallOptions {
 			}),
 		},
 		GetIamPolicy: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -95,8 +102,11 @@ func defaultSubnetworksRESTCallOptions() *SubnetworksCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
-		Insert: []gax.CallOption{},
+		Insert: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
 		List: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -108,6 +118,7 @@ func defaultSubnetworksRESTCallOptions() *SubnetworksCallOptions {
 			}),
 		},
 		ListUsable: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -118,10 +129,18 @@ func defaultSubnetworksRESTCallOptions() *SubnetworksCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
-		Patch:                    []gax.CallOption{},
-		SetIamPolicy:             []gax.CallOption{},
-		SetPrivateIpGoogleAccess: []gax.CallOption{},
-		TestIamPermissions:       []gax.CallOption{},
+		Patch: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		SetIamPolicy: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		SetPrivateIpGoogleAccess: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		TestIamPermissions: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
 	}
 }
 

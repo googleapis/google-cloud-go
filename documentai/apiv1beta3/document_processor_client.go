@@ -94,6 +94,7 @@ func defaultDocumentProcessorGRPCClientOptions() []option.ClientOption {
 func defaultDocumentProcessorCallOptions() *DocumentProcessorCallOptions {
 	return &DocumentProcessorCallOptions{
 		ProcessDocument: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -106,6 +107,7 @@ func defaultDocumentProcessorCallOptions() *DocumentProcessorCallOptions {
 			}),
 		},
 		BatchProcessDocuments: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -134,6 +136,7 @@ func defaultDocumentProcessorCallOptions() *DocumentProcessorCallOptions {
 		DisableProcessor:           []gax.CallOption{},
 		SetDefaultProcessorVersion: []gax.CallOption{},
 		ReviewDocument: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -160,6 +163,7 @@ func defaultDocumentProcessorCallOptions() *DocumentProcessorCallOptions {
 func defaultDocumentProcessorRESTCallOptions() *DocumentProcessorCallOptions {
 	return &DocumentProcessorCallOptions{
 		ProcessDocument: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -171,6 +175,7 @@ func defaultDocumentProcessorRESTCallOptions() *DocumentProcessorCallOptions {
 			}),
 		},
 		BatchProcessDocuments: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -198,6 +203,7 @@ func defaultDocumentProcessorRESTCallOptions() *DocumentProcessorCallOptions {
 		DisableProcessor:           []gax.CallOption{},
 		SetDefaultProcessorVersion: []gax.CallOption{},
 		ReviewDocument: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -542,9 +548,6 @@ type documentProcessorGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing DocumentProcessorClient
 	CallOptions **DocumentProcessorCallOptions
 
@@ -581,11 +584,6 @@ func NewDocumentProcessorClient(ctx context.Context, opts ...option.ClientOption
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -594,7 +592,6 @@ func NewDocumentProcessorClient(ctx context.Context, opts ...option.ClientOption
 
 	c := &documentProcessorGRPCClient{
 		connPool:                connPool,
-		disableDeadlines:        disableDeadlines,
 		documentProcessorClient: documentaipb.NewDocumentProcessorServiceClient(connPool),
 		CallOptions:             &client.CallOptions,
 		operationsClient:        longrunningpb.NewOperationsClient(connPool),
@@ -728,11 +725,6 @@ func (c *documentProcessorRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 func (c *documentProcessorGRPCClient) ProcessDocument(ctx context.Context, req *documentaipb.ProcessRequest, opts ...gax.CallOption) (*documentaipb.ProcessResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 120000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -750,11 +742,6 @@ func (c *documentProcessorGRPCClient) ProcessDocument(ctx context.Context, req *
 }
 
 func (c *documentProcessorGRPCClient) BatchProcessDocuments(ctx context.Context, req *documentaipb.BatchProcessRequest, opts ...gax.CallOption) (*BatchProcessDocumentsOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 120000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1146,11 +1133,6 @@ func (c *documentProcessorGRPCClient) SetDefaultProcessorVersion(ctx context.Con
 }
 
 func (c *documentProcessorGRPCClient) ReviewDocument(ctx context.Context, req *documentaipb.ReviewDocumentRequest, opts ...gax.CallOption) (*ReviewDocumentOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 120000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "human_review_config", url.QueryEscape(req.GetHumanReviewConfig())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)

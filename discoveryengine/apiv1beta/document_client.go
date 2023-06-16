@@ -74,6 +74,7 @@ func defaultDocumentGRPCClientOptions() []option.ClientOption {
 func defaultDocumentCallOptions() *DocumentCallOptions {
 	return &DocumentCallOptions{
 		GetDocument: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -85,6 +86,7 @@ func defaultDocumentCallOptions() *DocumentCallOptions {
 			}),
 		},
 		ListDocuments: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -96,6 +98,7 @@ func defaultDocumentCallOptions() *DocumentCallOptions {
 			}),
 		},
 		CreateDocument: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -107,6 +110,7 @@ func defaultDocumentCallOptions() *DocumentCallOptions {
 			}),
 		},
 		UpdateDocument: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -118,6 +122,7 @@ func defaultDocumentCallOptions() *DocumentCallOptions {
 			}),
 		},
 		DeleteDocument: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -129,6 +134,7 @@ func defaultDocumentCallOptions() *DocumentCallOptions {
 			}),
 		},
 		ImportDocuments: []gax.CallOption{
+			gax.WithTimeout(300000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -140,6 +146,7 @@ func defaultDocumentCallOptions() *DocumentCallOptions {
 			}),
 		},
 		PurgeDocuments: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -151,6 +158,7 @@ func defaultDocumentCallOptions() *DocumentCallOptions {
 			}),
 		},
 		GetOperation: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -162,6 +170,7 @@ func defaultDocumentCallOptions() *DocumentCallOptions {
 			}),
 		},
 		ListOperations: []gax.CallOption{
+			gax.WithTimeout(300000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -178,6 +187,7 @@ func defaultDocumentCallOptions() *DocumentCallOptions {
 func defaultDocumentRESTCallOptions() *DocumentCallOptions {
 	return &DocumentCallOptions{
 		GetDocument: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -188,6 +198,7 @@ func defaultDocumentRESTCallOptions() *DocumentCallOptions {
 			}),
 		},
 		ListDocuments: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -198,6 +209,7 @@ func defaultDocumentRESTCallOptions() *DocumentCallOptions {
 			}),
 		},
 		CreateDocument: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -208,6 +220,7 @@ func defaultDocumentRESTCallOptions() *DocumentCallOptions {
 			}),
 		},
 		UpdateDocument: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -218,6 +231,7 @@ func defaultDocumentRESTCallOptions() *DocumentCallOptions {
 			}),
 		},
 		DeleteDocument: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -228,6 +242,7 @@ func defaultDocumentRESTCallOptions() *DocumentCallOptions {
 			}),
 		},
 		ImportDocuments: []gax.CallOption{
+			gax.WithTimeout(300000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -238,6 +253,7 @@ func defaultDocumentRESTCallOptions() *DocumentCallOptions {
 			}),
 		},
 		PurgeDocuments: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -248,6 +264,7 @@ func defaultDocumentRESTCallOptions() *DocumentCallOptions {
 			}),
 		},
 		GetOperation: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -258,6 +275,7 @@ func defaultDocumentRESTCallOptions() *DocumentCallOptions {
 			}),
 		},
 		ListOperations: []gax.CallOption{
+			gax.WithTimeout(300000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -416,9 +434,6 @@ type documentGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing DocumentClient
 	CallOptions **DocumentCallOptions
 
@@ -452,11 +467,6 @@ func NewDocumentClient(ctx context.Context, opts ...option.ClientOption) (*Docum
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -465,7 +475,6 @@ func NewDocumentClient(ctx context.Context, opts ...option.ClientOption) (*Docum
 
 	c := &documentGRPCClient{
 		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
 		documentClient:   discoveryenginepb.NewDocumentServiceClient(connPool),
 		CallOptions:      &client.CallOptions,
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
@@ -597,11 +606,6 @@ func (c *documentRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 func (c *documentGRPCClient) GetDocument(ctx context.Context, req *discoveryenginepb.GetDocumentRequest, opts ...gax.CallOption) (*discoveryenginepb.Document, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -664,11 +668,6 @@ func (c *documentGRPCClient) ListDocuments(ctx context.Context, req *discoveryen
 }
 
 func (c *documentGRPCClient) CreateDocument(ctx context.Context, req *discoveryenginepb.CreateDocumentRequest, opts ...gax.CallOption) (*discoveryenginepb.Document, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -686,11 +685,6 @@ func (c *documentGRPCClient) CreateDocument(ctx context.Context, req *discoverye
 }
 
 func (c *documentGRPCClient) UpdateDocument(ctx context.Context, req *discoveryenginepb.UpdateDocumentRequest, opts ...gax.CallOption) (*discoveryenginepb.Document, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "document.name", url.QueryEscape(req.GetDocument().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -708,11 +702,6 @@ func (c *documentGRPCClient) UpdateDocument(ctx context.Context, req *discoverye
 }
 
 func (c *documentGRPCClient) DeleteDocument(ctx context.Context, req *discoveryenginepb.DeleteDocumentRequest, opts ...gax.CallOption) error {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -726,11 +715,6 @@ func (c *documentGRPCClient) DeleteDocument(ctx context.Context, req *discoverye
 }
 
 func (c *documentGRPCClient) ImportDocuments(ctx context.Context, req *discoveryenginepb.ImportDocumentsRequest, opts ...gax.CallOption) (*ImportDocumentsOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 300000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -750,11 +734,6 @@ func (c *documentGRPCClient) ImportDocuments(ctx context.Context, req *discovery
 }
 
 func (c *documentGRPCClient) PurgeDocuments(ctx context.Context, req *discoveryenginepb.PurgeDocumentsRequest, opts ...gax.CallOption) (*PurgeDocumentsOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -774,11 +753,6 @@ func (c *documentGRPCClient) PurgeDocuments(ctx context.Context, req *discoverye
 }
 
 func (c *documentGRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)

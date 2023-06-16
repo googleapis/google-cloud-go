@@ -98,8 +98,11 @@ func defaultGRPCClientOptions() []option.ClientOption {
 
 func defaultCallOptions() *CallOptions {
 	return &CallOptions{
-		CreateDataset: []gax.CallOption{},
+		CreateDataset: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+		},
 		GetDataset: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -112,6 +115,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		ListDatasets: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -124,6 +128,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		DeleteDataset: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -135,8 +140,11 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
-		ImportData: []gax.CallOption{},
+		ImportData: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+		},
 		ExportData: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -149,6 +157,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		GetDataItem: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -161,6 +170,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		ListDataItems: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -173,6 +183,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		GetAnnotatedDataset: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -185,6 +196,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		ListAnnotatedDatasets: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -197,10 +209,17 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		DeleteAnnotatedDataset: []gax.CallOption{},
-		LabelImage:             []gax.CallOption{},
-		LabelVideo:             []gax.CallOption{},
-		LabelText:              []gax.CallOption{},
+		LabelImage: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+		},
+		LabelVideo: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+		},
+		LabelText: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+		},
 		GetExample: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -213,6 +232,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		ListExamples: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -224,8 +244,11 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
-		CreateAnnotationSpecSet: []gax.CallOption{},
+		CreateAnnotationSpecSet: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+		},
 		GetAnnotationSpecSet: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -238,6 +261,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		ListAnnotationSpecSets: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -250,6 +274,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		DeleteAnnotationSpecSet: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -261,8 +286,11 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
-		CreateInstruction: []gax.CallOption{},
+		CreateInstruction: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+		},
 		GetInstruction: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -275,6 +303,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		ListInstructions: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -287,6 +316,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		DeleteInstruction: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -299,6 +329,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		GetEvaluation: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -311,6 +342,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		SearchEvaluations: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -322,10 +354,17 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
-		SearchExampleComparisons: []gax.CallOption{},
-		CreateEvaluationJob:      []gax.CallOption{},
-		UpdateEvaluationJob:      []gax.CallOption{},
+		SearchExampleComparisons: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+		},
+		CreateEvaluationJob: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+		},
+		UpdateEvaluationJob: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+		},
 		GetEvaluationJob: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -337,9 +376,14 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
-		PauseEvaluationJob:  []gax.CallOption{},
-		ResumeEvaluationJob: []gax.CallOption{},
+		PauseEvaluationJob: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+		},
+		ResumeEvaluationJob: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+		},
 		DeleteEvaluationJob: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -352,6 +396,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		ListEvaluationJobs: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -368,8 +413,11 @@ func defaultCallOptions() *CallOptions {
 
 func defaultRESTCallOptions() *CallOptions {
 	return &CallOptions{
-		CreateDataset: []gax.CallOption{},
+		CreateDataset: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+		},
 		GetDataset: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -381,6 +429,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		ListDatasets: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -392,6 +441,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		DeleteDataset: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -402,8 +452,11 @@ func defaultRESTCallOptions() *CallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
-		ImportData: []gax.CallOption{},
+		ImportData: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+		},
 		ExportData: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -415,6 +468,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		GetDataItem: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -426,6 +480,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		ListDataItems: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -437,6 +492,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		GetAnnotatedDataset: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -448,6 +504,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		ListAnnotatedDatasets: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -459,10 +516,17 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		DeleteAnnotatedDataset: []gax.CallOption{},
-		LabelImage:             []gax.CallOption{},
-		LabelVideo:             []gax.CallOption{},
-		LabelText:              []gax.CallOption{},
+		LabelImage: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+		},
+		LabelVideo: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+		},
+		LabelText: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+		},
 		GetExample: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -474,6 +538,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		ListExamples: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -484,8 +549,11 @@ func defaultRESTCallOptions() *CallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
-		CreateAnnotationSpecSet: []gax.CallOption{},
+		CreateAnnotationSpecSet: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+		},
 		GetAnnotationSpecSet: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -497,6 +565,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		ListAnnotationSpecSets: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -508,6 +577,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		DeleteAnnotationSpecSet: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -518,8 +588,11 @@ func defaultRESTCallOptions() *CallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
-		CreateInstruction: []gax.CallOption{},
+		CreateInstruction: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+		},
 		GetInstruction: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -531,6 +604,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		ListInstructions: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -542,6 +616,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		DeleteInstruction: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -553,6 +628,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		GetEvaluation: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -564,6 +640,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		SearchEvaluations: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -574,10 +651,17 @@ func defaultRESTCallOptions() *CallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
-		SearchExampleComparisons: []gax.CallOption{},
-		CreateEvaluationJob:      []gax.CallOption{},
-		UpdateEvaluationJob:      []gax.CallOption{},
+		SearchExampleComparisons: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+		},
+		CreateEvaluationJob: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+		},
+		UpdateEvaluationJob: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+		},
 		GetEvaluationJob: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -588,9 +672,14 @@ func defaultRESTCallOptions() *CallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
-		PauseEvaluationJob:  []gax.CallOption{},
-		ResumeEvaluationJob: []gax.CallOption{},
+		PauseEvaluationJob: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+		},
+		ResumeEvaluationJob: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+		},
 		DeleteEvaluationJob: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -602,6 +691,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		ListEvaluationJobs: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -935,9 +1025,6 @@ type gRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing Client
 	CallOptions **CallOptions
 
@@ -967,11 +1054,6 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -979,10 +1061,9 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 	client := Client{CallOptions: defaultCallOptions()}
 
 	c := &gRPCClient{
-		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
-		client:           datalabelingpb.NewDataLabelingServiceClient(connPool),
-		CallOptions:      &client.CallOptions,
+		connPool:    connPool,
+		client:      datalabelingpb.NewDataLabelingServiceClient(connPool),
+		CallOptions: &client.CallOptions,
 	}
 	c.setGoogleClientInfo()
 
@@ -1109,11 +1190,6 @@ func (c *restClient) Connection() *grpc.ClientConn {
 	return nil
 }
 func (c *gRPCClient) CreateDataset(ctx context.Context, req *datalabelingpb.CreateDatasetRequest, opts ...gax.CallOption) (*datalabelingpb.Dataset, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1131,11 +1207,6 @@ func (c *gRPCClient) CreateDataset(ctx context.Context, req *datalabelingpb.Crea
 }
 
 func (c *gRPCClient) GetDataset(ctx context.Context, req *datalabelingpb.GetDatasetRequest, opts ...gax.CallOption) (*datalabelingpb.Dataset, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1198,11 +1269,6 @@ func (c *gRPCClient) ListDatasets(ctx context.Context, req *datalabelingpb.ListD
 }
 
 func (c *gRPCClient) DeleteDataset(ctx context.Context, req *datalabelingpb.DeleteDatasetRequest, opts ...gax.CallOption) error {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1216,11 +1282,6 @@ func (c *gRPCClient) DeleteDataset(ctx context.Context, req *datalabelingpb.Dele
 }
 
 func (c *gRPCClient) ImportData(ctx context.Context, req *datalabelingpb.ImportDataRequest, opts ...gax.CallOption) (*ImportDataOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1240,11 +1301,6 @@ func (c *gRPCClient) ImportData(ctx context.Context, req *datalabelingpb.ImportD
 }
 
 func (c *gRPCClient) ExportData(ctx context.Context, req *datalabelingpb.ExportDataRequest, opts ...gax.CallOption) (*ExportDataOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1264,11 +1320,6 @@ func (c *gRPCClient) ExportData(ctx context.Context, req *datalabelingpb.ExportD
 }
 
 func (c *gRPCClient) GetDataItem(ctx context.Context, req *datalabelingpb.GetDataItemRequest, opts ...gax.CallOption) (*datalabelingpb.DataItem, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1331,11 +1382,6 @@ func (c *gRPCClient) ListDataItems(ctx context.Context, req *datalabelingpb.List
 }
 
 func (c *gRPCClient) GetAnnotatedDataset(ctx context.Context, req *datalabelingpb.GetAnnotatedDatasetRequest, opts ...gax.CallOption) (*datalabelingpb.AnnotatedDataset, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1411,11 +1457,6 @@ func (c *gRPCClient) DeleteAnnotatedDataset(ctx context.Context, req *datalabeli
 }
 
 func (c *gRPCClient) LabelImage(ctx context.Context, req *datalabelingpb.LabelImageRequest, opts ...gax.CallOption) (*LabelImageOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1435,11 +1476,6 @@ func (c *gRPCClient) LabelImage(ctx context.Context, req *datalabelingpb.LabelIm
 }
 
 func (c *gRPCClient) LabelVideo(ctx context.Context, req *datalabelingpb.LabelVideoRequest, opts ...gax.CallOption) (*LabelVideoOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1459,11 +1495,6 @@ func (c *gRPCClient) LabelVideo(ctx context.Context, req *datalabelingpb.LabelVi
 }
 
 func (c *gRPCClient) LabelText(ctx context.Context, req *datalabelingpb.LabelTextRequest, opts ...gax.CallOption) (*LabelTextOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1483,11 +1514,6 @@ func (c *gRPCClient) LabelText(ctx context.Context, req *datalabelingpb.LabelTex
 }
 
 func (c *gRPCClient) GetExample(ctx context.Context, req *datalabelingpb.GetExampleRequest, opts ...gax.CallOption) (*datalabelingpb.Example, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1550,11 +1576,6 @@ func (c *gRPCClient) ListExamples(ctx context.Context, req *datalabelingpb.ListE
 }
 
 func (c *gRPCClient) CreateAnnotationSpecSet(ctx context.Context, req *datalabelingpb.CreateAnnotationSpecSetRequest, opts ...gax.CallOption) (*datalabelingpb.AnnotationSpecSet, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1572,11 +1593,6 @@ func (c *gRPCClient) CreateAnnotationSpecSet(ctx context.Context, req *datalabel
 }
 
 func (c *gRPCClient) GetAnnotationSpecSet(ctx context.Context, req *datalabelingpb.GetAnnotationSpecSetRequest, opts ...gax.CallOption) (*datalabelingpb.AnnotationSpecSet, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1639,11 +1655,6 @@ func (c *gRPCClient) ListAnnotationSpecSets(ctx context.Context, req *datalabeli
 }
 
 func (c *gRPCClient) DeleteAnnotationSpecSet(ctx context.Context, req *datalabelingpb.DeleteAnnotationSpecSetRequest, opts ...gax.CallOption) error {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1657,11 +1668,6 @@ func (c *gRPCClient) DeleteAnnotationSpecSet(ctx context.Context, req *datalabel
 }
 
 func (c *gRPCClient) CreateInstruction(ctx context.Context, req *datalabelingpb.CreateInstructionRequest, opts ...gax.CallOption) (*CreateInstructionOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1681,11 +1687,6 @@ func (c *gRPCClient) CreateInstruction(ctx context.Context, req *datalabelingpb.
 }
 
 func (c *gRPCClient) GetInstruction(ctx context.Context, req *datalabelingpb.GetInstructionRequest, opts ...gax.CallOption) (*datalabelingpb.Instruction, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1748,11 +1749,6 @@ func (c *gRPCClient) ListInstructions(ctx context.Context, req *datalabelingpb.L
 }
 
 func (c *gRPCClient) DeleteInstruction(ctx context.Context, req *datalabelingpb.DeleteInstructionRequest, opts ...gax.CallOption) error {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1766,11 +1762,6 @@ func (c *gRPCClient) DeleteInstruction(ctx context.Context, req *datalabelingpb.
 }
 
 func (c *gRPCClient) GetEvaluation(ctx context.Context, req *datalabelingpb.GetEvaluationRequest, opts ...gax.CallOption) (*datalabelingpb.Evaluation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1878,11 +1869,6 @@ func (c *gRPCClient) SearchExampleComparisons(ctx context.Context, req *datalabe
 }
 
 func (c *gRPCClient) CreateEvaluationJob(ctx context.Context, req *datalabelingpb.CreateEvaluationJobRequest, opts ...gax.CallOption) (*datalabelingpb.EvaluationJob, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1900,11 +1886,6 @@ func (c *gRPCClient) CreateEvaluationJob(ctx context.Context, req *datalabelingp
 }
 
 func (c *gRPCClient) UpdateEvaluationJob(ctx context.Context, req *datalabelingpb.UpdateEvaluationJobRequest, opts ...gax.CallOption) (*datalabelingpb.EvaluationJob, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "evaluation_job.name", url.QueryEscape(req.GetEvaluationJob().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1922,11 +1903,6 @@ func (c *gRPCClient) UpdateEvaluationJob(ctx context.Context, req *datalabelingp
 }
 
 func (c *gRPCClient) GetEvaluationJob(ctx context.Context, req *datalabelingpb.GetEvaluationJobRequest, opts ...gax.CallOption) (*datalabelingpb.EvaluationJob, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1944,11 +1920,6 @@ func (c *gRPCClient) GetEvaluationJob(ctx context.Context, req *datalabelingpb.G
 }
 
 func (c *gRPCClient) PauseEvaluationJob(ctx context.Context, req *datalabelingpb.PauseEvaluationJobRequest, opts ...gax.CallOption) error {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1962,11 +1933,6 @@ func (c *gRPCClient) PauseEvaluationJob(ctx context.Context, req *datalabelingpb
 }
 
 func (c *gRPCClient) ResumeEvaluationJob(ctx context.Context, req *datalabelingpb.ResumeEvaluationJobRequest, opts ...gax.CallOption) error {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1980,11 +1946,6 @@ func (c *gRPCClient) ResumeEvaluationJob(ctx context.Context, req *datalabelingp
 }
 
 func (c *gRPCClient) DeleteEvaluationJob(ctx context.Context, req *datalabelingpb.DeleteEvaluationJobRequest, opts ...gax.CallOption) error {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)

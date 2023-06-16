@@ -71,6 +71,7 @@ func defaultAnswerRecordsGRPCClientOptions() []option.ClientOption {
 func defaultAnswerRecordsCallOptions() *AnswerRecordsCallOptions {
 	return &AnswerRecordsCallOptions{
 		ListAnswerRecords: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -82,6 +83,7 @@ func defaultAnswerRecordsCallOptions() *AnswerRecordsCallOptions {
 			}),
 		},
 		UpdateAnswerRecord: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -103,6 +105,7 @@ func defaultAnswerRecordsCallOptions() *AnswerRecordsCallOptions {
 func defaultAnswerRecordsRESTCallOptions() *AnswerRecordsCallOptions {
 	return &AnswerRecordsCallOptions{
 		ListAnswerRecords: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -113,6 +116,7 @@ func defaultAnswerRecordsRESTCallOptions() *AnswerRecordsCallOptions {
 			}),
 		},
 		UpdateAnswerRecord: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -223,9 +227,6 @@ type answerRecordsGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing AnswerRecordsClient
 	CallOptions **AnswerRecordsCallOptions
 
@@ -255,11 +256,6 @@ func NewAnswerRecordsClient(ctx context.Context, opts ...option.ClientOption) (*
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -268,7 +264,6 @@ func NewAnswerRecordsClient(ctx context.Context, opts ...option.ClientOption) (*
 
 	c := &answerRecordsGRPCClient{
 		connPool:            connPool,
-		disableDeadlines:    disableDeadlines,
 		answerRecordsClient: dialogflowpb.NewAnswerRecordsClient(connPool),
 		CallOptions:         &client.CallOptions,
 		operationsClient:    longrunningpb.NewOperationsClient(connPool),
@@ -419,11 +414,6 @@ func (c *answerRecordsGRPCClient) ListAnswerRecords(ctx context.Context, req *di
 }
 
 func (c *answerRecordsGRPCClient) UpdateAnswerRecord(ctx context.Context, req *dialogflowpb.UpdateAnswerRecordRequest, opts ...gax.CallOption) (*dialogflowpb.AnswerRecord, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "answer_record.name", url.QueryEscape(req.GetAnswerRecord().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)

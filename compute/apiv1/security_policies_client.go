@@ -60,8 +60,11 @@ type SecurityPoliciesCallOptions struct {
 
 func defaultSecurityPoliciesRESTCallOptions() *SecurityPoliciesCallOptions {
 	return &SecurityPoliciesCallOptions{
-		AddRule: []gax.CallOption{},
+		AddRule: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
 		AggregatedList: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -72,8 +75,11 @@ func defaultSecurityPoliciesRESTCallOptions() *SecurityPoliciesCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
-		Delete: []gax.CallOption{},
+		Delete: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
 		Get: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -85,6 +91,7 @@ func defaultSecurityPoliciesRESTCallOptions() *SecurityPoliciesCallOptions {
 			}),
 		},
 		GetRule: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -95,8 +102,11 @@ func defaultSecurityPoliciesRESTCallOptions() *SecurityPoliciesCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
-		Insert: []gax.CallOption{},
+		Insert: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
 		List: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -108,6 +118,7 @@ func defaultSecurityPoliciesRESTCallOptions() *SecurityPoliciesCallOptions {
 			}),
 		},
 		ListPreconfiguredExpressionSets: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -118,10 +129,18 @@ func defaultSecurityPoliciesRESTCallOptions() *SecurityPoliciesCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
-		Patch:      []gax.CallOption{},
-		PatchRule:  []gax.CallOption{},
-		RemoveRule: []gax.CallOption{},
-		SetLabels:  []gax.CallOption{},
+		Patch: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		PatchRule: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		RemoveRule: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		SetLabels: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
 	}
 }
 

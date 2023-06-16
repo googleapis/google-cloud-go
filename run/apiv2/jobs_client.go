@@ -275,9 +275,6 @@ type jobsGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing JobsClient
 	CallOptions **JobsCallOptions
 
@@ -309,11 +306,6 @@ func NewJobsClient(ctx context.Context, opts ...option.ClientOption) (*JobsClien
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -322,7 +314,6 @@ func NewJobsClient(ctx context.Context, opts ...option.ClientOption) (*JobsClien
 
 	c := &jobsGRPCClient{
 		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
 		jobsClient:       runpb.NewJobsClient(connPool),
 		CallOptions:      &client.CallOptions,
 		operationsClient: longrunningpb.NewOperationsClient(connPool),

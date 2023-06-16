@@ -83,13 +83,27 @@ func defaultIndexEndpointGRPCClientOptions() []option.ClientOption {
 
 func defaultIndexEndpointCallOptions() *IndexEndpointCallOptions {
 	return &IndexEndpointCallOptions{
-		CreateIndexEndpoint: []gax.CallOption{},
-		GetIndexEndpoint:    []gax.CallOption{},
-		ListIndexEndpoints:  []gax.CallOption{},
-		UpdateIndexEndpoint: []gax.CallOption{},
-		DeleteIndexEndpoint: []gax.CallOption{},
-		DeployIndex:         []gax.CallOption{},
-		UndeployIndex:       []gax.CallOption{},
+		CreateIndexEndpoint: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		GetIndexEndpoint: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		ListIndexEndpoints: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		UpdateIndexEndpoint: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		DeleteIndexEndpoint: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		DeployIndex: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		UndeployIndex: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
 		MutateDeployedIndex: []gax.CallOption{},
 		GetLocation:         []gax.CallOption{},
 		ListLocations:       []gax.CallOption{},
@@ -106,13 +120,27 @@ func defaultIndexEndpointCallOptions() *IndexEndpointCallOptions {
 
 func defaultIndexEndpointRESTCallOptions() *IndexEndpointCallOptions {
 	return &IndexEndpointCallOptions{
-		CreateIndexEndpoint: []gax.CallOption{},
-		GetIndexEndpoint:    []gax.CallOption{},
-		ListIndexEndpoints:  []gax.CallOption{},
-		UpdateIndexEndpoint: []gax.CallOption{},
-		DeleteIndexEndpoint: []gax.CallOption{},
-		DeployIndex:         []gax.CallOption{},
-		UndeployIndex:       []gax.CallOption{},
+		CreateIndexEndpoint: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		GetIndexEndpoint: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		ListIndexEndpoints: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		UpdateIndexEndpoint: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		DeleteIndexEndpoint: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		DeployIndex: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		UndeployIndex: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
 		MutateDeployedIndex: []gax.CallOption{},
 		GetLocation:         []gax.CallOption{},
 		ListLocations:       []gax.CallOption{},
@@ -338,9 +366,6 @@ type indexEndpointGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing IndexEndpointClient
 	CallOptions **IndexEndpointCallOptions
 
@@ -376,11 +401,6 @@ func NewIndexEndpointClient(ctx context.Context, opts ...option.ClientOption) (*
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -389,7 +409,6 @@ func NewIndexEndpointClient(ctx context.Context, opts ...option.ClientOption) (*
 
 	c := &indexEndpointGRPCClient{
 		connPool:            connPool,
-		disableDeadlines:    disableDeadlines,
 		indexEndpointClient: aiplatformpb.NewIndexEndpointServiceClient(connPool),
 		CallOptions:         &client.CallOptions,
 		operationsClient:    longrunningpb.NewOperationsClient(connPool),
@@ -521,11 +540,6 @@ func (c *indexEndpointRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 func (c *indexEndpointGRPCClient) CreateIndexEndpoint(ctx context.Context, req *aiplatformpb.CreateIndexEndpointRequest, opts ...gax.CallOption) (*CreateIndexEndpointOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -545,11 +559,6 @@ func (c *indexEndpointGRPCClient) CreateIndexEndpoint(ctx context.Context, req *
 }
 
 func (c *indexEndpointGRPCClient) GetIndexEndpoint(ctx context.Context, req *aiplatformpb.GetIndexEndpointRequest, opts ...gax.CallOption) (*aiplatformpb.IndexEndpoint, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -612,11 +621,6 @@ func (c *indexEndpointGRPCClient) ListIndexEndpoints(ctx context.Context, req *a
 }
 
 func (c *indexEndpointGRPCClient) UpdateIndexEndpoint(ctx context.Context, req *aiplatformpb.UpdateIndexEndpointRequest, opts ...gax.CallOption) (*aiplatformpb.IndexEndpoint, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "index_endpoint.name", url.QueryEscape(req.GetIndexEndpoint().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -634,11 +638,6 @@ func (c *indexEndpointGRPCClient) UpdateIndexEndpoint(ctx context.Context, req *
 }
 
 func (c *indexEndpointGRPCClient) DeleteIndexEndpoint(ctx context.Context, req *aiplatformpb.DeleteIndexEndpointRequest, opts ...gax.CallOption) (*DeleteIndexEndpointOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -658,11 +657,6 @@ func (c *indexEndpointGRPCClient) DeleteIndexEndpoint(ctx context.Context, req *
 }
 
 func (c *indexEndpointGRPCClient) DeployIndex(ctx context.Context, req *aiplatformpb.DeployIndexRequest, opts ...gax.CallOption) (*DeployIndexOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "index_endpoint", url.QueryEscape(req.GetIndexEndpoint())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -682,11 +676,6 @@ func (c *indexEndpointGRPCClient) DeployIndex(ctx context.Context, req *aiplatfo
 }
 
 func (c *indexEndpointGRPCClient) UndeployIndex(ctx context.Context, req *aiplatformpb.UndeployIndexRequest, opts ...gax.CallOption) (*UndeployIndexOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "index_endpoint", url.QueryEscape(req.GetIndexEndpoint())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)

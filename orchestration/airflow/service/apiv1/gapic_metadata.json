@@ -15,6 +15,11 @@
                 "CreateEnvironment"
               ]
             },
+            "DatabaseFailover": {
+              "methods": [
+                "DatabaseFailover"
+              ]
+            },
             "DeleteEnvironment": {
               "methods": [
                 "DeleteEnvironment"
@@ -23,6 +28,16 @@
             "DeleteOperation": {
               "methods": [
                 "DeleteOperation"
+              ]
+            },
+            "ExecuteAirflowCommand": {
+              "methods": [
+                "ExecuteAirflowCommand"
+              ]
+            },
+            "FetchDatabaseProperties": {
+              "methods": [
+                "FetchDatabaseProperties"
               ]
             },
             "GetEnvironment": {
@@ -50,9 +65,19 @@
                 "LoadSnapshot"
               ]
             },
+            "PollAirflowCommand": {
+              "methods": [
+                "PollAirflowCommand"
+              ]
+            },
             "SaveSnapshot": {
               "methods": [
                 "SaveSnapshot"
+              ]
+            },
+            "StopAirflowCommand": {
+              "methods": [
+                "StopAirflowCommand"
               ]
             },
             "UpdateEnvironment": {
@@ -70,6 +95,11 @@
                 "CreateEnvironment"
               ]
             },
+            "DatabaseFailover": {
+              "methods": [
+                "DatabaseFailover"
+              ]
+            },
             "DeleteEnvironment": {
               "methods": [
                 "DeleteEnvironment"
@@ -78,6 +108,16 @@
             "DeleteOperation": {
               "methods": [
                 "DeleteOperation"
+              ]
+            },
+            "ExecuteAirflowCommand": {
+              "methods": [
+                "ExecuteAirflowCommand"
+              ]
+            },
+            "FetchDatabaseProperties": {
+              "methods": [
+                "FetchDatabaseProperties"
               ]
             },
             "GetEnvironment": {
@@ -105,9 +145,19 @@
                 "LoadSnapshot"
               ]
             },
+            "PollAirflowCommand": {
+              "methods": [
+                "PollAirflowCommand"
+              ]
+            },
             "SaveSnapshot": {
               "methods": [
                 "SaveSnapshot"
+              ]
+            },
+            "StopAirflowCommand": {
+              "methods": [
+                "StopAirflowCommand"
               ]
             },
             "UpdateEnvironment": {

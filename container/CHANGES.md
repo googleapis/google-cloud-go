@@ -1,5 +1,12 @@
 # Changes
 
+## [1.22.0](https://github.com/googleapis/google-cloud-go/compare/container/v1.21.0...container/v1.22.0) (2023-06-13)
+
+
+### Features
+
+* **container:** Add API for GPU driver installation config ([3abdfa1](https://github.com/googleapis/google-cloud-go/commit/3abdfa14dd56cf773c477f289a7f888e20bbbd9a))
+
 ## [1.21.0](https://github.com/googleapis/google-cloud-go/compare/container/v1.20.0...container/v1.21.0) (2023-06-07)
 
 

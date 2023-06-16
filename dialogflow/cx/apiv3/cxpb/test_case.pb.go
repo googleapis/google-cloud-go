@@ -687,7 +687,8 @@ type TestRunDifference struct {
 
 	// The type of diff.
 	Type TestRunDifference_DiffType `protobuf:"varint,1,opt,name=type,proto3,enum=google.cloud.dialogflow.cx.v3.TestRunDifference_DiffType" json:"type,omitempty"`
-	// A description of the diff, showing the actual output vs expected output.
+	// A human readable description of the diff, showing the actual output vs
+	// expected output.
 	Description string `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty"`
 }
 
