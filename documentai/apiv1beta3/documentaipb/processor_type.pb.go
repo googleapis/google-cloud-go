@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -21,13 +21,12 @@
 package documentaipb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	api "google.golang.org/genproto/googleapis/api"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -47,7 +46,7 @@ type ProcessorType struct {
 	// The resource name of the processor type.
 	// Format: `projects/{project}/processorTypes/{processor_type}`
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	// The processor type, e.g., `OCR_PROCESSOR`, `INVOICE_PROCESSOR`, etc.
+	// The processor type, such as: `OCR_PROCESSOR`, `INVOICE_PROCESSOR`.
 	Type string `protobuf:"bytes,2,opt,name=type,proto3" json:"type,omitempty"`
 	// The processor category, used by UI to group processor types.
 	Category string `protobuf:"bytes,3,opt,name=category,proto3" json:"category,omitempty"`
@@ -149,7 +148,8 @@ type ProcessorType_LocationInfo struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// The location id, currently must be one of [us, eu].
+	// The location ID. For supported locations, refer to [regional and
+	// multi-regional support](/document-ai/docs/regions).
 	LocationId string `protobuf:"bytes,1,opt,name=location_id,json=locationId,proto3" json:"location_id,omitempty"`
 }
 
