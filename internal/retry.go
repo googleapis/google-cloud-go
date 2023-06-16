@@ -17,6 +17,7 @@ package internal
 import (
 	"context"
 	"fmt"
+	"google.golang.org/grpc/codes"
 	"time"
 
 	gax "github.com/googleapis/gax-go/v2"
@@ -81,5 +82,5 @@ func (e wrappedCallErr) GRPCStatus() *status.Status {
 	if s, ok := status.FromError(e.wrappedErr); ok {
 		return s
 	}
-	return nil
+	return status.New(codes.Unknown, e.Error())
 }
