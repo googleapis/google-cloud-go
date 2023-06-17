@@ -22,15 +22,14 @@ package discoveryenginepb
 
 import (
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -64,6 +63,8 @@ type CompleteQueryRequest struct {
 	// API calls. Do not use it when there is no traffic for Search API.
 	// * `user-event` - Using suggestions generated from user-imported search
 	// events.
+	// * `document-completable` - Using suggestions taken directly from
+	// user-imported document fields marked as completable.
 	//
 	// Default values:
 	//

@@ -21,13 +21,12 @@
 package discoveryenginepb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	structpb "google.golang.org/protobuf/types/known/structpb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -213,8 +212,11 @@ type Document_Content struct {
 	Content isDocument_Content_Content `protobuf_oneof:"content"`
 	// The MIME type of the content. Supported types:
 	//
-	// * `application/pdf` (PDF)
+	// * `application/pdf` (PDF, only native PDFs are supported for now)
 	// * `text/html` (HTML)
+	// * `application/vnd.openxmlformats-officedocument.wordprocessingml.document` (DOCX)
+	// * `application/vnd.openxmlformats-officedocument.presentationml.presentation` (PPTX)
+	// * `text/plain` (TXT)
 	//
 	// See https://www.iana.org/assignments/media-types/media-types.xhtml.
 	MimeType string `protobuf:"bytes,1,opt,name=mime_type,json=mimeType,proto3" json:"mime_type,omitempty"`
