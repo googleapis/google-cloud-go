@@ -20,6 +20,7 @@ import (
 	"time"
 
 	gax "github.com/googleapis/gax-go/v2"
+	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
 
@@ -81,5 +82,5 @@ func (e wrappedCallErr) GRPCStatus() *status.Status {
 	if s, ok := status.FromError(e.wrappedErr); ok {
 		return s
 	}
-	return nil
+	return status.New(codes.Unknown, e.Error())
 }
