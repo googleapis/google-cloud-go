@@ -68,25 +68,37 @@ func defaultPolicyTagManagerSerializationGRPCClientOptions() []option.ClientOpti
 
 func defaultPolicyTagManagerSerializationCallOptions() *PolicyTagManagerSerializationCallOptions {
 	return &PolicyTagManagerSerializationCallOptions{
-		ReplaceTaxonomy:  []gax.CallOption{},
-		ImportTaxonomies: []gax.CallOption{},
-		ExportTaxonomies: []gax.CallOption{},
-		CancelOperation:  []gax.CallOption{},
-		DeleteOperation:  []gax.CallOption{},
-		GetOperation:     []gax.CallOption{},
-		ListOperations:   []gax.CallOption{},
+		ReplaceTaxonomy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ImportTaxonomies: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ExportTaxonomies: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		CancelOperation: []gax.CallOption{},
+		DeleteOperation: []gax.CallOption{},
+		GetOperation:    []gax.CallOption{},
+		ListOperations:  []gax.CallOption{},
 	}
 }
 
 func defaultPolicyTagManagerSerializationRESTCallOptions() *PolicyTagManagerSerializationCallOptions {
 	return &PolicyTagManagerSerializationCallOptions{
-		ReplaceTaxonomy:  []gax.CallOption{},
-		ImportTaxonomies: []gax.CallOption{},
-		ExportTaxonomies: []gax.CallOption{},
-		CancelOperation:  []gax.CallOption{},
-		DeleteOperation:  []gax.CallOption{},
-		GetOperation:     []gax.CallOption{},
-		ListOperations:   []gax.CallOption{},
+		ReplaceTaxonomy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ImportTaxonomies: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ExportTaxonomies: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		CancelOperation: []gax.CallOption{},
+		DeleteOperation: []gax.CallOption{},
+		GetOperation:    []gax.CallOption{},
+		ListOperations:  []gax.CallOption{},
 	}
 }
 
@@ -210,9 +222,6 @@ type policyTagManagerSerializationGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing PolicyTagManagerSerializationClient
 	CallOptions **PolicyTagManagerSerializationCallOptions
 
@@ -242,11 +251,6 @@ func NewPolicyTagManagerSerializationClient(ctx context.Context, opts ...option.
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -255,7 +259,6 @@ func NewPolicyTagManagerSerializationClient(ctx context.Context, opts ...option.
 
 	c := &policyTagManagerSerializationGRPCClient{
 		connPool:                            connPool,
-		disableDeadlines:                    disableDeadlines,
 		policyTagManagerSerializationClient: datacatalogpb.NewPolicyTagManagerSerializationClient(connPool),
 		CallOptions:                         &client.CallOptions,
 		operationsClient:                    longrunningpb.NewOperationsClient(connPool),
@@ -362,11 +365,6 @@ func (c *policyTagManagerSerializationRESTClient) Connection() *grpc.ClientConn 
 	return nil
 }
 func (c *policyTagManagerSerializationGRPCClient) ReplaceTaxonomy(ctx context.Context, req *datacatalogpb.ReplaceTaxonomyRequest, opts ...gax.CallOption) (*datacatalogpb.Taxonomy, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -384,11 +382,6 @@ func (c *policyTagManagerSerializationGRPCClient) ReplaceTaxonomy(ctx context.Co
 }
 
 func (c *policyTagManagerSerializationGRPCClient) ImportTaxonomies(ctx context.Context, req *datacatalogpb.ImportTaxonomiesRequest, opts ...gax.CallOption) (*datacatalogpb.ImportTaxonomiesResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -406,11 +399,6 @@ func (c *policyTagManagerSerializationGRPCClient) ImportTaxonomies(ctx context.C
 }
 
 func (c *policyTagManagerSerializationGRPCClient) ExportTaxonomies(ctx context.Context, req *datacatalogpb.ExportTaxonomiesRequest, opts ...gax.CallOption) (*datacatalogpb.ExportTaxonomiesResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)

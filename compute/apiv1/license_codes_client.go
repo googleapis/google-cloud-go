@@ -47,6 +47,7 @@ type LicenseCodesCallOptions struct {
 func defaultLicenseCodesRESTCallOptions() *LicenseCodesCallOptions {
 	return &LicenseCodesCallOptions{
 		Get: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -57,7 +58,9 @@ func defaultLicenseCodesRESTCallOptions() *LicenseCodesCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
-		TestIamPermissions: []gax.CallOption{},
+		TestIamPermissions: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
 	}
 }
 

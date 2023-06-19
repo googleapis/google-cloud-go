@@ -76,7 +76,9 @@ func defaultFeaturestoreOnlineServingGRPCClientOptions() []option.ClientOption {
 
 func defaultFeaturestoreOnlineServingCallOptions() *FeaturestoreOnlineServingCallOptions {
 	return &FeaturestoreOnlineServingCallOptions{
-		ReadFeatureValues:          []gax.CallOption{},
+		ReadFeatureValues: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
 		StreamingReadFeatureValues: []gax.CallOption{},
 		WriteFeatureValues:         []gax.CallOption{},
 		GetLocation:                []gax.CallOption{},
@@ -94,19 +96,23 @@ func defaultFeaturestoreOnlineServingCallOptions() *FeaturestoreOnlineServingCal
 
 func defaultFeaturestoreOnlineServingRESTCallOptions() *FeaturestoreOnlineServingCallOptions {
 	return &FeaturestoreOnlineServingCallOptions{
-		ReadFeatureValues:          []gax.CallOption{},
-		StreamingReadFeatureValues: []gax.CallOption{},
-		WriteFeatureValues:         []gax.CallOption{},
-		GetLocation:                []gax.CallOption{},
-		ListLocations:              []gax.CallOption{},
-		GetIamPolicy:               []gax.CallOption{},
-		SetIamPolicy:               []gax.CallOption{},
-		TestIamPermissions:         []gax.CallOption{},
-		CancelOperation:            []gax.CallOption{},
-		DeleteOperation:            []gax.CallOption{},
-		GetOperation:               []gax.CallOption{},
-		ListOperations:             []gax.CallOption{},
-		WaitOperation:              []gax.CallOption{},
+		ReadFeatureValues: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		StreamingReadFeatureValues: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		WriteFeatureValues: []gax.CallOption{},
+		GetLocation:        []gax.CallOption{},
+		ListLocations:      []gax.CallOption{},
+		GetIamPolicy:       []gax.CallOption{},
+		SetIamPolicy:       []gax.CallOption{},
+		TestIamPermissions: []gax.CallOption{},
+		CancelOperation:    []gax.CallOption{},
+		DeleteOperation:    []gax.CallOption{},
+		GetOperation:       []gax.CallOption{},
+		ListOperations:     []gax.CallOption{},
+		WaitOperation:      []gax.CallOption{},
 	}
 }
 
@@ -256,9 +262,6 @@ type featurestoreOnlineServingGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing FeaturestoreOnlineServingClient
 	CallOptions **FeaturestoreOnlineServingCallOptions
 
@@ -289,11 +292,6 @@ func NewFeaturestoreOnlineServingClient(ctx context.Context, opts ...option.Clie
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -302,7 +300,6 @@ func NewFeaturestoreOnlineServingClient(ctx context.Context, opts ...option.Clie
 
 	c := &featurestoreOnlineServingGRPCClient{
 		connPool:                        connPool,
-		disableDeadlines:                disableDeadlines,
 		featurestoreOnlineServingClient: aiplatformpb.NewFeaturestoreOnlineServingServiceClient(connPool),
 		CallOptions:                     &client.CallOptions,
 		operationsClient:                longrunningpb.NewOperationsClient(connPool),
@@ -408,11 +405,6 @@ func (c *featurestoreOnlineServingRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 func (c *featurestoreOnlineServingGRPCClient) ReadFeatureValues(ctx context.Context, req *aiplatformpb.ReadFeatureValuesRequest, opts ...gax.CallOption) (*aiplatformpb.ReadFeatureValuesResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "entity_type", url.QueryEscape(req.GetEntityType())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)

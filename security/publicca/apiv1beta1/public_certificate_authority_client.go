@@ -61,6 +61,7 @@ func defaultPublicCertificateAuthorityGRPCClientOptions() []option.ClientOption 
 func defaultPublicCertificateAuthorityCallOptions() *PublicCertificateAuthorityCallOptions {
 	return &PublicCertificateAuthorityCallOptions{
 		CreateExternalAccountKey: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -77,6 +78,7 @@ func defaultPublicCertificateAuthorityCallOptions() *PublicCertificateAuthorityC
 func defaultPublicCertificateAuthorityRESTCallOptions() *PublicCertificateAuthorityCallOptions {
 	return &PublicCertificateAuthorityCallOptions{
 		CreateExternalAccountKey: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -146,9 +148,6 @@ type publicCertificateAuthorityGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing PublicCertificateAuthorityClient
 	CallOptions **PublicCertificateAuthorityCallOptions
 
@@ -175,11 +174,6 @@ func NewPublicCertificateAuthorityClient(ctx context.Context, opts ...option.Cli
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -188,7 +182,6 @@ func NewPublicCertificateAuthorityClient(ctx context.Context, opts ...option.Cli
 
 	c := &publicCertificateAuthorityGRPCClient{
 		connPool:                         connPool,
-		disableDeadlines:                 disableDeadlines,
 		publicCertificateAuthorityClient: publiccapb.NewPublicCertificateAuthorityServiceClient(connPool),
 		CallOptions:                      &client.CallOptions,
 	}
@@ -293,11 +286,6 @@ func (c *publicCertificateAuthorityRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 func (c *publicCertificateAuthorityGRPCClient) CreateExternalAccountKey(ctx context.Context, req *publiccapb.CreateExternalAccountKeyRequest, opts ...gax.CallOption) (*publiccapb.ExternalAccountKey, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)

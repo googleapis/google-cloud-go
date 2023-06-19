@@ -71,6 +71,7 @@ func defaultRealmsGRPCClientOptions() []option.ClientOption {
 func defaultRealmsCallOptions() *RealmsCallOptions {
 	return &RealmsCallOptions{
 		ListRealms: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -82,6 +83,7 @@ func defaultRealmsCallOptions() *RealmsCallOptions {
 			}),
 		},
 		GetRealm: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -92,10 +94,17 @@ func defaultRealmsCallOptions() *RealmsCallOptions {
 				})
 			}),
 		},
-		CreateRealm: []gax.CallOption{},
-		DeleteRealm: []gax.CallOption{},
-		UpdateRealm: []gax.CallOption{},
+		CreateRealm: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteRealm: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateRealm: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		PreviewRealmUpdate: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -112,6 +121,7 @@ func defaultRealmsCallOptions() *RealmsCallOptions {
 func defaultRealmsRESTCallOptions() *RealmsCallOptions {
 	return &RealmsCallOptions{
 		ListRealms: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -122,6 +132,7 @@ func defaultRealmsRESTCallOptions() *RealmsCallOptions {
 			}),
 		},
 		GetRealm: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -131,10 +142,17 @@ func defaultRealmsRESTCallOptions() *RealmsCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
-		CreateRealm: []gax.CallOption{},
-		DeleteRealm: []gax.CallOption{},
-		UpdateRealm: []gax.CallOption{},
+		CreateRealm: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteRealm: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateRealm: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		PreviewRealmUpdate: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -259,9 +277,6 @@ type realmsGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing RealmsClient
 	CallOptions **RealmsCallOptions
 
@@ -292,11 +307,6 @@ func NewRealmsClient(ctx context.Context, opts ...option.ClientOption) (*RealmsC
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -304,10 +314,9 @@ func NewRealmsClient(ctx context.Context, opts ...option.ClientOption) (*RealmsC
 	client := RealmsClient{CallOptions: defaultRealmsCallOptions()}
 
 	c := &realmsGRPCClient{
-		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
-		realmsClient:     gamingpb.NewRealmsServiceClient(connPool),
-		CallOptions:      &client.CallOptions,
+		connPool:     connPool,
+		realmsClient: gamingpb.NewRealmsServiceClient(connPool),
+		CallOptions:  &client.CallOptions,
 	}
 	c.setGoogleClientInfo()
 
@@ -480,11 +489,6 @@ func (c *realmsGRPCClient) ListRealms(ctx context.Context, req *gamingpb.ListRea
 }
 
 func (c *realmsGRPCClient) GetRealm(ctx context.Context, req *gamingpb.GetRealmRequest, opts ...gax.CallOption) (*gamingpb.Realm, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -502,11 +506,6 @@ func (c *realmsGRPCClient) GetRealm(ctx context.Context, req *gamingpb.GetRealmR
 }
 
 func (c *realmsGRPCClient) CreateRealm(ctx context.Context, req *gamingpb.CreateRealmRequest, opts ...gax.CallOption) (*CreateRealmOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -526,11 +525,6 @@ func (c *realmsGRPCClient) CreateRealm(ctx context.Context, req *gamingpb.Create
 }
 
 func (c *realmsGRPCClient) DeleteRealm(ctx context.Context, req *gamingpb.DeleteRealmRequest, opts ...gax.CallOption) (*DeleteRealmOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -550,11 +544,6 @@ func (c *realmsGRPCClient) DeleteRealm(ctx context.Context, req *gamingpb.Delete
 }
 
 func (c *realmsGRPCClient) UpdateRealm(ctx context.Context, req *gamingpb.UpdateRealmRequest, opts ...gax.CallOption) (*UpdateRealmOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "realm.name", url.QueryEscape(req.GetRealm().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -574,11 +563,6 @@ func (c *realmsGRPCClient) UpdateRealm(ctx context.Context, req *gamingpb.Update
 }
 
 func (c *realmsGRPCClient) PreviewRealmUpdate(ctx context.Context, req *gamingpb.PreviewRealmUpdateRequest, opts ...gax.CallOption) (*gamingpb.PreviewRealmUpdateResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "realm.name", url.QueryEscape(req.GetRealm().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)

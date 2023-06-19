@@ -84,6 +84,7 @@ func defaultProductSearchGRPCClientOptions() []option.ClientOption {
 func defaultProductSearchCallOptions() *ProductSearchCallOptions {
 	return &ProductSearchCallOptions{
 		CreateProductSet: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -93,6 +94,7 @@ func defaultProductSearchCallOptions() *ProductSearchCallOptions {
 			}),
 		},
 		ListProductSets: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -105,6 +107,7 @@ func defaultProductSearchCallOptions() *ProductSearchCallOptions {
 			}),
 		},
 		GetProductSet: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -117,6 +120,7 @@ func defaultProductSearchCallOptions() *ProductSearchCallOptions {
 			}),
 		},
 		UpdateProductSet: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -129,6 +133,7 @@ func defaultProductSearchCallOptions() *ProductSearchCallOptions {
 			}),
 		},
 		DeleteProductSet: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -141,6 +146,7 @@ func defaultProductSearchCallOptions() *ProductSearchCallOptions {
 			}),
 		},
 		CreateProduct: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -150,6 +156,7 @@ func defaultProductSearchCallOptions() *ProductSearchCallOptions {
 			}),
 		},
 		ListProducts: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -162,6 +169,7 @@ func defaultProductSearchCallOptions() *ProductSearchCallOptions {
 			}),
 		},
 		GetProduct: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -174,6 +182,7 @@ func defaultProductSearchCallOptions() *ProductSearchCallOptions {
 			}),
 		},
 		UpdateProduct: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -186,6 +195,7 @@ func defaultProductSearchCallOptions() *ProductSearchCallOptions {
 			}),
 		},
 		DeleteProduct: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -198,6 +208,7 @@ func defaultProductSearchCallOptions() *ProductSearchCallOptions {
 			}),
 		},
 		CreateReferenceImage: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -207,6 +218,7 @@ func defaultProductSearchCallOptions() *ProductSearchCallOptions {
 			}),
 		},
 		DeleteReferenceImage: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -219,6 +231,7 @@ func defaultProductSearchCallOptions() *ProductSearchCallOptions {
 			}),
 		},
 		ListReferenceImages: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -231,6 +244,7 @@ func defaultProductSearchCallOptions() *ProductSearchCallOptions {
 			}),
 		},
 		GetReferenceImage: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -243,6 +257,7 @@ func defaultProductSearchCallOptions() *ProductSearchCallOptions {
 			}),
 		},
 		AddProductToProductSet: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -255,6 +270,7 @@ func defaultProductSearchCallOptions() *ProductSearchCallOptions {
 			}),
 		},
 		RemoveProductFromProductSet: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -267,6 +283,7 @@ func defaultProductSearchCallOptions() *ProductSearchCallOptions {
 			}),
 		},
 		ListProductsInProductSet: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -279,6 +296,7 @@ func defaultProductSearchCallOptions() *ProductSearchCallOptions {
 			}),
 		},
 		ImportProductSets: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -288,6 +306,7 @@ func defaultProductSearchCallOptions() *ProductSearchCallOptions {
 			}),
 		},
 		PurgeProducts: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -301,8 +320,11 @@ func defaultProductSearchCallOptions() *ProductSearchCallOptions {
 
 func defaultProductSearchRESTCallOptions() *ProductSearchCallOptions {
 	return &ProductSearchCallOptions{
-		CreateProductSet: []gax.CallOption{},
+		CreateProductSet: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
 		ListProductSets: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -314,6 +336,7 @@ func defaultProductSearchRESTCallOptions() *ProductSearchCallOptions {
 			}),
 		},
 		GetProductSet: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -325,6 +348,7 @@ func defaultProductSearchRESTCallOptions() *ProductSearchCallOptions {
 			}),
 		},
 		UpdateProductSet: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -336,6 +360,7 @@ func defaultProductSearchRESTCallOptions() *ProductSearchCallOptions {
 			}),
 		},
 		DeleteProductSet: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -346,8 +371,11 @@ func defaultProductSearchRESTCallOptions() *ProductSearchCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
-		CreateProduct: []gax.CallOption{},
+		CreateProduct: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
 		ListProducts: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -359,6 +387,7 @@ func defaultProductSearchRESTCallOptions() *ProductSearchCallOptions {
 			}),
 		},
 		GetProduct: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -370,6 +399,7 @@ func defaultProductSearchRESTCallOptions() *ProductSearchCallOptions {
 			}),
 		},
 		UpdateProduct: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -381,6 +411,7 @@ func defaultProductSearchRESTCallOptions() *ProductSearchCallOptions {
 			}),
 		},
 		DeleteProduct: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -391,8 +422,11 @@ func defaultProductSearchRESTCallOptions() *ProductSearchCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
-		CreateReferenceImage: []gax.CallOption{},
+		CreateReferenceImage: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
 		DeleteReferenceImage: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -404,6 +438,7 @@ func defaultProductSearchRESTCallOptions() *ProductSearchCallOptions {
 			}),
 		},
 		ListReferenceImages: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -415,6 +450,7 @@ func defaultProductSearchRESTCallOptions() *ProductSearchCallOptions {
 			}),
 		},
 		GetReferenceImage: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -426,6 +462,7 @@ func defaultProductSearchRESTCallOptions() *ProductSearchCallOptions {
 			}),
 		},
 		AddProductToProductSet: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -437,6 +474,7 @@ func defaultProductSearchRESTCallOptions() *ProductSearchCallOptions {
 			}),
 		},
 		RemoveProductFromProductSet: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -448,6 +486,7 @@ func defaultProductSearchRESTCallOptions() *ProductSearchCallOptions {
 			}),
 		},
 		ListProductsInProductSet: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -458,8 +497,12 @@ func defaultProductSearchRESTCallOptions() *ProductSearchCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
-		ImportProductSets: []gax.CallOption{},
-		PurgeProducts:     []gax.CallOption{},
+		ImportProductSets: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		PurgeProducts: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
 	}
 }
 
@@ -805,9 +848,6 @@ type productSearchGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing ProductSearchClient
 	CallOptions **ProductSearchCallOptions
 
@@ -850,11 +890,6 @@ func NewProductSearchClient(ctx context.Context, opts ...option.ClientOption) (*
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -863,7 +898,6 @@ func NewProductSearchClient(ctx context.Context, opts ...option.ClientOption) (*
 
 	c := &productSearchGRPCClient{
 		connPool:            connPool,
-		disableDeadlines:    disableDeadlines,
 		productSearchClient: visionpb.NewProductSearchClient(connPool),
 		CallOptions:         &client.CallOptions,
 	}
@@ -1005,11 +1039,6 @@ func (c *productSearchRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 func (c *productSearchGRPCClient) CreateProductSet(ctx context.Context, req *visionpb.CreateProductSetRequest, opts ...gax.CallOption) (*visionpb.ProductSet, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1072,11 +1101,6 @@ func (c *productSearchGRPCClient) ListProductSets(ctx context.Context, req *visi
 }
 
 func (c *productSearchGRPCClient) GetProductSet(ctx context.Context, req *visionpb.GetProductSetRequest, opts ...gax.CallOption) (*visionpb.ProductSet, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1094,11 +1118,6 @@ func (c *productSearchGRPCClient) GetProductSet(ctx context.Context, req *vision
 }
 
 func (c *productSearchGRPCClient) UpdateProductSet(ctx context.Context, req *visionpb.UpdateProductSetRequest, opts ...gax.CallOption) (*visionpb.ProductSet, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "product_set.name", url.QueryEscape(req.GetProductSet().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1116,11 +1135,6 @@ func (c *productSearchGRPCClient) UpdateProductSet(ctx context.Context, req *vis
 }
 
 func (c *productSearchGRPCClient) DeleteProductSet(ctx context.Context, req *visionpb.DeleteProductSetRequest, opts ...gax.CallOption) error {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1134,11 +1148,6 @@ func (c *productSearchGRPCClient) DeleteProductSet(ctx context.Context, req *vis
 }
 
 func (c *productSearchGRPCClient) CreateProduct(ctx context.Context, req *visionpb.CreateProductRequest, opts ...gax.CallOption) (*visionpb.Product, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1201,11 +1210,6 @@ func (c *productSearchGRPCClient) ListProducts(ctx context.Context, req *visionp
 }
 
 func (c *productSearchGRPCClient) GetProduct(ctx context.Context, req *visionpb.GetProductRequest, opts ...gax.CallOption) (*visionpb.Product, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1223,11 +1227,6 @@ func (c *productSearchGRPCClient) GetProduct(ctx context.Context, req *visionpb.
 }
 
 func (c *productSearchGRPCClient) UpdateProduct(ctx context.Context, req *visionpb.UpdateProductRequest, opts ...gax.CallOption) (*visionpb.Product, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "product.name", url.QueryEscape(req.GetProduct().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1245,11 +1244,6 @@ func (c *productSearchGRPCClient) UpdateProduct(ctx context.Context, req *vision
 }
 
 func (c *productSearchGRPCClient) DeleteProduct(ctx context.Context, req *visionpb.DeleteProductRequest, opts ...gax.CallOption) error {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1263,11 +1257,6 @@ func (c *productSearchGRPCClient) DeleteProduct(ctx context.Context, req *vision
 }
 
 func (c *productSearchGRPCClient) CreateReferenceImage(ctx context.Context, req *visionpb.CreateReferenceImageRequest, opts ...gax.CallOption) (*visionpb.ReferenceImage, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1285,11 +1274,6 @@ func (c *productSearchGRPCClient) CreateReferenceImage(ctx context.Context, req 
 }
 
 func (c *productSearchGRPCClient) DeleteReferenceImage(ctx context.Context, req *visionpb.DeleteReferenceImageRequest, opts ...gax.CallOption) error {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1348,11 +1332,6 @@ func (c *productSearchGRPCClient) ListReferenceImages(ctx context.Context, req *
 }
 
 func (c *productSearchGRPCClient) GetReferenceImage(ctx context.Context, req *visionpb.GetReferenceImageRequest, opts ...gax.CallOption) (*visionpb.ReferenceImage, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1370,11 +1349,6 @@ func (c *productSearchGRPCClient) GetReferenceImage(ctx context.Context, req *vi
 }
 
 func (c *productSearchGRPCClient) AddProductToProductSet(ctx context.Context, req *visionpb.AddProductToProductSetRequest, opts ...gax.CallOption) error {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1388,11 +1362,6 @@ func (c *productSearchGRPCClient) AddProductToProductSet(ctx context.Context, re
 }
 
 func (c *productSearchGRPCClient) RemoveProductFromProductSet(ctx context.Context, req *visionpb.RemoveProductFromProductSetRequest, opts ...gax.CallOption) error {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1451,11 +1420,6 @@ func (c *productSearchGRPCClient) ListProductsInProductSet(ctx context.Context, 
 }
 
 func (c *productSearchGRPCClient) ImportProductSets(ctx context.Context, req *visionpb.ImportProductSetsRequest, opts ...gax.CallOption) (*ImportProductSetsOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1475,11 +1439,6 @@ func (c *productSearchGRPCClient) ImportProductSets(ctx context.Context, req *vi
 }
 
 func (c *productSearchGRPCClient) PurgeProducts(ctx context.Context, req *visionpb.PurgeProductsRequest, opts ...gax.CallOption) (*PurgeProductsOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)

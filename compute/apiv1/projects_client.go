@@ -60,11 +60,20 @@ type ProjectsCallOptions struct {
 
 func defaultProjectsRESTCallOptions() *ProjectsCallOptions {
 	return &ProjectsCallOptions{
-		DisableXpnHost:     []gax.CallOption{},
-		DisableXpnResource: []gax.CallOption{},
-		EnableXpnHost:      []gax.CallOption{},
-		EnableXpnResource:  []gax.CallOption{},
+		DisableXpnHost: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		DisableXpnResource: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		EnableXpnHost: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		EnableXpnResource: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
 		Get: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -76,6 +85,7 @@ func defaultProjectsRESTCallOptions() *ProjectsCallOptions {
 			}),
 		},
 		GetXpnHost: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -87,6 +97,7 @@ func defaultProjectsRESTCallOptions() *ProjectsCallOptions {
 			}),
 		},
 		GetXpnResources: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -97,12 +108,24 @@ func defaultProjectsRESTCallOptions() *ProjectsCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
-		ListXpnHosts:              []gax.CallOption{},
-		MoveDisk:                  []gax.CallOption{},
-		MoveInstance:              []gax.CallOption{},
-		SetCommonInstanceMetadata: []gax.CallOption{},
-		SetDefaultNetworkTier:     []gax.CallOption{},
-		SetUsageExportBucket:      []gax.CallOption{},
+		ListXpnHosts: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		MoveDisk: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		MoveInstance: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		SetCommonInstanceMetadata: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		SetDefaultNetworkTier: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		SetUsageExportBucket: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
 	}
 }
 

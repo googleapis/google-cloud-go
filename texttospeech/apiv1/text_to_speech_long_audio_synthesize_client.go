@@ -62,13 +62,17 @@ func defaultTextToSpeechLongAudioSynthesizeGRPCClientOptions() []option.ClientOp
 
 func defaultTextToSpeechLongAudioSynthesizeCallOptions() *TextToSpeechLongAudioSynthesizeCallOptions {
 	return &TextToSpeechLongAudioSynthesizeCallOptions{
-		SynthesizeLongAudio: []gax.CallOption{},
+		SynthesizeLongAudio: []gax.CallOption{
+			gax.WithTimeout(5000000 * time.Millisecond),
+		},
 	}
 }
 
 func defaultTextToSpeechLongAudioSynthesizeRESTCallOptions() *TextToSpeechLongAudioSynthesizeCallOptions {
 	return &TextToSpeechLongAudioSynthesizeCallOptions{
-		SynthesizeLongAudio: []gax.CallOption{},
+		SynthesizeLongAudio: []gax.CallOption{
+			gax.WithTimeout(5000000 * time.Millisecond),
+		},
 	}
 }
 
@@ -139,9 +143,6 @@ type textToSpeechLongAudioSynthesizeGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing TextToSpeechLongAudioSynthesizeClient
 	CallOptions **TextToSpeechLongAudioSynthesizeCallOptions
 
@@ -171,11 +172,6 @@ func NewTextToSpeechLongAudioSynthesizeClient(ctx context.Context, opts ...optio
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -184,7 +180,6 @@ func NewTextToSpeechLongAudioSynthesizeClient(ctx context.Context, opts ...optio
 
 	c := &textToSpeechLongAudioSynthesizeGRPCClient{
 		connPool:                              connPool,
-		disableDeadlines:                      disableDeadlines,
 		textToSpeechLongAudioSynthesizeClient: texttospeechpb.NewTextToSpeechLongAudioSynthesizeClient(connPool),
 		CallOptions:                           &client.CallOptions,
 	}
@@ -313,11 +308,6 @@ func (c *textToSpeechLongAudioSynthesizeRESTClient) Connection() *grpc.ClientCon
 	return nil
 }
 func (c *textToSpeechLongAudioSynthesizeGRPCClient) SynthesizeLongAudio(ctx context.Context, req *texttospeechpb.SynthesizeLongAudioRequest, opts ...gax.CallOption) (*SynthesizeLongAudioOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
