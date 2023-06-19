@@ -165,16 +165,19 @@ type ReadOptions struct {
 
 	// The request tag to use for this request.
 	RequestTag string
+
+	DataBoostEnabled bool
 }
 
 // merge combines two ReadOptions that the input parameter will have higher
 // order of precedence.
 func (ro ReadOptions) merge(opts ReadOptions) ReadOptions {
 	merged := ReadOptions{
-		Index:      ro.Index,
-		Limit:      ro.Limit,
-		Priority:   ro.Priority,
-		RequestTag: ro.RequestTag,
+		Index:            ro.Index,
+		Limit:            ro.Limit,
+		Priority:         ro.Priority,
+		RequestTag:       ro.RequestTag,
+		DataBoostEnabled: ro.DataBoostEnabled,
 	}
 	if opts.Index != "" {
 		merged.Index = opts.Index
@@ -187,6 +190,9 @@ func (ro ReadOptions) merge(opts ReadOptions) ReadOptions {
 	}
 	if opts.RequestTag != "" {
 		merged.RequestTag = opts.RequestTag
+	}
+	if opts.DataBoostEnabled {
+		merged.DataBoostEnabled = opts.DataBoostEnabled
 	}
 	return merged
 }
@@ -357,16 +363,19 @@ type QueryOptions struct {
 
 	// The request tag to use for this request.
 	RequestTag string
+
+	DataBoostEnabled bool
 }
 
 // merge combines two QueryOptions that the input parameter will have higher
 // order of precedence.
 func (qo QueryOptions) merge(opts QueryOptions) QueryOptions {
 	merged := QueryOptions{
-		Mode:       qo.Mode,
-		Options:    &sppb.ExecuteSqlRequest_QueryOptions{},
-		RequestTag: qo.RequestTag,
-		Priority:   qo.Priority,
+		Mode:             qo.Mode,
+		Options:          &sppb.ExecuteSqlRequest_QueryOptions{},
+		RequestTag:       qo.RequestTag,
+		Priority:         qo.Priority,
+		DataBoostEnabled: qo.DataBoostEnabled,
 	}
 	if opts.Mode != nil {
 		merged.Mode = opts.Mode
@@ -376,6 +385,9 @@ func (qo QueryOptions) merge(opts QueryOptions) QueryOptions {
 	}
 	if opts.Priority != sppb.RequestOptions_PRIORITY_UNSPECIFIED {
 		merged.Priority = opts.Priority
+	}
+	if opts.DataBoostEnabled {
+		merged.DataBoostEnabled = opts.DataBoostEnabled
 	}
 	proto.Merge(merged.Options, qo.Options)
 	proto.Merge(merged.Options, opts.Options)
