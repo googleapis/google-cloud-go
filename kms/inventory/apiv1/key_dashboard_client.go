@@ -23,6 +23,7 @@ import (
 	"math"
 	"net/http"
 	"net/url"
+	"time"
 
 	kmspb "cloud.google.com/go/kms/apiv1/kmspb"
 	inventorypb "cloud.google.com/go/kms/inventory/apiv1/inventorypb"
@@ -60,13 +61,17 @@ func defaultKeyDashboardGRPCClientOptions() []option.ClientOption {
 
 func defaultKeyDashboardCallOptions() *KeyDashboardCallOptions {
 	return &KeyDashboardCallOptions{
-		ListCryptoKeys: []gax.CallOption{},
+		ListCryptoKeys: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 	}
 }
 
 func defaultKeyDashboardRESTCallOptions() *KeyDashboardCallOptions {
 	return &KeyDashboardCallOptions{
-		ListCryptoKeys: []gax.CallOption{},
+		ListCryptoKeys: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 	}
 }
 
@@ -127,9 +132,6 @@ type keyDashboardGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing KeyDashboardClient
 	CallOptions **KeyDashboardCallOptions
 
@@ -154,11 +156,6 @@ func NewKeyDashboardClient(ctx context.Context, opts ...option.ClientOption) (*K
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -167,7 +164,6 @@ func NewKeyDashboardClient(ctx context.Context, opts ...option.ClientOption) (*K
 
 	c := &keyDashboardGRPCClient{
 		connPool:           connPool,
-		disableDeadlines:   disableDeadlines,
 		keyDashboardClient: inventorypb.NewKeyDashboardServiceClient(connPool),
 		CallOptions:        &client.CallOptions,
 	}

@@ -52,6 +52,7 @@ type DatabaseAdminCallOptions struct {
 	ListDatabases          []gax.CallOption
 	CreateDatabase         []gax.CallOption
 	GetDatabase            []gax.CallOption
+	UpdateDatabase         []gax.CallOption
 	UpdateDatabaseDdl      []gax.CallOption
 	DropDatabase           []gax.CallOption
 	GetDatabaseDdl         []gax.CallOption
@@ -89,6 +90,7 @@ func defaultDatabaseAdminGRPCClientOptions() []option.ClientOption {
 func defaultDatabaseAdminCallOptions() *DatabaseAdminCallOptions {
 	return &DatabaseAdminCallOptions{
 		ListDatabases: []gax.CallOption{
+			gax.WithTimeout(3600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -100,8 +102,24 @@ func defaultDatabaseAdminCallOptions() *DatabaseAdminCallOptions {
 				})
 			}),
 		},
-		CreateDatabase: []gax.CallOption{},
+		CreateDatabase: []gax.CallOption{
+			gax.WithTimeout(3600000 * time.Millisecond),
+		},
 		GetDatabase: []gax.CallOption{
+			gax.WithTimeout(3600000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.DeadlineExceeded,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        32000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		UpdateDatabase: []gax.CallOption{
+			gax.WithTimeout(3600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -114,6 +132,7 @@ func defaultDatabaseAdminCallOptions() *DatabaseAdminCallOptions {
 			}),
 		},
 		UpdateDatabaseDdl: []gax.CallOption{
+			gax.WithTimeout(3600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -126,6 +145,7 @@ func defaultDatabaseAdminCallOptions() *DatabaseAdminCallOptions {
 			}),
 		},
 		DropDatabase: []gax.CallOption{
+			gax.WithTimeout(3600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -138,6 +158,7 @@ func defaultDatabaseAdminCallOptions() *DatabaseAdminCallOptions {
 			}),
 		},
 		GetDatabaseDdl: []gax.CallOption{
+			gax.WithTimeout(3600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -149,8 +170,11 @@ func defaultDatabaseAdminCallOptions() *DatabaseAdminCallOptions {
 				})
 			}),
 		},
-		SetIamPolicy: []gax.CallOption{},
+		SetIamPolicy: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+		},
 		GetIamPolicy: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -162,10 +186,17 @@ func defaultDatabaseAdminCallOptions() *DatabaseAdminCallOptions {
 				})
 			}),
 		},
-		TestIamPermissions: []gax.CallOption{},
-		CreateBackup:       []gax.CallOption{},
-		CopyBackup:         []gax.CallOption{},
+		TestIamPermissions: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+		},
+		CreateBackup: []gax.CallOption{
+			gax.WithTimeout(3600000 * time.Millisecond),
+		},
+		CopyBackup: []gax.CallOption{
+			gax.WithTimeout(3600000 * time.Millisecond),
+		},
 		GetBackup: []gax.CallOption{
+			gax.WithTimeout(3600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -178,6 +209,7 @@ func defaultDatabaseAdminCallOptions() *DatabaseAdminCallOptions {
 			}),
 		},
 		UpdateBackup: []gax.CallOption{
+			gax.WithTimeout(3600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -190,6 +222,7 @@ func defaultDatabaseAdminCallOptions() *DatabaseAdminCallOptions {
 			}),
 		},
 		DeleteBackup: []gax.CallOption{
+			gax.WithTimeout(3600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -202,6 +235,7 @@ func defaultDatabaseAdminCallOptions() *DatabaseAdminCallOptions {
 			}),
 		},
 		ListBackups: []gax.CallOption{
+			gax.WithTimeout(3600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -213,8 +247,11 @@ func defaultDatabaseAdminCallOptions() *DatabaseAdminCallOptions {
 				})
 			}),
 		},
-		RestoreDatabase: []gax.CallOption{},
+		RestoreDatabase: []gax.CallOption{
+			gax.WithTimeout(3600000 * time.Millisecond),
+		},
 		ListDatabaseOperations: []gax.CallOption{
+			gax.WithTimeout(3600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -227,6 +264,7 @@ func defaultDatabaseAdminCallOptions() *DatabaseAdminCallOptions {
 			}),
 		},
 		ListBackupOperations: []gax.CallOption{
+			gax.WithTimeout(3600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -239,6 +277,7 @@ func defaultDatabaseAdminCallOptions() *DatabaseAdminCallOptions {
 			}),
 		},
 		ListDatabaseRoles: []gax.CallOption{
+			gax.WithTimeout(3600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -260,6 +299,7 @@ func defaultDatabaseAdminCallOptions() *DatabaseAdminCallOptions {
 func defaultDatabaseAdminRESTCallOptions() *DatabaseAdminCallOptions {
 	return &DatabaseAdminCallOptions{
 		ListDatabases: []gax.CallOption{
+			gax.WithTimeout(3600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -270,8 +310,23 @@ func defaultDatabaseAdminRESTCallOptions() *DatabaseAdminCallOptions {
 					http.StatusGatewayTimeout)
 			}),
 		},
-		CreateDatabase: []gax.CallOption{},
+		CreateDatabase: []gax.CallOption{
+			gax.WithTimeout(3600000 * time.Millisecond),
+		},
 		GetDatabase: []gax.CallOption{
+			gax.WithTimeout(3600000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        32000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusGatewayTimeout)
+			}),
+		},
+		UpdateDatabase: []gax.CallOption{
+			gax.WithTimeout(3600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -283,6 +338,7 @@ func defaultDatabaseAdminRESTCallOptions() *DatabaseAdminCallOptions {
 			}),
 		},
 		UpdateDatabaseDdl: []gax.CallOption{
+			gax.WithTimeout(3600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -294,6 +350,7 @@ func defaultDatabaseAdminRESTCallOptions() *DatabaseAdminCallOptions {
 			}),
 		},
 		DropDatabase: []gax.CallOption{
+			gax.WithTimeout(3600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -305,6 +362,7 @@ func defaultDatabaseAdminRESTCallOptions() *DatabaseAdminCallOptions {
 			}),
 		},
 		GetDatabaseDdl: []gax.CallOption{
+			gax.WithTimeout(3600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -315,8 +373,11 @@ func defaultDatabaseAdminRESTCallOptions() *DatabaseAdminCallOptions {
 					http.StatusGatewayTimeout)
 			}),
 		},
-		SetIamPolicy: []gax.CallOption{},
+		SetIamPolicy: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+		},
 		GetIamPolicy: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -327,10 +388,17 @@ func defaultDatabaseAdminRESTCallOptions() *DatabaseAdminCallOptions {
 					http.StatusGatewayTimeout)
 			}),
 		},
-		TestIamPermissions: []gax.CallOption{},
-		CreateBackup:       []gax.CallOption{},
-		CopyBackup:         []gax.CallOption{},
+		TestIamPermissions: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+		},
+		CreateBackup: []gax.CallOption{
+			gax.WithTimeout(3600000 * time.Millisecond),
+		},
+		CopyBackup: []gax.CallOption{
+			gax.WithTimeout(3600000 * time.Millisecond),
+		},
 		GetBackup: []gax.CallOption{
+			gax.WithTimeout(3600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -342,6 +410,7 @@ func defaultDatabaseAdminRESTCallOptions() *DatabaseAdminCallOptions {
 			}),
 		},
 		UpdateBackup: []gax.CallOption{
+			gax.WithTimeout(3600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -353,6 +422,7 @@ func defaultDatabaseAdminRESTCallOptions() *DatabaseAdminCallOptions {
 			}),
 		},
 		DeleteBackup: []gax.CallOption{
+			gax.WithTimeout(3600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -364,6 +434,7 @@ func defaultDatabaseAdminRESTCallOptions() *DatabaseAdminCallOptions {
 			}),
 		},
 		ListBackups: []gax.CallOption{
+			gax.WithTimeout(3600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -374,8 +445,11 @@ func defaultDatabaseAdminRESTCallOptions() *DatabaseAdminCallOptions {
 					http.StatusGatewayTimeout)
 			}),
 		},
-		RestoreDatabase: []gax.CallOption{},
+		RestoreDatabase: []gax.CallOption{
+			gax.WithTimeout(3600000 * time.Millisecond),
+		},
 		ListDatabaseOperations: []gax.CallOption{
+			gax.WithTimeout(3600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -387,6 +461,7 @@ func defaultDatabaseAdminRESTCallOptions() *DatabaseAdminCallOptions {
 			}),
 		},
 		ListBackupOperations: []gax.CallOption{
+			gax.WithTimeout(3600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -398,6 +473,7 @@ func defaultDatabaseAdminRESTCallOptions() *DatabaseAdminCallOptions {
 			}),
 		},
 		ListDatabaseRoles: []gax.CallOption{
+			gax.WithTimeout(3600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -424,6 +500,8 @@ type internalDatabaseAdminClient interface {
 	CreateDatabase(context.Context, *databasepb.CreateDatabaseRequest, ...gax.CallOption) (*CreateDatabaseOperation, error)
 	CreateDatabaseOperation(name string) *CreateDatabaseOperation
 	GetDatabase(context.Context, *databasepb.GetDatabaseRequest, ...gax.CallOption) (*databasepb.Database, error)
+	UpdateDatabase(context.Context, *databasepb.UpdateDatabaseRequest, ...gax.CallOption) (*UpdateDatabaseOperation, error)
+	UpdateDatabaseOperation(name string) *UpdateDatabaseOperation
 	UpdateDatabaseDdl(context.Context, *databasepb.UpdateDatabaseDdlRequest, ...gax.CallOption) (*UpdateDatabaseDdlOperation, error)
 	UpdateDatabaseDdlOperation(name string) *UpdateDatabaseDdlOperation
 	DropDatabase(context.Context, *databasepb.DropDatabaseRequest, ...gax.CallOption) error
@@ -526,6 +604,56 @@ func (c *DatabaseAdminClient) CreateDatabaseOperation(name string) *CreateDataba
 // GetDatabase gets the state of a Cloud Spanner database.
 func (c *DatabaseAdminClient) GetDatabase(ctx context.Context, req *databasepb.GetDatabaseRequest, opts ...gax.CallOption) (*databasepb.Database, error) {
 	return c.internalClient.GetDatabase(ctx, req, opts...)
+}
+
+// UpdateDatabase updates a Cloud Spanner database. The returned
+// [long-running operation][google.longrunning.Operation] can be used to track
+// the progress of updating the database. If the named database does not
+// exist, returns NOT_FOUND.
+//
+// While the operation is pending:
+//
+//	The database’s
+//	reconciling
+//	field is set to true.
+//
+//	Cancelling the operation is best-effort. If the cancellation succeeds,
+//	the operation metadata’s
+//	cancel_time
+//	is set, the updates are reverted, and the operation terminates with a
+//	CANCELLED status.
+//
+//	New UpdateDatabase requests will return a FAILED_PRECONDITION error
+//	until the pending operation is done (returns successfully or with
+//	error).
+//
+//	Reading the database via the API continues to give the pre-request
+//	values.
+//
+// Upon completion of the returned operation:
+//
+//	The new values are in effect and readable via the API.
+//
+//	The database’s
+//	reconciling
+//	field becomes false.
+//
+// The returned [long-running operation][google.longrunning.Operation] will
+// have a name of the format
+// projects/<project>/instances/<instance>/databases/<database>/operations/<operation_id>
+// and can be used to track the database modification. The
+// metadata field type is
+// UpdateDatabaseMetadata.
+// The response field type is
+// Database, if successful.
+func (c *DatabaseAdminClient) UpdateDatabase(ctx context.Context, req *databasepb.UpdateDatabaseRequest, opts ...gax.CallOption) (*UpdateDatabaseOperation, error) {
+	return c.internalClient.UpdateDatabase(ctx, req, opts...)
+}
+
+// UpdateDatabaseOperation returns a new UpdateDatabaseOperation from a given name.
+// The name must be that of a previously created UpdateDatabaseOperation, possibly from a different process.
+func (c *DatabaseAdminClient) UpdateDatabaseOperation(name string) *UpdateDatabaseOperation {
+	return c.internalClient.UpdateDatabaseOperation(name)
 }
 
 // UpdateDatabaseDdl updates the schema of a Cloud Spanner database by
@@ -749,9 +877,6 @@ type databaseAdminGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing DatabaseAdminClient
 	CallOptions **DatabaseAdminCallOptions
 
@@ -793,11 +918,6 @@ func NewDatabaseAdminClient(ctx context.Context, opts ...option.ClientOption) (*
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -806,7 +926,6 @@ func NewDatabaseAdminClient(ctx context.Context, opts ...option.ClientOption) (*
 
 	c := &databaseAdminGRPCClient{
 		connPool:            connPool,
-		disableDeadlines:    disableDeadlines,
 		databaseAdminClient: databasepb.NewDatabaseAdminClient(connPool),
 		CallOptions:         &client.CallOptions,
 		operationsClient:    longrunningpb.NewOperationsClient(connPool),
@@ -991,11 +1110,6 @@ func (c *databaseAdminGRPCClient) ListDatabases(ctx context.Context, req *databa
 }
 
 func (c *databaseAdminGRPCClient) CreateDatabase(ctx context.Context, req *databasepb.CreateDatabaseRequest, opts ...gax.CallOption) (*CreateDatabaseOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 3600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1015,11 +1129,6 @@ func (c *databaseAdminGRPCClient) CreateDatabase(ctx context.Context, req *datab
 }
 
 func (c *databaseAdminGRPCClient) GetDatabase(ctx context.Context, req *databasepb.GetDatabaseRequest, opts ...gax.CallOption) (*databasepb.Database, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 3600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1036,12 +1145,26 @@ func (c *databaseAdminGRPCClient) GetDatabase(ctx context.Context, req *database
 	return resp, nil
 }
 
-func (c *databaseAdminGRPCClient) UpdateDatabaseDdl(ctx context.Context, req *databasepb.UpdateDatabaseDdlRequest, opts ...gax.CallOption) (*UpdateDatabaseDdlOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 3600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
+func (c *databaseAdminGRPCClient) UpdateDatabase(ctx context.Context, req *databasepb.UpdateDatabaseRequest, opts ...gax.CallOption) (*UpdateDatabaseOperation, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "database.name", url.QueryEscape(req.GetDatabase().GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).UpdateDatabase[0:len((*c.CallOptions).UpdateDatabase):len((*c.CallOptions).UpdateDatabase)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.databaseAdminClient.UpdateDatabase(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
 	}
+	return &UpdateDatabaseOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *databaseAdminGRPCClient) UpdateDatabaseDdl(ctx context.Context, req *databasepb.UpdateDatabaseDdlRequest, opts ...gax.CallOption) (*UpdateDatabaseDdlOperation, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "database", url.QueryEscape(req.GetDatabase())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1061,11 +1184,6 @@ func (c *databaseAdminGRPCClient) UpdateDatabaseDdl(ctx context.Context, req *da
 }
 
 func (c *databaseAdminGRPCClient) DropDatabase(ctx context.Context, req *databasepb.DropDatabaseRequest, opts ...gax.CallOption) error {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 3600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "database", url.QueryEscape(req.GetDatabase())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1079,11 +1197,6 @@ func (c *databaseAdminGRPCClient) DropDatabase(ctx context.Context, req *databas
 }
 
 func (c *databaseAdminGRPCClient) GetDatabaseDdl(ctx context.Context, req *databasepb.GetDatabaseDdlRequest, opts ...gax.CallOption) (*databasepb.GetDatabaseDdlResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 3600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "database", url.QueryEscape(req.GetDatabase())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1101,11 +1214,6 @@ func (c *databaseAdminGRPCClient) GetDatabaseDdl(ctx context.Context, req *datab
 }
 
 func (c *databaseAdminGRPCClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1123,11 +1231,6 @@ func (c *databaseAdminGRPCClient) SetIamPolicy(ctx context.Context, req *iampb.S
 }
 
 func (c *databaseAdminGRPCClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1145,11 +1248,6 @@ func (c *databaseAdminGRPCClient) GetIamPolicy(ctx context.Context, req *iampb.G
 }
 
 func (c *databaseAdminGRPCClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermissionsRequest, opts ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1167,11 +1265,6 @@ func (c *databaseAdminGRPCClient) TestIamPermissions(ctx context.Context, req *i
 }
 
 func (c *databaseAdminGRPCClient) CreateBackup(ctx context.Context, req *databasepb.CreateBackupRequest, opts ...gax.CallOption) (*CreateBackupOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 3600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1191,11 +1284,6 @@ func (c *databaseAdminGRPCClient) CreateBackup(ctx context.Context, req *databas
 }
 
 func (c *databaseAdminGRPCClient) CopyBackup(ctx context.Context, req *databasepb.CopyBackupRequest, opts ...gax.CallOption) (*CopyBackupOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 3600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1215,11 +1303,6 @@ func (c *databaseAdminGRPCClient) CopyBackup(ctx context.Context, req *databasep
 }
 
 func (c *databaseAdminGRPCClient) GetBackup(ctx context.Context, req *databasepb.GetBackupRequest, opts ...gax.CallOption) (*databasepb.Backup, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 3600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1237,11 +1320,6 @@ func (c *databaseAdminGRPCClient) GetBackup(ctx context.Context, req *databasepb
 }
 
 func (c *databaseAdminGRPCClient) UpdateBackup(ctx context.Context, req *databasepb.UpdateBackupRequest, opts ...gax.CallOption) (*databasepb.Backup, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 3600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "backup.name", url.QueryEscape(req.GetBackup().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1259,11 +1337,6 @@ func (c *databaseAdminGRPCClient) UpdateBackup(ctx context.Context, req *databas
 }
 
 func (c *databaseAdminGRPCClient) DeleteBackup(ctx context.Context, req *databasepb.DeleteBackupRequest, opts ...gax.CallOption) error {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 3600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1322,11 +1395,6 @@ func (c *databaseAdminGRPCClient) ListBackups(ctx context.Context, req *database
 }
 
 func (c *databaseAdminGRPCClient) RestoreDatabase(ctx context.Context, req *databasepb.RestoreDatabaseRequest, opts ...gax.CallOption) (*RestoreDatabaseOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 3600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1787,6 +1855,121 @@ func (c *databaseAdminRESTClient) GetDatabase(ctx context.Context, req *database
 		return nil, e
 	}
 	return resp, nil
+}
+
+// UpdateDatabase updates a Cloud Spanner database. The returned
+// [long-running operation][google.longrunning.Operation] can be used to track
+// the progress of updating the database. If the named database does not
+// exist, returns NOT_FOUND.
+//
+// While the operation is pending:
+//
+//	The database’s
+//	reconciling
+//	field is set to true.
+//
+//	Cancelling the operation is best-effort. If the cancellation succeeds,
+//	the operation metadata’s
+//	cancel_time
+//	is set, the updates are reverted, and the operation terminates with a
+//	CANCELLED status.
+//
+//	New UpdateDatabase requests will return a FAILED_PRECONDITION error
+//	until the pending operation is done (returns successfully or with
+//	error).
+//
+//	Reading the database via the API continues to give the pre-request
+//	values.
+//
+// Upon completion of the returned operation:
+//
+//	The new values are in effect and readable via the API.
+//
+//	The database’s
+//	reconciling
+//	field becomes false.
+//
+// The returned [long-running operation][google.longrunning.Operation] will
+// have a name of the format
+// projects/<project>/instances/<instance>/databases/<database>/operations/<operation_id>
+// and can be used to track the database modification. The
+// metadata field type is
+// UpdateDatabaseMetadata.
+// The response field type is
+// Database, if successful.
+func (c *databaseAdminRESTClient) UpdateDatabase(ctx context.Context, req *databasepb.UpdateDatabaseRequest, opts ...gax.CallOption) (*UpdateDatabaseOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetDatabase()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetDatabase().GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetUpdateMask() != nil {
+		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(updateMask))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "database.name", url.QueryEscape(req.GetDatabase().GetName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &UpdateDatabaseOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
 }
 
 // UpdateDatabaseDdl updates the schema of a Cloud Spanner database by
@@ -3532,6 +3715,88 @@ func (op *RestoreDatabaseOperation) Done() bool {
 // Name returns the name of the long-running operation.
 // The name is assigned by the server and is unique within the service from which the operation is created.
 func (op *RestoreDatabaseOperation) Name() string {
+	return op.lro.Name()
+}
+
+// UpdateDatabaseOperation manages a long-running operation from UpdateDatabase.
+type UpdateDatabaseOperation struct {
+	lro      *longrunning.Operation
+	pollPath string
+}
+
+// UpdateDatabaseOperation returns a new UpdateDatabaseOperation from a given name.
+// The name must be that of a previously created UpdateDatabaseOperation, possibly from a different process.
+func (c *databaseAdminGRPCClient) UpdateDatabaseOperation(name string) *UpdateDatabaseOperation {
+	return &UpdateDatabaseOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// UpdateDatabaseOperation returns a new UpdateDatabaseOperation from a given name.
+// The name must be that of a previously created UpdateDatabaseOperation, possibly from a different process.
+func (c *databaseAdminRESTClient) UpdateDatabaseOperation(name string) *UpdateDatabaseOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &UpdateDatabaseOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *UpdateDatabaseOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*databasepb.Database, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp databasepb.Database
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *UpdateDatabaseOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*databasepb.Database, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp databasepb.Database
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *UpdateDatabaseOperation) Metadata() (*databasepb.UpdateDatabaseMetadata, error) {
+	var meta databasepb.UpdateDatabaseMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *UpdateDatabaseOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *UpdateDatabaseOperation) Name() string {
 	return op.lro.Name()
 }
 

@@ -78,6 +78,7 @@ func defaultFoldersGRPCClientOptions() []option.ClientOption {
 func defaultFoldersCallOptions() *FoldersCallOptions {
 	return &FoldersCallOptions{
 		GetFolder: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -89,6 +90,7 @@ func defaultFoldersCallOptions() *FoldersCallOptions {
 			}),
 		},
 		ListFolders: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -99,13 +101,26 @@ func defaultFoldersCallOptions() *FoldersCallOptions {
 				})
 			}),
 		},
-		SearchFolders:  []gax.CallOption{},
-		CreateFolder:   []gax.CallOption{},
-		UpdateFolder:   []gax.CallOption{},
-		MoveFolder:     []gax.CallOption{},
-		DeleteFolder:   []gax.CallOption{},
-		UndeleteFolder: []gax.CallOption{},
+		SearchFolders: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		CreateFolder: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateFolder: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		MoveFolder: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteFolder: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UndeleteFolder: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		GetIamPolicy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -116,7 +131,9 @@ func defaultFoldersCallOptions() *FoldersCallOptions {
 				})
 			}),
 		},
-		SetIamPolicy:       []gax.CallOption{},
+		SetIamPolicy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		TestIamPermissions: []gax.CallOption{},
 		GetOperation:       []gax.CallOption{},
 	}
@@ -125,6 +142,7 @@ func defaultFoldersCallOptions() *FoldersCallOptions {
 func defaultFoldersRESTCallOptions() *FoldersCallOptions {
 	return &FoldersCallOptions{
 		GetFolder: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -135,6 +153,7 @@ func defaultFoldersRESTCallOptions() *FoldersCallOptions {
 			}),
 		},
 		ListFolders: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -144,13 +163,26 @@ func defaultFoldersRESTCallOptions() *FoldersCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
-		SearchFolders:  []gax.CallOption{},
-		CreateFolder:   []gax.CallOption{},
-		UpdateFolder:   []gax.CallOption{},
-		MoveFolder:     []gax.CallOption{},
-		DeleteFolder:   []gax.CallOption{},
-		UndeleteFolder: []gax.CallOption{},
+		SearchFolders: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		CreateFolder: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateFolder: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		MoveFolder: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteFolder: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UndeleteFolder: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		GetIamPolicy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -160,7 +192,9 @@ func defaultFoldersRESTCallOptions() *FoldersCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
-		SetIamPolicy:       []gax.CallOption{},
+		SetIamPolicy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		TestIamPermissions: []gax.CallOption{},
 		GetOperation:       []gax.CallOption{},
 	}
@@ -436,9 +470,6 @@ type foldersGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing FoldersClient
 	CallOptions **FoldersCallOptions
 
@@ -472,11 +503,6 @@ func NewFoldersClient(ctx context.Context, opts ...option.ClientOption) (*Folder
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -485,7 +511,6 @@ func NewFoldersClient(ctx context.Context, opts ...option.ClientOption) (*Folder
 
 	c := &foldersGRPCClient{
 		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
 		foldersClient:    resourcemanagerpb.NewFoldersClient(connPool),
 		CallOptions:      &client.CallOptions,
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
@@ -617,11 +642,6 @@ func (c *foldersRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 func (c *foldersGRPCClient) GetFolder(ctx context.Context, req *resourcemanagerpb.GetFolderRequest, opts ...gax.CallOption) (*resourcemanagerpb.Folder, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -725,11 +745,6 @@ func (c *foldersGRPCClient) SearchFolders(ctx context.Context, req *resourcemana
 }
 
 func (c *foldersGRPCClient) CreateFolder(ctx context.Context, req *resourcemanagerpb.CreateFolderRequest, opts ...gax.CallOption) (*CreateFolderOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
 	opts = append((*c.CallOptions).CreateFolder[0:len((*c.CallOptions).CreateFolder):len((*c.CallOptions).CreateFolder)], opts...)
 	var resp *longrunningpb.Operation
@@ -747,11 +762,6 @@ func (c *foldersGRPCClient) CreateFolder(ctx context.Context, req *resourcemanag
 }
 
 func (c *foldersGRPCClient) UpdateFolder(ctx context.Context, req *resourcemanagerpb.UpdateFolderRequest, opts ...gax.CallOption) (*UpdateFolderOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "folder.name", url.QueryEscape(req.GetFolder().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -771,11 +781,6 @@ func (c *foldersGRPCClient) UpdateFolder(ctx context.Context, req *resourcemanag
 }
 
 func (c *foldersGRPCClient) MoveFolder(ctx context.Context, req *resourcemanagerpb.MoveFolderRequest, opts ...gax.CallOption) (*MoveFolderOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -795,11 +800,6 @@ func (c *foldersGRPCClient) MoveFolder(ctx context.Context, req *resourcemanager
 }
 
 func (c *foldersGRPCClient) DeleteFolder(ctx context.Context, req *resourcemanagerpb.DeleteFolderRequest, opts ...gax.CallOption) (*DeleteFolderOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -819,11 +819,6 @@ func (c *foldersGRPCClient) DeleteFolder(ctx context.Context, req *resourcemanag
 }
 
 func (c *foldersGRPCClient) UndeleteFolder(ctx context.Context, req *resourcemanagerpb.UndeleteFolderRequest, opts ...gax.CallOption) (*UndeleteFolderOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -843,11 +838,6 @@ func (c *foldersGRPCClient) UndeleteFolder(ctx context.Context, req *resourceman
 }
 
 func (c *foldersGRPCClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -865,11 +855,6 @@ func (c *foldersGRPCClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamP
 }
 
 func (c *foldersGRPCClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)

@@ -97,6 +97,7 @@ func defaultGRPCClientOptions() []option.ClientOption {
 func defaultCallOptions() *CallOptions {
 	return &CallOptions{
 		ListConnectionProfiles: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -108,6 +109,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		GetConnectionProfile: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -118,10 +120,17 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
-		CreateConnectionProfile: []gax.CallOption{},
-		UpdateConnectionProfile: []gax.CallOption{},
-		DeleteConnectionProfile: []gax.CallOption{},
+		CreateConnectionProfile: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateConnectionProfile: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteConnectionProfile: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		DiscoverConnectionProfile: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -133,6 +142,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		ListStreams: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -144,6 +154,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		GetStream: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -154,10 +165,17 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
-		CreateStream: []gax.CallOption{},
-		UpdateStream: []gax.CallOption{},
-		DeleteStream: []gax.CallOption{},
+		CreateStream: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateStream: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteStream: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		GetStreamObject: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -169,6 +187,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		LookupStreamObject: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -180,6 +199,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		ListStreamObjects: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -191,6 +211,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		StartBackfillJob: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -202,6 +223,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		StopBackfillJob: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -213,6 +235,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		FetchStaticIps: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -223,8 +246,11 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
-		CreatePrivateConnection: []gax.CallOption{},
+		CreatePrivateConnection: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		GetPrivateConnection: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -236,6 +262,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		ListPrivateConnections: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -246,9 +273,14 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
-		DeletePrivateConnection: []gax.CallOption{},
-		CreateRoute:             []gax.CallOption{},
+		DeletePrivateConnection: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		CreateRoute: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		GetRoute: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -260,6 +292,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		ListRoutes: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -270,7 +303,9 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
-		DeleteRoute:     []gax.CallOption{},
+		DeleteRoute: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		GetLocation:     []gax.CallOption{},
 		ListLocations:   []gax.CallOption{},
 		CancelOperation: []gax.CallOption{},
@@ -283,6 +318,7 @@ func defaultCallOptions() *CallOptions {
 func defaultRESTCallOptions() *CallOptions {
 	return &CallOptions{
 		ListConnectionProfiles: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -293,6 +329,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		GetConnectionProfile: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -302,10 +339,17 @@ func defaultRESTCallOptions() *CallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
-		CreateConnectionProfile: []gax.CallOption{},
-		UpdateConnectionProfile: []gax.CallOption{},
-		DeleteConnectionProfile: []gax.CallOption{},
+		CreateConnectionProfile: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateConnectionProfile: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteConnectionProfile: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		DiscoverConnectionProfile: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -316,6 +360,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		ListStreams: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -326,6 +371,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		GetStream: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -335,10 +381,17 @@ func defaultRESTCallOptions() *CallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
-		CreateStream: []gax.CallOption{},
-		UpdateStream: []gax.CallOption{},
-		DeleteStream: []gax.CallOption{},
+		CreateStream: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateStream: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteStream: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		GetStreamObject: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -349,6 +402,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		LookupStreamObject: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -359,6 +413,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		ListStreamObjects: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -369,6 +424,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		StartBackfillJob: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -379,6 +435,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		StopBackfillJob: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -389,6 +446,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		FetchStaticIps: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -398,8 +456,11 @@ func defaultRESTCallOptions() *CallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
-		CreatePrivateConnection: []gax.CallOption{},
+		CreatePrivateConnection: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		GetPrivateConnection: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -410,6 +471,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		ListPrivateConnections: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -419,9 +481,14 @@ func defaultRESTCallOptions() *CallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
-		DeletePrivateConnection: []gax.CallOption{},
-		CreateRoute:             []gax.CallOption{},
+		DeletePrivateConnection: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		CreateRoute: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		GetRoute: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -432,6 +499,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		ListRoutes: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -441,7 +509,9 @@ func defaultRESTCallOptions() *CallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
-		DeleteRoute:     []gax.CallOption{},
+		DeleteRoute: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		GetLocation:     []gax.CallOption{},
 		ListLocations:   []gax.CallOption{},
 		CancelOperation: []gax.CallOption{},
@@ -769,9 +839,6 @@ type gRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing Client
 	CallOptions **CallOptions
 
@@ -805,11 +872,6 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -818,7 +880,6 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 
 	c := &gRPCClient{
 		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
 		client:           datastreampb.NewDatastreamClient(connPool),
 		CallOptions:      &client.CallOptions,
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
@@ -994,11 +1055,6 @@ func (c *gRPCClient) ListConnectionProfiles(ctx context.Context, req *datastream
 }
 
 func (c *gRPCClient) GetConnectionProfile(ctx context.Context, req *datastreampb.GetConnectionProfileRequest, opts ...gax.CallOption) (*datastreampb.ConnectionProfile, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1016,11 +1072,6 @@ func (c *gRPCClient) GetConnectionProfile(ctx context.Context, req *datastreampb
 }
 
 func (c *gRPCClient) CreateConnectionProfile(ctx context.Context, req *datastreampb.CreateConnectionProfileRequest, opts ...gax.CallOption) (*CreateConnectionProfileOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1040,11 +1091,6 @@ func (c *gRPCClient) CreateConnectionProfile(ctx context.Context, req *datastrea
 }
 
 func (c *gRPCClient) UpdateConnectionProfile(ctx context.Context, req *datastreampb.UpdateConnectionProfileRequest, opts ...gax.CallOption) (*UpdateConnectionProfileOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "connection_profile.name", url.QueryEscape(req.GetConnectionProfile().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1064,11 +1110,6 @@ func (c *gRPCClient) UpdateConnectionProfile(ctx context.Context, req *datastrea
 }
 
 func (c *gRPCClient) DeleteConnectionProfile(ctx context.Context, req *datastreampb.DeleteConnectionProfileRequest, opts ...gax.CallOption) (*DeleteConnectionProfileOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1088,11 +1129,6 @@ func (c *gRPCClient) DeleteConnectionProfile(ctx context.Context, req *datastrea
 }
 
 func (c *gRPCClient) DiscoverConnectionProfile(ctx context.Context, req *datastreampb.DiscoverConnectionProfileRequest, opts ...gax.CallOption) (*datastreampb.DiscoverConnectionProfileResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1155,11 +1191,6 @@ func (c *gRPCClient) ListStreams(ctx context.Context, req *datastreampb.ListStre
 }
 
 func (c *gRPCClient) GetStream(ctx context.Context, req *datastreampb.GetStreamRequest, opts ...gax.CallOption) (*datastreampb.Stream, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1177,11 +1208,6 @@ func (c *gRPCClient) GetStream(ctx context.Context, req *datastreampb.GetStreamR
 }
 
 func (c *gRPCClient) CreateStream(ctx context.Context, req *datastreampb.CreateStreamRequest, opts ...gax.CallOption) (*CreateStreamOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1201,11 +1227,6 @@ func (c *gRPCClient) CreateStream(ctx context.Context, req *datastreampb.CreateS
 }
 
 func (c *gRPCClient) UpdateStream(ctx context.Context, req *datastreampb.UpdateStreamRequest, opts ...gax.CallOption) (*UpdateStreamOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "stream.name", url.QueryEscape(req.GetStream().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1225,11 +1246,6 @@ func (c *gRPCClient) UpdateStream(ctx context.Context, req *datastreampb.UpdateS
 }
 
 func (c *gRPCClient) DeleteStream(ctx context.Context, req *datastreampb.DeleteStreamRequest, opts ...gax.CallOption) (*DeleteStreamOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1249,11 +1265,6 @@ func (c *gRPCClient) DeleteStream(ctx context.Context, req *datastreampb.DeleteS
 }
 
 func (c *gRPCClient) GetStreamObject(ctx context.Context, req *datastreampb.GetStreamObjectRequest, opts ...gax.CallOption) (*datastreampb.StreamObject, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1271,11 +1282,6 @@ func (c *gRPCClient) GetStreamObject(ctx context.Context, req *datastreampb.GetS
 }
 
 func (c *gRPCClient) LookupStreamObject(ctx context.Context, req *datastreampb.LookupStreamObjectRequest, opts ...gax.CallOption) (*datastreampb.StreamObject, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1338,11 +1344,6 @@ func (c *gRPCClient) ListStreamObjects(ctx context.Context, req *datastreampb.Li
 }
 
 func (c *gRPCClient) StartBackfillJob(ctx context.Context, req *datastreampb.StartBackfillJobRequest, opts ...gax.CallOption) (*datastreampb.StartBackfillJobResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "object", url.QueryEscape(req.GetObject())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1360,11 +1361,6 @@ func (c *gRPCClient) StartBackfillJob(ctx context.Context, req *datastreampb.Sta
 }
 
 func (c *gRPCClient) StopBackfillJob(ctx context.Context, req *datastreampb.StopBackfillJobRequest, opts ...gax.CallOption) (*datastreampb.StopBackfillJobResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "object", url.QueryEscape(req.GetObject())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1427,11 +1423,6 @@ func (c *gRPCClient) FetchStaticIps(ctx context.Context, req *datastreampb.Fetch
 }
 
 func (c *gRPCClient) CreatePrivateConnection(ctx context.Context, req *datastreampb.CreatePrivateConnectionRequest, opts ...gax.CallOption) (*CreatePrivateConnectionOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1451,11 +1442,6 @@ func (c *gRPCClient) CreatePrivateConnection(ctx context.Context, req *datastrea
 }
 
 func (c *gRPCClient) GetPrivateConnection(ctx context.Context, req *datastreampb.GetPrivateConnectionRequest, opts ...gax.CallOption) (*datastreampb.PrivateConnection, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1518,11 +1504,6 @@ func (c *gRPCClient) ListPrivateConnections(ctx context.Context, req *datastream
 }
 
 func (c *gRPCClient) DeletePrivateConnection(ctx context.Context, req *datastreampb.DeletePrivateConnectionRequest, opts ...gax.CallOption) (*DeletePrivateConnectionOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1542,11 +1523,6 @@ func (c *gRPCClient) DeletePrivateConnection(ctx context.Context, req *datastrea
 }
 
 func (c *gRPCClient) CreateRoute(ctx context.Context, req *datastreampb.CreateRouteRequest, opts ...gax.CallOption) (*CreateRouteOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1566,11 +1542,6 @@ func (c *gRPCClient) CreateRoute(ctx context.Context, req *datastreampb.CreateRo
 }
 
 func (c *gRPCClient) GetRoute(ctx context.Context, req *datastreampb.GetRouteRequest, opts ...gax.CallOption) (*datastreampb.Route, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1633,11 +1604,6 @@ func (c *gRPCClient) ListRoutes(ctx context.Context, req *datastreampb.ListRoute
 }
 
 func (c *gRPCClient) DeleteRoute(ctx context.Context, req *datastreampb.DeleteRouteRequest, opts ...gax.CallOption) (*DeleteRouteOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -3080,6 +3046,9 @@ func (c *restClient) CreatePrivateConnection(ctx context.Context, req *datastrea
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetForce() {
+		params.Add("force", fmt.Sprintf("%v", req.GetForce()))
+	}
 	params.Add("privateConnectionId", fmt.Sprintf("%v", req.GetPrivateConnectionId()))
 	if req.GetRequestId() != "" {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))

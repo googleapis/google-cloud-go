@@ -270,8 +270,7 @@ func (c *DeploymentResourcePoolClient) GetOperation(ctx context.Context, req *lo
 	return c.internalClient.GetOperation(ctx, req, opts...)
 }
 
-// ListOperations lists operations that match the specified filter in the request. If
-// the server doesn’t support this method, it returns UNIMPLEMENTED.
+// ListOperations is a utility method from google.longrunning.Operations.
 func (c *DeploymentResourcePoolClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	return c.internalClient.ListOperations(ctx, req, opts...)
 }
@@ -287,9 +286,6 @@ func (c *DeploymentResourcePoolClient) WaitOperation(ctx context.Context, req *l
 type deploymentResourcePoolGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
-
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
 
 	// Points back to the CallOptions field of the containing DeploymentResourcePoolClient
 	CallOptions **DeploymentResourcePoolCallOptions
@@ -326,11 +322,6 @@ func NewDeploymentResourcePoolClient(ctx context.Context, opts ...option.ClientO
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -339,7 +330,6 @@ func NewDeploymentResourcePoolClient(ctx context.Context, opts ...option.ClientO
 
 	c := &deploymentResourcePoolGRPCClient{
 		connPool:                     connPool,
-		disableDeadlines:             disableDeadlines,
 		deploymentResourcePoolClient: aiplatformpb.NewDeploymentResourcePoolServiceClient(connPool),
 		CallOptions:                  &client.CallOptions,
 		operationsClient:             longrunningpb.NewOperationsClient(connPool),
@@ -1634,8 +1624,7 @@ func (c *deploymentResourcePoolRESTClient) GetOperation(ctx context.Context, req
 	return resp, nil
 }
 
-// ListOperations lists operations that match the specified filter in the request. If
-// the server doesn’t support this method, it returns UNIMPLEMENTED.
+// ListOperations is a utility method from google.longrunning.Operations.
 func (c *deploymentResourcePoolRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
 	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)

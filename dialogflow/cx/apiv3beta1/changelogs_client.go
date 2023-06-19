@@ -70,6 +70,7 @@ func defaultChangelogsGRPCClientOptions() []option.ClientOption {
 func defaultChangelogsCallOptions() *ChangelogsCallOptions {
 	return &ChangelogsCallOptions{
 		ListChangelogs: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -81,6 +82,7 @@ func defaultChangelogsCallOptions() *ChangelogsCallOptions {
 			}),
 		},
 		GetChangelog: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -102,6 +104,7 @@ func defaultChangelogsCallOptions() *ChangelogsCallOptions {
 func defaultChangelogsRESTCallOptions() *ChangelogsCallOptions {
 	return &ChangelogsCallOptions{
 		ListChangelogs: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -112,6 +115,7 @@ func defaultChangelogsRESTCallOptions() *ChangelogsCallOptions {
 			}),
 		},
 		GetChangelog: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -209,8 +213,7 @@ func (c *ChangelogsClient) GetOperation(ctx context.Context, req *longrunningpb.
 	return c.internalClient.GetOperation(ctx, req, opts...)
 }
 
-// ListOperations lists operations that match the specified filter in the request. If
-// the server doesn’t support this method, it returns UNIMPLEMENTED.
+// ListOperations is a utility method from google.longrunning.Operations.
 func (c *ChangelogsClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	return c.internalClient.ListOperations(ctx, req, opts...)
 }
@@ -221,9 +224,6 @@ func (c *ChangelogsClient) ListOperations(ctx context.Context, req *longrunningp
 type changelogsGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
-
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
 
 	// Points back to the CallOptions field of the containing ChangelogsClient
 	CallOptions **ChangelogsCallOptions
@@ -254,11 +254,6 @@ func NewChangelogsClient(ctx context.Context, opts ...option.ClientOption) (*Cha
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -267,7 +262,6 @@ func NewChangelogsClient(ctx context.Context, opts ...option.ClientOption) (*Cha
 
 	c := &changelogsGRPCClient{
 		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
 		changelogsClient: cxpb.NewChangelogsClient(connPool),
 		CallOptions:      &client.CallOptions,
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
@@ -418,11 +412,6 @@ func (c *changelogsGRPCClient) ListChangelogs(ctx context.Context, req *cxpb.Lis
 }
 
 func (c *changelogsGRPCClient) GetChangelog(ctx context.Context, req *cxpb.GetChangelogRequest, opts ...gax.CallOption) (*cxpb.Changelog, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -972,8 +961,7 @@ func (c *changelogsRESTClient) GetOperation(ctx context.Context, req *longrunnin
 	return resp, nil
 }
 
-// ListOperations lists operations that match the specified filter in the request. If
-// the server doesn’t support this method, it returns UNIMPLEMENTED.
+// ListOperations is a utility method from google.longrunning.Operations.
 func (c *changelogsRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
 	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)

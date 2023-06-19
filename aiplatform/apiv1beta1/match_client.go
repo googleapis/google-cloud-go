@@ -223,8 +223,7 @@ func (c *MatchClient) GetOperation(ctx context.Context, req *longrunningpb.GetOp
 	return c.internalClient.GetOperation(ctx, req, opts...)
 }
 
-// ListOperations lists operations that match the specified filter in the request. If
-// the server doesn’t support this method, it returns UNIMPLEMENTED.
+// ListOperations is a utility method from google.longrunning.Operations.
 func (c *MatchClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	return c.internalClient.ListOperations(ctx, req, opts...)
 }
@@ -240,9 +239,6 @@ func (c *MatchClient) WaitOperation(ctx context.Context, req *longrunningpb.Wait
 type matchGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
-
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
 
 	// Points back to the CallOptions field of the containing MatchClient
 	CallOptions **MatchCallOptions
@@ -275,11 +271,6 @@ func NewMatchClient(ctx context.Context, opts ...option.ClientOption) (*MatchCli
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -288,7 +279,6 @@ func NewMatchClient(ctx context.Context, opts ...option.ClientOption) (*MatchCli
 
 	c := &matchGRPCClient{
 		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
 		matchClient:      aiplatformpb.NewMatchServiceClient(connPool),
 		CallOptions:      &client.CallOptions,
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
@@ -1219,8 +1209,7 @@ func (c *matchRESTClient) GetOperation(ctx context.Context, req *longrunningpb.G
 	return resp, nil
 }
 
-// ListOperations lists operations that match the specified filter in the request. If
-// the server doesn’t support this method, it returns UNIMPLEMENTED.
+// ListOperations is a utility method from google.longrunning.Operations.
 func (c *matchRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
 	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)

@@ -28,6 +28,7 @@ import (
 	gapic "cloud.google.com/go/storage/internal/apiv2"
 	"cloud.google.com/go/storage/internal/apiv2/storagepb"
 	"github.com/googleapis/gax-go/v2"
+	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -1059,11 +1060,13 @@ func (c *grpcStorageClient) OpenWriter(params *openWriterParams, opts ...storage
 				pr.CloseWithError(err)
 				return
 			}
-			// At this point, the current buffer has been uploaded. Capture the
-			// committed offset here in case the upload was not finalized and
-			// another chunk is to be uploaded.
-			offset = off
-			progress(offset)
+			// At this point, the current buffer has been uploaded. For resumable
+			// uploads, capture the committed offset here in case the upload was not
+			// finalized and another chunk is to be uploaded.
+			if gw.upid != "" {
+				offset = off
+				progress(offset)
+			}
 
 			// When we are done reading data and the chunk has been finalized,
 			// we are done.
@@ -1471,6 +1474,12 @@ func (r *gRPCReader) reopenStream() (*storagepb.ReadObjectResponse, error) {
 
 func newGRPCWriter(c *grpcStorageClient, params *openWriterParams, r io.Reader) *gRPCWriter {
 	size := params.chunkSize
+
+	// Round up chunksize to nearest 256KiB
+	if size%googleapi.MinUploadChunkSize != 0 {
+		size += googleapi.MinUploadChunkSize - (size % googleapi.MinUploadChunkSize)
+	}
+
 	if params.chunkSize == 0 {
 		// TODO: Should we actually use the minimum of 256 KB here when the user
 		// indicates they want minimal memory usage? We cannot do a zero-copy,

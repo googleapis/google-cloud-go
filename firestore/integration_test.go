@@ -38,6 +38,7 @@ import (
 	"cloud.google.com/go/internal/uid"
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
+	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/genproto/googleapis/type/latlng"
 	"google.golang.org/grpc/codes"
@@ -61,6 +62,8 @@ var (
 	iAdminClient  *apiv1.FirestoreAdminClient
 	iColl         *CollectionRef
 	collectionIDs = uid.NewSpace("go-integration-test", nil)
+	wantDBPath    string
+	indexNames    []string
 )
 
 func initIntegrationTest() {
@@ -81,7 +84,7 @@ func initIntegrationTest() {
 		log.Fatal("The project key must be set. See CONTRIBUTING.md for details")
 	}
 	projectPath := "projects/" + testProjectID
-	wantDBPath := projectPath + "/databases/(default)"
+	wantDBPath = projectPath + "/databases/(default)"
 
 	ti := &testutil.HeadersEnforcer{
 		Checkers: []*testutil.HeaderChecker{
@@ -131,10 +134,11 @@ func createIndexes(ctx context.Context, dbPath string) {
 	var createIndexWg sync.WaitGroup
 
 	indexFields := [][]string{{"updatedAt", "weight", "height"}, {"weight", "height"}}
+	indexNames = make([]string, len(indexFields))
 	indexParent := fmt.Sprintf("%s/collectionGroups/%s", dbPath, iColl.ID)
 
 	createIndexWg.Add(len(indexFields))
-	for _, fields := range indexFields {
+	for i, fields := range indexFields {
 		var adminPbIndexFields []*adminpb.Index_IndexField
 		for _, field := range fields {
 			adminPbIndexFields = append(adminPbIndexFields, &adminpb.Index_IndexField{
@@ -151,25 +155,71 @@ func createIndexes(ctx context.Context, dbPath string) {
 				Fields:     adminPbIndexFields,
 			},
 		}
-		go func(req *adminpb.CreateIndexRequest) {
-			op, err := iAdminClient.CreateIndex(ctx, req)
-			if err != nil {
-				log.Fatalf("CreateIndex: %v", err)
+		go func(req *adminpb.CreateIndexRequest, i int) {
+			op, createErr := iAdminClient.CreateIndex(ctx, req)
+			if createErr != nil {
+				log.Fatalf("CreateIndex: %v", createErr)
 			}
 
-			_, err = op.Wait(ctx)
-			if err != nil {
-				log.Fatalf("Wait: %v", err)
+			createdIndex, waitErr := op.Wait(ctx)
+			if waitErr != nil {
+				log.Fatalf("Wait: %v", waitErr)
 			}
+			indexNames[i] = createdIndex.Name
 			createIndexWg.Done()
-		}(req)
+		}(req, i)
 	}
 	createIndexWg.Wait()
 }
 
+// deleteIndexes deletes composite indexes created in createIndexes function
+func deleteIndexes(ctx context.Context) {
+	for _, indexName := range indexNames {
+		err := iAdminClient.DeleteIndex(ctx, &adminpb.DeleteIndexRequest{
+			Name: indexName,
+		})
+		if err != nil {
+			log.Printf("Failed to delete index \"%s\": %+v\n", indexName, err)
+		}
+	}
+}
+
+// deleteCollection recursively deletes the documents in the specified collection
+func deleteCollection(ctx context.Context, coll *CollectionRef) error {
+	bulkwriter := iClient.BulkWriter(ctx)
+
+	// Get  documents
+	iter := coll.Documents(ctx)
+
+	// Iterate through the documents, adding
+	// a delete operation for each one to the BulkWriter.
+	for {
+		doc, err := iter.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			log.Printf("Failed to get next document: %+v\n", err)
+			return err
+		}
+
+		_, err = bulkwriter.Delete(doc.Ref)
+		if err != nil {
+			log.Printf("Failed to delete document: %+v, err: %+v\n", doc.Ref, err)
+		}
+	}
+
+	bulkwriter.End()
+	bulkwriter.Flush()
+
+	return nil
+}
+
 func cleanupIntegrationTest() {
 	if iClient != nil {
-		// TODO(jba): delete everything in integrationColl.
+		ctx := context.Background()
+		deleteIndexes(ctx)
+		deleteCollection(ctx, iColl)
 		iClient.Close()
 	}
 
@@ -1927,6 +1977,21 @@ func TestIntegration_ColGroupRefPartitionsLarge(t *testing.T) {
 
 	if got, want := totalCount, documentCount; got != want {
 		t.Errorf("Unexpected number of documents across partitions: got %d, want %d", got, want)
+	}
+}
+
+// TestIntegration_BulkWriter_Set tests setting values and serverTimeStamp in single write.
+func TestIntegration_BulkWriter_Set(t *testing.T) {
+	doc := iColl.NewDoc()
+	c := integrationClient(t)
+	ctx := context.Background()
+	bw := c.BulkWriter(ctx)
+
+	f := copyMap(integrationTestMap)
+	f["serverTimeStamp"] = ServerTimestamp
+	_, err := bw.Set(doc, f)
+	if err != nil {
+		t.Errorf("bulkwriter: error performing a set write: %v\n", err)
 	}
 }
 

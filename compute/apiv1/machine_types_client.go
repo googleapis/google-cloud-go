@@ -51,6 +51,7 @@ type MachineTypesCallOptions struct {
 func defaultMachineTypesRESTCallOptions() *MachineTypesCallOptions {
 	return &MachineTypesCallOptions{
 		AggregatedList: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -62,6 +63,7 @@ func defaultMachineTypesRESTCallOptions() *MachineTypesCallOptions {
 			}),
 		},
 		Get: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -73,6 +75,7 @@ func defaultMachineTypesRESTCallOptions() *MachineTypesCallOptions {
 			}),
 		},
 		List: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,

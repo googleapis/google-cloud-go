@@ -60,10 +60,17 @@ type RegionDisksCallOptions struct {
 
 func defaultRegionDisksRESTCallOptions() *RegionDisksCallOptions {
 	return &RegionDisksCallOptions{
-		AddResourcePolicies: []gax.CallOption{},
-		CreateSnapshot:      []gax.CallOption{},
-		Delete:              []gax.CallOption{},
+		AddResourcePolicies: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		CreateSnapshot: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		Delete: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
 		Get: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -75,6 +82,7 @@ func defaultRegionDisksRESTCallOptions() *RegionDisksCallOptions {
 			}),
 		},
 		GetIamPolicy: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -85,8 +93,11 @@ func defaultRegionDisksRESTCallOptions() *RegionDisksCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
-		Insert: []gax.CallOption{},
+		Insert: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
 		List: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -97,12 +108,24 @@ func defaultRegionDisksRESTCallOptions() *RegionDisksCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
-		RemoveResourcePolicies: []gax.CallOption{},
-		Resize:                 []gax.CallOption{},
-		SetIamPolicy:           []gax.CallOption{},
-		SetLabels:              []gax.CallOption{},
-		TestIamPermissions:     []gax.CallOption{},
-		Update:                 []gax.CallOption{},
+		RemoveResourcePolicies: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		Resize: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		SetIamPolicy: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		SetLabels: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		TestIamPermissions: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		Update: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
 	}
 }
 

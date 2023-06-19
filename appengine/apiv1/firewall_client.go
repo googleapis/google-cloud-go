@@ -66,23 +66,47 @@ func defaultFirewallGRPCClientOptions() []option.ClientOption {
 
 func defaultFirewallCallOptions() *FirewallCallOptions {
 	return &FirewallCallOptions{
-		ListIngressRules:        []gax.CallOption{},
-		BatchUpdateIngressRules: []gax.CallOption{},
-		CreateIngressRule:       []gax.CallOption{},
-		GetIngressRule:          []gax.CallOption{},
-		UpdateIngressRule:       []gax.CallOption{},
-		DeleteIngressRule:       []gax.CallOption{},
+		ListIngressRules: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		BatchUpdateIngressRules: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		CreateIngressRule: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetIngressRule: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateIngressRule: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteIngressRule: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 	}
 }
 
 func defaultFirewallRESTCallOptions() *FirewallCallOptions {
 	return &FirewallCallOptions{
-		ListIngressRules:        []gax.CallOption{},
-		BatchUpdateIngressRules: []gax.CallOption{},
-		CreateIngressRule:       []gax.CallOption{},
-		GetIngressRule:          []gax.CallOption{},
-		UpdateIngressRule:       []gax.CallOption{},
-		DeleteIngressRule:       []gax.CallOption{},
+		ListIngressRules: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		BatchUpdateIngressRules: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		CreateIngressRule: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetIngressRule: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateIngressRule: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteIngressRule: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 	}
 }
 
@@ -184,9 +208,6 @@ type firewallGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing FirewallClient
 	CallOptions **FirewallCallOptions
 
@@ -220,11 +241,6 @@ func NewFirewallClient(ctx context.Context, opts ...option.ClientOption) (*Firew
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -232,10 +248,9 @@ func NewFirewallClient(ctx context.Context, opts ...option.ClientOption) (*Firew
 	client := FirewallClient{CallOptions: defaultFirewallCallOptions()}
 
 	c := &firewallGRPCClient{
-		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
-		firewallClient:   appenginepb.NewFirewallClient(connPool),
-		CallOptions:      &client.CallOptions,
+		connPool:       connPool,
+		firewallClient: appenginepb.NewFirewallClient(connPool),
+		CallOptions:    &client.CallOptions,
 	}
 	c.setGoogleClientInfo()
 
@@ -390,11 +405,6 @@ func (c *firewallGRPCClient) ListIngressRules(ctx context.Context, req *appengin
 }
 
 func (c *firewallGRPCClient) BatchUpdateIngressRules(ctx context.Context, req *appenginepb.BatchUpdateIngressRulesRequest, opts ...gax.CallOption) (*appenginepb.BatchUpdateIngressRulesResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -412,11 +422,6 @@ func (c *firewallGRPCClient) BatchUpdateIngressRules(ctx context.Context, req *a
 }
 
 func (c *firewallGRPCClient) CreateIngressRule(ctx context.Context, req *appenginepb.CreateIngressRuleRequest, opts ...gax.CallOption) (*appenginepb.FirewallRule, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -434,11 +439,6 @@ func (c *firewallGRPCClient) CreateIngressRule(ctx context.Context, req *appengi
 }
 
 func (c *firewallGRPCClient) GetIngressRule(ctx context.Context, req *appenginepb.GetIngressRuleRequest, opts ...gax.CallOption) (*appenginepb.FirewallRule, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -456,11 +456,6 @@ func (c *firewallGRPCClient) GetIngressRule(ctx context.Context, req *appenginep
 }
 
 func (c *firewallGRPCClient) UpdateIngressRule(ctx context.Context, req *appenginepb.UpdateIngressRuleRequest, opts ...gax.CallOption) (*appenginepb.FirewallRule, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -478,11 +473,6 @@ func (c *firewallGRPCClient) UpdateIngressRule(ctx context.Context, req *appengi
 }
 
 func (c *firewallGRPCClient) DeleteIngressRule(ctx context.Context, req *appenginepb.DeleteIngressRuleRequest, opts ...gax.CallOption) error {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)

@@ -58,6 +58,7 @@ type UrlMapsCallOptions struct {
 func defaultUrlMapsRESTCallOptions() *UrlMapsCallOptions {
 	return &UrlMapsCallOptions{
 		AggregatedList: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -68,8 +69,11 @@ func defaultUrlMapsRESTCallOptions() *UrlMapsCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
-		Delete: []gax.CallOption{},
+		Delete: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
 		Get: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -80,9 +84,14 @@ func defaultUrlMapsRESTCallOptions() *UrlMapsCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
-		Insert:          []gax.CallOption{},
-		InvalidateCache: []gax.CallOption{},
+		Insert: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		InvalidateCache: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
 		List: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -93,9 +102,15 @@ func defaultUrlMapsRESTCallOptions() *UrlMapsCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
-		Patch:    []gax.CallOption{},
-		Update:   []gax.CallOption{},
-		Validate: []gax.CallOption{},
+		Patch: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		Update: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		Validate: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
 	}
 }
 

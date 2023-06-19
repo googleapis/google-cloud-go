@@ -30,10 +30,10 @@ import (
 	"cloud.google.com/go/pubsub/internal/scheduler"
 	gax "github.com/googleapis/gax-go/v2"
 	"golang.org/x/sync/errgroup"
-	fmpb "google.golang.org/genproto/protobuf/field_mask"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	durpb "google.golang.org/protobuf/types/known/durationpb"
+	fmpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 
 	vkit "cloud.google.com/go/pubsub/apiv1"
 )
@@ -263,6 +263,11 @@ type BigQueryConfig struct {
 
 func (bc *BigQueryConfig) toProto() *pb.BigQueryConfig {
 	if bc == nil {
+		return nil
+	}
+	// If the config is zero valued, this is the sentinel for
+	// clearing bigquery config and switch back to pull.
+	if *bc == (BigQueryConfig{}) {
 		return nil
 	}
 	pbCfg := &pb.BigQueryConfig{
@@ -690,9 +695,8 @@ type ReceiveSettings struct {
 	// The default is false.
 	UseLegacyFlowControl bool
 
-	// NumGoroutines is the number of goroutines that each datastructure along
-	// the Receive path will spawn. Adjusting this value adjusts concurrency
-	// along the receive path.
+	// NumGoroutines sets the number of StreamingPull streams to pull messages
+	// from the subscription.
 	//
 	// NumGoroutines defaults to DefaultReceiveSettings.NumGoroutines.
 	//

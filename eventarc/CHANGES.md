@@ -1,5 +1,19 @@
 # Changes
 
+## [1.12.0](https://github.com/googleapis/google-cloud-go/compare/eventarc/v1.11.1...eventarc/v1.12.0) (2023-05-30)
+
+
+### Features
+
+* **eventarc:** Update all direct dependencies ([b340d03](https://github.com/googleapis/google-cloud-go/commit/b340d030f2b52a4ce48846ce63984b28583abde6))
+
+## [1.11.1](https://github.com/googleapis/google-cloud-go/compare/eventarc/v1.11.0...eventarc/v1.11.1) (2023-05-08)
+
+
+### Bug Fixes
+
+* **eventarc:** Update grpc to v1.55.0 ([1147ce0](https://github.com/googleapis/google-cloud-go/commit/1147ce02a990276ca4f8ab7a1ab65c14da4450ef))
+
 ## [1.11.0](https://github.com/googleapis/google-cloud-go/compare/eventarc/v1.10.0...eventarc/v1.11.0) (2023-03-15)
 
 

@@ -74,6 +74,7 @@ func defaultPagesGRPCClientOptions() []option.ClientOption {
 func defaultPagesCallOptions() *PagesCallOptions {
 	return &PagesCallOptions{
 		ListPages: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -85,6 +86,7 @@ func defaultPagesCallOptions() *PagesCallOptions {
 			}),
 		},
 		GetPage: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -96,6 +98,7 @@ func defaultPagesCallOptions() *PagesCallOptions {
 			}),
 		},
 		CreatePage: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -107,6 +110,7 @@ func defaultPagesCallOptions() *PagesCallOptions {
 			}),
 		},
 		UpdatePage: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -118,6 +122,7 @@ func defaultPagesCallOptions() *PagesCallOptions {
 			}),
 		},
 		DeletePage: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -139,6 +144,7 @@ func defaultPagesCallOptions() *PagesCallOptions {
 func defaultPagesRESTCallOptions() *PagesCallOptions {
 	return &PagesCallOptions{
 		ListPages: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -149,6 +155,7 @@ func defaultPagesRESTCallOptions() *PagesCallOptions {
 			}),
 		},
 		GetPage: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -159,6 +166,7 @@ func defaultPagesRESTCallOptions() *PagesCallOptions {
 			}),
 		},
 		CreatePage: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -169,6 +177,7 @@ func defaultPagesRESTCallOptions() *PagesCallOptions {
 			}),
 		},
 		UpdatePage: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -179,6 +188,7 @@ func defaultPagesRESTCallOptions() *PagesCallOptions {
 			}),
 		},
 		DeletePage: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -293,8 +303,7 @@ func (c *PagesClient) GetOperation(ctx context.Context, req *longrunningpb.GetOp
 	return c.internalClient.GetOperation(ctx, req, opts...)
 }
 
-// ListOperations lists operations that match the specified filter in the request. If
-// the server doesn’t support this method, it returns UNIMPLEMENTED.
+// ListOperations is a utility method from google.longrunning.Operations.
 func (c *PagesClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	return c.internalClient.ListOperations(ctx, req, opts...)
 }
@@ -305,9 +314,6 @@ func (c *PagesClient) ListOperations(ctx context.Context, req *longrunningpb.Lis
 type pagesGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
-
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
 
 	// Points back to the CallOptions field of the containing PagesClient
 	CallOptions **PagesCallOptions
@@ -337,11 +343,6 @@ func NewPagesClient(ctx context.Context, opts ...option.ClientOption) (*PagesCli
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -350,7 +351,6 @@ func NewPagesClient(ctx context.Context, opts ...option.ClientOption) (*PagesCli
 
 	c := &pagesGRPCClient{
 		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
 		pagesClient:      cxpb.NewPagesClient(connPool),
 		CallOptions:      &client.CallOptions,
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
@@ -500,11 +500,6 @@ func (c *pagesGRPCClient) ListPages(ctx context.Context, req *cxpb.ListPagesRequ
 }
 
 func (c *pagesGRPCClient) GetPage(ctx context.Context, req *cxpb.GetPageRequest, opts ...gax.CallOption) (*cxpb.Page, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -522,11 +517,6 @@ func (c *pagesGRPCClient) GetPage(ctx context.Context, req *cxpb.GetPageRequest,
 }
 
 func (c *pagesGRPCClient) CreatePage(ctx context.Context, req *cxpb.CreatePageRequest, opts ...gax.CallOption) (*cxpb.Page, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -544,11 +534,6 @@ func (c *pagesGRPCClient) CreatePage(ctx context.Context, req *cxpb.CreatePageRe
 }
 
 func (c *pagesGRPCClient) UpdatePage(ctx context.Context, req *cxpb.UpdatePageRequest, opts ...gax.CallOption) (*cxpb.Page, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "page.name", url.QueryEscape(req.GetPage().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -566,11 +551,6 @@ func (c *pagesGRPCClient) UpdatePage(ctx context.Context, req *cxpb.UpdatePageRe
 }
 
 func (c *pagesGRPCClient) DeletePage(ctx context.Context, req *cxpb.DeletePageRequest, opts ...gax.CallOption) error {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1305,8 +1285,7 @@ func (c *pagesRESTClient) GetOperation(ctx context.Context, req *longrunningpb.G
 	return resp, nil
 }
 
-// ListOperations lists operations that match the specified filter in the request. If
-// the server doesn’t support this method, it returns UNIMPLEMENTED.
+// ListOperations is a utility method from google.longrunning.Operations.
 func (c *pagesRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
 	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)

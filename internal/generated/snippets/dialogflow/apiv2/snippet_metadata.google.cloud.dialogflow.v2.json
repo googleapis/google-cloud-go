@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/dialogflow/apiv2",
-    "version": "1.32.0",
+    "version": "1.36.0",
     "language": "GO",
     "apis": [
       {
@@ -426,7 +426,7 @@
     {
       "regionTag": "dialogflow_v2_generated_Agents_ListOperations_sync",
       "title": "dialogflow ListOperations Sample",
-      "description": "ListOperations lists operations that match the specified filter in the request. If\nthe server doesn't support this method, it returns `UNIMPLEMENTED`.",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
       "file": "AgentsClient/ListOperations/main.go",
       "language": "GO",
       "clientMethod": {
@@ -885,7 +885,7 @@
     {
       "regionTag": "dialogflow_v2_generated_AnswerRecords_ListOperations_sync",
       "title": "dialogflow ListOperations Sample",
-      "description": "ListOperations lists operations that match the specified filter in the request. If\nthe server doesn't support this method, it returns `UNIMPLEMENTED`.",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
       "file": "AnswerRecordsClient/ListOperations/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1388,7 +1388,7 @@
     {
       "regionTag": "dialogflow_v2_generated_Contexts_ListOperations_sync",
       "title": "dialogflow ListOperations Sample",
-      "description": "ListOperations lists operations that match the specified filter in the request. If\nthe server doesn't support this method, it returns `UNIMPLEMENTED`.",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
       "file": "ContextsClient/ListOperations/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1893,7 +1893,7 @@
     {
       "regionTag": "dialogflow_v2_generated_ConversationDatasets_ListOperations_sync",
       "title": "dialogflow ListOperations Sample",
-      "description": "ListOperations lists operations that match the specified filter in the request. If\nthe server doesn't support this method, it returns `UNIMPLEMENTED`.",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
       "file": "ConversationDatasetsClient/ListOperations/main.go",
       "language": "GO",
       "clientMethod": {
@@ -2490,7 +2490,7 @@
     {
       "regionTag": "dialogflow_v2_generated_ConversationModels_ListOperations_sync",
       "title": "dialogflow ListOperations Sample",
-      "description": "ListOperations lists operations that match the specified filter in the request. If\nthe server doesn't support this method, it returns `UNIMPLEMENTED`.",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
       "file": "ConversationModelsClient/ListOperations/main.go",
       "language": "GO",
       "clientMethod": {
@@ -2994,7 +2994,7 @@
     {
       "regionTag": "dialogflow_v2_generated_ConversationProfiles_ListOperations_sync",
       "title": "dialogflow ListOperations Sample",
-      "description": "ListOperations lists operations that match the specified filter in the request. If\nthe server doesn't support this method, it returns `UNIMPLEMENTED`.",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
       "file": "ConversationProfilesClient/ListOperations/main.go",
       "language": "GO",
       "clientMethod": {
@@ -3251,6 +3251,52 @@
         "method": {
           "shortName": "CreateConversation",
           "fullName": "google.cloud.dialogflow.v2.Conversations.CreateConversation",
+          "service": {
+            "shortName": "Conversations",
+            "fullName": "google.cloud.dialogflow.v2.Conversations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dialogflow_v2_generated_Conversations_GenerateStatelessSummary_sync",
+      "title": "dialogflow GenerateStatelessSummary Sample",
+      "description": "GenerateStatelessSummary generates and returns a summary for a conversation that does not have a\nresource created for it.",
+      "file": "ConversationsClient/GenerateStatelessSummary/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GenerateStatelessSummary",
+        "fullName": "google.cloud.dialogflow.v2.ConversationsClient.GenerateStatelessSummary",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dialogflowpb.GenerateStatelessSummaryRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*dialogflowpb.GenerateStatelessSummaryResponse",
+        "client": {
+          "shortName": "ConversationsClient",
+          "fullName": "google.cloud.dialogflow.v2.ConversationsClient"
+        },
+        "method": {
+          "shortName": "GenerateStatelessSummary",
+          "fullName": "google.cloud.dialogflow.v2.Conversations.GenerateStatelessSummary",
           "service": {
             "shortName": "Conversations",
             "fullName": "google.cloud.dialogflow.v2.Conversations"
@@ -3545,7 +3591,7 @@
     {
       "regionTag": "dialogflow_v2_generated_Conversations_ListOperations_sync",
       "title": "dialogflow ListOperations Sample",
-      "description": "ListOperations lists operations that match the specified filter in the request. If\nthe server doesn't support this method, it returns `UNIMPLEMENTED`.",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
       "file": "ConversationsClient/ListOperations/main.go",
       "language": "GO",
       "clientMethod": {
@@ -4096,7 +4142,7 @@
     {
       "regionTag": "dialogflow_v2_generated_Documents_ListOperations_sync",
       "title": "dialogflow ListOperations Sample",
-      "description": "ListOperations lists operations that match the specified filter in the request. If\nthe server doesn't support this method, it returns `UNIMPLEMENTED`.",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
       "file": "DocumentsClient/ListOperations/main.go",
       "language": "GO",
       "clientMethod": {
@@ -4830,7 +4876,7 @@
     {
       "regionTag": "dialogflow_v2_generated_EntityTypes_ListOperations_sync",
       "title": "dialogflow ListOperations Sample",
-      "description": "ListOperations lists operations that match the specified filter in the request. If\nthe server doesn't support this method, it returns `UNIMPLEMENTED`.",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
       "file": "EntityTypesClient/ListOperations/main.go",
       "language": "GO",
       "clientMethod": {
@@ -5334,7 +5380,7 @@
     {
       "regionTag": "dialogflow_v2_generated_Environments_ListOperations_sync",
       "title": "dialogflow ListOperations Sample",
-      "description": "ListOperations lists operations that match the specified filter in the request. If\nthe server doesn't support this method, it returns `UNIMPLEMENTED`.",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
       "file": "EnvironmentsClient/ListOperations/main.go",
       "language": "GO",
       "clientMethod": {
@@ -5655,7 +5701,7 @@
     {
       "regionTag": "dialogflow_v2_generated_Fulfillments_ListOperations_sync",
       "title": "dialogflow ListOperations Sample",
-      "description": "ListOperations lists operations that match the specified filter in the request. If\nthe server doesn't support this method, it returns `UNIMPLEMENTED`.",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
       "file": "FulfillmentsClient/ListOperations/main.go",
       "language": "GO",
       "clientMethod": {
@@ -6205,7 +6251,7 @@
     {
       "regionTag": "dialogflow_v2_generated_Intents_ListOperations_sync",
       "title": "dialogflow ListOperations Sample",
-      "description": "ListOperations lists operations that match the specified filter in the request. If\nthe server doesn't support this method, it returns `UNIMPLEMENTED`.",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
       "file": "IntentsClient/ListOperations/main.go",
       "language": "GO",
       "clientMethod": {
@@ -6663,7 +6709,7 @@
     {
       "regionTag": "dialogflow_v2_generated_KnowledgeBases_ListOperations_sync",
       "title": "dialogflow ListOperations Sample",
-      "description": "ListOperations lists operations that match the specified filter in the request. If\nthe server doesn't support this method, it returns `UNIMPLEMENTED`.",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
       "file": "KnowledgeBasesClient/ListOperations/main.go",
       "language": "GO",
       "clientMethod": {
@@ -7076,7 +7122,7 @@
     {
       "regionTag": "dialogflow_v2_generated_Participants_ListOperations_sync",
       "title": "dialogflow ListOperations Sample",
-      "description": "ListOperations lists operations that match the specified filter in the request. If\nthe server doesn't support this method, it returns `UNIMPLEMENTED`.",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
       "file": "ParticipantsClient/ListOperations/main.go",
       "language": "GO",
       "clientMethod": {
@@ -7714,7 +7760,7 @@
     {
       "regionTag": "dialogflow_v2_generated_SessionEntityTypes_ListOperations_sync",
       "title": "dialogflow ListOperations Sample",
-      "description": "ListOperations lists operations that match the specified filter in the request. If\nthe server doesn't support this method, it returns `UNIMPLEMENTED`.",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
       "file": "SessionEntityTypesClient/ListOperations/main.go",
       "language": "GO",
       "clientMethod": {
@@ -8081,7 +8127,7 @@
     {
       "regionTag": "dialogflow_v2_generated_Sessions_ListOperations_sync",
       "title": "dialogflow ListOperations Sample",
-      "description": "ListOperations lists operations that match the specified filter in the request. If\nthe server doesn't support this method, it returns `UNIMPLEMENTED`.",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
       "file": "SessionsClient/ListOperations/main.go",
       "language": "GO",
       "clientMethod": {
@@ -8489,7 +8535,7 @@
     {
       "regionTag": "dialogflow_v2_generated_Versions_ListOperations_sync",
       "title": "dialogflow ListOperations Sample",
-      "description": "ListOperations lists operations that match the specified filter in the request. If\nthe server doesn't support this method, it returns `UNIMPLEMENTED`.",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
       "file": "VersionsClient/ListOperations/main.go",
       "language": "GO",
       "clientMethod": {

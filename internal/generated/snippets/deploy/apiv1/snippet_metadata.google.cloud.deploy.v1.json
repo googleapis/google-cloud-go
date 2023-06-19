@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/deploy/apiv1",
-    "version": "1.8.0",
+    "version": "1.10.0",
     "language": "GO",
     "apis": [
       {
@@ -1162,7 +1162,7 @@
     {
       "regionTag": "clouddeploy_v1_generated_CloudDeploy_ListOperations_sync",
       "title": "clouddeploy ListOperations Sample",
-      "description": "ListOperations lists operations that match the specified filter in the request. If\nthe server doesn't support this method, it returns `UNIMPLEMENTED`.",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
       "file": "CloudDeployClient/ListOperations/main.go",
       "language": "GO",
       "clientMethod": {

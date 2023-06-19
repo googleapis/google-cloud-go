@@ -1,6 +1,28 @@
 # Changes
 
 
+
+## [1.2.0](https://github.com/googleapis/google-cloud-go/compare/maps/v1.1.0...maps/v1.2.0) (2023-05-30)
+
+
+### Features
+
+* **maps:** Update all direct dependencies ([b340d03](https://github.com/googleapis/google-cloud-go/commit/b340d030f2b52a4ce48846ce63984b28583abde6))
+
+## [1.1.0](https://github.com/googleapis/google-cloud-go/compare/maps/v1.0.1...maps/v1.1.0) (2023-05-16)
+
+
+### Features
+
+* **maps/places:** Start generating apiv1 ([#7919](https://github.com/googleapis/google-cloud-go/issues/7919)) ([ee10cfd](https://github.com/googleapis/google-cloud-go/commit/ee10cfd2e59a3d228af2dd8c56f5229cf6c577f0))
+
+## [1.0.1](https://github.com/googleapis/google-cloud-go/compare/maps/v1.0.0...maps/v1.0.1) (2023-05-08)
+
+
+### Bug Fixes
+
+* **maps:** Update grpc to v1.55.0 ([1147ce0](https://github.com/googleapis/google-cloud-go/commit/1147ce02a990276ca4f8ab7a1ab65c14da4450ef))
+
 ## [1.0.0](https://github.com/googleapis/google-cloud-go/compare/maps/v0.7.0...maps/v1.0.0) (2023-04-04)
 
 

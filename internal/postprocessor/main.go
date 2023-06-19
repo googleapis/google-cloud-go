@@ -25,7 +25,6 @@ import (
 	"go/token"
 	"html/template"
 	"io/fs"
-	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
@@ -34,7 +33,7 @@ import (
 	"time"
 
 	"cloud.google.com/go/internal/postprocessor/execv/gocmd"
-	"github.com/google/go-github/v50/github"
+	"github.com/google/go-github/v52/github"
 )
 
 const (
@@ -150,7 +149,7 @@ func (p *postProcessor) run(ctx context.Context) error {
 	if err := p.InitializeNewModules(manifest); err != nil {
 		return err
 	}
-	if err := p.MoveSnippets(); err != nil {
+	if err := p.UpdateSnippetsMetadata(); err != nil {
 		return err
 	}
 	prTitle, prBody, err := p.GetNewPRTitleAndBody(ctx)
@@ -158,6 +157,9 @@ func (p *postProcessor) run(ctx context.Context) error {
 		return err
 	}
 	if err := p.TidyAffectedMods(); err != nil {
+		return err
+	}
+	if err := p.UpdateReleaseFiles(); err != nil {
 		return err
 	}
 	if err := gocmd.Vet(p.googleCloudDir); err != nil {
@@ -181,6 +183,7 @@ func (p *postProcessor) InitializeNewModules(manifest map[string]ManifestEntry) 
 		pathToModVersionFile := filepath.Join(modulePath, "internal/version.go")
 		// Check if <module>/internal/version.go file exists
 		if _, err := os.Stat(pathToModVersionFile); errors.Is(err, fs.ErrNotExist) {
+			log.Println("detected missing file: ", pathToModVersionFile)
 			var serviceImportPath string
 			for _, v := range p.config.GapicImportPaths() {
 				if strings.Contains(v, importPath) {
@@ -189,11 +192,14 @@ func (p *postProcessor) InitializeNewModules(manifest map[string]ManifestEntry) 
 				}
 			}
 			if serviceImportPath == "" {
-				return fmt.Errorf("no corresponding config found for module %s. Cannot generate min required files", moduleName)
+				return fmt.Errorf("no config found for module %s. Cannot generate min required files", importPath)
 			}
 			// serviceImportPath here should be a valid ImportPath from a MicrogenGapicConfigs
 			apiName := manifest[serviceImportPath].Description
 			if err := p.generateMinReqFilesNewMod(moduleName, modulePath, importPath, apiName); err != nil {
+				return err
+			}
+			if err := p.modEditReplaceInSnippets(modulePath, importPath); err != nil {
 				return err
 			}
 		}
@@ -212,7 +218,6 @@ func (p *postProcessor) InitializeNewModules(manifest map[string]ManifestEntry) 
 			}
 			pathToClientVersionFile := filepath.Join(path, "version.go")
 			if _, err = os.Stat(pathToClientVersionFile); errors.Is(err, fs.ErrNotExist) {
-				log.Println("generating version.go file in", path)
 				if err := p.generateVersionFile(moduleName, path); err != nil {
 					return err
 				}
@@ -245,15 +250,20 @@ func (p *postProcessor) generateModule(modPath, importPath string) error {
 		return err
 	}
 	log.Printf("Creating %s/go.mod", modPath)
-	return gocmd.ModInit(modPath, importPath)
+	if err := gocmd.ModInit(modPath, importPath); err != nil {
+		return err
+	}
+	log.Print("Updating workspace")
+	return gocmd.WorkUse(p.googleCloudDir)
 }
 
 func (p *postProcessor) generateVersionFile(moduleName, path string) error {
 	// These directories are not modules on purpose, don't generate a version
 	// file for them.
-	if strings.Contains(path, "debugger/apiv2") {
+	if strings.Contains(path, "debugger/apiv2") || strings.Contains(path, "orgpolicy/apiv1") {
 		return nil
 	}
+	log.Println("generating version.go file in", path)
 	pathSegments := strings.Split(filepath.Dir(path), "/")
 
 	rootModInternal := fmt.Sprintf("cloud.google.com/go/%s/internal", moduleName)
@@ -310,67 +320,66 @@ func (p *postProcessor) getDirs() []string {
 	return dirs
 }
 
-func (p *postProcessor) MoveSnippets() error {
-	log.Println("moving snippets")
+func (p *postProcessor) modEditReplaceInSnippets(modulePath, importPath string) error {
+	// Replace it. Use a relative path to avoid issues on different systems.
+	snippetsDir := filepath.Join(p.googleCloudDir, "internal", "generated", "snippets")
+	rel, err := filepath.Rel(snippetsDir, modulePath)
+	if err != nil {
+		return err
+	}
+	return gocmd.EditReplace(snippetsDir, importPath, rel)
+}
+
+func (p *postProcessor) UpdateSnippetsMetadata() error {
+	log.Println("updating snippets metadata")
 	for _, clientRelPath := range p.config.ClientRelPaths {
 		// OwlBot dest relative paths in ClientRelPaths begin with /, so the
 		// first path segment is the second element.
 		moduleName := strings.Split(clientRelPath, "/")[1]
+		if moduleName == "" {
+			return fmt.Errorf("unable to parse module name for %v", clientRelPath)
+		}
+		// Skip if dirs option set and this module is not included.
 		if len(p.modules) > 0 && !contains(p.modules, moduleName) {
 			continue
 		}
-		snpDir := filepath.Join(p.googleCloudDir, clientRelPath, "internal", "snippets")
-		srcInfo, err := os.Stat(snpDir)
-		if err != nil {
+		// debugger/apiv2 is not in a module so it does not have version info to read.
+		if strings.Contains(clientRelPath, "debugger/apiv2") {
 			continue
 		}
-
-		toDir := filepath.Join(p.googleCloudDir, "internal", "generated", "snippets", clientRelPath)
-		log.Printf("deleting old snippets and metadata at %s", toDir)
-		if err := os.RemoveAll(toDir); err != nil {
+		snpDir := filepath.Join(p.googleCloudDir, "internal", "generated", "snippets", clientRelPath)
+		glob := filepath.Join(snpDir, "snippet_metadata.*.json")
+		metadataFiles, err := filepath.Glob(glob)
+		if err != nil {
 			return err
 		}
-		log.Printf("moving new snippets and metadata from %s to %s", snpDir, toDir)
-		if err := os.Rename(snpDir, toDir); err != nil {
-			if errors.Is(err, os.ErrNotExist) {
-				// TODO(codyoss): remove this hack once it is better understood what the issue is here
-				if err := os.MkdirAll(toDir, srcInfo.Mode()); err != nil {
-					return err
-				}
-				if err := os.RemoveAll(toDir); err != nil {
-					return err
-				}
-				if err := os.Rename(snpDir, toDir); err != nil {
-					return err
-				}
-			} else {
-				return err
-			}
+		if len(metadataFiles) == 0 {
+			log.Println("skipping, file not found with glob: ", glob)
+			continue
 		}
+		log.Println("updating ", glob)
 		version, err := getModuleVersion(filepath.Join(p.googleCloudDir, moduleName))
 		if err != nil {
 			return err
 		}
-		metadataFiles, err := filepath.Glob(filepath.Join(toDir, "snippet_metadata.*.json"))
+		read, err := os.ReadFile(metadataFiles[0])
 		if err != nil {
 			return err
 		}
-		read, err := ioutil.ReadFile(metadataFiles[0])
-		if err != nil {
-			return err
-		}
-		log.Printf("setting $VERSION to %s in %s", version, metadataFiles[0])
-		s := strings.Replace(string(read), "$VERSION", version, 1)
-		err = ioutil.WriteFile(metadataFiles[0], []byte(s), 0)
-		if err != nil {
-			return err
+		if strings.Contains(string(read), "$VERSION") {
+			log.Printf("setting $VERSION to %s in %s", version, metadataFiles[0])
+			s := strings.Replace(string(read), "$VERSION", version, 1)
+			err = os.WriteFile(metadataFiles[0], []byte(s), 0)
+			if err != nil {
+				return err
+			}
 		}
 	}
 	return nil
 }
 
 func getModuleVersion(dir string) (string, error) {
-	node, err := parser.ParseFile(token.NewFileSet(), fmt.Sprintf("%s/internal/version.go", dir), nil, parser.ParseComments)
+	node, err := parser.ParseFile(token.NewFileSet(), filepath.Join(dir, "internal", "version.go"), nil, parser.ParseComments)
 	if err != nil {
 		return "", err
 	}

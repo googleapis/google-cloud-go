@@ -93,6 +93,7 @@ func defaultGRPCClientOptions() []option.ClientOption {
 func defaultCallOptions() *CallOptions {
 	return &CallOptions{
 		GetWorkstationCluster: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -104,6 +105,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		ListWorkstationClusters: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -114,10 +116,17 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
-		CreateWorkstationCluster: []gax.CallOption{},
-		UpdateWorkstationCluster: []gax.CallOption{},
-		DeleteWorkstationCluster: []gax.CallOption{},
+		CreateWorkstationCluster: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateWorkstationCluster: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteWorkstationCluster: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		GetWorkstationConfig: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -129,6 +138,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		ListWorkstationConfigs: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -140,6 +150,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		ListUsableWorkstationConfigs: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -150,10 +161,17 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
-		CreateWorkstationConfig: []gax.CallOption{},
-		UpdateWorkstationConfig: []gax.CallOption{},
-		DeleteWorkstationConfig: []gax.CallOption{},
+		CreateWorkstationConfig: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateWorkstationConfig: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteWorkstationConfig: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		GetWorkstation: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -165,6 +183,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		ListWorkstations: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -176,6 +195,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		ListUsableWorkstations: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -186,12 +206,23 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
-		CreateWorkstation: []gax.CallOption{},
-		UpdateWorkstation: []gax.CallOption{},
-		DeleteWorkstation: []gax.CallOption{},
-		StartWorkstation:  []gax.CallOption{},
-		StopWorkstation:   []gax.CallOption{},
+		CreateWorkstation: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateWorkstation: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteWorkstation: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		StartWorkstation: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		StopWorkstation: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		GenerateAccessToken: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -215,6 +246,7 @@ func defaultCallOptions() *CallOptions {
 func defaultRESTCallOptions() *CallOptions {
 	return &CallOptions{
 		GetWorkstationCluster: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -225,6 +257,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		ListWorkstationClusters: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -234,10 +267,17 @@ func defaultRESTCallOptions() *CallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
-		CreateWorkstationCluster: []gax.CallOption{},
-		UpdateWorkstationCluster: []gax.CallOption{},
-		DeleteWorkstationCluster: []gax.CallOption{},
+		CreateWorkstationCluster: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateWorkstationCluster: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteWorkstationCluster: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		GetWorkstationConfig: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -248,6 +288,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		ListWorkstationConfigs: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -258,6 +299,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		ListUsableWorkstationConfigs: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -267,10 +309,17 @@ func defaultRESTCallOptions() *CallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
-		CreateWorkstationConfig: []gax.CallOption{},
-		UpdateWorkstationConfig: []gax.CallOption{},
-		DeleteWorkstationConfig: []gax.CallOption{},
+		CreateWorkstationConfig: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateWorkstationConfig: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteWorkstationConfig: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		GetWorkstation: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -281,6 +330,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		ListWorkstations: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -291,6 +341,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		ListUsableWorkstations: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -300,12 +351,23 @@ func defaultRESTCallOptions() *CallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
-		CreateWorkstation: []gax.CallOption{},
-		UpdateWorkstation: []gax.CallOption{},
-		DeleteWorkstation: []gax.CallOption{},
-		StartWorkstation:  []gax.CallOption{},
-		StopWorkstation:   []gax.CallOption{},
+		CreateWorkstation: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateWorkstation: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteWorkstation: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		StartWorkstation: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		StopWorkstation: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		GenerateAccessToken: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -507,13 +569,13 @@ func (c *Client) GetWorkstation(ctx context.Context, req *workstationspb.GetWork
 	return c.internalClient.GetWorkstation(ctx, req, opts...)
 }
 
-// ListWorkstations returns all Workstations using the specified config.
+// ListWorkstations returns all Workstations using the specified workstation configuration.
 func (c *Client) ListWorkstations(ctx context.Context, req *workstationspb.ListWorkstationsRequest, opts ...gax.CallOption) *WorkstationIterator {
 	return c.internalClient.ListWorkstations(ctx, req, opts...)
 }
 
-// ListUsableWorkstations returns all Workstations using the specified config on which the caller has
-// the “workstations.workstations.use” permission.
+// ListUsableWorkstations returns all workstations using the specified workstation configuration
+// on which the caller has the “workstations.workstations.use” permission.
 func (c *Client) ListUsableWorkstations(ctx context.Context, req *workstationspb.ListUsableWorkstationsRequest, opts ...gax.CallOption) *WorkstationIterator {
 	return c.internalClient.ListUsableWorkstations(ctx, req, opts...)
 }
@@ -632,9 +694,6 @@ type gRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing Client
 	CallOptions **CallOptions
 
@@ -668,11 +727,6 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -681,7 +735,6 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 
 	c := &gRPCClient{
 		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
 		client:           workstationspb.NewWorkstationsClient(connPool),
 		CallOptions:      &client.CallOptions,
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
@@ -812,11 +865,6 @@ func (c *restClient) Connection() *grpc.ClientConn {
 	return nil
 }
 func (c *gRPCClient) GetWorkstationCluster(ctx context.Context, req *workstationspb.GetWorkstationClusterRequest, opts ...gax.CallOption) (*workstationspb.WorkstationCluster, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -879,11 +927,6 @@ func (c *gRPCClient) ListWorkstationClusters(ctx context.Context, req *workstati
 }
 
 func (c *gRPCClient) CreateWorkstationCluster(ctx context.Context, req *workstationspb.CreateWorkstationClusterRequest, opts ...gax.CallOption) (*CreateWorkstationClusterOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -903,11 +946,6 @@ func (c *gRPCClient) CreateWorkstationCluster(ctx context.Context, req *workstat
 }
 
 func (c *gRPCClient) UpdateWorkstationCluster(ctx context.Context, req *workstationspb.UpdateWorkstationClusterRequest, opts ...gax.CallOption) (*UpdateWorkstationClusterOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "workstation_cluster.name", url.QueryEscape(req.GetWorkstationCluster().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -927,11 +965,6 @@ func (c *gRPCClient) UpdateWorkstationCluster(ctx context.Context, req *workstat
 }
 
 func (c *gRPCClient) DeleteWorkstationCluster(ctx context.Context, req *workstationspb.DeleteWorkstationClusterRequest, opts ...gax.CallOption) (*DeleteWorkstationClusterOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -951,11 +984,6 @@ func (c *gRPCClient) DeleteWorkstationCluster(ctx context.Context, req *workstat
 }
 
 func (c *gRPCClient) GetWorkstationConfig(ctx context.Context, req *workstationspb.GetWorkstationConfigRequest, opts ...gax.CallOption) (*workstationspb.WorkstationConfig, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1063,11 +1091,6 @@ func (c *gRPCClient) ListUsableWorkstationConfigs(ctx context.Context, req *work
 }
 
 func (c *gRPCClient) CreateWorkstationConfig(ctx context.Context, req *workstationspb.CreateWorkstationConfigRequest, opts ...gax.CallOption) (*CreateWorkstationConfigOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1087,11 +1110,6 @@ func (c *gRPCClient) CreateWorkstationConfig(ctx context.Context, req *workstati
 }
 
 func (c *gRPCClient) UpdateWorkstationConfig(ctx context.Context, req *workstationspb.UpdateWorkstationConfigRequest, opts ...gax.CallOption) (*UpdateWorkstationConfigOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "workstation_config.name", url.QueryEscape(req.GetWorkstationConfig().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1111,11 +1129,6 @@ func (c *gRPCClient) UpdateWorkstationConfig(ctx context.Context, req *workstati
 }
 
 func (c *gRPCClient) DeleteWorkstationConfig(ctx context.Context, req *workstationspb.DeleteWorkstationConfigRequest, opts ...gax.CallOption) (*DeleteWorkstationConfigOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1135,11 +1148,6 @@ func (c *gRPCClient) DeleteWorkstationConfig(ctx context.Context, req *workstati
 }
 
 func (c *gRPCClient) GetWorkstation(ctx context.Context, req *workstationspb.GetWorkstationRequest, opts ...gax.CallOption) (*workstationspb.Workstation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1247,11 +1255,6 @@ func (c *gRPCClient) ListUsableWorkstations(ctx context.Context, req *workstatio
 }
 
 func (c *gRPCClient) CreateWorkstation(ctx context.Context, req *workstationspb.CreateWorkstationRequest, opts ...gax.CallOption) (*CreateWorkstationOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1271,11 +1274,6 @@ func (c *gRPCClient) CreateWorkstation(ctx context.Context, req *workstationspb.
 }
 
 func (c *gRPCClient) UpdateWorkstation(ctx context.Context, req *workstationspb.UpdateWorkstationRequest, opts ...gax.CallOption) (*UpdateWorkstationOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "workstation.name", url.QueryEscape(req.GetWorkstation().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1295,11 +1293,6 @@ func (c *gRPCClient) UpdateWorkstation(ctx context.Context, req *workstationspb.
 }
 
 func (c *gRPCClient) DeleteWorkstation(ctx context.Context, req *workstationspb.DeleteWorkstationRequest, opts ...gax.CallOption) (*DeleteWorkstationOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1319,11 +1312,6 @@ func (c *gRPCClient) DeleteWorkstation(ctx context.Context, req *workstationspb.
 }
 
 func (c *gRPCClient) StartWorkstation(ctx context.Context, req *workstationspb.StartWorkstationRequest, opts ...gax.CallOption) (*StartWorkstationOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1343,11 +1331,6 @@ func (c *gRPCClient) StartWorkstation(ctx context.Context, req *workstationspb.S
 }
 
 func (c *gRPCClient) StopWorkstation(ctx context.Context, req *workstationspb.StopWorkstationRequest, opts ...gax.CallOption) (*StopWorkstationOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1367,11 +1350,6 @@ func (c *gRPCClient) StopWorkstation(ctx context.Context, req *workstationspb.St
 }
 
 func (c *gRPCClient) GenerateAccessToken(ctx context.Context, req *workstationspb.GenerateAccessTokenRequest, opts ...gax.CallOption) (*workstationspb.GenerateAccessTokenResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "workstation", url.QueryEscape(req.GetWorkstation())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -2418,7 +2396,7 @@ func (c *restClient) GetWorkstation(ctx context.Context, req *workstationspb.Get
 	return resp, nil
 }
 
-// ListWorkstations returns all Workstations using the specified config.
+// ListWorkstations returns all Workstations using the specified workstation configuration.
 func (c *restClient) ListWorkstations(ctx context.Context, req *workstationspb.ListWorkstationsRequest, opts ...gax.CallOption) *WorkstationIterator {
 	it := &WorkstationIterator{}
 	req = proto.Clone(req).(*workstationspb.ListWorkstationsRequest)
@@ -2506,8 +2484,8 @@ func (c *restClient) ListWorkstations(ctx context.Context, req *workstationspb.L
 	return it
 }
 
-// ListUsableWorkstations returns all Workstations using the specified config on which the caller has
-// the “workstations.workstations.use” permission.
+// ListUsableWorkstations returns all workstations using the specified workstation configuration
+// on which the caller has the “workstations.workstations.use” permission.
 func (c *restClient) ListUsableWorkstations(ctx context.Context, req *workstationspb.ListUsableWorkstationsRequest, opts ...gax.CallOption) *WorkstationIterator {
 	it := &WorkstationIterator{}
 	req = proto.Clone(req).(*workstationspb.ListUsableWorkstationsRequest)

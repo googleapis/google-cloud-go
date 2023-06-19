@@ -17,6 +17,7 @@ package main
 import (
 	"context"
 	crand "crypto/rand"
+	"errors"
 	"fmt"
 	"io"
 	"log"
@@ -27,6 +28,8 @@ import (
 
 	"cloud.google.com/go/storage"
 	"github.com/google/uuid"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 const (
@@ -93,8 +96,8 @@ func createBenchmarkBucket(bucketName string, opts *benchmarkOptions) func() {
 }
 
 // generateRandomFile creates a temp file on disk and fills it with size random bytes.
-func generateRandomFile(size int64) (string, error) {
-	f, err := os.CreateTemp("", objectPrefix)
+func generateRandomFile(path string, size int64) (string, error) {
+	f, err := os.CreateTemp(path, objectPrefix)
 	if err != nil {
 		return "", fmt.Errorf("error creating file: %v", err)
 	}
@@ -103,6 +106,30 @@ func generateRandomFile(size int64) (string, error) {
 	_, err = io.CopyN(f, crand.Reader, size)
 
 	return f.Name(), err
+}
+
+// fillDirectory fills the directory with the number of different files
+// specified on the command line. Each file created will contain random bytes,
+// and will be of the size specified on the command line. No subdirectories are
+// created.
+// The number of bytes across all created files is returned.
+func fillDirectory(dirPath string) (int64, error) {
+	currNumBytes := int64(0)
+
+	for i := opts.numObjectsPerDirectory; i > 0; i-- {
+		size := opts.objectSize
+		if size == 0 {
+			// Choose a different random object size for each file
+			size = randomInt64(opts.minObjectSize, opts.maxObjectSize)
+		}
+
+		if _, err := generateRandomFile(dirPath, size); err != nil {
+			return 0, err
+		}
+		currNumBytes += size
+	}
+
+	return currNumBytes, nil
 }
 
 var goVersion string
@@ -126,4 +153,21 @@ func populateDependencyVersions() error {
 		}
 	}
 	return nil
+}
+
+// errorIsDeadLineExceeded functions like errors.Is(err, context.DeadlineExceeded)
+// Except, it unwraps the error to look for GRPC DeadlineExceeded errors.
+func errorIsDeadLineExceeded(err error) bool {
+	if errors.Is(err, context.DeadlineExceeded) {
+		return true
+	}
+
+	err = errors.Unwrap(err)
+	for err != nil {
+		if status.Code(err) == codes.DeadlineExceeded {
+			return true
+		}
+		err = errors.Unwrap(err)
+	}
+	return false
 }

@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/monitoring/apiv3/v2",
-    "version": "1.13.0",
+    "version": "1.15.0",
     "language": "GO",
     "apis": [
       {
@@ -34,7 +34,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "monitoringpb.AlertPolicy",
+        "resultType": "*monitoringpb.AlertPolicy",
         "client": {
           "shortName": "AlertPolicyClient",
           "fullName": "google.monitoring.v3.AlertPolicyClient"
@@ -125,7 +125,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "monitoringpb.AlertPolicy",
+        "resultType": "*monitoringpb.AlertPolicy",
         "client": {
           "shortName": "AlertPolicyClient",
           "fullName": "google.monitoring.v3.AlertPolicyClient"
@@ -197,7 +197,7 @@
     {
       "regionTag": "monitoring_v3_generated_AlertPolicyService_UpdateAlertPolicy_sync",
       "title": "monitoring UpdateAlertPolicy Sample",
-      "description": "UpdateAlertPolicy updates an alerting policy. You can either replace the entire policy with\na new one or replace only certain fields in the current alerting policy by\nspecifying the fields to be updated via updateMask. Returns the\nupdated alerting policy.",
+      "description": "UpdateAlertPolicy updates an alerting policy. You can either replace the entire policy with\na new one or replace only certain fields in the current alerting policy by\nspecifying the fields to be updated via `updateMask`. Returns the\nupdated alerting policy.",
       "file": "AlertPolicyClient/UpdateAlertPolicy/main.go",
       "language": "GO",
       "clientMethod": {
@@ -217,7 +217,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "monitoringpb.AlertPolicy",
+        "resultType": "*monitoringpb.AlertPolicy",
         "client": {
           "shortName": "AlertPolicyClient",
           "fullName": "google.monitoring.v3.AlertPolicyClient"
@@ -263,7 +263,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "monitoringpb.Group",
+        "resultType": "*monitoringpb.Group",
         "client": {
           "shortName": "GroupClient",
           "fullName": "google.monitoring.v3.GroupClient"
@@ -354,7 +354,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "monitoringpb.Group",
+        "resultType": "*monitoringpb.Group",
         "client": {
           "shortName": "GroupClient",
           "fullName": "google.monitoring.v3.GroupClient"
@@ -472,7 +472,7 @@
     {
       "regionTag": "monitoring_v3_generated_GroupService_UpdateGroup_sync",
       "title": "monitoring UpdateGroup Sample",
-      "description": "UpdateGroup updates an existing group.\nYou can change any group attributes except name.",
+      "description": "UpdateGroup updates an existing group.\nYou can change any group attributes except `name`.",
       "file": "GroupClient/UpdateGroup/main.go",
       "language": "GO",
       "clientMethod": {
@@ -492,7 +492,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "monitoringpb.Group",
+        "resultType": "*monitoringpb.Group",
         "client": {
           "shortName": "GroupClient",
           "fullName": "google.monitoring.v3.GroupClient"
@@ -518,7 +518,7 @@
     {
       "regionTag": "monitoring_v3_generated_MetricService_CreateMetricDescriptor_sync",
       "title": "monitoring CreateMetricDescriptor Sample",
-      "description": "CreateMetricDescriptor creates a new metric descriptor.\nThe creation is executed asynchronously and callers may check the returned\noperation to track its progress.\nUser-created metric descriptors define\ncustom metrics (at https: //cloud.google.com/monitoring/custom-metrics).",
+      "description": "CreateMetricDescriptor creates a new metric descriptor.\nThe creation is executed asynchronously and callers may check the returned\noperation to track its progress.\nUser-created metric descriptors define\n[custom metrics](https: //cloud.google.com/monitoring/custom-metrics).",
       "file": "MetricClient/CreateMetricDescriptor/main.go",
       "language": "GO",
       "clientMethod": {
@@ -538,7 +538,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "metricpb.MetricDescriptor",
+        "resultType": "*metricpb.MetricDescriptor",
         "client": {
           "shortName": "MetricClient",
           "fullName": "google.monitoring.v3.MetricClient"
@@ -564,7 +564,7 @@
     {
       "regionTag": "monitoring_v3_generated_MetricService_CreateServiceTimeSeries_sync",
       "title": "monitoring CreateServiceTimeSeries Sample",
-      "description": "CreateServiceTimeSeries creates or adds data to one or more service time series. A service time\nseries is a time series for a metric from a Google Cloud service. The\nresponse is empty if all time series in the request were written. If any\ntime series could not be written, a corresponding failure message is\nincluded in the error response. This endpoint rejects writes to\nuser-defined metrics.\nThis method is only for use by Google Cloud services. Use\nprojects.timeSeries.create\ninstead.",
+      "description": "CreateServiceTimeSeries creates or adds data to one or more service time series. A service time\nseries is a time series for a metric from a Google Cloud service. The\nresponse is empty if all time series in the request were written. If any\ntime series could not be written, a corresponding failure message is\nincluded in the error response. This endpoint rejects writes to\nuser-defined metrics.\nThis method is only for use by Google Cloud services. Use\n[projects.timeSeries.create][google.monitoring.v3.MetricService.CreateTimeSeries]\ninstead.",
       "file": "MetricClient/CreateServiceTimeSeries/main.go",
       "language": "GO",
       "clientMethod": {
@@ -654,7 +654,7 @@
     {
       "regionTag": "monitoring_v3_generated_MetricService_DeleteMetricDescriptor_sync",
       "title": "monitoring DeleteMetricDescriptor Sample",
-      "description": "DeleteMetricDescriptor deletes a metric descriptor. Only user-created\ncustom metrics (at https: //cloud.google.com/monitoring/custom-metrics) can be\ndeleted.",
+      "description": "DeleteMetricDescriptor deletes a metric descriptor. Only user-created\n[custom metrics](https: //cloud.google.com/monitoring/custom-metrics) can be\ndeleted.",
       "file": "MetricClient/DeleteMetricDescriptor/main.go",
       "language": "GO",
       "clientMethod": {
@@ -719,7 +719,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "metricpb.MetricDescriptor",
+        "resultType": "*metricpb.MetricDescriptor",
         "client": {
           "shortName": "MetricClient",
           "fullName": "google.monitoring.v3.MetricClient"
@@ -765,7 +765,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "monitoredrespb.MonitoredResourceDescriptor",
+        "resultType": "*monitoredrespb.MonitoredResourceDescriptor",
         "client": {
           "shortName": "MetricClient",
           "fullName": "google.monitoring.v3.MetricClient"
@@ -949,7 +949,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "monitoringpb.NotificationChannel",
+        "resultType": "*monitoringpb.NotificationChannel",
         "client": {
           "shortName": "NotificationChannelClient",
           "fullName": "google.monitoring.v3.NotificationChannelClient"
@@ -1040,7 +1040,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "monitoringpb.NotificationChannel",
+        "resultType": "*monitoringpb.NotificationChannel",
         "client": {
           "shortName": "NotificationChannelClient",
           "fullName": "google.monitoring.v3.NotificationChannelClient"
@@ -1086,7 +1086,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "monitoringpb.NotificationChannelDescriptor",
+        "resultType": "*monitoringpb.NotificationChannelDescriptor",
         "client": {
           "shortName": "NotificationChannelClient",
           "fullName": "google.monitoring.v3.NotificationChannelClient"
@@ -1112,7 +1112,7 @@
     {
       "regionTag": "monitoring_v3_generated_NotificationChannelService_GetNotificationChannelVerificationCode_sync",
       "title": "monitoring GetNotificationChannelVerificationCode Sample",
-      "description": "GetNotificationChannelVerificationCode requests a verification code for an already verified channel that can then\nbe used in a call to VerifyNotificationChannel() on a different channel\nwith an equivalent identity in the same or in a different project. This\nmakes it possible to copy a channel between projects without requiring\nmanual reverification of the channel. If the channel is not in the\nverified state, this method will fail (in other words, this may only be\nused if the SendNotificationChannelVerificationCode and\nVerifyNotificationChannel paths have already been used to put the given\nchannel into the verified state).\n\nThere is no guarantee that the verification codes returned by this method\nwill be of a similar structure or form as the ones that are delivered\nto the channel via SendNotificationChannelVerificationCode; while\nVerifyNotificationChannel() will recognize both the codes delivered via\nSendNotificationChannelVerificationCode() and returned from\nGetNotificationChannelVerificationCode(), it is typically the case that\nthe verification codes delivered via\nSendNotificationChannelVerificationCode() will be shorter and also\nhave a shorter expiration (e.g. codes such as “G-123456”) whereas\nGetVerificationCode() will typically return a much longer, websafe base\n64 encoded string that has a longer expiration time.",
+      "description": "GetNotificationChannelVerificationCode requests a verification code for an already verified channel that can then\nbe used in a call to VerifyNotificationChannel() on a different channel\nwith an equivalent identity in the same or in a different project. This\nmakes it possible to copy a channel between projects without requiring\nmanual reverification of the channel. If the channel is not in the\nverified state, this method will fail (in other words, this may only be\nused if the SendNotificationChannelVerificationCode and\nVerifyNotificationChannel paths have already been used to put the given\nchannel into the verified state).\n\nThere is no guarantee that the verification codes returned by this method\nwill be of a similar structure or form as the ones that are delivered\nto the channel via SendNotificationChannelVerificationCode; while\nVerifyNotificationChannel() will recognize both the codes delivered via\nSendNotificationChannelVerificationCode() and returned from\nGetNotificationChannelVerificationCode(), it is typically the case that\nthe verification codes delivered via\nSendNotificationChannelVerificationCode() will be shorter and also\nhave a shorter expiration (e.g. codes such as \"G-123456\") whereas\nGetVerificationCode() will typically return a much longer, websafe base\n64 encoded string that has a longer expiration time.",
       "file": "NotificationChannelClient/GetNotificationChannelVerificationCode/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1132,7 +1132,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "monitoringpb.GetNotificationChannelVerificationCodeResponse",
+        "resultType": "*monitoringpb.GetNotificationChannelVerificationCodeResponse",
         "client": {
           "shortName": "NotificationChannelClient",
           "fullName": "google.monitoring.v3.NotificationChannelClient"
@@ -1250,7 +1250,7 @@
     {
       "regionTag": "monitoring_v3_generated_NotificationChannelService_SendNotificationChannelVerificationCode_sync",
       "title": "monitoring SendNotificationChannelVerificationCode Sample",
-      "description": "SendNotificationChannelVerificationCode causes a verification code to be delivered to the channel. The code\ncan then be supplied in VerifyNotificationChannel to verify the channel.",
+      "description": "SendNotificationChannelVerificationCode causes a verification code to be delivered to the channel. The code\ncan then be supplied in `VerifyNotificationChannel` to verify the channel.",
       "file": "NotificationChannelClient/SendNotificationChannelVerificationCode/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1315,7 +1315,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "monitoringpb.NotificationChannel",
+        "resultType": "*monitoringpb.NotificationChannel",
         "client": {
           "shortName": "NotificationChannelClient",
           "fullName": "google.monitoring.v3.NotificationChannelClient"
@@ -1341,7 +1341,7 @@
     {
       "regionTag": "monitoring_v3_generated_NotificationChannelService_VerifyNotificationChannel_sync",
       "title": "monitoring VerifyNotificationChannel Sample",
-      "description": "VerifyNotificationChannel verifies a NotificationChannel by proving receipt of the code\ndelivered to the channel as a result of calling\nSendNotificationChannelVerificationCode.",
+      "description": "VerifyNotificationChannel verifies a `NotificationChannel` by proving receipt of the code\ndelivered to the channel as a result of calling\n`SendNotificationChannelVerificationCode`.",
       "file": "NotificationChannelClient/VerifyNotificationChannel/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1361,7 +1361,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "monitoringpb.NotificationChannel",
+        "resultType": "*monitoringpb.NotificationChannel",
         "client": {
           "shortName": "NotificationChannelClient",
           "fullName": "google.monitoring.v3.NotificationChannelClient"
@@ -1433,7 +1433,7 @@
     {
       "regionTag": "monitoring_v3_generated_ServiceMonitoringService_CreateService_sync",
       "title": "monitoring CreateService Sample",
-      "description": "CreateService create a Service.",
+      "description": "CreateService create a `Service`.",
       "file": "ServiceMonitoringClient/CreateService/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1453,7 +1453,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "monitoringpb.Service",
+        "resultType": "*monitoringpb.Service",
         "client": {
           "shortName": "ServiceMonitoringClient",
           "fullName": "google.monitoring.v3.ServiceMonitoringClient"
@@ -1479,7 +1479,7 @@
     {
       "regionTag": "monitoring_v3_generated_ServiceMonitoringService_CreateServiceLevelObjective_sync",
       "title": "monitoring CreateServiceLevelObjective Sample",
-      "description": "CreateServiceLevelObjective create a ServiceLevelObjective for the given Service.",
+      "description": "CreateServiceLevelObjective create a `ServiceLevelObjective` for the given `Service`.",
       "file": "ServiceMonitoringClient/CreateServiceLevelObjective/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1499,7 +1499,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "monitoringpb.ServiceLevelObjective",
+        "resultType": "*monitoringpb.ServiceLevelObjective",
         "client": {
           "shortName": "ServiceMonitoringClient",
           "fullName": "google.monitoring.v3.ServiceMonitoringClient"
@@ -1525,7 +1525,7 @@
     {
       "regionTag": "monitoring_v3_generated_ServiceMonitoringService_DeleteService_sync",
       "title": "monitoring DeleteService Sample",
-      "description": "DeleteService soft delete this Service.",
+      "description": "DeleteService soft delete this `Service`.",
       "file": "ServiceMonitoringClient/DeleteService/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1570,7 +1570,7 @@
     {
       "regionTag": "monitoring_v3_generated_ServiceMonitoringService_DeleteServiceLevelObjective_sync",
       "title": "monitoring DeleteServiceLevelObjective Sample",
-      "description": "DeleteServiceLevelObjective delete the given ServiceLevelObjective.",
+      "description": "DeleteServiceLevelObjective delete the given `ServiceLevelObjective`.",
       "file": "ServiceMonitoringClient/DeleteServiceLevelObjective/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1615,7 +1615,7 @@
     {
       "regionTag": "monitoring_v3_generated_ServiceMonitoringService_GetService_sync",
       "title": "monitoring GetService Sample",
-      "description": "GetService get the named Service.",
+      "description": "GetService get the named `Service`.",
       "file": "ServiceMonitoringClient/GetService/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1635,7 +1635,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "monitoringpb.Service",
+        "resultType": "*monitoringpb.Service",
         "client": {
           "shortName": "ServiceMonitoringClient",
           "fullName": "google.monitoring.v3.ServiceMonitoringClient"
@@ -1661,7 +1661,7 @@
     {
       "regionTag": "monitoring_v3_generated_ServiceMonitoringService_GetServiceLevelObjective_sync",
       "title": "monitoring GetServiceLevelObjective Sample",
-      "description": "GetServiceLevelObjective get a ServiceLevelObjective by name.",
+      "description": "GetServiceLevelObjective get a `ServiceLevelObjective` by name.",
       "file": "ServiceMonitoringClient/GetServiceLevelObjective/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1681,7 +1681,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "monitoringpb.ServiceLevelObjective",
+        "resultType": "*monitoringpb.ServiceLevelObjective",
         "client": {
           "shortName": "ServiceMonitoringClient",
           "fullName": "google.monitoring.v3.ServiceMonitoringClient"
@@ -1707,7 +1707,7 @@
     {
       "regionTag": "monitoring_v3_generated_ServiceMonitoringService_ListServiceLevelObjectives_sync",
       "title": "monitoring ListServiceLevelObjectives Sample",
-      "description": "ListServiceLevelObjectives list the ServiceLevelObjectives for the given Service.",
+      "description": "ListServiceLevelObjectives list the `ServiceLevelObjective`s for the given `Service`.",
       "file": "ServiceMonitoringClient/ListServiceLevelObjectives/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1753,7 +1753,7 @@
     {
       "regionTag": "monitoring_v3_generated_ServiceMonitoringService_ListServices_sync",
       "title": "monitoring ListServices Sample",
-      "description": "ListServices list Services for this workspace.",
+      "description": "ListServices list `Service`s for this workspace.",
       "file": "ServiceMonitoringClient/ListServices/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1799,7 +1799,7 @@
     {
       "regionTag": "monitoring_v3_generated_ServiceMonitoringService_UpdateService_sync",
       "title": "monitoring UpdateService Sample",
-      "description": "UpdateService update this Service.",
+      "description": "UpdateService update this `Service`.",
       "file": "ServiceMonitoringClient/UpdateService/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1819,7 +1819,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "monitoringpb.Service",
+        "resultType": "*monitoringpb.Service",
         "client": {
           "shortName": "ServiceMonitoringClient",
           "fullName": "google.monitoring.v3.ServiceMonitoringClient"
@@ -1845,7 +1845,7 @@
     {
       "regionTag": "monitoring_v3_generated_ServiceMonitoringService_UpdateServiceLevelObjective_sync",
       "title": "monitoring UpdateServiceLevelObjective Sample",
-      "description": "UpdateServiceLevelObjective update the given ServiceLevelObjective.",
+      "description": "UpdateServiceLevelObjective update the given `ServiceLevelObjective`.",
       "file": "ServiceMonitoringClient/UpdateServiceLevelObjective/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1865,7 +1865,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "monitoringpb.ServiceLevelObjective",
+        "resultType": "*monitoringpb.ServiceLevelObjective",
         "client": {
           "shortName": "ServiceMonitoringClient",
           "fullName": "google.monitoring.v3.ServiceMonitoringClient"
@@ -1891,7 +1891,7 @@
     {
       "regionTag": "monitoring_v3_generated_SnoozeService_CreateSnooze_sync",
       "title": "monitoring CreateSnooze Sample",
-      "description": "CreateSnooze creates a Snooze that will prevent alerts, which match the provided\ncriteria, from being opened. The Snooze applies for a specific time\ninterval.",
+      "description": "CreateSnooze creates a `Snooze` that will prevent alerts, which match the provided\ncriteria, from being opened. The `Snooze` applies for a specific time\ninterval.",
       "file": "SnoozeClient/CreateSnooze/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1911,7 +1911,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "monitoringpb.Snooze",
+        "resultType": "*monitoringpb.Snooze",
         "client": {
           "shortName": "SnoozeClient",
           "fullName": "google.monitoring.v3.SnoozeClient"
@@ -1937,7 +1937,7 @@
     {
       "regionTag": "monitoring_v3_generated_SnoozeService_GetSnooze_sync",
       "title": "monitoring GetSnooze Sample",
-      "description": "GetSnooze retrieves a Snooze by name.",
+      "description": "GetSnooze retrieves a `Snooze` by `name`.",
       "file": "SnoozeClient/GetSnooze/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1957,7 +1957,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "monitoringpb.Snooze",
+        "resultType": "*monitoringpb.Snooze",
         "client": {
           "shortName": "SnoozeClient",
           "fullName": "google.monitoring.v3.SnoozeClient"
@@ -1983,7 +1983,7 @@
     {
       "regionTag": "monitoring_v3_generated_SnoozeService_ListSnoozes_sync",
       "title": "monitoring ListSnoozes Sample",
-      "description": "ListSnoozes lists the Snoozes associated with a project. Can optionally pass in\nfilter, which specifies predicates to match Snoozes.",
+      "description": "ListSnoozes lists the `Snooze`s associated with a project. Can optionally pass in\n`filter`, which specifies predicates to match `Snooze`s.",
       "file": "SnoozeClient/ListSnoozes/main.go",
       "language": "GO",
       "clientMethod": {
@@ -2029,7 +2029,7 @@
     {
       "regionTag": "monitoring_v3_generated_SnoozeService_UpdateSnooze_sync",
       "title": "monitoring UpdateSnooze Sample",
-      "description": "UpdateSnooze updates a Snooze, identified by its name, with the parameters in the\ngiven Snooze object.",
+      "description": "UpdateSnooze updates a `Snooze`, identified by its `name`, with the parameters in the\ngiven `Snooze` object.",
       "file": "SnoozeClient/UpdateSnooze/main.go",
       "language": "GO",
       "clientMethod": {
@@ -2049,7 +2049,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "monitoringpb.Snooze",
+        "resultType": "*monitoringpb.Snooze",
         "client": {
           "shortName": "SnoozeClient",
           "fullName": "google.monitoring.v3.SnoozeClient"
@@ -2095,7 +2095,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "monitoringpb.UptimeCheckConfig",
+        "resultType": "*monitoringpb.UptimeCheckConfig",
         "client": {
           "shortName": "UptimeCheckClient",
           "fullName": "google.monitoring.v3.UptimeCheckClient"
@@ -2186,7 +2186,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "monitoringpb.UptimeCheckConfig",
+        "resultType": "*monitoringpb.UptimeCheckConfig",
         "client": {
           "shortName": "UptimeCheckClient",
           "fullName": "google.monitoring.v3.UptimeCheckClient"
@@ -2304,7 +2304,7 @@
     {
       "regionTag": "monitoring_v3_generated_UptimeCheckService_UpdateUptimeCheckConfig_sync",
       "title": "monitoring UpdateUptimeCheckConfig Sample",
-      "description": "UpdateUptimeCheckConfig updates an Uptime check configuration. You can either replace the entire\nconfiguration with a new one or replace only certain fields in the current\nconfiguration by specifying the fields to be updated via updateMask.\nReturns the updated configuration.",
+      "description": "UpdateUptimeCheckConfig updates an Uptime check configuration. You can either replace the entire\nconfiguration with a new one or replace only certain fields in the current\nconfiguration by specifying the fields to be updated via `updateMask`.\nReturns the updated configuration.",
       "file": "UptimeCheckClient/UpdateUptimeCheckConfig/main.go",
       "language": "GO",
       "clientMethod": {
@@ -2324,7 +2324,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "monitoringpb.UptimeCheckConfig",
+        "resultType": "*monitoringpb.UptimeCheckConfig",
         "client": {
           "shortName": "UptimeCheckClient",
           "fullName": "google.monitoring.v3.UptimeCheckClient"

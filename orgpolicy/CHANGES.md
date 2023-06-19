@@ -1,5 +1,19 @@
 # Changes
 
+## [1.11.0](https://github.com/googleapis/google-cloud-go/compare/orgpolicy/v1.10.1...orgpolicy/v1.11.0) (2023-05-30)
+
+
+### Features
+
+* **orgpolicy:** Update all direct dependencies ([b340d03](https://github.com/googleapis/google-cloud-go/commit/b340d030f2b52a4ce48846ce63984b28583abde6))
+
+## [1.10.1](https://github.com/googleapis/google-cloud-go/compare/orgpolicy/v1.10.0...orgpolicy/v1.10.1) (2023-05-08)
+
+
+### Bug Fixes
+
+* **orgpolicy:** Update grpc to v1.55.0 ([1147ce0](https://github.com/googleapis/google-cloud-go/commit/1147ce02a990276ca4f8ab7a1ab65c14da4450ef))
+
 ## [1.10.0](https://github.com/googleapis/google-cloud-go/compare/orgpolicy/v1.9.0...orgpolicy/v1.10.0) (2023-02-14)
 
 

@@ -292,8 +292,7 @@ func (c *IndexEndpointClient) GetOperation(ctx context.Context, req *longrunning
 	return c.internalClient.GetOperation(ctx, req, opts...)
 }
 
-// ListOperations lists operations that match the specified filter in the request. If
-// the server doesn’t support this method, it returns UNIMPLEMENTED.
+// ListOperations is a utility method from google.longrunning.Operations.
 func (c *IndexEndpointClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	return c.internalClient.ListOperations(ctx, req, opts...)
 }
@@ -309,9 +308,6 @@ func (c *IndexEndpointClient) WaitOperation(ctx context.Context, req *longrunnin
 type indexEndpointGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
-
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
 
 	// Points back to the CallOptions field of the containing IndexEndpointClient
 	CallOptions **IndexEndpointCallOptions
@@ -348,11 +344,6 @@ func NewIndexEndpointClient(ctx context.Context, opts ...option.ClientOption) (*
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -361,7 +352,6 @@ func NewIndexEndpointClient(ctx context.Context, opts ...option.ClientOption) (*
 
 	c := &indexEndpointGRPCClient{
 		connPool:            connPool,
-		disableDeadlines:    disableDeadlines,
 		indexEndpointClient: aiplatformpb.NewIndexEndpointServiceClient(connPool),
 		CallOptions:         &client.CallOptions,
 		operationsClient:    longrunningpb.NewOperationsClient(connPool),

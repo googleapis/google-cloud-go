@@ -1,5 +1,24 @@
 # Changes
 
+## [1.8.1](https://github.com/googleapis/google-cloud-go/compare/pubsublite/v1.8.0...pubsublite/v1.8.1) (2023-05-11)
+
+
+### Bug Fixes
+
+* **pubsublite:** Update grpc to v1.55.0 ([1147ce0](https://github.com/googleapis/google-cloud-go/commit/1147ce02a990276ca4f8ab7a1ab65c14da4450ef))
+
+## [1.8.0](https://github.com/googleapis/google-cloud-go/compare/pubsublite/v1.7.1...pubsublite/v1.8.0) (2023-04-28)
+
+
+### Features
+
+* **pubsublite:** Expose functions to encode/decode message event times ([#7853](https://github.com/googleapis/google-cloud-go/issues/7853)) ([89bf810](https://github.com/googleapis/google-cloud-go/commit/89bf8106fdd12025abe3cc54484b7bcf084266a0))
+
+
+### Documentation
+
+* **pubsublite:** Associate examples with the correct function ([#7827](https://github.com/googleapis/google-cloud-go/issues/7827)) ([481b161](https://github.com/googleapis/google-cloud-go/commit/481b161d2fe5fbf2b6fb306b9153b2c174e75991))
+
 ## [1.7.1](https://github.com/googleapis/google-cloud-go/compare/pubsublite/v1.7.0...pubsublite/v1.7.1) (2023-04-21)
 
 

@@ -112,8 +112,7 @@ type internalCloudChannelReportsClient interface {
 //
 // CloudChannelReportsService lets Google Cloud resellers and
 // distributors retrieve and combine a variety of data in Cloud Channel for
-// multiple products (Google Cloud Platform (GCP), Google Voice, and
-// Google Workspace.)
+// multiple products (Google Cloud, Google Voice, and Google Workspace.)
 type CloudChannelReportsClient struct {
 	// The internal transport-dependent client.
 	internalClient internalCloudChannelReportsClient
@@ -216,8 +215,7 @@ func (c *CloudChannelReportsClient) GetOperation(ctx context.Context, req *longr
 	return c.internalClient.GetOperation(ctx, req, opts...)
 }
 
-// ListOperations lists operations that match the specified filter in the request. If
-// the server doesn’t support this method, it returns UNIMPLEMENTED.
+// ListOperations is a utility method from google.longrunning.Operations.
 func (c *CloudChannelReportsClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	return c.internalClient.ListOperations(ctx, req, opts...)
 }
@@ -228,9 +226,6 @@ func (c *CloudChannelReportsClient) ListOperations(ctx context.Context, req *lon
 type cloudChannelReportsGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
-
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
 
 	// Points back to the CallOptions field of the containing CloudChannelReportsClient
 	CallOptions **CloudChannelReportsCallOptions
@@ -254,8 +249,7 @@ type cloudChannelReportsGRPCClient struct {
 //
 // CloudChannelReportsService lets Google Cloud resellers and
 // distributors retrieve and combine a variety of data in Cloud Channel for
-// multiple products (Google Cloud Platform (GCP), Google Voice, and
-// Google Workspace.)
+// multiple products (Google Cloud, Google Voice, and Google Workspace.)
 func NewCloudChannelReportsClient(ctx context.Context, opts ...option.ClientOption) (*CloudChannelReportsClient, error) {
 	clientOpts := defaultCloudChannelReportsGRPCClientOptions()
 	if newCloudChannelReportsClientHook != nil {
@@ -266,11 +260,6 @@ func NewCloudChannelReportsClient(ctx context.Context, opts ...option.ClientOpti
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -279,7 +268,6 @@ func NewCloudChannelReportsClient(ctx context.Context, opts ...option.ClientOpti
 
 	c := &cloudChannelReportsGRPCClient{
 		connPool:                  connPool,
-		disableDeadlines:          disableDeadlines,
 		cloudChannelReportsClient: channelpb.NewCloudChannelReportsServiceClient(connPool),
 		CallOptions:               &client.CallOptions,
 		operationsClient:          longrunningpb.NewOperationsClient(connPool),
@@ -349,8 +337,7 @@ type cloudChannelReportsRESTClient struct {
 //
 // CloudChannelReportsService lets Google Cloud resellers and
 // distributors retrieve and combine a variety of data in Cloud Channel for
-// multiple products (Google Cloud Platform (GCP), Google Voice, and
-// Google Workspace.)
+// multiple products (Google Cloud, Google Voice, and Google Workspace.)
 func NewCloudChannelReportsRESTClient(ctx context.Context, opts ...option.ClientOption) (*CloudChannelReportsClient, error) {
 	clientOpts := append(defaultCloudChannelReportsRESTClientOptions(), opts...)
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
@@ -1029,8 +1016,7 @@ func (c *cloudChannelReportsRESTClient) GetOperation(ctx context.Context, req *l
 	return resp, nil
 }
 
-// ListOperations lists operations that match the specified filter in the request. If
-// the server doesn’t support this method, it returns UNIMPLEMENTED.
+// ListOperations is a utility method from google.longrunning.Operations.
 func (c *cloudChannelReportsRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
 	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)

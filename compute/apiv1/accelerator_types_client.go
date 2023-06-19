@@ -51,6 +51,7 @@ type AcceleratorTypesCallOptions struct {
 func defaultAcceleratorTypesRESTCallOptions() *AcceleratorTypesCallOptions {
 	return &AcceleratorTypesCallOptions{
 		AggregatedList: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -62,6 +63,7 @@ func defaultAcceleratorTypesRESTCallOptions() *AcceleratorTypesCallOptions {
 			}),
 		},
 		Get: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -73,6 +75,7 @@ func defaultAcceleratorTypesRESTCallOptions() *AcceleratorTypesCallOptions {
 			}),
 		},
 		List: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,

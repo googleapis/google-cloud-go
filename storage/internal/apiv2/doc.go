@@ -19,8 +19,6 @@
 //
 // Lets you store and retrieve potentially-large, immutable data objects.
 //
-//	NOTE: This package is in alpha. It is not stable, and is likely to change.
-//
 // # General documentation
 //
 // For information about setting deadlines, reusing contexts, and more
@@ -82,9 +80,7 @@ package storage // import "cloud.google.com/go/storage/internal/apiv2"
 
 import (
 	"context"
-	"os"
 	"runtime"
-	"strconv"
 	"strings"
 	"unicode"
 
@@ -115,16 +111,6 @@ func insertMetadata(ctx context.Context, mds ...metadata.MD) context.Context {
 		}
 	}
 	return metadata.NewOutgoingContext(ctx, out)
-}
-
-func checkDisableDeadlines() (bool, error) {
-	raw, ok := os.LookupEnv("GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE")
-	if !ok {
-		return false, nil
-	}
-
-	b, err := strconv.ParseBool(raw)
-	return b, err
 }
 
 // DefaultAuthScopes reports the default set of authentication scopes to use with this package.

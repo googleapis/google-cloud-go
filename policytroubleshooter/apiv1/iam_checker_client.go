@@ -59,13 +59,17 @@ func defaultIamCheckerGRPCClientOptions() []option.ClientOption {
 
 func defaultIamCheckerCallOptions() *IamCheckerCallOptions {
 	return &IamCheckerCallOptions{
-		TroubleshootIamPolicy: []gax.CallOption{},
+		TroubleshootIamPolicy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 	}
 }
 
 func defaultIamCheckerRESTCallOptions() *IamCheckerCallOptions {
 	return &IamCheckerCallOptions{
-		TroubleshootIamPolicy: []gax.CallOption{},
+		TroubleshootIamPolicy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 	}
 }
 
@@ -127,9 +131,6 @@ type iamCheckerGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing IamCheckerClient
 	CallOptions **IamCheckerCallOptions
 
@@ -156,11 +157,6 @@ func NewIamCheckerClient(ctx context.Context, opts ...option.ClientOption) (*Iam
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -169,7 +165,6 @@ func NewIamCheckerClient(ctx context.Context, opts ...option.ClientOption) (*Iam
 
 	c := &iamCheckerGRPCClient{
 		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
 		iamCheckerClient: policytroubleshooterpb.NewIamCheckerClient(connPool),
 		CallOptions:      &client.CallOptions,
 	}
@@ -274,11 +269,6 @@ func (c *iamCheckerRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 func (c *iamCheckerGRPCClient) TroubleshootIamPolicy(ctx context.Context, req *policytroubleshooterpb.TroubleshootIamPolicyRequest, opts ...gax.CallOption) (*policytroubleshooterpb.TroubleshootIamPolicyResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
 	opts = append((*c.CallOptions).TroubleshootIamPolicy[0:len((*c.CallOptions).TroubleshootIamPolicy):len((*c.CallOptions).TroubleshootIamPolicy)], opts...)
 	var resp *policytroubleshooterpb.TroubleshootIamPolicyResponse

@@ -35,6 +35,7 @@ import (
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/encoding/gzip"
 	"google.golang.org/grpc/status"
 
 	vkit "cloud.google.com/go/spanner/apiv1"
@@ -69,6 +70,20 @@ func setupMockedTestServerWithConfigAndClientOptions(t *testing.T, config Client
 				},
 			},
 		},
+	}
+	if config.Compression == gzip.Name {
+		grpcHeaderChecker.Checkers = append(grpcHeaderChecker.Checkers, &itestutil.HeaderChecker{
+			Key: "x-response-encoding",
+			ValuesValidator: func(token ...string) error {
+				if len(token) != 1 {
+					return status.Errorf(codes.Internal, "unexpected number of compression headers: %v", len(token))
+				}
+				if token[0] != gzip.Name {
+					return status.Errorf(codes.Internal, "unexpected compression: %v", token[0])
+				}
+				return nil
+			},
+		})
 	}
 	clientOptions = append(clientOptions, grpcHeaderChecker.CallOptions()...)
 	server, opts, serverTeardown := NewMockedSpannerInMemTestServer(t)
@@ -2660,6 +2675,38 @@ func TestClient_WithGRPCConnectionPoolAndNumChannels_Misconfigured(t *testing.T)
 	}
 	if !strings.Contains(se.Error(), msg) {
 		t.Fatalf("Error message mismatch\nGot: %s\nWant: %s", se.Error(), msg)
+	}
+}
+
+func TestClient_WithCustomBatchTimeout(t *testing.T) {
+	t.Parallel()
+
+	_, opts, serverTeardown := NewMockedSpannerInMemTestServer(t)
+	defer serverTeardown()
+
+	wantBatchTimeout := time.Second * 42
+	client, err := NewClientWithConfig(context.Background(), "projects/p/instances/i/databases/d", ClientConfig{BatchTimeout: wantBatchTimeout}, opts...)
+	if err != nil {
+		t.Fatalf("failed to get a client: %v", err)
+	}
+	if wantBatchTimeout != client.sc.batchTimeout {
+		t.Fatalf("mismatch in client configuration for property BatchTimeout: got %v, want %v", client.sc.batchTimeout, wantBatchTimeout)
+	}
+}
+
+func TestClient_WithoutCustomBatchTimeout(t *testing.T) {
+	t.Parallel()
+
+	_, opts, serverTeardown := NewMockedSpannerInMemTestServer(t)
+	defer serverTeardown()
+
+	wantBatchTimeout := time.Minute
+	client, err := NewClientWithConfig(context.Background(), "projects/p/instances/i/databases/d", ClientConfig{}, opts...)
+	if err != nil {
+		t.Fatalf("failed to get a client: %v", err)
+	}
+	if wantBatchTimeout != client.sc.batchTimeout {
+		t.Fatalf("mismatch in client configuration for property BatchTimeout: got %v, want %v", client.sc.batchTimeout, wantBatchTimeout)
 	}
 }
 

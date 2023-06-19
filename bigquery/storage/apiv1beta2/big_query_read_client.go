@@ -63,6 +63,7 @@ func defaultBigQueryReadGRPCClientOptions() []option.ClientOption {
 func defaultBigQueryReadCallOptions() *BigQueryReadCallOptions {
 	return &BigQueryReadCallOptions{
 		CreateReadSession: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -86,6 +87,7 @@ func defaultBigQueryReadCallOptions() *BigQueryReadCallOptions {
 			}),
 		},
 		SplitReadStream: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -103,6 +105,7 @@ func defaultBigQueryReadCallOptions() *BigQueryReadCallOptions {
 func defaultBigQueryReadRESTCallOptions() *BigQueryReadCallOptions {
 	return &BigQueryReadCallOptions{
 		CreateReadSession: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -114,6 +117,7 @@ func defaultBigQueryReadRESTCallOptions() *BigQueryReadCallOptions {
 			}),
 		},
 		ReadRows: []gax.CallOption{
+			gax.WithTimeout(86400000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -124,6 +128,7 @@ func defaultBigQueryReadRESTCallOptions() *BigQueryReadCallOptions {
 			}),
 		},
 		SplitReadStream: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -244,9 +249,6 @@ type bigQueryReadGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing BigQueryReadClient
 	CallOptions **BigQueryReadCallOptions
 
@@ -276,11 +278,6 @@ func NewBigQueryReadClient(ctx context.Context, opts ...option.ClientOption) (*B
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -289,7 +286,6 @@ func NewBigQueryReadClient(ctx context.Context, opts ...option.ClientOption) (*B
 
 	c := &bigQueryReadGRPCClient{
 		connPool:           connPool,
-		disableDeadlines:   disableDeadlines,
 		bigQueryReadClient: storagepb.NewBigQueryReadClient(connPool),
 		CallOptions:        &client.CallOptions,
 	}
@@ -397,11 +393,6 @@ func (c *bigQueryReadRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 func (c *bigQueryReadGRPCClient) CreateReadSession(ctx context.Context, req *storagepb.CreateReadSessionRequest, opts ...gax.CallOption) (*storagepb.ReadSession, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "read_session.table", url.QueryEscape(req.GetReadSession().GetTable())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -436,11 +427,6 @@ func (c *bigQueryReadGRPCClient) ReadRows(ctx context.Context, req *storagepb.Re
 }
 
 func (c *bigQueryReadGRPCClient) SplitReadStream(ctx context.Context, req *storagepb.SplitReadStreamRequest, opts ...gax.CallOption) (*storagepb.SplitReadStreamResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)

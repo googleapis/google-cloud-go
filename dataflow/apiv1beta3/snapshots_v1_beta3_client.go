@@ -60,17 +60,29 @@ func defaultSnapshotsV1Beta3GRPCClientOptions() []option.ClientOption {
 
 func defaultSnapshotsV1Beta3CallOptions() *SnapshotsV1Beta3CallOptions {
 	return &SnapshotsV1Beta3CallOptions{
-		GetSnapshot:    []gax.CallOption{},
-		DeleteSnapshot: []gax.CallOption{},
-		ListSnapshots:  []gax.CallOption{},
+		GetSnapshot: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteSnapshot: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ListSnapshots: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 	}
 }
 
 func defaultSnapshotsV1Beta3RESTCallOptions() *SnapshotsV1Beta3CallOptions {
 	return &SnapshotsV1Beta3CallOptions{
-		GetSnapshot:    []gax.CallOption{},
-		DeleteSnapshot: []gax.CallOption{},
-		ListSnapshots:  []gax.CallOption{},
+		GetSnapshot: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteSnapshot: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ListSnapshots: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 	}
 }
 
@@ -141,9 +153,6 @@ type snapshotsV1Beta3GRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing SnapshotsV1Beta3Client
 	CallOptions **SnapshotsV1Beta3CallOptions
 
@@ -168,11 +177,6 @@ func NewSnapshotsV1Beta3Client(ctx context.Context, opts ...option.ClientOption)
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -181,7 +185,6 @@ func NewSnapshotsV1Beta3Client(ctx context.Context, opts ...option.ClientOption)
 
 	c := &snapshotsV1Beta3GRPCClient{
 		connPool:               connPool,
-		disableDeadlines:       disableDeadlines,
 		snapshotsV1Beta3Client: dataflowpb.NewSnapshotsV1Beta3Client(connPool),
 		CallOptions:            &client.CallOptions,
 	}
@@ -284,11 +287,6 @@ func (c *snapshotsV1Beta3RESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 func (c *snapshotsV1Beta3GRPCClient) GetSnapshot(ctx context.Context, req *dataflowpb.GetSnapshotRequest, opts ...gax.CallOption) (*dataflowpb.Snapshot, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project_id", url.QueryEscape(req.GetProjectId()), "location", url.QueryEscape(req.GetLocation()), "snapshot_id", url.QueryEscape(req.GetSnapshotId())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -306,11 +304,6 @@ func (c *snapshotsV1Beta3GRPCClient) GetSnapshot(ctx context.Context, req *dataf
 }
 
 func (c *snapshotsV1Beta3GRPCClient) DeleteSnapshot(ctx context.Context, req *dataflowpb.DeleteSnapshotRequest, opts ...gax.CallOption) (*dataflowpb.DeleteSnapshotResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project_id", url.QueryEscape(req.GetProjectId()), "location", url.QueryEscape(req.GetLocation()), "snapshot_id", url.QueryEscape(req.GetSnapshotId())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -328,11 +321,6 @@ func (c *snapshotsV1Beta3GRPCClient) DeleteSnapshot(ctx context.Context, req *da
 }
 
 func (c *snapshotsV1Beta3GRPCClient) ListSnapshots(ctx context.Context, req *dataflowpb.ListSnapshotsRequest, opts ...gax.CallOption) (*dataflowpb.ListSnapshotsResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project_id", url.QueryEscape(req.GetProjectId()), "location", url.QueryEscape(req.GetLocation()), "job_id", url.QueryEscape(req.GetJobId())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)

@@ -93,67 +93,111 @@ func defaultModelGRPCClientOptions() []option.ClientOption {
 
 func defaultModelCallOptions() *ModelCallOptions {
 	return &ModelCallOptions{
-		UploadModel:                      []gax.CallOption{},
-		GetModel:                         []gax.CallOption{},
-		ListModels:                       []gax.CallOption{},
-		ListModelVersions:                []gax.CallOption{},
-		UpdateModel:                      []gax.CallOption{},
-		UpdateExplanationDataset:         []gax.CallOption{},
-		DeleteModel:                      []gax.CallOption{},
-		DeleteModelVersion:               []gax.CallOption{},
-		MergeVersionAliases:              []gax.CallOption{},
-		ExportModel:                      []gax.CallOption{},
-		CopyModel:                        []gax.CallOption{},
+		UploadModel: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		GetModel: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		ListModels: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		ListModelVersions: []gax.CallOption{},
+		UpdateModel: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		UpdateExplanationDataset: []gax.CallOption{},
+		DeleteModel: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		DeleteModelVersion:  []gax.CallOption{},
+		MergeVersionAliases: []gax.CallOption{},
+		ExportModel: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		CopyModel: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
 		ImportModelEvaluation:            []gax.CallOption{},
 		BatchImportModelEvaluationSlices: []gax.CallOption{},
 		BatchImportEvaluatedAnnotations:  []gax.CallOption{},
-		GetModelEvaluation:               []gax.CallOption{},
-		ListModelEvaluations:             []gax.CallOption{},
-		GetModelEvaluationSlice:          []gax.CallOption{},
-		ListModelEvaluationSlices:        []gax.CallOption{},
-		GetLocation:                      []gax.CallOption{},
-		ListLocations:                    []gax.CallOption{},
-		GetIamPolicy:                     []gax.CallOption{},
-		SetIamPolicy:                     []gax.CallOption{},
-		TestIamPermissions:               []gax.CallOption{},
-		CancelOperation:                  []gax.CallOption{},
-		DeleteOperation:                  []gax.CallOption{},
-		GetOperation:                     []gax.CallOption{},
-		ListOperations:                   []gax.CallOption{},
-		WaitOperation:                    []gax.CallOption{},
+		GetModelEvaluation: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		ListModelEvaluations: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		GetModelEvaluationSlice: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		ListModelEvaluationSlices: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		GetLocation:        []gax.CallOption{},
+		ListLocations:      []gax.CallOption{},
+		GetIamPolicy:       []gax.CallOption{},
+		SetIamPolicy:       []gax.CallOption{},
+		TestIamPermissions: []gax.CallOption{},
+		CancelOperation:    []gax.CallOption{},
+		DeleteOperation:    []gax.CallOption{},
+		GetOperation:       []gax.CallOption{},
+		ListOperations:     []gax.CallOption{},
+		WaitOperation:      []gax.CallOption{},
 	}
 }
 
 func defaultModelRESTCallOptions() *ModelCallOptions {
 	return &ModelCallOptions{
-		UploadModel:                      []gax.CallOption{},
-		GetModel:                         []gax.CallOption{},
-		ListModels:                       []gax.CallOption{},
-		ListModelVersions:                []gax.CallOption{},
-		UpdateModel:                      []gax.CallOption{},
-		UpdateExplanationDataset:         []gax.CallOption{},
-		DeleteModel:                      []gax.CallOption{},
-		DeleteModelVersion:               []gax.CallOption{},
-		MergeVersionAliases:              []gax.CallOption{},
-		ExportModel:                      []gax.CallOption{},
-		CopyModel:                        []gax.CallOption{},
+		UploadModel: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		GetModel: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		ListModels: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		ListModelVersions: []gax.CallOption{},
+		UpdateModel: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		UpdateExplanationDataset: []gax.CallOption{},
+		DeleteModel: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		DeleteModelVersion:  []gax.CallOption{},
+		MergeVersionAliases: []gax.CallOption{},
+		ExportModel: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		CopyModel: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
 		ImportModelEvaluation:            []gax.CallOption{},
 		BatchImportModelEvaluationSlices: []gax.CallOption{},
 		BatchImportEvaluatedAnnotations:  []gax.CallOption{},
-		GetModelEvaluation:               []gax.CallOption{},
-		ListModelEvaluations:             []gax.CallOption{},
-		GetModelEvaluationSlice:          []gax.CallOption{},
-		ListModelEvaluationSlices:        []gax.CallOption{},
-		GetLocation:                      []gax.CallOption{},
-		ListLocations:                    []gax.CallOption{},
-		GetIamPolicy:                     []gax.CallOption{},
-		SetIamPolicy:                     []gax.CallOption{},
-		TestIamPermissions:               []gax.CallOption{},
-		CancelOperation:                  []gax.CallOption{},
-		DeleteOperation:                  []gax.CallOption{},
-		GetOperation:                     []gax.CallOption{},
-		ListOperations:                   []gax.CallOption{},
-		WaitOperation:                    []gax.CallOption{},
+		GetModelEvaluation: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		ListModelEvaluations: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		GetModelEvaluationSlice: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		ListModelEvaluationSlices: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		GetLocation:        []gax.CallOption{},
+		ListLocations:      []gax.CallOption{},
+		GetIamPolicy:       []gax.CallOption{},
+		SetIamPolicy:       []gax.CallOption{},
+		TestIamPermissions: []gax.CallOption{},
+		CancelOperation:    []gax.CallOption{},
+		DeleteOperation:    []gax.CallOption{},
+		GetOperation:       []gax.CallOption{},
+		ListOperations:     []gax.CallOption{},
+		WaitOperation:      []gax.CallOption{},
 	}
 }
 
@@ -436,8 +480,7 @@ func (c *ModelClient) GetOperation(ctx context.Context, req *longrunningpb.GetOp
 	return c.internalClient.GetOperation(ctx, req, opts...)
 }
 
-// ListOperations lists operations that match the specified filter in the request. If
-// the server doesn’t support this method, it returns UNIMPLEMENTED.
+// ListOperations is a utility method from google.longrunning.Operations.
 func (c *ModelClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	return c.internalClient.ListOperations(ctx, req, opts...)
 }
@@ -453,9 +496,6 @@ func (c *ModelClient) WaitOperation(ctx context.Context, req *longrunningpb.Wait
 type modelGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
-
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
 
 	// Points back to the CallOptions field of the containing ModelClient
 	CallOptions **ModelCallOptions
@@ -492,11 +532,6 @@ func NewModelClient(ctx context.Context, opts ...option.ClientOption) (*ModelCli
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -505,7 +540,6 @@ func NewModelClient(ctx context.Context, opts ...option.ClientOption) (*ModelCli
 
 	c := &modelGRPCClient{
 		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
 		modelClient:      aiplatformpb.NewModelServiceClient(connPool),
 		CallOptions:      &client.CallOptions,
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
@@ -637,11 +671,6 @@ func (c *modelRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 func (c *modelGRPCClient) UploadModel(ctx context.Context, req *aiplatformpb.UploadModelRequest, opts ...gax.CallOption) (*UploadModelOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -661,11 +690,6 @@ func (c *modelGRPCClient) UploadModel(ctx context.Context, req *aiplatformpb.Upl
 }
 
 func (c *modelGRPCClient) GetModel(ctx context.Context, req *aiplatformpb.GetModelRequest, opts ...gax.CallOption) (*aiplatformpb.Model, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -773,11 +797,6 @@ func (c *modelGRPCClient) ListModelVersions(ctx context.Context, req *aiplatform
 }
 
 func (c *modelGRPCClient) UpdateModel(ctx context.Context, req *aiplatformpb.UpdateModelRequest, opts ...gax.CallOption) (*aiplatformpb.Model, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "model.name", url.QueryEscape(req.GetModel().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -814,11 +833,6 @@ func (c *modelGRPCClient) UpdateExplanationDataset(ctx context.Context, req *aip
 }
 
 func (c *modelGRPCClient) DeleteModel(ctx context.Context, req *aiplatformpb.DeleteModelRequest, opts ...gax.CallOption) (*DeleteModelOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -874,11 +888,6 @@ func (c *modelGRPCClient) MergeVersionAliases(ctx context.Context, req *aiplatfo
 }
 
 func (c *modelGRPCClient) ExportModel(ctx context.Context, req *aiplatformpb.ExportModelRequest, opts ...gax.CallOption) (*ExportModelOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -898,11 +907,6 @@ func (c *modelGRPCClient) ExportModel(ctx context.Context, req *aiplatformpb.Exp
 }
 
 func (c *modelGRPCClient) CopyModel(ctx context.Context, req *aiplatformpb.CopyModelRequest, opts ...gax.CallOption) (*CopyModelOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -973,11 +977,6 @@ func (c *modelGRPCClient) BatchImportEvaluatedAnnotations(ctx context.Context, r
 }
 
 func (c *modelGRPCClient) GetModelEvaluation(ctx context.Context, req *aiplatformpb.GetModelEvaluationRequest, opts ...gax.CallOption) (*aiplatformpb.ModelEvaluation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1040,11 +1039,6 @@ func (c *modelGRPCClient) ListModelEvaluations(ctx context.Context, req *aiplatf
 }
 
 func (c *modelGRPCClient) GetModelEvaluationSlice(ctx context.Context, req *aiplatformpb.GetModelEvaluationSliceRequest, opts ...gax.CallOption) (*aiplatformpb.ModelEvaluationSlice, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -3022,8 +3016,7 @@ func (c *modelRESTClient) GetOperation(ctx context.Context, req *longrunningpb.G
 	return resp, nil
 }
 
-// ListOperations lists operations that match the specified filter in the request. If
-// the server doesn’t support this method, it returns UNIMPLEMENTED.
+// ListOperations is a utility method from google.longrunning.Operations.
 func (c *modelRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
 	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)

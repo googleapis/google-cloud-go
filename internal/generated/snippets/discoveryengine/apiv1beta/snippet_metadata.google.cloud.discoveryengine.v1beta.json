@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/discoveryengine/apiv1beta",
-    "version": "0.2.0",
+    "version": "0.4.1",
     "language": "GO",
     "apis": [
       {
@@ -466,6 +466,52 @@
         {
           "start": 18,
           "end": 60,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "discoveryengine_v1beta_generated_DocumentService_PurgeDocuments_sync",
+      "title": "discoveryengine PurgeDocuments Sample",
+      "description": "PurgeDocuments permanently deletes all selected\n[Document][google.cloud.discoveryengine.v1beta.Document]s in a branch.\n\nThis process is asynchronous. Depending on the number of\n[Document][google.cloud.discoveryengine.v1beta.Document]s to be deleted,\nthis operation can take hours to complete. Before the delete operation\ncompletes, some [Document][google.cloud.discoveryengine.v1beta.Document]s\nmight still be returned by\n[DocumentService.GetDocument][google.cloud.discoveryengine.v1beta.DocumentService.GetDocument]\nor\n[DocumentService.ListDocuments][google.cloud.discoveryengine.v1beta.DocumentService.ListDocuments].\n\nTo get a list of the\n[Document][google.cloud.discoveryengine.v1beta.Document]s to be deleted,\nset\n[PurgeDocumentsRequest.force][google.cloud.discoveryengine.v1beta.PurgeDocumentsRequest.force]\nto false.",
+      "file": "DocumentClient/PurgeDocuments/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "PurgeDocuments",
+        "fullName": "google.cloud.discoveryengine.v1beta.DocumentClient.PurgeDocuments",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "discoveryenginepb.PurgeDocumentsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "PurgeDocumentsOperation",
+        "client": {
+          "shortName": "DocumentClient",
+          "fullName": "google.cloud.discoveryengine.v1beta.DocumentClient"
+        },
+        "method": {
+          "shortName": "PurgeDocuments",
+          "fullName": "google.cloud.discoveryengine.v1beta.DocumentService.PurgeDocuments",
+          "service": {
+            "shortName": "DocumentService",
+            "fullName": "google.cloud.discoveryengine.v1beta.DocumentService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
           "type": "FULL"
         }
       ]

@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,11 +17,24 @@
 // Package recaptchaenterprise is an auto-generated package for the
 // reCAPTCHA Enterprise API.
 //
+// Help protect your website from fraudulent activity, spam, and abuse
+// without creating friction.
+//
+// # General documentation
+//
+// For information about setting deadlines, reusing contexts, and more
+// please visit https://pkg.go.dev/cloud.google.com/go.
+//
 // # Example usage
 //
 // To get started with this package, create a client.
 //
 //	ctx := context.Background()
+//	// This snippet has been automatically generated and should be regarded as a code template only.
+//	// It will require modifications to work:
+//	// - It may require correct/in-range values for request initialization.
+//	// - It may require specifying regional endpoints when creating the service client as shown in:
+//	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 //	c, err := recaptchaenterprise.NewClient(ctx)
 //	if err != nil {
 //		// TODO: Handle error.
@@ -37,6 +50,11 @@
 // The following is an example of making an API call with the newly created client.
 //
 //	ctx := context.Background()
+//	// This snippet has been automatically generated and should be regarded as a code template only.
+//	// It will require modifications to work:
+//	// - It may require correct/in-range values for request initialization.
+//	// - It may require specifying regional endpoints when creating the service client as shown in:
+//	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 //	c, err := recaptchaenterprise.NewClient(ctx)
 //	if err != nil {
 //		// TODO: Handle error.
@@ -45,7 +63,7 @@
 //
 //	req := &recaptchaenterprisepb.CreateAssessmentRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/recaptchaenterprise/v1#CreateAssessmentRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/recaptchaenterprise/v2/apiv1/recaptchaenterprisepb#CreateAssessmentRequest.
 //	}
 //	resp, err := c.CreateAssessment(ctx, req)
 //	if err != nil {
@@ -61,16 +79,11 @@
 // Individual methods on the client use the ctx given to them.
 //
 // To close the open connection, use the Close() method.
-//
-// For information about setting deadlines, reusing contexts, and more
-// please visit https://pkg.go.dev/cloud.google.com/go.
-package recaptchaenterprise // import "cloud.google.com/go/recaptchaenterprise/apiv1"
+package recaptchaenterprise // import "cloud.google.com/go/recaptchaenterprise/v2/apiv1"
 
 import (
 	"context"
-	"os"
 	"runtime"
-	"strconv"
 	"strings"
 	"unicode"
 
@@ -101,16 +114,6 @@ func insertMetadata(ctx context.Context, mds ...metadata.MD) context.Context {
 		}
 	}
 	return metadata.NewOutgoingContext(ctx, out)
-}
-
-func checkDisableDeadlines() (bool, error) {
-	raw, ok := os.LookupEnv("GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE")
-	if !ok {
-		return false, nil
-	}
-
-	b, err := strconv.ParseBool(raw)
-	return b, err
 }
 
 // DefaultAuthScopes reports the default set of authentication scopes to use with this package.

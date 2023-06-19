@@ -76,6 +76,7 @@ func defaultExperimentsGRPCClientOptions() []option.ClientOption {
 func defaultExperimentsCallOptions() *ExperimentsCallOptions {
 	return &ExperimentsCallOptions{
 		ListExperiments: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -87,6 +88,7 @@ func defaultExperimentsCallOptions() *ExperimentsCallOptions {
 			}),
 		},
 		GetExperiment: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -98,6 +100,7 @@ func defaultExperimentsCallOptions() *ExperimentsCallOptions {
 			}),
 		},
 		CreateExperiment: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -109,6 +112,7 @@ func defaultExperimentsCallOptions() *ExperimentsCallOptions {
 			}),
 		},
 		UpdateExperiment: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -120,6 +124,7 @@ func defaultExperimentsCallOptions() *ExperimentsCallOptions {
 			}),
 		},
 		DeleteExperiment: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -131,6 +136,7 @@ func defaultExperimentsCallOptions() *ExperimentsCallOptions {
 			}),
 		},
 		StartExperiment: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -142,6 +148,7 @@ func defaultExperimentsCallOptions() *ExperimentsCallOptions {
 			}),
 		},
 		StopExperiment: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -163,6 +170,7 @@ func defaultExperimentsCallOptions() *ExperimentsCallOptions {
 func defaultExperimentsRESTCallOptions() *ExperimentsCallOptions {
 	return &ExperimentsCallOptions{
 		ListExperiments: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -173,6 +181,7 @@ func defaultExperimentsRESTCallOptions() *ExperimentsCallOptions {
 			}),
 		},
 		GetExperiment: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -183,6 +192,7 @@ func defaultExperimentsRESTCallOptions() *ExperimentsCallOptions {
 			}),
 		},
 		CreateExperiment: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -193,6 +203,7 @@ func defaultExperimentsRESTCallOptions() *ExperimentsCallOptions {
 			}),
 		},
 		UpdateExperiment: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -203,6 +214,7 @@ func defaultExperimentsRESTCallOptions() *ExperimentsCallOptions {
 			}),
 		},
 		DeleteExperiment: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -213,6 +225,7 @@ func defaultExperimentsRESTCallOptions() *ExperimentsCallOptions {
 			}),
 		},
 		StartExperiment: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -223,6 +236,7 @@ func defaultExperimentsRESTCallOptions() *ExperimentsCallOptions {
 			}),
 		},
 		StopExperiment: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -360,8 +374,7 @@ func (c *ExperimentsClient) GetOperation(ctx context.Context, req *longrunningpb
 	return c.internalClient.GetOperation(ctx, req, opts...)
 }
 
-// ListOperations lists operations that match the specified filter in the request. If
-// the server doesn’t support this method, it returns UNIMPLEMENTED.
+// ListOperations is a utility method from google.longrunning.Operations.
 func (c *ExperimentsClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	return c.internalClient.ListOperations(ctx, req, opts...)
 }
@@ -372,9 +385,6 @@ func (c *ExperimentsClient) ListOperations(ctx context.Context, req *longrunning
 type experimentsGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
-
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
 
 	// Points back to the CallOptions field of the containing ExperimentsClient
 	CallOptions **ExperimentsCallOptions
@@ -405,11 +415,6 @@ func NewExperimentsClient(ctx context.Context, opts ...option.ClientOption) (*Ex
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -418,7 +423,6 @@ func NewExperimentsClient(ctx context.Context, opts ...option.ClientOption) (*Ex
 
 	c := &experimentsGRPCClient{
 		connPool:          connPool,
-		disableDeadlines:  disableDeadlines,
 		experimentsClient: cxpb.NewExperimentsClient(connPool),
 		CallOptions:       &client.CallOptions,
 		operationsClient:  longrunningpb.NewOperationsClient(connPool),
@@ -569,11 +573,6 @@ func (c *experimentsGRPCClient) ListExperiments(ctx context.Context, req *cxpb.L
 }
 
 func (c *experimentsGRPCClient) GetExperiment(ctx context.Context, req *cxpb.GetExperimentRequest, opts ...gax.CallOption) (*cxpb.Experiment, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -591,11 +590,6 @@ func (c *experimentsGRPCClient) GetExperiment(ctx context.Context, req *cxpb.Get
 }
 
 func (c *experimentsGRPCClient) CreateExperiment(ctx context.Context, req *cxpb.CreateExperimentRequest, opts ...gax.CallOption) (*cxpb.Experiment, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -613,11 +607,6 @@ func (c *experimentsGRPCClient) CreateExperiment(ctx context.Context, req *cxpb.
 }
 
 func (c *experimentsGRPCClient) UpdateExperiment(ctx context.Context, req *cxpb.UpdateExperimentRequest, opts ...gax.CallOption) (*cxpb.Experiment, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "experiment.name", url.QueryEscape(req.GetExperiment().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -635,11 +624,6 @@ func (c *experimentsGRPCClient) UpdateExperiment(ctx context.Context, req *cxpb.
 }
 
 func (c *experimentsGRPCClient) DeleteExperiment(ctx context.Context, req *cxpb.DeleteExperimentRequest, opts ...gax.CallOption) error {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -653,11 +637,6 @@ func (c *experimentsGRPCClient) DeleteExperiment(ctx context.Context, req *cxpb.
 }
 
 func (c *experimentsGRPCClient) StartExperiment(ctx context.Context, req *cxpb.StartExperimentRequest, opts ...gax.CallOption) (*cxpb.Experiment, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -675,11 +654,6 @@ func (c *experimentsGRPCClient) StartExperiment(ctx context.Context, req *cxpb.S
 }
 
 func (c *experimentsGRPCClient) StopExperiment(ctx context.Context, req *cxpb.StopExperimentRequest, opts ...gax.CallOption) (*cxpb.Experiment, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1541,8 +1515,7 @@ func (c *experimentsRESTClient) GetOperation(ctx context.Context, req *longrunni
 	return resp, nil
 }
 
-// ListOperations lists operations that match the specified filter in the request. If
-// the server doesn’t support this method, it returns UNIMPLEMENTED.
+// ListOperations is a utility method from google.longrunning.Operations.
 func (c *experimentsRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
 	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)

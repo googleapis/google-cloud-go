@@ -66,6 +66,7 @@ func defaultRecommendationGRPCClientOptions() []option.ClientOption {
 func defaultRecommendationCallOptions() *RecommendationCallOptions {
 	return &RecommendationCallOptions{
 		Recommend: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -77,6 +78,7 @@ func defaultRecommendationCallOptions() *RecommendationCallOptions {
 			}),
 		},
 		GetOperation: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -88,6 +90,7 @@ func defaultRecommendationCallOptions() *RecommendationCallOptions {
 			}),
 		},
 		ListOperations: []gax.CallOption{
+			gax.WithTimeout(300000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -104,6 +107,7 @@ func defaultRecommendationCallOptions() *RecommendationCallOptions {
 func defaultRecommendationRESTCallOptions() *RecommendationCallOptions {
 	return &RecommendationCallOptions{
 		Recommend: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -114,6 +118,7 @@ func defaultRecommendationRESTCallOptions() *RecommendationCallOptions {
 			}),
 		},
 		GetOperation: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -124,6 +129,7 @@ func defaultRecommendationRESTCallOptions() *RecommendationCallOptions {
 			}),
 		},
 		ListOperations: []gax.CallOption{
+			gax.WithTimeout(300000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -203,9 +209,6 @@ type recommendationGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing RecommendationClient
 	CallOptions **RecommendationCallOptions
 
@@ -232,11 +235,6 @@ func NewRecommendationClient(ctx context.Context, opts ...option.ClientOption) (
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -245,7 +243,6 @@ func NewRecommendationClient(ctx context.Context, opts ...option.ClientOption) (
 
 	c := &recommendationGRPCClient{
 		connPool:             connPool,
-		disableDeadlines:     disableDeadlines,
 		recommendationClient: discoveryenginepb.NewRecommendationServiceClient(connPool),
 		CallOptions:          &client.CallOptions,
 		operationsClient:     longrunningpb.NewOperationsClient(connPool),
@@ -349,11 +346,6 @@ func (c *recommendationRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 func (c *recommendationGRPCClient) Recommend(ctx context.Context, req *discoveryenginepb.RecommendRequest, opts ...gax.CallOption) (*discoveryenginepb.RecommendResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "serving_config", url.QueryEscape(req.GetServingConfig())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -371,11 +363,6 @@ func (c *recommendationGRPCClient) Recommend(ctx context.Context, req *discovery
 }
 
 func (c *recommendationGRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)

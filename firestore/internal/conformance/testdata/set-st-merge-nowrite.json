@@ -2,7 +2,7 @@
   "tests": [
     {
       "description": "set-merge: If no ordinary values in Merge, no write",
-      "comment": "If all the fields in the merge option have ServerTimestamp\nvalues, then no update operation is produced, only a transform.",
+      "comment": "If all the fields in the merge option have ServerTimestamp\nvalues, then no update mask is produced, only an update transform.",
       "set": {
         "docRefPath": "projects/projectID/databases/(default)/documents/C/d",
         "option": {
@@ -19,15 +19,16 @@
           "database": "projects/projectID/databases/(default)",
           "writes": [
             {
-              "transform": {
-                "document": "projects/projectID/databases/(default)/documents/C/d",
-                "fieldTransforms": [
-                  {
-                    "fieldPath": "b",
-                    "setToServerValue": "REQUEST_TIME"
-                  }
-                ]
-              }
+              "update": {
+                "name": "projects/projectID/databases/(default)/documents/C/d"
+              },
+              "updateMask": {},
+              "updateTransforms": [
+                {
+                  "fieldPath": "b",
+                  "setToServerValue": "REQUEST_TIME"
+                }
+              ]
             }
           ]
         }

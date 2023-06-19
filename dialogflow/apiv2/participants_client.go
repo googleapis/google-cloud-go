@@ -78,6 +78,7 @@ func defaultParticipantsGRPCClientOptions() []option.ClientOption {
 func defaultParticipantsCallOptions() *ParticipantsCallOptions {
 	return &ParticipantsCallOptions{
 		CreateParticipant: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -89,6 +90,7 @@ func defaultParticipantsCallOptions() *ParticipantsCallOptions {
 			}),
 		},
 		GetParticipant: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -100,6 +102,7 @@ func defaultParticipantsCallOptions() *ParticipantsCallOptions {
 			}),
 		},
 		ListParticipants: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -111,6 +114,7 @@ func defaultParticipantsCallOptions() *ParticipantsCallOptions {
 			}),
 		},
 		UpdateParticipant: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -122,6 +126,7 @@ func defaultParticipantsCallOptions() *ParticipantsCallOptions {
 			}),
 		},
 		AnalyzeContent: []gax.CallOption{
+			gax.WithTimeout(220000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -134,6 +139,7 @@ func defaultParticipantsCallOptions() *ParticipantsCallOptions {
 		},
 		StreamingAnalyzeContent: []gax.CallOption{},
 		SuggestArticles: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -145,6 +151,7 @@ func defaultParticipantsCallOptions() *ParticipantsCallOptions {
 			}),
 		},
 		SuggestFaqAnswers: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -156,6 +163,7 @@ func defaultParticipantsCallOptions() *ParticipantsCallOptions {
 			}),
 		},
 		SuggestSmartReplies: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -177,6 +185,7 @@ func defaultParticipantsCallOptions() *ParticipantsCallOptions {
 func defaultParticipantsRESTCallOptions() *ParticipantsCallOptions {
 	return &ParticipantsCallOptions{
 		CreateParticipant: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -187,6 +196,7 @@ func defaultParticipantsRESTCallOptions() *ParticipantsCallOptions {
 			}),
 		},
 		GetParticipant: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -197,6 +207,7 @@ func defaultParticipantsRESTCallOptions() *ParticipantsCallOptions {
 			}),
 		},
 		ListParticipants: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -207,6 +218,7 @@ func defaultParticipantsRESTCallOptions() *ParticipantsCallOptions {
 			}),
 		},
 		UpdateParticipant: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -217,6 +229,7 @@ func defaultParticipantsRESTCallOptions() *ParticipantsCallOptions {
 			}),
 		},
 		AnalyzeContent: []gax.CallOption{
+			gax.WithTimeout(220000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -226,8 +239,11 @@ func defaultParticipantsRESTCallOptions() *ParticipantsCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
-		StreamingAnalyzeContent: []gax.CallOption{},
+		StreamingAnalyzeContent: []gax.CallOption{
+			gax.WithTimeout(220000 * time.Millisecond),
+		},
 		SuggestArticles: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -238,6 +254,7 @@ func defaultParticipantsRESTCallOptions() *ParticipantsCallOptions {
 			}),
 		},
 		SuggestFaqAnswers: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -248,6 +265,7 @@ func defaultParticipantsRESTCallOptions() *ParticipantsCallOptions {
 			}),
 		},
 		SuggestSmartReplies: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -410,8 +428,7 @@ func (c *ParticipantsClient) GetOperation(ctx context.Context, req *longrunningp
 	return c.internalClient.GetOperation(ctx, req, opts...)
 }
 
-// ListOperations lists operations that match the specified filter in the request. If
-// the server doesn’t support this method, it returns UNIMPLEMENTED.
+// ListOperations is a utility method from google.longrunning.Operations.
 func (c *ParticipantsClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	return c.internalClient.ListOperations(ctx, req, opts...)
 }
@@ -422,9 +439,6 @@ func (c *ParticipantsClient) ListOperations(ctx context.Context, req *longrunnin
 type participantsGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
-
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
 
 	// Points back to the CallOptions field of the containing ParticipantsClient
 	CallOptions **ParticipantsCallOptions
@@ -454,11 +468,6 @@ func NewParticipantsClient(ctx context.Context, opts ...option.ClientOption) (*P
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -467,7 +476,6 @@ func NewParticipantsClient(ctx context.Context, opts ...option.ClientOption) (*P
 
 	c := &participantsGRPCClient{
 		connPool:           connPool,
-		disableDeadlines:   disableDeadlines,
 		participantsClient: dialogflowpb.NewParticipantsClient(connPool),
 		CallOptions:        &client.CallOptions,
 		operationsClient:   longrunningpb.NewOperationsClient(connPool),
@@ -572,11 +580,6 @@ func (c *participantsRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 func (c *participantsGRPCClient) CreateParticipant(ctx context.Context, req *dialogflowpb.CreateParticipantRequest, opts ...gax.CallOption) (*dialogflowpb.Participant, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -594,11 +597,6 @@ func (c *participantsGRPCClient) CreateParticipant(ctx context.Context, req *dia
 }
 
 func (c *participantsGRPCClient) GetParticipant(ctx context.Context, req *dialogflowpb.GetParticipantRequest, opts ...gax.CallOption) (*dialogflowpb.Participant, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -661,11 +659,6 @@ func (c *participantsGRPCClient) ListParticipants(ctx context.Context, req *dial
 }
 
 func (c *participantsGRPCClient) UpdateParticipant(ctx context.Context, req *dialogflowpb.UpdateParticipantRequest, opts ...gax.CallOption) (*dialogflowpb.Participant, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "participant.name", url.QueryEscape(req.GetParticipant().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -683,11 +676,6 @@ func (c *participantsGRPCClient) UpdateParticipant(ctx context.Context, req *dia
 }
 
 func (c *participantsGRPCClient) AnalyzeContent(ctx context.Context, req *dialogflowpb.AnalyzeContentRequest, opts ...gax.CallOption) (*dialogflowpb.AnalyzeContentResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 220000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "participant", url.QueryEscape(req.GetParticipant())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -720,11 +708,6 @@ func (c *participantsGRPCClient) StreamingAnalyzeContent(ctx context.Context, op
 }
 
 func (c *participantsGRPCClient) SuggestArticles(ctx context.Context, req *dialogflowpb.SuggestArticlesRequest, opts ...gax.CallOption) (*dialogflowpb.SuggestArticlesResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -742,11 +725,6 @@ func (c *participantsGRPCClient) SuggestArticles(ctx context.Context, req *dialo
 }
 
 func (c *participantsGRPCClient) SuggestFaqAnswers(ctx context.Context, req *dialogflowpb.SuggestFaqAnswersRequest, opts ...gax.CallOption) (*dialogflowpb.SuggestFaqAnswersResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -764,11 +742,6 @@ func (c *participantsGRPCClient) SuggestFaqAnswers(ctx context.Context, req *dia
 }
 
 func (c *participantsGRPCClient) SuggestSmartReplies(ctx context.Context, req *dialogflowpb.SuggestSmartRepliesRequest, opts ...gax.CallOption) (*dialogflowpb.SuggestSmartRepliesResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1737,8 +1710,7 @@ func (c *participantsRESTClient) GetOperation(ctx context.Context, req *longrunn
 	return resp, nil
 }
 
-// ListOperations lists operations that match the specified filter in the request. If
-// the server doesn’t support this method, it returns UNIMPLEMENTED.
+// ListOperations is a utility method from google.longrunning.Operations.
 func (c *participantsRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
 	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)

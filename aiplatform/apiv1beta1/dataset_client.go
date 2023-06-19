@@ -87,18 +87,38 @@ func defaultDatasetGRPCClientOptions() []option.ClientOption {
 
 func defaultDatasetCallOptions() *DatasetCallOptions {
 	return &DatasetCallOptions{
-		CreateDataset:      []gax.CallOption{},
-		GetDataset:         []gax.CallOption{},
-		UpdateDataset:      []gax.CallOption{},
-		ListDatasets:       []gax.CallOption{},
-		DeleteDataset:      []gax.CallOption{},
-		ImportData:         []gax.CallOption{},
-		ExportData:         []gax.CallOption{},
-		ListDataItems:      []gax.CallOption{},
-		SearchDataItems:    []gax.CallOption{},
-		ListSavedQueries:   []gax.CallOption{},
-		GetAnnotationSpec:  []gax.CallOption{},
-		ListAnnotations:    []gax.CallOption{},
+		CreateDataset: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		GetDataset: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		UpdateDataset: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		ListDatasets: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		DeleteDataset: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		ImportData: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		ExportData: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		ListDataItems: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		SearchDataItems:  []gax.CallOption{},
+		ListSavedQueries: []gax.CallOption{},
+		GetAnnotationSpec: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		ListAnnotations: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
 		GetLocation:        []gax.CallOption{},
 		ListLocations:      []gax.CallOption{},
 		GetIamPolicy:       []gax.CallOption{},
@@ -114,18 +134,38 @@ func defaultDatasetCallOptions() *DatasetCallOptions {
 
 func defaultDatasetRESTCallOptions() *DatasetCallOptions {
 	return &DatasetCallOptions{
-		CreateDataset:      []gax.CallOption{},
-		GetDataset:         []gax.CallOption{},
-		UpdateDataset:      []gax.CallOption{},
-		ListDatasets:       []gax.CallOption{},
-		DeleteDataset:      []gax.CallOption{},
-		ImportData:         []gax.CallOption{},
-		ExportData:         []gax.CallOption{},
-		ListDataItems:      []gax.CallOption{},
-		SearchDataItems:    []gax.CallOption{},
-		ListSavedQueries:   []gax.CallOption{},
-		GetAnnotationSpec:  []gax.CallOption{},
-		ListAnnotations:    []gax.CallOption{},
+		CreateDataset: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		GetDataset: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		UpdateDataset: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		ListDatasets: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		DeleteDataset: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		ImportData: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		ExportData: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		ListDataItems: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		SearchDataItems:  []gax.CallOption{},
+		ListSavedQueries: []gax.CallOption{},
+		GetAnnotationSpec: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		ListAnnotations: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
 		GetLocation:        []gax.CallOption{},
 		ListLocations:      []gax.CallOption{},
 		GetIamPolicy:       []gax.CallOption{},
@@ -348,8 +388,7 @@ func (c *DatasetClient) GetOperation(ctx context.Context, req *longrunningpb.Get
 	return c.internalClient.GetOperation(ctx, req, opts...)
 }
 
-// ListOperations lists operations that match the specified filter in the request. If
-// the server doesn’t support this method, it returns UNIMPLEMENTED.
+// ListOperations is a utility method from google.longrunning.Operations.
 func (c *DatasetClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	return c.internalClient.ListOperations(ctx, req, opts...)
 }
@@ -365,9 +404,6 @@ func (c *DatasetClient) WaitOperation(ctx context.Context, req *longrunningpb.Wa
 type datasetGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
-
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
 
 	// Points back to the CallOptions field of the containing DatasetClient
 	CallOptions **DatasetCallOptions
@@ -405,11 +441,6 @@ func NewDatasetClient(ctx context.Context, opts ...option.ClientOption) (*Datase
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -418,7 +449,6 @@ func NewDatasetClient(ctx context.Context, opts ...option.ClientOption) (*Datase
 
 	c := &datasetGRPCClient{
 		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
 		datasetClient:    aiplatformpb.NewDatasetServiceClient(connPool),
 		CallOptions:      &client.CallOptions,
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
@@ -551,11 +581,6 @@ func (c *datasetRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 func (c *datasetGRPCClient) CreateDataset(ctx context.Context, req *aiplatformpb.CreateDatasetRequest, opts ...gax.CallOption) (*CreateDatasetOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -575,11 +600,6 @@ func (c *datasetGRPCClient) CreateDataset(ctx context.Context, req *aiplatformpb
 }
 
 func (c *datasetGRPCClient) GetDataset(ctx context.Context, req *aiplatformpb.GetDatasetRequest, opts ...gax.CallOption) (*aiplatformpb.Dataset, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -597,11 +617,6 @@ func (c *datasetGRPCClient) GetDataset(ctx context.Context, req *aiplatformpb.Ge
 }
 
 func (c *datasetGRPCClient) UpdateDataset(ctx context.Context, req *aiplatformpb.UpdateDatasetRequest, opts ...gax.CallOption) (*aiplatformpb.Dataset, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "dataset.name", url.QueryEscape(req.GetDataset().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -664,11 +679,6 @@ func (c *datasetGRPCClient) ListDatasets(ctx context.Context, req *aiplatformpb.
 }
 
 func (c *datasetGRPCClient) DeleteDataset(ctx context.Context, req *aiplatformpb.DeleteDatasetRequest, opts ...gax.CallOption) (*DeleteDatasetOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -688,11 +698,6 @@ func (c *datasetGRPCClient) DeleteDataset(ctx context.Context, req *aiplatformpb
 }
 
 func (c *datasetGRPCClient) ImportData(ctx context.Context, req *aiplatformpb.ImportDataRequest, opts ...gax.CallOption) (*ImportDataOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -712,11 +717,6 @@ func (c *datasetGRPCClient) ImportData(ctx context.Context, req *aiplatformpb.Im
 }
 
 func (c *datasetGRPCClient) ExportData(ctx context.Context, req *aiplatformpb.ExportDataRequest, opts ...gax.CallOption) (*ExportDataOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -871,11 +871,6 @@ func (c *datasetGRPCClient) ListSavedQueries(ctx context.Context, req *aiplatfor
 }
 
 func (c *datasetGRPCClient) GetAnnotationSpec(ctx context.Context, req *aiplatformpb.GetAnnotationSpecRequest, opts ...gax.CallOption) (*aiplatformpb.AnnotationSpec, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -2579,8 +2574,7 @@ func (c *datasetRESTClient) GetOperation(ctx context.Context, req *longrunningpb
 	return resp, nil
 }
 
-// ListOperations lists operations that match the specified filter in the request. If
-// the server doesn’t support this method, it returns UNIMPLEMENTED.
+// ListOperations is a utility method from google.longrunning.Operations.
 func (c *datasetRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
 	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)

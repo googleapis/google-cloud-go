@@ -74,6 +74,7 @@ func defaultVersionsGRPCClientOptions() []option.ClientOption {
 func defaultVersionsCallOptions() *VersionsCallOptions {
 	return &VersionsCallOptions{
 		ListVersions: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -85,6 +86,7 @@ func defaultVersionsCallOptions() *VersionsCallOptions {
 			}),
 		},
 		GetVersion: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -96,6 +98,7 @@ func defaultVersionsCallOptions() *VersionsCallOptions {
 			}),
 		},
 		CreateVersion: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -107,6 +110,7 @@ func defaultVersionsCallOptions() *VersionsCallOptions {
 			}),
 		},
 		UpdateVersion: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -118,6 +122,7 @@ func defaultVersionsCallOptions() *VersionsCallOptions {
 			}),
 		},
 		DeleteVersion: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -139,6 +144,7 @@ func defaultVersionsCallOptions() *VersionsCallOptions {
 func defaultVersionsRESTCallOptions() *VersionsCallOptions {
 	return &VersionsCallOptions{
 		ListVersions: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -149,6 +155,7 @@ func defaultVersionsRESTCallOptions() *VersionsCallOptions {
 			}),
 		},
 		GetVersion: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -159,6 +166,7 @@ func defaultVersionsRESTCallOptions() *VersionsCallOptions {
 			}),
 		},
 		CreateVersion: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -169,6 +177,7 @@ func defaultVersionsRESTCallOptions() *VersionsCallOptions {
 			}),
 		},
 		UpdateVersion: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -179,6 +188,7 @@ func defaultVersionsRESTCallOptions() *VersionsCallOptions {
 			}),
 		},
 		DeleteVersion: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -299,8 +309,7 @@ func (c *VersionsClient) GetOperation(ctx context.Context, req *longrunningpb.Ge
 	return c.internalClient.GetOperation(ctx, req, opts...)
 }
 
-// ListOperations lists operations that match the specified filter in the request. If
-// the server doesn’t support this method, it returns UNIMPLEMENTED.
+// ListOperations is a utility method from google.longrunning.Operations.
 func (c *VersionsClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	return c.internalClient.ListOperations(ctx, req, opts...)
 }
@@ -311,9 +320,6 @@ func (c *VersionsClient) ListOperations(ctx context.Context, req *longrunningpb.
 type versionsGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
-
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
 
 	// Points back to the CallOptions field of the containing VersionsClient
 	CallOptions **VersionsCallOptions
@@ -343,11 +349,6 @@ func NewVersionsClient(ctx context.Context, opts ...option.ClientOption) (*Versi
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -356,7 +357,6 @@ func NewVersionsClient(ctx context.Context, opts ...option.ClientOption) (*Versi
 
 	c := &versionsGRPCClient{
 		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
 		versionsClient:   dialogflowpb.NewVersionsClient(connPool),
 		CallOptions:      &client.CallOptions,
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
@@ -506,11 +506,6 @@ func (c *versionsGRPCClient) ListVersions(ctx context.Context, req *dialogflowpb
 }
 
 func (c *versionsGRPCClient) GetVersion(ctx context.Context, req *dialogflowpb.GetVersionRequest, opts ...gax.CallOption) (*dialogflowpb.Version, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -528,11 +523,6 @@ func (c *versionsGRPCClient) GetVersion(ctx context.Context, req *dialogflowpb.G
 }
 
 func (c *versionsGRPCClient) CreateVersion(ctx context.Context, req *dialogflowpb.CreateVersionRequest, opts ...gax.CallOption) (*dialogflowpb.Version, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -550,11 +540,6 @@ func (c *versionsGRPCClient) CreateVersion(ctx context.Context, req *dialogflowp
 }
 
 func (c *versionsGRPCClient) UpdateVersion(ctx context.Context, req *dialogflowpb.UpdateVersionRequest, opts ...gax.CallOption) (*dialogflowpb.Version, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "version.name", url.QueryEscape(req.GetVersion().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -572,11 +557,6 @@ func (c *versionsGRPCClient) UpdateVersion(ctx context.Context, req *dialogflowp
 }
 
 func (c *versionsGRPCClient) DeleteVersion(ctx context.Context, req *dialogflowpb.DeleteVersionRequest, opts ...gax.CallOption) error {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1302,8 +1282,7 @@ func (c *versionsRESTClient) GetOperation(ctx context.Context, req *longrunningp
 	return resp, nil
 }
 
-// ListOperations lists operations that match the specified filter in the request. If
-// the server doesn’t support this method, it returns UNIMPLEMENTED.
+// ListOperations is a utility method from google.longrunning.Operations.
 func (c *versionsRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
 	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
