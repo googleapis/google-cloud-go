@@ -22,9 +22,6 @@ package dialogflowpb
 
 import (
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -33,6 +30,8 @@ import (
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -278,16 +277,14 @@ func (AgentAssistantFeedback_DocumentEfficiency) EnumDescriptor() ([]byte, []int
 //
 // A typical workflow for customers provide feedback to an answer is:
 //
-//  1. For human agent assistant, customers get suggestion via ListSuggestions
-//     API. Together with the answers,
-//     [AnswerRecord.name][google.cloud.dialogflow.v2.AnswerRecord.name] are
-//     returned to the customers.
-//  2. The customer uses the
-//
+// 1. For human agent assistant, customers get suggestion via ListSuggestions
+//    API. Together with the answers,
+//    [AnswerRecord.name][google.cloud.dialogflow.v2.AnswerRecord.name] are
+//    returned to the customers.
+// 2. The customer uses the
 // [AnswerRecord.name][google.cloud.dialogflow.v2.AnswerRecord.name] to call the
-//
-//	[UpdateAnswerRecord][] method to send feedback about a specific answer
-//	that they believe is wrong.
+//    [UpdateAnswerRecord][] method to send feedback about a specific answer
+//    that they believe is wrong.
 type AnswerRecord struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -610,8 +607,8 @@ type AnswerFeedback struct {
 	DetailFeedback isAnswerFeedback_DetailFeedback `protobuf_oneof:"detail_feedback"`
 	// Indicates whether the answer/item was clicked by the human agent
 	// or not. Default to false.
-	// For knowledge search, the answer record is considered to be clicked if the
-	// answer was copied or any URI was clicked.
+	// For knowledge search and knowledge assist, the answer record is considered
+	// to be clicked if the answer was copied or any URI was clicked.
 	Clicked bool `protobuf:"varint,3,opt,name=clicked,proto3" json:"clicked,omitempty"`
 	// Time when the answer/item was clicked.
 	ClickTime *timestamppb.Timestamp `protobuf:"bytes,5,opt,name=click_time,json=clickTime,proto3" json:"click_time,omitempty"`
