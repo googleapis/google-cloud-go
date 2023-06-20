@@ -166,6 +166,7 @@ type ReadOptions struct {
 	// The request tag to use for this request.
 	RequestTag string
 
+	// If this is for a partitioned read and DataBoostEnabled field is set to true, the request will be executed via Spanner independent compute resources.
 	DataBoostEnabled bool
 }
 
@@ -224,6 +225,7 @@ func (t *txReadOnly) ReadWithOptions(ctx context.Context, table string, keys Key
 	limit := t.ro.Limit
 	prio := t.ro.Priority
 	requestTag := t.ro.RequestTag
+	dataBoostEnabled := t.ro.DataBoostEnabled
 	if opts != nil {
 		index = opts.Index
 		if opts.Limit > 0 {
@@ -231,6 +233,9 @@ func (t *txReadOnly) ReadWithOptions(ctx context.Context, table string, keys Key
 		}
 		prio = opts.Priority
 		requestTag = opts.RequestTag
+		if opts.DataBoostEnabled {
+			dataBoostEnabled = opts.DataBoostEnabled
+		}
 	}
 	var setTransactionID func(transactionID)
 	if _, ok := ts.Selector.(*sppb.TransactionSelector_Begin); ok {
@@ -244,15 +249,16 @@ func (t *txReadOnly) ReadWithOptions(ctx context.Context, table string, keys Key
 		func(ctx context.Context, resumeToken []byte) (streamingReceiver, error) {
 			client, err := client.StreamingRead(ctx,
 				&sppb.ReadRequest{
-					Session:        t.sh.getID(),
-					Transaction:    t.getTransactionSelector(),
-					Table:          table,
-					Index:          index,
-					Columns:        columns,
-					KeySet:         kset,
-					ResumeToken:    resumeToken,
-					Limit:          int64(limit),
-					RequestOptions: createRequestOptions(prio, requestTag, t.txOpts.TransactionTag),
+					Session:          t.sh.getID(),
+					Transaction:      t.getTransactionSelector(),
+					Table:            table,
+					Index:            index,
+					Columns:          columns,
+					KeySet:           kset,
+					ResumeToken:      resumeToken,
+					Limit:            int64(limit),
+					RequestOptions:   createRequestOptions(prio, requestTag, t.txOpts.TransactionTag),
+					DataBoostEnabled: dataBoostEnabled,
 				})
 			if err != nil {
 				if _, ok := t.getTransactionSelector().GetSelector().(*sppb.TransactionSelector_Begin); ok {
@@ -364,6 +370,7 @@ type QueryOptions struct {
 	// The request tag to use for this request.
 	RequestTag string
 
+	// If this is for a partitioned query and DataBoostEnabled field is set to true, the request will be executed via Spanner independent compute resources.
 	DataBoostEnabled bool
 }
 
@@ -529,15 +536,16 @@ func (t *txReadOnly) prepareExecuteSQL(ctx context.Context, stmt Statement, opti
 		mode = *options.Mode
 	}
 	req := &sppb.ExecuteSqlRequest{
-		Session:        sid,
-		Transaction:    ts,
-		Sql:            stmt.SQL,
-		QueryMode:      mode,
-		Seqno:          atomic.AddInt64(&t.sequenceNumber, 1),
-		Params:         params,
-		ParamTypes:     paramTypes,
-		QueryOptions:   options.Options,
-		RequestOptions: createRequestOptions(options.Priority, options.RequestTag, t.txOpts.TransactionTag),
+		Session:          sid,
+		Transaction:      ts,
+		Sql:              stmt.SQL,
+		QueryMode:        mode,
+		Seqno:            atomic.AddInt64(&t.sequenceNumber, 1),
+		Params:           params,
+		ParamTypes:       paramTypes,
+		QueryOptions:     options.Options,
+		RequestOptions:   createRequestOptions(options.Priority, options.RequestTag, t.txOpts.TransactionTag),
+		DataBoostEnabled: options.DataBoostEnabled,
 	}
 	return req, sh, nil
 }
