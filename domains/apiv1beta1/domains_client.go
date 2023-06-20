@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"math"
 	"net/http"
 	"net/url"
@@ -276,11 +276,11 @@ func (c *Client) GetRegistration(ctx context.Context, req *domainspb.GetRegistra
 // UpdateRegistration updates select fields of a Registration resource, notably labels. To
 // update other fields, use the appropriate custom update method:
 //
-//	To update management settings, see ConfigureManagementSettings
+//   To update management settings, see ConfigureManagementSettings
 //
-//	To update DNS configuration, see ConfigureDnsSettings
+//   To update DNS configuration, see ConfigureDnsSettings
 //
-//	To update contact information, see ConfigureContactSettings
+//   To update contact information, see ConfigureContactSettings
 func (c *Client) UpdateRegistration(ctx context.Context, req *domainspb.UpdateRegistrationRequest, opts ...gax.CallOption) (*UpdateRegistrationOperation, error) {
 	return c.internalClient.UpdateRegistration(ctx, req, opts...)
 }
@@ -353,11 +353,11 @@ func (c *Client) ExportRegistrationOperation(name string) *ExportRegistrationOpe
 // For Registration resources using
 // Monthly billing (at /domains/pricing#billing-models), this method works if:
 //
-//	state is EXPORTED with expire_time in the past
+//   state is EXPORTED with expire_time in the past
 //
-//	state is REGISTRATION_FAILED
+//   state is REGISTRATION_FAILED
 //
-//	state is TRANSFER_FAILED
+//   state is TRANSFER_FAILED
 //
 // When an active registration is successfully deleted, you can continue to
 // use the domain in Google Domains (at https://domains.google/) until it
@@ -469,7 +469,7 @@ func (c *gRPCClient) Connection() *grpc.ClientConn {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -544,7 +544,7 @@ func defaultRESTClientOptions() []option.ClientOption {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *restClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -908,13 +908,13 @@ func (c *restClient) SearchDomains(ctx context.Context, req *domainspb.SearchDom
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -968,13 +968,13 @@ func (c *restClient) RetrieveRegisterParameters(ctx context.Context, req *domain
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1043,13 +1043,13 @@ func (c *restClient) RegisterDomain(ctx context.Context, req *domainspb.Register
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1111,13 +1111,13 @@ func (c *restClient) RetrieveTransferParameters(ctx context.Context, req *domain
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1193,13 +1193,13 @@ func (c *restClient) TransferDomain(ctx context.Context, req *domainspb.Transfer
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1272,13 +1272,13 @@ func (c *restClient) ListRegistrations(ctx context.Context, req *domainspb.ListR
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -1347,13 +1347,13 @@ func (c *restClient) GetRegistration(ctx context.Context, req *domainspb.GetRegi
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1367,11 +1367,11 @@ func (c *restClient) GetRegistration(ctx context.Context, req *domainspb.GetRegi
 // UpdateRegistration updates select fields of a Registration resource, notably labels. To
 // update other fields, use the appropriate custom update method:
 //
-//	To update management settings, see ConfigureManagementSettings
+//   To update management settings, see ConfigureManagementSettings
 //
-//	To update DNS configuration, see ConfigureDnsSettings
+//   To update DNS configuration, see ConfigureDnsSettings
 //
-//	To update contact information, see ConfigureContactSettings
+//   To update contact information, see ConfigureContactSettings
 func (c *restClient) UpdateRegistration(ctx context.Context, req *domainspb.UpdateRegistrationRequest, opts ...gax.CallOption) (*UpdateRegistrationOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetRegistration()
@@ -1393,7 +1393,7 @@ func (c *restClient) UpdateRegistration(ctx context.Context, req *domainspb.Upda
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask))
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1425,13 +1425,13 @@ func (c *restClient) UpdateRegistration(ctx context.Context, req *domainspb.Upda
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1493,13 +1493,13 @@ func (c *restClient) ConfigureManagementSettings(ctx context.Context, req *domai
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1561,13 +1561,13 @@ func (c *restClient) ConfigureDnsSettings(ctx context.Context, req *domainspb.Co
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1630,13 +1630,13 @@ func (c *restClient) ConfigureContactSettings(ctx context.Context, req *domainsp
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1706,13 +1706,13 @@ func (c *restClient) ExportRegistration(ctx context.Context, req *domainspb.Expo
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1737,11 +1737,11 @@ func (c *restClient) ExportRegistration(ctx context.Context, req *domainspb.Expo
 // For Registration resources using
 // Monthly billing (at /domains/pricing#billing-models), this method works if:
 //
-//	state is EXPORTED with expire_time in the past
+//   state is EXPORTED with expire_time in the past
 //
-//	state is REGISTRATION_FAILED
+//   state is REGISTRATION_FAILED
 //
-//	state is TRANSFER_FAILED
+//   state is TRANSFER_FAILED
 //
 // When an active registration is successfully deleted, you can continue to
 // use the domain in Google Domains (at https://domains.google/) until it
@@ -1788,13 +1788,13 @@ func (c *restClient) DeleteRegistration(ctx context.Context, req *domainspb.Dele
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1855,13 +1855,13 @@ func (c *restClient) RetrieveAuthorizationCode(ctx context.Context, req *domains
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1922,13 +1922,13 @@ func (c *restClient) ResetAuthorizationCode(ctx context.Context, req *domainspb.
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil

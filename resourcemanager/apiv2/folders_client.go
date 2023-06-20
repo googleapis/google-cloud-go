@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"math"
 	"net/http"
 	"net/url"
@@ -206,16 +206,16 @@ func (c *FoldersClient) GetFolder(ctx context.Context, req *resourcemanagerpb.Ge
 // In order to succeed, the addition of this new Folder must not violate
 // the Folder naming, height or fanout constraints.
 //
-//	The Folder’s display_name must be distinct from all other Folder’s that
-//	share its parent.
+//   The Folder’s display_name must be distinct from all other Folder’s that
+//   share its parent.
 //
-//	The addition of the Folder must not cause the active Folder hierarchy
-//	to exceed a height of 4. Note, the full active + deleted Folder hierarchy
-//	is allowed to reach a height of 8; this provides additional headroom when
-//	moving folders that contain deleted folders.
+//   The addition of the Folder must not cause the active Folder hierarchy
+//   to exceed a height of 4. Note, the full active + deleted Folder hierarchy
+//   is allowed to reach a height of 8; this provides additional headroom when
+//   moving folders that contain deleted folders.
 //
-//	The addition of the Folder must not cause the total number of Folders
-//	under its parent to exceed 100.
+//   The addition of the Folder must not cause the total number of Folders
+//   under its parent to exceed 100.
 //
 // If the operation fails due to a folder constraint violation, some errors
 // may be returned by the CreateFolder request, with status code
@@ -415,7 +415,7 @@ func (c *foldersGRPCClient) Connection() *grpc.ClientConn {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *foldersGRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -492,7 +492,7 @@ func defaultFoldersRESTClientOptions() []option.ClientOption {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *foldersRESTClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -816,13 +816,13 @@ func (c *foldersRESTClient) ListFolders(ctx context.Context, req *resourcemanage
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -909,13 +909,13 @@ func (c *foldersRESTClient) SearchFolders(ctx context.Context, req *resourcemana
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -988,13 +988,13 @@ func (c *foldersRESTClient) GetFolder(ctx context.Context, req *resourcemanagerp
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1014,16 +1014,16 @@ func (c *foldersRESTClient) GetFolder(ctx context.Context, req *resourcemanagerp
 // In order to succeed, the addition of this new Folder must not violate
 // the Folder naming, height or fanout constraints.
 //
-//	The Folder’s display_name must be distinct from all other Folder’s that
-//	share its parent.
+//   The Folder’s display_name must be distinct from all other Folder’s that
+//   share its parent.
 //
-//	The addition of the Folder must not cause the active Folder hierarchy
-//	to exceed a height of 4. Note, the full active + deleted Folder hierarchy
-//	is allowed to reach a height of 8; this provides additional headroom when
-//	moving folders that contain deleted folders.
+//   The addition of the Folder must not cause the active Folder hierarchy
+//   to exceed a height of 4. Note, the full active + deleted Folder hierarchy
+//   is allowed to reach a height of 8; this provides additional headroom when
+//   moving folders that contain deleted folders.
 //
-//	The addition of the Folder must not cause the total number of Folders
-//	under its parent to exceed 100.
+//   The addition of the Folder must not cause the total number of Folders
+//   under its parent to exceed 100.
 //
 // If the operation fails due to a folder constraint violation, some errors
 // may be returned by the CreateFolder request, with status code
@@ -1079,13 +1079,13 @@ func (c *foldersRESTClient) CreateFolder(ctx context.Context, req *resourcemanag
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1137,7 +1137,7 @@ func (c *foldersRESTClient) UpdateFolder(ctx context.Context, req *resourcemanag
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask))
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1170,13 +1170,13 @@ func (c *foldersRESTClient) UpdateFolder(ctx context.Context, req *resourcemanag
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1249,13 +1249,13 @@ func (c *foldersRESTClient) MoveFolder(ctx context.Context, req *resourcemanager
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1323,13 +1323,13 @@ func (c *foldersRESTClient) DeleteFolder(ctx context.Context, req *resourcemanag
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1396,13 +1396,13 @@ func (c *foldersRESTClient) UndeleteFolder(ctx context.Context, req *resourceman
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1464,13 +1464,13 @@ func (c *foldersRESTClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamP
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1532,13 +1532,13 @@ func (c *foldersRESTClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamP
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1600,13 +1600,13 @@ func (c *foldersRESTClient) TestIamPermissions(ctx context.Context, req *iampb.T
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil

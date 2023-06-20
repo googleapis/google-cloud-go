@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"math"
 	"net/http"
 	"net/url"
@@ -159,9 +159,9 @@ func (c *ApplicationsClient) GetApplication(ctx context.Context, req *appenginep
 // CreateApplication creates an App Engine application for a Google Cloud Platform project.
 // Required fields:
 //
-//	id - The ID of the target Cloud Platform project.
+//   id - The ID of the target Cloud Platform project.
 //
-//	location - The region (at https://cloud.google.com/appengine/docs/locations) where you want the App Engine application located.
+//   location - The region (at https://cloud.google.com/appengine/docs/locations) where you want the App Engine application located.
 //
 // For more information about App Engine applications, see Managing Projects, Applications, and Billing (at https://cloud.google.com/appengine/docs/standard/python/console/).
 func (c *ApplicationsClient) CreateApplication(ctx context.Context, req *appenginepb.CreateApplicationRequest, opts ...gax.CallOption) (*CreateApplicationOperation, error) {
@@ -177,11 +177,11 @@ func (c *ApplicationsClient) CreateApplicationOperation(name string) *CreateAppl
 // UpdateApplication updates the specified Application resource.
 // You can update the following fields:
 //
-//	auth_domain - Google authentication domain for controlling user access to the application.
+//   auth_domain - Google authentication domain for controlling user access to the application.
 //
-//	default_cookie_expiration - Cookie expiration policy for the application.
+//   default_cookie_expiration - Cookie expiration policy for the application.
 //
-//	iap - Identity-Aware Proxy properties for the application.
+//   iap - Identity-Aware Proxy properties for the application.
 func (c *ApplicationsClient) UpdateApplication(ctx context.Context, req *appenginepb.UpdateApplicationRequest, opts ...gax.CallOption) (*UpdateApplicationOperation, error) {
 	return c.internalClient.UpdateApplication(ctx, req, opts...)
 }
@@ -289,7 +289,7 @@ func (c *applicationsGRPCClient) Connection() *grpc.ClientConn {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *applicationsGRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -364,7 +364,7 @@ func defaultApplicationsRESTClientOptions() []option.ClientOption {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *applicationsRESTClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -496,13 +496,13 @@ func (c *applicationsRESTClient) GetApplication(ctx context.Context, req *appeng
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -516,9 +516,9 @@ func (c *applicationsRESTClient) GetApplication(ctx context.Context, req *appeng
 // CreateApplication creates an App Engine application for a Google Cloud Platform project.
 // Required fields:
 //
-//	id - The ID of the target Cloud Platform project.
+//   id - The ID of the target Cloud Platform project.
 //
-//	location - The region (at https://cloud.google.com/appengine/docs/locations) where you want the App Engine application located.
+//   location - The region (at https://cloud.google.com/appengine/docs/locations) where you want the App Engine application located.
 //
 // For more information about App Engine applications, see Managing Projects, Applications, and Billing (at https://cloud.google.com/appengine/docs/standard/python/console/).
 func (c *applicationsRESTClient) CreateApplication(ctx context.Context, req *appenginepb.CreateApplicationRequest, opts ...gax.CallOption) (*CreateApplicationOperation, error) {
@@ -565,13 +565,13 @@ func (c *applicationsRESTClient) CreateApplication(ctx context.Context, req *app
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -590,11 +590,11 @@ func (c *applicationsRESTClient) CreateApplication(ctx context.Context, req *app
 // UpdateApplication updates the specified Application resource.
 // You can update the following fields:
 //
-//	auth_domain - Google authentication domain for controlling user access to the application.
+//   auth_domain - Google authentication domain for controlling user access to the application.
 //
-//	default_cookie_expiration - Cookie expiration policy for the application.
+//   default_cookie_expiration - Cookie expiration policy for the application.
 //
-//	iap - Identity-Aware Proxy properties for the application.
+//   iap - Identity-Aware Proxy properties for the application.
 func (c *applicationsRESTClient) UpdateApplication(ctx context.Context, req *appenginepb.UpdateApplicationRequest, opts ...gax.CallOption) (*UpdateApplicationOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetApplication()
@@ -616,7 +616,7 @@ func (c *applicationsRESTClient) UpdateApplication(ctx context.Context, req *app
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask))
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -648,13 +648,13 @@ func (c *applicationsRESTClient) UpdateApplication(ctx context.Context, req *app
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -725,13 +725,13 @@ func (c *applicationsRESTClient) RepairApplication(ctx context.Context, req *app
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil

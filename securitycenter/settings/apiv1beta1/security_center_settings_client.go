@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"math"
 	"net/http"
 	"net/url"
@@ -512,16 +512,16 @@ func (c *SecurityCenterSettingsClient) BatchGetSettings(ctx context.Context, req
 // Settings resources in the GCP resource hierarchy, and calculates the
 // effective settings on that resource by applying the following rules:
 //
-//	Settings provided closer to the target resource take precedence over
-//	those further away (e.g. folder will override organization level
-//	settings).
+//   Settings provided closer to the target resource take precedence over
+//   those further away (e.g. folder will override organization level
+//   settings).
 //
-//	Product defaults can be overridden at org, folder, project, and cluster
-//	levels.
+//   Product defaults can be overridden at org, folder, project, and cluster
+//   levels.
 //
-//	Detectors will be filtered out if they belong to a billing tier the
-//	customer
-//	has not configured.
+//   Detectors will be filtered out if they belong to a billing tier the
+//   customer
+//   has not configured.
 func (c *SecurityCenterSettingsClient) CalculateEffectiveSettings(ctx context.Context, req *settingspb.CalculateEffectiveSettingsRequest, opts ...gax.CallOption) (*settingspb.Settings, error) {
 	return c.internalClient.CalculateEffectiveSettings(ctx, req, opts...)
 }
@@ -629,7 +629,7 @@ func (c *securityCenterSettingsGRPCClient) Connection() *grpc.ClientConn {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *securityCenterSettingsGRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -692,7 +692,7 @@ func defaultSecurityCenterSettingsRESTClientOptions() []option.ClientOption {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *securityCenterSettingsRESTClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -1025,13 +1025,13 @@ func (c *securityCenterSettingsRESTClient) GetServiceAccount(ctx context.Context
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1078,13 +1078,13 @@ func (c *securityCenterSettingsRESTClient) GetSettings(ctx context.Context, req 
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1116,7 +1116,7 @@ func (c *securityCenterSettingsRESTClient) UpdateSettings(ctx context.Context, r
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask))
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1149,13 +1149,13 @@ func (c *securityCenterSettingsRESTClient) UpdateSettings(ctx context.Context, r
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1261,13 +1261,13 @@ func (c *securityCenterSettingsRESTClient) BatchGetSettings(ctx context.Context,
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1282,16 +1282,16 @@ func (c *securityCenterSettingsRESTClient) BatchGetSettings(ctx context.Context,
 // Settings resources in the GCP resource hierarchy, and calculates the
 // effective settings on that resource by applying the following rules:
 //
-//	Settings provided closer to the target resource take precedence over
-//	those further away (e.g. folder will override organization level
-//	settings).
+//   Settings provided closer to the target resource take precedence over
+//   those further away (e.g. folder will override organization level
+//   settings).
 //
-//	Product defaults can be overridden at org, folder, project, and cluster
-//	levels.
+//   Product defaults can be overridden at org, folder, project, and cluster
+//   levels.
 //
-//	Detectors will be filtered out if they belong to a billing tier the
-//	customer
-//	has not configured.
+//   Detectors will be filtered out if they belong to a billing tier the
+//   customer
+//   has not configured.
 func (c *securityCenterSettingsRESTClient) CalculateEffectiveSettings(ctx context.Context, req *settingspb.CalculateEffectiveSettingsRequest, opts ...gax.CallOption) (*settingspb.Settings, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -1327,13 +1327,13 @@ func (c *securityCenterSettingsRESTClient) CalculateEffectiveSettings(ctx contex
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1386,13 +1386,13 @@ func (c *securityCenterSettingsRESTClient) BatchCalculateEffectiveSettings(ctx c
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1439,13 +1439,13 @@ func (c *securityCenterSettingsRESTClient) GetComponentSettings(ctx context.Cont
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1477,7 +1477,7 @@ func (c *securityCenterSettingsRESTClient) UpdateComponentSettings(ctx context.C
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask))
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1510,13 +1510,13 @@ func (c *securityCenterSettingsRESTClient) UpdateComponentSettings(ctx context.C
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1608,13 +1608,13 @@ func (c *securityCenterSettingsRESTClient) CalculateEffectiveComponentSettings(c
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1681,13 +1681,13 @@ func (c *securityCenterSettingsRESTClient) ListDetectors(ctx context.Context, re
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -1768,13 +1768,13 @@ func (c *securityCenterSettingsRESTClient) ListComponents(ctx context.Context, r
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil

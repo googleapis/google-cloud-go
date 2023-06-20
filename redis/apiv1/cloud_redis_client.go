@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"math"
 	"net/http"
 	"net/url"
@@ -202,26 +202,26 @@ type internalCloudRedisClient interface {
 // CloudRedisClient is a client for interacting with Google Cloud Memorystore for Redis API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
-// # Configures and manages Cloud Memorystore for Redis instances
+// Configures and manages Cloud Memorystore for Redis instances
 //
-// # Google Cloud Memorystore for Redis v1
+// Google Cloud Memorystore for Redis v1
 //
 // The redis.googleapis.com service implements the Google Cloud Memorystore
 // for Redis API and defines the following resource model for managing Redis
 // instances:
 //
-//	The service works with a collection of cloud projects, named: /projects/*
+//   The service works with a collection of cloud projects, named: /projects/*
 //
-//	Each project has a collection of available locations, named: /locations/*
+//   Each project has a collection of available locations, named: /locations/*
 //
-//	Each location has a collection of Redis instances, named: /instances/*
+//   Each location has a collection of Redis instances, named: /instances/*
 //
-//	As such, Redis instances are resources of the form:
-//	/projects/{project_id}/locations/{location_id}/instances/{instance_id}
+//   As such, Redis instances are resources of the form:
+//   /projects/{project_id}/locations/{location_id}/instances/{instance_id}
 //
 // Note that location_id must be referring to a GCP region; for example:
 //
-//	projects/redpepper-1290/locations/us-central1/instances/my-redis
+//   projects/redpepper-1290/locations/us-central1/instances/my-redis
 type CloudRedisClient struct {
 	// The internal transport-dependent client.
 	internalClient internalCloudRedisClient
@@ -263,7 +263,7 @@ func (c *CloudRedisClient) Connection() *grpc.ClientConn {
 //
 // The location should have the following format:
 //
-//	projects/{project_id}/locations/{location_id}
+//   projects/{project_id}/locations/{location_id}
 //
 // If location_id is specified as - (wildcard), then all regions
 // available to the project are queried, and the results are aggregated.
@@ -461,26 +461,26 @@ type cloudRedisGRPCClient struct {
 // NewCloudRedisClient creates a new cloud redis client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
-// # Configures and manages Cloud Memorystore for Redis instances
+// Configures and manages Cloud Memorystore for Redis instances
 //
-// # Google Cloud Memorystore for Redis v1
+// Google Cloud Memorystore for Redis v1
 //
 // The redis.googleapis.com service implements the Google Cloud Memorystore
 // for Redis API and defines the following resource model for managing Redis
 // instances:
 //
-//	The service works with a collection of cloud projects, named: /projects/*
+//   The service works with a collection of cloud projects, named: /projects/*
 //
-//	Each project has a collection of available locations, named: /locations/*
+//   Each project has a collection of available locations, named: /locations/*
 //
-//	Each location has a collection of Redis instances, named: /instances/*
+//   Each location has a collection of Redis instances, named: /instances/*
 //
-//	As such, Redis instances are resources of the form:
-//	/projects/{project_id}/locations/{location_id}/instances/{instance_id}
+//   As such, Redis instances are resources of the form:
+//   /projects/{project_id}/locations/{location_id}/instances/{instance_id}
 //
 // Note that location_id must be referring to a GCP region; for example:
 //
-//	projects/redpepper-1290/locations/us-central1/instances/my-redis
+//   projects/redpepper-1290/locations/us-central1/instances/my-redis
 func NewCloudRedisClient(ctx context.Context, opts ...option.ClientOption) (*CloudRedisClient, error) {
 	clientOpts := defaultCloudRedisGRPCClientOptions()
 	if newCloudRedisClientHook != nil {
@@ -534,7 +534,7 @@ func (c *cloudRedisGRPCClient) Connection() *grpc.ClientConn {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *cloudRedisGRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -567,26 +567,26 @@ type cloudRedisRESTClient struct {
 
 // NewCloudRedisRESTClient creates a new cloud redis rest client.
 //
-// # Configures and manages Cloud Memorystore for Redis instances
+// Configures and manages Cloud Memorystore for Redis instances
 //
-// # Google Cloud Memorystore for Redis v1
+// Google Cloud Memorystore for Redis v1
 //
 // The redis.googleapis.com service implements the Google Cloud Memorystore
 // for Redis API and defines the following resource model for managing Redis
 // instances:
 //
-//	The service works with a collection of cloud projects, named: /projects/*
+//   The service works with a collection of cloud projects, named: /projects/*
 //
-//	Each project has a collection of available locations, named: /locations/*
+//   Each project has a collection of available locations, named: /locations/*
 //
-//	Each location has a collection of Redis instances, named: /instances/*
+//   Each location has a collection of Redis instances, named: /instances/*
 //
-//	As such, Redis instances are resources of the form:
-//	/projects/{project_id}/locations/{location_id}/instances/{instance_id}
+//   As such, Redis instances are resources of the form:
+//   /projects/{project_id}/locations/{location_id}/instances/{instance_id}
 //
 // Note that location_id must be referring to a GCP region; for example:
 //
-//	projects/redpepper-1290/locations/us-central1/instances/my-redis
+//   projects/redpepper-1290/locations/us-central1/instances/my-redis
 func NewCloudRedisRESTClient(ctx context.Context, opts ...option.ClientOption) (*CloudRedisClient, error) {
 	clientOpts := append(defaultCloudRedisRESTClientOptions(), opts...)
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
@@ -628,7 +628,7 @@ func defaultCloudRedisRESTClientOptions() []option.ClientOption {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *cloudRedisRESTClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -1033,7 +1033,7 @@ func (c *cloudRedisGRPCClient) ListOperations(ctx context.Context, req *longrunn
 //
 // The location should have the following format:
 //
-//	projects/{project_id}/locations/{location_id}
+//   projects/{project_id}/locations/{location_id}
 //
 // If location_id is specified as - (wildcard), then all regions
 // available to the project are queried, and the results are aggregated.
@@ -1090,13 +1090,13 @@ func (c *cloudRedisRESTClient) ListInstances(ctx context.Context, req *redispb.L
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -1165,13 +1165,13 @@ func (c *cloudRedisRESTClient) GetInstance(ctx context.Context, req *redispb.Get
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1225,13 +1225,13 @@ func (c *cloudRedisRESTClient) GetInstanceAuthString(ctx context.Context, req *r
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1301,13 +1301,13 @@ func (c *cloudRedisRESTClient) CreateInstance(ctx context.Context, req *redispb.
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1349,7 +1349,7 @@ func (c *cloudRedisRESTClient) UpdateInstance(ctx context.Context, req *redispb.
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask))
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1381,13 +1381,13 @@ func (c *cloudRedisRESTClient) UpdateInstance(ctx context.Context, req *redispb.
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1450,13 +1450,13 @@ func (c *cloudRedisRESTClient) UpgradeInstance(ctx context.Context, req *redispb
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1525,13 +1525,13 @@ func (c *cloudRedisRESTClient) ImportInstance(ctx context.Context, req *redispb.
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1598,13 +1598,13 @@ func (c *cloudRedisRESTClient) ExportInstance(ctx context.Context, req *redispb.
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1667,13 +1667,13 @@ func (c *cloudRedisRESTClient) FailoverInstance(ctx context.Context, req *redisp
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1730,13 +1730,13 @@ func (c *cloudRedisRESTClient) DeleteInstance(ctx context.Context, req *redispb.
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1799,13 +1799,13 @@ func (c *cloudRedisRESTClient) RescheduleMaintenance(ctx context.Context, req *r
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1862,13 +1862,13 @@ func (c *cloudRedisRESTClient) GetLocation(ctx context.Context, req *locationpb.
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1936,13 +1936,13 @@ func (c *cloudRedisRESTClient) ListLocations(ctx context.Context, req *locationp
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -2091,13 +2091,13 @@ func (c *cloudRedisRESTClient) GetOperation(ctx context.Context, req *longrunnin
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2165,13 +2165,13 @@ func (c *cloudRedisRESTClient) ListOperations(ctx context.Context, req *longrunn
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil

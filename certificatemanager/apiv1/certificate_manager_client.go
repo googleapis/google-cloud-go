@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"math"
 	"net/http"
 	"net/url"
@@ -847,7 +847,7 @@ type internalClient interface {
 // Client is a client for interacting with Certificate Manager API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
-// # API Overview
+// API Overview
 //
 // Certificates Manager API allows customers to see and manage all their TLS
 // certificates.
@@ -856,25 +856,25 @@ type internalClient interface {
 // group them into collections, and create serving configuration that can be
 // easily applied to other Cloud resources e.g. Target Proxies.
 //
-// # Data Model
+// Data Model
 //
 // The Certificates Manager service exposes the following resources:
 //
-//	Certificate that describes a single TLS certificate.
+//   Certificate that describes a single TLS certificate.
 //
-//	CertificateMap that describes a collection of certificates that can be
-//	attached to a target resource.
+//   CertificateMap that describes a collection of certificates that can be
+//   attached to a target resource.
 //
-//	CertificateMapEntry that describes a single configuration entry that
-//	consists of a SNI and a group of certificates. It’s a subresource of
-//	CertificateMap.
+//   CertificateMapEntry that describes a single configuration entry that
+//   consists of a SNI and a group of certificates. It’s a subresource of
+//   CertificateMap.
 //
 // Certificate, CertificateMap and CertificateMapEntry IDs
 // have to fully match the regexp [a-z0-9-]{1,63}. In other words,
 //
-//	only lower case letters, digits, and hyphen are allowed
+//   only lower case letters, digits, and hyphen are allowed
 //
-//	length of the resource ID has to be in [1,63] range.
+//   length of the resource ID has to be in [1,63] range.
 //
 // Provides methods to manage Cloud Certificate Manager entities.
 type Client struct {
@@ -1178,7 +1178,7 @@ type gRPCClient struct {
 // NewClient creates a new certificate manager client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
-// # API Overview
+// API Overview
 //
 // Certificates Manager API allows customers to see and manage all their TLS
 // certificates.
@@ -1187,25 +1187,25 @@ type gRPCClient struct {
 // group them into collections, and create serving configuration that can be
 // easily applied to other Cloud resources e.g. Target Proxies.
 //
-// # Data Model
+// Data Model
 //
 // The Certificates Manager service exposes the following resources:
 //
-//	Certificate that describes a single TLS certificate.
+//   Certificate that describes a single TLS certificate.
 //
-//	CertificateMap that describes a collection of certificates that can be
-//	attached to a target resource.
+//   CertificateMap that describes a collection of certificates that can be
+//   attached to a target resource.
 //
-//	CertificateMapEntry that describes a single configuration entry that
-//	consists of a SNI and a group of certificates. It’s a subresource of
-//	CertificateMap.
+//   CertificateMapEntry that describes a single configuration entry that
+//   consists of a SNI and a group of certificates. It’s a subresource of
+//   CertificateMap.
 //
 // Certificate, CertificateMap and CertificateMapEntry IDs
 // have to fully match the regexp [a-z0-9-]{1,63}. In other words,
 //
-//	only lower case letters, digits, and hyphen are allowed
+//   only lower case letters, digits, and hyphen are allowed
 //
-//	length of the resource ID has to be in [1,63] range.
+//   length of the resource ID has to be in [1,63] range.
 //
 // Provides methods to manage Cloud Certificate Manager entities.
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
@@ -1261,7 +1261,7 @@ func (c *gRPCClient) Connection() *grpc.ClientConn {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -1294,7 +1294,7 @@ type restClient struct {
 
 // NewRESTClient creates a new certificate manager rest client.
 //
-// # API Overview
+// API Overview
 //
 // Certificates Manager API allows customers to see and manage all their TLS
 // certificates.
@@ -1303,25 +1303,25 @@ type restClient struct {
 // group them into collections, and create serving configuration that can be
 // easily applied to other Cloud resources e.g. Target Proxies.
 //
-// # Data Model
+// Data Model
 //
 // The Certificates Manager service exposes the following resources:
 //
-//	Certificate that describes a single TLS certificate.
+//   Certificate that describes a single TLS certificate.
 //
-//	CertificateMap that describes a collection of certificates that can be
-//	attached to a target resource.
+//   CertificateMap that describes a collection of certificates that can be
+//   attached to a target resource.
 //
-//	CertificateMapEntry that describes a single configuration entry that
-//	consists of a SNI and a group of certificates. It’s a subresource of
-//	CertificateMap.
+//   CertificateMapEntry that describes a single configuration entry that
+//   consists of a SNI and a group of certificates. It’s a subresource of
+//   CertificateMap.
 //
 // Certificate, CertificateMap and CertificateMapEntry IDs
 // have to fully match the regexp [a-z0-9-]{1,63}. In other words,
 //
-//	only lower case letters, digits, and hyphen are allowed
+//   only lower case letters, digits, and hyphen are allowed
 //
-//	length of the resource ID has to be in [1,63] range.
+//   length of the resource ID has to be in [1,63] range.
 //
 // Provides methods to manage Cloud Certificate Manager entities.
 func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
@@ -1365,7 +1365,7 @@ func defaultRESTClientOptions() []option.ClientOption {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *restClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -2170,13 +2170,13 @@ func (c *restClient) ListCertificates(ctx context.Context, req *certificatemanag
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -2245,13 +2245,13 @@ func (c *restClient) GetCertificate(ctx context.Context, req *certificatemanager
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2310,13 +2310,13 @@ func (c *restClient) CreateCertificate(ctx context.Context, req *certificatemana
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2354,7 +2354,7 @@ func (c *restClient) UpdateCertificate(ctx context.Context, req *certificatemana
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask))
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -2386,13 +2386,13 @@ func (c *restClient) UpdateCertificate(ctx context.Context, req *certificatemana
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2448,13 +2448,13 @@ func (c *restClient) DeleteCertificate(ctx context.Context, req *certificatemana
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2530,13 +2530,13 @@ func (c *restClient) ListCertificateMaps(ctx context.Context, req *certificatema
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -2605,13 +2605,13 @@ func (c *restClient) GetCertificateMap(ctx context.Context, req *certificatemana
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2670,13 +2670,13 @@ func (c *restClient) CreateCertificateMap(ctx context.Context, req *certificatem
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2714,7 +2714,7 @@ func (c *restClient) UpdateCertificateMap(ctx context.Context, req *certificatem
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask))
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -2746,13 +2746,13 @@ func (c *restClient) UpdateCertificateMap(ctx context.Context, req *certificatem
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2810,13 +2810,13 @@ func (c *restClient) DeleteCertificateMap(ctx context.Context, req *certificatem
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2892,13 +2892,13 @@ func (c *restClient) ListCertificateMapEntries(ctx context.Context, req *certifi
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -2967,13 +2967,13 @@ func (c *restClient) GetCertificateMapEntry(ctx context.Context, req *certificat
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -3032,13 +3032,13 @@ func (c *restClient) CreateCertificateMapEntry(ctx context.Context, req *certifi
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -3076,7 +3076,7 @@ func (c *restClient) UpdateCertificateMapEntry(ctx context.Context, req *certifi
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask))
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -3108,13 +3108,13 @@ func (c *restClient) UpdateCertificateMapEntry(ctx context.Context, req *certifi
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -3170,13 +3170,13 @@ func (c *restClient) DeleteCertificateMapEntry(ctx context.Context, req *certifi
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -3252,13 +3252,13 @@ func (c *restClient) ListDnsAuthorizations(ctx context.Context, req *certificate
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -3327,13 +3327,13 @@ func (c *restClient) GetDnsAuthorization(ctx context.Context, req *certificatema
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -3392,13 +3392,13 @@ func (c *restClient) CreateDnsAuthorization(ctx context.Context, req *certificat
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -3436,7 +3436,7 @@ func (c *restClient) UpdateDnsAuthorization(ctx context.Context, req *certificat
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask))
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -3468,13 +3468,13 @@ func (c *restClient) UpdateDnsAuthorization(ctx context.Context, req *certificat
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -3530,13 +3530,13 @@ func (c *restClient) DeleteDnsAuthorization(ctx context.Context, req *certificat
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -3612,13 +3612,13 @@ func (c *restClient) ListCertificateIssuanceConfigs(ctx context.Context, req *ce
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -3687,13 +3687,13 @@ func (c *restClient) GetCertificateIssuanceConfig(ctx context.Context, req *cert
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -3752,13 +3752,13 @@ func (c *restClient) CreateCertificateIssuanceConfig(ctx context.Context, req *c
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -3814,13 +3814,13 @@ func (c *restClient) DeleteCertificateIssuanceConfig(ctx context.Context, req *c
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -3877,13 +3877,13 @@ func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -3951,13 +3951,13 @@ func (c *restClient) ListLocations(ctx context.Context, req *locationpb.ListLoca
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -4112,13 +4112,13 @@ func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -4186,13 +4186,13 @@ func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.List
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil

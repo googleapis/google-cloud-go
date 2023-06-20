@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"math"
 	"net/http"
 	"net/url"
@@ -177,15 +177,15 @@ type internalClient interface {
 // The Tables Service provides an API for reading and updating tables.
 // It defines the following resource model:
 //
-//	The API has a collection of [Table][google.area120.tables.v1alpha1.Table]
-//	resources, named tables/*
+//   The API has a collection of [Table][google.area120.tables.v1alpha1.Table]
+//   resources, named tables/*
 //
-//	Each Table has a collection of [Row][google.area120.tables.v1alpha1.Row]
-//	resources, named tables/*/rows/*
+//   Each Table has a collection of [Row][google.area120.tables.v1alpha1.Row]
+//   resources, named tables/*/rows/*
 //
-//	The API has a collection of
-//	[Workspace][google.area120.tables.v1alpha1.Workspace]
-//	resources, named workspaces/*.
+//   The API has a collection of
+//   [Workspace][google.area120.tables.v1alpha1.Workspace]
+//   resources, named workspaces/*.
 type Client struct {
 	// The internal transport-dependent client.
 	internalClient internalClient
@@ -300,15 +300,15 @@ type gRPCClient struct {
 // The Tables Service provides an API for reading and updating tables.
 // It defines the following resource model:
 //
-//	The API has a collection of [Table][google.area120.tables.v1alpha1.Table]
-//	resources, named tables/*
+//   The API has a collection of [Table][google.area120.tables.v1alpha1.Table]
+//   resources, named tables/*
 //
-//	Each Table has a collection of [Row][google.area120.tables.v1alpha1.Row]
-//	resources, named tables/*/rows/*
+//   Each Table has a collection of [Row][google.area120.tables.v1alpha1.Row]
+//   resources, named tables/*/rows/*
 //
-//	The API has a collection of
-//	[Workspace][google.area120.tables.v1alpha1.Workspace]
-//	resources, named workspaces/*.
+//   The API has a collection of
+//   [Workspace][google.area120.tables.v1alpha1.Workspace]
+//   resources, named workspaces/*.
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := defaultGRPCClientOptions()
 	if newClientHook != nil {
@@ -349,7 +349,7 @@ func (c *gRPCClient) Connection() *grpc.ClientConn {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -380,15 +380,15 @@ type restClient struct {
 // The Tables Service provides an API for reading and updating tables.
 // It defines the following resource model:
 //
-//	The API has a collection of [Table][google.area120.tables.v1alpha1.Table]
-//	resources, named tables/*
+//   The API has a collection of [Table][google.area120.tables.v1alpha1.Table]
+//   resources, named tables/*
 //
-//	Each Table has a collection of [Row][google.area120.tables.v1alpha1.Row]
-//	resources, named tables/*/rows/*
+//   Each Table has a collection of [Row][google.area120.tables.v1alpha1.Row]
+//   resources, named tables/*/rows/*
 //
-//	The API has a collection of
-//	[Workspace][google.area120.tables.v1alpha1.Workspace]
-//	resources, named workspaces/*.
+//   The API has a collection of
+//   [Workspace][google.area120.tables.v1alpha1.Workspace]
+//   resources, named workspaces/*.
 func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := append(defaultRESTClientOptions(), opts...)
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
@@ -420,7 +420,7 @@ func defaultRESTClientOptions() []option.ClientOption {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *restClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -756,13 +756,13 @@ func (c *restClient) GetTable(ctx context.Context, req *tablespb.GetTableRequest
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -827,13 +827,13 @@ func (c *restClient) ListTables(ctx context.Context, req *tablespb.ListTablesReq
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -902,13 +902,13 @@ func (c *restClient) GetWorkspace(ctx context.Context, req *tablespb.GetWorkspac
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -973,13 +973,13 @@ func (c *restClient) ListWorkspaces(ctx context.Context, req *tablespb.ListWorks
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -1051,13 +1051,13 @@ func (c *restClient) GetRow(ctx context.Context, req *tablespb.GetRowRequest, op
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1128,13 +1128,13 @@ func (c *restClient) ListRows(ctx context.Context, req *tablespb.ListRowsRequest
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -1213,13 +1213,13 @@ func (c *restClient) CreateRow(ctx context.Context, req *tablespb.CreateRowReque
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1277,13 +1277,13 @@ func (c *restClient) BatchCreateRows(ctx context.Context, req *tablespb.BatchCre
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1316,7 +1316,7 @@ func (c *restClient) UpdateRow(ctx context.Context, req *tablespb.UpdateRowReque
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask))
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
 	}
 	if req.GetView() != 0 {
 		params.Add("view", fmt.Sprintf("%v", req.GetView()))
@@ -1352,13 +1352,13 @@ func (c *restClient) UpdateRow(ctx context.Context, req *tablespb.UpdateRowReque
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1416,13 +1416,13 @@ func (c *restClient) BatchUpdateRows(ctx context.Context, req *tablespb.BatchUpd
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil

@@ -129,8 +129,8 @@ type internalClient interface {
 //
 // The AppConnectionsService exposes the following resources:
 //
-//	AppConnections, named as follows:
-//	projects/{project_id}/locations/{location_id}/appConnections/{app_connection_id}.
+//   AppConnections, named as follows:
+//   projects/{project_id}/locations/{location_id}/appConnections/{app_connection_id}.
 //
 // The AppConnectionsService service provides methods to manage
 // (create/read/update/delete) BeyondCorp AppConnections.
@@ -316,8 +316,8 @@ type gRPCClient struct {
 //
 // The AppConnectionsService exposes the following resources:
 //
-//	AppConnections, named as follows:
-//	projects/{project_id}/locations/{location_id}/appConnections/{app_connection_id}.
+//   AppConnections, named as follows:
+//   projects/{project_id}/locations/{location_id}/appConnections/{app_connection_id}.
 //
 // The AppConnectionsService service provides methods to manage
 // (create/read/update/delete) BeyondCorp AppConnections.
@@ -375,7 +375,7 @@ func (c *gRPCClient) Connection() *grpc.ClientConn {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }

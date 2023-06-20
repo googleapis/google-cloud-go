@@ -127,7 +127,7 @@ type internalClient interface {
 // Client is a client for interacting with Managed Service for Microsoft Active Directory API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
-// # API Overview
+// API Overview
 //
 // The managedidentites.googleapis.com service implements the Google Cloud
 // Managed Identites API for identity services
@@ -137,35 +137,35 @@ type internalClient interface {
 // (create/read/update/delete) domains, reset managed identities admin password,
 // add/remove domain controllers in GCP regions and add/remove VPC peering.
 //
-// # Data Model
+// Data Model
 //
 // The Managed Identities service exposes the following resources:
 //
-//	Locations as global, named as follows:
-//	projects/{project_id}/locations/global.
+//   Locations as global, named as follows:
+//   projects/{project_id}/locations/global.
 //
-//	Domains, named as follows:
-//	/projects/{project_id}/locations/global/domain/{domain_name}.
+//   Domains, named as follows:
+//   /projects/{project_id}/locations/global/domain/{domain_name}.
 //
 // The {domain_name} refers to fully qualified domain name in the customer
 // project e.g. mydomain.myorganization.com (at http://mydomain.myorganization.com), with the following restrictions:
 //
-//	Must contain only lowercase letters, numbers, periods and hyphens.
+//   Must contain only lowercase letters, numbers, periods and hyphens.
 //
-//	Must start with a letter.
+//   Must start with a letter.
 //
-//	Must contain between 2-64 characters.
+//   Must contain between 2-64 characters.
 //
-//	Must end with a number or a letter.
+//   Must end with a number or a letter.
 //
-//	Must not start with period.
+//   Must not start with period.
 //
-//	First segement length (mydomain form example above) shouldn’t exceed
-//	15 chars.
+//   First segement length (mydomain form example above) shouldn’t exceed
+//   15 chars.
 //
-//	The last segment cannot be fully numeric.
+//   The last segment cannot be fully numeric.
 //
-//	Must be unique within the customer project.
+//   Must be unique within the customer project.
 type Client struct {
 	// The internal transport-dependent client.
 	internalClient internalClient
@@ -320,7 +320,7 @@ type gRPCClient struct {
 // NewClient creates a new managed identities service client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
-// # API Overview
+// API Overview
 //
 // The managedidentites.googleapis.com service implements the Google Cloud
 // Managed Identites API for identity services
@@ -330,35 +330,35 @@ type gRPCClient struct {
 // (create/read/update/delete) domains, reset managed identities admin password,
 // add/remove domain controllers in GCP regions and add/remove VPC peering.
 //
-// # Data Model
+// Data Model
 //
 // The Managed Identities service exposes the following resources:
 //
-//	Locations as global, named as follows:
-//	projects/{project_id}/locations/global.
+//   Locations as global, named as follows:
+//   projects/{project_id}/locations/global.
 //
-//	Domains, named as follows:
-//	/projects/{project_id}/locations/global/domain/{domain_name}.
+//   Domains, named as follows:
+//   /projects/{project_id}/locations/global/domain/{domain_name}.
 //
 // The {domain_name} refers to fully qualified domain name in the customer
 // project e.g. mydomain.myorganization.com (at http://mydomain.myorganization.com), with the following restrictions:
 //
-//	Must contain only lowercase letters, numbers, periods and hyphens.
+//   Must contain only lowercase letters, numbers, periods and hyphens.
 //
-//	Must start with a letter.
+//   Must start with a letter.
 //
-//	Must contain between 2-64 characters.
+//   Must contain between 2-64 characters.
 //
-//	Must end with a number or a letter.
+//   Must end with a number or a letter.
 //
-//	Must not start with period.
+//   Must not start with period.
 //
-//	First segement length (mydomain form example above) shouldn’t exceed
-//	15 chars.
+//   First segement length (mydomain form example above) shouldn’t exceed
+//   15 chars.
 //
-//	The last segment cannot be fully numeric.
+//   The last segment cannot be fully numeric.
 //
-//	Must be unique within the customer project.
+//   Must be unique within the customer project.
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := defaultGRPCClientOptions()
 	if newClientHook != nil {
@@ -410,7 +410,7 @@ func (c *gRPCClient) Connection() *grpc.ClientConn {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }

@@ -20,65 +20,69 @@
 // Manages keys and performs cryptographic operations in a central cloud
 // service, for direct use by other cloud resources and applications.
 //
-// # General documentation
+// General documentation
 //
 // For information about setting deadlines, reusing contexts, and more
 // please visit https://pkg.go.dev/cloud.google.com/go.
 //
-// # Example usage
+// Example usage
 //
 // To get started with this package, create a client.
-//
-//	ctx := context.Background()
-//	// This snippet has been automatically generated and should be regarded as a code template only.
-//	// It will require modifications to work:
-//	// - It may require correct/in-range values for request initialization.
-//	// - It may require specifying regional endpoints when creating the service client as shown in:
-//	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-//	c, err := kms.NewEkmClient(ctx)
-//	if err != nil {
-//		// TODO: Handle error.
-//	}
-//	defer c.Close()
+//  ctx := context.Background()
+//  // This snippet has been automatically generated and should be regarded as a code template only.
+//  // It will require modifications to work:
+//  // - It may require correct/in-range values for request initialization.
+//  // - It may require specifying regional endpoints when creating the service client as shown in:
+//  //   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+//  c, err := kms.NewEkmClient(ctx)
+//  if err != nil {
+//  	// TODO: Handle error.
+//  }
+//  defer c.Close()
 //
 // The client will use your default application credentials. Clients should be reused instead of created as needed.
 // The methods of Client are safe for concurrent use by multiple goroutines.
 // The returned client must be Closed when it is done being used.
 //
-// # Using the Client
+// Using the Client
 //
 // The following is an example of making an API call with the newly created client.
 //
-//	ctx := context.Background()
-//	// This snippet has been automatically generated and should be regarded as a code template only.
-//	// It will require modifications to work:
-//	// - It may require correct/in-range values for request initialization.
-//	// - It may require specifying regional endpoints when creating the service client as shown in:
-//	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-//	c, err := kms.NewEkmClient(ctx)
-//	if err != nil {
-//		// TODO: Handle error.
-//	}
-//	defer c.Close()
+//  ctx := context.Background()
+//  // This snippet has been automatically generated and should be regarded as a code template only.
+//  // It will require modifications to work:
+//  // - It may require correct/in-range values for request initialization.
+//  // - It may require specifying regional endpoints when creating the service client as shown in:
+//  //   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+//  c, err := kms.NewEkmClient(ctx)
+//  if err != nil {
+//  	// TODO: Handle error.
+//  }
+//  defer c.Close()
 //
-//	req := &kmspb.ListEkmConnectionsRequest{
-//		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/cloud.google.com/go/kms/apiv1/kmspb#ListEkmConnectionsRequest.
-//	}
-//	it := c.ListEkmConnections(ctx, req)
-//	for {
-//		resp, err := it.Next()
-//		if err == iterator.Done {
-//			break
-//		}
-//		if err != nil {
-//			// TODO: Handle error.
-//		}
-//		// TODO: Use resp.
-//		_ = resp
-//	}
+//  req := &kmspb.ListEkmConnectionsRequest{
+//  	// TODO: Fill request struct fields.
+//  	// See https://pkg.go.dev/cloud.google.com/go/kms/apiv1/kmspb#ListEkmConnectionsRequest.
+//  }
+//  it := c.ListEkmConnections(ctx, req)
+//  for {
+//  	resp, err := it.Next()
+//  	if err == iterator.Done {
+//  		break
+//  	}
+//  	if err != nil {
+//  		// TODO: Handle error.
+//  	}
+//  	// TODO: Use resp.
+//  	_ = resp
+//  }
 //
-// # Use of Context
+// Inspecting errors
+//
+// To see examples of how to inspect errors returned by this package please reference
+// [Inspecting errors](https://pkg.go.dev/cloud.google.com/go#hdr-Inspecting_errors).
+//
+// Use of Context
 //
 // The ctx passed to NewEkmClient is used for authentication requests and
 // for creating the underlying connection, but is not used for subsequent calls.
@@ -89,11 +93,7 @@ package kms // import "cloud.google.com/go/kms/apiv1"
 
 import (
 	"context"
-	"fmt"
 	"net/http"
-	"runtime"
-	"strings"
-	"unicode"
 
 	"google.golang.org/api/option"
 	"google.golang.org/grpc/metadata"
@@ -130,52 +130,6 @@ func DefaultAuthScopes() []string {
 		"https://www.googleapis.com/auth/cloud-platform",
 		"https://www.googleapis.com/auth/cloudkms",
 	}
-}
-
-// versionGo returns the Go runtime version. The returned string
-// has no whitespace, suitable for reporting in header.
-func versionGo() string {
-	const develPrefix = "devel +"
-
-	s := runtime.Version()
-	if strings.HasPrefix(s, develPrefix) {
-		s = s[len(develPrefix):]
-		if p := strings.IndexFunc(s, unicode.IsSpace); p >= 0 {
-			s = s[:p]
-		}
-		return s
-	}
-
-	notSemverRune := func(r rune) bool {
-		return !strings.ContainsRune("0123456789.", r)
-	}
-
-	if strings.HasPrefix(s, "go1") {
-		s = s[2:]
-		var prerelease string
-		if p := strings.IndexFunc(s, notSemverRune); p >= 0 {
-			s, prerelease = s[:p], s[p:]
-		}
-		if strings.HasSuffix(s, ".") {
-			s += "0"
-		} else if strings.Count(s, ".") < 2 {
-			s += ".0"
-		}
-		if prerelease != "" {
-			s += "-" + prerelease
-		}
-		return s
-	}
-	return "UNKNOWN"
-}
-
-// maybeUnknownEnum wraps the given proto-JSON parsing error if it is the result
-// of receiving an unknown enum value.
-func maybeUnknownEnum(err error) error {
-	if strings.Contains(err.Error(), "invalid value for enum type") {
-		err = fmt.Errorf("received an unknown enum value; a later version of the library may support it: %w", err)
-	}
-	return err
 }
 
 // buildHeaders extracts metadata from the outgoing context, joins it with any other

@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"math"
 	"net/http"
 	"net/url"
@@ -139,29 +139,29 @@ type internalFleetRoutingClient interface {
 //
 // Validity of certain types of fields:
 //
-//	google.protobuf.Timestamp
+//   google.protobuf.Timestamp
 //
-//	  Times are in Unix time: seconds since 1970-01-01T00:00:00+00:00.
+//     Times are in Unix time: seconds since 1970-01-01T00:00:00+00:00.
 //
-//	  seconds must be in [0, 253402300799],
-//	  i.e. in [1970-01-01T00:00:00+00:00, 9999-12-31T23:59:59+00:00].
+//     seconds must be in [0, 253402300799],
+//     i.e. in [1970-01-01T00:00:00+00:00, 9999-12-31T23:59:59+00:00].
 //
-//	  nanos must be unset or set to 0.
+//     nanos must be unset or set to 0.
 //
-//	google.protobuf.Duration
+//   google.protobuf.Duration
 //
-//	  seconds must be in [0, 253402300799],
-//	  i.e. in [1970-01-01T00:00:00+00:00, 9999-12-31T23:59:59+00:00].
+//     seconds must be in [0, 253402300799],
+//     i.e. in [1970-01-01T00:00:00+00:00, 9999-12-31T23:59:59+00:00].
 //
-//	  nanos must be unset or set to 0.
+//     nanos must be unset or set to 0.
 //
-//	google.type.LatLng
+//   google.type.LatLng
 //
-//	  latitude must be in [-90.0, 90.0].
+//     latitude must be in [-90.0, 90.0].
 //
-//	  longitude must be in [-180.0, 180.0].
+//     longitude must be in [-180.0, 180.0].
 //
-//	  at least one of latitude and longitude must be non-zero.
+//     at least one of latitude and longitude must be non-zero.
 type FleetRoutingClient struct {
 	// The internal transport-dependent client.
 	internalClient internalFleetRoutingClient
@@ -272,29 +272,29 @@ type fleetRoutingGRPCClient struct {
 //
 // Validity of certain types of fields:
 //
-//	google.protobuf.Timestamp
+//   google.protobuf.Timestamp
 //
-//	  Times are in Unix time: seconds since 1970-01-01T00:00:00+00:00.
+//     Times are in Unix time: seconds since 1970-01-01T00:00:00+00:00.
 //
-//	  seconds must be in [0, 253402300799],
-//	  i.e. in [1970-01-01T00:00:00+00:00, 9999-12-31T23:59:59+00:00].
+//     seconds must be in [0, 253402300799],
+//     i.e. in [1970-01-01T00:00:00+00:00, 9999-12-31T23:59:59+00:00].
 //
-//	  nanos must be unset or set to 0.
+//     nanos must be unset or set to 0.
 //
-//	google.protobuf.Duration
+//   google.protobuf.Duration
 //
-//	  seconds must be in [0, 253402300799],
-//	  i.e. in [1970-01-01T00:00:00+00:00, 9999-12-31T23:59:59+00:00].
+//     seconds must be in [0, 253402300799],
+//     i.e. in [1970-01-01T00:00:00+00:00, 9999-12-31T23:59:59+00:00].
 //
-//	  nanos must be unset or set to 0.
+//     nanos must be unset or set to 0.
 //
-//	google.type.LatLng
+//   google.type.LatLng
 //
-//	  latitude must be in [-90.0, 90.0].
+//     latitude must be in [-90.0, 90.0].
 //
-//	  longitude must be in [-180.0, 180.0].
+//     longitude must be in [-180.0, 180.0].
 //
-//	  at least one of latitude and longitude must be non-zero.
+//     at least one of latitude and longitude must be non-zero.
 func NewFleetRoutingClient(ctx context.Context, opts ...option.ClientOption) (*FleetRoutingClient, error) {
 	clientOpts := defaultFleetRoutingGRPCClientOptions()
 	if newFleetRoutingClientHook != nil {
@@ -347,7 +347,7 @@ func (c *fleetRoutingGRPCClient) Connection() *grpc.ClientConn {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *fleetRoutingGRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -384,29 +384,29 @@ type fleetRoutingRESTClient struct {
 //
 // Validity of certain types of fields:
 //
-//	google.protobuf.Timestamp
+//   google.protobuf.Timestamp
 //
-//	  Times are in Unix time: seconds since 1970-01-01T00:00:00+00:00.
+//     Times are in Unix time: seconds since 1970-01-01T00:00:00+00:00.
 //
-//	  seconds must be in [0, 253402300799],
-//	  i.e. in [1970-01-01T00:00:00+00:00, 9999-12-31T23:59:59+00:00].
+//     seconds must be in [0, 253402300799],
+//     i.e. in [1970-01-01T00:00:00+00:00, 9999-12-31T23:59:59+00:00].
 //
-//	  nanos must be unset or set to 0.
+//     nanos must be unset or set to 0.
 //
-//	google.protobuf.Duration
+//   google.protobuf.Duration
 //
-//	  seconds must be in [0, 253402300799],
-//	  i.e. in [1970-01-01T00:00:00+00:00, 9999-12-31T23:59:59+00:00].
+//     seconds must be in [0, 253402300799],
+//     i.e. in [1970-01-01T00:00:00+00:00, 9999-12-31T23:59:59+00:00].
 //
-//	  nanos must be unset or set to 0.
+//     nanos must be unset or set to 0.
 //
-//	google.type.LatLng
+//   google.type.LatLng
 //
-//	  latitude must be in [-90.0, 90.0].
+//     latitude must be in [-90.0, 90.0].
 //
-//	  longitude must be in [-180.0, 180.0].
+//     longitude must be in [-180.0, 180.0].
 //
-//	  at least one of latitude and longitude must be non-zero.
+//     at least one of latitude and longitude must be non-zero.
 func NewFleetRoutingRESTClient(ctx context.Context, opts ...option.ClientOption) (*FleetRoutingClient, error) {
 	clientOpts := append(defaultFleetRoutingRESTClientOptions(), opts...)
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
@@ -448,7 +448,7 @@ func defaultFleetRoutingRESTClientOptions() []option.ClientOption {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *fleetRoutingRESTClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -580,13 +580,13 @@ func (c *fleetRoutingRESTClient) OptimizeTours(ctx context.Context, req *optimiz
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -652,13 +652,13 @@ func (c *fleetRoutingRESTClient) BatchOptimizeTours(ctx context.Context, req *op
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -715,13 +715,13 @@ func (c *fleetRoutingRESTClient) GetOperation(ctx context.Context, req *longrunn
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil

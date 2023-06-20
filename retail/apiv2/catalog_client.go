@@ -323,13 +323,13 @@ func (c *CatalogClient) UpdateCatalog(ctx context.Context, req *retailpb.UpdateC
 //
 // More specifically:
 //
-//	PredictionService will only return product IDs from branch {newBranch}.
+//   PredictionService will only return product IDs from branch {newBranch}.
 //
-//	SearchService will only return product IDs from branch {newBranch}
-//	(if branch is not explicitly set).
+//   SearchService will only return product IDs from branch {newBranch}
+//   (if branch is not explicitly set).
 //
-//	UserEventService will only join events with products from branch
-//	{newBranch}.
+//   UserEventService will only join events with products from branch
+//   {newBranch}.
 func (c *CatalogClient) SetDefaultBranch(ctx context.Context, req *retailpb.SetDefaultBranchRequest, opts ...gax.CallOption) error {
 	return c.internalClient.SetDefaultBranch(ctx, req, opts...)
 }
@@ -474,7 +474,7 @@ func (c *catalogGRPCClient) Connection() *grpc.ClientConn {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *catalogGRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }

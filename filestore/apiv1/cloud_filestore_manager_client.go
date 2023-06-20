@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"math"
 	"net/http"
 	"net/url"
@@ -276,24 +276,24 @@ type internalCloudFilestoreManagerClient interface {
 // The file.googleapis.com service implements the Filestore API and
 // defines the following resource model for managing instances:
 //
-//	The service works with a collection of cloud projects, named: /projects/*
+//   The service works with a collection of cloud projects, named: /projects/*
 //
-//	Each project has a collection of available locations, named: /locations/*
+//   Each project has a collection of available locations, named: /locations/*
 //
-//	Each location has a collection of instances and backups, named:
-//	/instances/* and /backups/* respectively.
+//   Each location has a collection of instances and backups, named:
+//   /instances/* and /backups/* respectively.
 //
-//	As such, Filestore instances are resources of the form:
-//	/projects/{project_number}/locations/{location_id}/instances/{instance_id}
-//	and backups are resources of the form:
-//	/projects/{project_number}/locations/{location_id}/backup/{backup_id}
+//   As such, Filestore instances are resources of the form:
+//   /projects/{project_number}/locations/{location_id}/instances/{instance_id}
+//   and backups are resources of the form:
+//   /projects/{project_number}/locations/{location_id}/backup/{backup_id}
 //
 // Note that location_id must be a Google Cloud zone for instances, but
 // a Google Cloud region for backups; for example:
 //
-//	projects/12345/locations/us-central1-c/instances/my-filestore
+//   projects/12345/locations/us-central1-c/instances/my-filestore
 //
-//	projects/12345/locations/us-central1/backups/my-backup
+//   projects/12345/locations/us-central1/backups/my-backup
 type CloudFilestoreManagerClient struct {
 	// The internal transport-dependent client.
 	internalClient internalCloudFilestoreManagerClient
@@ -512,24 +512,24 @@ type cloudFilestoreManagerGRPCClient struct {
 // The file.googleapis.com service implements the Filestore API and
 // defines the following resource model for managing instances:
 //
-//	The service works with a collection of cloud projects, named: /projects/*
+//   The service works with a collection of cloud projects, named: /projects/*
 //
-//	Each project has a collection of available locations, named: /locations/*
+//   Each project has a collection of available locations, named: /locations/*
 //
-//	Each location has a collection of instances and backups, named:
-//	/instances/* and /backups/* respectively.
+//   Each location has a collection of instances and backups, named:
+//   /instances/* and /backups/* respectively.
 //
-//	As such, Filestore instances are resources of the form:
-//	/projects/{project_number}/locations/{location_id}/instances/{instance_id}
-//	and backups are resources of the form:
-//	/projects/{project_number}/locations/{location_id}/backup/{backup_id}
+//   As such, Filestore instances are resources of the form:
+//   /projects/{project_number}/locations/{location_id}/instances/{instance_id}
+//   and backups are resources of the form:
+//   /projects/{project_number}/locations/{location_id}/backup/{backup_id}
 //
 // Note that location_id must be a Google Cloud zone for instances, but
 // a Google Cloud region for backups; for example:
 //
-//	projects/12345/locations/us-central1-c/instances/my-filestore
+//   projects/12345/locations/us-central1-c/instances/my-filestore
 //
-//	projects/12345/locations/us-central1/backups/my-backup
+//   projects/12345/locations/us-central1/backups/my-backup
 func NewCloudFilestoreManagerClient(ctx context.Context, opts ...option.ClientOption) (*CloudFilestoreManagerClient, error) {
 	clientOpts := defaultCloudFilestoreManagerGRPCClientOptions()
 	if newCloudFilestoreManagerClientHook != nil {
@@ -581,7 +581,7 @@ func (c *cloudFilestoreManagerGRPCClient) Connection() *grpc.ClientConn {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *cloudFilestoreManagerGRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -621,24 +621,24 @@ type cloudFilestoreManagerRESTClient struct {
 // The file.googleapis.com service implements the Filestore API and
 // defines the following resource model for managing instances:
 //
-//	The service works with a collection of cloud projects, named: /projects/*
+//   The service works with a collection of cloud projects, named: /projects/*
 //
-//	Each project has a collection of available locations, named: /locations/*
+//   Each project has a collection of available locations, named: /locations/*
 //
-//	Each location has a collection of instances and backups, named:
-//	/instances/* and /backups/* respectively.
+//   Each location has a collection of instances and backups, named:
+//   /instances/* and /backups/* respectively.
 //
-//	As such, Filestore instances are resources of the form:
-//	/projects/{project_number}/locations/{location_id}/instances/{instance_id}
-//	and backups are resources of the form:
-//	/projects/{project_number}/locations/{location_id}/backup/{backup_id}
+//   As such, Filestore instances are resources of the form:
+//   /projects/{project_number}/locations/{location_id}/instances/{instance_id}
+//   and backups are resources of the form:
+//   /projects/{project_number}/locations/{location_id}/backup/{backup_id}
 //
 // Note that location_id must be a Google Cloud zone for instances, but
 // a Google Cloud region for backups; for example:
 //
-//	projects/12345/locations/us-central1-c/instances/my-filestore
+//   projects/12345/locations/us-central1-c/instances/my-filestore
 //
-//	projects/12345/locations/us-central1/backups/my-backup
+//   projects/12345/locations/us-central1/backups/my-backup
 func NewCloudFilestoreManagerRESTClient(ctx context.Context, opts ...option.ClientOption) (*CloudFilestoreManagerClient, error) {
 	clientOpts := append(defaultCloudFilestoreManagerRESTClientOptions(), opts...)
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
@@ -680,7 +680,7 @@ func defaultCloudFilestoreManagerRESTClientOptions() []option.ClientOption {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *cloudFilestoreManagerRESTClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -1136,13 +1136,13 @@ func (c *cloudFilestoreManagerRESTClient) ListInstances(ctx context.Context, req
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -1211,13 +1211,13 @@ func (c *cloudFilestoreManagerRESTClient) GetInstance(ctx context.Context, req *
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1279,13 +1279,13 @@ func (c *cloudFilestoreManagerRESTClient) CreateInstance(ctx context.Context, re
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1323,7 +1323,7 @@ func (c *cloudFilestoreManagerRESTClient) UpdateInstance(ctx context.Context, re
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask))
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1355,13 +1355,13 @@ func (c *cloudFilestoreManagerRESTClient) UpdateInstance(ctx context.Context, re
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1427,13 +1427,13 @@ func (c *cloudFilestoreManagerRESTClient) RestoreInstance(ctx context.Context, r
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1492,13 +1492,13 @@ func (c *cloudFilestoreManagerRESTClient) DeleteInstance(ctx context.Context, re
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1575,13 +1575,13 @@ func (c *cloudFilestoreManagerRESTClient) ListSnapshots(ctx context.Context, req
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -1650,13 +1650,13 @@ func (c *cloudFilestoreManagerRESTClient) GetSnapshot(ctx context.Context, req *
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1715,13 +1715,13 @@ func (c *cloudFilestoreManagerRESTClient) CreateSnapshot(ctx context.Context, re
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1777,13 +1777,13 @@ func (c *cloudFilestoreManagerRESTClient) DeleteSnapshot(ctx context.Context, re
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1821,7 +1821,7 @@ func (c *cloudFilestoreManagerRESTClient) UpdateSnapshot(ctx context.Context, re
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask))
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1853,13 +1853,13 @@ func (c *cloudFilestoreManagerRESTClient) UpdateSnapshot(ctx context.Context, re
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1936,13 +1936,13 @@ func (c *cloudFilestoreManagerRESTClient) ListBackups(ctx context.Context, req *
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -2011,13 +2011,13 @@ func (c *cloudFilestoreManagerRESTClient) GetBackup(ctx context.Context, req *fi
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2076,13 +2076,13 @@ func (c *cloudFilestoreManagerRESTClient) CreateBackup(ctx context.Context, req 
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2138,13 +2138,13 @@ func (c *cloudFilestoreManagerRESTClient) DeleteBackup(ctx context.Context, req 
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2182,7 +2182,7 @@ func (c *cloudFilestoreManagerRESTClient) UpdateBackup(ctx context.Context, req 
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask))
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -2214,13 +2214,13 @@ func (c *cloudFilestoreManagerRESTClient) UpdateBackup(ctx context.Context, req 
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil

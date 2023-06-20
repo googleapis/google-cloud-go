@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"math"
 	"net/http"
 	"net/url"
@@ -87,7 +87,7 @@ type internalIamPolicyClient interface {
 // IamPolicyClient is a client for interacting with IAM Meta API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
-// # API Overview
+// API Overview
 //
 // Manages Identity and Access Management (IAM) policies.
 //
@@ -103,7 +103,7 @@ type internalIamPolicyClient interface {
 // specified only at the Table level, whereas another might allow access control
 // to also be specified at the Column level.
 //
-// # Policy StructureSee google.iam.v1.Policy
+// Policy StructureSee google.iam.v1.Policy
 //
 // This is intentionally not a CRUD style API because access control policies
 // are created and deleted implicitly with the resources to which they are
@@ -185,7 +185,7 @@ type iamPolicyGRPCClient struct {
 // NewIamPolicyClient creates a new iam policy client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
-// # API Overview
+// API Overview
 //
 // Manages Identity and Access Management (IAM) policies.
 //
@@ -201,7 +201,7 @@ type iamPolicyGRPCClient struct {
 // specified only at the Table level, whereas another might allow access control
 // to also be specified at the Column level.
 //
-// # Policy StructureSee google.iam.v1.Policy
+// Policy StructureSee google.iam.v1.Policy
 //
 // This is intentionally not a CRUD style API because access control policies
 // are created and deleted implicitly with the resources to which they are
@@ -246,7 +246,7 @@ func (c *iamPolicyGRPCClient) Connection() *grpc.ClientConn {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *iamPolicyGRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -274,7 +274,7 @@ type iamPolicyRESTClient struct {
 
 // NewIamPolicyRESTClient creates a new iam policy rest client.
 //
-// # API Overview
+// API Overview
 //
 // Manages Identity and Access Management (IAM) policies.
 //
@@ -290,7 +290,7 @@ type iamPolicyRESTClient struct {
 // specified only at the Table level, whereas another might allow access control
 // to also be specified at the Column level.
 //
-// # Policy StructureSee google.iam.v1.Policy
+// Policy StructureSee google.iam.v1.Policy
 //
 // This is intentionally not a CRUD style API because access control policies
 // are created and deleted implicitly with the resources to which they are
@@ -326,7 +326,7 @@ func defaultIamPolicyRESTClientOptions() []option.ClientOption {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *iamPolicyRESTClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -446,13 +446,13 @@ func (c *iamPolicyRESTClient) SetIamPolicy(ctx context.Context, req *iampb.SetIa
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -512,13 +512,13 @@ func (c *iamPolicyRESTClient) GetIamPolicy(ctx context.Context, req *iampb.GetIa
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -582,13 +582,13 @@ func (c *iamPolicyRESTClient) TestIamPermissions(ctx context.Context, req *iampb
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil

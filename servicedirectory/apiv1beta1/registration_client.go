@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"math"
 	"net/http"
 	"net/url"
@@ -569,18 +569,18 @@ type internalRegistrationClient interface {
 // Service Directory API for registering services. It defines the following
 // resource model:
 //
-//	The API has a collection of
-//	Namespace
-//	resources, named projects/*/locations/*/namespaces/*.
+//   The API has a collection of
+//   Namespace
+//   resources, named projects/*/locations/*/namespaces/*.
 //
-//	Each Namespace has a collection of
-//	Service resources, named
-//	projects/*/locations/*/namespaces/*/services/*.
+//   Each Namespace has a collection of
+//   Service resources, named
+//   projects/*/locations/*/namespaces/*/services/*.
 //
-//	Each Service has a collection of
-//	Endpoint
-//	resources, named
-//	projects/*/locations/*/namespaces/*/services/*/endpoints/*.
+//   Each Service has a collection of
+//   Endpoint
+//   resources, named
+//   projects/*/locations/*/namespaces/*/services/*/endpoints/*.
 type RegistrationClient struct {
 	// The internal transport-dependent client.
 	internalClient internalRegistrationClient
@@ -727,18 +727,18 @@ type registrationGRPCClient struct {
 // Service Directory API for registering services. It defines the following
 // resource model:
 //
-//	The API has a collection of
-//	Namespace
-//	resources, named projects/*/locations/*/namespaces/*.
+//   The API has a collection of
+//   Namespace
+//   resources, named projects/*/locations/*/namespaces/*.
 //
-//	Each Namespace has a collection of
-//	Service resources, named
-//	projects/*/locations/*/namespaces/*/services/*.
+//   Each Namespace has a collection of
+//   Service resources, named
+//   projects/*/locations/*/namespaces/*/services/*.
 //
-//	Each Service has a collection of
-//	Endpoint
-//	resources, named
-//	projects/*/locations/*/namespaces/*/services/*/endpoints/*.
+//   Each Service has a collection of
+//   Endpoint
+//   resources, named
+//   projects/*/locations/*/namespaces/*/services/*/endpoints/*.
 func NewRegistrationClient(ctx context.Context, opts ...option.ClientOption) (*RegistrationClient, error) {
 	clientOpts := defaultRegistrationGRPCClientOptions()
 	if newRegistrationClientHook != nil {
@@ -779,7 +779,7 @@ func (c *registrationGRPCClient) Connection() *grpc.ClientConn {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *registrationGRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -810,18 +810,18 @@ type registrationRESTClient struct {
 // Service Directory API for registering services. It defines the following
 // resource model:
 //
-//	The API has a collection of
-//	Namespace
-//	resources, named projects/*/locations/*/namespaces/*.
+//   The API has a collection of
+//   Namespace
+//   resources, named projects/*/locations/*/namespaces/*.
 //
-//	Each Namespace has a collection of
-//	Service resources, named
-//	projects/*/locations/*/namespaces/*/services/*.
+//   Each Namespace has a collection of
+//   Service resources, named
+//   projects/*/locations/*/namespaces/*/services/*.
 //
-//	Each Service has a collection of
-//	Endpoint
-//	resources, named
-//	projects/*/locations/*/namespaces/*/services/*/endpoints/*.
+//   Each Service has a collection of
+//   Endpoint
+//   resources, named
+//   projects/*/locations/*/namespaces/*/services/*/endpoints/*.
 func NewRegistrationRESTClient(ctx context.Context, opts ...option.ClientOption) (*RegistrationClient, error) {
 	clientOpts := append(defaultRegistrationRESTClientOptions(), opts...)
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
@@ -853,7 +853,7 @@ func defaultRegistrationRESTClientOptions() []option.ClientOption {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *registrationRESTClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -1299,13 +1299,13 @@ func (c *registrationRESTClient) CreateNamespace(ctx context.Context, req *servi
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1376,13 +1376,13 @@ func (c *registrationRESTClient) ListNamespaces(ctx context.Context, req *servic
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -1451,13 +1451,13 @@ func (c *registrationRESTClient) GetNamespace(ctx context.Context, req *serviced
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1490,7 +1490,7 @@ func (c *registrationRESTClient) UpdateNamespace(ctx context.Context, req *servi
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask))
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1523,13 +1523,13 @@ func (c *registrationRESTClient) UpdateNamespace(ctx context.Context, req *servi
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1630,13 +1630,13 @@ func (c *registrationRESTClient) CreateService(ctx context.Context, req *service
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1707,13 +1707,13 @@ func (c *registrationRESTClient) ListServices(ctx context.Context, req *serviced
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -1782,13 +1782,13 @@ func (c *registrationRESTClient) GetService(ctx context.Context, req *servicedir
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1821,7 +1821,7 @@ func (c *registrationRESTClient) UpdateService(ctx context.Context, req *service
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask))
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1854,13 +1854,13 @@ func (c *registrationRESTClient) UpdateService(ctx context.Context, req *service
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1961,13 +1961,13 @@ func (c *registrationRESTClient) CreateEndpoint(ctx context.Context, req *servic
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2038,13 +2038,13 @@ func (c *registrationRESTClient) ListEndpoints(ctx context.Context, req *service
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -2113,13 +2113,13 @@ func (c *registrationRESTClient) GetEndpoint(ctx context.Context, req *servicedi
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2152,7 +2152,7 @@ func (c *registrationRESTClient) UpdateEndpoint(ctx context.Context, req *servic
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask))
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -2185,13 +2185,13 @@ func (c *registrationRESTClient) UpdateEndpoint(ctx context.Context, req *servic
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2289,13 +2289,13 @@ func (c *registrationRESTClient) GetIamPolicy(ctx context.Context, req *iampb.Ge
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2353,13 +2353,13 @@ func (c *registrationRESTClient) SetIamPolicy(ctx context.Context, req *iampb.Se
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2417,13 +2417,13 @@ func (c *registrationRESTClient) TestIamPermissions(ctx context.Context, req *ia
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil

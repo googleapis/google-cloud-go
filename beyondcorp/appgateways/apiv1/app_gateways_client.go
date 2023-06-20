@@ -122,8 +122,8 @@ type internalClient interface {
 //
 // The AppGatewaysService exposes the following resources:
 //
-//	AppGateways, named as follows:
-//	projects/{project_id}/locations/{location_id}/appGateways/{app_gateway_id}.
+//   AppGateways, named as follows:
+//   projects/{project_id}/locations/{location_id}/appGateways/{app_gateway_id}.
 //
 // The AppGatewaysService service provides methods to manage
 // (create/read/update/delete) BeyondCorp AppGateways.
@@ -291,8 +291,8 @@ type gRPCClient struct {
 //
 // The AppGatewaysService exposes the following resources:
 //
-//	AppGateways, named as follows:
-//	projects/{project_id}/locations/{location_id}/appGateways/{app_gateway_id}.
+//   AppGateways, named as follows:
+//   projects/{project_id}/locations/{location_id}/appGateways/{app_gateway_id}.
 //
 // The AppGatewaysService service provides methods to manage
 // (create/read/update/delete) BeyondCorp AppGateways.
@@ -350,7 +350,7 @@ func (c *gRPCClient) Connection() *grpc.ClientConn {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }

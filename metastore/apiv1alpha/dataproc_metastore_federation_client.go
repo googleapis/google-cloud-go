@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"math"
 	"net/http"
 	"net/url"
@@ -150,15 +150,15 @@ type internalDataprocMetastoreFederationClient interface {
 //
 // The Dataproc Metastore Federation API defines the following resource model:
 //
-//	The service works with a collection of Google Cloud projects.
+//   The service works with a collection of Google Cloud projects.
 //
-//	Each project has a collection of available locations.
+//   Each project has a collection of available locations.
 //
-//	Each location has a collection of federations.
+//   Each location has a collection of federations.
 //
-//	Dataproc Metastore Federations are resources with names of the
-//	form:
-//	projects/{project_number}/locations/{location_id}/federations/{federation_id}.
+//   Dataproc Metastore Federations are resources with names of the
+//   form:
+//   projects/{project_number}/locations/{location_id}/federations/{federation_id}.
 type DataprocMetastoreFederationClient struct {
 	// The internal transport-dependent client.
 	internalClient internalDataprocMetastoreFederationClient
@@ -333,15 +333,15 @@ type dataprocMetastoreFederationGRPCClient struct {
 //
 // The Dataproc Metastore Federation API defines the following resource model:
 //
-//	The service works with a collection of Google Cloud projects.
+//   The service works with a collection of Google Cloud projects.
 //
-//	Each project has a collection of available locations.
+//   Each project has a collection of available locations.
 //
-//	Each location has a collection of federations.
+//   Each location has a collection of federations.
 //
-//	Dataproc Metastore Federations are resources with names of the
-//	form:
-//	projects/{project_number}/locations/{location_id}/federations/{federation_id}.
+//   Dataproc Metastore Federations are resources with names of the
+//   form:
+//   projects/{project_number}/locations/{location_id}/federations/{federation_id}.
 func NewDataprocMetastoreFederationClient(ctx context.Context, opts ...option.ClientOption) (*DataprocMetastoreFederationClient, error) {
 	clientOpts := defaultDataprocMetastoreFederationGRPCClientOptions()
 	if newDataprocMetastoreFederationClientHook != nil {
@@ -396,7 +396,7 @@ func (c *dataprocMetastoreFederationGRPCClient) Connection() *grpc.ClientConn {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *dataprocMetastoreFederationGRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -437,15 +437,15 @@ type dataprocMetastoreFederationRESTClient struct {
 //
 // The Dataproc Metastore Federation API defines the following resource model:
 //
-//	The service works with a collection of Google Cloud projects.
+//   The service works with a collection of Google Cloud projects.
 //
-//	Each project has a collection of available locations.
+//   Each project has a collection of available locations.
 //
-//	Each location has a collection of federations.
+//   Each location has a collection of federations.
 //
-//	Dataproc Metastore Federations are resources with names of the
-//	form:
-//	projects/{project_number}/locations/{location_id}/federations/{federation_id}.
+//   Dataproc Metastore Federations are resources with names of the
+//   form:
+//   projects/{project_number}/locations/{location_id}/federations/{federation_id}.
 func NewDataprocMetastoreFederationRESTClient(ctx context.Context, opts ...option.ClientOption) (*DataprocMetastoreFederationClient, error) {
 	clientOpts := append(defaultDataprocMetastoreFederationRESTClientOptions(), opts...)
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
@@ -487,7 +487,7 @@ func defaultDataprocMetastoreFederationRESTClientOptions() []option.ClientOption
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *dataprocMetastoreFederationRESTClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -886,13 +886,13 @@ func (c *dataprocMetastoreFederationRESTClient) ListFederations(ctx context.Cont
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -961,13 +961,13 @@ func (c *dataprocMetastoreFederationRESTClient) GetFederation(ctx context.Contex
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1029,13 +1029,13 @@ func (c *dataprocMetastoreFederationRESTClient) CreateFederation(ctx context.Con
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1076,7 +1076,7 @@ func (c *dataprocMetastoreFederationRESTClient) UpdateFederation(ctx context.Con
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask))
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1108,13 +1108,13 @@ func (c *dataprocMetastoreFederationRESTClient) UpdateFederation(ctx context.Con
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1173,13 +1173,13 @@ func (c *dataprocMetastoreFederationRESTClient) DeleteFederation(ctx context.Con
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1236,13 +1236,13 @@ func (c *dataprocMetastoreFederationRESTClient) GetLocation(ctx context.Context,
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1310,13 +1310,13 @@ func (c *dataprocMetastoreFederationRESTClient) ListLocations(ctx context.Contex
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -1389,13 +1389,13 @@ func (c *dataprocMetastoreFederationRESTClient) GetIamPolicy(ctx context.Context
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1457,13 +1457,13 @@ func (c *dataprocMetastoreFederationRESTClient) SetIamPolicy(ctx context.Context
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1527,13 +1527,13 @@ func (c *dataprocMetastoreFederationRESTClient) TestIamPermissions(ctx context.C
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1671,13 +1671,13 @@ func (c *dataprocMetastoreFederationRESTClient) GetOperation(ctx context.Context
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1745,13 +1745,13 @@ func (c *dataprocMetastoreFederationRESTClient) ListOperations(ctx context.Conte
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil

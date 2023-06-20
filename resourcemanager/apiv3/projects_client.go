@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"math"
 	"net/http"
 	"net/url"
@@ -433,35 +433,35 @@ func (c *ProjectsClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPoli
 //
 // The following constraints apply when using setIamPolicy():
 //
-//	Project does not support allUsers and allAuthenticatedUsers as
-//	members in a Binding of a Policy.
+//   Project does not support allUsers and allAuthenticatedUsers as
+//   members in a Binding of a Policy.
 //
-//	The owner role can be granted to a user, serviceAccount, or a group
-//	that is part of an organization. For example,
-//	group@myownpersonaldomain.com (at mailto:group@myownpersonaldomain.com) could be added as an owner to a project in
-//	the myownpersonaldomain.com (at http://myownpersonaldomain.com) organization, but not the examplepetstore.com (at http://examplepetstore.com)
-//	organization.
+//   The owner role can be granted to a user, serviceAccount, or a group
+//   that is part of an organization. For example,
+//   group@myownpersonaldomain.com (at mailto:group@myownpersonaldomain.com) could be added as an owner to a project in
+//   the myownpersonaldomain.com (at http://myownpersonaldomain.com) organization, but not the examplepetstore.com (at http://examplepetstore.com)
+//   organization.
 //
-//	Service accounts can be made owners of a project directly
-//	without any restrictions. However, to be added as an owner, a user must be
-//	invited using the Cloud Platform console and must accept the invitation.
+//   Service accounts can be made owners of a project directly
+//   without any restrictions. However, to be added as an owner, a user must be
+//   invited using the Cloud Platform console and must accept the invitation.
 //
-//	A user cannot be granted the owner role using setIamPolicy(). The user
-//	must be granted the owner role using the Cloud Platform Console and must
-//	explicitly accept the invitation.
+//   A user cannot be granted the owner role using setIamPolicy(). The user
+//   must be granted the owner role using the Cloud Platform Console and must
+//   explicitly accept the invitation.
 //
-//	Invitations to grant the owner role cannot be sent using
-//	setIamPolicy();
-//	they must be sent only using the Cloud Platform Console.
+//   Invitations to grant the owner role cannot be sent using
+//   setIamPolicy();
+//   they must be sent only using the Cloud Platform Console.
 //
-//	If the project is not part of an organization, there must be at least
-//	one owner who has accepted the Terms of Service (ToS) agreement in the
-//	policy. Calling setIamPolicy() to remove the last ToS-accepted owner
-//	from the policy will fail. This restriction also applies to legacy
-//	projects that no longer have owners who have accepted the ToS. Edits to
-//	IAM policies will be rejected until the lack of a ToS-accepting owner is
-//	rectified. If the project is part of an organization, you can remove all
-//	owners, potentially making the organization inaccessible.
+//   If the project is not part of an organization, there must be at least
+//   one owner who has accepted the Terms of Service (ToS) agreement in the
+//   policy. Calling setIamPolicy() to remove the last ToS-accepted owner
+//   from the policy will fail. This restriction also applies to legacy
+//   projects that no longer have owners who have accepted the ToS. Edits to
+//   IAM policies will be rejected until the lack of a ToS-accepting owner is
+//   rectified. If the project is part of an organization, you can remove all
+//   owners, potentially making the organization inaccessible.
 func (c *ProjectsClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
 	return c.internalClient.SetIamPolicy(ctx, req, opts...)
 }
@@ -557,7 +557,7 @@ func (c *projectsGRPCClient) Connection() *grpc.ClientConn {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *projectsGRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -632,7 +632,7 @@ func defaultProjectsRESTClientOptions() []option.ClientOption {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *projectsRESTClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -960,13 +960,13 @@ func (c *projectsRESTClient) GetProject(ctx context.Context, req *resourcemanage
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1040,13 +1040,13 @@ func (c *projectsRESTClient) ListProjects(ctx context.Context, req *resourcemana
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -1140,13 +1140,13 @@ func (c *projectsRESTClient) SearchProjects(ctx context.Context, req *resourcema
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -1223,13 +1223,13 @@ func (c *projectsRESTClient) CreateProject(ctx context.Context, req *resourceman
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1272,7 +1272,7 @@ func (c *projectsRESTClient) UpdateProject(ctx context.Context, req *resourceman
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask))
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1304,13 +1304,13 @@ func (c *projectsRESTClient) UpdateProject(ctx context.Context, req *resourceman
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1385,13 +1385,13 @@ func (c *projectsRESTClient) MoveProject(ctx context.Context, req *resourcemanag
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1479,13 +1479,13 @@ func (c *projectsRESTClient) DeleteProject(ctx context.Context, req *resourceman
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1555,13 +1555,13 @@ func (c *projectsRESTClient) UndeleteProject(ctx context.Context, req *resourcem
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1626,13 +1626,13 @@ func (c *projectsRESTClient) GetIamPolicy(ctx context.Context, req *iampb.GetIam
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1655,35 +1655,35 @@ func (c *projectsRESTClient) GetIamPolicy(ctx context.Context, req *iampb.GetIam
 //
 // The following constraints apply when using setIamPolicy():
 //
-//	Project does not support allUsers and allAuthenticatedUsers as
-//	members in a Binding of a Policy.
+//   Project does not support allUsers and allAuthenticatedUsers as
+//   members in a Binding of a Policy.
 //
-//	The owner role can be granted to a user, serviceAccount, or a group
-//	that is part of an organization. For example,
-//	group@myownpersonaldomain.com (at mailto:group@myownpersonaldomain.com) could be added as an owner to a project in
-//	the myownpersonaldomain.com (at http://myownpersonaldomain.com) organization, but not the examplepetstore.com (at http://examplepetstore.com)
-//	organization.
+//   The owner role can be granted to a user, serviceAccount, or a group
+//   that is part of an organization. For example,
+//   group@myownpersonaldomain.com (at mailto:group@myownpersonaldomain.com) could be added as an owner to a project in
+//   the myownpersonaldomain.com (at http://myownpersonaldomain.com) organization, but not the examplepetstore.com (at http://examplepetstore.com)
+//   organization.
 //
-//	Service accounts can be made owners of a project directly
-//	without any restrictions. However, to be added as an owner, a user must be
-//	invited using the Cloud Platform console and must accept the invitation.
+//   Service accounts can be made owners of a project directly
+//   without any restrictions. However, to be added as an owner, a user must be
+//   invited using the Cloud Platform console and must accept the invitation.
 //
-//	A user cannot be granted the owner role using setIamPolicy(). The user
-//	must be granted the owner role using the Cloud Platform Console and must
-//	explicitly accept the invitation.
+//   A user cannot be granted the owner role using setIamPolicy(). The user
+//   must be granted the owner role using the Cloud Platform Console and must
+//   explicitly accept the invitation.
 //
-//	Invitations to grant the owner role cannot be sent using
-//	setIamPolicy();
-//	they must be sent only using the Cloud Platform Console.
+//   Invitations to grant the owner role cannot be sent using
+//   setIamPolicy();
+//   they must be sent only using the Cloud Platform Console.
 //
-//	If the project is not part of an organization, there must be at least
-//	one owner who has accepted the Terms of Service (ToS) agreement in the
-//	policy. Calling setIamPolicy() to remove the last ToS-accepted owner
-//	from the policy will fail. This restriction also applies to legacy
-//	projects that no longer have owners who have accepted the ToS. Edits to
-//	IAM policies will be rejected until the lack of a ToS-accepting owner is
-//	rectified. If the project is part of an organization, you can remove all
-//	owners, potentially making the organization inaccessible.
+//   If the project is not part of an organization, there must be at least
+//   one owner who has accepted the Terms of Service (ToS) agreement in the
+//   policy. Calling setIamPolicy() to remove the last ToS-accepted owner
+//   from the policy will fail. This restriction also applies to legacy
+//   projects that no longer have owners who have accepted the ToS. Edits to
+//   IAM policies will be rejected until the lack of a ToS-accepting owner is
+//   rectified. If the project is part of an organization, you can remove all
+//   owners, potentially making the organization inaccessible.
 func (c *projectsRESTClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -1730,13 +1730,13 @@ func (c *projectsRESTClient) SetIamPolicy(ctx context.Context, req *iampb.SetIam
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1795,13 +1795,13 @@ func (c *projectsRESTClient) TestIamPermissions(ctx context.Context, req *iampb.
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1853,13 +1853,13 @@ func (c *projectsRESTClient) GetOperation(ctx context.Context, req *longrunningp
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil

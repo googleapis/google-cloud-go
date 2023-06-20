@@ -357,15 +357,15 @@ func (c *FeaturestoreClient) DeleteFeatureOperation(name string) *DeleteFeatureO
 //
 // There are also scenarios where the caller can cause inconsistency.
 //
-//	Source data for import contains multiple distinct Feature values for
-//	the same entity ID and timestamp.
+//   Source data for import contains multiple distinct Feature values for
+//   the same entity ID and timestamp.
 //
-//	Source is modified during an import. This includes adding, updating, or
-//	removing source data and/or metadata. Examples of updating metadata
-//	include but are not limited to changing storage location, storage class,
-//	or retention policy.
+//   Source is modified during an import. This includes adding, updating, or
+//   removing source data and/or metadata. Examples of updating metadata
+//   include but are not limited to changing storage location, storage class,
+//   or retention policy.
 //
-//	Online serving cluster is under-provisioned.
+//   Online serving cluster is under-provisioned.
 func (c *FeaturestoreClient) ImportFeatureValues(ctx context.Context, req *aiplatformpb.ImportFeatureValuesRequest, opts ...gax.CallOption) (*ImportFeatureValuesOperation, error) {
 	return c.internalClient.ImportFeatureValues(ctx, req, opts...)
 }
@@ -575,7 +575,7 @@ func (c *featurestoreGRPCClient) Connection() *grpc.ClientConn {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *featurestoreGRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }

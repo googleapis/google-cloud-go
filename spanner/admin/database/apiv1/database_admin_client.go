@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"math"
 	"net/http"
 	"net/url"
@@ -531,17 +531,17 @@ type internalDatabaseAdminClient interface {
 // DatabaseAdminClient is a client for interacting with Cloud Spanner API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
-// # Cloud Spanner Database Admin API
+// Cloud Spanner Database Admin API
 //
 // The Cloud Spanner Database Admin API can be used to:
 //
-//	create, drop, and list databases
+//   create, drop, and list databases
 //
-//	update the schema of pre-existing databases
+//   update the schema of pre-existing databases
 //
-//	create, delete and list backups for a database
+//   create, delete and list backups for a database
 //
-//	restore a database from an existing backup
+//   restore a database from an existing backup
 type DatabaseAdminClient struct {
 	// The internal transport-dependent client.
 	internalClient internalDatabaseAdminClient
@@ -613,30 +613,30 @@ func (c *DatabaseAdminClient) GetDatabase(ctx context.Context, req *databasepb.G
 //
 // While the operation is pending:
 //
-//	The database’s
-//	reconciling
-//	field is set to true.
+//   The database’s
+//   reconciling
+//   field is set to true.
 //
-//	Cancelling the operation is best-effort. If the cancellation succeeds,
-//	the operation metadata’s
-//	cancel_time
-//	is set, the updates are reverted, and the operation terminates with a
-//	CANCELLED status.
+//   Cancelling the operation is best-effort. If the cancellation succeeds,
+//   the operation metadata’s
+//   cancel_time
+//   is set, the updates are reverted, and the operation terminates with a
+//   CANCELLED status.
 //
-//	New UpdateDatabase requests will return a FAILED_PRECONDITION error
-//	until the pending operation is done (returns successfully or with
-//	error).
+//   New UpdateDatabase requests will return a FAILED_PRECONDITION error
+//   until the pending operation is done (returns successfully or with
+//   error).
 //
-//	Reading the database via the API continues to give the pre-request
-//	values.
+//   Reading the database via the API continues to give the pre-request
+//   values.
 //
 // Upon completion of the returned operation:
 //
-//	The new values are in effect and readable via the API.
+//   The new values are in effect and readable via the API.
 //
-//	The database’s
-//	reconciling
-//	field becomes false.
+//   The database’s
+//   reconciling
+//   field becomes false.
 //
 // The returned [long-running operation][google.longrunning.Operation] will
 // have a name of the format
@@ -897,17 +897,17 @@ type databaseAdminGRPCClient struct {
 // NewDatabaseAdminClient creates a new database admin client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
-// # Cloud Spanner Database Admin API
+// Cloud Spanner Database Admin API
 //
 // The Cloud Spanner Database Admin API can be used to:
 //
-//	create, drop, and list databases
+//   create, drop, and list databases
 //
-//	update the schema of pre-existing databases
+//   update the schema of pre-existing databases
 //
-//	create, delete and list backups for a database
+//   create, delete and list backups for a database
 //
-//	restore a database from an existing backup
+//   restore a database from an existing backup
 func NewDatabaseAdminClient(ctx context.Context, opts ...option.ClientOption) (*DatabaseAdminClient, error) {
 	clientOpts := defaultDatabaseAdminGRPCClientOptions()
 	if newDatabaseAdminClientHook != nil {
@@ -960,7 +960,7 @@ func (c *databaseAdminGRPCClient) Connection() *grpc.ClientConn {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *databaseAdminGRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -993,17 +993,17 @@ type databaseAdminRESTClient struct {
 
 // NewDatabaseAdminRESTClient creates a new database admin rest client.
 //
-// # Cloud Spanner Database Admin API
+// Cloud Spanner Database Admin API
 //
 // The Cloud Spanner Database Admin API can be used to:
 //
-//	create, drop, and list databases
+//   create, drop, and list databases
 //
-//	update the schema of pre-existing databases
+//   update the schema of pre-existing databases
 //
-//	create, delete and list backups for a database
+//   create, delete and list backups for a database
 //
-//	restore a database from an existing backup
+//   restore a database from an existing backup
 func NewDatabaseAdminRESTClient(ctx context.Context, opts ...option.ClientOption) (*DatabaseAdminClient, error) {
 	clientOpts := append(defaultDatabaseAdminRESTClientOptions(), opts...)
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
@@ -1045,7 +1045,7 @@ func defaultDatabaseAdminRESTClientOptions() []option.ClientOption {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *databaseAdminRESTClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -1690,13 +1690,13 @@ func (c *databaseAdminRESTClient) ListDatabases(ctx context.Context, req *databa
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -1777,13 +1777,13 @@ func (c *databaseAdminRESTClient) CreateDatabase(ctx context.Context, req *datab
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1840,13 +1840,13 @@ func (c *databaseAdminRESTClient) GetDatabase(ctx context.Context, req *database
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1864,30 +1864,30 @@ func (c *databaseAdminRESTClient) GetDatabase(ctx context.Context, req *database
 //
 // While the operation is pending:
 //
-//	The database’s
-//	reconciling
-//	field is set to true.
+//   The database’s
+//   reconciling
+//   field is set to true.
 //
-//	Cancelling the operation is best-effort. If the cancellation succeeds,
-//	the operation metadata’s
-//	cancel_time
-//	is set, the updates are reverted, and the operation terminates with a
-//	CANCELLED status.
+//   Cancelling the operation is best-effort. If the cancellation succeeds,
+//   the operation metadata’s
+//   cancel_time
+//   is set, the updates are reverted, and the operation terminates with a
+//   CANCELLED status.
 //
-//	New UpdateDatabase requests will return a FAILED_PRECONDITION error
-//	until the pending operation is done (returns successfully or with
-//	error).
+//   New UpdateDatabase requests will return a FAILED_PRECONDITION error
+//   until the pending operation is done (returns successfully or with
+//   error).
 //
-//	Reading the database via the API continues to give the pre-request
-//	values.
+//   Reading the database via the API continues to give the pre-request
+//   values.
 //
 // Upon completion of the returned operation:
 //
-//	The new values are in effect and readable via the API.
+//   The new values are in effect and readable via the API.
 //
-//	The database’s
-//	reconciling
-//	field becomes false.
+//   The database’s
+//   reconciling
+//   field becomes false.
 //
 // The returned [long-running operation][google.longrunning.Operation] will
 // have a name of the format
@@ -1918,7 +1918,7 @@ func (c *databaseAdminRESTClient) UpdateDatabase(ctx context.Context, req *datab
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask))
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1950,13 +1950,13 @@ func (c *databaseAdminRESTClient) UpdateDatabase(ctx context.Context, req *datab
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2024,13 +2024,13 @@ func (c *databaseAdminRESTClient) UpdateDatabaseDdl(ctx context.Context, req *da
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2133,13 +2133,13 @@ func (c *databaseAdminRESTClient) GetDatabaseDdl(ctx context.Context, req *datab
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2203,13 +2203,13 @@ func (c *databaseAdminRESTClient) SetIamPolicy(ctx context.Context, req *iampb.S
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2274,13 +2274,13 @@ func (c *databaseAdminRESTClient) GetIamPolicy(ctx context.Context, req *iampb.G
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2347,13 +2347,13 @@ func (c *databaseAdminRESTClient) TestIamPermissions(ctx context.Context, req *i
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2427,13 +2427,13 @@ func (c *databaseAdminRESTClient) CreateBackup(ctx context.Context, req *databas
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2506,13 +2506,13 @@ func (c *databaseAdminRESTClient) CopyBackup(ctx context.Context, req *databasep
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2569,13 +2569,13 @@ func (c *databaseAdminRESTClient) GetBackup(ctx context.Context, req *databasepb
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2608,7 +2608,7 @@ func (c *databaseAdminRESTClient) UpdateBackup(ctx context.Context, req *databas
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask))
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -2641,13 +2641,13 @@ func (c *databaseAdminRESTClient) UpdateBackup(ctx context.Context, req *databas
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2757,13 +2757,13 @@ func (c *databaseAdminRESTClient) ListBackups(ctx context.Context, req *database
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -2853,13 +2853,13 @@ func (c *databaseAdminRESTClient) RestoreDatabase(ctx context.Context, req *data
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2939,13 +2939,13 @@ func (c *databaseAdminRESTClient) ListDatabaseOperations(ctx context.Context, re
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -3039,13 +3039,13 @@ func (c *databaseAdminRESTClient) ListBackupOperations(ctx context.Context, req 
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -3127,13 +3127,13 @@ func (c *databaseAdminRESTClient) ListDatabaseRoles(ctx context.Context, req *da
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -3282,13 +3282,13 @@ func (c *databaseAdminRESTClient) GetOperation(ctx context.Context, req *longrun
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -3356,13 +3356,13 @@ func (c *databaseAdminRESTClient) ListOperations(ctx context.Context, req *longr
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
