@@ -22,9 +22,6 @@ package dialogflowpb
 
 import (
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -34,6 +31,8 @@ import (
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -129,9 +128,9 @@ type Environment struct {
 
 	// Output only. The unique identifier of this agent environment.
 	// Supported formats:
-	// - `projects/<Project Number / ID>/agent/environments/<Environment ID>`
-	// - `projects/<Project Number / ID>/locations/<Location
-	//   ID>/agent/environments/<Environment ID>`
+	// - `projects/<Project ID>/agent/environments/<Environment ID>`
+	// - `projects/<Project ID>/locations/<Location
+	// ID>/agent/environments/<Environment ID>`
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Optional. The developer-provided description for this environment.
 	// The maximum length is 500 characters. If exceeded, the request is rejected.
@@ -140,7 +139,7 @@ type Environment struct {
 	// Supported formats:
 	// - `projects/<Project ID>/agent/versions/<Version ID>`
 	// - `projects/<Project ID>/locations/<Location ID>/agent/versions/<Version
-	//   ID>`
+	// ID>`
 	AgentVersion string `protobuf:"bytes,3,opt,name=agent_version,json=agentVersion,proto3" json:"agent_version,omitempty"`
 	// Output only. The state of this environment. This field is read-only, i.e.,
 	// it cannot be set by create and update methods.
@@ -327,8 +326,8 @@ type ListEnvironmentsRequest struct {
 
 	// Required. The agent to list all environments from.
 	// Format:
-	// - `projects/<Project Number / ID>/agent`
-	// - `projects/<Project Number / ID>/locations/<Location ID>/agent`
+	// - `projects/<Project ID>/agent`
+	// - `projects/<Project ID>/locations/<Location ID>/agent`
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Optional. The maximum number of items to return in a single page. By
 	// default 100 and at most 1000.
@@ -460,8 +459,8 @@ type GetEnvironmentRequest struct {
 
 	// Required. The name of the environment.
 	// Supported formats:
-	// - `projects/<Project Number / ID>/agent/environments/<Environment ID>`
-	// - `projects/<Project Number / ID>/locations/<Location
+	// - `projects/<Project ID>/agent/environments/<Environment ID>`
+	// - `projects/<Project ID>/locations/<Location
 	//   ID>/agent/environments/<Environment ID>`
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 }
@@ -514,8 +513,8 @@ type CreateEnvironmentRequest struct {
 
 	// Required. The agent to create an environment for.
 	// Supported formats:
-	// - `projects/<Project Number / ID>/agent`
-	// - `projects/<Project Number / ID>/locations/<Location ID>/agent`
+	// - `projects/<Project ID>/agent`
+	// - `projects/<Project ID>/locations/<Location ID>/agent`
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Required. The environment to create.
 	Environment *Environment `protobuf:"bytes,2,opt,name=environment,proto3" json:"environment,omitempty"`
@@ -656,8 +655,8 @@ type DeleteEnvironmentRequest struct {
 
 	// Required. The name of the environment to delete.
 	// / Format:
-	// - `projects/<Project Number / ID>/agent/environments/<Environment ID>`
-	// - `projects/<Project Number / ID>/locations/<Location
+	// - `projects/<Project ID>/agent/environments/<Environment ID>`
+	// - `projects/<Project ID>/locations/<Location
 	// ID>/agent/environments/<Environment ID>`
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 }
@@ -710,8 +709,8 @@ type GetEnvironmentHistoryRequest struct {
 
 	// Required. The name of the environment to retrieve history for.
 	// Supported formats:
-	// - `projects/<Project Number / ID>/agent/environments/<Environment ID>`
-	// - `projects/<Project Number / ID>/locations/<Location
+	// - `projects/<Project ID>/agent/environments/<Environment ID>`
+	// - `projects/<Project ID>/locations/<Location
 	//   ID>/agent/environments/<Environment ID>`
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Optional. The maximum number of items to return in a single page. By
@@ -783,8 +782,8 @@ type EnvironmentHistory struct {
 
 	// Output only. The name of the environment this history is for.
 	// Supported formats:
-	// - `projects/<Project Number / ID>/agent/environments/<Environment ID>`
-	// - `projects/<Project Number / ID>/locations/<Location
+	// - `projects/<Project ID>/agent/environments/<Environment ID>`
+	// - `projects/<Project ID>/locations/<Location
 	//    ID>/agent/environments/<Environment ID>`
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Output only. The list of agent environments. There will be a maximum number

@@ -22,9 +22,6 @@ package dialogflowpb
 
 import (
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -32,6 +29,8 @@ import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -740,7 +739,7 @@ type BatchCreateMessagesRequest struct {
 	// Format: `projects/<Project ID>/locations/<Location
 	// ID>/conversations/<Conversation ID>`.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
-	// Required. A maximum of 1000 Messages can be created in a batch.
+	// Required. A maximum of 300 messages can be created in a batch.
 	// [CreateMessageRequest.message.send_time][] is required. All created
 	// messages will have identical
 	// [Message.create_time][google.cloud.dialogflow.v2beta1.Message.create_time].
@@ -1013,7 +1012,7 @@ type SuggestConversationSummaryRequest struct {
 	// [latest_message] to use as context when compiling the
 	// suggestion. By default 500 and at most 1000.
 	ContextSize int32 `protobuf:"varint,4,opt,name=context_size,json=contextSize,proto3" json:"context_size,omitempty"`
-	// Parameters for a human assist query.
+	// Parameters for a human assist query. Only used for POC/demo purpose.
 	AssistQueryParams *AssistQueryParameters `protobuf:"bytes,5,opt,name=assist_query_params,json=assistQueryParams,proto3" json:"assist_query_params,omitempty"`
 }
 
