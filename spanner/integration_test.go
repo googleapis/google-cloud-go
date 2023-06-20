@@ -3141,7 +3141,7 @@ func TestIntegration_BatchQuery(t *testing.T) {
 		t.Fatal(err)
 	}
 	defer txn.Cleanup(ctx)
-	if partitions, err = txn.PartitionQueryWithOptions(ctx, stmt, PartitionOptions{0, 3}, QueryOptions{DataBoostEnabled: true}); err != nil {
+	if partitions, err = txn.PartitionQueryWithOptions(ctx, stmt, PartitionOptions{0, 3}, QueryOptions{DataBoostEnabled: false}); err != nil {
 		t.Fatal(err)
 	}
 
@@ -3224,7 +3224,7 @@ func TestIntegration_BatchRead(t *testing.T) {
 		t.Fatal(err)
 	}
 	defer txn.Cleanup(ctx)
-	if partitions, err = txn.PartitionReadWithOptions(ctx, "test", AllKeys(), simpleDBTableColumns, PartitionOptions{0, 3}, ReadOptions{DataBoostEnabled: true}); err != nil {
+	if partitions, err = txn.PartitionReadWithOptions(ctx, "test", AllKeys(), simpleDBTableColumns, PartitionOptions{0, 3}, ReadOptions{DataBoostEnabled: false}); err != nil {
 		t.Fatal(err)
 	}
 
