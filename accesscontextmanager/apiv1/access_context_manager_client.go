@@ -2134,7 +2134,8 @@ func (c *restClient) UpdateAccessLevel(ctx context.Context, req *accesscontextma
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask))
+		// Manually added to fix https://github.com/googleapis/gapic-generator-go/issues/1363.
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()

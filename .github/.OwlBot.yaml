@@ -3,7 +3,10 @@ docker:
 
 deep-remove-regex:
   - /accessapproval/apiv1/
-  - /accesscontextmanager/apiv1/
+  # Temporarily disable generation to retain manual fix:
+  # https://github.com/googleapis/gapic-generator-go/issues/1363.
+  #
+  # - /accesscontextmanager/apiv1/
   - /aiplatform/apiv1/
   - /aiplatform/apiv1beta1/
   - /advisorynotifications/apiv1/
@@ -116,7 +119,10 @@ deep-remove-regex:
   - /ids/apiv1/
   # START snippets
   - /internal/generated/snippets/accessapproval/apiv1/
-  - /internal/generated/snippets/accesscontextmanager/apiv1/
+  # Temporarily disable generation to retain manual fix:
+  # https://github.com/googleapis/gapic-generator-go/issues/1363.
+  #
+  # - /internal/generated/snippets/accesscontextmanager/apiv1/
   - /internal/generated/snippets/aiplatform/apiv1/
   - /internal/generated/snippets/aiplatform/apiv1beta1/
   - /internal/generated/snippets/advisorynotifications/apiv1/
@@ -496,8 +502,11 @@ deep-preserve-regex:
 deep-copy-regex:
   - source: /google/cloud/accessapproval/v1/cloud.google.com/go
     dest: /
-  - source: /google/identity/accesscontextmanager/v1/cloud.google.com/go
-    dest: /
+  # Temporarily disable generation to retain manual fix:
+  # https://github.com/googleapis/gapic-generator-go/issues/1363.
+  #
+  # - source: /google/identity/accesscontextmanager/v1/cloud.google.com/go
+  #   dest: /
   - source: /google/cloud/aiplatform/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/aiplatform/v1beta1/cloud.google.com/go
