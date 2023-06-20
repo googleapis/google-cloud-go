@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"math"
 	"net/http"
 	"net/url"
@@ -700,7 +700,7 @@ func (c *gRPCClient) Connection() *grpc.ClientConn {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -763,7 +763,7 @@ func defaultRESTClientOptions() []option.ClientOption {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *restClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -1122,13 +1122,13 @@ func (c *restClient) CreateSession(ctx context.Context, req *spannerpb.CreateSes
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1189,13 +1189,13 @@ func (c *restClient) BatchCreateSessions(ctx context.Context, req *spannerpb.Bat
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1249,13 +1249,13 @@ func (c *restClient) GetSession(ctx context.Context, req *spannerpb.GetSessionRe
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1323,13 +1323,13 @@ func (c *restClient) ListSessions(ctx context.Context, req *spannerpb.ListSessio
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -1456,13 +1456,13 @@ func (c *restClient) ExecuteSql(ctx context.Context, req *spannerpb.ExecuteSqlRe
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1638,13 +1638,13 @@ func (c *restClient) ExecuteBatchDml(ctx context.Context, req *spannerpb.Execute
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1714,13 +1714,13 @@ func (c *restClient) Read(ctx context.Context, req *spannerpb.ReadRequest, opts 
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1889,13 +1889,13 @@ func (c *restClient) BeginTransaction(ctx context.Context, req *spannerpb.BeginT
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1966,13 +1966,13 @@ func (c *restClient) Commit(ctx context.Context, req *spannerpb.CommitRequest, o
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2093,13 +2093,13 @@ func (c *restClient) PartitionQuery(ctx context.Context, req *spannerpb.Partitio
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2169,13 +2169,13 @@ func (c *restClient) PartitionRead(ctx context.Context, req *spannerpb.Partition
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil

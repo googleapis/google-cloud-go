@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"math"
 	"net/http"
 	"net/url"
@@ -447,7 +447,7 @@ func (c *experimentsGRPCClient) Connection() *grpc.ClientConn {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *experimentsGRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -508,7 +508,7 @@ func defaultExperimentsRESTClientOptions() []option.ClientOption {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *experimentsRESTClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -862,13 +862,13 @@ func (c *experimentsRESTClient) ListExperiments(ctx context.Context, req *cxpb.L
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -938,13 +938,13 @@ func (c *experimentsRESTClient) GetExperiment(ctx context.Context, req *cxpb.Get
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1005,13 +1005,13 @@ func (c *experimentsRESTClient) CreateExperiment(ctx context.Context, req *cxpb.
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1045,7 +1045,7 @@ func (c *experimentsRESTClient) UpdateExperiment(ctx context.Context, req *cxpb.
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask))
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1078,13 +1078,13 @@ func (c *experimentsRESTClient) UpdateExperiment(ctx context.Context, req *cxpb.
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1185,13 +1185,13 @@ func (c *experimentsRESTClient) StartExperiment(ctx context.Context, req *cxpb.S
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1251,13 +1251,13 @@ func (c *experimentsRESTClient) StopExperiment(ctx context.Context, req *cxpb.St
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1309,13 +1309,13 @@ func (c *experimentsRESTClient) GetLocation(ctx context.Context, req *locationpb
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1383,13 +1383,13 @@ func (c *experimentsRESTClient) ListLocations(ctx context.Context, req *location
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -1498,13 +1498,13 @@ func (c *experimentsRESTClient) GetOperation(ctx context.Context, req *longrunni
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1572,13 +1572,13 @@ func (c *experimentsRESTClient) ListOperations(ctx context.Context, req *longrun
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil

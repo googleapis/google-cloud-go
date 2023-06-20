@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"math"
 	"net/http"
 	"net/url"
@@ -556,7 +556,7 @@ func (c *gRPCClient) Connection() *grpc.ClientConn {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -638,7 +638,7 @@ func defaultRESTClientOptions() []option.ClientOption {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *restClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -1274,13 +1274,13 @@ func (c *restClient) ListInstances(ctx context.Context, req *baremetalsolutionpb
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -1349,13 +1349,13 @@ func (c *restClient) GetInstance(ctx context.Context, req *baremetalsolutionpb.G
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1388,7 +1388,7 @@ func (c *restClient) UpdateInstance(ctx context.Context, req *baremetalsolutionp
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask))
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1420,13 +1420,13 @@ func (c *restClient) UpdateInstance(ctx context.Context, req *baremetalsolutionp
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1489,13 +1489,13 @@ func (c *restClient) ResetInstance(ctx context.Context, req *baremetalsolutionpb
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1557,13 +1557,13 @@ func (c *restClient) StartInstance(ctx context.Context, req *baremetalsolutionpb
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1625,13 +1625,13 @@ func (c *restClient) StopInstance(ctx context.Context, req *baremetalsolutionpb.
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1693,13 +1693,13 @@ func (c *restClient) DetachLun(ctx context.Context, req *baremetalsolutionpb.Det
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1772,13 +1772,13 @@ func (c *restClient) ListVolumes(ctx context.Context, req *baremetalsolutionpb.L
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -1847,13 +1847,13 @@ func (c *restClient) GetVolume(ctx context.Context, req *baremetalsolutionpb.Get
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1886,7 +1886,7 @@ func (c *restClient) UpdateVolume(ctx context.Context, req *baremetalsolutionpb.
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask))
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1918,13 +1918,13 @@ func (c *restClient) UpdateVolume(ctx context.Context, req *baremetalsolutionpb.
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1986,13 +1986,13 @@ func (c *restClient) ResizeVolume(ctx context.Context, req *baremetalsolutionpb.
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2065,13 +2065,13 @@ func (c *restClient) ListNetworks(ctx context.Context, req *baremetalsolutionpb.
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -2141,13 +2141,13 @@ func (c *restClient) ListNetworkUsage(ctx context.Context, req *baremetalsolutio
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2199,13 +2199,13 @@ func (c *restClient) GetNetwork(ctx context.Context, req *baremetalsolutionpb.Ge
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2238,7 +2238,7 @@ func (c *restClient) UpdateNetwork(ctx context.Context, req *baremetalsolutionpb
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask))
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -2270,13 +2270,13 @@ func (c *restClient) UpdateNetwork(ctx context.Context, req *baremetalsolutionpb
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2333,13 +2333,13 @@ func (c *restClient) GetLun(ctx context.Context, req *baremetalsolutionpb.GetLun
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2404,13 +2404,13 @@ func (c *restClient) ListLuns(ctx context.Context, req *baremetalsolutionpb.List
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -2479,13 +2479,13 @@ func (c *restClient) GetNfsShare(ctx context.Context, req *baremetalsolutionpb.G
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2553,13 +2553,13 @@ func (c *restClient) ListNfsShares(ctx context.Context, req *baremetalsolutionpb
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -2609,7 +2609,7 @@ func (c *restClient) UpdateNfsShare(ctx context.Context, req *baremetalsolutionp
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask))
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -2641,13 +2641,13 @@ func (c *restClient) UpdateNfsShare(ctx context.Context, req *baremetalsolutionp
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2704,13 +2704,13 @@ func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2778,13 +2778,13 @@ func (c *restClient) ListLocations(ctx context.Context, req *locationpb.ListLoca
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil

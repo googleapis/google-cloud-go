@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"math"
 	"net/http"
 	"net/url"
@@ -1113,7 +1113,7 @@ func (c *gRPCClient) Connection() *grpc.ClientConn {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -1188,7 +1188,7 @@ func defaultRESTClientOptions() []option.ClientOption {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *restClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -2387,13 +2387,13 @@ func (c *restClient) BulkMuteFindings(ctx context.Context, req *securitycenterpb
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2460,13 +2460,13 @@ func (c *restClient) CreateSecurityHealthAnalyticsCustomModule(ctx context.Conte
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2525,13 +2525,13 @@ func (c *restClient) CreateSource(ctx context.Context, req *securitycenterpb.Cre
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2592,13 +2592,13 @@ func (c *restClient) CreateFinding(ctx context.Context, req *securitycenterpb.Cr
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2658,13 +2658,13 @@ func (c *restClient) CreateMuteConfig(ctx context.Context, req *securitycenterpb
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2724,13 +2724,13 @@ func (c *restClient) CreateNotificationConfig(ctx context.Context, req *security
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2904,13 +2904,13 @@ func (c *restClient) GetBigQueryExport(ctx context.Context, req *securitycenterp
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2968,13 +2968,13 @@ func (c *restClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRe
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -3026,13 +3026,13 @@ func (c *restClient) GetMuteConfig(ctx context.Context, req *securitycenterpb.Ge
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -3084,13 +3084,13 @@ func (c *restClient) GetNotificationConfig(ctx context.Context, req *securitycen
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -3142,13 +3142,13 @@ func (c *restClient) GetOrganizationSettings(ctx context.Context, req *securityc
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -3200,13 +3200,13 @@ func (c *restClient) GetEffectiveSecurityHealthAnalyticsCustomModule(ctx context
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -3258,13 +3258,13 @@ func (c *restClient) GetSecurityHealthAnalyticsCustomModule(ctx context.Context,
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -3316,13 +3316,13 @@ func (c *restClient) GetSource(ctx context.Context, req *securitycenterpb.GetSou
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -3388,13 +3388,13 @@ func (c *restClient) GroupAssets(ctx context.Context, req *securitycenterpb.Grou
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -3482,13 +3482,13 @@ func (c *restClient) GroupFindings(ctx context.Context, req *securitycenterpb.Gr
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -3544,14 +3544,14 @@ func (c *restClient) ListAssets(ctx context.Context, req *securitycenterpb.ListA
 			if err != nil {
 				return nil, "", err
 			}
-			params.Add("compareDuration", string(compareDuration))
+			params.Add("compareDuration", string(compareDuration[1:len(compareDuration)-1]))
 		}
 		if req.GetFieldMask() != nil {
 			fieldMask, err := protojson.Marshal(req.GetFieldMask())
 			if err != nil {
 				return nil, "", err
 			}
-			params.Add("fieldMask", string(fieldMask))
+			params.Add("fieldMask", string(fieldMask[1:len(fieldMask)-1]))
 		}
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
@@ -3570,7 +3570,7 @@ func (c *restClient) ListAssets(ctx context.Context, req *securitycenterpb.ListA
 			if err != nil {
 				return nil, "", err
 			}
-			params.Add("readTime", string(readTime))
+			params.Add("readTime", string(readTime[1:len(readTime)-1]))
 		}
 
 		baseUrl.RawQuery = params.Encode()
@@ -3597,13 +3597,13 @@ func (c *restClient) ListAssets(ctx context.Context, req *securitycenterpb.ListA
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -3686,13 +3686,13 @@ func (c *restClient) ListDescendantSecurityHealthAnalyticsCustomModules(ctx cont
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -3751,14 +3751,14 @@ func (c *restClient) ListFindings(ctx context.Context, req *securitycenterpb.Lis
 			if err != nil {
 				return nil, "", err
 			}
-			params.Add("compareDuration", string(compareDuration))
+			params.Add("compareDuration", string(compareDuration[1:len(compareDuration)-1]))
 		}
 		if req.GetFieldMask() != nil {
 			fieldMask, err := protojson.Marshal(req.GetFieldMask())
 			if err != nil {
 				return nil, "", err
 			}
-			params.Add("fieldMask", string(fieldMask))
+			params.Add("fieldMask", string(fieldMask[1:len(fieldMask)-1]))
 		}
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
@@ -3777,7 +3777,7 @@ func (c *restClient) ListFindings(ctx context.Context, req *securitycenterpb.Lis
 			if err != nil {
 				return nil, "", err
 			}
-			params.Add("readTime", string(readTime))
+			params.Add("readTime", string(readTime[1:len(readTime)-1]))
 		}
 
 		baseUrl.RawQuery = params.Encode()
@@ -3804,13 +3804,13 @@ func (c *restClient) ListFindings(ctx context.Context, req *securitycenterpb.Lis
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -3892,13 +3892,13 @@ func (c *restClient) ListMuteConfigs(ctx context.Context, req *securitycenterpb.
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -3980,13 +3980,13 @@ func (c *restClient) ListNotificationConfigs(ctx context.Context, req *securityc
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -4070,13 +4070,13 @@ func (c *restClient) ListEffectiveSecurityHealthAnalyticsCustomModules(ctx conte
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -4160,13 +4160,13 @@ func (c *restClient) ListSecurityHealthAnalyticsCustomModules(ctx context.Contex
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -4248,13 +4248,13 @@ func (c *restClient) ListSources(ctx context.Context, req *securitycenterpb.List
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -4333,13 +4333,13 @@ func (c *restClient) RunAssetDiscovery(ctx context.Context, req *securitycenterp
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -4402,13 +4402,13 @@ func (c *restClient) SetFindingState(ctx context.Context, req *securitycenterpb.
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -4466,13 +4466,13 @@ func (c *restClient) SetMute(ctx context.Context, req *securitycenterpb.SetMuteR
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -4530,13 +4530,13 @@ func (c *restClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRe
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -4594,13 +4594,13 @@ func (c *restClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamP
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -4633,7 +4633,7 @@ func (c *restClient) UpdateExternalSystem(ctx context.Context, req *securitycent
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask))
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -4666,13 +4666,13 @@ func (c *restClient) UpdateExternalSystem(ctx context.Context, req *securitycent
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -4706,7 +4706,7 @@ func (c *restClient) UpdateFinding(ctx context.Context, req *securitycenterpb.Up
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask))
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -4739,13 +4739,13 @@ func (c *restClient) UpdateFinding(ctx context.Context, req *securitycenterpb.Up
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -4778,7 +4778,7 @@ func (c *restClient) UpdateMuteConfig(ctx context.Context, req *securitycenterpb
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask))
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -4811,13 +4811,13 @@ func (c *restClient) UpdateMuteConfig(ctx context.Context, req *securitycenterpb
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -4851,7 +4851,7 @@ func (c *restClient) UpdateNotificationConfig(ctx context.Context, req *security
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask))
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -4884,13 +4884,13 @@ func (c *restClient) UpdateNotificationConfig(ctx context.Context, req *security
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -4923,7 +4923,7 @@ func (c *restClient) UpdateOrganizationSettings(ctx context.Context, req *securi
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask))
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -4956,13 +4956,13 @@ func (c *restClient) UpdateOrganizationSettings(ctx context.Context, req *securi
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -4999,7 +4999,7 @@ func (c *restClient) UpdateSecurityHealthAnalyticsCustomModule(ctx context.Conte
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask))
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -5032,13 +5032,13 @@ func (c *restClient) UpdateSecurityHealthAnalyticsCustomModule(ctx context.Conte
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -5071,7 +5071,7 @@ func (c *restClient) UpdateSource(ctx context.Context, req *securitycenterpb.Upd
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask))
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -5104,13 +5104,13 @@ func (c *restClient) UpdateSource(ctx context.Context, req *securitycenterpb.Upd
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -5143,14 +5143,14 @@ func (c *restClient) UpdateSecurityMarks(ctx context.Context, req *securitycente
 		if err != nil {
 			return nil, err
 		}
-		params.Add("startTime", string(startTime))
+		params.Add("startTime", string(startTime[1:len(startTime)-1]))
 	}
 	if req.GetUpdateMask() != nil {
 		updateMask, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask))
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -5183,13 +5183,13 @@ func (c *restClient) UpdateSecurityMarks(ctx context.Context, req *securitycente
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -5249,13 +5249,13 @@ func (c *restClient) CreateBigQueryExport(ctx context.Context, req *securitycent
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -5328,7 +5328,7 @@ func (c *restClient) UpdateBigQueryExport(ctx context.Context, req *securitycent
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask))
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -5361,13 +5361,13 @@ func (c *restClient) UpdateBigQueryExport(ctx context.Context, req *securitycent
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -5436,13 +5436,13 @@ func (c *restClient) ListBigQueryExports(ctx context.Context, req *securitycente
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -5591,13 +5591,13 @@ func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -5665,13 +5665,13 @@ func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.List
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
