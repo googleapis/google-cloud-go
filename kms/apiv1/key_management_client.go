@@ -24,6 +24,7 @@ import (
 	"math"
 	"net/http"
 	"net/url"
+	"strings"
 	"time"
 
 	iampb "cloud.google.com/go/iam/apiv1/iampb"
@@ -2966,7 +2967,7 @@ func (c *keyManagementRESTClient) UpdateCryptoKey(ctx context.Context, req *kmsp
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask))
+		params.Add("updateMask", strings.Replace(string(updateMask), "\"", ""))
 	}
 
 	baseUrl.RawQuery = params.Encode()

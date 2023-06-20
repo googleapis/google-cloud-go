@@ -24,6 +24,7 @@ import (
 	"math"
 	"net/http"
 	"net/url"
+	"strings"
 	"time"
 
 	accesscontextmanagerpb "cloud.google.com/go/accesscontextmanager/apiv1/accesscontextmanagerpb"
@@ -2135,7 +2136,7 @@ func (c *restClient) UpdateAccessLevel(ctx context.Context, req *accesscontextma
 			return nil, err
 		}
 		// Manually added to fix https://github.com/googleapis/gapic-generator-go/issues/1363.
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+		params.Add("updateMask", strings.ReplaceAll(string(updateMask), "\"", ""))
 	}
 
 	baseUrl.RawQuery = params.Encode()
