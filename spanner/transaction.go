@@ -166,7 +166,8 @@ type ReadOptions struct {
 	// The request tag to use for this request.
 	RequestTag string
 
-	// If this is for a partitioned read and DataBoostEnabled field is set to true, the request will be executed via Spanner independent compute resources.
+	// If this is for a partitioned read and DataBoostEnabled field is set to true, the request will be executed
+	// via Spanner independent compute resources. Setting this option for regular read operations has no effect.
 	DataBoostEnabled bool
 }
 
@@ -370,7 +371,8 @@ type QueryOptions struct {
 	// The request tag to use for this request.
 	RequestTag string
 
-	// If this is for a partitioned query and DataBoostEnabled field is set to true, the request will be executed via Spanner independent compute resources.
+	// If this is for a partitioned query and DataBoostEnabled field is set to true, the request will be executed
+	// via Spanner independent compute resources. Setting this option for regular query operations has no effect.
 	DataBoostEnabled bool
 }
 
