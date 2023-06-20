@@ -1,5 +1,18 @@
 # Changes
 
+## [1.37.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.36.0...dialogflow/v1.37.0) (2023-06-20)
+
+
+### Features
+
+* **dialogflow/cx:** Added include_bigquery_export_settings to ExportAgentRequest ([b726d41](https://github.com/googleapis/google-cloud-go/commit/b726d413166faa8c84c0a09c6019ff50f3249b9d))
+* **dialogflow/cx:** Added include_bigquery_export_settings to ExportAgentRequest ([b726d41](https://github.com/googleapis/google-cloud-go/commit/b726d413166faa8c84c0a09c6019ff50f3249b9d))
+
+
+### Bug Fixes
+
+* **dialogflow:** REST query UpdateMask bug ([df52820](https://github.com/googleapis/google-cloud-go/commit/df52820b0e7721954809a8aa8700b93c5662dc9b))
+
 ## [1.36.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.35.0...dialogflow/v1.36.0) (2023-06-13)
 
 

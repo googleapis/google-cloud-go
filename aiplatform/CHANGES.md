@@ -1,6 +1,19 @@
 # Changes
 
 
+## [1.45.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.44.0...aiplatform/v1.45.0) (2023-06-20)
+
+
+### Features
+
+* **aiplatform:** Add bias_configs to ModelEvaluation ([b726d41](https://github.com/googleapis/google-cloud-go/commit/b726d413166faa8c84c0a09c6019ff50f3249b9d))
+* **aiplatform:** Add UpdateExplanationDataset to aiplatform ([#8118](https://github.com/googleapis/google-cloud-go/issues/8118)) ([b726d41](https://github.com/googleapis/google-cloud-go/commit/b726d413166faa8c84c0a09c6019ff50f3249b9d))
+
+
+### Bug Fixes
+
+* **aiplatform:** REST query UpdateMask bug ([df52820](https://github.com/googleapis/google-cloud-go/commit/df52820b0e7721954809a8aa8700b93c5662dc9b))
+
 ## [1.44.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform-v1.43.0...aiplatform/v1.44.0) (2023-06-07)
 
 

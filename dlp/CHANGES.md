@@ -1,5 +1,12 @@
 # Changes
 
+## [1.10.1](https://github.com/googleapis/google-cloud-go/compare/dlp/v1.10.0...dlp/v1.10.1) (2023-06-20)
+
+
+### Bug Fixes
+
+* **dlp:** REST query UpdateMask bug ([df52820](https://github.com/googleapis/google-cloud-go/commit/df52820b0e7721954809a8aa8700b93c5662dc9b))
+
 ## [1.10.0](https://github.com/googleapis/google-cloud-go/compare/dlp/v1.9.1...dlp/v1.10.0) (2023-05-30)
 
 

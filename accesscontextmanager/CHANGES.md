@@ -1,5 +1,12 @@
 # Changes
 
+## [1.8.1](https://github.com/googleapis/google-cloud-go/compare/accesscontextmanager-v1.8.0...accesscontextmanager/v1.8.1) (2023-06-20)
+
+
+### Bug Fixes
+
+* **accesscontextmanager:** REST query UpdateMask bug ([df52820](https://github.com/googleapis/google-cloud-go/commit/df52820b0e7721954809a8aa8700b93c5662dc9b))
+
 ## [1.8.0](https://github.com/googleapis/google-cloud-go/compare/accesscontextmanager/v1.7.1...accesscontextmanager/v1.8.0) (2023-05-30)
 
 
