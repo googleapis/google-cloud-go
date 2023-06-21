@@ -2337,7 +2337,7 @@ func TestSignedURLOptionsClone(t *testing.T) {
 		Style:           VirtualHostedStyle(),
 		Insecure:        true,
 		Scheme:          SigningSchemeV2,
-		endpoint:        "localhost:8000",
+		Hostname:        "localhost:8000",
 	}
 
 	// Check that all fields are set to a non-zero value, so we can check that

@@ -1215,6 +1215,7 @@ func TestDetectDefaultGoogleAccessID(t *testing.T) {
 
 // TestBucketSignedURL_Endpoint_Emulator_Host tests that Bucket.SignedURl
 // respects the host set in STORAGE_EMULATOR_HOST and/or in option.WithEndpoint
+// TODO: move this testing to conformance tests.
 func TestBucketSignedURL_Endpoint_Emulator_Host(t *testing.T) {
 	expires, _ := time.Parse(time.RFC3339, "2002-10-02T10:00:00-05:00")
 	bucketName := "bucket-name"
@@ -1470,6 +1471,24 @@ func TestBucketSignedURL_Endpoint_Emulator_Host(t *testing.T) {
 				Method:         "POST",
 				Expires:        expires,
 				Scheme:         SigningSchemeV2,
+			},
+			want: "https://localhost:6000/" + bucketName + "/" + objectName +
+				"?Expires=1033570800" +
+				"&GoogleAccessId=xxx%40clientid" +
+				"&Signature=oRi3y2tBTmoDto7FezNx4AjC0RXA6fpJjTBa0hINeVroZ%2ByOeRU8MRwJbKg1IkBbV0IjtlPaGwv5YoUH16UYdipBjCXOS%2B1qgRWyzl8AnzvU%2BfwSXSlCk9zPtHHoBkFT7G4cZQOdDTLRrSG%2FmRJ3K09KEHYg%2Fc6R5Dd92inD1tLE2tiFMyHFs5uQHRMsepY4wrWiIQ4u53tPvk%2Fwiq1%2B9yL6x3QGblhdWwjX0BTVBOxexyKTlwczJW0XlWX8wpcTFfzQnJZuujbhanf2g9MGzSmkv3ylyuQdHMJDYp4Bzq%2FmnkNUg0Vp6iEvh9tyVdRNkwXeg3D8qn%2BFSOxcF%2B9vJw%3D%3D",
+		},
+		{
+			desc:         "hostname in opts overrides all else",
+			endpoint:     &localhost9000,
+			emulatorHost: "https://localhost:8000",
+			now:          expires.Add(-24 * time.Hour),
+			opts: &SignedURLOptions{
+				GoogleAccessID: "xxx@clientid",
+				PrivateKey:     dummyKey("rsa"),
+				Method:         "POST",
+				Expires:        expires,
+				Scheme:         SigningSchemeV2,
+				Hostname:       "localhost:6000",
 			},
 			want: "https://localhost:6000/" + bucketName + "/" + objectName +
 				"?Expires=1033570800" +

@@ -173,14 +173,17 @@ func (b *BucketHandle) Update(ctx context.Context, uattrs BucketAttrsToUpdate) (
 // [Overview of access control]: https://cloud.google.com/storage/docs/accesscontrol#signed_urls_query_string_authentication
 // [automatic detection of credentials]: https://pkg.go.dev/cloud.google.com/go/storage#hdr-Credential_requirements_for_signing
 func (b *BucketHandle) SignedURL(object string, opts *SignedURLOptions) (string, error) {
-	// Extract the correct endpoint from the readhost set on the client
-	opts.endpoint = b.c.readHost
-
-	if opts.GoogleAccessID != "" && (opts.SignBytes != nil || len(opts.PrivateKey) > 0) {
-		return SignedURL(b.name, object, opts)
-	}
 	// Make a copy of opts so we don't modify the pointer parameter.
 	newopts := opts.clone()
+
+	if newopts.Hostname == "" {
+		// Extract the correct host from the readhost set on the client
+		newopts.Hostname = b.c.readHost
+	}
+
+	if opts.GoogleAccessID != "" && (opts.SignBytes != nil || len(opts.PrivateKey) > 0) {
+		return SignedURL(b.name, object, newopts)
+	}
 
 	if newopts.GoogleAccessID == "" {
 		id, err := b.detectDefaultGoogleAccessID()
@@ -218,14 +221,17 @@ func (b *BucketHandle) SignedURL(object string, opts *SignedURLOptions) (string,
 //
 // [automatic detection of credentials]: https://pkg.go.dev/cloud.google.com/go/storage#hdr-Credential_requirements_for_signing
 func (b *BucketHandle) GenerateSignedPostPolicyV4(object string, opts *PostPolicyV4Options) (*PostPolicyV4, error) {
-	// Extract the correct endpoint from the readhost set on the client
-	opts.endpoint = b.c.readHost
-
-	if opts.GoogleAccessID != "" && (opts.SignRawBytes != nil || opts.SignBytes != nil || len(opts.PrivateKey) > 0) {
-		return GenerateSignedPostPolicyV4(b.name, object, opts)
-	}
 	// Make a copy of opts so we don't modify the pointer parameter.
 	newopts := opts.clone()
+
+	if newopts.Hostname == "" {
+		// Extract the correct host from the readhost set on the client
+		newopts.Hostname = b.c.readHost
+	}
+
+	if opts.GoogleAccessID != "" && (opts.SignRawBytes != nil || opts.SignBytes != nil || len(opts.PrivateKey) > 0) {
+		return GenerateSignedPostPolicyV4(b.name, object, newopts)
+	}
 
 	if newopts.GoogleAccessID == "" {
 		id, err := b.detectDefaultGoogleAccessID()

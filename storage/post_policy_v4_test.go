@@ -40,7 +40,7 @@ func TestPostPolicyV4OptionsClone(t *testing.T) {
 		Fields:              &PolicyV4Fields{ACL: "test-acl"},
 		Conditions:          []PostPolicyV4Condition{},
 		shouldHashSignBytes: true,
-		endpoint:            "localhost:9000",
+		Hostname:            "localhost:9000",
 	}
 
 	// Check that all fields are set to a non-zero value, so we can check that

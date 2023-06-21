@@ -113,8 +113,13 @@ type PostPolicyV4Options struct {
 	// Optional.
 	Conditions []PostPolicyV4Condition
 
+	// Hostname sets the host of the signed post policy. This field overrides
+	// any endpoint set on a storage Client or through STORAGE_EMULATOR_HOST.
+	// Not compatible with BucketBoundHostname URLStyle.
+	// Optional.
+	Hostname string
+
 	shouldHashSignBytes bool
-	endpoint            string
 }
 
 func (opts *PostPolicyV4Options) clone() *PostPolicyV4Options {
@@ -129,7 +134,7 @@ func (opts *PostPolicyV4Options) clone() *PostPolicyV4Options {
 		Fields:              opts.Fields,
 		Conditions:          opts.Conditions,
 		shouldHashSignBytes: opts.shouldHashSignBytes,
-		endpoint:            opts.endpoint,
+		Hostname:            opts.Hostname,
 	}
 }
 
@@ -372,7 +377,7 @@ func GenerateSignedPostPolicyV4(bucket, object string, opts *PostPolicyV4Options
 	u := &url.URL{
 		Path:    path,
 		RawPath: pathEncodeV4(path),
-		Host:    opts.Style.host(opts.endpoint, bucket),
+		Host:    opts.Style.host(opts.Hostname, bucket),
 		Scheme:  scheme,
 	}
 
