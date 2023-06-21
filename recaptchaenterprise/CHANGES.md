@@ -1,6 +1,13 @@
 # Changes
 
 
+## [2.7.2](https://github.com/googleapis/google-cloud-go/compare/recaptchaenterprise-v2.7.1...recaptchaenterprise/v2.7.2) (2023-06-20)
+
+
+### Bug Fixes
+
+* **recaptchaenterprise:** REST query UpdateMask bug ([df52820](https://github.com/googleapis/google-cloud-go/commit/df52820b0e7721954809a8aa8700b93c5662dc9b))
+
 ## [2.7.1](https://github.com/googleapis/google-cloud-go/compare/recaptchaenterprise/v2.7.0...recaptchaenterprise/v2.7.1) (2023-05-08)
 
 
