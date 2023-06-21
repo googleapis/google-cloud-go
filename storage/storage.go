@@ -109,8 +109,8 @@ type Client struct {
 	raw *raw.Service
 	// Scheme describes the scheme under the current host.
 	scheme string
-	// ReadHost is the default host used on the reader.
-	readHost string
+	// xmlHost is the default host used for XML requests.
+	xmlHost string
 	// May be nil.
 	creds *google.Credentials
 	retry *retryConfig
@@ -199,7 +199,7 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 	if err != nil {
 		return nil, fmt.Errorf("storage client: %w", err)
 	}
-	// Update readHost and scheme with the chosen endpoint.
+	// Update xmlHost and scheme with the chosen endpoint.
 	u, err := url.Parse(ep)
 	if err != nil {
 		return nil, fmt.Errorf("supplied endpoint %q is not valid: %w", ep, err)
@@ -211,12 +211,12 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 	}
 
 	return &Client{
-		hc:       hc,
-		raw:      rawService,
-		scheme:   u.Scheme,
-		readHost: u.Host,
-		creds:    creds,
-		tc:       tc,
+		hc:      hc,
+		raw:     rawService,
+		scheme:  u.Scheme,
+		xmlHost: u.Host,
+		creds:   creds,
+		tc:      tc,
 	}, nil
 }
 
