@@ -1,5 +1,12 @@
 # Changes
 
+## [1.22.1](https://github.com/googleapis/google-cloud-go/compare/container/v1.22.0...container/v1.22.1) (2023-06-20)
+
+
+### Bug Fixes
+
+* **container:** REST query UpdateMask bug ([df52820](https://github.com/googleapis/google-cloud-go/commit/df52820b0e7721954809a8aa8700b93c5662dc9b))
+
 ## [1.22.0](https://github.com/googleapis/google-cloud-go/compare/container/v1.21.0...container/v1.22.0) (2023-06-13)
 
 

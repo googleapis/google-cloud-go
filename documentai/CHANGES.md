@@ -1,6 +1,19 @@
 # Changes
 
 
+## [1.20.0](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.19.0...documentai/v1.20.0) (2023-06-20)
+
+
+### Features
+
+* **documentai:** Add StyleInfo to document.proto ([b726d41](https://github.com/googleapis/google-cloud-go/commit/b726d413166faa8c84c0a09c6019ff50f3249b9d))
+* **documentai:** Add StyleInfo to document.proto ([b726d41](https://github.com/googleapis/google-cloud-go/commit/b726d413166faa8c84c0a09c6019ff50f3249b9d))
+
+
+### Bug Fixes
+
+* **documentai:** REST query UpdateMask bug ([df52820](https://github.com/googleapis/google-cloud-go/commit/df52820b0e7721954809a8aa8700b93c5662dc9b))
+
 ## [1.19.0](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.18.1...documentai/v1.19.0) (2023-05-30)
 
 

@@ -1,6 +1,18 @@
 # Changelog
 
 
+## [1.3.0](https://github.com/googleapis/google-cloud-go/compare/batch/v1.2.0...batch/v1.3.0) (2023-06-20)
+
+
+### Features
+
+* **batch:** Add support for scheduling_policy ([3382ef8](https://github.com/googleapis/google-cloud-go/commit/3382ef81b6bcefe1c7bfc14aa5ff9bbf25850966))
+
+
+### Bug Fixes
+
+* **batch:** REST query UpdateMask bug ([df52820](https://github.com/googleapis/google-cloud-go/commit/df52820b0e7721954809a8aa8700b93c5662dc9b))
+
 ## [1.2.0](https://github.com/googleapis/google-cloud-go/compare/batch/v1.1.0...batch/v1.2.0) (2023-05-30)
 
 
