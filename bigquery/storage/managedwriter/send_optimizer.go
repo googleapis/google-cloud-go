@@ -35,6 +35,9 @@ type sendOptimizer interface {
 
 	// optimizeSend handles possible manipulation of a request, and triggers the send.
 	optimizeSend(arc storagepb.BigQueryWrite_AppendRowsClient, pw *pendingWrite) error
+
+	// isMultiplexing tracks if we've actually sent writes to more than a single stream on this connection.
+	isMultiplexing() bool
 }
 
 // verboseOptimizer is a primarily a testing optimizer that always sends the full request.
@@ -48,6 +51,11 @@ func (vo *verboseOptimizer) signalReset() {
 // optimizeSend populates a full request every time.
 func (vo *verboseOptimizer) optimizeSend(arc storagepb.BigQueryWrite_AppendRowsClient, pw *pendingWrite) error {
 	return arc.Send(pw.constructFullRequest(true))
+}
+
+func (vo *verboseOptimizer) isMultiplexing() bool {
+	// we declare this no to ensure we always reconnect on schema changes.
+	return false
 }
 
 // simplexOptimizer is used for connections bearing AppendRowsRequest for only a single stream.
@@ -80,6 +88,11 @@ func (so *simplexOptimizer) optimizeSend(arc storagepb.BigQueryWrite_AppendRowsC
 	return err
 }
 
+func (so *simplexOptimizer) isMultiplexing() bool {
+	// A simplex optimizer is not designed for multiplexing.
+	return false
+}
+
 // multiplexOptimizer is used for connections where requests for multiple default streams are sent on a common
 // connection.  Only default streams can currently be multiplexed.
 //
@@ -93,10 +106,12 @@ func (so *simplexOptimizer) optimizeSend(arc storagepb.BigQueryWrite_AppendRowsC
 type multiplexOptimizer struct {
 	prevStream            string
 	prevDescriptorVersion *descriptorVersion
+	multiplexStreams      bool
 }
 
 func (mo *multiplexOptimizer) signalReset() {
 	mo.prevStream = ""
+	mo.multiplexStreams = false
 	mo.prevDescriptorVersion = nil
 }
 
@@ -139,9 +154,16 @@ func (mo *multiplexOptimizer) optimizeSend(arc storagepb.BigQueryWrite_AppendRow
 				mo.prevStream = pw.writeStreamID
 				mo.prevDescriptorVersion = pw.descVersion
 			}
+			// Also, note that we've sent traffic for multiple streams, which means the backend recognizes this
+			// is a multiplex stream as well.
+			mo.multiplexStreams = true
 		}
 	}
 	return err
+}
+
+func (mo *multiplexOptimizer) isMultiplexing() bool {
+	return mo.multiplexStreams
 }
 
 // getDescriptorFromAppend is a utility method for extracting the deeply nested schema

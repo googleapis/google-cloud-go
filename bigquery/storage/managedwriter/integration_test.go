@@ -245,10 +245,6 @@ func TestIntegration_ManagedWriter(t *testing.T) {
 			t.Parallel()
 			testPendingStream(ctx, t, mwClient, bqClient, dataset)
 		})
-		t.Run("SchemaEvolution", func(t *testing.T) {
-			t.Parallel()
-			testSchemaEvolution(ctx, t, mwClient, bqClient, dataset)
-		})
 		t.Run("SimpleCDC", func(t *testing.T) {
 			t.Parallel()
 			testSimpleCDC(ctx, t, mwClient, bqClient, dataset)
@@ -265,6 +261,56 @@ func TestIntegration_ManagedWriter(t *testing.T) {
 		})
 
 	})
+}
+
+func TestIntegration_SchemaEvolution(t *testing.T) {
+
+	testcases := []struct {
+		desc       string
+		clientOpts []option.ClientOption
+		writerOpts []WriterOption
+	}{
+		{
+			desc: "Simplex_Committed",
+			writerOpts: []WriterOption{
+				WithType(CommittedStream),
+			},
+		},
+		{
+			desc: "Simplex_Default",
+			writerOpts: []WriterOption{
+				WithType(DefaultStream),
+			},
+		},
+		{
+			desc: "Multiplex_Default",
+			clientOpts: []option.ClientOption{
+				WithMultiplexing(),
+				WithMultiplexPoolLimit(2),
+			},
+			writerOpts: []WriterOption{
+				WithType(DefaultStream),
+			},
+		},
+	}
+
+	for _, tc := range testcases {
+		mwClient, bqClient := getTestClients(context.Background(), t, tc.clientOpts...)
+		defer mwClient.Close()
+		defer bqClient.Close()
+
+		dataset, cleanup, err := setupTestDataset(context.Background(), t, bqClient, "asia-east1")
+		if err != nil {
+			t.Fatalf("failed to init test dataset: %v", err)
+		}
+		defer cleanup()
+
+		ctx, cancel := context.WithTimeout(context.Background(), defaultTestTimeout)
+		defer cancel()
+		t.Run(tc.desc, func(t *testing.T) {
+			testSchemaEvolution(ctx, t, mwClient, bqClient, dataset, tc.writerOpts...)
+		})
+	}
 }
 
 func testDefaultStream(ctx context.Context, t *testing.T, mwClient *Client, bqClient *bigquery.Client, dataset *bigquery.Dataset) {
@@ -1094,7 +1140,7 @@ func testInstrumentation(ctx context.Context, t *testing.T, mwClient *Client, bq
 	}
 }
 
-func testSchemaEvolution(ctx context.Context, t *testing.T, mwClient *Client, bqClient *bigquery.Client, dataset *bigquery.Dataset) {
+func testSchemaEvolution(ctx context.Context, t *testing.T, mwClient *Client, bqClient *bigquery.Client, dataset *bigquery.Dataset, opts ...WriterOption) {
 	testTable := dataset.Table(tableIDs.New())
 	if err := testTable.Create(ctx, &bigquery.TableMetadata{Schema: testdata.SimpleMessageSchema}); err != nil {
 		t.Fatalf("failed to create test table %s: %v", testTable.FullyQualifiedName(), err)
@@ -1104,11 +1150,9 @@ func testSchemaEvolution(ctx context.Context, t *testing.T, mwClient *Client, bq
 	descriptorProto := protodesc.ToDescriptorProto(m.ProtoReflect().Descriptor())
 
 	// setup a new stream.
-	ms, err := mwClient.NewManagedStream(ctx,
-		WithDestinationTable(TableParentFromParts(testTable.ProjectID, testTable.DatasetID, testTable.TableID)),
-		WithSchemaDescriptor(descriptorProto),
-		WithType(CommittedStream),
-	)
+	opts = append(opts, WithDestinationTable(TableParentFromParts(testTable.ProjectID, testTable.DatasetID, testTable.TableID)))
+	opts = append(opts, WithSchemaDescriptor(descriptorProto))
+	ms, err := mwClient.NewManagedStream(ctx, opts...)
 	if err != nil {
 		t.Fatalf("NewManagedStream: %v", err)
 	}
@@ -1154,7 +1198,7 @@ func testSchemaEvolution(ctx context.Context, t *testing.T, mwClient *Client, bq
 	// this subjects us to a possible race, as the backend that services GetWriteStream isn't necessarily the
 	// one in charge of the stream, and thus may report ready early.
 	for {
-		resp, err := ms.AppendRows(ctx, [][]byte{latestRow}, WithOffset(curOffset))
+		resp, err := ms.AppendRows(ctx, [][]byte{latestRow})
 		if err != nil {
 			t.Errorf("got error on dupe append: %v", err)
 			break
@@ -1181,7 +1225,7 @@ func testSchemaEvolution(ctx context.Context, t *testing.T, mwClient *Client, bq
 		t.Errorf("failed to marshal evolved message: %v", err)
 	}
 	// Send an append with an evolved schema
-	res, err := ms.AppendRows(ctx, [][]byte{b}, WithOffset(curOffset), UpdateSchemaDescriptor(descriptorProto))
+	res, err := ms.AppendRows(ctx, [][]byte{b}, UpdateSchemaDescriptor(descriptorProto))
 	if err != nil {
 		t.Errorf("failed evolved append: %v", err)
 	}
