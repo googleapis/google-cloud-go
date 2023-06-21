@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"math"
 	"net/http"
 	"net/url"
@@ -83,8 +83,11 @@ func defaultRepositoryManagerGRPCClientOptions() []option.ClientOption {
 
 func defaultRepositoryManagerCallOptions() *RepositoryManagerCallOptions {
 	return &RepositoryManagerCallOptions{
-		CreateConnection: []gax.CallOption{},
+		CreateConnection: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		GetConnection: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -96,6 +99,7 @@ func defaultRepositoryManagerCallOptions() *RepositoryManagerCallOptions {
 			}),
 		},
 		ListConnections: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -106,11 +110,18 @@ func defaultRepositoryManagerCallOptions() *RepositoryManagerCallOptions {
 				})
 			}),
 		},
-		UpdateConnection:        []gax.CallOption{},
-		DeleteConnection:        []gax.CallOption{},
-		CreateRepository:        []gax.CallOption{},
+		UpdateConnection: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteConnection: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		CreateRepository: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		BatchCreateRepositories: []gax.CallOption{},
 		GetRepository: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -122,6 +133,7 @@ func defaultRepositoryManagerCallOptions() *RepositoryManagerCallOptions {
 			}),
 		},
 		ListRepositories: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -132,8 +144,11 @@ func defaultRepositoryManagerCallOptions() *RepositoryManagerCallOptions {
 				})
 			}),
 		},
-		DeleteRepository: []gax.CallOption{},
+		DeleteRepository: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		FetchReadWriteToken: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -145,6 +160,7 @@ func defaultRepositoryManagerCallOptions() *RepositoryManagerCallOptions {
 			}),
 		},
 		FetchReadToken: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -156,6 +172,7 @@ func defaultRepositoryManagerCallOptions() *RepositoryManagerCallOptions {
 			}),
 		},
 		FetchLinkableRepositories: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -176,8 +193,11 @@ func defaultRepositoryManagerCallOptions() *RepositoryManagerCallOptions {
 
 func defaultRepositoryManagerRESTCallOptions() *RepositoryManagerCallOptions {
 	return &RepositoryManagerCallOptions{
-		CreateConnection: []gax.CallOption{},
+		CreateConnection: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		GetConnection: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -188,6 +208,7 @@ func defaultRepositoryManagerRESTCallOptions() *RepositoryManagerCallOptions {
 			}),
 		},
 		ListConnections: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -197,11 +218,18 @@ func defaultRepositoryManagerRESTCallOptions() *RepositoryManagerCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
-		UpdateConnection:        []gax.CallOption{},
-		DeleteConnection:        []gax.CallOption{},
-		CreateRepository:        []gax.CallOption{},
+		UpdateConnection: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteConnection: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		CreateRepository: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		BatchCreateRepositories: []gax.CallOption{},
 		GetRepository: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -212,6 +240,7 @@ func defaultRepositoryManagerRESTCallOptions() *RepositoryManagerCallOptions {
 			}),
 		},
 		ListRepositories: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -221,8 +250,11 @@ func defaultRepositoryManagerRESTCallOptions() *RepositoryManagerCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
-		DeleteRepository: []gax.CallOption{},
+		DeleteRepository: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		FetchReadWriteToken: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -233,6 +265,7 @@ func defaultRepositoryManagerRESTCallOptions() *RepositoryManagerCallOptions {
 			}),
 		},
 		FetchReadToken: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -243,6 +276,7 @@ func defaultRepositoryManagerRESTCallOptions() *RepositoryManagerCallOptions {
 			}),
 		},
 		FetchLinkableRepositories: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -476,9 +510,6 @@ type repositoryManagerGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing RepositoryManagerClient
 	CallOptions **RepositoryManagerCallOptions
 
@@ -512,11 +543,6 @@ func NewRepositoryManagerClient(ctx context.Context, opts ...option.ClientOption
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -525,7 +551,6 @@ func NewRepositoryManagerClient(ctx context.Context, opts ...option.ClientOption
 
 	c := &repositoryManagerGRPCClient{
 		connPool:                connPool,
-		disableDeadlines:        disableDeadlines,
 		repositoryManagerClient: cloudbuildpb.NewRepositoryManagerClient(connPool),
 		CallOptions:             &client.CallOptions,
 		operationsClient:        longrunningpb.NewOperationsClient(connPool),
@@ -561,7 +586,7 @@ func (c *repositoryManagerGRPCClient) Connection() *grpc.ClientConn {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *repositoryManagerGRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -636,7 +661,7 @@ func defaultRepositoryManagerRESTClientOptions() []option.ClientOption {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *repositoryManagerRESTClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -656,11 +681,6 @@ func (c *repositoryManagerRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 func (c *repositoryManagerGRPCClient) CreateConnection(ctx context.Context, req *cloudbuildpb.CreateConnectionRequest, opts ...gax.CallOption) (*CreateConnectionOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -680,11 +700,6 @@ func (c *repositoryManagerGRPCClient) CreateConnection(ctx context.Context, req 
 }
 
 func (c *repositoryManagerGRPCClient) GetConnection(ctx context.Context, req *cloudbuildpb.GetConnectionRequest, opts ...gax.CallOption) (*cloudbuildpb.Connection, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -747,11 +762,6 @@ func (c *repositoryManagerGRPCClient) ListConnections(ctx context.Context, req *
 }
 
 func (c *repositoryManagerGRPCClient) UpdateConnection(ctx context.Context, req *cloudbuildpb.UpdateConnectionRequest, opts ...gax.CallOption) (*UpdateConnectionOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "connection.name", url.QueryEscape(req.GetConnection().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -771,11 +781,6 @@ func (c *repositoryManagerGRPCClient) UpdateConnection(ctx context.Context, req 
 }
 
 func (c *repositoryManagerGRPCClient) DeleteConnection(ctx context.Context, req *cloudbuildpb.DeleteConnectionRequest, opts ...gax.CallOption) (*DeleteConnectionOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -795,11 +800,6 @@ func (c *repositoryManagerGRPCClient) DeleteConnection(ctx context.Context, req 
 }
 
 func (c *repositoryManagerGRPCClient) CreateRepository(ctx context.Context, req *cloudbuildpb.CreateRepositoryRequest, opts ...gax.CallOption) (*CreateRepositoryOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -838,11 +838,6 @@ func (c *repositoryManagerGRPCClient) BatchCreateRepositories(ctx context.Contex
 }
 
 func (c *repositoryManagerGRPCClient) GetRepository(ctx context.Context, req *cloudbuildpb.GetRepositoryRequest, opts ...gax.CallOption) (*cloudbuildpb.Repository, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -905,11 +900,6 @@ func (c *repositoryManagerGRPCClient) ListRepositories(ctx context.Context, req 
 }
 
 func (c *repositoryManagerGRPCClient) DeleteRepository(ctx context.Context, req *cloudbuildpb.DeleteRepositoryRequest, opts ...gax.CallOption) (*DeleteRepositoryOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -929,11 +919,6 @@ func (c *repositoryManagerGRPCClient) DeleteRepository(ctx context.Context, req 
 }
 
 func (c *repositoryManagerGRPCClient) FetchReadWriteToken(ctx context.Context, req *cloudbuildpb.FetchReadWriteTokenRequest, opts ...gax.CallOption) (*cloudbuildpb.FetchReadWriteTokenResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "repository", url.QueryEscape(req.GetRepository())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -951,11 +936,6 @@ func (c *repositoryManagerGRPCClient) FetchReadWriteToken(ctx context.Context, r
 }
 
 func (c *repositoryManagerGRPCClient) FetchReadToken(ctx context.Context, req *cloudbuildpb.FetchReadTokenRequest, opts ...gax.CallOption) (*cloudbuildpb.FetchReadTokenResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "repository", url.QueryEscape(req.GetRepository())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1146,13 +1126,13 @@ func (c *repositoryManagerRESTClient) CreateConnection(ctx context.Context, req 
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1209,13 +1189,13 @@ func (c *repositoryManagerRESTClient) GetConnection(ctx context.Context, req *cl
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1280,13 +1260,13 @@ func (c *repositoryManagerRESTClient) ListConnections(ctx context.Context, req *
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -1342,7 +1322,7 @@ func (c *repositoryManagerRESTClient) UpdateConnection(ctx context.Context, req 
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask))
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1374,13 +1354,13 @@ func (c *repositoryManagerRESTClient) UpdateConnection(ctx context.Context, req 
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1442,13 +1422,13 @@ func (c *repositoryManagerRESTClient) DeleteConnection(ctx context.Context, req 
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1512,13 +1492,13 @@ func (c *repositoryManagerRESTClient) CreateRepository(ctx context.Context, req 
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1580,13 +1560,13 @@ func (c *repositoryManagerRESTClient) BatchCreateRepositories(ctx context.Contex
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1643,13 +1623,13 @@ func (c *repositoryManagerRESTClient) GetRepository(ctx context.Context, req *cl
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1717,13 +1697,13 @@ func (c *repositoryManagerRESTClient) ListRepositories(ctx context.Context, req 
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -1797,13 +1777,13 @@ func (c *repositoryManagerRESTClient) DeleteRepository(ctx context.Context, req 
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1866,13 +1846,13 @@ func (c *repositoryManagerRESTClient) FetchReadWriteToken(ctx context.Context, r
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1930,13 +1910,13 @@ func (c *repositoryManagerRESTClient) FetchReadToken(ctx context.Context, req *c
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2002,13 +1982,13 @@ func (c *repositoryManagerRESTClient) FetchLinkableRepositories(ctx context.Cont
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -2081,13 +2061,13 @@ func (c *repositoryManagerRESTClient) GetIamPolicy(ctx context.Context, req *iam
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2149,13 +2129,13 @@ func (c *repositoryManagerRESTClient) SetIamPolicy(ctx context.Context, req *iam
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2219,13 +2199,13 @@ func (c *repositoryManagerRESTClient) TestIamPermissions(ctx context.Context, re
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2323,13 +2303,13 @@ func (c *repositoryManagerRESTClient) GetOperation(ctx context.Context, req *lon
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil

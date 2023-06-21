@@ -74,9 +74,14 @@ func defaultAwsClustersGRPCClientOptions() []option.ClientOption {
 
 func defaultAwsClustersCallOptions() *AwsClustersCallOptions {
 	return &AwsClustersCallOptions{
-		CreateAwsCluster: []gax.CallOption{},
-		UpdateAwsCluster: []gax.CallOption{},
+		CreateAwsCluster: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateAwsCluster: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		GetAwsCluster: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -88,6 +93,7 @@ func defaultAwsClustersCallOptions() *AwsClustersCallOptions {
 			}),
 		},
 		ListAwsClusters: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -98,8 +104,11 @@ func defaultAwsClustersCallOptions() *AwsClustersCallOptions {
 				})
 			}),
 		},
-		DeleteAwsCluster: []gax.CallOption{},
+		DeleteAwsCluster: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		GenerateAwsAccessToken: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -110,9 +119,14 @@ func defaultAwsClustersCallOptions() *AwsClustersCallOptions {
 				})
 			}),
 		},
-		CreateAwsNodePool: []gax.CallOption{},
-		UpdateAwsNodePool: []gax.CallOption{},
+		CreateAwsNodePool: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateAwsNodePool: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		GetAwsNodePool: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -124,6 +138,7 @@ func defaultAwsClustersCallOptions() *AwsClustersCallOptions {
 			}),
 		},
 		ListAwsNodePools: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -134,8 +149,11 @@ func defaultAwsClustersCallOptions() *AwsClustersCallOptions {
 				})
 			}),
 		},
-		DeleteAwsNodePool: []gax.CallOption{},
+		DeleteAwsNodePool: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		GetAwsServerConfig: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -376,9 +394,6 @@ type awsClustersGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing AwsClustersClient
 	CallOptions **AwsClustersCallOptions
 
@@ -411,11 +426,6 @@ func NewAwsClustersClient(ctx context.Context, opts ...option.ClientOption) (*Aw
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -424,7 +434,6 @@ func NewAwsClustersClient(ctx context.Context, opts ...option.ClientOption) (*Aw
 
 	c := &awsClustersGRPCClient{
 		connPool:          connPool,
-		disableDeadlines:  disableDeadlines,
 		awsClustersClient: gkemulticloudpb.NewAwsClustersClient(connPool),
 		CallOptions:       &client.CallOptions,
 		operationsClient:  longrunningpb.NewOperationsClient(connPool),
@@ -459,7 +468,7 @@ func (c *awsClustersGRPCClient) Connection() *grpc.ClientConn {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *awsClustersGRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -471,11 +480,6 @@ func (c *awsClustersGRPCClient) Close() error {
 }
 
 func (c *awsClustersGRPCClient) CreateAwsCluster(ctx context.Context, req *gkemulticloudpb.CreateAwsClusterRequest, opts ...gax.CallOption) (*CreateAwsClusterOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -495,11 +499,6 @@ func (c *awsClustersGRPCClient) CreateAwsCluster(ctx context.Context, req *gkemu
 }
 
 func (c *awsClustersGRPCClient) UpdateAwsCluster(ctx context.Context, req *gkemulticloudpb.UpdateAwsClusterRequest, opts ...gax.CallOption) (*UpdateAwsClusterOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "aws_cluster.name", url.QueryEscape(req.GetAwsCluster().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -519,11 +518,6 @@ func (c *awsClustersGRPCClient) UpdateAwsCluster(ctx context.Context, req *gkemu
 }
 
 func (c *awsClustersGRPCClient) GetAwsCluster(ctx context.Context, req *gkemulticloudpb.GetAwsClusterRequest, opts ...gax.CallOption) (*gkemulticloudpb.AwsCluster, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -586,11 +580,6 @@ func (c *awsClustersGRPCClient) ListAwsClusters(ctx context.Context, req *gkemul
 }
 
 func (c *awsClustersGRPCClient) DeleteAwsCluster(ctx context.Context, req *gkemulticloudpb.DeleteAwsClusterRequest, opts ...gax.CallOption) (*DeleteAwsClusterOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -610,11 +599,6 @@ func (c *awsClustersGRPCClient) DeleteAwsCluster(ctx context.Context, req *gkemu
 }
 
 func (c *awsClustersGRPCClient) GenerateAwsAccessToken(ctx context.Context, req *gkemulticloudpb.GenerateAwsAccessTokenRequest, opts ...gax.CallOption) (*gkemulticloudpb.GenerateAwsAccessTokenResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "aws_cluster", url.QueryEscape(req.GetAwsCluster())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -632,11 +616,6 @@ func (c *awsClustersGRPCClient) GenerateAwsAccessToken(ctx context.Context, req 
 }
 
 func (c *awsClustersGRPCClient) CreateAwsNodePool(ctx context.Context, req *gkemulticloudpb.CreateAwsNodePoolRequest, opts ...gax.CallOption) (*CreateAwsNodePoolOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -656,11 +635,6 @@ func (c *awsClustersGRPCClient) CreateAwsNodePool(ctx context.Context, req *gkem
 }
 
 func (c *awsClustersGRPCClient) UpdateAwsNodePool(ctx context.Context, req *gkemulticloudpb.UpdateAwsNodePoolRequest, opts ...gax.CallOption) (*UpdateAwsNodePoolOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "aws_node_pool.name", url.QueryEscape(req.GetAwsNodePool().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -680,11 +654,6 @@ func (c *awsClustersGRPCClient) UpdateAwsNodePool(ctx context.Context, req *gkem
 }
 
 func (c *awsClustersGRPCClient) GetAwsNodePool(ctx context.Context, req *gkemulticloudpb.GetAwsNodePoolRequest, opts ...gax.CallOption) (*gkemulticloudpb.AwsNodePool, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -747,11 +716,6 @@ func (c *awsClustersGRPCClient) ListAwsNodePools(ctx context.Context, req *gkemu
 }
 
 func (c *awsClustersGRPCClient) DeleteAwsNodePool(ctx context.Context, req *gkemulticloudpb.DeleteAwsNodePoolRequest, opts ...gax.CallOption) (*DeleteAwsNodePoolOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -771,11 +735,6 @@ func (c *awsClustersGRPCClient) DeleteAwsNodePool(ctx context.Context, req *gkem
 }
 
 func (c *awsClustersGRPCClient) GetAwsServerConfig(ctx context.Context, req *gkemulticloudpb.GetAwsServerConfigRequest, opts ...gax.CallOption) (*gkemulticloudpb.AwsServerConfig, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)

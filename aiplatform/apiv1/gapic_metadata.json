@@ -1434,6 +1434,11 @@
                 "TestIamPermissions"
               ]
             },
+            "UpdateExplanationDataset": {
+              "methods": [
+                "UpdateExplanationDataset"
+              ]
+            },
             "UpdateModel": {
               "methods": [
                 "UpdateModel"

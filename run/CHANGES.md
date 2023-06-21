@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [1.1.1](https://github.com/googleapis/google-cloud-go/compare/run/v1.1.0...run/v1.1.1) (2023-06-20)
+
+
+### Bug Fixes
+
+* **run:** REST query UpdateMask bug ([df52820](https://github.com/googleapis/google-cloud-go/commit/df52820b0e7721954809a8aa8700b93c5662dc9b))
+
 ## [1.1.0](https://github.com/googleapis/google-cloud-go/compare/run/v1.0.1...run/v1.1.0) (2023-05-30)
 
 

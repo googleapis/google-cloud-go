@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"math"
 	"net/http"
 	"net/url"
@@ -77,6 +77,7 @@ func defaultConversationsGRPCClientOptions() []option.ClientOption {
 func defaultConversationsCallOptions() *ConversationsCallOptions {
 	return &ConversationsCallOptions{
 		CreateConversation: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -88,6 +89,7 @@ func defaultConversationsCallOptions() *ConversationsCallOptions {
 			}),
 		},
 		ListConversations: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -99,6 +101,7 @@ func defaultConversationsCallOptions() *ConversationsCallOptions {
 			}),
 		},
 		GetConversation: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -110,6 +113,7 @@ func defaultConversationsCallOptions() *ConversationsCallOptions {
 			}),
 		},
 		CompleteConversation: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -121,6 +125,7 @@ func defaultConversationsCallOptions() *ConversationsCallOptions {
 			}),
 		},
 		BatchCreateMessages: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -132,6 +137,7 @@ func defaultConversationsCallOptions() *ConversationsCallOptions {
 			}),
 		},
 		ListMessages: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -143,6 +149,7 @@ func defaultConversationsCallOptions() *ConversationsCallOptions {
 			}),
 		},
 		SuggestConversationSummary: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -154,6 +161,7 @@ func defaultConversationsCallOptions() *ConversationsCallOptions {
 			}),
 		},
 		GenerateStatelessSummary: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -175,6 +183,7 @@ func defaultConversationsCallOptions() *ConversationsCallOptions {
 func defaultConversationsRESTCallOptions() *ConversationsCallOptions {
 	return &ConversationsCallOptions{
 		CreateConversation: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -185,6 +194,7 @@ func defaultConversationsRESTCallOptions() *ConversationsCallOptions {
 			}),
 		},
 		ListConversations: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -195,6 +205,7 @@ func defaultConversationsRESTCallOptions() *ConversationsCallOptions {
 			}),
 		},
 		GetConversation: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -205,6 +216,7 @@ func defaultConversationsRESTCallOptions() *ConversationsCallOptions {
 			}),
 		},
 		CompleteConversation: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -215,6 +227,7 @@ func defaultConversationsRESTCallOptions() *ConversationsCallOptions {
 			}),
 		},
 		BatchCreateMessages: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -225,6 +238,7 @@ func defaultConversationsRESTCallOptions() *ConversationsCallOptions {
 			}),
 		},
 		ListMessages: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -235,6 +249,7 @@ func defaultConversationsRESTCallOptions() *ConversationsCallOptions {
 			}),
 		},
 		SuggestConversationSummary: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -245,6 +260,7 @@ func defaultConversationsRESTCallOptions() *ConversationsCallOptions {
 			}),
 		},
 		GenerateStatelessSummary: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -418,9 +434,6 @@ type conversationsGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing ConversationsClient
 	CallOptions **ConversationsCallOptions
 
@@ -450,11 +463,6 @@ func NewConversationsClient(ctx context.Context, opts ...option.ClientOption) (*
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -463,7 +471,6 @@ func NewConversationsClient(ctx context.Context, opts ...option.ClientOption) (*
 
 	c := &conversationsGRPCClient{
 		connPool:            connPool,
-		disableDeadlines:    disableDeadlines,
 		conversationsClient: dialogflowpb.NewConversationsClient(connPool),
 		CallOptions:         &client.CallOptions,
 		operationsClient:    longrunningpb.NewOperationsClient(connPool),
@@ -488,7 +495,7 @@ func (c *conversationsGRPCClient) Connection() *grpc.ClientConn {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *conversationsGRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -549,7 +556,7 @@ func defaultConversationsRESTClientOptions() []option.ClientOption {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *conversationsRESTClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -569,11 +576,6 @@ func (c *conversationsRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 func (c *conversationsGRPCClient) CreateConversation(ctx context.Context, req *dialogflowpb.CreateConversationRequest, opts ...gax.CallOption) (*dialogflowpb.Conversation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -636,11 +638,6 @@ func (c *conversationsGRPCClient) ListConversations(ctx context.Context, req *di
 }
 
 func (c *conversationsGRPCClient) GetConversation(ctx context.Context, req *dialogflowpb.GetConversationRequest, opts ...gax.CallOption) (*dialogflowpb.Conversation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -658,11 +655,6 @@ func (c *conversationsGRPCClient) GetConversation(ctx context.Context, req *dial
 }
 
 func (c *conversationsGRPCClient) CompleteConversation(ctx context.Context, req *dialogflowpb.CompleteConversationRequest, opts ...gax.CallOption) (*dialogflowpb.Conversation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -680,11 +672,6 @@ func (c *conversationsGRPCClient) CompleteConversation(ctx context.Context, req 
 }
 
 func (c *conversationsGRPCClient) BatchCreateMessages(ctx context.Context, req *dialogflowpb.BatchCreateMessagesRequest, opts ...gax.CallOption) (*dialogflowpb.BatchCreateMessagesResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -747,11 +734,6 @@ func (c *conversationsGRPCClient) ListMessages(ctx context.Context, req *dialogf
 }
 
 func (c *conversationsGRPCClient) SuggestConversationSummary(ctx context.Context, req *dialogflowpb.SuggestConversationSummaryRequest, opts ...gax.CallOption) (*dialogflowpb.SuggestConversationSummaryResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "conversation", url.QueryEscape(req.GetConversation())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -769,11 +751,6 @@ func (c *conversationsGRPCClient) SuggestConversationSummary(ctx context.Context
 }
 
 func (c *conversationsGRPCClient) GenerateStatelessSummary(ctx context.Context, req *dialogflowpb.GenerateStatelessSummaryRequest, opts ...gax.CallOption) (*dialogflowpb.GenerateStatelessSummaryResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "stateless_conversation.parent", url.QueryEscape(req.GetStatelessConversation().GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -998,13 +975,13 @@ func (c *conversationsRESTClient) CreateConversation(ctx context.Context, req *d
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1072,13 +1049,13 @@ func (c *conversationsRESTClient) ListConversations(ctx context.Context, req *di
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -1147,13 +1124,13 @@ func (c *conversationsRESTClient) GetConversation(ctx context.Context, req *dial
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1212,13 +1189,13 @@ func (c *conversationsRESTClient) CompleteConversation(ctx context.Context, req 
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1277,13 +1254,13 @@ func (c *conversationsRESTClient) BatchCreateMessages(ctx context.Context, req *
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1354,13 +1331,13 @@ func (c *conversationsRESTClient) ListMessages(ctx context.Context, req *dialogf
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -1437,13 +1414,13 @@ func (c *conversationsRESTClient) SuggestConversationSummary(ctx context.Context
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1502,13 +1479,13 @@ func (c *conversationsRESTClient) GenerateStatelessSummary(ctx context.Context, 
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1560,13 +1537,13 @@ func (c *conversationsRESTClient) GetLocation(ctx context.Context, req *location
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1634,13 +1611,13 @@ func (c *conversationsRESTClient) ListLocations(ctx context.Context, req *locati
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -1749,13 +1726,13 @@ func (c *conversationsRESTClient) GetOperation(ctx context.Context, req *longrun
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1823,13 +1800,13 @@ func (c *conversationsRESTClient) ListOperations(ctx context.Context, req *longr
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil

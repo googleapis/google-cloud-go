@@ -298,6 +298,100 @@
           }
         }
       }
+    },
+    "DocumentService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "DocumentClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "GetDatasetSchema": {
+              "methods": [
+                "GetDatasetSchema"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "UpdateDataset": {
+              "methods": [
+                "UpdateDataset"
+              ]
+            },
+            "UpdateDatasetSchema": {
+              "methods": [
+                "UpdateDatasetSchema"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "DocumentClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "GetDatasetSchema": {
+              "methods": [
+                "GetDatasetSchema"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "UpdateDataset": {
+              "methods": [
+                "UpdateDataset"
+              ]
+            },
+            "UpdateDatasetSchema": {
+              "methods": [
+                "UpdateDatasetSchema"
+              ]
+            }
+          }
+        }
+      }
     }
   }
 }

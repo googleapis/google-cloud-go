@@ -1,5 +1,12 @@
 # Changes
 
+## [0.8.1](https://github.com/googleapis/google-cloud-go/compare/area120/v0.8.0...area120/v0.8.1) (2023-06-20)
+
+
+### Bug Fixes
+
+* **area120:** REST query UpdateMask bug ([df52820](https://github.com/googleapis/google-cloud-go/commit/df52820b0e7721954809a8aa8700b93c5662dc9b))
+
 ## [0.8.0](https://github.com/googleapis/google-cloud-go/compare/area120/v0.7.2...area120/v0.8.0) (2023-05-30)
 
 

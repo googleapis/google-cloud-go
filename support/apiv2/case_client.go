@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"math"
 	"net/http"
 	"net/url"
@@ -70,6 +70,7 @@ func defaultCaseGRPCClientOptions() []option.ClientOption {
 func defaultCaseCallOptions() *CaseCallOptions {
 	return &CaseCallOptions{
 		GetCase: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -81,6 +82,7 @@ func defaultCaseCallOptions() *CaseCallOptions {
 			}),
 		},
 		ListCases: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -92,6 +94,7 @@ func defaultCaseCallOptions() *CaseCallOptions {
 			}),
 		},
 		SearchCases: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -102,11 +105,20 @@ func defaultCaseCallOptions() *CaseCallOptions {
 				})
 			}),
 		},
-		CreateCase:   []gax.CallOption{},
-		UpdateCase:   []gax.CallOption{},
-		EscalateCase: []gax.CallOption{},
-		CloseCase:    []gax.CallOption{},
+		CreateCase: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateCase: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		EscalateCase: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		CloseCase: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		SearchCaseClassifications: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -123,6 +135,7 @@ func defaultCaseCallOptions() *CaseCallOptions {
 func defaultCaseRESTCallOptions() *CaseCallOptions {
 	return &CaseCallOptions{
 		GetCase: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -133,6 +146,7 @@ func defaultCaseRESTCallOptions() *CaseCallOptions {
 			}),
 		},
 		ListCases: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -143,6 +157,7 @@ func defaultCaseRESTCallOptions() *CaseCallOptions {
 			}),
 		},
 		SearchCases: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -152,11 +167,20 @@ func defaultCaseRESTCallOptions() *CaseCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
-		CreateCase:   []gax.CallOption{},
-		UpdateCase:   []gax.CallOption{},
-		EscalateCase: []gax.CallOption{},
-		CloseCase:    []gax.CallOption{},
+		CreateCase: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateCase: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		EscalateCase: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		CloseCase: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		SearchCaseClassifications: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -282,9 +306,6 @@ type caseGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing CaseClient
 	CallOptions **CaseCallOptions
 
@@ -309,11 +330,6 @@ func NewCaseClient(ctx context.Context, opts ...option.ClientOption) (*CaseClien
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -321,10 +337,9 @@ func NewCaseClient(ctx context.Context, opts ...option.ClientOption) (*CaseClien
 	client := CaseClient{CallOptions: defaultCaseCallOptions()}
 
 	c := &caseGRPCClient{
-		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
-		caseClient:       supportpb.NewCaseServiceClient(connPool),
-		CallOptions:      &client.CallOptions,
+		connPool:    connPool,
+		caseClient:  supportpb.NewCaseServiceClient(connPool),
+		CallOptions: &client.CallOptions,
 	}
 	c.setGoogleClientInfo()
 
@@ -345,7 +360,7 @@ func (c *caseGRPCClient) Connection() *grpc.ClientConn {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *caseGRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -405,7 +420,7 @@ func defaultCaseRESTClientOptions() []option.ClientOption {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *caseRESTClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -425,11 +440,6 @@ func (c *caseRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 func (c *caseGRPCClient) GetCase(ctx context.Context, req *supportpb.GetCaseRequest, opts ...gax.CallOption) (*supportpb.Case, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -537,11 +547,6 @@ func (c *caseGRPCClient) SearchCases(ctx context.Context, req *supportpb.SearchC
 }
 
 func (c *caseGRPCClient) CreateCase(ctx context.Context, req *supportpb.CreateCaseRequest, opts ...gax.CallOption) (*supportpb.Case, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -559,11 +564,6 @@ func (c *caseGRPCClient) CreateCase(ctx context.Context, req *supportpb.CreateCa
 }
 
 func (c *caseGRPCClient) UpdateCase(ctx context.Context, req *supportpb.UpdateCaseRequest, opts ...gax.CallOption) (*supportpb.Case, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "case.name", url.QueryEscape(req.GetCase().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -581,11 +581,6 @@ func (c *caseGRPCClient) UpdateCase(ctx context.Context, req *supportpb.UpdateCa
 }
 
 func (c *caseGRPCClient) EscalateCase(ctx context.Context, req *supportpb.EscalateCaseRequest, opts ...gax.CallOption) (*supportpb.Case, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -603,11 +598,6 @@ func (c *caseGRPCClient) EscalateCase(ctx context.Context, req *supportpb.Escala
 }
 
 func (c *caseGRPCClient) CloseCase(ctx context.Context, req *supportpb.CloseCaseRequest, opts ...gax.CallOption) (*supportpb.Case, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -708,13 +698,13 @@ func (c *caseRESTClient) GetCase(ctx context.Context, req *supportpb.GetCaseRequ
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -787,13 +777,13 @@ func (c *caseRESTClient) ListCases(ctx context.Context, req *supportpb.ListCases
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -878,13 +868,13 @@ func (c *caseRESTClient) SearchCases(ctx context.Context, req *supportpb.SearchC
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -962,13 +952,13 @@ func (c *caseRESTClient) CreateCase(ctx context.Context, req *supportpb.CreateCa
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1001,7 +991,7 @@ func (c *caseRESTClient) UpdateCase(ctx context.Context, req *supportpb.UpdateCa
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask))
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1034,13 +1024,13 @@ func (c *caseRESTClient) UpdateCase(ctx context.Context, req *supportpb.UpdateCa
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1104,13 +1094,13 @@ func (c *caseRESTClient) EscalateCase(ctx context.Context, req *supportpb.Escala
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1168,13 +1158,13 @@ func (c *caseRESTClient) CloseCase(ctx context.Context, req *supportpb.CloseCase
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1245,13 +1235,13 @@ func (c *caseRESTClient) SearchCaseClassifications(ctx context.Context, req *sup
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil

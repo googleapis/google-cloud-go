@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"math"
 	"net/http"
 	"net/url"
@@ -106,6 +106,7 @@ func defaultGRPCClientOptions() []option.ClientOption {
 func defaultCallOptions() *CallOptions {
 	return &CallOptions{
 		CreateConversation: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -117,6 +118,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		UploadConversation: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -128,6 +130,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		UpdateConversation: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -139,6 +142,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		GetConversation: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -150,6 +154,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		ListConversations: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -161,6 +166,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		DeleteConversation: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -172,6 +178,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		CreateAnalysis: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -183,6 +190,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		GetAnalysis: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -194,6 +202,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		ListAnalyses: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -205,6 +214,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		DeleteAnalysis: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -216,6 +226,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		BulkAnalyzeConversations: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -227,6 +238,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		IngestConversations: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -238,6 +250,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		ExportInsightsData: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -249,6 +262,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		CreateIssueModel: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -260,6 +274,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		UpdateIssueModel: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -271,6 +286,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		GetIssueModel: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -282,6 +298,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		ListIssueModels: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -293,6 +310,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		DeleteIssueModel: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -304,6 +322,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		DeployIssueModel: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -315,6 +334,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		UndeployIssueModel: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -326,6 +346,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		GetIssue: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -337,6 +358,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		ListIssues: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -348,6 +370,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		UpdateIssue: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -359,6 +382,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		DeleteIssue: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -370,6 +394,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		CalculateIssueModelStats: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -381,6 +406,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		CreatePhraseMatcher: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -392,6 +418,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		GetPhraseMatcher: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -403,6 +430,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		ListPhraseMatchers: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -414,6 +442,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		DeletePhraseMatcher: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -425,6 +454,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		UpdatePhraseMatcher: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -436,6 +466,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		CalculateStats: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -447,6 +478,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		GetSettings: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -458,6 +490,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		UpdateSettings: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -469,6 +502,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		CreateView: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -480,6 +514,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		GetView: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -491,6 +526,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		ListViews: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -502,6 +538,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		UpdateView: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -513,6 +550,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		DeleteView: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -524,6 +562,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		CancelOperation: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -535,6 +574,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		GetOperation: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -546,6 +586,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		ListOperations: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -562,6 +603,7 @@ func defaultCallOptions() *CallOptions {
 func defaultRESTCallOptions() *CallOptions {
 	return &CallOptions{
 		CreateConversation: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -572,6 +614,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		UploadConversation: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -582,6 +625,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		UpdateConversation: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -592,6 +636,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		GetConversation: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -602,6 +647,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		ListConversations: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -612,6 +658,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		DeleteConversation: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -622,6 +669,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		CreateAnalysis: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -632,6 +680,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		GetAnalysis: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -642,6 +691,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		ListAnalyses: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -652,6 +702,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		DeleteAnalysis: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -662,6 +713,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		BulkAnalyzeConversations: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -672,6 +724,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		IngestConversations: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -682,6 +735,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		ExportInsightsData: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -692,6 +746,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		CreateIssueModel: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -702,6 +757,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		UpdateIssueModel: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -712,6 +768,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		GetIssueModel: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -722,6 +779,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		ListIssueModels: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -732,6 +790,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		DeleteIssueModel: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -742,6 +801,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		DeployIssueModel: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -752,6 +812,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		UndeployIssueModel: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -762,6 +823,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		GetIssue: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -772,6 +834,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		ListIssues: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -782,6 +845,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		UpdateIssue: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -792,6 +856,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		DeleteIssue: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -802,6 +867,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		CalculateIssueModelStats: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -812,6 +878,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		CreatePhraseMatcher: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -822,6 +889,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		GetPhraseMatcher: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -832,6 +900,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		ListPhraseMatchers: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -842,6 +911,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		DeletePhraseMatcher: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -852,6 +922,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		UpdatePhraseMatcher: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -862,6 +933,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		CalculateStats: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -872,6 +944,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		GetSettings: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -882,6 +955,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		UpdateSettings: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -892,6 +966,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		CreateView: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -902,6 +977,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		GetView: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -912,6 +988,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		ListViews: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -922,6 +999,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		UpdateView: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -932,6 +1010,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		DeleteView: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -942,6 +1021,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		CancelOperation: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -952,6 +1032,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		GetOperation: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -962,6 +1043,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		ListOperations: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -1343,9 +1425,6 @@ type gRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing Client
 	CallOptions **CallOptions
 
@@ -1377,11 +1456,6 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -1390,7 +1464,6 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 
 	c := &gRPCClient{
 		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
 		client:           contactcenterinsightspb.NewContactCenterInsightsClient(connPool),
 		CallOptions:      &client.CallOptions,
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
@@ -1425,7 +1498,7 @@ func (c *gRPCClient) Connection() *grpc.ClientConn {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -1500,7 +1573,7 @@ func defaultRESTClientOptions() []option.ClientOption {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *restClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -1520,11 +1593,6 @@ func (c *restClient) Connection() *grpc.ClientConn {
 	return nil
 }
 func (c *gRPCClient) CreateConversation(ctx context.Context, req *contactcenterinsightspb.CreateConversationRequest, opts ...gax.CallOption) (*contactcenterinsightspb.Conversation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1542,11 +1610,6 @@ func (c *gRPCClient) CreateConversation(ctx context.Context, req *contactcenteri
 }
 
 func (c *gRPCClient) UploadConversation(ctx context.Context, req *contactcenterinsightspb.UploadConversationRequest, opts ...gax.CallOption) (*UploadConversationOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1566,11 +1629,6 @@ func (c *gRPCClient) UploadConversation(ctx context.Context, req *contactcenteri
 }
 
 func (c *gRPCClient) UpdateConversation(ctx context.Context, req *contactcenterinsightspb.UpdateConversationRequest, opts ...gax.CallOption) (*contactcenterinsightspb.Conversation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "conversation.name", url.QueryEscape(req.GetConversation().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1588,11 +1646,6 @@ func (c *gRPCClient) UpdateConversation(ctx context.Context, req *contactcenteri
 }
 
 func (c *gRPCClient) GetConversation(ctx context.Context, req *contactcenterinsightspb.GetConversationRequest, opts ...gax.CallOption) (*contactcenterinsightspb.Conversation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1655,11 +1708,6 @@ func (c *gRPCClient) ListConversations(ctx context.Context, req *contactcenterin
 }
 
 func (c *gRPCClient) DeleteConversation(ctx context.Context, req *contactcenterinsightspb.DeleteConversationRequest, opts ...gax.CallOption) error {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1673,11 +1721,6 @@ func (c *gRPCClient) DeleteConversation(ctx context.Context, req *contactcenteri
 }
 
 func (c *gRPCClient) CreateAnalysis(ctx context.Context, req *contactcenterinsightspb.CreateAnalysisRequest, opts ...gax.CallOption) (*CreateAnalysisOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1697,11 +1740,6 @@ func (c *gRPCClient) CreateAnalysis(ctx context.Context, req *contactcenterinsig
 }
 
 func (c *gRPCClient) GetAnalysis(ctx context.Context, req *contactcenterinsightspb.GetAnalysisRequest, opts ...gax.CallOption) (*contactcenterinsightspb.Analysis, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1764,11 +1802,6 @@ func (c *gRPCClient) ListAnalyses(ctx context.Context, req *contactcenterinsight
 }
 
 func (c *gRPCClient) DeleteAnalysis(ctx context.Context, req *contactcenterinsightspb.DeleteAnalysisRequest, opts ...gax.CallOption) error {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1782,11 +1815,6 @@ func (c *gRPCClient) DeleteAnalysis(ctx context.Context, req *contactcenterinsig
 }
 
 func (c *gRPCClient) BulkAnalyzeConversations(ctx context.Context, req *contactcenterinsightspb.BulkAnalyzeConversationsRequest, opts ...gax.CallOption) (*BulkAnalyzeConversationsOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1806,11 +1834,6 @@ func (c *gRPCClient) BulkAnalyzeConversations(ctx context.Context, req *contactc
 }
 
 func (c *gRPCClient) IngestConversations(ctx context.Context, req *contactcenterinsightspb.IngestConversationsRequest, opts ...gax.CallOption) (*IngestConversationsOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1830,11 +1853,6 @@ func (c *gRPCClient) IngestConversations(ctx context.Context, req *contactcenter
 }
 
 func (c *gRPCClient) ExportInsightsData(ctx context.Context, req *contactcenterinsightspb.ExportInsightsDataRequest, opts ...gax.CallOption) (*ExportInsightsDataOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1854,11 +1872,6 @@ func (c *gRPCClient) ExportInsightsData(ctx context.Context, req *contactcenteri
 }
 
 func (c *gRPCClient) CreateIssueModel(ctx context.Context, req *contactcenterinsightspb.CreateIssueModelRequest, opts ...gax.CallOption) (*CreateIssueModelOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1878,11 +1891,6 @@ func (c *gRPCClient) CreateIssueModel(ctx context.Context, req *contactcenterins
 }
 
 func (c *gRPCClient) UpdateIssueModel(ctx context.Context, req *contactcenterinsightspb.UpdateIssueModelRequest, opts ...gax.CallOption) (*contactcenterinsightspb.IssueModel, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "issue_model.name", url.QueryEscape(req.GetIssueModel().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1900,11 +1908,6 @@ func (c *gRPCClient) UpdateIssueModel(ctx context.Context, req *contactcenterins
 }
 
 func (c *gRPCClient) GetIssueModel(ctx context.Context, req *contactcenterinsightspb.GetIssueModelRequest, opts ...gax.CallOption) (*contactcenterinsightspb.IssueModel, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1922,11 +1925,6 @@ func (c *gRPCClient) GetIssueModel(ctx context.Context, req *contactcenterinsigh
 }
 
 func (c *gRPCClient) ListIssueModels(ctx context.Context, req *contactcenterinsightspb.ListIssueModelsRequest, opts ...gax.CallOption) (*contactcenterinsightspb.ListIssueModelsResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1944,11 +1942,6 @@ func (c *gRPCClient) ListIssueModels(ctx context.Context, req *contactcenterinsi
 }
 
 func (c *gRPCClient) DeleteIssueModel(ctx context.Context, req *contactcenterinsightspb.DeleteIssueModelRequest, opts ...gax.CallOption) (*DeleteIssueModelOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1968,11 +1961,6 @@ func (c *gRPCClient) DeleteIssueModel(ctx context.Context, req *contactcenterins
 }
 
 func (c *gRPCClient) DeployIssueModel(ctx context.Context, req *contactcenterinsightspb.DeployIssueModelRequest, opts ...gax.CallOption) (*DeployIssueModelOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1992,11 +1980,6 @@ func (c *gRPCClient) DeployIssueModel(ctx context.Context, req *contactcenterins
 }
 
 func (c *gRPCClient) UndeployIssueModel(ctx context.Context, req *contactcenterinsightspb.UndeployIssueModelRequest, opts ...gax.CallOption) (*UndeployIssueModelOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -2016,11 +1999,6 @@ func (c *gRPCClient) UndeployIssueModel(ctx context.Context, req *contactcenteri
 }
 
 func (c *gRPCClient) GetIssue(ctx context.Context, req *contactcenterinsightspb.GetIssueRequest, opts ...gax.CallOption) (*contactcenterinsightspb.Issue, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -2038,11 +2016,6 @@ func (c *gRPCClient) GetIssue(ctx context.Context, req *contactcenterinsightspb.
 }
 
 func (c *gRPCClient) ListIssues(ctx context.Context, req *contactcenterinsightspb.ListIssuesRequest, opts ...gax.CallOption) (*contactcenterinsightspb.ListIssuesResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -2060,11 +2033,6 @@ func (c *gRPCClient) ListIssues(ctx context.Context, req *contactcenterinsightsp
 }
 
 func (c *gRPCClient) UpdateIssue(ctx context.Context, req *contactcenterinsightspb.UpdateIssueRequest, opts ...gax.CallOption) (*contactcenterinsightspb.Issue, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "issue.name", url.QueryEscape(req.GetIssue().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -2082,11 +2050,6 @@ func (c *gRPCClient) UpdateIssue(ctx context.Context, req *contactcenterinsights
 }
 
 func (c *gRPCClient) DeleteIssue(ctx context.Context, req *contactcenterinsightspb.DeleteIssueRequest, opts ...gax.CallOption) error {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -2100,11 +2063,6 @@ func (c *gRPCClient) DeleteIssue(ctx context.Context, req *contactcenterinsights
 }
 
 func (c *gRPCClient) CalculateIssueModelStats(ctx context.Context, req *contactcenterinsightspb.CalculateIssueModelStatsRequest, opts ...gax.CallOption) (*contactcenterinsightspb.CalculateIssueModelStatsResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "issue_model", url.QueryEscape(req.GetIssueModel())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -2122,11 +2080,6 @@ func (c *gRPCClient) CalculateIssueModelStats(ctx context.Context, req *contactc
 }
 
 func (c *gRPCClient) CreatePhraseMatcher(ctx context.Context, req *contactcenterinsightspb.CreatePhraseMatcherRequest, opts ...gax.CallOption) (*contactcenterinsightspb.PhraseMatcher, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -2144,11 +2097,6 @@ func (c *gRPCClient) CreatePhraseMatcher(ctx context.Context, req *contactcenter
 }
 
 func (c *gRPCClient) GetPhraseMatcher(ctx context.Context, req *contactcenterinsightspb.GetPhraseMatcherRequest, opts ...gax.CallOption) (*contactcenterinsightspb.PhraseMatcher, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -2211,11 +2159,6 @@ func (c *gRPCClient) ListPhraseMatchers(ctx context.Context, req *contactcenteri
 }
 
 func (c *gRPCClient) DeletePhraseMatcher(ctx context.Context, req *contactcenterinsightspb.DeletePhraseMatcherRequest, opts ...gax.CallOption) error {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -2229,11 +2172,6 @@ func (c *gRPCClient) DeletePhraseMatcher(ctx context.Context, req *contactcenter
 }
 
 func (c *gRPCClient) UpdatePhraseMatcher(ctx context.Context, req *contactcenterinsightspb.UpdatePhraseMatcherRequest, opts ...gax.CallOption) (*contactcenterinsightspb.PhraseMatcher, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "phrase_matcher.name", url.QueryEscape(req.GetPhraseMatcher().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -2251,11 +2189,6 @@ func (c *gRPCClient) UpdatePhraseMatcher(ctx context.Context, req *contactcenter
 }
 
 func (c *gRPCClient) CalculateStats(ctx context.Context, req *contactcenterinsightspb.CalculateStatsRequest, opts ...gax.CallOption) (*contactcenterinsightspb.CalculateStatsResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "location", url.QueryEscape(req.GetLocation())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -2273,11 +2206,6 @@ func (c *gRPCClient) CalculateStats(ctx context.Context, req *contactcenterinsig
 }
 
 func (c *gRPCClient) GetSettings(ctx context.Context, req *contactcenterinsightspb.GetSettingsRequest, opts ...gax.CallOption) (*contactcenterinsightspb.Settings, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -2295,11 +2223,6 @@ func (c *gRPCClient) GetSettings(ctx context.Context, req *contactcenterinsights
 }
 
 func (c *gRPCClient) UpdateSettings(ctx context.Context, req *contactcenterinsightspb.UpdateSettingsRequest, opts ...gax.CallOption) (*contactcenterinsightspb.Settings, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "settings.name", url.QueryEscape(req.GetSettings().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -2317,11 +2240,6 @@ func (c *gRPCClient) UpdateSettings(ctx context.Context, req *contactcenterinsig
 }
 
 func (c *gRPCClient) CreateView(ctx context.Context, req *contactcenterinsightspb.CreateViewRequest, opts ...gax.CallOption) (*contactcenterinsightspb.View, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -2339,11 +2257,6 @@ func (c *gRPCClient) CreateView(ctx context.Context, req *contactcenterinsightsp
 }
 
 func (c *gRPCClient) GetView(ctx context.Context, req *contactcenterinsightspb.GetViewRequest, opts ...gax.CallOption) (*contactcenterinsightspb.View, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -2406,11 +2319,6 @@ func (c *gRPCClient) ListViews(ctx context.Context, req *contactcenterinsightspb
 }
 
 func (c *gRPCClient) UpdateView(ctx context.Context, req *contactcenterinsightspb.UpdateViewRequest, opts ...gax.CallOption) (*contactcenterinsightspb.View, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "view.name", url.QueryEscape(req.GetView().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -2428,11 +2336,6 @@ func (c *gRPCClient) UpdateView(ctx context.Context, req *contactcenterinsightsp
 }
 
 func (c *gRPCClient) DeleteView(ctx context.Context, req *contactcenterinsightspb.DeleteViewRequest, opts ...gax.CallOption) error {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -2446,11 +2349,6 @@ func (c *gRPCClient) DeleteView(ctx context.Context, req *contactcenterinsightsp
 }
 
 func (c *gRPCClient) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -2464,11 +2362,6 @@ func (c *gRPCClient) CancelOperation(ctx context.Context, req *longrunningpb.Can
 }
 
 func (c *gRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -2581,13 +2474,13 @@ func (c *restClient) CreateConversation(ctx context.Context, req *contactcenteri
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2646,13 +2539,13 @@ func (c *restClient) UploadConversation(ctx context.Context, req *contactcenteri
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2690,7 +2583,7 @@ func (c *restClient) UpdateConversation(ctx context.Context, req *contactcenteri
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask))
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -2723,13 +2616,13 @@ func (c *restClient) UpdateConversation(ctx context.Context, req *contactcenteri
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2784,13 +2677,13 @@ func (c *restClient) GetConversation(ctx context.Context, req *contactcenterinsi
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2861,13 +2754,13 @@ func (c *restClient) ListConversations(ctx context.Context, req *contactcenterin
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -2986,13 +2879,13 @@ func (c *restClient) CreateAnalysis(ctx context.Context, req *contactcenterinsig
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -3049,13 +2942,13 @@ func (c *restClient) GetAnalysis(ctx context.Context, req *contactcenterinsights
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -3123,13 +3016,13 @@ func (c *restClient) ListAnalyses(ctx context.Context, req *contactcenterinsight
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -3243,13 +3136,13 @@ func (c *restClient) BulkAnalyzeConversations(ctx context.Context, req *contactc
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -3312,13 +3205,13 @@ func (c *restClient) IngestConversations(ctx context.Context, req *contactcenter
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -3380,13 +3273,13 @@ func (c *restClient) ExportInsightsData(ctx context.Context, req *contactcenteri
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -3449,13 +3342,13 @@ func (c *restClient) CreateIssueModel(ctx context.Context, req *contactcenterins
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -3493,7 +3386,7 @@ func (c *restClient) UpdateIssueModel(ctx context.Context, req *contactcenterins
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask))
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -3526,13 +3419,13 @@ func (c *restClient) UpdateIssueModel(ctx context.Context, req *contactcenterins
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -3584,13 +3477,13 @@ func (c *restClient) GetIssueModel(ctx context.Context, req *contactcenterinsigh
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -3642,13 +3535,13 @@ func (c *restClient) ListIssueModels(ctx context.Context, req *contactcenterinsi
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -3699,13 +3592,13 @@ func (c *restClient) DeleteIssueModel(ctx context.Context, req *contactcenterins
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -3768,13 +3661,13 @@ func (c *restClient) DeployIssueModel(ctx context.Context, req *contactcenterins
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -3837,13 +3730,13 @@ func (c *restClient) UndeployIssueModel(ctx context.Context, req *contactcenteri
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -3900,13 +3793,13 @@ func (c *restClient) GetIssue(ctx context.Context, req *contactcenterinsightspb.
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -3958,13 +3851,13 @@ func (c *restClient) ListIssues(ctx context.Context, req *contactcenterinsightsp
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -3997,7 +3890,7 @@ func (c *restClient) UpdateIssue(ctx context.Context, req *contactcenterinsights
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask))
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -4030,13 +3923,13 @@ func (c *restClient) UpdateIssue(ctx context.Context, req *contactcenterinsights
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -4128,13 +4021,13 @@ func (c *restClient) CalculateIssueModelStats(ctx context.Context, req *contactc
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -4193,13 +4086,13 @@ func (c *restClient) CreatePhraseMatcher(ctx context.Context, req *contactcenter
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -4251,13 +4144,13 @@ func (c *restClient) GetPhraseMatcher(ctx context.Context, req *contactcenterins
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -4325,13 +4218,13 @@ func (c *restClient) ListPhraseMatchers(ctx context.Context, req *contactcenteri
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -4421,7 +4314,7 @@ func (c *restClient) UpdatePhraseMatcher(ctx context.Context, req *contactcenter
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask))
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -4454,13 +4347,13 @@ func (c *restClient) UpdatePhraseMatcher(ctx context.Context, req *contactcenter
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -4515,13 +4408,13 @@ func (c *restClient) CalculateStats(ctx context.Context, req *contactcenterinsig
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -4573,13 +4466,13 @@ func (c *restClient) GetSettings(ctx context.Context, req *contactcenterinsights
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -4612,7 +4505,7 @@ func (c *restClient) UpdateSettings(ctx context.Context, req *contactcenterinsig
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask))
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -4645,13 +4538,13 @@ func (c *restClient) UpdateSettings(ctx context.Context, req *contactcenterinsig
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -4710,13 +4603,13 @@ func (c *restClient) CreateView(ctx context.Context, req *contactcenterinsightsp
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -4768,13 +4661,13 @@ func (c *restClient) GetView(ctx context.Context, req *contactcenterinsightspb.G
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -4839,13 +4732,13 @@ func (c *restClient) ListViews(ctx context.Context, req *contactcenterinsightspb
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -4895,7 +4788,7 @@ func (c *restClient) UpdateView(ctx context.Context, req *contactcenterinsightsp
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask))
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -4928,13 +4821,13 @@ func (c *restClient) UpdateView(ctx context.Context, req *contactcenterinsightsp
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -5066,13 +4959,13 @@ func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -5140,13 +5033,13 @@ func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.List
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil

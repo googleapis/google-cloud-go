@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"math"
 	"net/http"
 	"net/url"
@@ -69,6 +69,7 @@ func defaultBinauthzManagementServiceV1Beta1GRPCClientOptions() []option.ClientO
 func defaultBinauthzManagementServiceV1Beta1CallOptions() *BinauthzManagementServiceV1Beta1CallOptions {
 	return &BinauthzManagementServiceV1Beta1CallOptions{
 		GetPolicy: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -81,6 +82,7 @@ func defaultBinauthzManagementServiceV1Beta1CallOptions() *BinauthzManagementSer
 			}),
 		},
 		UpdatePolicy: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -92,8 +94,11 @@ func defaultBinauthzManagementServiceV1Beta1CallOptions() *BinauthzManagementSer
 				})
 			}),
 		},
-		CreateAttestor: []gax.CallOption{},
+		CreateAttestor: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
 		GetAttestor: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -106,6 +111,7 @@ func defaultBinauthzManagementServiceV1Beta1CallOptions() *BinauthzManagementSer
 			}),
 		},
 		UpdateAttestor: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -118,6 +124,7 @@ func defaultBinauthzManagementServiceV1Beta1CallOptions() *BinauthzManagementSer
 			}),
 		},
 		ListAttestors: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -130,6 +137,7 @@ func defaultBinauthzManagementServiceV1Beta1CallOptions() *BinauthzManagementSer
 			}),
 		},
 		DeleteAttestor: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -147,6 +155,7 @@ func defaultBinauthzManagementServiceV1Beta1CallOptions() *BinauthzManagementSer
 func defaultBinauthzManagementServiceV1Beta1RESTCallOptions() *BinauthzManagementServiceV1Beta1CallOptions {
 	return &BinauthzManagementServiceV1Beta1CallOptions{
 		GetPolicy: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -158,6 +167,7 @@ func defaultBinauthzManagementServiceV1Beta1RESTCallOptions() *BinauthzManagemen
 			}),
 		},
 		UpdatePolicy: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -168,8 +178,11 @@ func defaultBinauthzManagementServiceV1Beta1RESTCallOptions() *BinauthzManagemen
 					http.StatusServiceUnavailable)
 			}),
 		},
-		CreateAttestor: []gax.CallOption{},
+		CreateAttestor: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
 		GetAttestor: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -181,6 +194,7 @@ func defaultBinauthzManagementServiceV1Beta1RESTCallOptions() *BinauthzManagemen
 			}),
 		},
 		UpdateAttestor: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -192,6 +206,7 @@ func defaultBinauthzManagementServiceV1Beta1RESTCallOptions() *BinauthzManagemen
 			}),
 		},
 		ListAttestors: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -203,6 +218,7 @@ func defaultBinauthzManagementServiceV1Beta1RESTCallOptions() *BinauthzManagemen
 			}),
 		},
 		DeleteAttestor: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -331,9 +347,6 @@ type binauthzManagementServiceV1Beta1GRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing BinauthzManagementServiceV1Beta1Client
 	CallOptions **BinauthzManagementServiceV1Beta1CallOptions
 
@@ -365,11 +378,6 @@ func NewBinauthzManagementServiceV1Beta1Client(ctx context.Context, opts ...opti
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -378,7 +386,6 @@ func NewBinauthzManagementServiceV1Beta1Client(ctx context.Context, opts ...opti
 
 	c := &binauthzManagementServiceV1Beta1GRPCClient{
 		connPool:                               connPool,
-		disableDeadlines:                       disableDeadlines,
 		binauthzManagementServiceV1Beta1Client: binaryauthorizationpb.NewBinauthzManagementServiceV1Beta1Client(connPool),
 		CallOptions:                            &client.CallOptions,
 	}
@@ -401,7 +408,7 @@ func (c *binauthzManagementServiceV1Beta1GRPCClient) Connection() *grpc.ClientCo
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *binauthzManagementServiceV1Beta1GRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -468,7 +475,7 @@ func defaultBinauthzManagementServiceV1Beta1RESTClientOptions() []option.ClientO
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *binauthzManagementServiceV1Beta1RESTClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -488,11 +495,6 @@ func (c *binauthzManagementServiceV1Beta1RESTClient) Connection() *grpc.ClientCo
 	return nil
 }
 func (c *binauthzManagementServiceV1Beta1GRPCClient) GetPolicy(ctx context.Context, req *binaryauthorizationpb.GetPolicyRequest, opts ...gax.CallOption) (*binaryauthorizationpb.Policy, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -510,11 +512,6 @@ func (c *binauthzManagementServiceV1Beta1GRPCClient) GetPolicy(ctx context.Conte
 }
 
 func (c *binauthzManagementServiceV1Beta1GRPCClient) UpdatePolicy(ctx context.Context, req *binaryauthorizationpb.UpdatePolicyRequest, opts ...gax.CallOption) (*binaryauthorizationpb.Policy, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "policy.name", url.QueryEscape(req.GetPolicy().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -532,11 +529,6 @@ func (c *binauthzManagementServiceV1Beta1GRPCClient) UpdatePolicy(ctx context.Co
 }
 
 func (c *binauthzManagementServiceV1Beta1GRPCClient) CreateAttestor(ctx context.Context, req *binaryauthorizationpb.CreateAttestorRequest, opts ...gax.CallOption) (*binaryauthorizationpb.Attestor, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -554,11 +546,6 @@ func (c *binauthzManagementServiceV1Beta1GRPCClient) CreateAttestor(ctx context.
 }
 
 func (c *binauthzManagementServiceV1Beta1GRPCClient) GetAttestor(ctx context.Context, req *binaryauthorizationpb.GetAttestorRequest, opts ...gax.CallOption) (*binaryauthorizationpb.Attestor, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -576,11 +563,6 @@ func (c *binauthzManagementServiceV1Beta1GRPCClient) GetAttestor(ctx context.Con
 }
 
 func (c *binauthzManagementServiceV1Beta1GRPCClient) UpdateAttestor(ctx context.Context, req *binaryauthorizationpb.UpdateAttestorRequest, opts ...gax.CallOption) (*binaryauthorizationpb.Attestor, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "attestor.name", url.QueryEscape(req.GetAttestor().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -643,11 +625,6 @@ func (c *binauthzManagementServiceV1Beta1GRPCClient) ListAttestors(ctx context.C
 }
 
 func (c *binauthzManagementServiceV1Beta1GRPCClient) DeleteAttestor(ctx context.Context, req *binaryauthorizationpb.DeleteAttestorRequest, opts ...gax.CallOption) error {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -707,13 +684,13 @@ func (c *binauthzManagementServiceV1Beta1RESTClient) GetPolicy(ctx context.Conte
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -776,13 +753,13 @@ func (c *binauthzManagementServiceV1Beta1RESTClient) UpdatePolicy(ctx context.Co
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -845,13 +822,13 @@ func (c *binauthzManagementServiceV1Beta1RESTClient) CreateAttestor(ctx context.
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -904,13 +881,13 @@ func (c *binauthzManagementServiceV1Beta1RESTClient) GetAttestor(ctx context.Con
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -970,13 +947,13 @@ func (c *binauthzManagementServiceV1Beta1RESTClient) UpdateAttestor(ctx context.
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1042,13 +1019,13 @@ func (c *binauthzManagementServiceV1Beta1RESTClient) ListAttestors(ctx context.C
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil

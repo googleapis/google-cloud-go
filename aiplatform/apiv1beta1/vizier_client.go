@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"math"
 	"net/http"
 	"net/url"
@@ -90,61 +90,121 @@ func defaultVizierGRPCClientOptions() []option.ClientOption {
 
 func defaultVizierCallOptions() *VizierCallOptions {
 	return &VizierCallOptions{
-		CreateStudy:                  []gax.CallOption{},
-		GetStudy:                     []gax.CallOption{},
-		ListStudies:                  []gax.CallOption{},
-		DeleteStudy:                  []gax.CallOption{},
-		LookupStudy:                  []gax.CallOption{},
-		SuggestTrials:                []gax.CallOption{},
-		CreateTrial:                  []gax.CallOption{},
-		GetTrial:                     []gax.CallOption{},
-		ListTrials:                   []gax.CallOption{},
-		AddTrialMeasurement:          []gax.CallOption{},
-		CompleteTrial:                []gax.CallOption{},
-		DeleteTrial:                  []gax.CallOption{},
-		CheckTrialEarlyStoppingState: []gax.CallOption{},
-		StopTrial:                    []gax.CallOption{},
-		ListOptimalTrials:            []gax.CallOption{},
-		GetLocation:                  []gax.CallOption{},
-		ListLocations:                []gax.CallOption{},
-		GetIamPolicy:                 []gax.CallOption{},
-		SetIamPolicy:                 []gax.CallOption{},
-		TestIamPermissions:           []gax.CallOption{},
-		CancelOperation:              []gax.CallOption{},
-		DeleteOperation:              []gax.CallOption{},
-		GetOperation:                 []gax.CallOption{},
-		ListOperations:               []gax.CallOption{},
-		WaitOperation:                []gax.CallOption{},
+		CreateStudy: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		GetStudy: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		ListStudies: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		DeleteStudy: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		LookupStudy: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		SuggestTrials: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		CreateTrial: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		GetTrial: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		ListTrials: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		AddTrialMeasurement: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		CompleteTrial: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		DeleteTrial: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		CheckTrialEarlyStoppingState: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		StopTrial: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		ListOptimalTrials: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		GetLocation:        []gax.CallOption{},
+		ListLocations:      []gax.CallOption{},
+		GetIamPolicy:       []gax.CallOption{},
+		SetIamPolicy:       []gax.CallOption{},
+		TestIamPermissions: []gax.CallOption{},
+		CancelOperation:    []gax.CallOption{},
+		DeleteOperation:    []gax.CallOption{},
+		GetOperation:       []gax.CallOption{},
+		ListOperations:     []gax.CallOption{},
+		WaitOperation:      []gax.CallOption{},
 	}
 }
 
 func defaultVizierRESTCallOptions() *VizierCallOptions {
 	return &VizierCallOptions{
-		CreateStudy:                  []gax.CallOption{},
-		GetStudy:                     []gax.CallOption{},
-		ListStudies:                  []gax.CallOption{},
-		DeleteStudy:                  []gax.CallOption{},
-		LookupStudy:                  []gax.CallOption{},
-		SuggestTrials:                []gax.CallOption{},
-		CreateTrial:                  []gax.CallOption{},
-		GetTrial:                     []gax.CallOption{},
-		ListTrials:                   []gax.CallOption{},
-		AddTrialMeasurement:          []gax.CallOption{},
-		CompleteTrial:                []gax.CallOption{},
-		DeleteTrial:                  []gax.CallOption{},
-		CheckTrialEarlyStoppingState: []gax.CallOption{},
-		StopTrial:                    []gax.CallOption{},
-		ListOptimalTrials:            []gax.CallOption{},
-		GetLocation:                  []gax.CallOption{},
-		ListLocations:                []gax.CallOption{},
-		GetIamPolicy:                 []gax.CallOption{},
-		SetIamPolicy:                 []gax.CallOption{},
-		TestIamPermissions:           []gax.CallOption{},
-		CancelOperation:              []gax.CallOption{},
-		DeleteOperation:              []gax.CallOption{},
-		GetOperation:                 []gax.CallOption{},
-		ListOperations:               []gax.CallOption{},
-		WaitOperation:                []gax.CallOption{},
+		CreateStudy: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		GetStudy: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		ListStudies: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		DeleteStudy: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		LookupStudy: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		SuggestTrials: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		CreateTrial: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		GetTrial: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		ListTrials: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		AddTrialMeasurement: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		CompleteTrial: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		DeleteTrial: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		CheckTrialEarlyStoppingState: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		StopTrial: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		ListOptimalTrials: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		GetLocation:        []gax.CallOption{},
+		ListLocations:      []gax.CallOption{},
+		GetIamPolicy:       []gax.CallOption{},
+		SetIamPolicy:       []gax.CallOption{},
+		TestIamPermissions: []gax.CallOption{},
+		CancelOperation:    []gax.CallOption{},
+		DeleteOperation:    []gax.CallOption{},
+		GetOperation:       []gax.CallOption{},
+		ListOperations:     []gax.CallOption{},
+		WaitOperation:      []gax.CallOption{},
 	}
 }
 
@@ -395,9 +455,6 @@ type vizierGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing VizierClient
 	CallOptions **VizierCallOptions
 
@@ -437,11 +494,6 @@ func NewVizierClient(ctx context.Context, opts ...option.ClientOption) (*VizierC
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -450,7 +502,6 @@ func NewVizierClient(ctx context.Context, opts ...option.ClientOption) (*VizierC
 
 	c := &vizierGRPCClient{
 		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
 		vizierClient:     aiplatformpb.NewVizierServiceClient(connPool),
 		CallOptions:      &client.CallOptions,
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
@@ -487,7 +538,7 @@ func (c *vizierGRPCClient) Connection() *grpc.ClientConn {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *vizierGRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -566,7 +617,7 @@ func defaultVizierRESTClientOptions() []option.ClientOption {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *vizierRESTClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -586,11 +637,6 @@ func (c *vizierRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 func (c *vizierGRPCClient) CreateStudy(ctx context.Context, req *aiplatformpb.CreateStudyRequest, opts ...gax.CallOption) (*aiplatformpb.Study, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -608,11 +654,6 @@ func (c *vizierGRPCClient) CreateStudy(ctx context.Context, req *aiplatformpb.Cr
 }
 
 func (c *vizierGRPCClient) GetStudy(ctx context.Context, req *aiplatformpb.GetStudyRequest, opts ...gax.CallOption) (*aiplatformpb.Study, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -675,11 +716,6 @@ func (c *vizierGRPCClient) ListStudies(ctx context.Context, req *aiplatformpb.Li
 }
 
 func (c *vizierGRPCClient) DeleteStudy(ctx context.Context, req *aiplatformpb.DeleteStudyRequest, opts ...gax.CallOption) error {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -693,11 +729,6 @@ func (c *vizierGRPCClient) DeleteStudy(ctx context.Context, req *aiplatformpb.De
 }
 
 func (c *vizierGRPCClient) LookupStudy(ctx context.Context, req *aiplatformpb.LookupStudyRequest, opts ...gax.CallOption) (*aiplatformpb.Study, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -715,11 +746,6 @@ func (c *vizierGRPCClient) LookupStudy(ctx context.Context, req *aiplatformpb.Lo
 }
 
 func (c *vizierGRPCClient) SuggestTrials(ctx context.Context, req *aiplatformpb.SuggestTrialsRequest, opts ...gax.CallOption) (*SuggestTrialsOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -739,11 +765,6 @@ func (c *vizierGRPCClient) SuggestTrials(ctx context.Context, req *aiplatformpb.
 }
 
 func (c *vizierGRPCClient) CreateTrial(ctx context.Context, req *aiplatformpb.CreateTrialRequest, opts ...gax.CallOption) (*aiplatformpb.Trial, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -761,11 +782,6 @@ func (c *vizierGRPCClient) CreateTrial(ctx context.Context, req *aiplatformpb.Cr
 }
 
 func (c *vizierGRPCClient) GetTrial(ctx context.Context, req *aiplatformpb.GetTrialRequest, opts ...gax.CallOption) (*aiplatformpb.Trial, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -828,11 +844,6 @@ func (c *vizierGRPCClient) ListTrials(ctx context.Context, req *aiplatformpb.Lis
 }
 
 func (c *vizierGRPCClient) AddTrialMeasurement(ctx context.Context, req *aiplatformpb.AddTrialMeasurementRequest, opts ...gax.CallOption) (*aiplatformpb.Trial, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "trial_name", url.QueryEscape(req.GetTrialName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -850,11 +861,6 @@ func (c *vizierGRPCClient) AddTrialMeasurement(ctx context.Context, req *aiplatf
 }
 
 func (c *vizierGRPCClient) CompleteTrial(ctx context.Context, req *aiplatformpb.CompleteTrialRequest, opts ...gax.CallOption) (*aiplatformpb.Trial, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -872,11 +878,6 @@ func (c *vizierGRPCClient) CompleteTrial(ctx context.Context, req *aiplatformpb.
 }
 
 func (c *vizierGRPCClient) DeleteTrial(ctx context.Context, req *aiplatformpb.DeleteTrialRequest, opts ...gax.CallOption) error {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -890,11 +891,6 @@ func (c *vizierGRPCClient) DeleteTrial(ctx context.Context, req *aiplatformpb.De
 }
 
 func (c *vizierGRPCClient) CheckTrialEarlyStoppingState(ctx context.Context, req *aiplatformpb.CheckTrialEarlyStoppingStateRequest, opts ...gax.CallOption) (*CheckTrialEarlyStoppingStateOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "trial_name", url.QueryEscape(req.GetTrialName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -914,11 +910,6 @@ func (c *vizierGRPCClient) CheckTrialEarlyStoppingState(ctx context.Context, req
 }
 
 func (c *vizierGRPCClient) StopTrial(ctx context.Context, req *aiplatformpb.StopTrialRequest, opts ...gax.CallOption) (*aiplatformpb.Trial, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -936,11 +927,6 @@ func (c *vizierGRPCClient) StopTrial(ctx context.Context, req *aiplatformpb.Stop
 }
 
 func (c *vizierGRPCClient) ListOptimalTrials(ctx context.Context, req *aiplatformpb.ListOptimalTrialsRequest, opts ...gax.CallOption) (*aiplatformpb.ListOptimalTrialsResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1219,13 +1205,13 @@ func (c *vizierRESTClient) CreateStudy(ctx context.Context, req *aiplatformpb.Cr
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1272,13 +1258,13 @@ func (c *vizierRESTClient) GetStudy(ctx context.Context, req *aiplatformpb.GetSt
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1342,13 +1328,13 @@ func (c *vizierRESTClient) ListStudies(ctx context.Context, req *aiplatformpb.Li
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -1454,13 +1440,13 @@ func (c *vizierRESTClient) LookupStudy(ctx context.Context, req *aiplatformpb.Lo
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1517,13 +1503,13 @@ func (c *vizierRESTClient) SuggestTrials(ctx context.Context, req *aiplatformpb.
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1582,13 +1568,13 @@ func (c *vizierRESTClient) CreateTrial(ctx context.Context, req *aiplatformpb.Cr
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1635,13 +1621,13 @@ func (c *vizierRESTClient) GetTrial(ctx context.Context, req *aiplatformpb.GetTr
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1705,13 +1691,13 @@ func (c *vizierRESTClient) ListTrials(ctx context.Context, req *aiplatformpb.Lis
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -1782,13 +1768,13 @@ func (c *vizierRESTClient) AddTrialMeasurement(ctx context.Context, req *aiplatf
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1841,13 +1827,13 @@ func (c *vizierRESTClient) CompleteTrial(ctx context.Context, req *aiplatformpb.
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1937,13 +1923,13 @@ func (c *vizierRESTClient) CheckTrialEarlyStoppingState(ctx context.Context, req
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2001,13 +1987,13 @@ func (c *vizierRESTClient) StopTrial(ctx context.Context, req *aiplatformpb.Stop
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2063,13 +2049,13 @@ func (c *vizierRESTClient) ListOptimalTrials(ctx context.Context, req *aiplatfor
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2116,13 +2102,13 @@ func (c *vizierRESTClient) GetLocation(ctx context.Context, req *locationpb.GetL
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2189,13 +2175,13 @@ func (c *vizierRESTClient) ListLocations(ctx context.Context, req *locationpb.Li
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -2266,13 +2252,13 @@ func (c *vizierRESTClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPo
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2329,13 +2315,13 @@ func (c *vizierRESTClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPo
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2394,13 +2380,13 @@ func (c *vizierRESTClient) TestIamPermissions(ctx context.Context, req *iampb.Te
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2517,13 +2503,13 @@ func (c *vizierRESTClient) GetOperation(ctx context.Context, req *longrunningpb.
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2590,13 +2576,13 @@ func (c *vizierRESTClient) ListOperations(ctx context.Context, req *longrunningp
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -2638,7 +2624,7 @@ func (c *vizierRESTClient) WaitOperation(ctx context.Context, req *longrunningpb
 		if err != nil {
 			return nil, err
 		}
-		params.Add("timeout", string(timeout))
+		params.Add("timeout", string(timeout[1:len(timeout)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -2671,13 +2657,13 @@ func (c *vizierRESTClient) WaitOperation(ctx context.Context, req *longrunningpb
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil

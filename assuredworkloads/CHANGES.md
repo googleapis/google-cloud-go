@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.11.1](https://github.com/googleapis/google-cloud-go/compare/assuredworkloads/v1.11.0...assuredworkloads/v1.11.1) (2023-06-20)
+
+
+### Bug Fixes
+
+* **assuredworkloads:** REST query UpdateMask bug ([df52820](https://github.com/googleapis/google-cloud-go/commit/df52820b0e7721954809a8aa8700b93c5662dc9b))
+
 ## [1.11.0](https://github.com/googleapis/google-cloud-go/compare/assuredworkloads/v1.10.1...assuredworkloads/v1.11.0) (2023-05-30)
 
 

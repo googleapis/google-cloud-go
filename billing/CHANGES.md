@@ -1,5 +1,17 @@
 # Changes
 
+## [1.16.0](https://github.com/googleapis/google-cloud-go/compare/billing/v1.15.0...billing/v1.16.0) (2023-06-20)
+
+
+### Features
+
+* **billing:** Added resource_reference for name in GetProjectBillingInfoRequest message ([b726d41](https://github.com/googleapis/google-cloud-go/commit/b726d413166faa8c84c0a09c6019ff50f3249b9d))
+
+
+### Bug Fixes
+
+* **billing:** REST query UpdateMask bug ([df52820](https://github.com/googleapis/google-cloud-go/commit/df52820b0e7721954809a8aa8700b93c5662dc9b))
+
 ## [1.15.0](https://github.com/googleapis/google-cloud-go/compare/billing/v1.14.0...billing/v1.15.0) (2023-06-07)
 
 

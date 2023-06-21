@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"math"
 	"net/http"
 	"net/url"
@@ -81,8 +81,11 @@ func defaultDeviceManagerGRPCClientOptions() []option.ClientOption {
 
 func defaultDeviceManagerCallOptions() *DeviceManagerCallOptions {
 	return &DeviceManagerCallOptions{
-		CreateDeviceRegistry: []gax.CallOption{},
+		CreateDeviceRegistry: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
+		},
 		GetDeviceRegistry: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -94,8 +97,11 @@ func defaultDeviceManagerCallOptions() *DeviceManagerCallOptions {
 				})
 			}),
 		},
-		UpdateDeviceRegistry: []gax.CallOption{},
+		UpdateDeviceRegistry: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
+		},
 		DeleteDeviceRegistry: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -108,6 +114,7 @@ func defaultDeviceManagerCallOptions() *DeviceManagerCallOptions {
 			}),
 		},
 		ListDeviceRegistries: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -119,8 +126,11 @@ func defaultDeviceManagerCallOptions() *DeviceManagerCallOptions {
 				})
 			}),
 		},
-		CreateDevice: []gax.CallOption{},
+		CreateDevice: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
+		},
 		GetDevice: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -132,8 +142,11 @@ func defaultDeviceManagerCallOptions() *DeviceManagerCallOptions {
 				})
 			}),
 		},
-		UpdateDevice: []gax.CallOption{},
+		UpdateDevice: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
+		},
 		DeleteDevice: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -146,6 +159,7 @@ func defaultDeviceManagerCallOptions() *DeviceManagerCallOptions {
 			}),
 		},
 		ListDevices: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -158,6 +172,7 @@ func defaultDeviceManagerCallOptions() *DeviceManagerCallOptions {
 			}),
 		},
 		ModifyCloudToDeviceConfig: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -171,6 +186,7 @@ func defaultDeviceManagerCallOptions() *DeviceManagerCallOptions {
 			}),
 		},
 		ListDeviceConfigVersions: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -183,6 +199,7 @@ func defaultDeviceManagerCallOptions() *DeviceManagerCallOptions {
 			}),
 		},
 		ListDeviceStates: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -194,10 +211,17 @@ func defaultDeviceManagerCallOptions() *DeviceManagerCallOptions {
 				})
 			}),
 		},
-		SetIamPolicy:       []gax.CallOption{},
-		GetIamPolicy:       []gax.CallOption{},
-		TestIamPermissions: []gax.CallOption{},
+		SetIamPolicy: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
+		},
+		GetIamPolicy: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
+		},
+		TestIamPermissions: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
+		},
 		SendCommandToDevice: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -210,15 +234,22 @@ func defaultDeviceManagerCallOptions() *DeviceManagerCallOptions {
 				})
 			}),
 		},
-		BindDeviceToGateway:     []gax.CallOption{},
-		UnbindDeviceFromGateway: []gax.CallOption{},
+		BindDeviceToGateway: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
+		},
+		UnbindDeviceFromGateway: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
+		},
 	}
 }
 
 func defaultDeviceManagerRESTCallOptions() *DeviceManagerCallOptions {
 	return &DeviceManagerCallOptions{
-		CreateDeviceRegistry: []gax.CallOption{},
+		CreateDeviceRegistry: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
+		},
 		GetDeviceRegistry: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -229,8 +260,11 @@ func defaultDeviceManagerRESTCallOptions() *DeviceManagerCallOptions {
 					http.StatusGatewayTimeout)
 			}),
 		},
-		UpdateDeviceRegistry: []gax.CallOption{},
+		UpdateDeviceRegistry: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
+		},
 		DeleteDeviceRegistry: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -242,6 +276,7 @@ func defaultDeviceManagerRESTCallOptions() *DeviceManagerCallOptions {
 			}),
 		},
 		ListDeviceRegistries: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -252,8 +287,11 @@ func defaultDeviceManagerRESTCallOptions() *DeviceManagerCallOptions {
 					http.StatusGatewayTimeout)
 			}),
 		},
-		CreateDevice: []gax.CallOption{},
+		CreateDevice: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
+		},
 		GetDevice: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -264,8 +302,11 @@ func defaultDeviceManagerRESTCallOptions() *DeviceManagerCallOptions {
 					http.StatusGatewayTimeout)
 			}),
 		},
-		UpdateDevice: []gax.CallOption{},
+		UpdateDevice: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
+		},
 		DeleteDevice: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -277,6 +318,7 @@ func defaultDeviceManagerRESTCallOptions() *DeviceManagerCallOptions {
 			}),
 		},
 		ListDevices: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -288,6 +330,7 @@ func defaultDeviceManagerRESTCallOptions() *DeviceManagerCallOptions {
 			}),
 		},
 		ModifyCloudToDeviceConfig: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -300,6 +343,7 @@ func defaultDeviceManagerRESTCallOptions() *DeviceManagerCallOptions {
 			}),
 		},
 		ListDeviceConfigVersions: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -311,6 +355,7 @@ func defaultDeviceManagerRESTCallOptions() *DeviceManagerCallOptions {
 			}),
 		},
 		ListDeviceStates: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -321,10 +366,17 @@ func defaultDeviceManagerRESTCallOptions() *DeviceManagerCallOptions {
 					http.StatusGatewayTimeout)
 			}),
 		},
-		SetIamPolicy:       []gax.CallOption{},
-		GetIamPolicy:       []gax.CallOption{},
-		TestIamPermissions: []gax.CallOption{},
+		SetIamPolicy: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
+		},
+		GetIamPolicy: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
+		},
+		TestIamPermissions: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
+		},
 		SendCommandToDevice: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -336,8 +388,12 @@ func defaultDeviceManagerRESTCallOptions() *DeviceManagerCallOptions {
 					http.StatusTooManyRequests)
 			}),
 		},
-		BindDeviceToGateway:     []gax.CallOption{},
-		UnbindDeviceFromGateway: []gax.CallOption{},
+		BindDeviceToGateway: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
+		},
+		UnbindDeviceFromGateway: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
+		},
 	}
 }
 
@@ -527,9 +583,6 @@ type deviceManagerGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing DeviceManagerClient
 	CallOptions **DeviceManagerCallOptions
 
@@ -554,11 +607,6 @@ func NewDeviceManagerClient(ctx context.Context, opts ...option.ClientOption) (*
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -567,7 +615,6 @@ func NewDeviceManagerClient(ctx context.Context, opts ...option.ClientOption) (*
 
 	c := &deviceManagerGRPCClient{
 		connPool:            connPool,
-		disableDeadlines:    disableDeadlines,
 		deviceManagerClient: iotpb.NewDeviceManagerClient(connPool),
 		CallOptions:         &client.CallOptions,
 	}
@@ -590,7 +637,7 @@ func (c *deviceManagerGRPCClient) Connection() *grpc.ClientConn {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *deviceManagerGRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -650,7 +697,7 @@ func defaultDeviceManagerRESTClientOptions() []option.ClientOption {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *deviceManagerRESTClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -670,11 +717,6 @@ func (c *deviceManagerRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 func (c *deviceManagerGRPCClient) CreateDeviceRegistry(ctx context.Context, req *iotpb.CreateDeviceRegistryRequest, opts ...gax.CallOption) (*iotpb.DeviceRegistry, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 120000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -692,11 +734,6 @@ func (c *deviceManagerGRPCClient) CreateDeviceRegistry(ctx context.Context, req 
 }
 
 func (c *deviceManagerGRPCClient) GetDeviceRegistry(ctx context.Context, req *iotpb.GetDeviceRegistryRequest, opts ...gax.CallOption) (*iotpb.DeviceRegistry, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 120000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -714,11 +751,6 @@ func (c *deviceManagerGRPCClient) GetDeviceRegistry(ctx context.Context, req *io
 }
 
 func (c *deviceManagerGRPCClient) UpdateDeviceRegistry(ctx context.Context, req *iotpb.UpdateDeviceRegistryRequest, opts ...gax.CallOption) (*iotpb.DeviceRegistry, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 120000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "device_registry.name", url.QueryEscape(req.GetDeviceRegistry().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -736,11 +768,6 @@ func (c *deviceManagerGRPCClient) UpdateDeviceRegistry(ctx context.Context, req 
 }
 
 func (c *deviceManagerGRPCClient) DeleteDeviceRegistry(ctx context.Context, req *iotpb.DeleteDeviceRegistryRequest, opts ...gax.CallOption) error {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 120000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -799,11 +826,6 @@ func (c *deviceManagerGRPCClient) ListDeviceRegistries(ctx context.Context, req 
 }
 
 func (c *deviceManagerGRPCClient) CreateDevice(ctx context.Context, req *iotpb.CreateDeviceRequest, opts ...gax.CallOption) (*iotpb.Device, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 120000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -821,11 +843,6 @@ func (c *deviceManagerGRPCClient) CreateDevice(ctx context.Context, req *iotpb.C
 }
 
 func (c *deviceManagerGRPCClient) GetDevice(ctx context.Context, req *iotpb.GetDeviceRequest, opts ...gax.CallOption) (*iotpb.Device, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 120000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -843,11 +860,6 @@ func (c *deviceManagerGRPCClient) GetDevice(ctx context.Context, req *iotpb.GetD
 }
 
 func (c *deviceManagerGRPCClient) UpdateDevice(ctx context.Context, req *iotpb.UpdateDeviceRequest, opts ...gax.CallOption) (*iotpb.Device, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 120000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "device.name", url.QueryEscape(req.GetDevice().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -865,11 +877,6 @@ func (c *deviceManagerGRPCClient) UpdateDevice(ctx context.Context, req *iotpb.U
 }
 
 func (c *deviceManagerGRPCClient) DeleteDevice(ctx context.Context, req *iotpb.DeleteDeviceRequest, opts ...gax.CallOption) error {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 120000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -928,11 +935,6 @@ func (c *deviceManagerGRPCClient) ListDevices(ctx context.Context, req *iotpb.Li
 }
 
 func (c *deviceManagerGRPCClient) ModifyCloudToDeviceConfig(ctx context.Context, req *iotpb.ModifyCloudToDeviceConfigRequest, opts ...gax.CallOption) (*iotpb.DeviceConfig, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 120000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -950,11 +952,6 @@ func (c *deviceManagerGRPCClient) ModifyCloudToDeviceConfig(ctx context.Context,
 }
 
 func (c *deviceManagerGRPCClient) ListDeviceConfigVersions(ctx context.Context, req *iotpb.ListDeviceConfigVersionsRequest, opts ...gax.CallOption) (*iotpb.ListDeviceConfigVersionsResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 120000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -972,11 +969,6 @@ func (c *deviceManagerGRPCClient) ListDeviceConfigVersions(ctx context.Context, 
 }
 
 func (c *deviceManagerGRPCClient) ListDeviceStates(ctx context.Context, req *iotpb.ListDeviceStatesRequest, opts ...gax.CallOption) (*iotpb.ListDeviceStatesResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 120000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -994,11 +986,6 @@ func (c *deviceManagerGRPCClient) ListDeviceStates(ctx context.Context, req *iot
 }
 
 func (c *deviceManagerGRPCClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 120000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1016,11 +1003,6 @@ func (c *deviceManagerGRPCClient) SetIamPolicy(ctx context.Context, req *iampb.S
 }
 
 func (c *deviceManagerGRPCClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 120000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1038,11 +1020,6 @@ func (c *deviceManagerGRPCClient) GetIamPolicy(ctx context.Context, req *iampb.G
 }
 
 func (c *deviceManagerGRPCClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermissionsRequest, opts ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 120000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1060,11 +1037,6 @@ func (c *deviceManagerGRPCClient) TestIamPermissions(ctx context.Context, req *i
 }
 
 func (c *deviceManagerGRPCClient) SendCommandToDevice(ctx context.Context, req *iotpb.SendCommandToDeviceRequest, opts ...gax.CallOption) (*iotpb.SendCommandToDeviceResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 120000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1082,11 +1054,6 @@ func (c *deviceManagerGRPCClient) SendCommandToDevice(ctx context.Context, req *
 }
 
 func (c *deviceManagerGRPCClient) BindDeviceToGateway(ctx context.Context, req *iotpb.BindDeviceToGatewayRequest, opts ...gax.CallOption) (*iotpb.BindDeviceToGatewayResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 120000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1104,11 +1071,6 @@ func (c *deviceManagerGRPCClient) BindDeviceToGateway(ctx context.Context, req *
 }
 
 func (c *deviceManagerGRPCClient) UnbindDeviceFromGateway(ctx context.Context, req *iotpb.UnbindDeviceFromGatewayRequest, opts ...gax.CallOption) (*iotpb.UnbindDeviceFromGatewayResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 120000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1173,13 +1135,13 @@ func (c *deviceManagerRESTClient) CreateDeviceRegistry(ctx context.Context, req 
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1231,13 +1193,13 @@ func (c *deviceManagerRESTClient) GetDeviceRegistry(ctx context.Context, req *io
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1270,7 +1232,7 @@ func (c *deviceManagerRESTClient) UpdateDeviceRegistry(ctx context.Context, req 
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask))
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1303,13 +1265,13 @@ func (c *deviceManagerRESTClient) UpdateDeviceRegistry(ctx context.Context, req 
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1414,13 +1376,13 @@ func (c *deviceManagerRESTClient) ListDeviceRegistries(ctx context.Context, req 
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -1496,13 +1458,13 @@ func (c *deviceManagerRESTClient) CreateDevice(ctx context.Context, req *iotpb.C
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1528,7 +1490,7 @@ func (c *deviceManagerRESTClient) GetDevice(ctx context.Context, req *iotpb.GetD
 		if err != nil {
 			return nil, err
 		}
-		params.Add("fieldMask", string(fieldMask))
+		params.Add("fieldMask", string(fieldMask[1:len(fieldMask)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1561,13 +1523,13 @@ func (c *deviceManagerRESTClient) GetDevice(ctx context.Context, req *iotpb.GetD
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1600,7 +1562,7 @@ func (c *deviceManagerRESTClient) UpdateDevice(ctx context.Context, req *iotpb.U
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask))
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1633,13 +1595,13 @@ func (c *deviceManagerRESTClient) UpdateDevice(ctx context.Context, req *iotpb.U
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1728,7 +1690,7 @@ func (c *deviceManagerRESTClient) ListDevices(ctx context.Context, req *iotpb.Li
 			if err != nil {
 				return nil, "", err
 			}
-			params.Add("fieldMask", string(fieldMask))
+			params.Add("fieldMask", string(fieldMask[1:len(fieldMask)-1]))
 		}
 		if req.GetGatewayListOptions().GetAssociationsDeviceId() != "" {
 			params.Add("gatewayListOptions.associationsDeviceId", fmt.Sprintf("%v", req.GetGatewayListOptions().GetAssociationsDeviceId()))
@@ -1770,13 +1732,13 @@ func (c *deviceManagerRESTClient) ListDevices(ctx context.Context, req *iotpb.Li
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -1853,13 +1815,13 @@ func (c *deviceManagerRESTClient) ModifyCloudToDeviceConfig(ctx context.Context,
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1915,13 +1877,13 @@ func (c *deviceManagerRESTClient) ListDeviceConfigVersions(ctx context.Context, 
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1977,13 +1939,13 @@ func (c *deviceManagerRESTClient) ListDeviceStates(ctx context.Context, req *iot
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2042,13 +2004,13 @@ func (c *deviceManagerRESTClient) SetIamPolicy(ctx context.Context, req *iampb.S
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2108,13 +2070,13 @@ func (c *deviceManagerRESTClient) GetIamPolicy(ctx context.Context, req *iampb.G
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2174,13 +2136,13 @@ func (c *deviceManagerRESTClient) TestIamPermissions(ctx context.Context, req *i
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2252,13 +2214,13 @@ func (c *deviceManagerRESTClient) SendCommandToDevice(ctx context.Context, req *
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2316,13 +2278,13 @@ func (c *deviceManagerRESTClient) BindDeviceToGateway(ctx context.Context, req *
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2380,13 +2342,13 @@ func (c *deviceManagerRESTClient) UnbindDeviceFromGateway(ctx context.Context, r
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
