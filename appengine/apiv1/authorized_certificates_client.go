@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"math"
 	"net/http"
 	"net/url"
@@ -65,21 +65,41 @@ func defaultAuthorizedCertificatesGRPCClientOptions() []option.ClientOption {
 
 func defaultAuthorizedCertificatesCallOptions() *AuthorizedCertificatesCallOptions {
 	return &AuthorizedCertificatesCallOptions{
-		ListAuthorizedCertificates:  []gax.CallOption{},
-		GetAuthorizedCertificate:    []gax.CallOption{},
-		CreateAuthorizedCertificate: []gax.CallOption{},
-		UpdateAuthorizedCertificate: []gax.CallOption{},
-		DeleteAuthorizedCertificate: []gax.CallOption{},
+		ListAuthorizedCertificates: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetAuthorizedCertificate: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		CreateAuthorizedCertificate: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateAuthorizedCertificate: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteAuthorizedCertificate: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 	}
 }
 
 func defaultAuthorizedCertificatesRESTCallOptions() *AuthorizedCertificatesCallOptions {
 	return &AuthorizedCertificatesCallOptions{
-		ListAuthorizedCertificates:  []gax.CallOption{},
-		GetAuthorizedCertificate:    []gax.CallOption{},
-		CreateAuthorizedCertificate: []gax.CallOption{},
-		UpdateAuthorizedCertificate: []gax.CallOption{},
-		DeleteAuthorizedCertificate: []gax.CallOption{},
+		ListAuthorizedCertificates: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetAuthorizedCertificate: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		CreateAuthorizedCertificate: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateAuthorizedCertificate: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteAuthorizedCertificate: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 	}
 }
 
@@ -167,9 +187,6 @@ type authorizedCertificatesGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing AuthorizedCertificatesClient
 	CallOptions **AuthorizedCertificatesCallOptions
 
@@ -195,11 +212,6 @@ func NewAuthorizedCertificatesClient(ctx context.Context, opts ...option.ClientO
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -208,7 +220,6 @@ func NewAuthorizedCertificatesClient(ctx context.Context, opts ...option.ClientO
 
 	c := &authorizedCertificatesGRPCClient{
 		connPool:                     connPool,
-		disableDeadlines:             disableDeadlines,
 		authorizedCertificatesClient: appenginepb.NewAuthorizedCertificatesClient(connPool),
 		CallOptions:                  &client.CallOptions,
 	}
@@ -231,7 +242,7 @@ func (c *authorizedCertificatesGRPCClient) Connection() *grpc.ClientConn {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *authorizedCertificatesGRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -292,7 +303,7 @@ func defaultAuthorizedCertificatesRESTClientOptions() []option.ClientOption {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *authorizedCertificatesRESTClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -357,11 +368,6 @@ func (c *authorizedCertificatesGRPCClient) ListAuthorizedCertificates(ctx contex
 }
 
 func (c *authorizedCertificatesGRPCClient) GetAuthorizedCertificate(ctx context.Context, req *appenginepb.GetAuthorizedCertificateRequest, opts ...gax.CallOption) (*appenginepb.AuthorizedCertificate, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -379,11 +385,6 @@ func (c *authorizedCertificatesGRPCClient) GetAuthorizedCertificate(ctx context.
 }
 
 func (c *authorizedCertificatesGRPCClient) CreateAuthorizedCertificate(ctx context.Context, req *appenginepb.CreateAuthorizedCertificateRequest, opts ...gax.CallOption) (*appenginepb.AuthorizedCertificate, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -401,11 +402,6 @@ func (c *authorizedCertificatesGRPCClient) CreateAuthorizedCertificate(ctx conte
 }
 
 func (c *authorizedCertificatesGRPCClient) UpdateAuthorizedCertificate(ctx context.Context, req *appenginepb.UpdateAuthorizedCertificateRequest, opts ...gax.CallOption) (*appenginepb.AuthorizedCertificate, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -423,11 +419,6 @@ func (c *authorizedCertificatesGRPCClient) UpdateAuthorizedCertificate(ctx conte
 }
 
 func (c *authorizedCertificatesGRPCClient) DeleteAuthorizedCertificate(ctx context.Context, req *appenginepb.DeleteAuthorizedCertificateRequest, opts ...gax.CallOption) error {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -497,13 +488,13 @@ func (c *authorizedCertificatesRESTClient) ListAuthorizedCertificates(ctx contex
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -575,13 +566,13 @@ func (c *authorizedCertificatesRESTClient) GetAuthorizedCertificate(ctx context.
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -640,13 +631,13 @@ func (c *authorizedCertificatesRESTClient) CreateAuthorizedCertificate(ctx conte
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -683,7 +674,7 @@ func (c *authorizedCertificatesRESTClient) UpdateAuthorizedCertificate(ctx conte
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask))
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -716,13 +707,13 @@ func (c *authorizedCertificatesRESTClient) UpdateAuthorizedCertificate(ctx conte
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil

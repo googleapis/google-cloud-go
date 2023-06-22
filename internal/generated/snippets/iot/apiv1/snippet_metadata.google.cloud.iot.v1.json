@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/iot/apiv1",
-    "version": "1.5.0",
+    "version": "1.7.0",
     "language": "GO",
     "apis": [
       {
@@ -34,7 +34,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "iotpb.BindDeviceToGatewayResponse",
+        "resultType": "*iotpb.BindDeviceToGatewayResponse",
         "client": {
           "shortName": "DeviceManagerClient",
           "fullName": "google.cloud.iot.v1.DeviceManagerClient"
@@ -80,7 +80,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "iotpb.Device",
+        "resultType": "*iotpb.Device",
         "client": {
           "shortName": "DeviceManagerClient",
           "fullName": "google.cloud.iot.v1.DeviceManagerClient"
@@ -126,7 +126,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "iotpb.DeviceRegistry",
+        "resultType": "*iotpb.DeviceRegistry",
         "client": {
           "shortName": "DeviceManagerClient",
           "fullName": "google.cloud.iot.v1.DeviceManagerClient"
@@ -262,7 +262,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "iotpb.Device",
+        "resultType": "*iotpb.Device",
         "client": {
           "shortName": "DeviceManagerClient",
           "fullName": "google.cloud.iot.v1.DeviceManagerClient"
@@ -308,7 +308,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "iotpb.DeviceRegistry",
+        "resultType": "*iotpb.DeviceRegistry",
         "client": {
           "shortName": "DeviceManagerClient",
           "fullName": "google.cloud.iot.v1.DeviceManagerClient"
@@ -354,7 +354,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "iampb.Policy",
+        "resultType": "*iampb.Policy",
         "client": {
           "shortName": "DeviceManagerClient",
           "fullName": "google.cloud.iot.v1.DeviceManagerClient"
@@ -372,7 +372,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -400,7 +400,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "iotpb.ListDeviceConfigVersionsResponse",
+        "resultType": "*iotpb.ListDeviceConfigVersionsResponse",
         "client": {
           "shortName": "DeviceManagerClient",
           "fullName": "google.cloud.iot.v1.DeviceManagerClient"
@@ -492,7 +492,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "iotpb.ListDeviceStatesResponse",
+        "resultType": "*iotpb.ListDeviceStatesResponse",
         "client": {
           "shortName": "DeviceManagerClient",
           "fullName": "google.cloud.iot.v1.DeviceManagerClient"
@@ -584,7 +584,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "iotpb.DeviceConfig",
+        "resultType": "*iotpb.DeviceConfig",
         "client": {
           "shortName": "DeviceManagerClient",
           "fullName": "google.cloud.iot.v1.DeviceManagerClient"
@@ -610,7 +610,7 @@
     {
       "regionTag": "cloudiot_v1_generated_DeviceManager_SendCommandToDevice_sync",
       "title": "cloudiot SendCommandToDevice Sample",
-      "description": "SendCommandToDevice sends a command to the specified device. In order for a device to be able\nto receive commands, it must: \n\nbe connected to Cloud IoT Core using the MQTT protocol, and\n\nbe subscribed to the group of MQTT topics specified by\n/devices/{device-id}/commands/#. This subscription will receive commands\nat the top-level topic /devices/{device-id}/commands as well as commands\nfor subfolders, like /devices/{device-id}/commands/subfolder.\nNote that subscribing to specific subfolders is not supported.\nIf the command could not be delivered to the device, this method will\nreturn an error; in particular, if the device is not subscribed, this\nmethod will return FAILED_PRECONDITION. Otherwise, this method will\nreturn OK. If the subscription is QoS 1, at least once delivery will be\nguaranteed; for QoS 0, no acknowledgment will be expected from the device.",
+      "description": "SendCommandToDevice sends a command to the specified device. In order for a device to be able\nto receive commands, it must: \n1) be connected to Cloud IoT Core using the MQTT protocol, and\n2) be subscribed to the group of MQTT topics specified by\n/devices/{device-id}/commands/#. This subscription will receive commands\nat the top-level topic /devices/{device-id}/commands as well as commands\nfor subfolders, like /devices/{device-id}/commands/subfolder.\nNote that subscribing to specific subfolders is not supported.\nIf the command could not be delivered to the device, this method will\nreturn an error; in particular, if the device is not subscribed, this\nmethod will return FAILED_PRECONDITION. Otherwise, this method will\nreturn OK. If the subscription is QoS 1, at least once delivery will be\nguaranteed; for QoS 0, no acknowledgment will be expected from the device.",
       "file": "DeviceManagerClient/SendCommandToDevice/main.go",
       "language": "GO",
       "clientMethod": {
@@ -630,7 +630,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "iotpb.SendCommandToDeviceResponse",
+        "resultType": "*iotpb.SendCommandToDeviceResponse",
         "client": {
           "shortName": "DeviceManagerClient",
           "fullName": "google.cloud.iot.v1.DeviceManagerClient"
@@ -676,7 +676,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "iampb.Policy",
+        "resultType": "*iampb.Policy",
         "client": {
           "shortName": "DeviceManagerClient",
           "fullName": "google.cloud.iot.v1.DeviceManagerClient"
@@ -694,7 +694,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -722,7 +722,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "iampb.TestIamPermissionsResponse",
+        "resultType": "*iampb.TestIamPermissionsResponse",
         "client": {
           "shortName": "DeviceManagerClient",
           "fullName": "google.cloud.iot.v1.DeviceManagerClient"
@@ -740,7 +740,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -768,7 +768,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "iotpb.UnbindDeviceFromGatewayResponse",
+        "resultType": "*iotpb.UnbindDeviceFromGatewayResponse",
         "client": {
           "shortName": "DeviceManagerClient",
           "fullName": "google.cloud.iot.v1.DeviceManagerClient"
@@ -814,7 +814,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "iotpb.Device",
+        "resultType": "*iotpb.Device",
         "client": {
           "shortName": "DeviceManagerClient",
           "fullName": "google.cloud.iot.v1.DeviceManagerClient"
@@ -860,7 +860,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "iotpb.DeviceRegistry",
+        "resultType": "*iotpb.DeviceRegistry",
         "client": {
           "shortName": "DeviceManagerClient",
           "fullName": "google.cloud.iot.v1.DeviceManagerClient"

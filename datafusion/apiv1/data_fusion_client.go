@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"math"
 	"net/http"
 	"net/url"
@@ -70,25 +70,53 @@ func defaultGRPCClientOptions() []option.ClientOption {
 
 func defaultCallOptions() *CallOptions {
 	return &CallOptions{
-		ListAvailableVersions: []gax.CallOption{},
-		ListInstances:         []gax.CallOption{},
-		GetInstance:           []gax.CallOption{},
-		CreateInstance:        []gax.CallOption{},
-		DeleteInstance:        []gax.CallOption{},
-		UpdateInstance:        []gax.CallOption{},
-		RestartInstance:       []gax.CallOption{},
+		ListAvailableVersions: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ListInstances: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetInstance: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		CreateInstance: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteInstance: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateInstance: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		RestartInstance: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 	}
 }
 
 func defaultRESTCallOptions() *CallOptions {
 	return &CallOptions{
-		ListAvailableVersions: []gax.CallOption{},
-		ListInstances:         []gax.CallOption{},
-		GetInstance:           []gax.CallOption{},
-		CreateInstance:        []gax.CallOption{},
-		DeleteInstance:        []gax.CallOption{},
-		UpdateInstance:        []gax.CallOption{},
-		RestartInstance:       []gax.CallOption{},
+		ListAvailableVersions: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ListInstances: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetInstance: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		CreateInstance: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteInstance: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateInstance: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		RestartInstance: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 	}
 }
 
@@ -220,9 +248,6 @@ type gRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing Client
 	CallOptions **CallOptions
 
@@ -254,11 +279,6 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -266,10 +286,9 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 	client := Client{CallOptions: defaultCallOptions()}
 
 	c := &gRPCClient{
-		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
-		client:           datafusionpb.NewDataFusionClient(connPool),
-		CallOptions:      &client.CallOptions,
+		connPool:    connPool,
+		client:      datafusionpb.NewDataFusionClient(connPool),
+		CallOptions: &client.CallOptions,
 	}
 	c.setGoogleClientInfo()
 
@@ -301,7 +320,7 @@ func (c *gRPCClient) Connection() *grpc.ClientConn {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -378,7 +397,7 @@ func defaultRESTClientOptions() []option.ClientOption {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *restClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -488,11 +507,6 @@ func (c *gRPCClient) ListInstances(ctx context.Context, req *datafusionpb.ListIn
 }
 
 func (c *gRPCClient) GetInstance(ctx context.Context, req *datafusionpb.GetInstanceRequest, opts ...gax.CallOption) (*datafusionpb.Instance, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -510,11 +524,6 @@ func (c *gRPCClient) GetInstance(ctx context.Context, req *datafusionpb.GetInsta
 }
 
 func (c *gRPCClient) CreateInstance(ctx context.Context, req *datafusionpb.CreateInstanceRequest, opts ...gax.CallOption) (*CreateInstanceOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -534,11 +543,6 @@ func (c *gRPCClient) CreateInstance(ctx context.Context, req *datafusionpb.Creat
 }
 
 func (c *gRPCClient) DeleteInstance(ctx context.Context, req *datafusionpb.DeleteInstanceRequest, opts ...gax.CallOption) (*DeleteInstanceOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -558,11 +562,6 @@ func (c *gRPCClient) DeleteInstance(ctx context.Context, req *datafusionpb.Delet
 }
 
 func (c *gRPCClient) UpdateInstance(ctx context.Context, req *datafusionpb.UpdateInstanceRequest, opts ...gax.CallOption) (*UpdateInstanceOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "instance.name", url.QueryEscape(req.GetInstance().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -582,11 +581,6 @@ func (c *gRPCClient) UpdateInstance(ctx context.Context, req *datafusionpb.Updat
 }
 
 func (c *gRPCClient) RestartInstance(ctx context.Context, req *datafusionpb.RestartInstanceRequest, opts ...gax.CallOption) (*RestartInstanceOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -663,13 +657,13 @@ func (c *restClient) ListAvailableVersions(ctx context.Context, req *datafusionp
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -757,13 +751,13 @@ func (c *restClient) ListInstances(ctx context.Context, req *datafusionpb.ListIn
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -832,13 +826,13 @@ func (c *restClient) GetInstance(ctx context.Context, req *datafusionpb.GetInsta
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -897,13 +891,13 @@ func (c *restClient) CreateInstance(ctx context.Context, req *datafusionpb.Creat
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -959,13 +953,13 @@ func (c *restClient) DeleteInstance(ctx context.Context, req *datafusionpb.Delet
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1003,7 +997,7 @@ func (c *restClient) UpdateInstance(ctx context.Context, req *datafusionpb.Updat
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask))
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1035,13 +1029,13 @@ func (c *restClient) UpdateInstance(ctx context.Context, req *datafusionpb.Updat
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1104,13 +1098,13 @@ func (c *restClient) RestartInstance(ctx context.Context, req *datafusionpb.Rest
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil

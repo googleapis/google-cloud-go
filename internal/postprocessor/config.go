@@ -27,6 +27,9 @@ type config struct {
 	// Modules are all the modules roots the post processor should generate
 	// template files for.
 	Modules []string `yaml:"modules"`
+	// ClientRelPaths are the relative paths to the client root directories in
+	// google-cloud-go.
+	ClientRelPaths []string
 	// GoogleapisToImportPath is a map of a googleapis dir to the corresponding
 	// gapic import path.
 	GoogleapisToImportPath map[string]*libraryInfo
@@ -42,6 +45,8 @@ type libraryInfo struct {
 	// ServiceConfig is the relative directory to the service config from the
 	// services directory in googleapis.
 	ServiceConfig string
+	// RelPath is the relative path to the client from the repo root.
+	RelPath string
 }
 
 func (p *postProcessor) loadConfig() error {
@@ -51,6 +56,7 @@ func (p *postProcessor) loadConfig() error {
 			InputDirectory string `yaml:"input-directory"`
 			ServiceConfig  string `yaml:"service-config"`
 			ImportPath     string `yaml:"import-path"`
+			RelPath        string `yaml:"rel-path"`
 		} `yaml:"service-configs"`
 		ManualClients []*ManifestEntry `yaml:"manual-clients"`
 	}
@@ -77,6 +83,7 @@ func (p *postProcessor) loadConfig() error {
 
 	c := &config{
 		Modules:                postProcessorConfig.Modules,
+		ClientRelPaths:         make([]string, 0),
 		GoogleapisToImportPath: make(map[string]*libraryInfo),
 		ManualClientInfo:       postProcessorConfig.ManualClients,
 	}
@@ -84,6 +91,7 @@ func (p *postProcessor) loadConfig() error {
 		c.GoogleapisToImportPath[v.InputDirectory] = &libraryInfo{
 			ServiceConfig: v.ServiceConfig,
 			ImportPath:    v.ImportPath,
+			RelPath:       v.RelPath,
 		}
 	}
 	for _, v := range owlBotConfig.DeepCopyRegex {
@@ -92,7 +100,13 @@ func (p *postProcessor) loadConfig() error {
 		if !ok {
 			return fmt.Errorf("unable to find value for %q, it may be missing a service config entry", v.Source[1:i])
 		}
-		li.ImportPath = v.Source[i+1:]
+		if li.ImportPath == "" {
+			li.ImportPath = v.Source[i+1:]
+		}
+		if li.RelPath == "" {
+			li.RelPath = strings.TrimPrefix(li.ImportPath, "cloud.google.com/go")
+		}
+		c.ClientRelPaths = append(c.ClientRelPaths, li.RelPath)
 	}
 	p.config = c
 	return nil

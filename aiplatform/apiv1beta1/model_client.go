@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"math"
 	"net/http"
 	"net/url"
@@ -93,67 +93,111 @@ func defaultModelGRPCClientOptions() []option.ClientOption {
 
 func defaultModelCallOptions() *ModelCallOptions {
 	return &ModelCallOptions{
-		UploadModel:                      []gax.CallOption{},
-		GetModel:                         []gax.CallOption{},
-		ListModels:                       []gax.CallOption{},
-		ListModelVersions:                []gax.CallOption{},
-		UpdateModel:                      []gax.CallOption{},
-		UpdateExplanationDataset:         []gax.CallOption{},
-		DeleteModel:                      []gax.CallOption{},
-		DeleteModelVersion:               []gax.CallOption{},
-		MergeVersionAliases:              []gax.CallOption{},
-		ExportModel:                      []gax.CallOption{},
-		CopyModel:                        []gax.CallOption{},
+		UploadModel: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		GetModel: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		ListModels: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		ListModelVersions: []gax.CallOption{},
+		UpdateModel: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		UpdateExplanationDataset: []gax.CallOption{},
+		DeleteModel: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		DeleteModelVersion:  []gax.CallOption{},
+		MergeVersionAliases: []gax.CallOption{},
+		ExportModel: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		CopyModel: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
 		ImportModelEvaluation:            []gax.CallOption{},
 		BatchImportModelEvaluationSlices: []gax.CallOption{},
 		BatchImportEvaluatedAnnotations:  []gax.CallOption{},
-		GetModelEvaluation:               []gax.CallOption{},
-		ListModelEvaluations:             []gax.CallOption{},
-		GetModelEvaluationSlice:          []gax.CallOption{},
-		ListModelEvaluationSlices:        []gax.CallOption{},
-		GetLocation:                      []gax.CallOption{},
-		ListLocations:                    []gax.CallOption{},
-		GetIamPolicy:                     []gax.CallOption{},
-		SetIamPolicy:                     []gax.CallOption{},
-		TestIamPermissions:               []gax.CallOption{},
-		CancelOperation:                  []gax.CallOption{},
-		DeleteOperation:                  []gax.CallOption{},
-		GetOperation:                     []gax.CallOption{},
-		ListOperations:                   []gax.CallOption{},
-		WaitOperation:                    []gax.CallOption{},
+		GetModelEvaluation: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		ListModelEvaluations: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		GetModelEvaluationSlice: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		ListModelEvaluationSlices: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		GetLocation:        []gax.CallOption{},
+		ListLocations:      []gax.CallOption{},
+		GetIamPolicy:       []gax.CallOption{},
+		SetIamPolicy:       []gax.CallOption{},
+		TestIamPermissions: []gax.CallOption{},
+		CancelOperation:    []gax.CallOption{},
+		DeleteOperation:    []gax.CallOption{},
+		GetOperation:       []gax.CallOption{},
+		ListOperations:     []gax.CallOption{},
+		WaitOperation:      []gax.CallOption{},
 	}
 }
 
 func defaultModelRESTCallOptions() *ModelCallOptions {
 	return &ModelCallOptions{
-		UploadModel:                      []gax.CallOption{},
-		GetModel:                         []gax.CallOption{},
-		ListModels:                       []gax.CallOption{},
-		ListModelVersions:                []gax.CallOption{},
-		UpdateModel:                      []gax.CallOption{},
-		UpdateExplanationDataset:         []gax.CallOption{},
-		DeleteModel:                      []gax.CallOption{},
-		DeleteModelVersion:               []gax.CallOption{},
-		MergeVersionAliases:              []gax.CallOption{},
-		ExportModel:                      []gax.CallOption{},
-		CopyModel:                        []gax.CallOption{},
+		UploadModel: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		GetModel: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		ListModels: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		ListModelVersions: []gax.CallOption{},
+		UpdateModel: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		UpdateExplanationDataset: []gax.CallOption{},
+		DeleteModel: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		DeleteModelVersion:  []gax.CallOption{},
+		MergeVersionAliases: []gax.CallOption{},
+		ExportModel: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		CopyModel: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
 		ImportModelEvaluation:            []gax.CallOption{},
 		BatchImportModelEvaluationSlices: []gax.CallOption{},
 		BatchImportEvaluatedAnnotations:  []gax.CallOption{},
-		GetModelEvaluation:               []gax.CallOption{},
-		ListModelEvaluations:             []gax.CallOption{},
-		GetModelEvaluationSlice:          []gax.CallOption{},
-		ListModelEvaluationSlices:        []gax.CallOption{},
-		GetLocation:                      []gax.CallOption{},
-		ListLocations:                    []gax.CallOption{},
-		GetIamPolicy:                     []gax.CallOption{},
-		SetIamPolicy:                     []gax.CallOption{},
-		TestIamPermissions:               []gax.CallOption{},
-		CancelOperation:                  []gax.CallOption{},
-		DeleteOperation:                  []gax.CallOption{},
-		GetOperation:                     []gax.CallOption{},
-		ListOperations:                   []gax.CallOption{},
-		WaitOperation:                    []gax.CallOption{},
+		GetModelEvaluation: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		ListModelEvaluations: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		GetModelEvaluationSlice: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		ListModelEvaluationSlices: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		GetLocation:        []gax.CallOption{},
+		ListLocations:      []gax.CallOption{},
+		GetIamPolicy:       []gax.CallOption{},
+		SetIamPolicy:       []gax.CallOption{},
+		TestIamPermissions: []gax.CallOption{},
+		CancelOperation:    []gax.CallOption{},
+		DeleteOperation:    []gax.CallOption{},
+		GetOperation:       []gax.CallOption{},
+		ListOperations:     []gax.CallOption{},
+		WaitOperation:      []gax.CallOption{},
 	}
 }
 
@@ -436,8 +480,7 @@ func (c *ModelClient) GetOperation(ctx context.Context, req *longrunningpb.GetOp
 	return c.internalClient.GetOperation(ctx, req, opts...)
 }
 
-// ListOperations lists operations that match the specified filter in the request. If
-// the server doesn’t support this method, it returns UNIMPLEMENTED.
+// ListOperations is a utility method from google.longrunning.Operations.
 func (c *ModelClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	return c.internalClient.ListOperations(ctx, req, opts...)
 }
@@ -453,9 +496,6 @@ func (c *ModelClient) WaitOperation(ctx context.Context, req *longrunningpb.Wait
 type modelGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
-
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
 
 	// Points back to the CallOptions field of the containing ModelClient
 	CallOptions **ModelCallOptions
@@ -492,11 +532,6 @@ func NewModelClient(ctx context.Context, opts ...option.ClientOption) (*ModelCli
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -505,7 +540,6 @@ func NewModelClient(ctx context.Context, opts ...option.ClientOption) (*ModelCli
 
 	c := &modelGRPCClient{
 		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
 		modelClient:      aiplatformpb.NewModelServiceClient(connPool),
 		CallOptions:      &client.CallOptions,
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
@@ -542,7 +576,7 @@ func (c *modelGRPCClient) Connection() *grpc.ClientConn {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *modelGRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -617,7 +651,7 @@ func defaultModelRESTClientOptions() []option.ClientOption {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *modelRESTClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -637,11 +671,6 @@ func (c *modelRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 func (c *modelGRPCClient) UploadModel(ctx context.Context, req *aiplatformpb.UploadModelRequest, opts ...gax.CallOption) (*UploadModelOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -661,11 +690,6 @@ func (c *modelGRPCClient) UploadModel(ctx context.Context, req *aiplatformpb.Upl
 }
 
 func (c *modelGRPCClient) GetModel(ctx context.Context, req *aiplatformpb.GetModelRequest, opts ...gax.CallOption) (*aiplatformpb.Model, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -773,11 +797,6 @@ func (c *modelGRPCClient) ListModelVersions(ctx context.Context, req *aiplatform
 }
 
 func (c *modelGRPCClient) UpdateModel(ctx context.Context, req *aiplatformpb.UpdateModelRequest, opts ...gax.CallOption) (*aiplatformpb.Model, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "model.name", url.QueryEscape(req.GetModel().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -814,11 +833,6 @@ func (c *modelGRPCClient) UpdateExplanationDataset(ctx context.Context, req *aip
 }
 
 func (c *modelGRPCClient) DeleteModel(ctx context.Context, req *aiplatformpb.DeleteModelRequest, opts ...gax.CallOption) (*DeleteModelOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -874,11 +888,6 @@ func (c *modelGRPCClient) MergeVersionAliases(ctx context.Context, req *aiplatfo
 }
 
 func (c *modelGRPCClient) ExportModel(ctx context.Context, req *aiplatformpb.ExportModelRequest, opts ...gax.CallOption) (*ExportModelOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -898,11 +907,6 @@ func (c *modelGRPCClient) ExportModel(ctx context.Context, req *aiplatformpb.Exp
 }
 
 func (c *modelGRPCClient) CopyModel(ctx context.Context, req *aiplatformpb.CopyModelRequest, opts ...gax.CallOption) (*CopyModelOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -973,11 +977,6 @@ func (c *modelGRPCClient) BatchImportEvaluatedAnnotations(ctx context.Context, r
 }
 
 func (c *modelGRPCClient) GetModelEvaluation(ctx context.Context, req *aiplatformpb.GetModelEvaluationRequest, opts ...gax.CallOption) (*aiplatformpb.ModelEvaluation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1040,11 +1039,6 @@ func (c *modelGRPCClient) ListModelEvaluations(ctx context.Context, req *aiplatf
 }
 
 func (c *modelGRPCClient) GetModelEvaluationSlice(ctx context.Context, req *aiplatformpb.GetModelEvaluationSliceRequest, opts ...gax.CallOption) (*aiplatformpb.ModelEvaluationSlice, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1365,13 +1359,13 @@ func (c *modelRESTClient) UploadModel(ctx context.Context, req *aiplatformpb.Upl
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1423,13 +1417,13 @@ func (c *modelRESTClient) GetModel(ctx context.Context, req *aiplatformpb.GetMod
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1476,7 +1470,7 @@ func (c *modelRESTClient) ListModels(ctx context.Context, req *aiplatformpb.List
 			if err != nil {
 				return nil, "", err
 			}
-			params.Add("readMask", string(readMask))
+			params.Add("readMask", string(readMask[1:len(readMask)-1]))
 		}
 
 		baseUrl.RawQuery = params.Encode()
@@ -1503,13 +1497,13 @@ func (c *modelRESTClient) ListModels(ctx context.Context, req *aiplatformpb.List
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -1576,7 +1570,7 @@ func (c *modelRESTClient) ListModelVersions(ctx context.Context, req *aiplatform
 			if err != nil {
 				return nil, "", err
 			}
-			params.Add("readMask", string(readMask))
+			params.Add("readMask", string(readMask[1:len(readMask)-1]))
 		}
 
 		baseUrl.RawQuery = params.Encode()
@@ -1603,13 +1597,13 @@ func (c *modelRESTClient) ListModelVersions(ctx context.Context, req *aiplatform
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -1658,7 +1652,7 @@ func (c *modelRESTClient) UpdateModel(ctx context.Context, req *aiplatformpb.Upd
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask))
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1691,13 +1685,13 @@ func (c *modelRESTClient) UpdateModel(ctx context.Context, req *aiplatformpb.Upd
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1749,13 +1743,13 @@ func (c *modelRESTClient) UpdateExplanationDataset(ctx context.Context, req *aip
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1813,13 +1807,13 @@ func (c *modelRESTClient) DeleteModel(ctx context.Context, req *aiplatformpb.Del
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1876,13 +1870,13 @@ func (c *modelRESTClient) DeleteModelVersion(ctx context.Context, req *aiplatfor
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1940,13 +1934,13 @@ func (c *modelRESTClient) MergeVersionAliases(ctx context.Context, req *aiplatfo
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2001,13 +1995,13 @@ func (c *modelRESTClient) ExportModel(ctx context.Context, req *aiplatformpb.Exp
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2069,13 +2063,13 @@ func (c *modelRESTClient) CopyModel(ctx context.Context, req *aiplatformpb.CopyM
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2133,13 +2127,13 @@ func (c *modelRESTClient) ImportModelEvaluation(ctx context.Context, req *aiplat
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2192,13 +2186,13 @@ func (c *modelRESTClient) BatchImportModelEvaluationSlices(ctx context.Context, 
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2251,13 +2245,13 @@ func (c *modelRESTClient) BatchImportEvaluatedAnnotations(ctx context.Context, r
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2304,13 +2298,13 @@ func (c *modelRESTClient) GetModelEvaluation(ctx context.Context, req *aiplatfor
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2357,7 +2351,7 @@ func (c *modelRESTClient) ListModelEvaluations(ctx context.Context, req *aiplatf
 			if err != nil {
 				return nil, "", err
 			}
-			params.Add("readMask", string(readMask))
+			params.Add("readMask", string(readMask[1:len(readMask)-1]))
 		}
 
 		baseUrl.RawQuery = params.Encode()
@@ -2384,13 +2378,13 @@ func (c *modelRESTClient) ListModelEvaluations(ctx context.Context, req *aiplatf
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -2454,13 +2448,13 @@ func (c *modelRESTClient) GetModelEvaluationSlice(ctx context.Context, req *aipl
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2507,7 +2501,7 @@ func (c *modelRESTClient) ListModelEvaluationSlices(ctx context.Context, req *ai
 			if err != nil {
 				return nil, "", err
 			}
-			params.Add("readMask", string(readMask))
+			params.Add("readMask", string(readMask[1:len(readMask)-1]))
 		}
 
 		baseUrl.RawQuery = params.Encode()
@@ -2534,13 +2528,13 @@ func (c *modelRESTClient) ListModelEvaluationSlices(ctx context.Context, req *ai
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -2604,13 +2598,13 @@ func (c *modelRESTClient) GetLocation(ctx context.Context, req *locationpb.GetLo
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2677,13 +2671,13 @@ func (c *modelRESTClient) ListLocations(ctx context.Context, req *locationpb.Lis
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -2754,13 +2748,13 @@ func (c *modelRESTClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPol
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2817,13 +2811,13 @@ func (c *modelRESTClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPol
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2882,13 +2876,13 @@ func (c *modelRESTClient) TestIamPermissions(ctx context.Context, req *iampb.Tes
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -3005,13 +2999,13 @@ func (c *modelRESTClient) GetOperation(ctx context.Context, req *longrunningpb.G
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -3022,8 +3016,7 @@ func (c *modelRESTClient) GetOperation(ctx context.Context, req *longrunningpb.G
 	return resp, nil
 }
 
-// ListOperations lists operations that match the specified filter in the request. If
-// the server doesn’t support this method, it returns UNIMPLEMENTED.
+// ListOperations is a utility method from google.longrunning.Operations.
 func (c *modelRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
 	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
@@ -3079,13 +3072,13 @@ func (c *modelRESTClient) ListOperations(ctx context.Context, req *longrunningpb
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -3127,7 +3120,7 @@ func (c *modelRESTClient) WaitOperation(ctx context.Context, req *longrunningpb.
 		if err != nil {
 			return nil, err
 		}
-		params.Add("timeout", string(timeout))
+		params.Add("timeout", string(timeout[1:len(timeout)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -3160,13 +3153,13 @@ func (c *modelRESTClient) WaitOperation(ctx context.Context, req *longrunningpb.
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil

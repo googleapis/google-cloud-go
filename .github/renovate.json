@@ -6,12 +6,11 @@
     ],
     "semanticCommits": false,
     "postUpdateOptions": [
-        "gomodTidy",
-        "gomodNoMassage"
+        "gomodTidy"
     ],
     "commitMessagePrefix": "chore(all): ",
     "commitMessageAction": "update",
-    "groupName": "all",
+    "groupName": "deps",
     "ignoreDeps": [
         "google.golang.org/genproto"
     ],

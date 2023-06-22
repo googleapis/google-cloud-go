@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"math"
 	"net/http"
 	"net/url"
@@ -105,6 +105,7 @@ func defaultCertificateAuthorityGRPCClientOptions() []option.ClientOption {
 func defaultCertificateAuthorityCallOptions() *CertificateAuthorityCallOptions {
 	return &CertificateAuthorityCallOptions{
 		CreateCertificate: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unknown,
@@ -118,6 +119,7 @@ func defaultCertificateAuthorityCallOptions() *CertificateAuthorityCallOptions {
 			}),
 		},
 		GetCertificate: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unknown,
@@ -131,6 +133,7 @@ func defaultCertificateAuthorityCallOptions() *CertificateAuthorityCallOptions {
 			}),
 		},
 		ListCertificates: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unknown,
@@ -144,6 +147,7 @@ func defaultCertificateAuthorityCallOptions() *CertificateAuthorityCallOptions {
 			}),
 		},
 		RevokeCertificate: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unknown,
@@ -157,6 +161,7 @@ func defaultCertificateAuthorityCallOptions() *CertificateAuthorityCallOptions {
 			}),
 		},
 		UpdateCertificate: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unknown,
@@ -170,6 +175,7 @@ func defaultCertificateAuthorityCallOptions() *CertificateAuthorityCallOptions {
 			}),
 		},
 		ActivateCertificateAuthority: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unknown,
@@ -183,6 +189,7 @@ func defaultCertificateAuthorityCallOptions() *CertificateAuthorityCallOptions {
 			}),
 		},
 		CreateCertificateAuthority: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unknown,
@@ -196,6 +203,7 @@ func defaultCertificateAuthorityCallOptions() *CertificateAuthorityCallOptions {
 			}),
 		},
 		DisableCertificateAuthority: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unknown,
@@ -209,6 +217,7 @@ func defaultCertificateAuthorityCallOptions() *CertificateAuthorityCallOptions {
 			}),
 		},
 		EnableCertificateAuthority: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unknown,
@@ -222,6 +231,7 @@ func defaultCertificateAuthorityCallOptions() *CertificateAuthorityCallOptions {
 			}),
 		},
 		FetchCertificateAuthorityCsr: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unknown,
@@ -235,6 +245,7 @@ func defaultCertificateAuthorityCallOptions() *CertificateAuthorityCallOptions {
 			}),
 		},
 		GetCertificateAuthority: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unknown,
@@ -248,6 +259,7 @@ func defaultCertificateAuthorityCallOptions() *CertificateAuthorityCallOptions {
 			}),
 		},
 		ListCertificateAuthorities: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unknown,
@@ -261,6 +273,7 @@ func defaultCertificateAuthorityCallOptions() *CertificateAuthorityCallOptions {
 			}),
 		},
 		UndeleteCertificateAuthority: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unknown,
@@ -274,6 +287,7 @@ func defaultCertificateAuthorityCallOptions() *CertificateAuthorityCallOptions {
 			}),
 		},
 		DeleteCertificateAuthority: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unknown,
@@ -287,6 +301,7 @@ func defaultCertificateAuthorityCallOptions() *CertificateAuthorityCallOptions {
 			}),
 		},
 		UpdateCertificateAuthority: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unknown,
@@ -300,6 +315,7 @@ func defaultCertificateAuthorityCallOptions() *CertificateAuthorityCallOptions {
 			}),
 		},
 		CreateCaPool: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unknown,
@@ -313,6 +329,7 @@ func defaultCertificateAuthorityCallOptions() *CertificateAuthorityCallOptions {
 			}),
 		},
 		UpdateCaPool: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unknown,
@@ -326,6 +343,7 @@ func defaultCertificateAuthorityCallOptions() *CertificateAuthorityCallOptions {
 			}),
 		},
 		GetCaPool: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unknown,
@@ -339,6 +357,7 @@ func defaultCertificateAuthorityCallOptions() *CertificateAuthorityCallOptions {
 			}),
 		},
 		ListCaPools: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unknown,
@@ -352,6 +371,7 @@ func defaultCertificateAuthorityCallOptions() *CertificateAuthorityCallOptions {
 			}),
 		},
 		DeleteCaPool: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unknown,
@@ -365,6 +385,7 @@ func defaultCertificateAuthorityCallOptions() *CertificateAuthorityCallOptions {
 			}),
 		},
 		FetchCaCerts: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unknown,
@@ -378,6 +399,7 @@ func defaultCertificateAuthorityCallOptions() *CertificateAuthorityCallOptions {
 			}),
 		},
 		GetCertificateRevocationList: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unknown,
@@ -391,6 +413,7 @@ func defaultCertificateAuthorityCallOptions() *CertificateAuthorityCallOptions {
 			}),
 		},
 		ListCertificateRevocationLists: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unknown,
@@ -404,6 +427,7 @@ func defaultCertificateAuthorityCallOptions() *CertificateAuthorityCallOptions {
 			}),
 		},
 		UpdateCertificateRevocationList: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unknown,
@@ -417,6 +441,7 @@ func defaultCertificateAuthorityCallOptions() *CertificateAuthorityCallOptions {
 			}),
 		},
 		CreateCertificateTemplate: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unknown,
@@ -430,6 +455,7 @@ func defaultCertificateAuthorityCallOptions() *CertificateAuthorityCallOptions {
 			}),
 		},
 		DeleteCertificateTemplate: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unknown,
@@ -443,6 +469,7 @@ func defaultCertificateAuthorityCallOptions() *CertificateAuthorityCallOptions {
 			}),
 		},
 		GetCertificateTemplate: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unknown,
@@ -456,6 +483,7 @@ func defaultCertificateAuthorityCallOptions() *CertificateAuthorityCallOptions {
 			}),
 		},
 		ListCertificateTemplates: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unknown,
@@ -469,6 +497,7 @@ func defaultCertificateAuthorityCallOptions() *CertificateAuthorityCallOptions {
 			}),
 		},
 		UpdateCertificateTemplate: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unknown,
@@ -496,6 +525,7 @@ func defaultCertificateAuthorityCallOptions() *CertificateAuthorityCallOptions {
 func defaultCertificateAuthorityRESTCallOptions() *CertificateAuthorityCallOptions {
 	return &CertificateAuthorityCallOptions{
 		CreateCertificate: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -508,6 +538,7 @@ func defaultCertificateAuthorityRESTCallOptions() *CertificateAuthorityCallOptio
 			}),
 		},
 		GetCertificate: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -520,6 +551,7 @@ func defaultCertificateAuthorityRESTCallOptions() *CertificateAuthorityCallOptio
 			}),
 		},
 		ListCertificates: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -532,6 +564,7 @@ func defaultCertificateAuthorityRESTCallOptions() *CertificateAuthorityCallOptio
 			}),
 		},
 		RevokeCertificate: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -544,6 +577,7 @@ func defaultCertificateAuthorityRESTCallOptions() *CertificateAuthorityCallOptio
 			}),
 		},
 		UpdateCertificate: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -556,6 +590,7 @@ func defaultCertificateAuthorityRESTCallOptions() *CertificateAuthorityCallOptio
 			}),
 		},
 		ActivateCertificateAuthority: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -568,6 +603,7 @@ func defaultCertificateAuthorityRESTCallOptions() *CertificateAuthorityCallOptio
 			}),
 		},
 		CreateCertificateAuthority: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -580,6 +616,7 @@ func defaultCertificateAuthorityRESTCallOptions() *CertificateAuthorityCallOptio
 			}),
 		},
 		DisableCertificateAuthority: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -592,6 +629,7 @@ func defaultCertificateAuthorityRESTCallOptions() *CertificateAuthorityCallOptio
 			}),
 		},
 		EnableCertificateAuthority: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -604,6 +642,7 @@ func defaultCertificateAuthorityRESTCallOptions() *CertificateAuthorityCallOptio
 			}),
 		},
 		FetchCertificateAuthorityCsr: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -616,6 +655,7 @@ func defaultCertificateAuthorityRESTCallOptions() *CertificateAuthorityCallOptio
 			}),
 		},
 		GetCertificateAuthority: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -628,6 +668,7 @@ func defaultCertificateAuthorityRESTCallOptions() *CertificateAuthorityCallOptio
 			}),
 		},
 		ListCertificateAuthorities: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -640,6 +681,7 @@ func defaultCertificateAuthorityRESTCallOptions() *CertificateAuthorityCallOptio
 			}),
 		},
 		UndeleteCertificateAuthority: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -652,6 +694,7 @@ func defaultCertificateAuthorityRESTCallOptions() *CertificateAuthorityCallOptio
 			}),
 		},
 		DeleteCertificateAuthority: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -664,6 +707,7 @@ func defaultCertificateAuthorityRESTCallOptions() *CertificateAuthorityCallOptio
 			}),
 		},
 		UpdateCertificateAuthority: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -676,6 +720,7 @@ func defaultCertificateAuthorityRESTCallOptions() *CertificateAuthorityCallOptio
 			}),
 		},
 		CreateCaPool: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -688,6 +733,7 @@ func defaultCertificateAuthorityRESTCallOptions() *CertificateAuthorityCallOptio
 			}),
 		},
 		UpdateCaPool: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -700,6 +746,7 @@ func defaultCertificateAuthorityRESTCallOptions() *CertificateAuthorityCallOptio
 			}),
 		},
 		GetCaPool: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -712,6 +759,7 @@ func defaultCertificateAuthorityRESTCallOptions() *CertificateAuthorityCallOptio
 			}),
 		},
 		ListCaPools: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -724,6 +772,7 @@ func defaultCertificateAuthorityRESTCallOptions() *CertificateAuthorityCallOptio
 			}),
 		},
 		DeleteCaPool: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -736,6 +785,7 @@ func defaultCertificateAuthorityRESTCallOptions() *CertificateAuthorityCallOptio
 			}),
 		},
 		FetchCaCerts: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -748,6 +798,7 @@ func defaultCertificateAuthorityRESTCallOptions() *CertificateAuthorityCallOptio
 			}),
 		},
 		GetCertificateRevocationList: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -760,6 +811,7 @@ func defaultCertificateAuthorityRESTCallOptions() *CertificateAuthorityCallOptio
 			}),
 		},
 		ListCertificateRevocationLists: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -772,6 +824,7 @@ func defaultCertificateAuthorityRESTCallOptions() *CertificateAuthorityCallOptio
 			}),
 		},
 		UpdateCertificateRevocationList: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -784,6 +837,7 @@ func defaultCertificateAuthorityRESTCallOptions() *CertificateAuthorityCallOptio
 			}),
 		},
 		CreateCertificateTemplate: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -796,6 +850,7 @@ func defaultCertificateAuthorityRESTCallOptions() *CertificateAuthorityCallOptio
 			}),
 		},
 		DeleteCertificateTemplate: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -808,6 +863,7 @@ func defaultCertificateAuthorityRESTCallOptions() *CertificateAuthorityCallOptio
 			}),
 		},
 		GetCertificateTemplate: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -820,6 +876,7 @@ func defaultCertificateAuthorityRESTCallOptions() *CertificateAuthorityCallOptio
 			}),
 		},
 		ListCertificateTemplates: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -832,6 +889,7 @@ func defaultCertificateAuthorityRESTCallOptions() *CertificateAuthorityCallOptio
 			}),
 		},
 		UpdateCertificateTemplate: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -1294,9 +1352,6 @@ type certificateAuthorityGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing CertificateAuthorityClient
 	CallOptions **CertificateAuthorityCallOptions
 
@@ -1334,11 +1389,6 @@ func NewCertificateAuthorityClient(ctx context.Context, opts ...option.ClientOpt
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -1347,7 +1397,6 @@ func NewCertificateAuthorityClient(ctx context.Context, opts ...option.ClientOpt
 
 	c := &certificateAuthorityGRPCClient{
 		connPool:                   connPool,
-		disableDeadlines:           disableDeadlines,
 		certificateAuthorityClient: privatecapb.NewCertificateAuthorityServiceClient(connPool),
 		CallOptions:                &client.CallOptions,
 		operationsClient:           longrunningpb.NewOperationsClient(connPool),
@@ -1384,7 +1433,7 @@ func (c *certificateAuthorityGRPCClient) Connection() *grpc.ClientConn {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *certificateAuthorityGRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -1461,7 +1510,7 @@ func defaultCertificateAuthorityRESTClientOptions() []option.ClientOption {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *certificateAuthorityRESTClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -1481,11 +1530,6 @@ func (c *certificateAuthorityRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 func (c *certificateAuthorityGRPCClient) CreateCertificate(ctx context.Context, req *privatecapb.CreateCertificateRequest, opts ...gax.CallOption) (*privatecapb.Certificate, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1503,11 +1547,6 @@ func (c *certificateAuthorityGRPCClient) CreateCertificate(ctx context.Context, 
 }
 
 func (c *certificateAuthorityGRPCClient) GetCertificate(ctx context.Context, req *privatecapb.GetCertificateRequest, opts ...gax.CallOption) (*privatecapb.Certificate, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1570,11 +1609,6 @@ func (c *certificateAuthorityGRPCClient) ListCertificates(ctx context.Context, r
 }
 
 func (c *certificateAuthorityGRPCClient) RevokeCertificate(ctx context.Context, req *privatecapb.RevokeCertificateRequest, opts ...gax.CallOption) (*privatecapb.Certificate, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1592,11 +1626,6 @@ func (c *certificateAuthorityGRPCClient) RevokeCertificate(ctx context.Context, 
 }
 
 func (c *certificateAuthorityGRPCClient) UpdateCertificate(ctx context.Context, req *privatecapb.UpdateCertificateRequest, opts ...gax.CallOption) (*privatecapb.Certificate, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "certificate.name", url.QueryEscape(req.GetCertificate().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1614,11 +1643,6 @@ func (c *certificateAuthorityGRPCClient) UpdateCertificate(ctx context.Context, 
 }
 
 func (c *certificateAuthorityGRPCClient) ActivateCertificateAuthority(ctx context.Context, req *privatecapb.ActivateCertificateAuthorityRequest, opts ...gax.CallOption) (*ActivateCertificateAuthorityOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1638,11 +1662,6 @@ func (c *certificateAuthorityGRPCClient) ActivateCertificateAuthority(ctx contex
 }
 
 func (c *certificateAuthorityGRPCClient) CreateCertificateAuthority(ctx context.Context, req *privatecapb.CreateCertificateAuthorityRequest, opts ...gax.CallOption) (*CreateCertificateAuthorityOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1662,11 +1681,6 @@ func (c *certificateAuthorityGRPCClient) CreateCertificateAuthority(ctx context.
 }
 
 func (c *certificateAuthorityGRPCClient) DisableCertificateAuthority(ctx context.Context, req *privatecapb.DisableCertificateAuthorityRequest, opts ...gax.CallOption) (*DisableCertificateAuthorityOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1686,11 +1700,6 @@ func (c *certificateAuthorityGRPCClient) DisableCertificateAuthority(ctx context
 }
 
 func (c *certificateAuthorityGRPCClient) EnableCertificateAuthority(ctx context.Context, req *privatecapb.EnableCertificateAuthorityRequest, opts ...gax.CallOption) (*EnableCertificateAuthorityOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1710,11 +1719,6 @@ func (c *certificateAuthorityGRPCClient) EnableCertificateAuthority(ctx context.
 }
 
 func (c *certificateAuthorityGRPCClient) FetchCertificateAuthorityCsr(ctx context.Context, req *privatecapb.FetchCertificateAuthorityCsrRequest, opts ...gax.CallOption) (*privatecapb.FetchCertificateAuthorityCsrResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1732,11 +1736,6 @@ func (c *certificateAuthorityGRPCClient) FetchCertificateAuthorityCsr(ctx contex
 }
 
 func (c *certificateAuthorityGRPCClient) GetCertificateAuthority(ctx context.Context, req *privatecapb.GetCertificateAuthorityRequest, opts ...gax.CallOption) (*privatecapb.CertificateAuthority, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1799,11 +1798,6 @@ func (c *certificateAuthorityGRPCClient) ListCertificateAuthorities(ctx context.
 }
 
 func (c *certificateAuthorityGRPCClient) UndeleteCertificateAuthority(ctx context.Context, req *privatecapb.UndeleteCertificateAuthorityRequest, opts ...gax.CallOption) (*UndeleteCertificateAuthorityOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1823,11 +1817,6 @@ func (c *certificateAuthorityGRPCClient) UndeleteCertificateAuthority(ctx contex
 }
 
 func (c *certificateAuthorityGRPCClient) DeleteCertificateAuthority(ctx context.Context, req *privatecapb.DeleteCertificateAuthorityRequest, opts ...gax.CallOption) (*DeleteCertificateAuthorityOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1847,11 +1836,6 @@ func (c *certificateAuthorityGRPCClient) DeleteCertificateAuthority(ctx context.
 }
 
 func (c *certificateAuthorityGRPCClient) UpdateCertificateAuthority(ctx context.Context, req *privatecapb.UpdateCertificateAuthorityRequest, opts ...gax.CallOption) (*UpdateCertificateAuthorityOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "certificate_authority.name", url.QueryEscape(req.GetCertificateAuthority().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1871,11 +1855,6 @@ func (c *certificateAuthorityGRPCClient) UpdateCertificateAuthority(ctx context.
 }
 
 func (c *certificateAuthorityGRPCClient) CreateCaPool(ctx context.Context, req *privatecapb.CreateCaPoolRequest, opts ...gax.CallOption) (*CreateCaPoolOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1895,11 +1874,6 @@ func (c *certificateAuthorityGRPCClient) CreateCaPool(ctx context.Context, req *
 }
 
 func (c *certificateAuthorityGRPCClient) UpdateCaPool(ctx context.Context, req *privatecapb.UpdateCaPoolRequest, opts ...gax.CallOption) (*UpdateCaPoolOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "ca_pool.name", url.QueryEscape(req.GetCaPool().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1919,11 +1893,6 @@ func (c *certificateAuthorityGRPCClient) UpdateCaPool(ctx context.Context, req *
 }
 
 func (c *certificateAuthorityGRPCClient) GetCaPool(ctx context.Context, req *privatecapb.GetCaPoolRequest, opts ...gax.CallOption) (*privatecapb.CaPool, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1986,11 +1955,6 @@ func (c *certificateAuthorityGRPCClient) ListCaPools(ctx context.Context, req *p
 }
 
 func (c *certificateAuthorityGRPCClient) DeleteCaPool(ctx context.Context, req *privatecapb.DeleteCaPoolRequest, opts ...gax.CallOption) (*DeleteCaPoolOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -2010,11 +1974,6 @@ func (c *certificateAuthorityGRPCClient) DeleteCaPool(ctx context.Context, req *
 }
 
 func (c *certificateAuthorityGRPCClient) FetchCaCerts(ctx context.Context, req *privatecapb.FetchCaCertsRequest, opts ...gax.CallOption) (*privatecapb.FetchCaCertsResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "ca_pool", url.QueryEscape(req.GetCaPool())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -2032,11 +1991,6 @@ func (c *certificateAuthorityGRPCClient) FetchCaCerts(ctx context.Context, req *
 }
 
 func (c *certificateAuthorityGRPCClient) GetCertificateRevocationList(ctx context.Context, req *privatecapb.GetCertificateRevocationListRequest, opts ...gax.CallOption) (*privatecapb.CertificateRevocationList, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -2099,11 +2053,6 @@ func (c *certificateAuthorityGRPCClient) ListCertificateRevocationLists(ctx cont
 }
 
 func (c *certificateAuthorityGRPCClient) UpdateCertificateRevocationList(ctx context.Context, req *privatecapb.UpdateCertificateRevocationListRequest, opts ...gax.CallOption) (*UpdateCertificateRevocationListOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "certificate_revocation_list.name", url.QueryEscape(req.GetCertificateRevocationList().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -2123,11 +2072,6 @@ func (c *certificateAuthorityGRPCClient) UpdateCertificateRevocationList(ctx con
 }
 
 func (c *certificateAuthorityGRPCClient) CreateCertificateTemplate(ctx context.Context, req *privatecapb.CreateCertificateTemplateRequest, opts ...gax.CallOption) (*CreateCertificateTemplateOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -2147,11 +2091,6 @@ func (c *certificateAuthorityGRPCClient) CreateCertificateTemplate(ctx context.C
 }
 
 func (c *certificateAuthorityGRPCClient) DeleteCertificateTemplate(ctx context.Context, req *privatecapb.DeleteCertificateTemplateRequest, opts ...gax.CallOption) (*DeleteCertificateTemplateOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -2171,11 +2110,6 @@ func (c *certificateAuthorityGRPCClient) DeleteCertificateTemplate(ctx context.C
 }
 
 func (c *certificateAuthorityGRPCClient) GetCertificateTemplate(ctx context.Context, req *privatecapb.GetCertificateTemplateRequest, opts ...gax.CallOption) (*privatecapb.CertificateTemplate, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -2238,11 +2172,6 @@ func (c *certificateAuthorityGRPCClient) ListCertificateTemplates(ctx context.Co
 }
 
 func (c *certificateAuthorityGRPCClient) UpdateCertificateTemplate(ctx context.Context, req *privatecapb.UpdateCertificateTemplateRequest, opts ...gax.CallOption) (*UpdateCertificateTemplateOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "certificate_template.name", url.QueryEscape(req.GetCertificateTemplate().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -2524,13 +2453,13 @@ func (c *certificateAuthorityRESTClient) CreateCertificate(ctx context.Context, 
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2582,13 +2511,13 @@ func (c *certificateAuthorityRESTClient) GetCertificate(ctx context.Context, req
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2659,13 +2588,13 @@ func (c *certificateAuthorityRESTClient) ListCertificates(ctx context.Context, r
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -2740,13 +2669,13 @@ func (c *certificateAuthorityRESTClient) RevokeCertificate(ctx context.Context, 
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2784,7 +2713,7 @@ func (c *certificateAuthorityRESTClient) UpdateCertificate(ctx context.Context, 
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask))
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -2817,13 +2746,13 @@ func (c *certificateAuthorityRESTClient) UpdateCertificate(ctx context.Context, 
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2889,13 +2818,13 @@ func (c *certificateAuthorityRESTClient) ActivateCertificateAuthority(ctx contex
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2964,13 +2893,13 @@ func (c *certificateAuthorityRESTClient) CreateCertificateAuthority(ctx context.
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -3033,13 +2962,13 @@ func (c *certificateAuthorityRESTClient) DisableCertificateAuthority(ctx context
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -3102,13 +3031,13 @@ func (c *certificateAuthorityRESTClient) EnableCertificateAuthority(ctx context.
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -3175,13 +3104,13 @@ func (c *certificateAuthorityRESTClient) FetchCertificateAuthorityCsr(ctx contex
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -3234,13 +3163,13 @@ func (c *certificateAuthorityRESTClient) GetCertificateAuthority(ctx context.Con
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -3312,13 +3241,13 @@ func (c *certificateAuthorityRESTClient) ListCertificateAuthorities(ctx context.
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -3394,13 +3323,13 @@ func (c *certificateAuthorityRESTClient) UndeleteCertificateAuthority(ctx contex
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -3429,6 +3358,9 @@ func (c *certificateAuthorityRESTClient) DeleteCertificateAuthority(ctx context.
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetIgnoreActiveCertificates() {
 		params.Add("ignoreActiveCertificates", fmt.Sprintf("%v", req.GetIgnoreActiveCertificates()))
+	}
+	if req.GetIgnoreDependentResources() {
+		params.Add("ignoreDependentResources", fmt.Sprintf("%v", req.GetIgnoreDependentResources()))
 	}
 	if req.GetRequestId() != "" {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
@@ -3466,13 +3398,13 @@ func (c *certificateAuthorityRESTClient) DeleteCertificateAuthority(ctx context.
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -3514,7 +3446,7 @@ func (c *certificateAuthorityRESTClient) UpdateCertificateAuthority(ctx context.
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask))
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -3546,13 +3478,13 @@ func (c *certificateAuthorityRESTClient) UpdateCertificateAuthority(ctx context.
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -3619,13 +3551,13 @@ func (c *certificateAuthorityRESTClient) CreateCaPool(ctx context.Context, req *
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -3666,7 +3598,7 @@ func (c *certificateAuthorityRESTClient) UpdateCaPool(ctx context.Context, req *
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask))
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -3698,13 +3630,13 @@ func (c *certificateAuthorityRESTClient) UpdateCaPool(ctx context.Context, req *
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -3761,13 +3693,13 @@ func (c *certificateAuthorityRESTClient) GetCaPool(ctx context.Context, req *pri
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -3838,13 +3770,13 @@ func (c *certificateAuthorityRESTClient) ListCaPools(ctx context.Context, req *p
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -3882,6 +3814,9 @@ func (c *certificateAuthorityRESTClient) DeleteCaPool(ctx context.Context, req *
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetIgnoreDependentResources() {
+		params.Add("ignoreDependentResources", fmt.Sprintf("%v", req.GetIgnoreDependentResources()))
+	}
 	if req.GetRequestId() != "" {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -3915,13 +3850,13 @@ func (c *certificateAuthorityRESTClient) DeleteCaPool(ctx context.Context, req *
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -3988,13 +3923,13 @@ func (c *certificateAuthorityRESTClient) FetchCaCerts(ctx context.Context, req *
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -4047,13 +3982,13 @@ func (c *certificateAuthorityRESTClient) GetCertificateRevocationList(ctx contex
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -4125,13 +4060,13 @@ func (c *certificateAuthorityRESTClient) ListCertificateRevocationLists(ctx cont
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -4185,7 +4120,7 @@ func (c *certificateAuthorityRESTClient) UpdateCertificateRevocationList(ctx con
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask))
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -4217,13 +4152,13 @@ func (c *certificateAuthorityRESTClient) UpdateCertificateRevocationList(ctx con
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -4292,13 +4227,13 @@ func (c *certificateAuthorityRESTClient) CreateCertificateTemplate(ctx context.C
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -4358,13 +4293,13 @@ func (c *certificateAuthorityRESTClient) DeleteCertificateTemplate(ctx context.C
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -4422,13 +4357,13 @@ func (c *certificateAuthorityRESTClient) GetCertificateTemplate(ctx context.Cont
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -4500,13 +4435,13 @@ func (c *certificateAuthorityRESTClient) ListCertificateTemplates(ctx context.Co
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -4560,7 +4495,7 @@ func (c *certificateAuthorityRESTClient) UpdateCertificateTemplate(ctx context.C
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask))
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -4592,13 +4527,13 @@ func (c *certificateAuthorityRESTClient) UpdateCertificateTemplate(ctx context.C
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -4655,13 +4590,13 @@ func (c *certificateAuthorityRESTClient) GetLocation(ctx context.Context, req *l
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -4729,13 +4664,13 @@ func (c *certificateAuthorityRESTClient) ListLocations(ctx context.Context, req 
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -4808,13 +4743,13 @@ func (c *certificateAuthorityRESTClient) GetIamPolicy(ctx context.Context, req *
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -4876,13 +4811,13 @@ func (c *certificateAuthorityRESTClient) SetIamPolicy(ctx context.Context, req *
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -4946,13 +4881,13 @@ func (c *certificateAuthorityRESTClient) TestIamPermissions(ctx context.Context,
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -5090,13 +5025,13 @@ func (c *certificateAuthorityRESTClient) GetOperation(ctx context.Context, req *
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -5164,13 +5099,13 @@ func (c *certificateAuthorityRESTClient) ListOperations(ctx context.Context, req
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil

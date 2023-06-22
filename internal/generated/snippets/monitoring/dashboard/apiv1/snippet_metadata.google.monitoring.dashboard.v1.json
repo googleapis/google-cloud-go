@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/monitoring/dashboard/apiv1",
-    "version": "1.13.0",
+    "version": "1.15.0",
     "language": "GO",
     "apis": [
       {
@@ -14,7 +14,7 @@
     {
       "regionTag": "monitoring_v1_generated_DashboardsService_CreateDashboard_sync",
       "title": "monitoring CreateDashboard Sample",
-      "description": "CreateDashboard creates a new custom dashboard. For examples on how you can use this API to\ncreate dashboards, see Managing dashboards by\nAPI (at https: //cloud.google.com/monitoring/dashboards/api-dashboard). This\nmethod requires the monitoring.dashboards.create permission on the\nspecified project. For more information about permissions, see Cloud\nIdentity and Access Management (at https: //cloud.google.com/iam).",
+      "description": "CreateDashboard creates a new custom dashboard. For examples on how you can use this API to\ncreate dashboards, see [Managing dashboards by\nAPI](https: //cloud.google.com/monitoring/dashboards/api-dashboard). This\nmethod requires the `monitoring.dashboards.create` permission on the\nspecified project. For more information about permissions, see [Cloud\nIdentity and Access Management](https: //cloud.google.com/iam).",
       "file": "DashboardsClient/CreateDashboard/main.go",
       "language": "GO",
       "clientMethod": {
@@ -34,7 +34,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "dashboardpb.Dashboard",
+        "resultType": "*dashboardpb.Dashboard",
         "client": {
           "shortName": "DashboardsClient",
           "fullName": "google.monitoring.dashboard.v1.DashboardsClient"
@@ -60,7 +60,7 @@
     {
       "regionTag": "monitoring_v1_generated_DashboardsService_DeleteDashboard_sync",
       "title": "monitoring DeleteDashboard Sample",
-      "description": "DeleteDashboard deletes an existing custom dashboard.\n\nThis method requires the monitoring.dashboards.delete permission\non the specified dashboard. For more information, see\nCloud Identity and Access Management (at https: //cloud.google.com/iam).",
+      "description": "DeleteDashboard deletes an existing custom dashboard.\n\nThis method requires the `monitoring.dashboards.delete` permission\non the specified dashboard. For more information, see\n[Cloud Identity and Access Management](https: //cloud.google.com/iam).",
       "file": "DashboardsClient/DeleteDashboard/main.go",
       "language": "GO",
       "clientMethod": {
@@ -105,7 +105,7 @@
     {
       "regionTag": "monitoring_v1_generated_DashboardsService_GetDashboard_sync",
       "title": "monitoring GetDashboard Sample",
-      "description": "GetDashboard fetches a specific dashboard.\n\nThis method requires the monitoring.dashboards.get permission\non the specified dashboard. For more information, see\nCloud Identity and Access Management (at https: //cloud.google.com/iam).",
+      "description": "GetDashboard fetches a specific dashboard.\n\nThis method requires the `monitoring.dashboards.get` permission\non the specified dashboard. For more information, see\n[Cloud Identity and Access Management](https: //cloud.google.com/iam).",
       "file": "DashboardsClient/GetDashboard/main.go",
       "language": "GO",
       "clientMethod": {
@@ -125,7 +125,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "dashboardpb.Dashboard",
+        "resultType": "*dashboardpb.Dashboard",
         "client": {
           "shortName": "DashboardsClient",
           "fullName": "google.monitoring.dashboard.v1.DashboardsClient"
@@ -151,7 +151,7 @@
     {
       "regionTag": "monitoring_v1_generated_DashboardsService_ListDashboards_sync",
       "title": "monitoring ListDashboards Sample",
-      "description": "ListDashboards lists the existing dashboards.\n\nThis method requires the monitoring.dashboards.list permission\non the specified project. For more information, see\nCloud Identity and Access Management (at https: //cloud.google.com/iam).",
+      "description": "ListDashboards lists the existing dashboards.\n\nThis method requires the `monitoring.dashboards.list` permission\non the specified project. For more information, see\n[Cloud Identity and Access Management](https: //cloud.google.com/iam).",
       "file": "DashboardsClient/ListDashboards/main.go",
       "language": "GO",
       "clientMethod": {
@@ -197,7 +197,7 @@
     {
       "regionTag": "monitoring_v1_generated_DashboardsService_UpdateDashboard_sync",
       "title": "monitoring UpdateDashboard Sample",
-      "description": "UpdateDashboard replaces an existing custom dashboard with a new definition.\n\nThis method requires the monitoring.dashboards.update permission\non the specified dashboard. For more information, see\nCloud Identity and Access Management (at https: //cloud.google.com/iam).",
+      "description": "UpdateDashboard replaces an existing custom dashboard with a new definition.\n\nThis method requires the `monitoring.dashboards.update` permission\non the specified dashboard. For more information, see\n[Cloud Identity and Access Management](https: //cloud.google.com/iam).",
       "file": "DashboardsClient/UpdateDashboard/main.go",
       "language": "GO",
       "clientMethod": {
@@ -217,7 +217,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "dashboardpb.Dashboard",
+        "resultType": "*dashboardpb.Dashboard",
         "client": {
           "shortName": "DashboardsClient",
           "fullName": "google.monitoring.dashboard.v1.DashboardsClient"

@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"math"
 	"net/http"
 	"net/url"
@@ -82,6 +82,7 @@ func defaultCloudFilestoreManagerGRPCClientOptions() []option.ClientOption {
 func defaultCloudFilestoreManagerCallOptions() *CloudFilestoreManagerCallOptions {
 	return &CloudFilestoreManagerCallOptions{
 		ListInstances: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -93,6 +94,7 @@ func defaultCloudFilestoreManagerCallOptions() *CloudFilestoreManagerCallOptions
 			}),
 		},
 		GetInstance: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -103,16 +105,25 @@ func defaultCloudFilestoreManagerCallOptions() *CloudFilestoreManagerCallOptions
 				})
 			}),
 		},
-		CreateInstance:  []gax.CallOption{},
-		UpdateInstance:  []gax.CallOption{},
-		RestoreInstance: []gax.CallOption{},
-		DeleteInstance:  []gax.CallOption{},
-		ListSnapshots:   []gax.CallOption{},
-		GetSnapshot:     []gax.CallOption{},
-		CreateSnapshot:  []gax.CallOption{},
-		DeleteSnapshot:  []gax.CallOption{},
-		UpdateSnapshot:  []gax.CallOption{},
+		CreateInstance: []gax.CallOption{
+			gax.WithTimeout(60000000 * time.Millisecond),
+		},
+		UpdateInstance: []gax.CallOption{
+			gax.WithTimeout(14400000 * time.Millisecond),
+		},
+		RestoreInstance: []gax.CallOption{
+			gax.WithTimeout(60000000 * time.Millisecond),
+		},
+		DeleteInstance: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		ListSnapshots:  []gax.CallOption{},
+		GetSnapshot:    []gax.CallOption{},
+		CreateSnapshot: []gax.CallOption{},
+		DeleteSnapshot: []gax.CallOption{},
+		UpdateSnapshot: []gax.CallOption{},
 		ListBackups: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -124,6 +135,7 @@ func defaultCloudFilestoreManagerCallOptions() *CloudFilestoreManagerCallOptions
 			}),
 		},
 		GetBackup: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -134,15 +146,22 @@ func defaultCloudFilestoreManagerCallOptions() *CloudFilestoreManagerCallOptions
 				})
 			}),
 		},
-		CreateBackup: []gax.CallOption{},
-		DeleteBackup: []gax.CallOption{},
-		UpdateBackup: []gax.CallOption{},
+		CreateBackup: []gax.CallOption{
+			gax.WithTimeout(60000000 * time.Millisecond),
+		},
+		DeleteBackup: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		UpdateBackup: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
 	}
 }
 
 func defaultCloudFilestoreManagerRESTCallOptions() *CloudFilestoreManagerCallOptions {
 	return &CloudFilestoreManagerCallOptions{
 		ListInstances: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    250 * time.Millisecond,
@@ -153,6 +172,7 @@ func defaultCloudFilestoreManagerRESTCallOptions() *CloudFilestoreManagerCallOpt
 			}),
 		},
 		GetInstance: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    250 * time.Millisecond,
@@ -162,16 +182,25 @@ func defaultCloudFilestoreManagerRESTCallOptions() *CloudFilestoreManagerCallOpt
 					http.StatusServiceUnavailable)
 			}),
 		},
-		CreateInstance:  []gax.CallOption{},
-		UpdateInstance:  []gax.CallOption{},
-		RestoreInstance: []gax.CallOption{},
-		DeleteInstance:  []gax.CallOption{},
-		ListSnapshots:   []gax.CallOption{},
-		GetSnapshot:     []gax.CallOption{},
-		CreateSnapshot:  []gax.CallOption{},
-		DeleteSnapshot:  []gax.CallOption{},
-		UpdateSnapshot:  []gax.CallOption{},
+		CreateInstance: []gax.CallOption{
+			gax.WithTimeout(60000000 * time.Millisecond),
+		},
+		UpdateInstance: []gax.CallOption{
+			gax.WithTimeout(14400000 * time.Millisecond),
+		},
+		RestoreInstance: []gax.CallOption{
+			gax.WithTimeout(60000000 * time.Millisecond),
+		},
+		DeleteInstance: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		ListSnapshots:  []gax.CallOption{},
+		GetSnapshot:    []gax.CallOption{},
+		CreateSnapshot: []gax.CallOption{},
+		DeleteSnapshot: []gax.CallOption{},
+		UpdateSnapshot: []gax.CallOption{},
 		ListBackups: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    250 * time.Millisecond,
@@ -182,6 +211,7 @@ func defaultCloudFilestoreManagerRESTCallOptions() *CloudFilestoreManagerCallOpt
 			}),
 		},
 		GetBackup: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    250 * time.Millisecond,
@@ -191,9 +221,15 @@ func defaultCloudFilestoreManagerRESTCallOptions() *CloudFilestoreManagerCallOpt
 					http.StatusServiceUnavailable)
 			}),
 		},
-		CreateBackup: []gax.CallOption{},
-		DeleteBackup: []gax.CallOption{},
-		UpdateBackup: []gax.CallOption{},
+		CreateBackup: []gax.CallOption{
+			gax.WithTimeout(60000000 * time.Millisecond),
+		},
+		DeleteBackup: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		UpdateBackup: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
 	}
 }
 
@@ -451,9 +487,6 @@ type cloudFilestoreManagerGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing CloudFilestoreManagerClient
 	CallOptions **CloudFilestoreManagerCallOptions
 
@@ -507,11 +540,6 @@ func NewCloudFilestoreManagerClient(ctx context.Context, opts ...option.ClientOp
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -520,7 +548,6 @@ func NewCloudFilestoreManagerClient(ctx context.Context, opts ...option.ClientOp
 
 	c := &cloudFilestoreManagerGRPCClient{
 		connPool:                    connPool,
-		disableDeadlines:            disableDeadlines,
 		cloudFilestoreManagerClient: filestorepb.NewCloudFilestoreManagerClient(connPool),
 		CallOptions:                 &client.CallOptions,
 	}
@@ -554,7 +581,7 @@ func (c *cloudFilestoreManagerGRPCClient) Connection() *grpc.ClientConn {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *cloudFilestoreManagerGRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -653,7 +680,7 @@ func defaultCloudFilestoreManagerRESTClientOptions() []option.ClientOption {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *cloudFilestoreManagerRESTClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -718,11 +745,6 @@ func (c *cloudFilestoreManagerGRPCClient) ListInstances(ctx context.Context, req
 }
 
 func (c *cloudFilestoreManagerGRPCClient) GetInstance(ctx context.Context, req *filestorepb.GetInstanceRequest, opts ...gax.CallOption) (*filestorepb.Instance, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -740,11 +762,6 @@ func (c *cloudFilestoreManagerGRPCClient) GetInstance(ctx context.Context, req *
 }
 
 func (c *cloudFilestoreManagerGRPCClient) CreateInstance(ctx context.Context, req *filestorepb.CreateInstanceRequest, opts ...gax.CallOption) (*CreateInstanceOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -764,11 +781,6 @@ func (c *cloudFilestoreManagerGRPCClient) CreateInstance(ctx context.Context, re
 }
 
 func (c *cloudFilestoreManagerGRPCClient) UpdateInstance(ctx context.Context, req *filestorepb.UpdateInstanceRequest, opts ...gax.CallOption) (*UpdateInstanceOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 14400000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "instance.name", url.QueryEscape(req.GetInstance().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -788,11 +800,6 @@ func (c *cloudFilestoreManagerGRPCClient) UpdateInstance(ctx context.Context, re
 }
 
 func (c *cloudFilestoreManagerGRPCClient) RestoreInstance(ctx context.Context, req *filestorepb.RestoreInstanceRequest, opts ...gax.CallOption) (*RestoreInstanceOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -812,11 +819,6 @@ func (c *cloudFilestoreManagerGRPCClient) RestoreInstance(ctx context.Context, r
 }
 
 func (c *cloudFilestoreManagerGRPCClient) DeleteInstance(ctx context.Context, req *filestorepb.DeleteInstanceRequest, opts ...gax.CallOption) (*DeleteInstanceOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1000,11 +1002,6 @@ func (c *cloudFilestoreManagerGRPCClient) ListBackups(ctx context.Context, req *
 }
 
 func (c *cloudFilestoreManagerGRPCClient) GetBackup(ctx context.Context, req *filestorepb.GetBackupRequest, opts ...gax.CallOption) (*filestorepb.Backup, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1022,11 +1019,6 @@ func (c *cloudFilestoreManagerGRPCClient) GetBackup(ctx context.Context, req *fi
 }
 
 func (c *cloudFilestoreManagerGRPCClient) CreateBackup(ctx context.Context, req *filestorepb.CreateBackupRequest, opts ...gax.CallOption) (*CreateBackupOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1046,11 +1038,6 @@ func (c *cloudFilestoreManagerGRPCClient) CreateBackup(ctx context.Context, req 
 }
 
 func (c *cloudFilestoreManagerGRPCClient) DeleteBackup(ctx context.Context, req *filestorepb.DeleteBackupRequest, opts ...gax.CallOption) (*DeleteBackupOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1070,11 +1057,6 @@ func (c *cloudFilestoreManagerGRPCClient) DeleteBackup(ctx context.Context, req 
 }
 
 func (c *cloudFilestoreManagerGRPCClient) UpdateBackup(ctx context.Context, req *filestorepb.UpdateBackupRequest, opts ...gax.CallOption) (*UpdateBackupOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "backup.name", url.QueryEscape(req.GetBackup().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1154,13 +1136,13 @@ func (c *cloudFilestoreManagerRESTClient) ListInstances(ctx context.Context, req
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -1229,13 +1211,13 @@ func (c *cloudFilestoreManagerRESTClient) GetInstance(ctx context.Context, req *
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1297,13 +1279,13 @@ func (c *cloudFilestoreManagerRESTClient) CreateInstance(ctx context.Context, re
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1341,7 +1323,7 @@ func (c *cloudFilestoreManagerRESTClient) UpdateInstance(ctx context.Context, re
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask))
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1373,13 +1355,13 @@ func (c *cloudFilestoreManagerRESTClient) UpdateInstance(ctx context.Context, re
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1445,13 +1427,13 @@ func (c *cloudFilestoreManagerRESTClient) RestoreInstance(ctx context.Context, r
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1510,13 +1492,13 @@ func (c *cloudFilestoreManagerRESTClient) DeleteInstance(ctx context.Context, re
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1593,13 +1575,13 @@ func (c *cloudFilestoreManagerRESTClient) ListSnapshots(ctx context.Context, req
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -1668,13 +1650,13 @@ func (c *cloudFilestoreManagerRESTClient) GetSnapshot(ctx context.Context, req *
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1733,13 +1715,13 @@ func (c *cloudFilestoreManagerRESTClient) CreateSnapshot(ctx context.Context, re
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1795,13 +1777,13 @@ func (c *cloudFilestoreManagerRESTClient) DeleteSnapshot(ctx context.Context, re
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1839,7 +1821,7 @@ func (c *cloudFilestoreManagerRESTClient) UpdateSnapshot(ctx context.Context, re
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask))
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1871,13 +1853,13 @@ func (c *cloudFilestoreManagerRESTClient) UpdateSnapshot(ctx context.Context, re
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1954,13 +1936,13 @@ func (c *cloudFilestoreManagerRESTClient) ListBackups(ctx context.Context, req *
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -2029,13 +2011,13 @@ func (c *cloudFilestoreManagerRESTClient) GetBackup(ctx context.Context, req *fi
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2094,13 +2076,13 @@ func (c *cloudFilestoreManagerRESTClient) CreateBackup(ctx context.Context, req 
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2156,13 +2138,13 @@ func (c *cloudFilestoreManagerRESTClient) DeleteBackup(ctx context.Context, req 
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2200,7 +2182,7 @@ func (c *cloudFilestoreManagerRESTClient) UpdateBackup(ctx context.Context, req 
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask))
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -2232,13 +2214,13 @@ func (c *cloudFilestoreManagerRESTClient) UpdateBackup(ctx context.Context, req 
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil

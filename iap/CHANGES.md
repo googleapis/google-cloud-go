@@ -1,5 +1,33 @@
 # Changes
 
+## [1.8.1](https://github.com/googleapis/google-cloud-go/compare/iap/v1.8.0...iap/v1.8.1) (2023-06-20)
+
+
+### Bug Fixes
+
+* **iap:** REST query UpdateMask bug ([df52820](https://github.com/googleapis/google-cloud-go/commit/df52820b0e7721954809a8aa8700b93c5662dc9b))
+
+## [1.8.0](https://github.com/googleapis/google-cloud-go/compare/iap/v1.7.3...iap/v1.8.0) (2023-05-30)
+
+
+### Features
+
+* **iap:** Update all direct dependencies ([b340d03](https://github.com/googleapis/google-cloud-go/commit/b340d030f2b52a4ce48846ce63984b28583abde6))
+
+## [1.7.3](https://github.com/googleapis/google-cloud-go/compare/iap/v1.7.2...iap/v1.7.3) (2023-05-08)
+
+
+### Bug Fixes
+
+* **iap:** Update grpc to v1.55.0 ([1147ce0](https://github.com/googleapis/google-cloud-go/commit/1147ce02a990276ca4f8ab7a1ab65c14da4450ef))
+
+## [1.7.2](https://github.com/googleapis/google-cloud-go/compare/iap/v1.7.1...iap/v1.7.2) (2023-04-11)
+
+
+### Documentation
+
+* **iap:** Few minor changes on doc description came out of cl/512701532 ([19f18c0](https://github.com/googleapis/google-cloud-go/commit/19f18c0a33d85e1949981d58bca2b765ce9787b5))
+
 ## [1.7.1](https://github.com/googleapis/google-cloud-go/compare/iap/v1.7.0...iap/v1.7.1) (2023-04-04)
 
 

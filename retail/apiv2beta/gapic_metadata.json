@@ -312,6 +312,11 @@
                 "DeleteModel"
               ]
             },
+            "GetModel": {
+              "methods": [
+                "GetModel"
+              ]
+            },
             "GetOperation": {
               "methods": [
                 "GetOperation"
@@ -360,6 +365,11 @@
             "DeleteModel": {
               "methods": [
                 "DeleteModel"
+              ]
+            },
+            "GetModel": {
+              "methods": [
+                "GetModel"
               ]
             },
             "GetOperation": {

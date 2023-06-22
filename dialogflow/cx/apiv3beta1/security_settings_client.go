@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"math"
 	"net/http"
 	"net/url"
@@ -74,6 +74,7 @@ func defaultSecuritySettingsGRPCClientOptions() []option.ClientOption {
 func defaultSecuritySettingsCallOptions() *SecuritySettingsCallOptions {
 	return &SecuritySettingsCallOptions{
 		CreateSecuritySettings: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -85,6 +86,7 @@ func defaultSecuritySettingsCallOptions() *SecuritySettingsCallOptions {
 			}),
 		},
 		GetSecuritySettings: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -96,6 +98,7 @@ func defaultSecuritySettingsCallOptions() *SecuritySettingsCallOptions {
 			}),
 		},
 		UpdateSecuritySettings: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -107,6 +110,7 @@ func defaultSecuritySettingsCallOptions() *SecuritySettingsCallOptions {
 			}),
 		},
 		ListSecuritySettings: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -118,6 +122,7 @@ func defaultSecuritySettingsCallOptions() *SecuritySettingsCallOptions {
 			}),
 		},
 		DeleteSecuritySettings: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -139,6 +144,7 @@ func defaultSecuritySettingsCallOptions() *SecuritySettingsCallOptions {
 func defaultSecuritySettingsRESTCallOptions() *SecuritySettingsCallOptions {
 	return &SecuritySettingsCallOptions{
 		CreateSecuritySettings: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -149,6 +155,7 @@ func defaultSecuritySettingsRESTCallOptions() *SecuritySettingsCallOptions {
 			}),
 		},
 		GetSecuritySettings: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -159,6 +166,7 @@ func defaultSecuritySettingsRESTCallOptions() *SecuritySettingsCallOptions {
 			}),
 		},
 		UpdateSecuritySettings: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -169,6 +177,7 @@ func defaultSecuritySettingsRESTCallOptions() *SecuritySettingsCallOptions {
 			}),
 		},
 		ListSecuritySettings: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -179,6 +188,7 @@ func defaultSecuritySettingsRESTCallOptions() *SecuritySettingsCallOptions {
 			}),
 		},
 		DeleteSecuritySettings: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -297,8 +307,7 @@ func (c *SecuritySettingsClient) GetOperation(ctx context.Context, req *longrunn
 	return c.internalClient.GetOperation(ctx, req, opts...)
 }
 
-// ListOperations lists operations that match the specified filter in the request. If
-// the server doesn’t support this method, it returns UNIMPLEMENTED.
+// ListOperations is a utility method from google.longrunning.Operations.
 func (c *SecuritySettingsClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	return c.internalClient.ListOperations(ctx, req, opts...)
 }
@@ -309,9 +318,6 @@ func (c *SecuritySettingsClient) ListOperations(ctx context.Context, req *longru
 type securitySettingsGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
-
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
 
 	// Points back to the CallOptions field of the containing SecuritySettingsClient
 	CallOptions **SecuritySettingsCallOptions
@@ -341,11 +347,6 @@ func NewSecuritySettingsClient(ctx context.Context, opts ...option.ClientOption)
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -354,7 +355,6 @@ func NewSecuritySettingsClient(ctx context.Context, opts ...option.ClientOption)
 
 	c := &securitySettingsGRPCClient{
 		connPool:               connPool,
-		disableDeadlines:       disableDeadlines,
 		securitySettingsClient: cxpb.NewSecuritySettingsServiceClient(connPool),
 		CallOptions:            &client.CallOptions,
 		operationsClient:       longrunningpb.NewOperationsClient(connPool),
@@ -379,7 +379,7 @@ func (c *securitySettingsGRPCClient) Connection() *grpc.ClientConn {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *securitySettingsGRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -439,7 +439,7 @@ func defaultSecuritySettingsRESTClientOptions() []option.ClientOption {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *securitySettingsRESTClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -459,11 +459,6 @@ func (c *securitySettingsRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 func (c *securitySettingsGRPCClient) CreateSecuritySettings(ctx context.Context, req *cxpb.CreateSecuritySettingsRequest, opts ...gax.CallOption) (*cxpb.SecuritySettings, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -481,11 +476,6 @@ func (c *securitySettingsGRPCClient) CreateSecuritySettings(ctx context.Context,
 }
 
 func (c *securitySettingsGRPCClient) GetSecuritySettings(ctx context.Context, req *cxpb.GetSecuritySettingsRequest, opts ...gax.CallOption) (*cxpb.SecuritySettings, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -503,11 +493,6 @@ func (c *securitySettingsGRPCClient) GetSecuritySettings(ctx context.Context, re
 }
 
 func (c *securitySettingsGRPCClient) UpdateSecuritySettings(ctx context.Context, req *cxpb.UpdateSecuritySettingsRequest, opts ...gax.CallOption) (*cxpb.SecuritySettings, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "security_settings.name", url.QueryEscape(req.GetSecuritySettings().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -570,11 +555,6 @@ func (c *securitySettingsGRPCClient) ListSecuritySettings(ctx context.Context, r
 }
 
 func (c *securitySettingsGRPCClient) DeleteSecuritySettings(ctx context.Context, req *cxpb.DeleteSecuritySettingsRequest, opts ...gax.CallOption) error {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -772,13 +752,13 @@ func (c *securitySettingsRESTClient) CreateSecuritySettings(ctx context.Context,
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -832,13 +812,13 @@ func (c *securitySettingsRESTClient) GetSecuritySettings(ctx context.Context, re
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -872,7 +852,7 @@ func (c *securitySettingsRESTClient) UpdateSecuritySettings(ctx context.Context,
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask))
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -905,13 +885,13 @@ func (c *securitySettingsRESTClient) UpdateSecuritySettings(ctx context.Context,
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -976,13 +956,13 @@ func (c *securitySettingsRESTClient) ListSecuritySettings(ctx context.Context, r
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -1092,13 +1072,13 @@ func (c *securitySettingsRESTClient) GetLocation(ctx context.Context, req *locat
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1166,13 +1146,13 @@ func (c *securitySettingsRESTClient) ListLocations(ctx context.Context, req *loc
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -1281,13 +1261,13 @@ func (c *securitySettingsRESTClient) GetOperation(ctx context.Context, req *long
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1298,8 +1278,7 @@ func (c *securitySettingsRESTClient) GetOperation(ctx context.Context, req *long
 	return resp, nil
 }
 
-// ListOperations lists operations that match the specified filter in the request. If
-// the server doesn’t support this method, it returns UNIMPLEMENTED.
+// ListOperations is a utility method from google.longrunning.Operations.
 func (c *securitySettingsRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
 	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
@@ -1356,13 +1335,13 @@ func (c *securitySettingsRESTClient) ListOperations(ctx context.Context, req *lo
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil

@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"math"
 	"net/http"
 	"net/url"
@@ -95,6 +95,7 @@ func defaultGRPCClientOptions() []option.ClientOption {
 func defaultCallOptions() *CallOptions {
 	return &CallOptions{
 		CreateRecognizer: []gax.CallOption{
+			gax.WithTimeout(5000000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -107,6 +108,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		ListRecognizers: []gax.CallOption{
+			gax.WithTimeout(5000000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -119,6 +121,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		GetRecognizer: []gax.CallOption{
+			gax.WithTimeout(5000000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -131,6 +134,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		UpdateRecognizer: []gax.CallOption{
+			gax.WithTimeout(5000000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -143,6 +147,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		DeleteRecognizer: []gax.CallOption{
+			gax.WithTimeout(5000000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -155,6 +160,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		UndeleteRecognizer: []gax.CallOption{
+			gax.WithTimeout(5000000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -167,6 +173,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		Recognize: []gax.CallOption{
+			gax.WithTimeout(5000000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -191,6 +198,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		BatchRecognize: []gax.CallOption{
+			gax.WithTimeout(5000000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -203,6 +211,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		GetConfig: []gax.CallOption{
+			gax.WithTimeout(5000000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -215,6 +224,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		UpdateConfig: []gax.CallOption{
+			gax.WithTimeout(5000000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -227,6 +237,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		CreateCustomClass: []gax.CallOption{
+			gax.WithTimeout(5000000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -239,6 +250,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		ListCustomClasses: []gax.CallOption{
+			gax.WithTimeout(5000000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -251,6 +263,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		GetCustomClass: []gax.CallOption{
+			gax.WithTimeout(5000000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -263,6 +276,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		UpdateCustomClass: []gax.CallOption{
+			gax.WithTimeout(5000000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -275,6 +289,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		DeleteCustomClass: []gax.CallOption{
+			gax.WithTimeout(5000000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -287,6 +302,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		UndeleteCustomClass: []gax.CallOption{
+			gax.WithTimeout(5000000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -299,6 +315,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		CreatePhraseSet: []gax.CallOption{
+			gax.WithTimeout(5000000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -311,6 +328,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		ListPhraseSets: []gax.CallOption{
+			gax.WithTimeout(5000000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -323,6 +341,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		GetPhraseSet: []gax.CallOption{
+			gax.WithTimeout(5000000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -335,6 +354,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		UpdatePhraseSet: []gax.CallOption{
+			gax.WithTimeout(5000000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -347,6 +367,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		DeletePhraseSet: []gax.CallOption{
+			gax.WithTimeout(5000000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -359,6 +380,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		UndeletePhraseSet: []gax.CallOption{
+			gax.WithTimeout(5000000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -382,6 +404,7 @@ func defaultCallOptions() *CallOptions {
 func defaultRESTCallOptions() *CallOptions {
 	return &CallOptions{
 		CreateRecognizer: []gax.CallOption{
+			gax.WithTimeout(5000000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -393,6 +416,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		ListRecognizers: []gax.CallOption{
+			gax.WithTimeout(5000000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -404,6 +428,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		GetRecognizer: []gax.CallOption{
+			gax.WithTimeout(5000000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -415,6 +440,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		UpdateRecognizer: []gax.CallOption{
+			gax.WithTimeout(5000000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -426,6 +452,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		DeleteRecognizer: []gax.CallOption{
+			gax.WithTimeout(5000000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -437,6 +464,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		UndeleteRecognizer: []gax.CallOption{
+			gax.WithTimeout(5000000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -448,6 +476,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		Recognize: []gax.CallOption{
+			gax.WithTimeout(5000000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -459,6 +488,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		StreamingRecognize: []gax.CallOption{
+			gax.WithTimeout(5000000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -470,6 +500,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		BatchRecognize: []gax.CallOption{
+			gax.WithTimeout(5000000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -481,6 +512,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		GetConfig: []gax.CallOption{
+			gax.WithTimeout(5000000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -492,6 +524,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		UpdateConfig: []gax.CallOption{
+			gax.WithTimeout(5000000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -503,6 +536,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		CreateCustomClass: []gax.CallOption{
+			gax.WithTimeout(5000000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -514,6 +548,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		ListCustomClasses: []gax.CallOption{
+			gax.WithTimeout(5000000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -525,6 +560,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		GetCustomClass: []gax.CallOption{
+			gax.WithTimeout(5000000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -536,6 +572,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		UpdateCustomClass: []gax.CallOption{
+			gax.WithTimeout(5000000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -547,6 +584,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		DeleteCustomClass: []gax.CallOption{
+			gax.WithTimeout(5000000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -558,6 +596,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		UndeleteCustomClass: []gax.CallOption{
+			gax.WithTimeout(5000000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -569,6 +608,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		CreatePhraseSet: []gax.CallOption{
+			gax.WithTimeout(5000000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -580,6 +620,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		ListPhraseSets: []gax.CallOption{
+			gax.WithTimeout(5000000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -591,6 +632,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		GetPhraseSet: []gax.CallOption{
+			gax.WithTimeout(5000000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -602,6 +644,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		UpdatePhraseSet: []gax.CallOption{
+			gax.WithTimeout(5000000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -613,6 +656,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		DeletePhraseSet: []gax.CallOption{
+			gax.WithTimeout(5000000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -624,6 +668,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		UndeletePhraseSet: []gax.CallOption{
+			gax.WithTimeout(5000000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -961,8 +1006,7 @@ func (c *Client) GetOperation(ctx context.Context, req *longrunningpb.GetOperati
 	return c.internalClient.GetOperation(ctx, req, opts...)
 }
 
-// ListOperations lists operations that match the specified filter in the request. If
-// the server doesn’t support this method, it returns UNIMPLEMENTED.
+// ListOperations is a utility method from google.longrunning.Operations.
 func (c *Client) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	return c.internalClient.ListOperations(ctx, req, opts...)
 }
@@ -973,9 +1017,6 @@ func (c *Client) ListOperations(ctx context.Context, req *longrunningpb.ListOper
 type gRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
-
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
 
 	// Points back to the CallOptions field of the containing Client
 	CallOptions **CallOptions
@@ -1010,11 +1051,6 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -1023,7 +1059,6 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 
 	c := &gRPCClient{
 		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
 		client:           speechpb.NewSpeechClient(connPool),
 		CallOptions:      &client.CallOptions,
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
@@ -1059,7 +1094,7 @@ func (c *gRPCClient) Connection() *grpc.ClientConn {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -1134,7 +1169,7 @@ func defaultRESTClientOptions() []option.ClientOption {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *restClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -1154,11 +1189,6 @@ func (c *restClient) Connection() *grpc.ClientConn {
 	return nil
 }
 func (c *gRPCClient) CreateRecognizer(ctx context.Context, req *speechpb.CreateRecognizerRequest, opts ...gax.CallOption) (*CreateRecognizerOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1223,11 +1253,6 @@ func (c *gRPCClient) ListRecognizers(ctx context.Context, req *speechpb.ListReco
 }
 
 func (c *gRPCClient) GetRecognizer(ctx context.Context, req *speechpb.GetRecognizerRequest, opts ...gax.CallOption) (*speechpb.Recognizer, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1245,11 +1270,6 @@ func (c *gRPCClient) GetRecognizer(ctx context.Context, req *speechpb.GetRecogni
 }
 
 func (c *gRPCClient) UpdateRecognizer(ctx context.Context, req *speechpb.UpdateRecognizerRequest, opts ...gax.CallOption) (*UpdateRecognizerOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "recognizer.name", url.QueryEscape(req.GetRecognizer().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1269,11 +1289,6 @@ func (c *gRPCClient) UpdateRecognizer(ctx context.Context, req *speechpb.UpdateR
 }
 
 func (c *gRPCClient) DeleteRecognizer(ctx context.Context, req *speechpb.DeleteRecognizerRequest, opts ...gax.CallOption) (*DeleteRecognizerOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1293,11 +1308,6 @@ func (c *gRPCClient) DeleteRecognizer(ctx context.Context, req *speechpb.DeleteR
 }
 
 func (c *gRPCClient) UndeleteRecognizer(ctx context.Context, req *speechpb.UndeleteRecognizerRequest, opts ...gax.CallOption) (*UndeleteRecognizerOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1317,11 +1327,6 @@ func (c *gRPCClient) UndeleteRecognizer(ctx context.Context, req *speechpb.Undel
 }
 
 func (c *gRPCClient) Recognize(ctx context.Context, req *speechpb.RecognizeRequest, opts ...gax.CallOption) (*speechpb.RecognizeResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "recognizer", url.QueryEscape(req.GetRecognizer())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1354,11 +1359,6 @@ func (c *gRPCClient) StreamingRecognize(ctx context.Context, opts ...gax.CallOpt
 }
 
 func (c *gRPCClient) BatchRecognize(ctx context.Context, req *speechpb.BatchRecognizeRequest, opts ...gax.CallOption) (*BatchRecognizeOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "recognizer", url.QueryEscape(req.GetRecognizer())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1378,11 +1378,6 @@ func (c *gRPCClient) BatchRecognize(ctx context.Context, req *speechpb.BatchReco
 }
 
 func (c *gRPCClient) GetConfig(ctx context.Context, req *speechpb.GetConfigRequest, opts ...gax.CallOption) (*speechpb.Config, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1400,11 +1395,6 @@ func (c *gRPCClient) GetConfig(ctx context.Context, req *speechpb.GetConfigReque
 }
 
 func (c *gRPCClient) UpdateConfig(ctx context.Context, req *speechpb.UpdateConfigRequest, opts ...gax.CallOption) (*speechpb.Config, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "config.name", url.QueryEscape(req.GetConfig().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1422,11 +1412,6 @@ func (c *gRPCClient) UpdateConfig(ctx context.Context, req *speechpb.UpdateConfi
 }
 
 func (c *gRPCClient) CreateCustomClass(ctx context.Context, req *speechpb.CreateCustomClassRequest, opts ...gax.CallOption) (*CreateCustomClassOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1491,11 +1476,6 @@ func (c *gRPCClient) ListCustomClasses(ctx context.Context, req *speechpb.ListCu
 }
 
 func (c *gRPCClient) GetCustomClass(ctx context.Context, req *speechpb.GetCustomClassRequest, opts ...gax.CallOption) (*speechpb.CustomClass, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1513,11 +1493,6 @@ func (c *gRPCClient) GetCustomClass(ctx context.Context, req *speechpb.GetCustom
 }
 
 func (c *gRPCClient) UpdateCustomClass(ctx context.Context, req *speechpb.UpdateCustomClassRequest, opts ...gax.CallOption) (*UpdateCustomClassOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "custom_class.name", url.QueryEscape(req.GetCustomClass().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1537,11 +1512,6 @@ func (c *gRPCClient) UpdateCustomClass(ctx context.Context, req *speechpb.Update
 }
 
 func (c *gRPCClient) DeleteCustomClass(ctx context.Context, req *speechpb.DeleteCustomClassRequest, opts ...gax.CallOption) (*DeleteCustomClassOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1561,11 +1531,6 @@ func (c *gRPCClient) DeleteCustomClass(ctx context.Context, req *speechpb.Delete
 }
 
 func (c *gRPCClient) UndeleteCustomClass(ctx context.Context, req *speechpb.UndeleteCustomClassRequest, opts ...gax.CallOption) (*UndeleteCustomClassOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1585,11 +1550,6 @@ func (c *gRPCClient) UndeleteCustomClass(ctx context.Context, req *speechpb.Unde
 }
 
 func (c *gRPCClient) CreatePhraseSet(ctx context.Context, req *speechpb.CreatePhraseSetRequest, opts ...gax.CallOption) (*CreatePhraseSetOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1654,11 +1614,6 @@ func (c *gRPCClient) ListPhraseSets(ctx context.Context, req *speechpb.ListPhras
 }
 
 func (c *gRPCClient) GetPhraseSet(ctx context.Context, req *speechpb.GetPhraseSetRequest, opts ...gax.CallOption) (*speechpb.PhraseSet, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1676,11 +1631,6 @@ func (c *gRPCClient) GetPhraseSet(ctx context.Context, req *speechpb.GetPhraseSe
 }
 
 func (c *gRPCClient) UpdatePhraseSet(ctx context.Context, req *speechpb.UpdatePhraseSetRequest, opts ...gax.CallOption) (*UpdatePhraseSetOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "phrase_set.name", url.QueryEscape(req.GetPhraseSet().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1700,11 +1650,6 @@ func (c *gRPCClient) UpdatePhraseSet(ctx context.Context, req *speechpb.UpdatePh
 }
 
 func (c *gRPCClient) DeletePhraseSet(ctx context.Context, req *speechpb.DeletePhraseSetRequest, opts ...gax.CallOption) (*DeletePhraseSetOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1724,11 +1669,6 @@ func (c *gRPCClient) DeletePhraseSet(ctx context.Context, req *speechpb.DeletePh
 }
 
 func (c *gRPCClient) UndeletePhraseSet(ctx context.Context, req *speechpb.UndeletePhraseSetRequest, opts ...gax.CallOption) (*UndeletePhraseSetOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1950,13 +1890,13 @@ func (c *restClient) CreateRecognizer(ctx context.Context, req *speechpb.CreateR
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2029,13 +1969,13 @@ func (c *restClient) ListRecognizers(ctx context.Context, req *speechpb.ListReco
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -2107,13 +2047,13 @@ func (c *restClient) GetRecognizer(ctx context.Context, req *speechpb.GetRecogni
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2146,7 +2086,7 @@ func (c *restClient) UpdateRecognizer(ctx context.Context, req *speechpb.UpdateR
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask))
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
 	}
 	if req.GetValidateOnly() {
 		params.Add("validateOnly", fmt.Sprintf("%v", req.GetValidateOnly()))
@@ -2181,13 +2121,13 @@ func (c *restClient) UpdateRecognizer(ctx context.Context, req *speechpb.UpdateR
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2252,13 +2192,13 @@ func (c *restClient) DeleteRecognizer(ctx context.Context, req *speechpb.DeleteR
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2320,13 +2260,13 @@ func (c *restClient) UndeleteRecognizer(ctx context.Context, req *speechpb.Undel
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2390,13 +2330,13 @@ func (c *restClient) Recognize(ctx context.Context, req *speechpb.RecognizeReque
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2463,13 +2403,13 @@ func (c *restClient) BatchRecognize(ctx context.Context, req *speechpb.BatchReco
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2526,13 +2466,13 @@ func (c *restClient) GetConfig(ctx context.Context, req *speechpb.GetConfigReque
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2565,7 +2505,7 @@ func (c *restClient) UpdateConfig(ctx context.Context, req *speechpb.UpdateConfi
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask))
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -2598,13 +2538,13 @@ func (c *restClient) UpdateConfig(ctx context.Context, req *speechpb.UpdateConfi
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2668,13 +2608,13 @@ func (c *restClient) CreateCustomClass(ctx context.Context, req *speechpb.Create
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2747,13 +2687,13 @@ func (c *restClient) ListCustomClasses(ctx context.Context, req *speechpb.ListCu
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -2823,13 +2763,13 @@ func (c *restClient) GetCustomClass(ctx context.Context, req *speechpb.GetCustom
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2862,7 +2802,7 @@ func (c *restClient) UpdateCustomClass(ctx context.Context, req *speechpb.Update
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask))
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
 	}
 	if req.GetValidateOnly() {
 		params.Add("validateOnly", fmt.Sprintf("%v", req.GetValidateOnly()))
@@ -2897,13 +2837,13 @@ func (c *restClient) UpdateCustomClass(ctx context.Context, req *speechpb.Update
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2968,13 +2908,13 @@ func (c *restClient) DeleteCustomClass(ctx context.Context, req *speechpb.Delete
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -3036,13 +2976,13 @@ func (c *restClient) UndeleteCustomClass(ctx context.Context, req *speechpb.Unde
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -3111,13 +3051,13 @@ func (c *restClient) CreatePhraseSet(ctx context.Context, req *speechpb.CreatePh
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -3190,13 +3130,13 @@ func (c *restClient) ListPhraseSets(ctx context.Context, req *speechpb.ListPhras
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -3266,13 +3206,13 @@ func (c *restClient) GetPhraseSet(ctx context.Context, req *speechpb.GetPhraseSe
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -3305,7 +3245,7 @@ func (c *restClient) UpdatePhraseSet(ctx context.Context, req *speechpb.UpdatePh
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask))
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
 	}
 	if req.GetValidateOnly() {
 		params.Add("validateOnly", fmt.Sprintf("%v", req.GetValidateOnly()))
@@ -3340,13 +3280,13 @@ func (c *restClient) UpdatePhraseSet(ctx context.Context, req *speechpb.UpdatePh
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -3411,13 +3351,13 @@ func (c *restClient) DeletePhraseSet(ctx context.Context, req *speechpb.DeletePh
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -3479,13 +3419,13 @@ func (c *restClient) UndeletePhraseSet(ctx context.Context, req *speechpb.Undele
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -3542,13 +3482,13 @@ func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -3616,13 +3556,13 @@ func (c *restClient) ListLocations(ctx context.Context, req *locationpb.ListLoca
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -3777,13 +3717,13 @@ func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -3794,8 +3734,7 @@ func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 	return resp, nil
 }
 
-// ListOperations lists operations that match the specified filter in the request. If
-// the server doesn’t support this method, it returns UNIMPLEMENTED.
+// ListOperations is a utility method from google.longrunning.Operations.
 func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
 	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
@@ -3852,13 +3791,13 @@ func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.List
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil

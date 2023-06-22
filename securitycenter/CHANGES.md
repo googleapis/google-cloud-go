@@ -1,5 +1,40 @@
 # Changes
 
+## [1.22.1](https://github.com/googleapis/google-cloud-go/compare/securitycenter/v1.22.0...securitycenter/v1.22.1) (2023-06-20)
+
+
+### Bug Fixes
+
+* **securitycenter:** REST query UpdateMask bug ([df52820](https://github.com/googleapis/google-cloud-go/commit/df52820b0e7721954809a8aa8700b93c5662dc9b))
+
+## [1.22.0](https://github.com/googleapis/google-cloud-go/compare/securitycenter/v1.21.0...securitycenter/v1.22.0) (2023-06-13)
+
+
+### Features
+
+* **securitycenter:** Add user agent and DLP parent type fields to finding's list of attributes ([3abdfa1](https://github.com/googleapis/google-cloud-go/commit/3abdfa14dd56cf773c477f289a7f888e20bbbd9a))
+
+## [1.21.0](https://github.com/googleapis/google-cloud-go/compare/securitycenter/v1.20.1...securitycenter/v1.21.0) (2023-05-30)
+
+
+### Features
+
+* **securitycenter:** Update all direct dependencies ([b340d03](https://github.com/googleapis/google-cloud-go/commit/b340d030f2b52a4ce48846ce63984b28583abde6))
+
+## [1.20.1](https://github.com/googleapis/google-cloud-go/compare/securitycenter/v1.20.0...securitycenter/v1.20.1) (2023-05-08)
+
+
+### Bug Fixes
+
+* **securitycenter:** Update grpc to v1.55.0 ([1147ce0](https://github.com/googleapis/google-cloud-go/commit/1147ce02a990276ca4f8ab7a1ab65c14da4450ef))
+
+## [1.20.0](https://github.com/googleapis/google-cloud-go/compare/securitycenter/v1.19.0...securitycenter/v1.20.0) (2023-04-25)
+
+
+### Features
+
+* **securitycenter:** Add cloud_dlp_inspection and cloud_dlp_data_profile fields to finding's list of attributes ([#7808](https://github.com/googleapis/google-cloud-go/issues/7808)) ([2c9b4cf](https://github.com/googleapis/google-cloud-go/commit/2c9b4cf95c5af845537e204cbcf3034f423ea10c))
+
 ## [1.19.0](https://github.com/googleapis/google-cloud-go/compare/securitycenter/v1.18.1...securitycenter/v1.19.0) (2023-03-15)
 
 

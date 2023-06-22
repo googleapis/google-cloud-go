@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"math"
 	"net/http"
 	"net/url"
@@ -172,9 +172,6 @@ type iamPolicyGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing IamPolicyClient
 	CallOptions **IamPolicyCallOptions
 
@@ -219,11 +216,6 @@ func NewIamPolicyClient(ctx context.Context, opts ...option.ClientOption) (*IamP
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -231,10 +223,9 @@ func NewIamPolicyClient(ctx context.Context, opts ...option.ClientOption) (*IamP
 	client := IamPolicyClient{CallOptions: defaultIamPolicyCallOptions()}
 
 	c := &iamPolicyGRPCClient{
-		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
-		iamPolicyClient:  iampb.NewIAMPolicyClient(connPool),
-		CallOptions:      &client.CallOptions,
+		connPool:        connPool,
+		iamPolicyClient: iampb.NewIAMPolicyClient(connPool),
+		CallOptions:     &client.CallOptions,
 	}
 	c.setGoogleClientInfo()
 
@@ -255,7 +246,7 @@ func (c *iamPolicyGRPCClient) Connection() *grpc.ClientConn {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *iamPolicyGRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -335,7 +326,7 @@ func defaultIamPolicyRESTClientOptions() []option.ClientOption {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *iamPolicyRESTClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -455,13 +446,13 @@ func (c *iamPolicyRESTClient) SetIamPolicy(ctx context.Context, req *iampb.SetIa
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -521,13 +512,13 @@ func (c *iamPolicyRESTClient) GetIamPolicy(ctx context.Context, req *iampb.GetIa
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -591,13 +582,13 @@ func (c *iamPolicyRESTClient) TestIamPermissions(ctx context.Context, req *iampb
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil

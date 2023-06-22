@@ -221,7 +221,8 @@ func (c *VizierClient) LookupStudy(ctx context.Context, req *aiplatformpb.Lookup
 // suggested by Vertex AI Vizier. Returns a long-running
 // operation associated with the generation of Trial suggestions.
 // When this long-running operation succeeds, it will contain
-// a SuggestTrialsResponse.
+// a
+// SuggestTrialsResponse.
 func (c *VizierClient) SuggestTrials(ctx context.Context, req *aiplatformpb.SuggestTrialsRequest, opts ...gax.CallOption) (*SuggestTrialsOperation, error) {
 	return c.internalClient.SuggestTrials(ctx, req, opts...)
 }
@@ -341,8 +342,7 @@ func (c *VizierClient) GetOperation(ctx context.Context, req *longrunningpb.GetO
 	return c.internalClient.GetOperation(ctx, req, opts...)
 }
 
-// ListOperations lists operations that match the specified filter in the request. If
-// the server doesn’t support this method, it returns UNIMPLEMENTED.
+// ListOperations is a utility method from google.longrunning.Operations.
 func (c *VizierClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	return c.internalClient.ListOperations(ctx, req, opts...)
 }
@@ -358,9 +358,6 @@ func (c *VizierClient) WaitOperation(ctx context.Context, req *longrunningpb.Wai
 type vizierGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
-
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
 
 	// Points back to the CallOptions field of the containing VizierClient
 	CallOptions **VizierCallOptions
@@ -401,11 +398,6 @@ func NewVizierClient(ctx context.Context, opts ...option.ClientOption) (*VizierC
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -414,7 +406,6 @@ func NewVizierClient(ctx context.Context, opts ...option.ClientOption) (*VizierC
 
 	c := &vizierGRPCClient{
 		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
 		vizierClient:     aiplatformpb.NewVizierServiceClient(connPool),
 		CallOptions:      &client.CallOptions,
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
@@ -451,7 +442,7 @@ func (c *vizierGRPCClient) Connection() *grpc.ClientConn {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *vizierGRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }

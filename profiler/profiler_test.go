@@ -972,13 +972,16 @@ func TestAgentWithServer(t *testing.T) {
 	quitProfilee := make(chan bool)
 	go profileeLoop(quitProfilee)
 
+	var logs bytes.Buffer
 	if err := Start(Config{
-		Service:     testService,
-		ProjectID:   testProjectID,
-		APIAddr:     srv.Addr,
-		Instance:    testInstance,
-		Zone:        testZone,
-		numProfiles: 2,
+		Service:            testService,
+		ProjectID:          testProjectID,
+		APIAddr:            srv.Addr,
+		Instance:           testInstance,
+		Zone:               testZone,
+		numProfiles:        2,
+		DebugLogging:       true,
+		DebugLoggingOutput: &logs,
 	}); err != nil {
 		t.Fatalf("Start(): %v", err)
 	}
@@ -996,6 +999,10 @@ func TestAgentWithServer(t *testing.T) {
 		} else if err := validateProfile(profile, "profilee"); err != nil {
 			t.Errorf("validateProfile(%s) got error: %v", pType, err)
 		}
+	}
+
+	if logs.Len() == 0 {
+		t.Error("expected some debug logging output, but got none")
 	}
 }
 

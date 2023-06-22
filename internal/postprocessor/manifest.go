@@ -31,13 +31,14 @@ const betaIndicator = "It is not stable"
 
 // ManifestEntry is used for JSON marshaling in manifest.
 type ManifestEntry struct {
-	DistributionName  string      `json:"distribution_name" yaml:"distribution-name"`
-	Description       string      `json:"description" yaml:"description"`
-	Language          string      `json:"language" yaml:"language"`
-	ClientLibraryType string      `json:"client_library_type" yaml:"client-library-type"`
-	DocsURL           string      `json:"docs_url" yaml:"docs-url"`
-	ReleaseLevel      string      `json:"release_level" yaml:"release-level"`
-	LibraryType       libraryType `json:"library_type" yaml:"library-type"`
+	APIShortname        string      `json:"api_shortname" yaml:"api-shortname"`
+	DistributionName    string      `json:"distribution_name" yaml:"distribution-name"`
+	Description         string      `json:"description" yaml:"description"`
+	Language            string      `json:"language" yaml:"language"`
+	ClientLibraryType   string      `json:"client_library_type" yaml:"client-library-type"`
+	ClientDocumentation string      `json:"client_documentation" yaml:"client-documentation"`
+	ReleaseLevel        string      `json:"release_level" yaml:"release-level"`
+	LibraryType         libraryType `json:"library_type" yaml:"library-type"`
 }
 
 type libraryType string
@@ -72,41 +73,58 @@ func (p *postProcessor) Manifest() (map[string]ManifestEntry, error) {
 			return nil, err
 		}
 		yamlConfig := struct {
-			Title string `yaml:"title"` // We only need the title field.
+			Title    string `yaml:"title"` // We only need the title and name.
+			NameFull string `yaml:"name"`  // We only need the title and name.
 		}{}
 		if err := yaml.NewDecoder(yamlFile).Decode(&yamlConfig); err != nil {
 			return nil, fmt.Errorf("decode: %v", err)
 		}
-		docURL, err := docURL(p.googleCloudDir, conf.ImportPath)
+		docURL, err := docURL(p.googleCloudDir, conf.ImportPath, conf.RelPath)
 		if err != nil {
 			return nil, fmt.Errorf("unable to build docs URL: %v", err)
 		}
-		// TODO(codyoss): We can read a files doc.go to see if it has a warning
-		// if needs. For beta/alpha use a guess
-		releaseLevel, err := releaseLevel(p.googleCloudDir, conf.ImportPath)
+		releaseLevel, err := releaseLevel(p.googleCloudDir, conf.ImportPath, conf.RelPath)
 		if err != nil {
-			return nil, fmt.Errorf("unable to calculate release level for: %v", inputDir)
+			return nil, fmt.Errorf("unable to calculate release level for %v: %v", inputDir, err)
+		}
+
+		apiShortname, err := apiShortname(yamlConfig.NameFull)
+		if err != nil {
+			return nil, fmt.Errorf("unable to determine api_shortname from %v: %v", yamlConfig.NameFull, err)
 		}
 
 		entry := ManifestEntry{
-			DistributionName:  conf.ImportPath,
-			Description:       yamlConfig.Title,
-			Language:          "Go",
-			ClientLibraryType: "generated",
-			DocsURL:           docURL,
-			ReleaseLevel:      releaseLevel,
-			LibraryType:       gapicAutoLibraryType,
+			APIShortname:        apiShortname,
+			DistributionName:    conf.ImportPath,
+			Description:         yamlConfig.Title,
+			Language:            "go",
+			ClientLibraryType:   "generated",
+			ClientDocumentation: docURL,
+			ReleaseLevel:        releaseLevel,
+			LibraryType:         gapicAutoLibraryType,
 		}
 		entries[conf.ImportPath] = entry
 	}
+	// Remove base module entry
+	delete(entries, "")
 	enc := json.NewEncoder(f)
 	enc.SetIndent("", "  ")
 	return entries, enc.Encode(entries)
 }
 
-func docURL(cloudDir, importPath string) (string, error) {
-	suffix := strings.TrimPrefix(importPath, "cloud.google.com/go/")
-	mod, err := gocmd.CurrentMod(filepath.Join(cloudDir, suffix))
+// Name is of form secretmanager.googleapis.com api_shortname
+// should be prefix secretmanager.
+func apiShortname(nameFull string) (string, error) {
+	nameParts := strings.Split(nameFull, ".")
+	if len(nameParts) > 0 {
+		return nameParts[0], nil
+	}
+	return "", nil
+}
+
+func docURL(cloudDir, importPath, relPath string) (string, error) {
+	dir := filepath.Join(cloudDir, relPath)
+	mod, err := gocmd.CurrentMod(dir)
 	if err != nil {
 		return "", err
 	}
@@ -114,18 +132,17 @@ func docURL(cloudDir, importPath string) (string, error) {
 	return "https://cloud.google.com/go/docs/reference/" + mod + "/latest/" + pkgPath, nil
 }
 
-func releaseLevel(cloudDir, importPath string) (string, error) {
+func releaseLevel(cloudDir, importPath, relPath string) (string, error) {
 	i := strings.LastIndex(importPath, "/")
 	lastElm := importPath[i+1:]
 	if strings.Contains(lastElm, "alpha") {
-		return "alpha", nil
+		return "preview", nil
 	} else if strings.Contains(lastElm, "beta") {
-		return "beta", nil
+		return "preview", nil
 	}
 
 	// Determine by scanning doc.go for our beta disclaimer
-	gapicRelPath := strings.TrimPrefix(importPath, "cloud.google.com/go/")
-	docFile := filepath.Join(cloudDir, gapicRelPath, "doc.go")
+	docFile := filepath.Join(cloudDir, relPath, "doc.go")
 	f, err := os.Open(docFile)
 	if err != nil {
 		return "", err
@@ -137,8 +154,8 @@ func releaseLevel(cloudDir, importPath string) (string, error) {
 	for scanner.Scan() && lineCnt < 50 {
 		line := scanner.Text()
 		if strings.Contains(line, betaIndicator) {
-			return "beta", nil
+			return "preview", nil
 		}
 	}
-	return "ga", nil
+	return "stable", nil
 }

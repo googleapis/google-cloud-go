@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"math"
 	"net/http"
 	"net/url"
@@ -82,6 +82,7 @@ func defaultFlowsGRPCClientOptions() []option.ClientOption {
 func defaultFlowsCallOptions() *FlowsCallOptions {
 	return &FlowsCallOptions{
 		CreateFlow: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -93,6 +94,7 @@ func defaultFlowsCallOptions() *FlowsCallOptions {
 			}),
 		},
 		DeleteFlow: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -104,6 +106,7 @@ func defaultFlowsCallOptions() *FlowsCallOptions {
 			}),
 		},
 		ListFlows: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -115,6 +118,7 @@ func defaultFlowsCallOptions() *FlowsCallOptions {
 			}),
 		},
 		GetFlow: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -126,6 +130,7 @@ func defaultFlowsCallOptions() *FlowsCallOptions {
 			}),
 		},
 		UpdateFlow: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -137,6 +142,7 @@ func defaultFlowsCallOptions() *FlowsCallOptions {
 			}),
 		},
 		TrainFlow: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -148,6 +154,7 @@ func defaultFlowsCallOptions() *FlowsCallOptions {
 			}),
 		},
 		ValidateFlow: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -159,6 +166,7 @@ func defaultFlowsCallOptions() *FlowsCallOptions {
 			}),
 		},
 		GetFlowValidationResult: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -170,6 +178,7 @@ func defaultFlowsCallOptions() *FlowsCallOptions {
 			}),
 		},
 		ImportFlow: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -181,6 +190,7 @@ func defaultFlowsCallOptions() *FlowsCallOptions {
 			}),
 		},
 		ExportFlow: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -202,6 +212,7 @@ func defaultFlowsCallOptions() *FlowsCallOptions {
 func defaultFlowsRESTCallOptions() *FlowsCallOptions {
 	return &FlowsCallOptions{
 		CreateFlow: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -212,6 +223,7 @@ func defaultFlowsRESTCallOptions() *FlowsCallOptions {
 			}),
 		},
 		DeleteFlow: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -222,6 +234,7 @@ func defaultFlowsRESTCallOptions() *FlowsCallOptions {
 			}),
 		},
 		ListFlows: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -232,6 +245,7 @@ func defaultFlowsRESTCallOptions() *FlowsCallOptions {
 			}),
 		},
 		GetFlow: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -242,6 +256,7 @@ func defaultFlowsRESTCallOptions() *FlowsCallOptions {
 			}),
 		},
 		UpdateFlow: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -252,6 +267,7 @@ func defaultFlowsRESTCallOptions() *FlowsCallOptions {
 			}),
 		},
 		TrainFlow: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -262,6 +278,7 @@ func defaultFlowsRESTCallOptions() *FlowsCallOptions {
 			}),
 		},
 		ValidateFlow: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -272,6 +289,7 @@ func defaultFlowsRESTCallOptions() *FlowsCallOptions {
 			}),
 		},
 		GetFlowValidationResult: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -282,6 +300,7 @@ func defaultFlowsRESTCallOptions() *FlowsCallOptions {
 			}),
 		},
 		ImportFlow: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -292,6 +311,7 @@ func defaultFlowsRESTCallOptions() *FlowsCallOptions {
 			}),
 		},
 		ExportFlow: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -515,8 +535,7 @@ func (c *FlowsClient) GetOperation(ctx context.Context, req *longrunningpb.GetOp
 	return c.internalClient.GetOperation(ctx, req, opts...)
 }
 
-// ListOperations lists operations that match the specified filter in the request. If
-// the server doesn’t support this method, it returns UNIMPLEMENTED.
+// ListOperations is a utility method from google.longrunning.Operations.
 func (c *FlowsClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	return c.internalClient.ListOperations(ctx, req, opts...)
 }
@@ -527,9 +546,6 @@ func (c *FlowsClient) ListOperations(ctx context.Context, req *longrunningpb.Lis
 type flowsGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
-
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
 
 	// Points back to the CallOptions field of the containing FlowsClient
 	CallOptions **FlowsCallOptions
@@ -564,11 +580,6 @@ func NewFlowsClient(ctx context.Context, opts ...option.ClientOption) (*FlowsCli
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -577,7 +588,6 @@ func NewFlowsClient(ctx context.Context, opts ...option.ClientOption) (*FlowsCli
 
 	c := &flowsGRPCClient{
 		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
 		flowsClient:      cxpb.NewFlowsClient(connPool),
 		CallOptions:      &client.CallOptions,
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
@@ -613,7 +623,7 @@ func (c *flowsGRPCClient) Connection() *grpc.ClientConn {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *flowsGRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -688,7 +698,7 @@ func defaultFlowsRESTClientOptions() []option.ClientOption {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *flowsRESTClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -708,11 +718,6 @@ func (c *flowsRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 func (c *flowsGRPCClient) CreateFlow(ctx context.Context, req *cxpb.CreateFlowRequest, opts ...gax.CallOption) (*cxpb.Flow, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -730,11 +735,6 @@ func (c *flowsGRPCClient) CreateFlow(ctx context.Context, req *cxpb.CreateFlowRe
 }
 
 func (c *flowsGRPCClient) DeleteFlow(ctx context.Context, req *cxpb.DeleteFlowRequest, opts ...gax.CallOption) error {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -793,11 +793,6 @@ func (c *flowsGRPCClient) ListFlows(ctx context.Context, req *cxpb.ListFlowsRequ
 }
 
 func (c *flowsGRPCClient) GetFlow(ctx context.Context, req *cxpb.GetFlowRequest, opts ...gax.CallOption) (*cxpb.Flow, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -815,11 +810,6 @@ func (c *flowsGRPCClient) GetFlow(ctx context.Context, req *cxpb.GetFlowRequest,
 }
 
 func (c *flowsGRPCClient) UpdateFlow(ctx context.Context, req *cxpb.UpdateFlowRequest, opts ...gax.CallOption) (*cxpb.Flow, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "flow.name", url.QueryEscape(req.GetFlow().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -837,11 +827,6 @@ func (c *flowsGRPCClient) UpdateFlow(ctx context.Context, req *cxpb.UpdateFlowRe
 }
 
 func (c *flowsGRPCClient) TrainFlow(ctx context.Context, req *cxpb.TrainFlowRequest, opts ...gax.CallOption) (*TrainFlowOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -861,11 +846,6 @@ func (c *flowsGRPCClient) TrainFlow(ctx context.Context, req *cxpb.TrainFlowRequ
 }
 
 func (c *flowsGRPCClient) ValidateFlow(ctx context.Context, req *cxpb.ValidateFlowRequest, opts ...gax.CallOption) (*cxpb.FlowValidationResult, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -883,11 +863,6 @@ func (c *flowsGRPCClient) ValidateFlow(ctx context.Context, req *cxpb.ValidateFl
 }
 
 func (c *flowsGRPCClient) GetFlowValidationResult(ctx context.Context, req *cxpb.GetFlowValidationResultRequest, opts ...gax.CallOption) (*cxpb.FlowValidationResult, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -905,11 +880,6 @@ func (c *flowsGRPCClient) GetFlowValidationResult(ctx context.Context, req *cxpb
 }
 
 func (c *flowsGRPCClient) ImportFlow(ctx context.Context, req *cxpb.ImportFlowRequest, opts ...gax.CallOption) (*ImportFlowOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -929,11 +899,6 @@ func (c *flowsGRPCClient) ImportFlow(ctx context.Context, req *cxpb.ImportFlowRe
 }
 
 func (c *flowsGRPCClient) ExportFlow(ctx context.Context, req *cxpb.ExportFlowRequest, opts ...gax.CallOption) (*ExportFlowOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1144,13 +1109,13 @@ func (c *flowsRESTClient) CreateFlow(ctx context.Context, req *cxpb.CreateFlowRe
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1261,13 +1226,13 @@ func (c *flowsRESTClient) ListFlows(ctx context.Context, req *cxpb.ListFlowsRequ
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -1339,13 +1304,13 @@ func (c *flowsRESTClient) GetFlow(ctx context.Context, req *cxpb.GetFlowRequest,
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1385,7 +1350,7 @@ func (c *flowsRESTClient) UpdateFlow(ctx context.Context, req *cxpb.UpdateFlowRe
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask))
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1418,13 +1383,13 @@ func (c *flowsRESTClient) UpdateFlow(ctx context.Context, req *cxpb.UpdateFlowRe
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1496,13 +1461,13 @@ func (c *flowsRESTClient) TrainFlow(ctx context.Context, req *cxpb.TrainFlowRequ
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1567,13 +1532,13 @@ func (c *flowsRESTClient) ValidateFlow(ctx context.Context, req *cxpb.ValidateFl
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1629,13 +1594,13 @@ func (c *flowsRESTClient) GetFlowValidationResult(ctx context.Context, req *cxpb
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1706,13 +1671,13 @@ func (c *flowsRESTClient) ImportFlow(ctx context.Context, req *cxpb.ImportFlowRe
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1787,13 +1752,13 @@ func (c *flowsRESTClient) ExportFlow(ctx context.Context, req *cxpb.ExportFlowRe
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1850,13 +1815,13 @@ func (c *flowsRESTClient) GetLocation(ctx context.Context, req *locationpb.GetLo
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1924,13 +1889,13 @@ func (c *flowsRESTClient) ListLocations(ctx context.Context, req *locationpb.Lis
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -2039,13 +2004,13 @@ func (c *flowsRESTClient) GetOperation(ctx context.Context, req *longrunningpb.G
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2056,8 +2021,7 @@ func (c *flowsRESTClient) GetOperation(ctx context.Context, req *longrunningpb.G
 	return resp, nil
 }
 
-// ListOperations lists operations that match the specified filter in the request. If
-// the server doesn’t support this method, it returns UNIMPLEMENTED.
+// ListOperations is a utility method from google.longrunning.Operations.
 func (c *flowsRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
 	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
@@ -2114,13 +2078,13 @@ func (c *flowsRESTClient) ListOperations(ctx context.Context, req *longrunningpb
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil

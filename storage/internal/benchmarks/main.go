@@ -23,12 +23,10 @@ import (
 	"log"
 	"math/rand"
 	"os"
-	"runtime"
 	"strconv"
 	"strings"
 	"time"
 
-	"cloud.google.com/go/storage"
 	"golang.org/x/sync/errgroup"
 
 	// Install google-c2p resolver, which is required for direct path.
@@ -37,7 +35,10 @@ import (
 	_ "google.golang.org/grpc/balancer/rls"
 )
 
-const codeVersion = "0.6.1" // to keep track of which version of the code a benchmark ran on
+const (
+	codeVersion = "0.9.1" // to keep track of which version of the code a benchmark ran on
+	useDefault  = -1
+)
 
 var (
 	projectID, outputFile string
@@ -63,9 +64,8 @@ type benchmarkOptions struct {
 	minReadOffset int64
 	maxReadOffset int64
 
-	allowCustomClient bool
-	readBufferSize    int
-	writeBufferSize   int
+	readBufferSize  int
+	writeBufferSize int
 
 	minChunkSize int64
 	maxChunkSize int64
@@ -73,8 +73,13 @@ type benchmarkOptions struct {
 	forceGC      bool
 	connPoolSize int
 
-	timeout         time.Duration
-	appendToResults string
+	timeout time.Duration
+
+	continueOnFail bool
+
+	numClients             int
+	workload               int
+	numObjectsPerDirectory int
 }
 
 func (b *benchmarkOptions) validate() error {
@@ -89,9 +94,15 @@ func (b *benchmarkOptions) validate() error {
 		return fmt.Errorf("read offset specified but no range size specified")
 	}
 
-	if b.maxReadOffset > b.minObjectSize-b.rangeSize {
+	minObjSize := b.objectSize
+	if minObjSize == 0 {
+		minObjSize = b.minObjectSize
+	}
+
+	if b.maxReadOffset > minObjSize-b.rangeSize {
 		return fmt.Errorf("read offset (%d) is too large for the selected range size (%d) - object might run out of bytes before reading complete rangeSize", b.maxReadOffset, b.rangeSize)
 	}
+
 	return nil
 }
 
@@ -140,12 +151,11 @@ func parseFlags() {
 	flag.Int64Var(&opts.minReadOffset, "minimum_read_offset", 0, "minimum read offset in bytes")
 	flag.Int64Var(&opts.maxReadOffset, "maximum_read_offset", 0, "maximum read offset in bytes")
 
-	flag.BoolVar(&opts.allowCustomClient, "allow_custom_HTTP_client", false, "allow custom client configuration")
-	flag.IntVar(&opts.readBufferSize, "read_buffer_size", 4000, "read buffer size in bytes")
-	flag.IntVar(&opts.writeBufferSize, "write_buffer_size", 4000, "write buffer size in bytes")
+	flag.IntVar(&opts.readBufferSize, "read_buffer_size", useDefault, "read buffer size in bytes")
+	flag.IntVar(&opts.writeBufferSize, "write_buffer_size", useDefault, "write buffer size in bytes")
 
-	flag.Int64Var(&opts.minChunkSize, "min_chunksize", 16*1024*1024, "min chunksize in bytes")
-	flag.Int64Var(&opts.maxChunkSize, "max_chunksize", 16*1024*1024, "max chunksize in bytes")
+	flag.Int64Var(&opts.minChunkSize, "min_chunksize", useDefault, "min chunksize in bytes")
+	flag.Int64Var(&opts.maxChunkSize, "max_chunksize", useDefault, "max chunksize in bytes")
 
 	flag.IntVar(&opts.connPoolSize, "connection_pool_size", 4, "GRPC connection pool size")
 
@@ -153,7 +163,13 @@ func parseFlags() {
 
 	flag.DurationVar(&opts.timeout, "timeout", time.Hour, "timeout")
 	flag.StringVar(&outputFile, "o", "", "file to output results to - if empty, will output to stdout")
-	flag.StringVar(&opts.appendToResults, "append_labels", "", "labels added to cloud monitoring output")
+
+	flag.BoolVar(&opts.continueOnFail, "continue_on_fail", false, "continue even if a run fails")
+
+	flag.IntVar(&opts.numClients, "clients", 1, "number of storage clients to be used; if Mixed APIs, then twice the clients are created")
+
+	flag.IntVar(&opts.workload, "workload", 1, "which workload to run")
+	flag.IntVar(&opts.numObjectsPerDirectory, "directory_num_objects", 1000, "total number of objects in directory")
 
 	flag.Parse()
 
@@ -184,8 +200,6 @@ func main() {
 	log.SetOutput(os.Stderr)
 	parseFlags()
 	rand.Seed(time.Now().UnixNano())
-	closePools := initializeClientPools(opts)
-	defer closePools()
 
 	start := time.Now()
 	ctx, cancel := context.WithDeadline(context.Background(), start.Add(opts.timeout))
@@ -220,6 +234,9 @@ func main() {
 		log.Fatal(err)
 	}
 
+	closePools := initializeClientPools(ctx, opts)
+	defer closePools()
+
 	w := os.Stdout
 
 	if outputFile != "" {
@@ -240,24 +257,54 @@ func main() {
 	recordResultGroup, _ := errgroup.WithContext(ctx)
 	startRecordingResults(w, recordResultGroup, opts.outType)
 
-	benchGroup, _ := errgroup.WithContext(ctx)
-	benchGroup.SetLimit(opts.numWorkers)
+	simultaneousGoroutines := opts.numWorkers
+
+	// Directories parallelize on the object level, so only run one benchmark at a time
+	if opts.workload == 6 {
+		simultaneousGoroutines = 1
+	}
+
+	benchGroup, ctx := errgroup.WithContext(ctx)
+	benchGroup.SetLimit(simultaneousGoroutines)
+
+	exitWithErrorCode := false
 
 	// Run benchmarks
 	for i := 0; i < opts.numSamples && time.Since(start) < opts.timeout; i++ {
 		benchGroup.Go(func() error {
-			benchmark := w1r3{opts: opts, bucketName: opts.bucket}
-			if err := benchmark.setup(); err != nil {
-				log.Fatalf("run setup failed: %v", err)
+			var benchmark benchmark
+			benchmark = &w1r3{opts: opts, bucketName: opts.bucket}
+
+			if opts.workload == 6 {
+				benchmark = &directoryBenchmark{opts: opts, bucketName: opts.bucket, numWorkers: opts.numWorkers}
+			}
+
+			if err := benchmark.setup(ctx); err != nil {
+				// If setup failed once, it will probably continue failing.
+				// Returning the error here will cancel the context to stop the
+				// benchmarking.
+				return fmt.Errorf("run setup failed: %v", err)
 			}
 			if err := benchmark.run(ctx); err != nil {
-				log.Fatalf("run failed: %v", err)
+				// If a run fails, we continue, as it could be a temporary issue.
+				// We log the error and make sure the program exits with an error
+				// to indicate that we did see an error, even though we continue.
+				log.Printf("run failed: %v", err)
+				exitWithErrorCode = true
+			}
+			if err := benchmark.cleanup(); err != nil {
+				// If cleanup fails, we continue, as a single fail is not critical.
+				// We log the error and make sure the program exits with an error
+				// to indicate that we did see an error, even though we continue.
+				// Cleanup may be expected to fail if there is an issue with the run.
+				log.Printf("run cleanup failed: %v", err)
+				exitWithErrorCode = true
 			}
 			return nil
 		})
 	}
 
-	benchGroup.Wait()
+	err := benchGroup.Wait()
 	close(results)
 	recordResultGroup.Wait()
 
@@ -265,6 +312,20 @@ func main() {
 		// if sending output to a file, we can use stdout for informational logs
 		fmt.Printf("\nTotal time running: %s\n", time.Since(start).Round(time.Second))
 	}
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	if exitWithErrorCode {
+		os.Exit(1)
+	}
+}
+
+type benchmark interface {
+	setup(context.Context) error
+	run(context.Context) error
+	cleanup() error
 }
 
 type randomizedParams struct {
@@ -274,249 +335,6 @@ type randomizedParams struct {
 	md5Enabled    bool
 	api           benchmarkAPI
 	rangeOffset   int64
-}
-
-type benchmarkResult struct {
-	objectSize    int64
-	readOffset    int64
-	params        randomizedParams
-	isRead        bool
-	readIteration int
-	start         time.Time
-	elapsedTime   time.Duration
-	err           error
-	timedOut      bool
-	startMem      runtime.MemStats
-	endMem        runtime.MemStats
-}
-
-func (br *benchmarkResult) selectParams(opts benchmarkOptions) {
-	api := opts.api
-	if api == mixedAPIs {
-		if randomBool() {
-			api = xmlAPI
-		} else {
-			api = grpcAPI
-		}
-	}
-
-	if br.isRead {
-		if api == jsonAPI {
-			api = xmlAPI
-		}
-
-		br.params = randomizedParams{
-			appBufferSize: opts.readBufferSize,
-			chunkSize:     -1,    // not used for reads
-			crc32cEnabled: true,  // crc32c is always verified in the Go GCS library
-			md5Enabled:    false, // we only need one integrity validation
-			api:           api,
-			rangeOffset:   randomInt64(opts.minReadOffset, opts.maxReadOffset),
-		}
-
-		if !opts.allowCustomClient {
-			br.params.appBufferSize = 4000 // default for HTTP
-
-			if api == grpcAPI {
-				br.params.appBufferSize = 32000 // default for GRPC
-			}
-		}
-
-		return
-	}
-
-	if api == xmlAPI {
-		api = jsonAPI
-	}
-
-	_, doMD5, doCRC32C := randomOf3()
-	br.params = randomizedParams{
-		appBufferSize: opts.writeBufferSize,
-		chunkSize:     randomInt64(opts.minChunkSize, opts.maxChunkSize),
-		crc32cEnabled: doCRC32C,
-		md5Enabled:    doMD5,
-		api:           api,
-	}
-
-	if !opts.allowCustomClient {
-		// get a writer on an object to check the default chunksize
-		// object does not need to exist
-		if c, err := storage.NewClient(context.Background()); err != nil {
-			log.Printf("storage.NewClient: %v", err)
-		} else {
-			w := c.Bucket("").Object("").NewWriter(context.Background())
-			br.params.chunkSize = int64(w.ChunkSize)
-		}
-
-		br.params.appBufferSize = 4000 // default for HTTP
-		if api == grpcAPI {
-			br.params.appBufferSize = 32000 // default for GRPC
-		}
-	}
-}
-
-func (br *benchmarkResult) copyParams(from *benchmarkResult) {
-	br.params = randomizedParams{
-		appBufferSize: from.params.appBufferSize,
-		chunkSize:     from.params.chunkSize,
-		crc32cEnabled: from.params.crc32cEnabled,
-		md5Enabled:    from.params.md5Enabled,
-		api:           from.params.api,
-		rangeOffset:   from.params.rangeOffset,
-	}
-}
-
-// converts result to cloud monitoring format
-func (br *benchmarkResult) cloudMonitoring() []byte {
-	var sb strings.Builder
-	op := "WRITE"
-	if br.isRead {
-		op = fmt.Sprintf("READ[%d]", br.readIteration)
-	}
-	status := "OK"
-	if br.err != nil {
-		status = "FAIL"
-
-		if br.timedOut {
-			status = "TIMEOUT"
-		}
-	}
-
-	throughput := float64(br.objectSize) / float64(br.elapsedTime.Seconds())
-
-	// Cloud monitoring only allows letters, numbers and underscores
-	sanitizeKey := func(key string) string {
-		key = strings.Replace(key, ".", "", -1)
-		return strings.Replace(key, "/", "_", -1)
-	}
-
-	sanitizeValue := func(key string) string {
-		return strings.Replace(key, "\"", "", -1)
-	}
-
-	// For values of type string
-	makeStringQuoted := func(parameter string, value any) string {
-		return fmt.Sprintf("%s=\"%v\"", parameter, value)
-	}
-	// For values of type int, bool
-	makeStringUnquoted := func(parameter string, value any) string {
-		return fmt.Sprintf("%s=%v", parameter, value)
-	}
-
-	sb.Grow(380)
-	sb.WriteString("throughput{")
-	sb.WriteString(makeStringQuoted("library", "go"))
-	sb.WriteString(",")
-	sb.WriteString(makeStringQuoted("api", br.params.api))
-	sb.WriteString(",")
-	sb.WriteString(makeStringQuoted("op", op))
-	sb.WriteString(",")
-	sb.WriteString(makeStringUnquoted("object_size", br.objectSize))
-	sb.WriteString(",")
-
-	if op != "WRITE" && opts.rangeSize > 0 {
-		sb.WriteString(makeStringUnquoted("transfer_size", opts.rangeSize))
-		sb.WriteString(",")
-		sb.WriteString(makeStringUnquoted("transfer_offset", br.params.rangeOffset))
-		sb.WriteString(",")
-	}
-
-	if op == "WRITE" {
-		sb.WriteString(makeStringUnquoted("chunksize", br.params.chunkSize))
-		sb.WriteString(",")
-	}
-
-	sb.WriteString(makeStringUnquoted("workers", opts.numWorkers))
-	sb.WriteString(",")
-
-	sb.WriteString(makeStringUnquoted("crc32c_enabled", br.params.crc32cEnabled))
-	sb.WriteString(",")
-	sb.WriteString(makeStringUnquoted("md5_enabled", br.params.md5Enabled))
-	sb.WriteString(",")
-
-	sb.WriteString(makeStringQuoted("bucket_name", opts.bucket))
-	sb.WriteString(",")
-
-	sb.WriteString(makeStringQuoted("status", status))
-	sb.WriteString(",")
-	if br.err != nil {
-		sb.WriteString(makeStringQuoted("failure_msg", sanitizeValue(br.err.Error())))
-		sb.WriteString(",")
-	}
-
-	sb.WriteString(makeStringUnquoted("app_buffer_size", br.params.appBufferSize))
-	sb.WriteString(",")
-
-	sb.WriteString(makeStringQuoted("code_version", codeVersion))
-	sb.WriteString(",")
-	sb.WriteString(makeStringQuoted("go_version", goVersion))
-	for dep, ver := range dependencyVersions {
-		sb.WriteString(",")
-		sb.WriteString(makeStringQuoted(sanitizeKey(dep), ver))
-	}
-
-	if opts.appendToResults != "" {
-		sb.WriteString(",")
-		sb.WriteString(opts.appendToResults)
-	}
-
-	sb.WriteString("} ")
-	sb.WriteString(strconv.FormatFloat(throughput, 'f', 2, 64))
-
-	return []byte(sb.String())
-}
-
-// converts result to csv writing format (ie. a slice of strings)
-func (br *benchmarkResult) csv() []string {
-	op := "WRITE"
-	if br.isRead {
-		op = fmt.Sprintf("READ[%d]", br.readIteration)
-	}
-	status := "OK"
-	if br.err != nil {
-		status = "FAIL"
-	}
-
-	record := make(map[string]string)
-
-	record["Op"] = op
-	record["ObjectSize"] = strconv.FormatInt(br.objectSize, 10)
-	record["AppBufferSize"] = strconv.Itoa(br.params.appBufferSize)
-	record["LibBufferSize"] = strconv.Itoa(int(br.params.chunkSize))
-	record["Crc32cEnabled"] = strconv.FormatBool(br.params.crc32cEnabled)
-	record["MD5Enabled"] = strconv.FormatBool(br.params.md5Enabled)
-	record["ApiName"] = string(br.params.api)
-	record["ElapsedTimeUs"] = strconv.FormatInt(br.elapsedTime.Microseconds(), 10)
-	record["CpuTimeUs"] = "-1" // TODO: record cpu time
-	record["Status"] = status
-	record["HeapSys"] = strconv.FormatUint(br.startMem.HeapSys, 10)
-	record["HeapAlloc"] = strconv.FormatUint(br.startMem.HeapAlloc, 10)
-	record["StackInUse"] = strconv.FormatUint(br.startMem.StackInuse, 10)
-	// commented out to avoid large numbers messing up BigQuery imports
-	record["HeapAllocDiff"] = "-1" //strconv.FormatUint(br.endMem.HeapAlloc-br.startMem.HeapAlloc, 10),
-	record["MallocsDiff"] = strconv.FormatUint(br.endMem.Mallocs-br.startMem.Mallocs, 10)
-	record["StartTime"] = strconv.FormatInt(br.start.Unix(), 10)
-	record["EndTime"] = strconv.FormatInt(br.start.Add(br.elapsedTime).Unix(), 10)
-	record["NumWorkers"] = strconv.Itoa(opts.numWorkers)
-	record["CodeVersion"] = codeVersion
-	record["BucketName"] = opts.bucket
-
-	var result []string
-
-	for _, h := range csvHeader {
-		result = append(result, record[h])
-	}
-
-	return result
-}
-
-var csvHeader = []string{
-	"Op", "ObjectSize", "AppBufferSize", "LibBufferSize",
-	"Crc32cEnabled", "MD5Enabled", "ApiName",
-	"ElapsedTimeUs", "CpuTimeUs", "Status",
-	"HeapSys", "HeapAlloc", "StackInUse", "HeapAllocDiff", "MallocsDiff",
-	"StartTime", "EndTime", "NumWorkers",
-	"CodeVersion", "BucketName",
 }
 
 type benchmarkAPI string
@@ -539,8 +357,9 @@ func (api benchmarkAPI) validate() error {
 }
 
 func writeHeader(w io.Writer) {
+	header := selectHeader()
 	cw := csv.NewWriter(w)
-	if err := cw.Write(csvHeader); err != nil {
+	if err := cw.Write(*header); err != nil {
 		log.Fatalf("error writing csv header: %v", err)
 	}
 	cw.Flush()

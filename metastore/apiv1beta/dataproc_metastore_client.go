@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"math"
 	"net/http"
 	"net/url"
@@ -74,6 +74,7 @@ type DataprocMetastoreCallOptions struct {
 	GetIamPolicy                  []gax.CallOption
 	SetIamPolicy                  []gax.CallOption
 	TestIamPermissions            []gax.CallOption
+	CancelOperation               []gax.CallOption
 	DeleteOperation               []gax.CallOption
 	GetOperation                  []gax.CallOption
 	ListOperations                []gax.CallOption
@@ -94,6 +95,7 @@ func defaultDataprocMetastoreGRPCClientOptions() []option.ClientOption {
 func defaultDataprocMetastoreCallOptions() *DataprocMetastoreCallOptions {
 	return &DataprocMetastoreCallOptions{
 		ListServices: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -105,6 +107,7 @@ func defaultDataprocMetastoreCallOptions() *DataprocMetastoreCallOptions {
 			}),
 		},
 		GetService: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -115,10 +118,17 @@ func defaultDataprocMetastoreCallOptions() *DataprocMetastoreCallOptions {
 				})
 			}),
 		},
-		CreateService: []gax.CallOption{},
-		UpdateService: []gax.CallOption{},
-		DeleteService: []gax.CallOption{},
+		CreateService: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateService: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteService: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		ListMetadataImports: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -130,6 +140,7 @@ func defaultDataprocMetastoreCallOptions() *DataprocMetastoreCallOptions {
 			}),
 		},
 		GetMetadataImport: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -140,11 +151,20 @@ func defaultDataprocMetastoreCallOptions() *DataprocMetastoreCallOptions {
 				})
 			}),
 		},
-		CreateMetadataImport: []gax.CallOption{},
-		UpdateMetadataImport: []gax.CallOption{},
-		ExportMetadata:       []gax.CallOption{},
-		RestoreService:       []gax.CallOption{},
+		CreateMetadataImport: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateMetadataImport: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ExportMetadata: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		RestoreService: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		ListBackups: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -156,6 +176,7 @@ func defaultDataprocMetastoreCallOptions() *DataprocMetastoreCallOptions {
 			}),
 		},
 		GetBackup: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -166,9 +187,14 @@ func defaultDataprocMetastoreCallOptions() *DataprocMetastoreCallOptions {
 				})
 			}),
 		},
-		CreateBackup: []gax.CallOption{},
-		DeleteBackup: []gax.CallOption{},
+		CreateBackup: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteBackup: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		RemoveIamPolicy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -180,6 +206,7 @@ func defaultDataprocMetastoreCallOptions() *DataprocMetastoreCallOptions {
 			}),
 		},
 		QueryMetadata: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -191,6 +218,7 @@ func defaultDataprocMetastoreCallOptions() *DataprocMetastoreCallOptions {
 			}),
 		},
 		MoveTableToDatabase: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -202,6 +230,7 @@ func defaultDataprocMetastoreCallOptions() *DataprocMetastoreCallOptions {
 			}),
 		},
 		AlterMetadataResourceLocation: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -217,6 +246,7 @@ func defaultDataprocMetastoreCallOptions() *DataprocMetastoreCallOptions {
 		GetIamPolicy:       []gax.CallOption{},
 		SetIamPolicy:       []gax.CallOption{},
 		TestIamPermissions: []gax.CallOption{},
+		CancelOperation:    []gax.CallOption{},
 		DeleteOperation:    []gax.CallOption{},
 		GetOperation:       []gax.CallOption{},
 		ListOperations:     []gax.CallOption{},
@@ -226,6 +256,7 @@ func defaultDataprocMetastoreCallOptions() *DataprocMetastoreCallOptions {
 func defaultDataprocMetastoreRESTCallOptions() *DataprocMetastoreCallOptions {
 	return &DataprocMetastoreCallOptions{
 		ListServices: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -236,6 +267,7 @@ func defaultDataprocMetastoreRESTCallOptions() *DataprocMetastoreCallOptions {
 			}),
 		},
 		GetService: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -245,10 +277,17 @@ func defaultDataprocMetastoreRESTCallOptions() *DataprocMetastoreCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
-		CreateService: []gax.CallOption{},
-		UpdateService: []gax.CallOption{},
-		DeleteService: []gax.CallOption{},
+		CreateService: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateService: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteService: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		ListMetadataImports: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -259,6 +298,7 @@ func defaultDataprocMetastoreRESTCallOptions() *DataprocMetastoreCallOptions {
 			}),
 		},
 		GetMetadataImport: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -268,11 +308,20 @@ func defaultDataprocMetastoreRESTCallOptions() *DataprocMetastoreCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
-		CreateMetadataImport: []gax.CallOption{},
-		UpdateMetadataImport: []gax.CallOption{},
-		ExportMetadata:       []gax.CallOption{},
-		RestoreService:       []gax.CallOption{},
+		CreateMetadataImport: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateMetadataImport: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ExportMetadata: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		RestoreService: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		ListBackups: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -283,6 +332,7 @@ func defaultDataprocMetastoreRESTCallOptions() *DataprocMetastoreCallOptions {
 			}),
 		},
 		GetBackup: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -292,9 +342,14 @@ func defaultDataprocMetastoreRESTCallOptions() *DataprocMetastoreCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
-		CreateBackup: []gax.CallOption{},
-		DeleteBackup: []gax.CallOption{},
+		CreateBackup: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteBackup: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		RemoveIamPolicy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -305,6 +360,7 @@ func defaultDataprocMetastoreRESTCallOptions() *DataprocMetastoreCallOptions {
 			}),
 		},
 		QueryMetadata: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -315,6 +371,7 @@ func defaultDataprocMetastoreRESTCallOptions() *DataprocMetastoreCallOptions {
 			}),
 		},
 		MoveTableToDatabase: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -325,6 +382,7 @@ func defaultDataprocMetastoreRESTCallOptions() *DataprocMetastoreCallOptions {
 			}),
 		},
 		AlterMetadataResourceLocation: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -339,6 +397,7 @@ func defaultDataprocMetastoreRESTCallOptions() *DataprocMetastoreCallOptions {
 		GetIamPolicy:       []gax.CallOption{},
 		SetIamPolicy:       []gax.CallOption{},
 		TestIamPermissions: []gax.CallOption{},
+		CancelOperation:    []gax.CallOption{},
 		DeleteOperation:    []gax.CallOption{},
 		GetOperation:       []gax.CallOption{},
 		ListOperations:     []gax.CallOption{},
@@ -386,6 +445,7 @@ type internalDataprocMetastoreClient interface {
 	GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
 	SetIamPolicy(context.Context, *iampb.SetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
 	TestIamPermissions(context.Context, *iampb.TestIamPermissionsRequest, ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error)
+	CancelOperation(context.Context, *longrunningpb.CancelOperationRequest, ...gax.CallOption) error
 	DeleteOperation(context.Context, *longrunningpb.DeleteOperationRequest, ...gax.CallOption) error
 	GetOperation(context.Context, *longrunningpb.GetOperationRequest, ...gax.CallOption) (*longrunningpb.Operation, error)
 	ListOperations(context.Context, *longrunningpb.ListOperationsRequest, ...gax.CallOption) *OperationIterator
@@ -657,6 +717,11 @@ func (c *DataprocMetastoreClient) TestIamPermissions(ctx context.Context, req *i
 	return c.internalClient.TestIamPermissions(ctx, req, opts...)
 }
 
+// CancelOperation is a utility method from google.longrunning.Operations.
+func (c *DataprocMetastoreClient) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
+	return c.internalClient.CancelOperation(ctx, req, opts...)
+}
+
 // DeleteOperation is a utility method from google.longrunning.Operations.
 func (c *DataprocMetastoreClient) DeleteOperation(ctx context.Context, req *longrunningpb.DeleteOperationRequest, opts ...gax.CallOption) error {
 	return c.internalClient.DeleteOperation(ctx, req, opts...)
@@ -678,9 +743,6 @@ func (c *DataprocMetastoreClient) ListOperations(ctx context.Context, req *longr
 type dataprocMetastoreGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
-
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
 
 	// Points back to the CallOptions field of the containing DataprocMetastoreClient
 	CallOptions **DataprocMetastoreCallOptions
@@ -736,11 +798,6 @@ func NewDataprocMetastoreClient(ctx context.Context, opts ...option.ClientOption
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -749,7 +806,6 @@ func NewDataprocMetastoreClient(ctx context.Context, opts ...option.ClientOption
 
 	c := &dataprocMetastoreGRPCClient{
 		connPool:                connPool,
-		disableDeadlines:        disableDeadlines,
 		dataprocMetastoreClient: metastorepb.NewDataprocMetastoreClient(connPool),
 		CallOptions:             &client.CallOptions,
 		operationsClient:        longrunningpb.NewOperationsClient(connPool),
@@ -786,7 +842,7 @@ func (c *dataprocMetastoreGRPCClient) Connection() *grpc.ClientConn {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *dataprocMetastoreGRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -880,7 +936,7 @@ func defaultDataprocMetastoreRESTClientOptions() []option.ClientOption {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *dataprocMetastoreRESTClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -945,11 +1001,6 @@ func (c *dataprocMetastoreGRPCClient) ListServices(ctx context.Context, req *met
 }
 
 func (c *dataprocMetastoreGRPCClient) GetService(ctx context.Context, req *metastorepb.GetServiceRequest, opts ...gax.CallOption) (*metastorepb.Service, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -967,11 +1018,6 @@ func (c *dataprocMetastoreGRPCClient) GetService(ctx context.Context, req *metas
 }
 
 func (c *dataprocMetastoreGRPCClient) CreateService(ctx context.Context, req *metastorepb.CreateServiceRequest, opts ...gax.CallOption) (*CreateServiceOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -991,11 +1037,6 @@ func (c *dataprocMetastoreGRPCClient) CreateService(ctx context.Context, req *me
 }
 
 func (c *dataprocMetastoreGRPCClient) UpdateService(ctx context.Context, req *metastorepb.UpdateServiceRequest, opts ...gax.CallOption) (*UpdateServiceOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "service.name", url.QueryEscape(req.GetService().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1015,11 +1056,6 @@ func (c *dataprocMetastoreGRPCClient) UpdateService(ctx context.Context, req *me
 }
 
 func (c *dataprocMetastoreGRPCClient) DeleteService(ctx context.Context, req *metastorepb.DeleteServiceRequest, opts ...gax.CallOption) (*DeleteServiceOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1084,11 +1120,6 @@ func (c *dataprocMetastoreGRPCClient) ListMetadataImports(ctx context.Context, r
 }
 
 func (c *dataprocMetastoreGRPCClient) GetMetadataImport(ctx context.Context, req *metastorepb.GetMetadataImportRequest, opts ...gax.CallOption) (*metastorepb.MetadataImport, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1106,11 +1137,6 @@ func (c *dataprocMetastoreGRPCClient) GetMetadataImport(ctx context.Context, req
 }
 
 func (c *dataprocMetastoreGRPCClient) CreateMetadataImport(ctx context.Context, req *metastorepb.CreateMetadataImportRequest, opts ...gax.CallOption) (*CreateMetadataImportOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1130,11 +1156,6 @@ func (c *dataprocMetastoreGRPCClient) CreateMetadataImport(ctx context.Context, 
 }
 
 func (c *dataprocMetastoreGRPCClient) UpdateMetadataImport(ctx context.Context, req *metastorepb.UpdateMetadataImportRequest, opts ...gax.CallOption) (*UpdateMetadataImportOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "metadata_import.name", url.QueryEscape(req.GetMetadataImport().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1154,11 +1175,6 @@ func (c *dataprocMetastoreGRPCClient) UpdateMetadataImport(ctx context.Context, 
 }
 
 func (c *dataprocMetastoreGRPCClient) ExportMetadata(ctx context.Context, req *metastorepb.ExportMetadataRequest, opts ...gax.CallOption) (*ExportMetadataOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "service", url.QueryEscape(req.GetService())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1178,11 +1194,6 @@ func (c *dataprocMetastoreGRPCClient) ExportMetadata(ctx context.Context, req *m
 }
 
 func (c *dataprocMetastoreGRPCClient) RestoreService(ctx context.Context, req *metastorepb.RestoreServiceRequest, opts ...gax.CallOption) (*RestoreServiceOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "service", url.QueryEscape(req.GetService())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1247,11 +1258,6 @@ func (c *dataprocMetastoreGRPCClient) ListBackups(ctx context.Context, req *meta
 }
 
 func (c *dataprocMetastoreGRPCClient) GetBackup(ctx context.Context, req *metastorepb.GetBackupRequest, opts ...gax.CallOption) (*metastorepb.Backup, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1269,11 +1275,6 @@ func (c *dataprocMetastoreGRPCClient) GetBackup(ctx context.Context, req *metast
 }
 
 func (c *dataprocMetastoreGRPCClient) CreateBackup(ctx context.Context, req *metastorepb.CreateBackupRequest, opts ...gax.CallOption) (*CreateBackupOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1293,11 +1294,6 @@ func (c *dataprocMetastoreGRPCClient) CreateBackup(ctx context.Context, req *met
 }
 
 func (c *dataprocMetastoreGRPCClient) DeleteBackup(ctx context.Context, req *metastorepb.DeleteBackupRequest, opts ...gax.CallOption) (*DeleteBackupOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1317,11 +1313,6 @@ func (c *dataprocMetastoreGRPCClient) DeleteBackup(ctx context.Context, req *met
 }
 
 func (c *dataprocMetastoreGRPCClient) RemoveIamPolicy(ctx context.Context, req *metastorepb.RemoveIamPolicyRequest, opts ...gax.CallOption) (*metastorepb.RemoveIamPolicyResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1339,11 +1330,6 @@ func (c *dataprocMetastoreGRPCClient) RemoveIamPolicy(ctx context.Context, req *
 }
 
 func (c *dataprocMetastoreGRPCClient) QueryMetadata(ctx context.Context, req *metastorepb.QueryMetadataRequest, opts ...gax.CallOption) (*QueryMetadataOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "service", url.QueryEscape(req.GetService())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1363,11 +1349,6 @@ func (c *dataprocMetastoreGRPCClient) QueryMetadata(ctx context.Context, req *me
 }
 
 func (c *dataprocMetastoreGRPCClient) MoveTableToDatabase(ctx context.Context, req *metastorepb.MoveTableToDatabaseRequest, opts ...gax.CallOption) (*MoveTableToDatabaseOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "service", url.QueryEscape(req.GetService())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1387,11 +1368,6 @@ func (c *dataprocMetastoreGRPCClient) MoveTableToDatabase(ctx context.Context, r
 }
 
 func (c *dataprocMetastoreGRPCClient) AlterMetadataResourceLocation(ctx context.Context, req *metastorepb.AlterMetadataResourceLocationRequest, opts ...gax.CallOption) (*AlterMetadataResourceLocationOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "service", url.QueryEscape(req.GetService())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1521,6 +1497,19 @@ func (c *dataprocMetastoreGRPCClient) TestIamPermissions(ctx context.Context, re
 		return nil, err
 	}
 	return resp, nil
+}
+
+func (c *dataprocMetastoreGRPCClient) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = c.operationsClient.CancelOperation(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	return err
 }
 
 func (c *dataprocMetastoreGRPCClient) DeleteOperation(ctx context.Context, req *longrunningpb.DeleteOperationRequest, opts ...gax.CallOption) error {
@@ -1658,13 +1647,13 @@ func (c *dataprocMetastoreRESTClient) ListServices(ctx context.Context, req *met
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -1733,13 +1722,13 @@ func (c *dataprocMetastoreRESTClient) GetService(ctx context.Context, req *metas
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1801,13 +1790,13 @@ func (c *dataprocMetastoreRESTClient) CreateService(ctx context.Context, req *me
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1848,7 +1837,7 @@ func (c *dataprocMetastoreRESTClient) UpdateService(ctx context.Context, req *me
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask))
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1880,13 +1869,13 @@ func (c *dataprocMetastoreRESTClient) UpdateService(ctx context.Context, req *me
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1945,13 +1934,13 @@ func (c *dataprocMetastoreRESTClient) DeleteService(ctx context.Context, req *me
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2027,13 +2016,13 @@ func (c *dataprocMetastoreRESTClient) ListMetadataImports(ctx context.Context, r
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -2102,13 +2091,13 @@ func (c *dataprocMetastoreRESTClient) GetMetadataImport(ctx context.Context, req
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2170,13 +2159,13 @@ func (c *dataprocMetastoreRESTClient) CreateMetadataImport(ctx context.Context, 
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2218,7 +2207,7 @@ func (c *dataprocMetastoreRESTClient) UpdateMetadataImport(ctx context.Context, 
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask))
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -2250,13 +2239,13 @@ func (c *dataprocMetastoreRESTClient) UpdateMetadataImport(ctx context.Context, 
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2318,13 +2307,13 @@ func (c *dataprocMetastoreRESTClient) ExportMetadata(ctx context.Context, req *m
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2386,13 +2375,13 @@ func (c *dataprocMetastoreRESTClient) RestoreService(ctx context.Context, req *m
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2468,13 +2457,13 @@ func (c *dataprocMetastoreRESTClient) ListBackups(ctx context.Context, req *meta
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -2543,13 +2532,13 @@ func (c *dataprocMetastoreRESTClient) GetBackup(ctx context.Context, req *metast
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2611,13 +2600,13 @@ func (c *dataprocMetastoreRESTClient) CreateBackup(ctx context.Context, req *met
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2676,13 +2665,13 @@ func (c *dataprocMetastoreRESTClient) DeleteBackup(ctx context.Context, req *met
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2745,13 +2734,13 @@ func (c *dataprocMetastoreRESTClient) RemoveIamPolicy(ctx context.Context, req *
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2808,13 +2797,13 @@ func (c *dataprocMetastoreRESTClient) QueryMetadata(ctx context.Context, req *me
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2876,13 +2865,13 @@ func (c *dataprocMetastoreRESTClient) MoveTableToDatabase(ctx context.Context, r
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2947,13 +2936,13 @@ func (c *dataprocMetastoreRESTClient) AlterMetadataResourceLocation(ctx context.
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -3010,13 +2999,13 @@ func (c *dataprocMetastoreRESTClient) GetLocation(ctx context.Context, req *loca
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -3084,13 +3073,13 @@ func (c *dataprocMetastoreRESTClient) ListLocations(ctx context.Context, req *lo
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -3163,13 +3152,13 @@ func (c *dataprocMetastoreRESTClient) GetIamPolicy(ctx context.Context, req *iam
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -3231,13 +3220,13 @@ func (c *dataprocMetastoreRESTClient) SetIamPolicy(ctx context.Context, req *iam
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -3301,13 +3290,13 @@ func (c *dataprocMetastoreRESTClient) TestIamPermissions(ctx context.Context, re
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -3316,6 +3305,52 @@ func (c *dataprocMetastoreRESTClient) TestIamPermissions(ctx context.Context, re
 		return nil, e
 	}
 	return resp, nil
+}
+
+// CancelOperation is a utility method from google.longrunning.Operations.
+func (c *dataprocMetastoreRESTClient) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta/%v:cancel", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		// Returns nil if there is no error, otherwise wraps
+		// the response code and body into a non-nil error
+		return googleapi.CheckResponse(httpRsp)
+	}, opts...)
 }
 
 // DeleteOperation is a utility method from google.longrunning.Operations.
@@ -3399,13 +3434,13 @@ func (c *dataprocMetastoreRESTClient) GetOperation(ctx context.Context, req *lon
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -3473,13 +3508,13 @@ func (c *dataprocMetastoreRESTClient) ListOperations(ctx context.Context, req *l
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil

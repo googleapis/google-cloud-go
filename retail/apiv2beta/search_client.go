@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"math"
 	"net/http"
 	"net/url"
@@ -66,6 +66,7 @@ func defaultSearchGRPCClientOptions() []option.ClientOption {
 func defaultSearchCallOptions() *SearchCallOptions {
 	return &SearchCallOptions{
 		Search: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -79,6 +80,7 @@ func defaultSearchCallOptions() *SearchCallOptions {
 		},
 		GetOperation: []gax.CallOption{},
 		ListOperations: []gax.CallOption{
+			gax.WithTimeout(300000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -96,6 +98,7 @@ func defaultSearchCallOptions() *SearchCallOptions {
 func defaultSearchRESTCallOptions() *SearchCallOptions {
 	return &SearchCallOptions{
 		Search: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -108,6 +111,7 @@ func defaultSearchRESTCallOptions() *SearchCallOptions {
 		},
 		GetOperation: []gax.CallOption{},
 		ListOperations: []gax.CallOption{
+			gax.WithTimeout(300000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -194,9 +198,6 @@ type searchGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing SearchClient
 	CallOptions **SearchCallOptions
 
@@ -226,11 +227,6 @@ func NewSearchClient(ctx context.Context, opts ...option.ClientOption) (*SearchC
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -239,7 +235,6 @@ func NewSearchClient(ctx context.Context, opts ...option.ClientOption) (*SearchC
 
 	c := &searchGRPCClient{
 		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
 		searchClient:     retailpb.NewSearchServiceClient(connPool),
 		CallOptions:      &client.CallOptions,
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
@@ -263,7 +258,7 @@ func (c *searchGRPCClient) Connection() *grpc.ClientConn {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *searchGRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -326,7 +321,7 @@ func defaultSearchRESTClientOptions() []option.ClientOption {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *searchRESTClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -509,13 +504,13 @@ func (c *searchRESTClient) Search(ctx context.Context, req *retailpb.SearchReque
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -584,13 +579,13 @@ func (c *searchRESTClient) GetOperation(ctx context.Context, req *longrunningpb.
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -658,13 +653,13 @@ func (c *searchRESTClient) ListOperations(ctx context.Context, req *longrunningp
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil

@@ -1,5 +1,33 @@
 # Changes
 
+## [0.21.1](https://github.com/googleapis/google-cloud-go/compare/analytics-v0.21.0...analytics/v0.21.1) (2023-06-20)
+
+
+### Bug Fixes
+
+* **analytics:** REST query UpdateMask bug ([df52820](https://github.com/googleapis/google-cloud-go/commit/df52820b0e7721954809a8aa8700b93c5662dc9b))
+
+## [0.21.0](https://github.com/googleapis/google-cloud-go/compare/analytics/v0.20.0...analytics/v0.21.0) (2023-05-30)
+
+
+### Features
+
+* **analytics:** Update all direct dependencies ([b340d03](https://github.com/googleapis/google-cloud-go/commit/b340d030f2b52a4ce48846ce63984b28583abde6))
+
+## [0.20.0](https://github.com/googleapis/google-cloud-go/compare/analytics/v0.19.1...analytics/v0.20.0) (2023-05-16)
+
+
+### Features
+
+* **analytics/admin:** Add `GetAdSenseLink`, `CreateAdSenseLink`, `DeleteAdSenseLink`, `ListAdSenseLinks` methods to the Admin API v1alpha ([8c479ac](https://github.com/googleapis/google-cloud-go/commit/8c479acd5ea710629b4b562a4654bc369e828c16))
+
+## [0.19.1](https://github.com/googleapis/google-cloud-go/compare/analytics/v0.19.0...analytics/v0.19.1) (2023-05-08)
+
+
+### Bug Fixes
+
+* **analytics:** Update grpc to v1.55.0 ([1147ce0](https://github.com/googleapis/google-cloud-go/commit/1147ce02a990276ca4f8ab7a1ab65c14da4450ef))
+
 ## [0.19.0](https://github.com/googleapis/google-cloud-go/compare/analytics/v0.18.0...analytics/v0.19.0) (2023-03-22)
 
 

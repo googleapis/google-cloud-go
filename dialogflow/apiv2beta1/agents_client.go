@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"math"
 	"net/http"
 	"net/url"
@@ -81,6 +81,7 @@ func defaultAgentsGRPCClientOptions() []option.ClientOption {
 func defaultAgentsCallOptions() *AgentsCallOptions {
 	return &AgentsCallOptions{
 		GetAgent: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -92,6 +93,7 @@ func defaultAgentsCallOptions() *AgentsCallOptions {
 			}),
 		},
 		SetAgent: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -103,6 +105,7 @@ func defaultAgentsCallOptions() *AgentsCallOptions {
 			}),
 		},
 		DeleteAgent: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -114,6 +117,7 @@ func defaultAgentsCallOptions() *AgentsCallOptions {
 			}),
 		},
 		SearchAgents: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -125,6 +129,7 @@ func defaultAgentsCallOptions() *AgentsCallOptions {
 			}),
 		},
 		TrainAgent: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -136,6 +141,7 @@ func defaultAgentsCallOptions() *AgentsCallOptions {
 			}),
 		},
 		ExportAgent: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -147,6 +153,7 @@ func defaultAgentsCallOptions() *AgentsCallOptions {
 			}),
 		},
 		ImportAgent: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -158,6 +165,7 @@ func defaultAgentsCallOptions() *AgentsCallOptions {
 			}),
 		},
 		RestoreAgent: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -169,6 +177,7 @@ func defaultAgentsCallOptions() *AgentsCallOptions {
 			}),
 		},
 		GetValidationResult: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -190,6 +199,7 @@ func defaultAgentsCallOptions() *AgentsCallOptions {
 func defaultAgentsRESTCallOptions() *AgentsCallOptions {
 	return &AgentsCallOptions{
 		GetAgent: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -200,6 +210,7 @@ func defaultAgentsRESTCallOptions() *AgentsCallOptions {
 			}),
 		},
 		SetAgent: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -210,6 +221,7 @@ func defaultAgentsRESTCallOptions() *AgentsCallOptions {
 			}),
 		},
 		DeleteAgent: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -220,6 +232,7 @@ func defaultAgentsRESTCallOptions() *AgentsCallOptions {
 			}),
 		},
 		SearchAgents: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -230,6 +243,7 @@ func defaultAgentsRESTCallOptions() *AgentsCallOptions {
 			}),
 		},
 		TrainAgent: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -240,6 +254,7 @@ func defaultAgentsRESTCallOptions() *AgentsCallOptions {
 			}),
 		},
 		ExportAgent: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -250,6 +265,7 @@ func defaultAgentsRESTCallOptions() *AgentsCallOptions {
 			}),
 		},
 		ImportAgent: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -260,6 +276,7 @@ func defaultAgentsRESTCallOptions() *AgentsCallOptions {
 			}),
 		},
 		RestoreAgent: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -270,6 +287,7 @@ func defaultAgentsRESTCallOptions() *AgentsCallOptions {
 			}),
 		},
 		GetValidationResult: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -527,8 +545,7 @@ func (c *AgentsClient) GetOperation(ctx context.Context, req *longrunningpb.GetO
 	return c.internalClient.GetOperation(ctx, req, opts...)
 }
 
-// ListOperations lists operations that match the specified filter in the request. If
-// the server doesn’t support this method, it returns UNIMPLEMENTED.
+// ListOperations is a utility method from google.longrunning.Operations.
 func (c *AgentsClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	return c.internalClient.ListOperations(ctx, req, opts...)
 }
@@ -539,9 +556,6 @@ func (c *AgentsClient) ListOperations(ctx context.Context, req *longrunningpb.Li
 type agentsGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
-
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
 
 	// Points back to the CallOptions field of the containing AgentsClient
 	CallOptions **AgentsCallOptions
@@ -576,11 +590,6 @@ func NewAgentsClient(ctx context.Context, opts ...option.ClientOption) (*AgentsC
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -589,7 +598,6 @@ func NewAgentsClient(ctx context.Context, opts ...option.ClientOption) (*AgentsC
 
 	c := &agentsGRPCClient{
 		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
 		agentsClient:     dialogflowpb.NewAgentsClient(connPool),
 		CallOptions:      &client.CallOptions,
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
@@ -625,7 +633,7 @@ func (c *agentsGRPCClient) Connection() *grpc.ClientConn {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *agentsGRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -700,7 +708,7 @@ func defaultAgentsRESTClientOptions() []option.ClientOption {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *agentsRESTClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -720,11 +728,6 @@ func (c *agentsRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 func (c *agentsGRPCClient) GetAgent(ctx context.Context, req *dialogflowpb.GetAgentRequest, opts ...gax.CallOption) (*dialogflowpb.Agent, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -742,11 +745,6 @@ func (c *agentsGRPCClient) GetAgent(ctx context.Context, req *dialogflowpb.GetAg
 }
 
 func (c *agentsGRPCClient) SetAgent(ctx context.Context, req *dialogflowpb.SetAgentRequest, opts ...gax.CallOption) (*dialogflowpb.Agent, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "agent.parent", url.QueryEscape(req.GetAgent().GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -764,11 +762,6 @@ func (c *agentsGRPCClient) SetAgent(ctx context.Context, req *dialogflowpb.SetAg
 }
 
 func (c *agentsGRPCClient) DeleteAgent(ctx context.Context, req *dialogflowpb.DeleteAgentRequest, opts ...gax.CallOption) error {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -827,11 +820,6 @@ func (c *agentsGRPCClient) SearchAgents(ctx context.Context, req *dialogflowpb.S
 }
 
 func (c *agentsGRPCClient) TrainAgent(ctx context.Context, req *dialogflowpb.TrainAgentRequest, opts ...gax.CallOption) (*TrainAgentOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -851,11 +839,6 @@ func (c *agentsGRPCClient) TrainAgent(ctx context.Context, req *dialogflowpb.Tra
 }
 
 func (c *agentsGRPCClient) ExportAgent(ctx context.Context, req *dialogflowpb.ExportAgentRequest, opts ...gax.CallOption) (*ExportAgentOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -875,11 +858,6 @@ func (c *agentsGRPCClient) ExportAgent(ctx context.Context, req *dialogflowpb.Ex
 }
 
 func (c *agentsGRPCClient) ImportAgent(ctx context.Context, req *dialogflowpb.ImportAgentRequest, opts ...gax.CallOption) (*ImportAgentOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -899,11 +877,6 @@ func (c *agentsGRPCClient) ImportAgent(ctx context.Context, req *dialogflowpb.Im
 }
 
 func (c *agentsGRPCClient) RestoreAgent(ctx context.Context, req *dialogflowpb.RestoreAgentRequest, opts ...gax.CallOption) (*RestoreAgentOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -923,11 +896,6 @@ func (c *agentsGRPCClient) RestoreAgent(ctx context.Context, req *dialogflowpb.R
 }
 
 func (c *agentsGRPCClient) GetValidationResult(ctx context.Context, req *dialogflowpb.GetValidationResultRequest, opts ...gax.CallOption) (*dialogflowpb.ValidationResult, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1122,13 +1090,13 @@ func (c *agentsRESTClient) GetAgent(ctx context.Context, req *dialogflowpb.GetAg
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1165,7 +1133,7 @@ func (c *agentsRESTClient) SetAgent(ctx context.Context, req *dialogflowpb.SetAg
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask))
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1198,13 +1166,13 @@ func (c *agentsRESTClient) SetAgent(ctx context.Context, req *dialogflowpb.SetAg
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1314,13 +1282,13 @@ func (c *agentsRESTClient) SearchAgents(ctx context.Context, req *dialogflowpb.S
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -1408,13 +1376,13 @@ func (c *agentsRESTClient) TrainAgent(ctx context.Context, req *dialogflowpb.Tra
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1486,13 +1454,13 @@ func (c *agentsRESTClient) ExportAgent(ctx context.Context, req *dialogflowpb.Ex
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1581,13 +1549,13 @@ func (c *agentsRESTClient) ImportAgent(ctx context.Context, req *dialogflowpb.Im
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1674,13 +1642,13 @@ func (c *agentsRESTClient) RestoreAgent(ctx context.Context, req *dialogflowpb.R
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1741,13 +1709,13 @@ func (c *agentsRESTClient) GetValidationResult(ctx context.Context, req *dialogf
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1799,13 +1767,13 @@ func (c *agentsRESTClient) GetLocation(ctx context.Context, req *locationpb.GetL
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1873,13 +1841,13 @@ func (c *agentsRESTClient) ListLocations(ctx context.Context, req *locationpb.Li
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -1988,13 +1956,13 @@ func (c *agentsRESTClient) GetOperation(ctx context.Context, req *longrunningpb.
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2005,8 +1973,7 @@ func (c *agentsRESTClient) GetOperation(ctx context.Context, req *longrunningpb.
 	return resp, nil
 }
 
-// ListOperations lists operations that match the specified filter in the request. If
-// the server doesn’t support this method, it returns UNIMPLEMENTED.
+// ListOperations is a utility method from google.longrunning.Operations.
 func (c *agentsRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
 	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
@@ -2063,13 +2030,13 @@ func (c *agentsRESTClient) ListOperations(ctx context.Context, req *longrunningp
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil

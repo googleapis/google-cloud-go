@@ -20,6 +20,9 @@ import (
 	"errors"
 	"flag"
 	"fmt"
+	"go/ast"
+	"go/parser"
+	"go/token"
 	"html/template"
 	"io/fs"
 	"log"
@@ -30,7 +33,7 @@ import (
 	"time"
 
 	"cloud.google.com/go/internal/postprocessor/execv/gocmd"
-	"github.com/google/go-github/v50/github"
+	"github.com/google/go-github/v52/github"
 )
 
 const (
@@ -73,7 +76,7 @@ func main() {
 
 	dirSlice := []string{}
 	if *directories != "" {
-		dirSlice := strings.Split(*directories, ",")
+		dirSlice = strings.Split(*directories, ",")
 		log.Println("Postprocessor running on", dirSlice)
 	} else {
 		log.Println("Postprocessor running on all modules.")
@@ -146,6 +149,9 @@ func (p *postProcessor) run(ctx context.Context) error {
 	if err := p.InitializeNewModules(manifest); err != nil {
 		return err
 	}
+	if err := p.UpdateSnippetsMetadata(); err != nil {
+		return err
+	}
 	prTitle, prBody, err := p.GetNewPRTitleAndBody(ctx)
 	if err != nil {
 		return err
@@ -153,10 +159,10 @@ func (p *postProcessor) run(ctx context.Context) error {
 	if err := p.TidyAffectedMods(); err != nil {
 		return err
 	}
-	if err := gocmd.Vet(p.googleCloudDir); err != nil {
+	if err := p.UpdateReleaseFiles(); err != nil {
 		return err
 	}
-	if err := p.RegenSnippets(); err != nil {
+	if err := gocmd.Vet(p.googleCloudDir); err != nil {
 		return err
 	}
 	if err := p.WritePRInfoToFile(prTitle, prBody); err != nil {
@@ -177,6 +183,7 @@ func (p *postProcessor) InitializeNewModules(manifest map[string]ManifestEntry) 
 		pathToModVersionFile := filepath.Join(modulePath, "internal/version.go")
 		// Check if <module>/internal/version.go file exists
 		if _, err := os.Stat(pathToModVersionFile); errors.Is(err, fs.ErrNotExist) {
+			log.Println("detected missing file: ", pathToModVersionFile)
 			var serviceImportPath string
 			for _, v := range p.config.GapicImportPaths() {
 				if strings.Contains(v, importPath) {
@@ -185,16 +192,19 @@ func (p *postProcessor) InitializeNewModules(manifest map[string]ManifestEntry) 
 				}
 			}
 			if serviceImportPath == "" {
-				return fmt.Errorf("no corresponding config found for module %s. Cannot generate min required files", moduleName)
+				return fmt.Errorf("no config found for module %s. Cannot generate min required files", importPath)
 			}
 			// serviceImportPath here should be a valid ImportPath from a MicrogenGapicConfigs
 			apiName := manifest[serviceImportPath].Description
 			if err := p.generateMinReqFilesNewMod(moduleName, modulePath, importPath, apiName); err != nil {
 				return err
 			}
+			if err := p.modEditReplaceInSnippets(modulePath, importPath); err != nil {
+				return err
+			}
 		}
 		// Check if version.go files exist for each client
-		filepath.WalkDir(modulePath, func(path string, d fs.DirEntry, err error) error {
+		err := filepath.WalkDir(modulePath, func(path string, d fs.DirEntry, err error) error {
 			if err != nil {
 				return err
 			}
@@ -208,13 +218,15 @@ func (p *postProcessor) InitializeNewModules(manifest map[string]ManifestEntry) 
 			}
 			pathToClientVersionFile := filepath.Join(path, "version.go")
 			if _, err = os.Stat(pathToClientVersionFile); errors.Is(err, fs.ErrNotExist) {
-				log.Println("generating version.go file in", path)
 				if err := p.generateVersionFile(moduleName, path); err != nil {
 					return err
 				}
 			}
 			return nil
 		})
+		if err != nil {
+			return err
+		}
 	}
 	return nil
 }
@@ -238,19 +250,25 @@ func (p *postProcessor) generateModule(modPath, importPath string) error {
 		return err
 	}
 	log.Printf("Creating %s/go.mod", modPath)
-	return gocmd.ModInit(modPath, importPath)
+	if err := gocmd.ModInit(modPath, importPath); err != nil {
+		return err
+	}
+	log.Print("Updating workspace")
+	return gocmd.WorkUse(p.googleCloudDir)
 }
 
-func (p *postProcessor) generateVersionFile(moduleName, modulePath string) error {
+func (p *postProcessor) generateVersionFile(moduleName, path string) error {
 	// These directories are not modules on purpose, don't generate a version
 	// file for them.
-	if strings.Contains(modulePath, "debugger/apiv2") || strings.Contains(modulePath, "orgpolicy/apiv1") {
+	if strings.Contains(path, "debugger/apiv2") || strings.Contains(path, "orgpolicy/apiv1") {
 		return nil
 	}
-	rootPackage := filepath.Dir(modulePath)
+	log.Println("generating version.go file in", path)
+	pathSegments := strings.Split(filepath.Dir(path), "/")
+
 	rootModInternal := fmt.Sprintf("cloud.google.com/go/%s/internal", moduleName)
 
-	f, err := os.Create(filepath.Join(modulePath, "version.go"))
+	f, err := os.Create(filepath.Join(path, "version.go"))
 	if err != nil {
 		return err
 	}
@@ -263,7 +281,7 @@ func (p *postProcessor) generateVersionFile(moduleName, modulePath string) error
 		ModuleRootInternal string
 	}{
 		Year:               time.Now().Year(),
-		Package:            rootPackage,
+		Package:            pathSegments[len(pathSegments)-1],
 		ModuleRootInternal: rootModInternal,
 	}
 	if err := t.Execute(f, versionData); err != nil {
@@ -300,6 +318,74 @@ func (p *postProcessor) getDirs() []string {
 		dirs = append(dirs, filepath.Join(p.googleCloudDir, module))
 	}
 	return dirs
+}
+
+func (p *postProcessor) modEditReplaceInSnippets(modulePath, importPath string) error {
+	// Replace it. Use a relative path to avoid issues on different systems.
+	snippetsDir := filepath.Join(p.googleCloudDir, "internal", "generated", "snippets")
+	rel, err := filepath.Rel(snippetsDir, modulePath)
+	if err != nil {
+		return err
+	}
+	return gocmd.EditReplace(snippetsDir, importPath, rel)
+}
+
+func (p *postProcessor) UpdateSnippetsMetadata() error {
+	log.Println("updating snippets metadata")
+	for _, clientRelPath := range p.config.ClientRelPaths {
+		// OwlBot dest relative paths in ClientRelPaths begin with /, so the
+		// first path segment is the second element.
+		moduleName := strings.Split(clientRelPath, "/")[1]
+		if moduleName == "" {
+			return fmt.Errorf("unable to parse module name for %v", clientRelPath)
+		}
+		// Skip if dirs option set and this module is not included.
+		if len(p.modules) > 0 && !contains(p.modules, moduleName) {
+			continue
+		}
+		// debugger/apiv2 is not in a module so it does not have version info to read.
+		if strings.Contains(clientRelPath, "debugger/apiv2") {
+			continue
+		}
+		snpDir := filepath.Join(p.googleCloudDir, "internal", "generated", "snippets", clientRelPath)
+		glob := filepath.Join(snpDir, "snippet_metadata.*.json")
+		metadataFiles, err := filepath.Glob(glob)
+		if err != nil {
+			return err
+		}
+		if len(metadataFiles) == 0 {
+			log.Println("skipping, file not found with glob: ", glob)
+			continue
+		}
+		log.Println("updating ", glob)
+		version, err := getModuleVersion(filepath.Join(p.googleCloudDir, moduleName))
+		if err != nil {
+			return err
+		}
+		read, err := os.ReadFile(metadataFiles[0])
+		if err != nil {
+			return err
+		}
+		if strings.Contains(string(read), "$VERSION") {
+			log.Printf("setting $VERSION to %s in %s", version, metadataFiles[0])
+			s := strings.Replace(string(read), "$VERSION", version, 1)
+			err = os.WriteFile(metadataFiles[0], []byte(s), 0)
+			if err != nil {
+				return err
+			}
+		}
+	}
+	return nil
+}
+
+func getModuleVersion(dir string) (string, error) {
+	node, err := parser.ParseFile(token.NewFileSet(), filepath.Join(dir, "internal", "version.go"), nil, parser.ParseComments)
+	if err != nil {
+		return "", err
+	}
+	version := node.Scope.Objects["Version"].Decl.(*ast.ValueSpec).Values[0].(*ast.BasicLit).Value
+	version = strings.Trim(version, `"`)
+	return version, nil
 }
 
 func (p *postProcessor) TidyAffectedMods() error {
@@ -476,10 +562,10 @@ func (p *postProcessor) getScopesFromGoogleapisCommitHash(commitHash string) ([]
 		// Need import path
 		for inputDir, li := range p.config.GoogleapisToImportPath {
 			if inputDir == filepath.Dir(filePath) {
-				// trim prefix
-				scope := strings.TrimPrefix(li.ImportPath, "cloud.google.com/go/")
-				// trim version
-				scope = filepath.Dir(scope)
+				// trim service version
+				scope := filepath.Dir(li.RelPath)
+				// trim leading slash
+				scope = strings.TrimPrefix(scope, "/")
 				if _, value := scopesMap[scope]; !value {
 					scopesMap[scope] = true
 					scopes = append(scopes, scope)

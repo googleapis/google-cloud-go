@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"math"
 	"net/http"
 	"net/url"
@@ -65,6 +65,7 @@ func defaultGRPCClientOptions() []option.ClientOption {
 func defaultCallOptions() *CallOptions {
 	return &CallOptions{
 		ListTraces: []gax.CallOption{
+			gax.WithTimeout(45000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -77,6 +78,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		GetTrace: []gax.CallOption{
+			gax.WithTimeout(45000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -89,6 +91,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		PatchTraces: []gax.CallOption{
+			gax.WithTimeout(45000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -106,6 +109,7 @@ func defaultCallOptions() *CallOptions {
 func defaultRESTCallOptions() *CallOptions {
 	return &CallOptions{
 		ListTraces: []gax.CallOption{
+			gax.WithTimeout(45000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -117,6 +121,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		GetTrace: []gax.CallOption{
+			gax.WithTimeout(45000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -128,6 +133,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		PatchTraces: []gax.CallOption{
+			gax.WithTimeout(45000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -216,9 +222,6 @@ type gRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing Client
 	CallOptions **CallOptions
 
@@ -247,11 +250,6 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -259,10 +257,9 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 	client := Client{CallOptions: defaultCallOptions()}
 
 	c := &gRPCClient{
-		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
-		client:           tracepb.NewTraceServiceClient(connPool),
-		CallOptions:      &client.CallOptions,
+		connPool:    connPool,
+		client:      tracepb.NewTraceServiceClient(connPool),
+		CallOptions: &client.CallOptions,
 	}
 	c.setGoogleClientInfo()
 
@@ -283,7 +280,7 @@ func (c *gRPCClient) Connection() *grpc.ClientConn {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -347,7 +344,7 @@ func defaultRESTClientOptions() []option.ClientOption {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *restClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -412,11 +409,6 @@ func (c *gRPCClient) ListTraces(ctx context.Context, req *tracepb.ListTracesRequ
 }
 
 func (c *gRPCClient) GetTrace(ctx context.Context, req *tracepb.GetTraceRequest, opts ...gax.CallOption) (*tracepb.Trace, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 45000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project_id", url.QueryEscape(req.GetProjectId()), "trace_id", url.QueryEscape(req.GetTraceId())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -434,11 +426,6 @@ func (c *gRPCClient) GetTrace(ctx context.Context, req *tracepb.GetTraceRequest,
 }
 
 func (c *gRPCClient) PatchTraces(ctx context.Context, req *tracepb.PatchTracesRequest, opts ...gax.CallOption) error {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 45000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "project_id", url.QueryEscape(req.GetProjectId())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -479,7 +466,7 @@ func (c *restClient) ListTraces(ctx context.Context, req *tracepb.ListTracesRequ
 			if err != nil {
 				return nil, "", err
 			}
-			params.Add("endTime", string(endTime))
+			params.Add("endTime", string(endTime[1:len(endTime)-1]))
 		}
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
@@ -498,7 +485,7 @@ func (c *restClient) ListTraces(ctx context.Context, req *tracepb.ListTracesRequ
 			if err != nil {
 				return nil, "", err
 			}
-			params.Add("startTime", string(startTime))
+			params.Add("startTime", string(startTime[1:len(startTime)-1]))
 		}
 		if req.GetView() != 0 {
 			params.Add("view", fmt.Sprintf("%v", req.GetView()))
@@ -528,13 +515,13 @@ func (c *restClient) ListTraces(ctx context.Context, req *tracepb.ListTracesRequ
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -603,13 +590,13 @@ func (c *restClient) GetTrace(ctx context.Context, req *tracepb.GetTraceRequest,
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil

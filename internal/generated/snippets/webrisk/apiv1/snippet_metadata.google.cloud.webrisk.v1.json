@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/webrisk/apiv1",
-    "version": "1.8.0",
+    "version": "1.9.0",
     "language": "GO",
     "apis": [
       {
@@ -11,6 +11,51 @@
     ]
   },
   "snippets": [
+    {
+      "regionTag": "webrisk_v1_generated_WebRiskService_CancelOperation_sync",
+      "title": "webrisk CancelOperation Sample",
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "Client/CancelOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CancelOperation",
+        "fullName": "google.cloud.webrisk.v1.Client.CancelOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.CancelOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.webrisk.v1.Client"
+        },
+        "method": {
+          "shortName": "CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
     {
       "regionTag": "webrisk_v1_generated_WebRiskService_ComputeThreatListDiff_sync",
       "title": "webrisk ComputeThreatListDiff Sample",
@@ -34,7 +79,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "webriskpb.ComputeThreatListDiffResponse",
+        "resultType": "*webriskpb.ComputeThreatListDiffResponse",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.webrisk.v1.Client"
@@ -60,7 +105,7 @@
     {
       "regionTag": "webrisk_v1_generated_WebRiskService_CreateSubmission_sync",
       "title": "webrisk CreateSubmission Sample",
-      "description": "CreateSubmission creates a Submission of a URI suspected of containing phishing content to\nbe reviewed. If the result verifies the existence of malicious phishing\ncontent, the site will be added to the Google’s Social Engineering\nlists (at https: //support.google.com/webmasters/answer/6350487/) in order to\nprotect users that could get exposed to this threat in the future. Only\nallowlisted projects can use this method during Early Access. Please reach\nout to Sales or your customer engineer to obtain access.",
+      "description": "CreateSubmission creates a Submission of a URI suspected of containing phishing content to\nbe reviewed. If the result verifies the existence of malicious phishing\ncontent, the site will be added to the [Google's Social Engineering\nlists](https: //support.google.com/webmasters/answer/6350487/) in order to\nprotect users that could get exposed to this threat in the future. Only\nallowlisted projects can use this method during Early Access. Please reach\nout to Sales or your customer engineer to obtain access.",
       "file": "Client/CreateSubmission/main.go",
       "language": "GO",
       "clientMethod": {
@@ -80,7 +125,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "webriskpb.Submission",
+        "resultType": "*webriskpb.Submission",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.webrisk.v1.Client"
@@ -99,6 +144,143 @@
         {
           "start": 18,
           "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "webrisk_v1_generated_WebRiskService_DeleteOperation_sync",
+      "title": "webrisk DeleteOperation Sample",
+      "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
+      "file": "Client/DeleteOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteOperation",
+        "fullName": "google.cloud.webrisk.v1.Client.DeleteOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.DeleteOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.webrisk.v1.Client"
+        },
+        "method": {
+          "shortName": "DeleteOperation",
+          "fullName": "google.longrunning.Operations.DeleteOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "webrisk_v1_generated_WebRiskService_GetOperation_sync",
+      "title": "webrisk GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "Client/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.webrisk.v1.Client.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.webrisk.v1.Client"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "webrisk_v1_generated_WebRiskService_ListOperations_sync",
+      "title": "webrisk ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "Client/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.cloud.webrisk.v1.Client.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.webrisk.v1.Client"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -126,7 +308,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "webriskpb.SearchHashesResponse",
+        "resultType": "*webriskpb.SearchHashesResponse",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.webrisk.v1.Client"
@@ -172,7 +354,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "webriskpb.SearchUrisResponse",
+        "resultType": "*webriskpb.SearchUrisResponse",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.webrisk.v1.Client"
@@ -191,6 +373,52 @@
         {
           "start": 18,
           "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "webrisk_v1_generated_WebRiskService_SubmitUri_sync",
+      "title": "webrisk SubmitUri Sample",
+      "description": "SubmitUri submits a URI suspected of containing malicious content to be reviewed.\nReturns a google.longrunning.Operation which, once the review is complete,\nis updated with its result. You can use the [Pub/Sub API]\n(https: //cloud.google.com/pubsub) to receive notifications for the returned\nOperation. If the result verifies the existence of malicious content, the\nsite will be added to the [Google's Social Engineering lists]\n(https: //support.google.com/webmasters/answer/6350487/) in order to\nprotect users that could get exposed to this threat in the future. Only\nallowlisted projects can use this method during Early Access. Please reach\nout to Sales or your customer engineer to obtain access.",
+      "file": "Client/SubmitUri/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SubmitUri",
+        "fullName": "google.cloud.webrisk.v1.Client.SubmitUri",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "webriskpb.SubmitUriRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "SubmitUriOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.webrisk.v1.Client"
+        },
+        "method": {
+          "shortName": "SubmitUri",
+          "fullName": "google.cloud.webrisk.v1.WebRiskService.SubmitUri",
+          "service": {
+            "shortName": "WebRiskService",
+            "fullName": "google.cloud.webrisk.v1.WebRiskService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
           "type": "FULL"
         }
       ]

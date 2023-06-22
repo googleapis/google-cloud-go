@@ -62,6 +62,7 @@ func defaultUptimeCheckGRPCClientOptions() []option.ClientOption {
 func defaultUptimeCheckCallOptions() *UptimeCheckCallOptions {
 	return &UptimeCheckCallOptions{
 		ListUptimeCheckConfigs: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -73,6 +74,7 @@ func defaultUptimeCheckCallOptions() *UptimeCheckCallOptions {
 			}),
 		},
 		GetUptimeCheckConfig: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -83,9 +85,14 @@ func defaultUptimeCheckCallOptions() *UptimeCheckCallOptions {
 				})
 			}),
 		},
-		CreateUptimeCheckConfig: []gax.CallOption{},
-		UpdateUptimeCheckConfig: []gax.CallOption{},
+		CreateUptimeCheckConfig: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+		},
+		UpdateUptimeCheckConfig: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+		},
 		DeleteUptimeCheckConfig: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -97,6 +104,7 @@ func defaultUptimeCheckCallOptions() *UptimeCheckCallOptions {
 			}),
 		},
 		ListUptimeCheckIps: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -127,13 +135,13 @@ type internalUptimeCheckClient interface {
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // The UptimeCheckService API is used to manage (list, create, delete, edit)
-// Uptime check configurations in the Stackdriver Monitoring product. An Uptime
+// Uptime check configurations in the Cloud Monitoring product. An Uptime
 // check is a piece of configuration that determines which resources and
 // services to monitor for availability. These configurations can also be
-// configured interactively by navigating to the [Cloud Console]
-// (http://console.cloud.google.com (at http://console.cloud.google.com)), selecting the appropriate project,
-// clicking on “Monitoring” on the left-hand side to navigate to Stackdriver,
-// and then clicking on “Uptime”.
+// configured interactively by navigating to the [Cloud console]
+// (https://console.cloud.google.com (at https://console.cloud.google.com)), selecting the appropriate project,
+// clicking on “Monitoring” on the left-hand side to navigate to Cloud
+// Monitoring, and then clicking on “Uptime”.
 type UptimeCheckClient struct {
 	// The internal transport-dependent client.
 	internalClient internalUptimeCheckClient
@@ -208,9 +216,6 @@ type uptimeCheckGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing UptimeCheckClient
 	CallOptions **UptimeCheckCallOptions
 
@@ -225,13 +230,13 @@ type uptimeCheckGRPCClient struct {
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
 // The UptimeCheckService API is used to manage (list, create, delete, edit)
-// Uptime check configurations in the Stackdriver Monitoring product. An Uptime
+// Uptime check configurations in the Cloud Monitoring product. An Uptime
 // check is a piece of configuration that determines which resources and
 // services to monitor for availability. These configurations can also be
-// configured interactively by navigating to the [Cloud Console]
-// (http://console.cloud.google.com (at http://console.cloud.google.com)), selecting the appropriate project,
-// clicking on “Monitoring” on the left-hand side to navigate to Stackdriver,
-// and then clicking on “Uptime”.
+// configured interactively by navigating to the [Cloud console]
+// (https://console.cloud.google.com (at https://console.cloud.google.com)), selecting the appropriate project,
+// clicking on “Monitoring” on the left-hand side to navigate to Cloud
+// Monitoring, and then clicking on “Uptime”.
 func NewUptimeCheckClient(ctx context.Context, opts ...option.ClientOption) (*UptimeCheckClient, error) {
 	clientOpts := defaultUptimeCheckGRPCClientOptions()
 	if newUptimeCheckClientHook != nil {
@@ -242,11 +247,6 @@ func NewUptimeCheckClient(ctx context.Context, opts ...option.ClientOption) (*Up
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -255,7 +255,6 @@ func NewUptimeCheckClient(ctx context.Context, opts ...option.ClientOption) (*Up
 
 	c := &uptimeCheckGRPCClient{
 		connPool:          connPool,
-		disableDeadlines:  disableDeadlines,
 		uptimeCheckClient: monitoringpb.NewUptimeCheckServiceClient(connPool),
 		CallOptions:       &client.CallOptions,
 	}
@@ -278,7 +277,7 @@ func (c *uptimeCheckGRPCClient) Connection() *grpc.ClientConn {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *uptimeCheckGRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -335,11 +334,6 @@ func (c *uptimeCheckGRPCClient) ListUptimeCheckConfigs(ctx context.Context, req 
 }
 
 func (c *uptimeCheckGRPCClient) GetUptimeCheckConfig(ctx context.Context, req *monitoringpb.GetUptimeCheckConfigRequest, opts ...gax.CallOption) (*monitoringpb.UptimeCheckConfig, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -357,11 +351,6 @@ func (c *uptimeCheckGRPCClient) GetUptimeCheckConfig(ctx context.Context, req *m
 }
 
 func (c *uptimeCheckGRPCClient) CreateUptimeCheckConfig(ctx context.Context, req *monitoringpb.CreateUptimeCheckConfigRequest, opts ...gax.CallOption) (*monitoringpb.UptimeCheckConfig, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -379,11 +368,6 @@ func (c *uptimeCheckGRPCClient) CreateUptimeCheckConfig(ctx context.Context, req
 }
 
 func (c *uptimeCheckGRPCClient) UpdateUptimeCheckConfig(ctx context.Context, req *monitoringpb.UpdateUptimeCheckConfigRequest, opts ...gax.CallOption) (*monitoringpb.UptimeCheckConfig, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "uptime_check_config.name", url.QueryEscape(req.GetUptimeCheckConfig().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -401,11 +385,6 @@ func (c *uptimeCheckGRPCClient) UpdateUptimeCheckConfig(ctx context.Context, req
 }
 
 func (c *uptimeCheckGRPCClient) DeleteUptimeCheckConfig(ctx context.Context, req *monitoringpb.DeleteUptimeCheckConfigRequest, opts ...gax.CallOption) error {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)

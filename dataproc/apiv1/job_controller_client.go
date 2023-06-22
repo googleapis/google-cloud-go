@@ -20,13 +20,13 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"math"
 	"net/http"
 	"net/url"
 	"time"
 
-	dataprocpb "cloud.google.com/go/dataproc/apiv1/dataprocpb"
+	dataprocpb "cloud.google.com/go/dataproc/v2/apiv1/dataprocpb"
 	iampb "cloud.google.com/go/iam/apiv1/iampb"
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
@@ -80,6 +80,7 @@ func defaultJobControllerGRPCClientOptions() []option.ClientOption {
 func defaultJobControllerCallOptions() *JobControllerCallOptions {
 	return &JobControllerCallOptions{
 		SubmitJob: []gax.CallOption{
+			gax.WithTimeout(900000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -91,6 +92,7 @@ func defaultJobControllerCallOptions() *JobControllerCallOptions {
 			}),
 		},
 		SubmitJobAsOperation: []gax.CallOption{
+			gax.WithTimeout(900000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -102,6 +104,7 @@ func defaultJobControllerCallOptions() *JobControllerCallOptions {
 			}),
 		},
 		GetJob: []gax.CallOption{
+			gax.WithTimeout(900000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -115,6 +118,7 @@ func defaultJobControllerCallOptions() *JobControllerCallOptions {
 			}),
 		},
 		ListJobs: []gax.CallOption{
+			gax.WithTimeout(900000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -128,6 +132,7 @@ func defaultJobControllerCallOptions() *JobControllerCallOptions {
 			}),
 		},
 		UpdateJob: []gax.CallOption{
+			gax.WithTimeout(900000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -139,6 +144,7 @@ func defaultJobControllerCallOptions() *JobControllerCallOptions {
 			}),
 		},
 		CancelJob: []gax.CallOption{
+			gax.WithTimeout(900000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -152,6 +158,7 @@ func defaultJobControllerCallOptions() *JobControllerCallOptions {
 			}),
 		},
 		DeleteJob: []gax.CallOption{
+			gax.WithTimeout(900000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -175,6 +182,7 @@ func defaultJobControllerCallOptions() *JobControllerCallOptions {
 func defaultJobControllerRESTCallOptions() *JobControllerCallOptions {
 	return &JobControllerCallOptions{
 		SubmitJob: []gax.CallOption{
+			gax.WithTimeout(900000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -185,6 +193,7 @@ func defaultJobControllerRESTCallOptions() *JobControllerCallOptions {
 			}),
 		},
 		SubmitJobAsOperation: []gax.CallOption{
+			gax.WithTimeout(900000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -195,6 +204,7 @@ func defaultJobControllerRESTCallOptions() *JobControllerCallOptions {
 			}),
 		},
 		GetJob: []gax.CallOption{
+			gax.WithTimeout(900000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -207,6 +217,7 @@ func defaultJobControllerRESTCallOptions() *JobControllerCallOptions {
 			}),
 		},
 		ListJobs: []gax.CallOption{
+			gax.WithTimeout(900000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -219,6 +230,7 @@ func defaultJobControllerRESTCallOptions() *JobControllerCallOptions {
 			}),
 		},
 		UpdateJob: []gax.CallOption{
+			gax.WithTimeout(900000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -229,6 +241,7 @@ func defaultJobControllerRESTCallOptions() *JobControllerCallOptions {
 			}),
 		},
 		CancelJob: []gax.CallOption{
+			gax.WithTimeout(900000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -241,6 +254,7 @@ func defaultJobControllerRESTCallOptions() *JobControllerCallOptions {
 			}),
 		},
 		DeleteJob: []gax.CallOption{
+			gax.WithTimeout(900000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -421,9 +435,6 @@ type jobControllerGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing JobControllerClient
 	CallOptions **JobControllerCallOptions
 
@@ -457,11 +468,6 @@ func NewJobControllerClient(ctx context.Context, opts ...option.ClientOption) (*
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -470,7 +476,6 @@ func NewJobControllerClient(ctx context.Context, opts ...option.ClientOption) (*
 
 	c := &jobControllerGRPCClient{
 		connPool:            connPool,
-		disableDeadlines:    disableDeadlines,
 		jobControllerClient: dataprocpb.NewJobControllerClient(connPool),
 		CallOptions:         &client.CallOptions,
 		operationsClient:    longrunningpb.NewOperationsClient(connPool),
@@ -506,7 +511,7 @@ func (c *jobControllerGRPCClient) Connection() *grpc.ClientConn {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *jobControllerGRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -581,7 +586,7 @@ func defaultJobControllerRESTClientOptions() []option.ClientOption {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *jobControllerRESTClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -601,11 +606,6 @@ func (c *jobControllerRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 func (c *jobControllerGRPCClient) SubmitJob(ctx context.Context, req *dataprocpb.SubmitJobRequest, opts ...gax.CallOption) (*dataprocpb.Job, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 900000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project_id", url.QueryEscape(req.GetProjectId()), "region", url.QueryEscape(req.GetRegion())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -623,11 +623,6 @@ func (c *jobControllerGRPCClient) SubmitJob(ctx context.Context, req *dataprocpb
 }
 
 func (c *jobControllerGRPCClient) SubmitJobAsOperation(ctx context.Context, req *dataprocpb.SubmitJobRequest, opts ...gax.CallOption) (*SubmitJobAsOperationOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 900000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project_id", url.QueryEscape(req.GetProjectId()), "region", url.QueryEscape(req.GetRegion())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -647,11 +642,6 @@ func (c *jobControllerGRPCClient) SubmitJobAsOperation(ctx context.Context, req 
 }
 
 func (c *jobControllerGRPCClient) GetJob(ctx context.Context, req *dataprocpb.GetJobRequest, opts ...gax.CallOption) (*dataprocpb.Job, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 900000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project_id", url.QueryEscape(req.GetProjectId()), "region", url.QueryEscape(req.GetRegion()), "job_id", url.QueryEscape(req.GetJobId())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -714,11 +704,6 @@ func (c *jobControllerGRPCClient) ListJobs(ctx context.Context, req *dataprocpb.
 }
 
 func (c *jobControllerGRPCClient) UpdateJob(ctx context.Context, req *dataprocpb.UpdateJobRequest, opts ...gax.CallOption) (*dataprocpb.Job, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 900000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project_id", url.QueryEscape(req.GetProjectId()), "region", url.QueryEscape(req.GetRegion()), "job_id", url.QueryEscape(req.GetJobId())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -736,11 +721,6 @@ func (c *jobControllerGRPCClient) UpdateJob(ctx context.Context, req *dataprocpb
 }
 
 func (c *jobControllerGRPCClient) CancelJob(ctx context.Context, req *dataprocpb.CancelJobRequest, opts ...gax.CallOption) (*dataprocpb.Job, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 900000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project_id", url.QueryEscape(req.GetProjectId()), "region", url.QueryEscape(req.GetRegion()), "job_id", url.QueryEscape(req.GetJobId())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -758,11 +738,6 @@ func (c *jobControllerGRPCClient) CancelJob(ctx context.Context, req *dataprocpb
 }
 
 func (c *jobControllerGRPCClient) DeleteJob(ctx context.Context, req *dataprocpb.DeleteJobRequest, opts ...gax.CallOption) error {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 900000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project_id", url.QueryEscape(req.GetProjectId()), "region", url.QueryEscape(req.GetRegion()), "job_id", url.QueryEscape(req.GetJobId())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -961,13 +936,13 @@ func (c *jobControllerRESTClient) SubmitJob(ctx context.Context, req *dataprocpb
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1024,13 +999,13 @@ func (c *jobControllerRESTClient) SubmitJobAsOperation(ctx context.Context, req 
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1087,13 +1062,13 @@ func (c *jobControllerRESTClient) GetJob(ctx context.Context, req *dataprocpb.Ge
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1167,13 +1142,13 @@ func (c *jobControllerRESTClient) ListJobs(ctx context.Context, req *dataprocpb.
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -1223,7 +1198,7 @@ func (c *jobControllerRESTClient) UpdateJob(ctx context.Context, req *dataprocpb
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask))
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1256,13 +1231,13 @@ func (c *jobControllerRESTClient) UpdateJob(ctx context.Context, req *dataprocpb
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1324,13 +1299,13 @@ func (c *jobControllerRESTClient) CancelJob(ctx context.Context, req *dataprocpb
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1430,13 +1405,13 @@ func (c *jobControllerRESTClient) GetIamPolicy(ctx context.Context, req *iampb.G
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1498,13 +1473,13 @@ func (c *jobControllerRESTClient) SetIamPolicy(ctx context.Context, req *iampb.S
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1568,13 +1543,13 @@ func (c *jobControllerRESTClient) TestIamPermissions(ctx context.Context, req *i
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1706,13 +1681,13 @@ func (c *jobControllerRESTClient) GetOperation(ctx context.Context, req *longrun
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1780,13 +1755,13 @@ func (c *jobControllerRESTClient) ListOperations(ctx context.Context, req *longr
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil

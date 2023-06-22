@@ -347,6 +347,7 @@ func (c *httpStorageClient) ListObjects(ctx context.Context, bucket string, q *Q
 		req.EndOffset(it.query.EndOffset)
 		req.Versions(it.query.Versions)
 		req.IncludeTrailingDelimiter(it.query.IncludeTrailingDelimiter)
+		req.MatchGlob(it.query.MatchGlob)
 		if selection := it.query.toFieldSelection(); selection != "" {
 			req.Fields("nextPageToken", googleapi.Field(selection))
 		}
@@ -790,9 +791,10 @@ func (c *httpStorageClient) NewRangeReader(ctx context.Context, params *newRange
 
 func (c *httpStorageClient) newRangeReaderXML(ctx context.Context, params *newRangeReaderParams, s *settings) (r *Reader, err error) {
 	u := &url.URL{
-		Scheme: c.scheme,
-		Host:   c.readHost,
-		Path:   fmt.Sprintf("/%s/%s", params.bucket, params.object),
+		Scheme:  c.scheme,
+		Host:    c.readHost,
+		Path:    fmt.Sprintf("/%s/%s", params.bucket, params.object),
+		RawPath: fmt.Sprintf("/%s/%s", params.bucket, url.PathEscape(params.object)),
 	}
 	verb := "GET"
 	if params.length == 0 {
@@ -1373,6 +1375,8 @@ func parseReadResponse(res *http.Response, params *newRangeReaderParams, reopen 
 
 	remain := res.ContentLength
 	body := res.Body
+	// If the user requested zero bytes, explicitly close and remove the request
+	// body.
 	if params.length == 0 {
 		remain = 0
 		body.Close()

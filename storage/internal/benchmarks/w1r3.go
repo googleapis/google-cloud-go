@@ -16,9 +16,8 @@ package main
 
 import (
 	"context"
-	"errors"
 	"fmt"
-	"log"
+	"math/rand"
 	"os"
 	"path"
 	"runtime"
@@ -33,135 +32,140 @@ import (
 //
 // SET UP
 //   - Initialize structs to populate with the benchmark results.
+//   - Select a random API to use to upload and download the object, unless an
+//     API is set in the command-line,
 //   - Select a random size for the object that will be uploaded; this size will
 //     be between two values configured in the command-line.
 //   - Create an object of that size on disk, and fill with random contents.
 //   - Select, for the upload and each download separately, the following parameters:
-//   - a random API to use to upload/download the object, unless it is set in
-//     the command-line,
-//   - the application buffer size, unless "default" is set in the command-line.
-//     This size is quantized, and the quantum, as well as the range, can be
-//     configured in the command-line;
-//   - the chunksize (only for uploads); this size will be between two values
-//     configured in the command-line,
+//   - the application buffer size set in the command-line
+//   - the chunksize (only for uploads) set in the command-line,
 //   - if the client library will perform CRC32C and/or MD5 hashes on the data.
 //
 // BENCHMARK
-//   - Create a storage client or grab one from the pool. No client will ever process
-//     more than one upload or download at a time.
+//   - Grab a storage client from the pool.
 //   - Take a snapshot of the current memory stats.
 //   - Upload the object that was created in the set up, capturing the time taken.
 //     This includes opening the file, writing the object, and verifying the hash
 //     (if applicable).
 //   - Take another snapshot of memory stats.
-//   - Delete the file from the OS.
-//   - Then the program downloads the same object (3 times), getting a different
-//     client for each, capturing the elapsed time and taking memory snapshots
-//     before and after each download.
-//   - Delete the object and return the clients to the pool or close them.
+//   - Downloads the same object (3 times) sequentially with the same client,
+//     capturing the elapsed time and taking memory snapshots before and after
+//     each download.
 type w1r3 struct {
 	opts                   *benchmarkOptions
 	bucketName, objectName string
+	directoryPath          string
 	objectPath             string
 	writeResult            *benchmarkResult
 	readResults            []*benchmarkResult
 }
 
-func (r *w1r3) setup() error {
+func (r *w1r3) setup(ctx context.Context) error {
+	// Check for context cancellation
+	select {
+	case <-ctx.Done():
+		return ctx.Err()
+	default:
+	}
+
+	// Select API first as it will be the same for all writes/reads
+	api := opts.api
+	if api == mixedAPIs {
+		switch rand.Intn(4) {
+		case 0:
+			api = xmlAPI
+		case 1:
+			api = jsonAPI
+		case 2:
+			api = grpcAPI
+		case 3:
+			api = directPath
+		}
+	}
+
+	// Select object size
 	objectSize := opts.objectSize
 	if objectSize == 0 {
 		objectSize = randomInt64(opts.minObjectSize, opts.maxObjectSize)
 	}
 	r.writeResult = &benchmarkResult{objectSize: objectSize}
-	r.readResults = []*benchmarkResult{{}, {}, {}}
+	r.readResults = []*benchmarkResult{{objectSize: objectSize}, {objectSize: objectSize}, {objectSize: objectSize}}
 
-	r.writeResult.selectParams(*r.opts)
+	// Select write params
+	r.writeResult.selectWriteParams(*r.opts, api)
 
+	// Select read params
 	firstRead := r.readResults[0]
 	firstRead.isRead = true
 	firstRead.readIteration = 0
-	firstRead.objectSize = objectSize
-	firstRead.selectParams(*r.opts)
+	firstRead.selectReadParams(*r.opts, api)
 
 	// We want the reads to be similar, so we copy the params from the first read
 	for i, res := range r.readResults[1:] {
 		res.isRead = true
 		res.readIteration = i + 1
-		res.objectSize = objectSize
 		res.copyParams(firstRead)
 	}
 
+	// Make a temp dir for this run
+	dir, err := os.MkdirTemp("", "benchmark-experiment-")
+	if err != nil {
+		return err
+	}
+
 	// Create contents
-	objectPath, err := generateRandomFile(objectSize)
+	objectPath, err := generateRandomFile(dir, objectSize)
 	if err != nil {
 		return fmt.Errorf("generateRandomFile: %w", err)
 	}
 
+	r.directoryPath = dir
 	r.objectPath = objectPath
 	r.objectName = path.Base(objectPath)
 	return nil
 }
 
-func (r *w1r3) run(ctx context.Context) error {
-	var memStats *runtime.MemStats = &runtime.MemStats{}
+// cleanup deletes objects on disk and in GCS. It does not accept a context as
+// it should run to completion to ensure full clean up of resources.
+func (r *w1r3) cleanup() error {
+	// Clean temp dir
+	if err := os.RemoveAll(r.directoryPath); err != nil {
+		return err
+	}
 
-	defer func() {
-		c := nonBenchmarkingClients.Get()
-		o := c.Bucket(r.bucketName).Object(r.objectName).Retryer(storage.WithPolicy(storage.RetryAlways))
-		o.Delete(context.Background())
-		nonBenchmarkingClients.Put(c)
-	}()
+	// Delete uploaded object
+	c := nonBenchmarkingClients.Get()
+	o := c.Bucket(r.bucketName).Object(r.objectName).Retryer(storage.WithPolicy(storage.RetryAlways))
+	if err := o.Delete(context.Background()); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (r *w1r3) run(ctx context.Context) error {
+	// Use the same client for write and reads as the api is the same
+	client := getClient(ctx, r.writeResult.params.api)
 
 	// Upload
-
-	// If the option is specified, run the garbage collector before collecting
-	// memory statistics and starting the timer on the benchmark. This can be
-	// used to compare between running each benchmark "on a blank slate" vs organically.
-	if opts.forceGC {
-		runtime.GC()
-	}
-
-	client, close, err := getClient(ctx, opts, *r.writeResult)
-	if err != nil {
-		return fmt.Errorf("getClient: %w", err)
-	}
-	defer func() {
-		if err := close(); err != nil {
-			log.Printf("close client: %v", err)
-		}
-	}()
-
-	runtime.ReadMemStats(memStats)
-	r.writeResult.startMem = *memStats
-	r.writeResult.start = time.Now()
-
-	timeTaken, err := uploadBenchmark(ctx, uploadOpts{
-		client:              client,
-		params:              r.writeResult.params,
-		bucket:              r.bucketName,
-		object:              r.objectName,
-		useDefaultChunkSize: !opts.allowCustomClient,
-		objectPath:          r.objectPath,
+	err := runOneOp(ctx, r.writeResult, func() (time.Duration, error) {
+		return uploadBenchmark(ctx, uploadOpts{
+			client:              client,
+			params:              r.writeResult.params,
+			bucket:              r.bucketName,
+			object:              r.objectName,
+			useDefaultChunkSize: opts.minChunkSize == useDefault || opts.maxChunkSize == useDefault,
+			objectPath:          r.objectPath,
+		})
 	})
-
-	runtime.ReadMemStats(memStats)
-	r.writeResult.endMem = *memStats
-	r.writeResult.err = err
-	r.writeResult.elapsedTime = timeTaken
-
-	if errors.Is(err, context.DeadlineExceeded) || errors.Is(err, context.Canceled) {
-		r.writeResult.timedOut = true
-	}
-
-	results <- *r.writeResult
-	os.Remove(r.objectPath)
 
 	// Do not attempt to read from a failed upload
 	if err != nil {
-		return fmt.Errorf("failed upload: %w", err)
+		return fmt.Errorf("upload: %w", err)
 	}
 
-	// Read
+	// Downloads
 	for i := 0; i < 3; i++ {
 		// Get full object if no rangeSize is specified
 		rangeStart := int64(0)
@@ -173,55 +177,52 @@ func (r *w1r3) run(ctx context.Context) error {
 		}
 		r.readResults[i].readOffset = rangeStart
 
-		// If the option is specified, run a garbage collector before collecting
-		// memory statistics and starting the timer on the benchmark. This can be
-		// used to compare between running each benchmark "on a blank slate" vs organically.
-		if opts.forceGC {
-			runtime.GC()
-		}
-
-		client, close, err := getClient(ctx, opts, *r.readResults[i])
-		if err != nil {
-			return fmt.Errorf("getClient: %w", err)
-		}
-		defer func() {
-			if err := close(); err != nil {
-				log.Printf("close client: %v", err)
-			}
-		}()
-
-		runtime.ReadMemStats(memStats)
-		r.readResults[i].startMem = *memStats
-		r.readResults[i].start = time.Now()
-
-		timeTaken, err := downloadBenchmark(ctx, downloadOpts{
-			client:      client,
-			objectSize:  r.readResults[i].objectSize,
-			bucket:      r.bucketName,
-			object:      r.objectName,
-			rangeStart:  rangeStart,
-			rangeLength: rangeLength,
+		err = runOneOp(ctx, r.readResults[i], func() (time.Duration, error) {
+			return downloadBenchmark(ctx, downloadOpts{
+				client:              client,
+				objectSize:          r.readResults[i].objectSize,
+				bucket:              r.bucketName,
+				object:              r.objectName,
+				rangeStart:          rangeStart,
+				rangeLength:         rangeLength,
+				downloadToDirectory: r.directoryPath,
+			})
 		})
-
-		runtime.ReadMemStats(memStats)
-		r.readResults[i].endMem = *memStats
-		r.readResults[i].err = err
-		r.readResults[i].elapsedTime = timeTaken
-
-		if errors.Is(err, context.DeadlineExceeded) || errors.Is(err, context.Canceled) {
-			r.readResults[i].timedOut = true
-		}
-
-		results <- *r.readResults[i]
-
-		// do not return error, continue to attempt to read
 		if err != nil {
-			if errors.Is(err, context.DeadlineExceeded) {
-				return err
-			}
-			log.Printf("read error: %v", err)
+			// We stop additional reads if one fails, as the iteration number would be off
+			return fmt.Errorf("download[%d]: %v", i, err)
 		}
 	}
 
 	return nil
+}
+
+func runOneOp(ctx context.Context, result *benchmarkResult, doOp func() (time.Duration, error)) error {
+	var memStats *runtime.MemStats = &runtime.MemStats{}
+
+	// If the option is specified, run the garbage collector before collecting
+	// memory statistics and starting the timer on the benchmark. This can be
+	// used to compare between running each benchmark "on a blank slate" vs organically.
+	if opts.forceGC {
+		runtime.GC()
+	}
+
+	runtime.ReadMemStats(memStats)
+	result.startMem = *memStats
+	result.start = time.Now()
+
+	timeTaken, err := doOp()
+
+	runtime.ReadMemStats(memStats)
+	result.endMem = *memStats
+	result.err = err
+	result.elapsedTime = timeTaken
+
+	if errorIsDeadLineExceeded(err) {
+		result.timedOut = true
+	}
+
+	results <- *result
+
+	return err
 }

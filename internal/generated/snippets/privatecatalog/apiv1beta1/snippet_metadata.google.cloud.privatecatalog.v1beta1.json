@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/privatecatalog/apiv1beta1",
-    "version": "0.7.0",
+    "version": "0.9.0",
     "language": "GO",
     "apis": [
       {
@@ -14,7 +14,7 @@
     {
       "regionTag": "cloudprivatecatalog_v1beta1_generated_PrivateCatalog_SearchCatalogs_sync",
       "title": "cloudprivatecatalog SearchCatalogs Sample",
-      "description": "SearchCatalogs search Catalog resources that consumers have access to, within the\nscope of the consumer cloud resource hierarchy context.",
+      "description": "SearchCatalogs search [Catalog][google.cloud.privatecatalog.v1beta1.Catalog] resources that consumers have access to, within the\nscope of the consumer cloud resource hierarchy context.",
       "file": "Client/SearchCatalogs/main.go",
       "language": "GO",
       "clientMethod": {
@@ -60,7 +60,7 @@
     {
       "regionTag": "cloudprivatecatalog_v1beta1_generated_PrivateCatalog_SearchProducts_sync",
       "title": "cloudprivatecatalog SearchProducts Sample",
-      "description": "SearchProducts search Product resources that consumers have access to, within the\nscope of the consumer cloud resource hierarchy context.",
+      "description": "SearchProducts search [Product][google.cloud.privatecatalog.v1beta1.Product] resources that consumers have access to, within the\nscope of the consumer cloud resource hierarchy context.",
       "file": "Client/SearchProducts/main.go",
       "language": "GO",
       "clientMethod": {
@@ -106,7 +106,7 @@
     {
       "regionTag": "cloudprivatecatalog_v1beta1_generated_PrivateCatalog_SearchVersions_sync",
       "title": "cloudprivatecatalog SearchVersions Sample",
-      "description": "SearchVersions search Version resources that consumers have access to, within the\nscope of the consumer cloud resource hierarchy context.",
+      "description": "SearchVersions search [Version][google.cloud.privatecatalog.v1beta1.Version] resources that consumers have access to, within the\nscope of the consumer cloud resource hierarchy context.",
       "file": "Client/SearchVersions/main.go",
       "language": "GO",
       "clientMethod": {

@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/managedidentities/apiv1",
-    "version": "1.5.0",
+    "version": "1.6.0",
     "language": "GO",
     "apis": [
       {
@@ -218,7 +218,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "managedidentitiespb.Domain",
+        "resultType": "*managedidentitiespb.Domain",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.managedidentities.v1.Client"
@@ -336,7 +336,7 @@
     {
       "regionTag": "managedidentities_v1_generated_ManagedIdentitiesService_ResetAdminPassword_sync",
       "title": "managedidentities ResetAdminPassword Sample",
-      "description": "ResetAdminPassword resets a domain’s administrator password.",
+      "description": "ResetAdminPassword resets a domain's administrator password.",
       "file": "Client/ResetAdminPassword/main.go",
       "language": "GO",
       "clientMethod": {
@@ -356,7 +356,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "managedidentitiespb.ResetAdminPasswordResponse",
+        "resultType": "*managedidentitiespb.ResetAdminPasswordResponse",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.managedidentities.v1.Client"

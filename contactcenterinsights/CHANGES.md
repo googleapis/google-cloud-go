@@ -1,5 +1,40 @@
 # Changes
 
+## [1.9.1](https://github.com/googleapis/google-cloud-go/compare/contactcenterinsights/v1.9.0...contactcenterinsights/v1.9.1) (2023-06-20)
+
+
+### Bug Fixes
+
+* **contactcenterinsights:** REST query UpdateMask bug ([df52820](https://github.com/googleapis/google-cloud-go/commit/df52820b0e7721954809a8aa8700b93c5662dc9b))
+
+## [1.9.0](https://github.com/googleapis/google-cloud-go/compare/contactcenterinsights/v1.8.0...contactcenterinsights/v1.9.0) (2023-06-07)
+
+
+### Features
+
+* **contactcenterinsights:** Add the resource definition of a STT recognizer ([#8035](https://github.com/googleapis/google-cloud-go/issues/8035)) ([b119cd0](https://github.com/googleapis/google-cloud-go/commit/b119cd08924ce9b4b26c6343686a76137de7375d))
+
+## [1.8.0](https://github.com/googleapis/google-cloud-go/compare/contactcenterinsights/v1.7.1...contactcenterinsights/v1.8.0) (2023-05-30)
+
+
+### Features
+
+* **contactcenterinsights:** Update all direct dependencies ([b340d03](https://github.com/googleapis/google-cloud-go/commit/b340d030f2b52a4ce48846ce63984b28583abde6))
+
+## [1.7.1](https://github.com/googleapis/google-cloud-go/compare/contactcenterinsights/v1.7.0...contactcenterinsights/v1.7.1) (2023-05-08)
+
+
+### Bug Fixes
+
+* **contactcenterinsights:** Update grpc to v1.55.0 ([1147ce0](https://github.com/googleapis/google-cloud-go/commit/1147ce02a990276ca4f8ab7a1ab65c14da4450ef))
+
+## [1.7.0](https://github.com/googleapis/google-cloud-go/compare/contactcenterinsights/v1.6.0...contactcenterinsights/v1.7.0) (2023-04-11)
+
+
+### Features
+
+* **contactcenterinsights:** Launch UploadConversation endpoint ([fc90e54](https://github.com/googleapis/google-cloud-go/commit/fc90e54b25bda6b339266e3e5388174339ed6a44))
+
 ## [1.6.0](https://github.com/googleapis/google-cloud-go/compare/contactcenterinsights/v1.5.0...contactcenterinsights/v1.6.0) (2023-02-14)
 
 

@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"math"
 	"net/http"
 	"net/url"
@@ -49,14 +49,16 @@ var newTagKeysClientHook clientHook
 
 // TagKeysCallOptions contains the retry settings for each method of TagKeysClient.
 type TagKeysCallOptions struct {
-	ListTagKeys        []gax.CallOption
-	GetTagKey          []gax.CallOption
-	CreateTagKey       []gax.CallOption
-	UpdateTagKey       []gax.CallOption
-	DeleteTagKey       []gax.CallOption
-	GetIamPolicy       []gax.CallOption
-	SetIamPolicy       []gax.CallOption
-	TestIamPermissions []gax.CallOption
+	ListTagKeys         []gax.CallOption
+	GetTagKey           []gax.CallOption
+	GetNamespacedTagKey []gax.CallOption
+	CreateTagKey        []gax.CallOption
+	UpdateTagKey        []gax.CallOption
+	DeleteTagKey        []gax.CallOption
+	GetIamPolicy        []gax.CallOption
+	SetIamPolicy        []gax.CallOption
+	TestIamPermissions  []gax.CallOption
+	GetOperation        []gax.CallOption
 }
 
 func defaultTagKeysGRPCClientOptions() []option.ClientOption {
@@ -74,6 +76,7 @@ func defaultTagKeysGRPCClientOptions() []option.ClientOption {
 func defaultTagKeysCallOptions() *TagKeysCallOptions {
 	return &TagKeysCallOptions{
 		ListTagKeys: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -85,6 +88,7 @@ func defaultTagKeysCallOptions() *TagKeysCallOptions {
 			}),
 		},
 		GetTagKey: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -95,10 +99,18 @@ func defaultTagKeysCallOptions() *TagKeysCallOptions {
 				})
 			}),
 		},
-		CreateTagKey: []gax.CallOption{},
-		UpdateTagKey: []gax.CallOption{},
-		DeleteTagKey: []gax.CallOption{},
+		GetNamespacedTagKey: []gax.CallOption{},
+		CreateTagKey: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateTagKey: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteTagKey: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		GetIamPolicy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -109,14 +121,18 @@ func defaultTagKeysCallOptions() *TagKeysCallOptions {
 				})
 			}),
 		},
-		SetIamPolicy:       []gax.CallOption{},
+		SetIamPolicy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		TestIamPermissions: []gax.CallOption{},
+		GetOperation:       []gax.CallOption{},
 	}
 }
 
 func defaultTagKeysRESTCallOptions() *TagKeysCallOptions {
 	return &TagKeysCallOptions{
 		ListTagKeys: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -127,6 +143,7 @@ func defaultTagKeysRESTCallOptions() *TagKeysCallOptions {
 			}),
 		},
 		GetTagKey: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -136,10 +153,18 @@ func defaultTagKeysRESTCallOptions() *TagKeysCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
-		CreateTagKey: []gax.CallOption{},
-		UpdateTagKey: []gax.CallOption{},
-		DeleteTagKey: []gax.CallOption{},
+		GetNamespacedTagKey: []gax.CallOption{},
+		CreateTagKey: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateTagKey: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteTagKey: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		GetIamPolicy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -149,8 +174,11 @@ func defaultTagKeysRESTCallOptions() *TagKeysCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
-		SetIamPolicy:       []gax.CallOption{},
+		SetIamPolicy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		TestIamPermissions: []gax.CallOption{},
+		GetOperation:       []gax.CallOption{},
 	}
 }
 
@@ -161,6 +189,7 @@ type internalTagKeysClient interface {
 	Connection() *grpc.ClientConn
 	ListTagKeys(context.Context, *resourcemanagerpb.ListTagKeysRequest, ...gax.CallOption) *TagKeyIterator
 	GetTagKey(context.Context, *resourcemanagerpb.GetTagKeyRequest, ...gax.CallOption) (*resourcemanagerpb.TagKey, error)
+	GetNamespacedTagKey(context.Context, *resourcemanagerpb.GetNamespacedTagKeyRequest, ...gax.CallOption) (*resourcemanagerpb.TagKey, error)
 	CreateTagKey(context.Context, *resourcemanagerpb.CreateTagKeyRequest, ...gax.CallOption) (*CreateTagKeyOperation, error)
 	CreateTagKeyOperation(name string) *CreateTagKeyOperation
 	UpdateTagKey(context.Context, *resourcemanagerpb.UpdateTagKeyRequest, ...gax.CallOption) (*UpdateTagKeyOperation, error)
@@ -170,6 +199,7 @@ type internalTagKeysClient interface {
 	GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
 	SetIamPolicy(context.Context, *iampb.SetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
 	TestIamPermissions(context.Context, *iampb.TestIamPermissionsRequest, ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error)
+	GetOperation(context.Context, *longrunningpb.GetOperationRequest, ...gax.CallOption) (*longrunningpb.Operation, error)
 }
 
 // TagKeysClient is a client for interacting with Cloud Resource Manager API.
@@ -223,10 +253,17 @@ func (c *TagKeysClient) GetTagKey(ctx context.Context, req *resourcemanagerpb.Ge
 	return c.internalClient.GetTagKey(ctx, req, opts...)
 }
 
+// GetNamespacedTagKey retrieves a TagKey by its namespaced name.
+// This method will return PERMISSION_DENIED if the key does not exist
+// or the user does not have permission to view it.
+func (c *TagKeysClient) GetNamespacedTagKey(ctx context.Context, req *resourcemanagerpb.GetNamespacedTagKeyRequest, opts ...gax.CallOption) (*resourcemanagerpb.TagKey, error) {
+	return c.internalClient.GetNamespacedTagKey(ctx, req, opts...)
+}
+
 // CreateTagKey creates a new TagKey. If another request with the same parameters is
 // sent while the original request is in process, the second request
-// will receive an error. A maximum of 300 TagKeys can exist under a parent at
-// any given time.
+// will receive an error. A maximum of 1000 TagKeys can exist under a parent
+// at any given time.
 func (c *TagKeysClient) CreateTagKey(ctx context.Context, req *resourcemanagerpb.CreateTagKeyRequest, opts ...gax.CallOption) (*CreateTagKeyOperation, error) {
 	return c.internalClient.CreateTagKey(ctx, req, opts...)
 }
@@ -288,15 +325,17 @@ func (c *TagKeysClient) TestIamPermissions(ctx context.Context, req *iampb.TestI
 	return c.internalClient.TestIamPermissions(ctx, req, opts...)
 }
 
+// GetOperation is a utility method from google.longrunning.Operations.
+func (c *TagKeysClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+	return c.internalClient.GetOperation(ctx, req, opts...)
+}
+
 // tagKeysGRPCClient is a client for interacting with Cloud Resource Manager API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type tagKeysGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
-
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
 
 	// Points back to the CallOptions field of the containing TagKeysClient
 	CallOptions **TagKeysCallOptions
@@ -308,6 +347,8 @@ type tagKeysGRPCClient struct {
 	// It is exposed so that its CallOptions can be modified if required.
 	// Users should not Close this client.
 	LROClient **lroauto.OperationsClient
+
+	operationsClient longrunningpb.OperationsClient
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
@@ -327,11 +368,6 @@ func NewTagKeysClient(ctx context.Context, opts ...option.ClientOption) (*TagKey
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -340,9 +376,9 @@ func NewTagKeysClient(ctx context.Context, opts ...option.ClientOption) (*TagKey
 
 	c := &tagKeysGRPCClient{
 		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
 		tagKeysClient:    resourcemanagerpb.NewTagKeysClient(connPool),
 		CallOptions:      &client.CallOptions,
+		operationsClient: longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
 
@@ -374,7 +410,7 @@ func (c *tagKeysGRPCClient) Connection() *grpc.ClientConn {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *tagKeysGRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -449,7 +485,7 @@ func defaultTagKeysRESTClientOptions() []option.ClientOption {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *tagKeysRESTClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -512,11 +548,6 @@ func (c *tagKeysGRPCClient) ListTagKeys(ctx context.Context, req *resourcemanage
 }
 
 func (c *tagKeysGRPCClient) GetTagKey(ctx context.Context, req *resourcemanagerpb.GetTagKeyRequest, opts ...gax.CallOption) (*resourcemanagerpb.TagKey, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -533,12 +564,22 @@ func (c *tagKeysGRPCClient) GetTagKey(ctx context.Context, req *resourcemanagerp
 	return resp, nil
 }
 
-func (c *tagKeysGRPCClient) CreateTagKey(ctx context.Context, req *resourcemanagerpb.CreateTagKeyRequest, opts ...gax.CallOption) (*CreateTagKeyOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
+func (c *tagKeysGRPCClient) GetNamespacedTagKey(ctx context.Context, req *resourcemanagerpb.GetNamespacedTagKeyRequest, opts ...gax.CallOption) (*resourcemanagerpb.TagKey, error) {
+	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	opts = append((*c.CallOptions).GetNamespacedTagKey[0:len((*c.CallOptions).GetNamespacedTagKey):len((*c.CallOptions).GetNamespacedTagKey)], opts...)
+	var resp *resourcemanagerpb.TagKey
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.tagKeysClient.GetNamespacedTagKey(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
 	}
+	return resp, nil
+}
+
+func (c *tagKeysGRPCClient) CreateTagKey(ctx context.Context, req *resourcemanagerpb.CreateTagKeyRequest, opts ...gax.CallOption) (*CreateTagKeyOperation, error) {
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
 	opts = append((*c.CallOptions).CreateTagKey[0:len((*c.CallOptions).CreateTagKey):len((*c.CallOptions).CreateTagKey)], opts...)
 	var resp *longrunningpb.Operation
@@ -556,11 +597,6 @@ func (c *tagKeysGRPCClient) CreateTagKey(ctx context.Context, req *resourcemanag
 }
 
 func (c *tagKeysGRPCClient) UpdateTagKey(ctx context.Context, req *resourcemanagerpb.UpdateTagKeyRequest, opts ...gax.CallOption) (*UpdateTagKeyOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "tag_key.name", url.QueryEscape(req.GetTagKey().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -580,11 +616,6 @@ func (c *tagKeysGRPCClient) UpdateTagKey(ctx context.Context, req *resourcemanag
 }
 
 func (c *tagKeysGRPCClient) DeleteTagKey(ctx context.Context, req *resourcemanagerpb.DeleteTagKeyRequest, opts ...gax.CallOption) (*DeleteTagKeyOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -604,11 +635,6 @@ func (c *tagKeysGRPCClient) DeleteTagKey(ctx context.Context, req *resourcemanag
 }
 
 func (c *tagKeysGRPCClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -626,11 +652,6 @@ func (c *tagKeysGRPCClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamP
 }
 
 func (c *tagKeysGRPCClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -656,6 +677,23 @@ func (c *tagKeysGRPCClient) TestIamPermissions(ctx context.Context, req *iampb.T
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.tagKeysClient.TestIamPermissions(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *tagKeysGRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
 		return err
 	}, opts...)
 	if err != nil {
@@ -719,13 +757,13 @@ func (c *tagKeysRESTClient) ListTagKeys(ctx context.Context, req *resourcemanage
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -795,13 +833,72 @@ func (c *tagKeysRESTClient) GetTagKey(ctx context.Context, req *resourcemanagerp
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// GetNamespacedTagKey retrieves a TagKey by its namespaced name.
+// This method will return PERMISSION_DENIED if the key does not exist
+// or the user does not have permission to view it.
+func (c *tagKeysRESTClient) GetNamespacedTagKey(ctx context.Context, req *resourcemanagerpb.GetNamespacedTagKeyRequest, opts ...gax.CallOption) (*resourcemanagerpb.TagKey, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v3/tagKeys/namespaced")
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	params.Add("name", fmt.Sprintf("%v", req.GetName()))
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).GetNamespacedTagKey[0:len((*c.CallOptions).GetNamespacedTagKey):len((*c.CallOptions).GetNamespacedTagKey)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &resourcemanagerpb.TagKey{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
 		}
 
 		return nil
@@ -814,8 +911,8 @@ func (c *tagKeysRESTClient) GetTagKey(ctx context.Context, req *resourcemanagerp
 
 // CreateTagKey creates a new TagKey. If another request with the same parameters is
 // sent while the original request is in process, the second request
-// will receive an error. A maximum of 300 TagKeys can exist under a parent at
-// any given time.
+// will receive an error. A maximum of 1000 TagKeys can exist under a parent
+// at any given time.
 func (c *tagKeysRESTClient) CreateTagKey(ctx context.Context, req *resourcemanagerpb.CreateTagKeyRequest, opts ...gax.CallOption) (*CreateTagKeyOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetTagKey()
@@ -863,13 +960,13 @@ func (c *tagKeysRESTClient) CreateTagKey(ctx context.Context, req *resourcemanag
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -907,7 +1004,7 @@ func (c *tagKeysRESTClient) UpdateTagKey(ctx context.Context, req *resourcemanag
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask))
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
 	}
 	if req.GetValidateOnly() {
 		params.Add("validateOnly", fmt.Sprintf("%v", req.GetValidateOnly()))
@@ -942,13 +1039,13 @@ func (c *tagKeysRESTClient) UpdateTagKey(ctx context.Context, req *resourcemanag
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1011,13 +1108,13 @@ func (c *tagKeysRESTClient) DeleteTagKey(ctx context.Context, req *resourcemanag
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1085,13 +1182,13 @@ func (c *tagKeysRESTClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamP
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1153,13 +1250,13 @@ func (c *tagKeysRESTClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamP
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1221,13 +1318,71 @@ func (c *tagKeysRESTClient) TestIamPermissions(ctx context.Context, req *iampb.T
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// GetOperation is a utility method from google.longrunning.Operations.
+func (c *tagKeysRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v3/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
 		}
 
 		return nil

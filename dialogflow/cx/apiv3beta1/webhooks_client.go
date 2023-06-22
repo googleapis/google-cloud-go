@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"math"
 	"net/http"
 	"net/url"
@@ -74,6 +74,7 @@ func defaultWebhooksGRPCClientOptions() []option.ClientOption {
 func defaultWebhooksCallOptions() *WebhooksCallOptions {
 	return &WebhooksCallOptions{
 		ListWebhooks: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -85,6 +86,7 @@ func defaultWebhooksCallOptions() *WebhooksCallOptions {
 			}),
 		},
 		GetWebhook: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -96,6 +98,7 @@ func defaultWebhooksCallOptions() *WebhooksCallOptions {
 			}),
 		},
 		CreateWebhook: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -107,6 +110,7 @@ func defaultWebhooksCallOptions() *WebhooksCallOptions {
 			}),
 		},
 		UpdateWebhook: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -118,6 +122,7 @@ func defaultWebhooksCallOptions() *WebhooksCallOptions {
 			}),
 		},
 		DeleteWebhook: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -139,6 +144,7 @@ func defaultWebhooksCallOptions() *WebhooksCallOptions {
 func defaultWebhooksRESTCallOptions() *WebhooksCallOptions {
 	return &WebhooksCallOptions{
 		ListWebhooks: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -149,6 +155,7 @@ func defaultWebhooksRESTCallOptions() *WebhooksCallOptions {
 			}),
 		},
 		GetWebhook: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -159,6 +166,7 @@ func defaultWebhooksRESTCallOptions() *WebhooksCallOptions {
 			}),
 		},
 		CreateWebhook: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -169,6 +177,7 @@ func defaultWebhooksRESTCallOptions() *WebhooksCallOptions {
 			}),
 		},
 		UpdateWebhook: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -179,6 +188,7 @@ func defaultWebhooksRESTCallOptions() *WebhooksCallOptions {
 			}),
 		},
 		DeleteWebhook: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -293,8 +303,7 @@ func (c *WebhooksClient) GetOperation(ctx context.Context, req *longrunningpb.Ge
 	return c.internalClient.GetOperation(ctx, req, opts...)
 }
 
-// ListOperations lists operations that match the specified filter in the request. If
-// the server doesn’t support this method, it returns UNIMPLEMENTED.
+// ListOperations is a utility method from google.longrunning.Operations.
 func (c *WebhooksClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	return c.internalClient.ListOperations(ctx, req, opts...)
 }
@@ -305,9 +314,6 @@ func (c *WebhooksClient) ListOperations(ctx context.Context, req *longrunningpb.
 type webhooksGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
-
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
 
 	// Points back to the CallOptions field of the containing WebhooksClient
 	CallOptions **WebhooksCallOptions
@@ -337,11 +343,6 @@ func NewWebhooksClient(ctx context.Context, opts ...option.ClientOption) (*Webho
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -350,7 +351,6 @@ func NewWebhooksClient(ctx context.Context, opts ...option.ClientOption) (*Webho
 
 	c := &webhooksGRPCClient{
 		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
 		webhooksClient:   cxpb.NewWebhooksClient(connPool),
 		CallOptions:      &client.CallOptions,
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
@@ -375,7 +375,7 @@ func (c *webhooksGRPCClient) Connection() *grpc.ClientConn {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *webhooksGRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -435,7 +435,7 @@ func defaultWebhooksRESTClientOptions() []option.ClientOption {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *webhooksRESTClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -500,11 +500,6 @@ func (c *webhooksGRPCClient) ListWebhooks(ctx context.Context, req *cxpb.ListWeb
 }
 
 func (c *webhooksGRPCClient) GetWebhook(ctx context.Context, req *cxpb.GetWebhookRequest, opts ...gax.CallOption) (*cxpb.Webhook, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -522,11 +517,6 @@ func (c *webhooksGRPCClient) GetWebhook(ctx context.Context, req *cxpb.GetWebhoo
 }
 
 func (c *webhooksGRPCClient) CreateWebhook(ctx context.Context, req *cxpb.CreateWebhookRequest, opts ...gax.CallOption) (*cxpb.Webhook, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -544,11 +534,6 @@ func (c *webhooksGRPCClient) CreateWebhook(ctx context.Context, req *cxpb.Create
 }
 
 func (c *webhooksGRPCClient) UpdateWebhook(ctx context.Context, req *cxpb.UpdateWebhookRequest, opts ...gax.CallOption) (*cxpb.Webhook, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "webhook.name", url.QueryEscape(req.GetWebhook().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -566,11 +551,6 @@ func (c *webhooksGRPCClient) UpdateWebhook(ctx context.Context, req *cxpb.Update
 }
 
 func (c *webhooksGRPCClient) DeleteWebhook(ctx context.Context, req *cxpb.DeleteWebhookRequest, opts ...gax.CallOption) error {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -774,13 +754,13 @@ func (c *webhooksRESTClient) ListWebhooks(ctx context.Context, req *cxpb.ListWeb
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -849,13 +829,13 @@ func (c *webhooksRESTClient) GetWebhook(ctx context.Context, req *cxpb.GetWebhoo
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -914,13 +894,13 @@ func (c *webhooksRESTClient) CreateWebhook(ctx context.Context, req *cxpb.Create
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -953,7 +933,7 @@ func (c *webhooksRESTClient) UpdateWebhook(ctx context.Context, req *cxpb.Update
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask))
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -986,13 +966,13 @@ func (c *webhooksRESTClient) UpdateWebhook(ctx context.Context, req *cxpb.Update
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1087,13 +1067,13 @@ func (c *webhooksRESTClient) GetLocation(ctx context.Context, req *locationpb.Ge
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1161,13 +1141,13 @@ func (c *webhooksRESTClient) ListLocations(ctx context.Context, req *locationpb.
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -1276,13 +1256,13 @@ func (c *webhooksRESTClient) GetOperation(ctx context.Context, req *longrunningp
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1293,8 +1273,7 @@ func (c *webhooksRESTClient) GetOperation(ctx context.Context, req *longrunningp
 	return resp, nil
 }
 
-// ListOperations lists operations that match the specified filter in the request. If
-// the server doesn’t support this method, it returns UNIMPLEMENTED.
+// ListOperations is a utility method from google.longrunning.Operations.
 func (c *webhooksRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
 	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
@@ -1351,13 +1330,13 @@ func (c *webhooksRESTClient) ListOperations(ctx context.Context, req *longrunnin
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil

@@ -41,7 +41,7 @@ import (
 	"cloud.google.com/go/internal/optional"
 	"cloud.google.com/go/internal/trace"
 	"cloud.google.com/go/storage/internal"
-	storagepb "cloud.google.com/go/storage/internal/apiv2/stubs"
+	"cloud.google.com/go/storage/internal/apiv2/storagepb"
 	"github.com/googleapis/gax-go/v2"
 	"golang.org/x/oauth2/google"
 	"google.golang.org/api/googleapi"
@@ -893,7 +893,9 @@ func (o *ObjectHandle) Generation(gen int64) *ObjectHandle {
 }
 
 // If returns a new ObjectHandle that applies a set of preconditions.
-// Preconditions already set on the ObjectHandle are ignored.
+// Preconditions already set on the ObjectHandle are ignored. The supplied
+// Conditions must have at least one field set to a non-default value;
+// otherwise an error will be returned from any operation on the ObjectHandle.
 // Operations on the new handle will return an error if the preconditions are not
 // satisfied. See https://cloud.google.com/storage/docs/generations-preconditions
 // for more details.
@@ -1163,7 +1165,7 @@ func (uattrs *ObjectAttrsToUpdate) toProtoObject(bucket, object string) *storage
 		o.Acl = toProtoObjectACL(uattrs.ACL)
 	}
 
-	// TODO(cathyo): Handle metadata. Pending b/230510191.
+	o.Metadata = uattrs.Metadata
 
 	return o
 }
@@ -1484,6 +1486,8 @@ type Query struct {
 	// aside from the prefix, contain delimiter will have their name,
 	// truncated after the delimiter, returned in prefixes.
 	// Duplicate prefixes are omitted.
+	// Must be set to / when used with the MatchGlob parameter to filter results
+	// in a directory-like mode.
 	// Optional.
 	Delimiter string
 
@@ -1497,9 +1501,9 @@ type Query struct {
 	Versions bool
 
 	// attrSelection is used to select only specific fields to be returned by
-	// the query. It is set by the user calling calling SetAttrSelection. These
+	// the query. It is set by the user calling SetAttrSelection. These
 	// are used by toFieldMask and toFieldSelection for gRPC and HTTP/JSON
-	// clients repsectively.
+	// clients respectively.
 	attrSelection []string
 
 	// StartOffset is used to filter results to objects whose names are
@@ -1525,6 +1529,12 @@ type Query struct {
 	// true, they will also be included as objects and their metadata will be
 	// populated in the returned ObjectAttrs.
 	IncludeTrailingDelimiter bool
+
+	// MatchGlob is a glob pattern used to filter results (for example, foo*bar). See
+	// https://cloud.google.com/storage/docs/json_api/v1/objects/list#list-object-glob
+	// for syntax details. When Delimiter is set in conjunction with MatchGlob,
+	// it must be set to /.
+	MatchGlob string
 }
 
 // attrToFieldMap maps the field names of ObjectAttrs to the underlying field

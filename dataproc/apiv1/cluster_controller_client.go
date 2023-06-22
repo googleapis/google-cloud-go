@@ -20,13 +20,13 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"math"
 	"net/http"
 	"net/url"
 	"time"
 
-	dataprocpb "cloud.google.com/go/dataproc/apiv1/dataprocpb"
+	dataprocpb "cloud.google.com/go/dataproc/v2/apiv1/dataprocpb"
 	iampb "cloud.google.com/go/iam/apiv1/iampb"
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
@@ -81,6 +81,7 @@ func defaultClusterControllerGRPCClientOptions() []option.ClientOption {
 func defaultClusterControllerCallOptions() *ClusterControllerCallOptions {
 	return &ClusterControllerCallOptions{
 		CreateCluster: []gax.CallOption{
+			gax.WithTimeout(300000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -92,6 +93,7 @@ func defaultClusterControllerCallOptions() *ClusterControllerCallOptions {
 			}),
 		},
 		UpdateCluster: []gax.CallOption{
+			gax.WithTimeout(300000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -105,6 +107,7 @@ func defaultClusterControllerCallOptions() *ClusterControllerCallOptions {
 		StopCluster:  []gax.CallOption{},
 		StartCluster: []gax.CallOption{},
 		DeleteCluster: []gax.CallOption{
+			gax.WithTimeout(300000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -116,6 +119,7 @@ func defaultClusterControllerCallOptions() *ClusterControllerCallOptions {
 			}),
 		},
 		GetCluster: []gax.CallOption{
+			gax.WithTimeout(300000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Internal,
@@ -129,6 +133,7 @@ func defaultClusterControllerCallOptions() *ClusterControllerCallOptions {
 			}),
 		},
 		ListClusters: []gax.CallOption{
+			gax.WithTimeout(300000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Internal,
@@ -142,6 +147,7 @@ func defaultClusterControllerCallOptions() *ClusterControllerCallOptions {
 			}),
 		},
 		DiagnoseCluster: []gax.CallOption{
+			gax.WithTimeout(300000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -165,6 +171,7 @@ func defaultClusterControllerCallOptions() *ClusterControllerCallOptions {
 func defaultClusterControllerRESTCallOptions() *ClusterControllerCallOptions {
 	return &ClusterControllerCallOptions{
 		CreateCluster: []gax.CallOption{
+			gax.WithTimeout(300000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -175,6 +182,7 @@ func defaultClusterControllerRESTCallOptions() *ClusterControllerCallOptions {
 			}),
 		},
 		UpdateCluster: []gax.CallOption{
+			gax.WithTimeout(300000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -187,6 +195,7 @@ func defaultClusterControllerRESTCallOptions() *ClusterControllerCallOptions {
 		StopCluster:  []gax.CallOption{},
 		StartCluster: []gax.CallOption{},
 		DeleteCluster: []gax.CallOption{
+			gax.WithTimeout(300000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -197,6 +206,7 @@ func defaultClusterControllerRESTCallOptions() *ClusterControllerCallOptions {
 			}),
 		},
 		GetCluster: []gax.CallOption{
+			gax.WithTimeout(300000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -209,6 +219,7 @@ func defaultClusterControllerRESTCallOptions() *ClusterControllerCallOptions {
 			}),
 		},
 		ListClusters: []gax.CallOption{
+			gax.WithTimeout(300000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -221,6 +232,7 @@ func defaultClusterControllerRESTCallOptions() *ClusterControllerCallOptions {
 			}),
 		},
 		DiagnoseCluster: []gax.CallOption{
+			gax.WithTimeout(300000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -453,9 +465,6 @@ type clusterControllerGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing ClusterControllerClient
 	CallOptions **ClusterControllerCallOptions
 
@@ -490,11 +499,6 @@ func NewClusterControllerClient(ctx context.Context, opts ...option.ClientOption
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -503,7 +507,6 @@ func NewClusterControllerClient(ctx context.Context, opts ...option.ClientOption
 
 	c := &clusterControllerGRPCClient{
 		connPool:                connPool,
-		disableDeadlines:        disableDeadlines,
 		clusterControllerClient: dataprocpb.NewClusterControllerClient(connPool),
 		CallOptions:             &client.CallOptions,
 		operationsClient:        longrunningpb.NewOperationsClient(connPool),
@@ -539,7 +542,7 @@ func (c *clusterControllerGRPCClient) Connection() *grpc.ClientConn {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *clusterControllerGRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -615,7 +618,7 @@ func defaultClusterControllerRESTClientOptions() []option.ClientOption {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *clusterControllerRESTClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -635,11 +638,6 @@ func (c *clusterControllerRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 func (c *clusterControllerGRPCClient) CreateCluster(ctx context.Context, req *dataprocpb.CreateClusterRequest, opts ...gax.CallOption) (*CreateClusterOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 300000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project_id", url.QueryEscape(req.GetProjectId()), "region", url.QueryEscape(req.GetRegion())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -659,11 +657,6 @@ func (c *clusterControllerGRPCClient) CreateCluster(ctx context.Context, req *da
 }
 
 func (c *clusterControllerGRPCClient) UpdateCluster(ctx context.Context, req *dataprocpb.UpdateClusterRequest, opts ...gax.CallOption) (*UpdateClusterOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 300000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project_id", url.QueryEscape(req.GetProjectId()), "region", url.QueryEscape(req.GetRegion()), "cluster_name", url.QueryEscape(req.GetClusterName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -721,11 +714,6 @@ func (c *clusterControllerGRPCClient) StartCluster(ctx context.Context, req *dat
 }
 
 func (c *clusterControllerGRPCClient) DeleteCluster(ctx context.Context, req *dataprocpb.DeleteClusterRequest, opts ...gax.CallOption) (*DeleteClusterOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 300000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project_id", url.QueryEscape(req.GetProjectId()), "region", url.QueryEscape(req.GetRegion()), "cluster_name", url.QueryEscape(req.GetClusterName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -745,11 +733,6 @@ func (c *clusterControllerGRPCClient) DeleteCluster(ctx context.Context, req *da
 }
 
 func (c *clusterControllerGRPCClient) GetCluster(ctx context.Context, req *dataprocpb.GetClusterRequest, opts ...gax.CallOption) (*dataprocpb.Cluster, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 300000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project_id", url.QueryEscape(req.GetProjectId()), "region", url.QueryEscape(req.GetRegion()), "cluster_name", url.QueryEscape(req.GetClusterName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -812,11 +795,6 @@ func (c *clusterControllerGRPCClient) ListClusters(ctx context.Context, req *dat
 }
 
 func (c *clusterControllerGRPCClient) DiagnoseCluster(ctx context.Context, req *dataprocpb.DiagnoseClusterRequest, opts ...gax.CallOption) (*DiagnoseClusterOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 300000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project_id", url.QueryEscape(req.GetProjectId()), "region", url.QueryEscape(req.GetRegion()), "cluster_name", url.QueryEscape(req.GetClusterName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1029,13 +1007,13 @@ func (c *clusterControllerRESTClient) CreateCluster(ctx context.Context, req *da
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1078,7 +1056,7 @@ func (c *clusterControllerRESTClient) UpdateCluster(ctx context.Context, req *da
 		if err != nil {
 			return nil, err
 		}
-		params.Add("gracefulDecommissionTimeout", string(gracefulDecommissionTimeout))
+		params.Add("gracefulDecommissionTimeout", string(gracefulDecommissionTimeout[1:len(gracefulDecommissionTimeout)-1]))
 	}
 	if req.GetRequestId() != "" {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
@@ -1088,7 +1066,7 @@ func (c *clusterControllerRESTClient) UpdateCluster(ctx context.Context, req *da
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask))
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1120,13 +1098,13 @@ func (c *clusterControllerRESTClient) UpdateCluster(ctx context.Context, req *da
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1188,13 +1166,13 @@ func (c *clusterControllerRESTClient) StopCluster(ctx context.Context, req *data
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1256,13 +1234,13 @@ func (c *clusterControllerRESTClient) StartCluster(ctx context.Context, req *dat
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1326,13 +1304,13 @@ func (c *clusterControllerRESTClient) DeleteCluster(ctx context.Context, req *da
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1389,13 +1367,13 @@ func (c *clusterControllerRESTClient) GetCluster(ctx context.Context, req *datap
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1463,13 +1441,13 @@ func (c *clusterControllerRESTClient) ListClusters(ctx context.Context, req *dat
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -1549,13 +1527,13 @@ func (c *clusterControllerRESTClient) DiagnoseCluster(ctx context.Context, req *
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1619,13 +1597,13 @@ func (c *clusterControllerRESTClient) GetIamPolicy(ctx context.Context, req *iam
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1687,13 +1665,13 @@ func (c *clusterControllerRESTClient) SetIamPolicy(ctx context.Context, req *iam
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1757,13 +1735,13 @@ func (c *clusterControllerRESTClient) TestIamPermissions(ctx context.Context, re
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1895,13 +1873,13 @@ func (c *clusterControllerRESTClient) GetOperation(ctx context.Context, req *lon
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1969,13 +1947,13 @@ func (c *clusterControllerRESTClient) ListOperations(ctx context.Context, req *l
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil

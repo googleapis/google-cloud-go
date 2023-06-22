@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"math"
 	"net/http"
 	"net/url"
@@ -43,9 +43,10 @@ var newContainerAnalysisV1Beta1ClientHook clientHook
 
 // ContainerAnalysisV1Beta1CallOptions contains the retry settings for each method of ContainerAnalysisV1Beta1Client.
 type ContainerAnalysisV1Beta1CallOptions struct {
-	SetIamPolicy       []gax.CallOption
-	GetIamPolicy       []gax.CallOption
-	TestIamPermissions []gax.CallOption
+	SetIamPolicy            []gax.CallOption
+	GetIamPolicy            []gax.CallOption
+	TestIamPermissions      []gax.CallOption
+	GeneratePackagesSummary []gax.CallOption
 }
 
 func defaultContainerAnalysisV1Beta1GRPCClientOptions() []option.ClientOption {
@@ -62,17 +63,31 @@ func defaultContainerAnalysisV1Beta1GRPCClientOptions() []option.ClientOption {
 
 func defaultContainerAnalysisV1Beta1CallOptions() *ContainerAnalysisV1Beta1CallOptions {
 	return &ContainerAnalysisV1Beta1CallOptions{
-		SetIamPolicy:       []gax.CallOption{},
-		GetIamPolicy:       []gax.CallOption{},
-		TestIamPermissions: []gax.CallOption{},
+		SetIamPolicy: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+		},
+		GetIamPolicy: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+		},
+		TestIamPermissions: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+		},
+		GeneratePackagesSummary: []gax.CallOption{},
 	}
 }
 
 func defaultContainerAnalysisV1Beta1RESTCallOptions() *ContainerAnalysisV1Beta1CallOptions {
 	return &ContainerAnalysisV1Beta1CallOptions{
-		SetIamPolicy:       []gax.CallOption{},
-		GetIamPolicy:       []gax.CallOption{},
-		TestIamPermissions: []gax.CallOption{},
+		SetIamPolicy: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+		},
+		GetIamPolicy: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+		},
+		TestIamPermissions: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+		},
+		GeneratePackagesSummary: []gax.CallOption{},
 	}
 }
 
@@ -84,6 +99,7 @@ type internalContainerAnalysisV1Beta1Client interface {
 	SetIamPolicy(context.Context, *iampb.SetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
 	GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
 	TestIamPermissions(context.Context, *iampb.TestIamPermissionsRequest, ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error)
+	GeneratePackagesSummary(context.Context, *containeranalysispb.GeneratePackagesSummaryRequest, ...gax.CallOption) (*containeranalysispb.PackagesSummaryResponse, error)
 }
 
 // ContainerAnalysisV1Beta1Client is a client for interacting with Container Analysis API.
@@ -168,15 +184,17 @@ func (c *ContainerAnalysisV1Beta1Client) TestIamPermissions(ctx context.Context,
 	return c.internalClient.TestIamPermissions(ctx, req, opts...)
 }
 
+// GeneratePackagesSummary gets a summary of the packages within a given resource.
+func (c *ContainerAnalysisV1Beta1Client) GeneratePackagesSummary(ctx context.Context, req *containeranalysispb.GeneratePackagesSummaryRequest, opts ...gax.CallOption) (*containeranalysispb.PackagesSummaryResponse, error) {
+	return c.internalClient.GeneratePackagesSummary(ctx, req, opts...)
+}
+
 // containerAnalysisV1Beta1GRPCClient is a client for interacting with Container Analysis API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type containerAnalysisV1Beta1GRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
-
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
 
 	// Points back to the CallOptions field of the containing ContainerAnalysisV1Beta1Client
 	CallOptions **ContainerAnalysisV1Beta1CallOptions
@@ -214,11 +232,6 @@ func NewContainerAnalysisV1Beta1Client(ctx context.Context, opts ...option.Clien
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -227,7 +240,6 @@ func NewContainerAnalysisV1Beta1Client(ctx context.Context, opts ...option.Clien
 
 	c := &containerAnalysisV1Beta1GRPCClient{
 		connPool:                       connPool,
-		disableDeadlines:               disableDeadlines,
 		containerAnalysisV1Beta1Client: containeranalysispb.NewContainerAnalysisV1Beta1Client(connPool),
 		CallOptions:                    &client.CallOptions,
 	}
@@ -250,7 +262,7 @@ func (c *containerAnalysisV1Beta1GRPCClient) Connection() *grpc.ClientConn {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *containerAnalysisV1Beta1GRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -322,7 +334,7 @@ func defaultContainerAnalysisV1Beta1RESTClientOptions() []option.ClientOption {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *containerAnalysisV1Beta1RESTClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -342,11 +354,6 @@ func (c *containerAnalysisV1Beta1RESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 func (c *containerAnalysisV1Beta1GRPCClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -364,11 +371,6 @@ func (c *containerAnalysisV1Beta1GRPCClient) SetIamPolicy(ctx context.Context, r
 }
 
 func (c *containerAnalysisV1Beta1GRPCClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -386,11 +388,6 @@ func (c *containerAnalysisV1Beta1GRPCClient) GetIamPolicy(ctx context.Context, r
 }
 
 func (c *containerAnalysisV1Beta1GRPCClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermissionsRequest, opts ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -399,6 +396,23 @@ func (c *containerAnalysisV1Beta1GRPCClient) TestIamPermissions(ctx context.Cont
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.containerAnalysisV1Beta1Client.TestIamPermissions(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *containerAnalysisV1Beta1GRPCClient) GeneratePackagesSummary(ctx context.Context, req *containeranalysispb.GeneratePackagesSummaryRequest, opts ...gax.CallOption) (*containeranalysispb.PackagesSummaryResponse, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).GeneratePackagesSummary[0:len((*c.CallOptions).GeneratePackagesSummary):len((*c.CallOptions).GeneratePackagesSummary)], opts...)
+	var resp *containeranalysispb.PackagesSummaryResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.containerAnalysisV1Beta1Client.GeneratePackagesSummary(ctx, req, settings.GRPC...)
 		return err
 	}, opts...)
 	if err != nil {
@@ -461,13 +475,13 @@ func (c *containerAnalysisV1Beta1RESTClient) SetIamPolicy(ctx context.Context, r
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -532,13 +546,13 @@ func (c *containerAnalysisV1Beta1RESTClient) GetIamPolicy(ctx context.Context, r
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -602,13 +616,77 @@ func (c *containerAnalysisV1Beta1RESTClient) TestIamPermissions(ctx context.Cont
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// GeneratePackagesSummary gets a summary of the packages within a given resource.
+func (c *containerAnalysisV1Beta1RESTClient) GeneratePackagesSummary(ctx context.Context, req *containeranalysispb.GeneratePackagesSummaryRequest, opts ...gax.CallOption) (*containeranalysispb.PackagesSummaryResponse, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:generatePackagesSummary", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).GeneratePackagesSummary[0:len((*c.CallOptions).GeneratePackagesSummary):len((*c.CallOptions).GeneratePackagesSummary)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &containeranalysispb.PackagesSummaryResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
 		}
 
 		return nil
