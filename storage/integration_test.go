@@ -80,7 +80,6 @@ var (
 	record = flag.Bool("record", false, "record RPCs")
 
 	uidSpace        *uid.Space
-	uidSpaceGRPC    *uid.Space
 	uidSpaceObjects *uid.Space
 	bucketName      string
 	grpcBucketName  string
@@ -209,11 +208,10 @@ func initIntegrationTest() func() error {
 }
 
 func initUIDsAndRand(t time.Time) {
-	uidSpace = uid.NewSpace(testPrefix, &uid.Options{Time: t, Short: true})
-	bucketName = uidSpace.New()
+	uidSpace = uid.NewSpace("", &uid.Options{Time: t, Short: true})
+	bucketName = testPrefix + uidSpace.New()
 	uidSpaceObjects = uid.NewSpace("obj", &uid.Options{Time: t})
-	uidSpaceGRPC = uid.NewSpace(grpcTestPrefix, &uid.Options{Time: t, Short: true})
-	grpcBucketName = uidSpaceGRPC.New()
+	grpcBucketName = grpcTestPrefix + uidSpace.New()
 	// Use our own random source, to avoid other parts of the program taking
 	// random numbers from the global source and putting record and replay
 	// out of sync.
@@ -281,10 +279,10 @@ func multiTransportTest(ctx context.Context, t *testing.T,
 			}
 
 			bucket := bucketName
-			var prefix string
+			prefix := testPrefix
 			if transport == "grpc" {
 				bucket = grpcBucketName
-				prefix = grpcTestPrefix + "-"
+				prefix = grpcTestPrefix
 			}
 
 			test(t, ctx, bucket, prefix, client)

@@ -154,7 +154,6 @@ func (c *grpcStorageClient) GetServiceAccount(ctx context.Context, project strin
 func (c *grpcStorageClient) CreateBucket(ctx context.Context, project, bucket string, attrs *BucketAttrs, opts ...storageOption) (*BucketAttrs, error) {
 	s := callSettings(c.settings, opts...)
 	b := attrs.toProtoBucket()
-	b.Name = bucket
 	b.Project = toProjectResource(project)
 	// If there is lifecycle information but no location, explicitly set
 	// the location. This is a GCS quirk/bug.
@@ -165,7 +164,7 @@ func (c *grpcStorageClient) CreateBucket(ctx context.Context, project, bucket st
 	req := &storagepb.CreateBucketRequest{
 		Parent:   fmt.Sprintf("projects/%s", globalProjectAlias),
 		Bucket:   b,
-		BucketId: b.GetName(),
+		BucketId: bucket,
 	}
 	if attrs != nil {
 		req.PredefinedAcl = attrs.PredefinedACL
