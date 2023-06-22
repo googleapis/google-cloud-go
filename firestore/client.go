@@ -24,6 +24,7 @@ import (
 	"time"
 
 	vkit "cloud.google.com/go/firestore/apiv1"
+	pb "cloud.google.com/go/firestore/apiv1/firestorepb"
 	"cloud.google.com/go/firestore/internal"
 	"cloud.google.com/go/internal/trace"
 	"github.com/golang/protobuf/ptypes"
@@ -31,11 +32,11 @@ import (
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/transport"
-	pb "google.golang.org/genproto/googleapis/firestore/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 // resourcePrefixHeader is the name of the metadata header used to indicate
@@ -53,9 +54,10 @@ const DetectProjectID = "*detect-project-id*"
 
 // A Client provides access to the Firestore service.
 type Client struct {
-	c          *vkit.Client
-	projectID  string
-	databaseID string // A client is tied to a single database.
+	c            *vkit.Client
+	projectID    string
+	databaseID   string        // A client is tied to a single database.
+	readSettings *readSettings // readSettings allows setting a snapshot time to read the database
 }
 
 // NewClient creates a new Firestore client that uses the given project.
@@ -94,9 +96,10 @@ func NewClient(ctx context.Context, projectID string, opts ...option.ClientOptio
 	}
 	vc.SetGoogleClientInfo("gccl", internal.Version)
 	c := &Client{
-		c:          vc,
-		projectID:  projectID,
-		databaseID: "(default)", // Default value is `(default)`
+		c:            vc,
+		projectID:    projectID,
+		databaseID:   "(default)", // Default value is `(default)`
+		readSettings: &readSettings{},
 	}
 	return c, nil
 }
@@ -215,10 +218,10 @@ func (c *Client) GetAll(ctx context.Context, docRefs []*DocumentRef) (_ []*Docum
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/firestore.GetAll")
 	defer func() { trace.EndSpan(ctx, err) }()
 
-	return c.getAll(ctx, docRefs, nil)
+	return c.getAll(ctx, docRefs, nil, nil)
 }
 
-func (c *Client) getAll(ctx context.Context, docRefs []*DocumentRef, tid []byte) (_ []*DocumentSnapshot, err error) {
+func (c *Client) getAll(ctx context.Context, docRefs []*DocumentRef, tid []byte, rs *readSettings) (_ []*DocumentSnapshot, err error) {
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/firestore.Client.BatchGetDocuments")
 	defer func() { trace.EndSpan(ctx, err) }()
 
@@ -235,9 +238,18 @@ func (c *Client) getAll(ctx context.Context, docRefs []*DocumentRef, tid []byte)
 		Database:  c.path(),
 		Documents: docNames,
 	}
-	if tid != nil {
-		req.ConsistencySelector = &pb.BatchGetDocumentsRequest_Transaction{tid}
+
+	// Note that transaction ID and other consistency selectors are mutually exclusive.
+	// We respect the transaction first, any read options passed by the caller second,
+	// and any read options stored in the client third.
+	if rt, hasOpts := parseReadTime(c, rs); hasOpts {
+		req.ConsistencySelector = &pb.BatchGetDocumentsRequest_ReadTime{ReadTime: rt}
 	}
+
+	if tid != nil {
+		req.ConsistencySelector = &pb.BatchGetDocumentsRequest_Transaction{Transaction: tid}
+	}
+
 	streamClient, err := c.c.BatchGetDocuments(withResourceHeader(ctx, req.Database), req)
 	if err != nil {
 		return nil, err
@@ -322,6 +334,15 @@ func (c *Client) BulkWriter(ctx context.Context) *BulkWriter {
 	return bw
 }
 
+// WithReadOptions specifies constraints for accessing documents from the database,
+// e.g. at what time snapshot to read the documents.
+func (c *Client) WithReadOptions(opts ...ReadOption) *Client {
+	for _, ro := range opts {
+		ro.apply(c.readSettings)
+	}
+	return c
+}
+
 // commit calls the Commit RPC outside of a transaction.
 func (c *Client) commit(ctx context.Context, ws []*pb.Write) (_ []*WriteResult, err error) {
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/firestore.Client.commit")
@@ -396,4 +417,36 @@ func (ec emulatorCreds) GetRequestMetadata(ctx context.Context, uri ...string) (
 }
 func (ec emulatorCreds) RequireTransportSecurity() bool {
 	return false
+}
+
+// ReadTime specifies a time-specific snapshot of the database to read.
+func ReadTime(t time.Time) ReadOption {
+	return readTime(t)
+}
+
+type readTime time.Time
+
+func (rt readTime) apply(rs *readSettings) {
+	rs.readTime = time.Time(rt)
+}
+
+// ReadOption interface allows for abstraction of computing read time settings.
+type ReadOption interface {
+	apply(*readSettings)
+}
+
+// readSettings contains the ReadOptions for a read operation
+type readSettings struct {
+	readTime time.Time
+}
+
+// parseReadTime ensures that fallback order of read options is respected.
+func parseReadTime(c *Client, rs *readSettings) (*timestamppb.Timestamp, bool) {
+	if rs != nil && !rs.readTime.IsZero() {
+		return &timestamppb.Timestamp{Seconds: int64(rs.readTime.Unix())}, true
+	}
+	if c.readSettings != nil && !c.readSettings.readTime.IsZero() {
+		return &timestamppb.Timestamp{Seconds: int64(c.readSettings.readTime.Unix())}, true
+	}
+	return nil, false
 }

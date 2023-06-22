@@ -17,23 +17,25 @@ package storage
 import (
 	"context"
 	"encoding/base64"
+	"errors"
 	"fmt"
 	"io"
 	"net/url"
 	"os"
 
+	"cloud.google.com/go/iam/apiv1/iampb"
 	"cloud.google.com/go/internal/trace"
 	gapic "cloud.google.com/go/storage/internal/apiv2"
-	storagepb "cloud.google.com/go/storage/internal/apiv2/stubs"
+	"cloud.google.com/go/storage/internal/apiv2/storagepb"
+	"github.com/googleapis/gax-go/v2"
+	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
-	iampb "google.golang.org/genproto/googleapis/iam/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
-	"google.golang.org/protobuf/proto"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 )
 
@@ -110,6 +112,11 @@ func newGRPCStorageClient(ctx context.Context, opts ...storageOption) (storageCl
 	s := initSettings(opts...)
 	s.clientOption = append(defaultGRPCOptions(), s.clientOption...)
 
+	config := newStorageConfig(s.clientOption...)
+	if config.readAPIWasSet {
+		return nil, errors.New("storage: GRPC is incompatible with any option that specifies an API for reads")
+	}
+
 	g, err := gapic.NewClient(ctx, s.clientOption...)
 	if err != nil {
 		return nil, err
@@ -147,7 +154,7 @@ func (c *grpcStorageClient) GetServiceAccount(ctx context.Context, project strin
 func (c *grpcStorageClient) CreateBucket(ctx context.Context, project, bucket string, attrs *BucketAttrs, opts ...storageOption) (*BucketAttrs, error) {
 	s := callSettings(c.settings, opts...)
 	b := attrs.toProtoBucket()
-	b.Name = bucket
+	b.Project = toProjectResource(project)
 	// If there is lifecycle information but no location, explicitly set
 	// the location. This is a GCS quirk/bug.
 	if b.GetLocation() == "" && b.GetLifecycle() != nil {
@@ -155,9 +162,9 @@ func (c *grpcStorageClient) CreateBucket(ctx context.Context, project, bucket st
 	}
 
 	req := &storagepb.CreateBucketRequest{
-		Parent:   toProjectResource(project),
+		Parent:   fmt.Sprintf("projects/%s", globalProjectAlias),
 		Bucket:   b,
-		BucketId: b.GetName(),
+		BucketId: bucket,
 	}
 	if attrs != nil {
 		req.PredefinedAcl = attrs.PredefinedACL
@@ -345,7 +352,19 @@ func (c *grpcStorageClient) UpdateBucket(ctx context.Context, bucket string, uat
 	if uattrs.RPO != RPOUnknown {
 		fieldMask.Paths = append(fieldMask.Paths, "rpo")
 	}
-	// TODO(cathyo): Handle labels. Pending b/230510191.
+	if uattrs.Autoclass != nil {
+		fieldMask.Paths = append(fieldMask.Paths, "autoclass")
+	}
+
+	for label := range uattrs.setLabels {
+		fieldMask.Paths = append(fieldMask.Paths, fmt.Sprintf("labels.%s", label))
+	}
+
+	// Delete a label by not including it in Bucket.Labels but adding the key to the update mask.
+	for label := range uattrs.deleteLabels {
+		fieldMask.Paths = append(fieldMask.Paths, fmt.Sprintf("labels.%s", label))
+	}
+
 	req.UpdateMask = fieldMask
 
 	var battrs *BucketAttrs
@@ -395,6 +414,11 @@ func (c *grpcStorageClient) ListObjects(ctx context.Context, bucket string, q *Q
 	}
 	gitr := c.raw.ListObjects(it.ctx, req, s.gax...)
 	fetch := func(pageSize int, pageToken string) (token string, err error) {
+		// MatchGlob not yet supported for gRPC.
+		// TODO: add support when b/287306063 resolved.
+		if q != nil && q.MatchGlob != "" {
+			return "", status.Errorf(codes.Unimplemented, "MatchGlob is not supported for gRPC")
+		}
 		var objects []*storagepb.Object
 		err = run(it.ctx, func() error {
 			objects, token, err = gitr.InternalFetch(pageSize, pageToken)
@@ -531,7 +555,19 @@ func (c *grpcStorageClient) UpdateObject(ctx context.Context, bucket, object str
 	if uattrs.ACL != nil || len(uattrs.PredefinedACL) > 0 {
 		fieldMask.Paths = append(fieldMask.Paths, "acl")
 	}
-	// TODO(cathyo): Handle metadata. Pending b/230510191.
+
+	if uattrs.Metadata != nil {
+		// We don't support deleting a specific metadata key; metadata is deleted
+		// as a whole if provided an empty map, so we do not use dot notation here
+		if len(uattrs.Metadata) == 0 {
+			fieldMask.Paths = append(fieldMask.Paths, "metadata")
+		} else {
+			// We can, however, use dot notation for adding keys
+			for key := range uattrs.Metadata {
+				fieldMask.Paths = append(fieldMask.Paths, fmt.Sprintf("metadata.%s", key))
+			}
+		}
+	}
 
 	req.UpdateMask = fieldMask
 
@@ -788,14 +824,15 @@ func (c *grpcStorageClient) RewriteObject(ctx context.Context, req *rewriteObjec
 	s := callSettings(c.settings, opts...)
 	obj := req.dstObject.attrs.toProtoObject("")
 	call := &storagepb.RewriteObjectRequest{
-		SourceBucket:             bucketResourceName(globalProjectAlias, req.srcObject.bucket),
-		SourceObject:             req.srcObject.name,
-		RewriteToken:             req.token,
-		DestinationBucket:        bucketResourceName(globalProjectAlias, req.dstObject.bucket),
-		DestinationName:          req.dstObject.name,
-		Destination:              obj,
-		DestinationKmsKey:        req.dstObject.keyName,
-		DestinationPredefinedAcl: req.predefinedACL,
+		SourceBucket:              bucketResourceName(globalProjectAlias, req.srcObject.bucket),
+		SourceObject:              req.srcObject.name,
+		RewriteToken:              req.token,
+		DestinationBucket:         bucketResourceName(globalProjectAlias, req.dstObject.bucket),
+		DestinationName:           req.dstObject.name,
+		Destination:               obj,
+		DestinationKmsKey:         req.dstObject.keyName,
+		DestinationPredefinedAcl:  req.predefinedACL,
+		CommonObjectRequestParams: toProtoCommonObjectRequestParams(req.dstObject.encryptionKey),
 	}
 
 	// The userProject, whether source or destination project, is decided by the code calling the interface.
@@ -818,6 +855,9 @@ func (c *grpcStorageClient) RewriteObject(ctx context.Context, req *rewriteObjec
 		call.CopySourceEncryptionKeyBytes = srcParams.GetEncryptionKeyBytes()
 		call.CopySourceEncryptionKeySha256Bytes = srcParams.GetEncryptionKeySha256Bytes()
 	}
+
+	call.MaxBytesRewrittenPerCall = req.maxBytesRewrittenPerCall
+
 	var res *storagepb.RewriteResponse
 	var err error
 
@@ -848,18 +888,11 @@ func (c *grpcStorageClient) NewRangeReader(ctx context.Context, params *newRange
 		ctx = setUserProjectMetadata(ctx, s.userProject)
 	}
 
-	// A negative length means "read to the end of the object", but the
-	// read_limit field it corresponds to uses zero to mean the same thing. Thus
-	// we coerce the length to 0 to read to the end of the object.
-	if params.length < 0 {
-		params.length = 0
-	}
-
 	b := bucketResourceName(globalProjectAlias, params.bucket)
-	// TODO(noahdietz): Use encryptionKey to set relevant request fields.
 	req := &storagepb.ReadObjectRequest{
-		Bucket: b,
-		Object: params.object,
+		Bucket:                    b,
+		Object:                    params.object,
+		CommonObjectRequestParams: toProtoCommonObjectRequestParams(params.encryptionKey),
 	}
 	// The default is a negative value, which means latest.
 	if params.gen >= 0 {
@@ -877,13 +910,13 @@ func (c *grpcStorageClient) NewRangeReader(ctx context.Context, params *newRange
 
 		cc, cancel := context.WithCancel(ctx)
 
-		start := params.offset + seen
-		// Only set a ReadLimit if length is greater than zero, because zero
-		// means read it all.
+		req.ReadOffset = params.offset + seen
+
+		// Only set a ReadLimit if length is greater than zero, because <= 0 means
+		// to read it all.
 		if params.length > 0 {
 			req.ReadLimit = params.length - seen
 		}
-		req.ReadOffset = start
 
 		if err := applyCondsProto("gRPCReader.reopen", params.gen, params.conds, req); err != nil {
 			cancel()
@@ -950,19 +983,27 @@ func (c *grpcStorageClient) NewRangeReader(ctx context.Context, params *newRange
 			// client buffer for reading later.
 			leftovers: msg.GetChecksummedData().GetContent(),
 			settings:  s,
+			zeroRange: params.length == 0,
 		},
 	}
 
 	cr := msg.GetContentRange()
 	if cr != nil {
 		r.Attrs.StartOffset = cr.GetStart()
-		r.remain = cr.GetEnd() - cr.GetStart() + 1
+		r.remain = cr.GetEnd() - cr.GetStart()
 	} else {
 		r.remain = size
 	}
 
+	// For a zero-length request, explicitly close the stream and set remaining
+	// bytes to zero.
+	if params.length == 0 {
+		r.remain = 0
+		r.reader.Close()
+	}
+
 	// Only support checksums when reading an entire object, not a range.
-	if checksums := msg.GetObjectChecksums(); checksums != nil && checksums.Crc32C != nil && params.offset == 0 && params.length == 0 {
+	if checksums := msg.GetObjectChecksums(); checksums != nil && checksums.Crc32C != nil && params.offset == 0 && params.length < 0 {
 		r.wantCRC = checksums.GetCrc32C()
 		r.checkCRC = true
 	}
@@ -1001,8 +1042,6 @@ func (c *grpcStorageClient) OpenWriter(params *openWriterParams, opts ...storage
 				return
 			}
 
-			// TODO(noahdietz): Send encryption key via CommonObjectRequestParams.
-
 			// The chunk buffer is full, but there is no end in sight. This
 			// means that a resumable upload will need to be used to send
 			// multiple chunks, until we are done reading data. Start a
@@ -1025,11 +1064,13 @@ func (c *grpcStorageClient) OpenWriter(params *openWriterParams, opts ...storage
 				pr.CloseWithError(err)
 				return
 			}
-			// At this point, the current buffer has been uploaded. Capture the
-			// committed offset here in case the upload was not finalized and
-			// another chunk is to be uploaded.
-			offset = off
-			progress(offset)
+			// At this point, the current buffer has been uploaded. For resumable
+			// uploads, capture the committed offset here in case the upload was not
+			// finalized and another chunk is to be uploaded.
+			if gw.upid != "" {
+				offset = off
+				progress(offset)
+			}
 
 			// When we are done reading data and the chunk has been finalized,
 			// we are done.
@@ -1249,12 +1290,12 @@ func (c *grpcStorageClient) ListNotifications(ctx context.Context, bucket string
 	if s.userProject != "" {
 		ctx = setUserProjectMetadata(ctx, s.userProject)
 	}
-	req := &storagepb.ListNotificationsRequest{
+	req := &storagepb.ListNotificationConfigsRequest{
 		Parent: bucketResourceName(globalProjectAlias, bucket),
 	}
-	var notifications []*storagepb.Notification
+	var notifications []*storagepb.NotificationConfig
 	err = run(ctx, func() error {
-		gitr := c.raw.ListNotifications(ctx, req, s.gax...)
+		gitr := c.raw.ListNotificationConfigs(ctx, req, s.gax...)
 		for {
 			// PageSize is not set and fallbacks to the API default pageSize of 100.
 			items, nextPageToken, err := gitr.InternalFetch(int(req.GetPageSize()), req.GetPageToken())
@@ -1281,14 +1322,14 @@ func (c *grpcStorageClient) CreateNotification(ctx context.Context, bucket strin
 	defer func() { trace.EndSpan(ctx, err) }()
 
 	s := callSettings(c.settings, opts...)
-	req := &storagepb.CreateNotificationRequest{
-		Parent:       bucketResourceName(globalProjectAlias, bucket),
-		Notification: toProtoNotification(n),
+	req := &storagepb.CreateNotificationConfigRequest{
+		Parent:             bucketResourceName(globalProjectAlias, bucket),
+		NotificationConfig: toProtoNotification(n),
 	}
-	var pbn *storagepb.Notification
+	var pbn *storagepb.NotificationConfig
 	err = run(ctx, func() error {
 		var err error
-		pbn, err = c.raw.CreateNotification(ctx, req, s.gax...)
+		pbn, err = c.raw.CreateNotificationConfig(ctx, req, s.gax...)
 		return err
 	}, s.retry, s.idempotent, setRetryHeaderGRPC(ctx))
 	if err != nil {
@@ -1302,9 +1343,9 @@ func (c *grpcStorageClient) DeleteNotification(ctx context.Context, bucket strin
 	defer func() { trace.EndSpan(ctx, err) }()
 
 	s := callSettings(c.settings, opts...)
-	req := &storagepb.DeleteNotificationRequest{Name: id}
+	req := &storagepb.DeleteNotificationConfigRequest{Name: id}
 	return run(ctx, func() error {
-		return c.raw.DeleteNotification(ctx, req, s.gax...)
+		return c.raw.DeleteNotificationConfig(ctx, req, s.gax...)
 	}, s.retry, s.idempotent, setRetryHeaderGRPC(ctx))
 }
 
@@ -1324,6 +1365,7 @@ type readStreamResponse struct {
 
 type gRPCReader struct {
 	seen, size int64
+	zeroRange  bool
 	stream     storagepb.Storage_ReadObjectClient
 	reopen     func(seen int64) (*readStreamResponse, context.CancelFunc, error)
 	leftovers  []byte
@@ -1333,17 +1375,17 @@ type gRPCReader struct {
 
 // Read reads bytes into the user's buffer from an open gRPC stream.
 func (r *gRPCReader) Read(p []byte) (int, error) {
-	// No stream to read from, either never initiliazed or Close was called.
+	// The entire object has been read by this reader, return EOF.
+	if r.size == r.seen || r.zeroRange {
+		return 0, io.EOF
+	}
+
+	// No stream to read from, either never initialized or Close was called.
 	// Note: There is a potential concurrency issue if multiple routines are
 	// using the same reader. One encounters an error and the stream is closed
 	// and then reopened while the other routine attempts to read from it.
 	if r.stream == nil {
 		return 0, fmt.Errorf("reader has been closed")
-	}
-
-	// The entire object has been read by this reader, return EOF.
-	if r.size != 0 && r.size == r.seen {
-		return 0, io.EOF
 	}
 
 	var n int
@@ -1436,6 +1478,12 @@ func (r *gRPCReader) reopenStream() (*storagepb.ReadObjectResponse, error) {
 
 func newGRPCWriter(c *grpcStorageClient, params *openWriterParams, r io.Reader) *gRPCWriter {
 	size := params.chunkSize
+
+	// Round up chunksize to nearest 256KiB
+	if size%googleapi.MinUploadChunkSize != 0 {
+		size += googleapi.MinUploadChunkSize - (size % googleapi.MinUploadChunkSize)
+	}
+
 	if params.chunkSize == 0 {
 		// TODO: Should we actually use the minimum of 256 KB here when the user
 		// indicates they want minimal memory usage? We cannot do a zero-copy,
@@ -1490,10 +1538,16 @@ func (w *gRPCWriter) startResumableUpload() error {
 	if err != nil {
 		return err
 	}
+	req := &storagepb.StartResumableWriteRequest{
+		WriteObjectSpec:           spec,
+		CommonObjectRequestParams: toProtoCommonObjectRequestParams(w.encryptionKey),
+	}
+	// TODO: Currently the checksums are only sent on the request to initialize
+	// the upload, but in the future, we must also support sending it
+	// on the *last* message of the stream.
+	req.ObjectChecksums = toProtoChecksums(w.sendCRC32C, w.attrs)
 	return run(w.ctx, func() error {
-		upres, err := w.c.raw.StartResumableWrite(w.ctx, &storagepb.StartResumableWriteRequest{
-			WriteObjectSpec: spec,
-		})
+		upres, err := w.c.raw.StartResumableWrite(w.ctx, req)
 		w.upid = upres.GetUploadId()
 		return err
 	}, w.settings.retry, w.settings.idempotent, setRetryHeaderGRPC(w.ctx))
@@ -1504,7 +1558,9 @@ func (w *gRPCWriter) startResumableUpload() error {
 func (w *gRPCWriter) queryProgress() (int64, error) {
 	var persistedSize int64
 	err := run(w.ctx, func() error {
-		q, err := w.c.raw.QueryWriteStatus(w.ctx, &storagepb.QueryWriteStatusRequest{UploadId: w.upid})
+		q, err := w.c.raw.QueryWriteStatus(w.ctx, &storagepb.QueryWriteStatusRequest{
+			UploadId: w.upid,
+		})
 		persistedSize = q.GetPersistedSize()
 		return err
 	}, w.settings.retry, true, setRetryHeaderGRPC(w.ctx))
@@ -1559,7 +1615,7 @@ func (w *gRPCWriter) uploadBuffer(recvd int, start int64, doneReading bool) (*st
 		// The first message on the WriteObject stream must either be the
 		// Object or the Resumable Upload ID.
 		if first {
-			ctx := gapic.InsertMetadata(w.ctx, metadata.Pairs("x-goog-request-params", "bucket="+url.QueryEscape(w.bucket)))
+			ctx := gapic.InsertMetadata(w.ctx, metadata.Pairs("x-goog-request-params", fmt.Sprintf("bucket=projects/_/buckets/%s", url.QueryEscape(w.bucket))))
 			w.stream, err = w.c.raw.WriteObject(ctx)
 			if err != nil {
 				return nil, 0, false, err
@@ -1575,25 +1631,14 @@ func (w *gRPCWriter) uploadBuffer(recvd int, start int64, doneReading bool) (*st
 				req.FirstMessage = &storagepb.WriteObjectRequest_WriteObjectSpec{
 					WriteObjectSpec: spec,
 				}
+				req.CommonObjectRequestParams = toProtoCommonObjectRequestParams(w.encryptionKey)
+				// For a non-resumable upload, checksums must be sent in this message.
+				// TODO: Currently the checksums are only sent on the first message
+				// of the stream, but in the future, we must also support sending it
+				// on the *last* message of the stream (instead of the first).
+				req.ObjectChecksums = toProtoChecksums(w.sendCRC32C, w.attrs)
 			}
 
-			// TODO: Currently the checksums are only sent on the first message
-			// of the stream, but in the future, we must also support sending it
-			// on the *last* message of the stream (instead of the first).
-			if w.sendCRC32C {
-				req.ObjectChecksums = &storagepb.ObjectChecksums{
-					Crc32C: proto.Uint32(w.attrs.CRC32C),
-				}
-			}
-			if len(w.attrs.MD5) != 0 {
-				if cs := req.GetObjectChecksums(); cs == nil {
-					req.ObjectChecksums = &storagepb.ObjectChecksums{
-						Md5Hash: w.attrs.MD5,
-					}
-				} else {
-					cs.Md5Hash = w.attrs.MD5
-				}
-			}
 		}
 
 		err = w.stream.Send(req)
@@ -1710,7 +1755,12 @@ func (w *gRPCWriter) writeObjectSpec() (*storagepb.WriteObjectSpec, error) {
 
 // read copies the data in the reader to the given buffer and reports how much
 // data was read into the buffer and if there is no more data to read (EOF).
+// Furthermore, if the attrs.ContentType is unset, the first bytes of content
+// will be sniffed for a matching content type.
 func (w *gRPCWriter) read() (int, bool, error) {
+	if w.attrs.ContentType == "" {
+		w.reader, w.attrs.ContentType = gax.DetermineContentType(w.reader)
+	}
 	// Set n to -1 to start the Read loop.
 	var n, recvd int = -1, 0
 	var err error

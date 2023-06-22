@@ -21,6 +21,7 @@ import (
 	"math/big"
 	"reflect"
 	"regexp"
+	"strings"
 	"time"
 
 	"cloud.google.com/go/civil"
@@ -380,6 +381,12 @@ func paramType(t reflect.Type, v reflect.Value) (*bq.QueryParameterType, error) 
 			return nil, err
 		}
 		for _, f := range fields {
+			prefixes := []string{"*", "[]"} // check pointer and arrays
+			for _, prefix := range prefixes {
+				if strings.TrimPrefix(t.String(), prefix) == strings.TrimPrefix(f.Type.String(), prefix) {
+					return nil, fmt.Errorf("bigquery: Go type %s cannot be represented as a parameter due to an attribute cycle/recursion detected", t)
+				}
+			}
 			pt, err := paramType(f.Type, v)
 			if err != nil {
 				return nil, err

@@ -1,5 +1,76 @@
 # Changes
 
+## [1.14.1](https://github.com/googleapis/google-cloud-go/compare/asset/v1.14.0...asset/v1.14.1) (2023-06-20)
+
+
+### Bug Fixes
+
+* **asset:** REST query UpdateMask bug ([df52820](https://github.com/googleapis/google-cloud-go/commit/df52820b0e7721954809a8aa8700b93c5662dc9b))
+
+## [1.14.0](https://github.com/googleapis/google-cloud-go/compare/asset/v1.13.1...asset/v1.14.0) (2023-05-30)
+
+
+### Features
+
+* **asset:** Update all direct dependencies ([b340d03](https://github.com/googleapis/google-cloud-go/commit/b340d030f2b52a4ce48846ce63984b28583abde6))
+
+## [1.13.1](https://github.com/googleapis/google-cloud-go/compare/asset/v1.13.0...asset/v1.13.1) (2023-05-08)
+
+
+### Bug Fixes
+
+* **asset:** Update grpc to v1.55.0 ([1147ce0](https://github.com/googleapis/google-cloud-go/commit/1147ce02a990276ca4f8ab7a1ab65c14da4450ef))
+
+## [1.13.0](https://github.com/googleapis/google-cloud-go/compare/asset/v1.12.0...asset/v1.13.0) (2023-04-04)
+
+
+### Features
+
+* **asset:** Add client library support for AssetService v1 AnalyzeOrgPolicies API feat: Add client library support for AssetService v1 AnalyzeOrgPolicyGovernedContainers API feat: Add client library support for AssetService v1 AnalyzeOrgPolicyGovernedAssets API ([493fb47](https://github.com/googleapis/google-cloud-go/commit/493fb4776e5976cd7a0a8f3d12f951b251300081))
+
+## [1.12.0](https://github.com/googleapis/google-cloud-go/compare/asset/v1.11.1...asset/v1.12.0) (2023-03-15)
+
+
+### Features
+
+* **asset:** Update iam and longrunning deps ([91a1f78](https://github.com/googleapis/google-cloud-go/commit/91a1f784a109da70f63b96414bba8a9b4254cddd))
+
+## [1.11.1](https://github.com/googleapis/google-cloud-go/compare/asset/v1.11.0...asset/v1.11.1) (2023-01-18)
+
+
+### Documentation
+
+* **asset:** Brand and typo fixes feat: Policy Analyzer for Organization Policy is publicly available ([8b3b76d](https://github.com/googleapis/google-cloud-go/commit/8b3b76d4c896e3f3338ccd357a5b2b7a6155c773))
+
+## [1.11.0](https://github.com/googleapis/google-cloud-go/compare/asset/v1.10.1...asset/v1.11.0) (2023-01-04)
+
+
+### Features
+
+* **asset:** Add REST client ([06a54a1](https://github.com/googleapis/google-cloud-go/commit/06a54a16a5866cce966547c51e203b9e09a25bc0))
+
+## [1.10.1](https://github.com/googleapis/google-cloud-go/compare/asset/v1.10.0...asset/v1.10.1) (2022-12-01)
+
+
+### Documentation
+
+* **asset:** Small change for documentation ([7231644](https://github.com/googleapis/google-cloud-go/commit/7231644e71f05abc864924a0065b9ea22a489180))
+* **asset:** Small change for documentation ([7231644](https://github.com/googleapis/google-cloud-go/commit/7231644e71f05abc864924a0065b9ea22a489180))
+
+## [1.10.0](https://github.com/googleapis/google-cloud-go/compare/asset/v1.9.0...asset/v1.10.0) (2022-11-03)
+
+
+### Features
+
+* **asset:** rewrite signatures in terms of new location ([3c4b2b3](https://github.com/googleapis/google-cloud-go/commit/3c4b2b34565795537aac1661e6af2442437e34ad))
+
+## [1.9.0](https://github.com/googleapis/google-cloud-go/compare/asset/v1.8.0...asset/v1.9.0) (2022-10-25)
+
+
+### Features
+
+* **asset:** start generating stubs dir ([de2d180](https://github.com/googleapis/google-cloud-go/commit/de2d18066dc613b72f6f8db93ca60146dabcfdcc))
+
 ## [1.8.0](https://github.com/googleapis/google-cloud-go/compare/asset/v1.7.0...asset/v1.8.0) (2022-10-14)
 
 

@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,10 +19,10 @@ package iap_test
 import (
 	"context"
 
+	iampb "cloud.google.com/go/iam/apiv1/iampb"
 	iap "cloud.google.com/go/iap/apiv1"
+	iappb "cloud.google.com/go/iap/apiv1/iappb"
 	"google.golang.org/api/iterator"
-	iappb "google.golang.org/genproto/googleapis/cloud/iap/v1"
-	iampb "google.golang.org/genproto/googleapis/iam/v1"
 )
 
 func ExampleNewIdentityAwareProxyAdminClient() {
@@ -33,6 +33,23 @@ func ExampleNewIdentityAwareProxyAdminClient() {
 	// - It may require specifying regional endpoints when creating the service client as shown in:
 	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := iap.NewIdentityAwareProxyAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
+func ExampleNewIdentityAwareProxyAdminRESTClient() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := iap.NewIdentityAwareProxyAdminRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -57,7 +74,7 @@ func ExampleIdentityAwareProxyAdminClient_SetIamPolicy() {
 
 	req := &iampb.SetIamPolicyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/iam/v1#SetIamPolicyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/iam/apiv1/iampb#SetIamPolicyRequest.
 	}
 	resp, err := c.SetIamPolicy(ctx, req)
 	if err != nil {
@@ -82,7 +99,7 @@ func ExampleIdentityAwareProxyAdminClient_GetIamPolicy() {
 
 	req := &iampb.GetIamPolicyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/iam/v1#GetIamPolicyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/iam/apiv1/iampb#GetIamPolicyRequest.
 	}
 	resp, err := c.GetIamPolicy(ctx, req)
 	if err != nil {
@@ -107,7 +124,7 @@ func ExampleIdentityAwareProxyAdminClient_TestIamPermissions() {
 
 	req := &iampb.TestIamPermissionsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/iam/v1#TestIamPermissionsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/iam/apiv1/iampb#TestIamPermissionsRequest.
 	}
 	resp, err := c.TestIamPermissions(ctx, req)
 	if err != nil {
@@ -132,7 +149,7 @@ func ExampleIdentityAwareProxyAdminClient_GetIapSettings() {
 
 	req := &iappb.GetIapSettingsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/iap/v1#GetIapSettingsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/iap/apiv1/iappb#GetIapSettingsRequest.
 	}
 	resp, err := c.GetIapSettings(ctx, req)
 	if err != nil {
@@ -157,7 +174,7 @@ func ExampleIdentityAwareProxyAdminClient_UpdateIapSettings() {
 
 	req := &iappb.UpdateIapSettingsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/iap/v1#UpdateIapSettingsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/iap/apiv1/iappb#UpdateIapSettingsRequest.
 	}
 	resp, err := c.UpdateIapSettings(ctx, req)
 	if err != nil {
@@ -182,7 +199,7 @@ func ExampleIdentityAwareProxyAdminClient_ListTunnelDestGroups() {
 
 	req := &iappb.ListTunnelDestGroupsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/iap/v1#ListTunnelDestGroupsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/iap/apiv1/iappb#ListTunnelDestGroupsRequest.
 	}
 	it := c.ListTunnelDestGroups(ctx, req)
 	for {
@@ -213,7 +230,7 @@ func ExampleIdentityAwareProxyAdminClient_CreateTunnelDestGroup() {
 
 	req := &iappb.CreateTunnelDestGroupRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/iap/v1#CreateTunnelDestGroupRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/iap/apiv1/iappb#CreateTunnelDestGroupRequest.
 	}
 	resp, err := c.CreateTunnelDestGroup(ctx, req)
 	if err != nil {
@@ -238,7 +255,7 @@ func ExampleIdentityAwareProxyAdminClient_GetTunnelDestGroup() {
 
 	req := &iappb.GetTunnelDestGroupRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/iap/v1#GetTunnelDestGroupRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/iap/apiv1/iappb#GetTunnelDestGroupRequest.
 	}
 	resp, err := c.GetTunnelDestGroup(ctx, req)
 	if err != nil {
@@ -263,7 +280,7 @@ func ExampleIdentityAwareProxyAdminClient_DeleteTunnelDestGroup() {
 
 	req := &iappb.DeleteTunnelDestGroupRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/iap/v1#DeleteTunnelDestGroupRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/iap/apiv1/iappb#DeleteTunnelDestGroupRequest.
 	}
 	err = c.DeleteTunnelDestGroup(ctx, req)
 	if err != nil {
@@ -286,7 +303,7 @@ func ExampleIdentityAwareProxyAdminClient_UpdateTunnelDestGroup() {
 
 	req := &iappb.UpdateTunnelDestGroupRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/iap/v1#UpdateTunnelDestGroupRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/iap/apiv1/iappb#UpdateTunnelDestGroupRequest.
 	}
 	resp, err := c.UpdateTunnelDestGroup(ctx, req)
 	if err != nil {

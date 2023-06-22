@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,24 +17,30 @@
 package servicemanagement
 
 import (
+	"bytes"
 	"context"
 	"fmt"
+	"io"
 	"math"
+	"net/http"
 	"net/url"
 	"time"
 
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	servicemanagementpb "cloud.google.com/go/servicemanagement/apiv1/servicemanagementpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
+	httptransport "google.golang.org/api/transport/http"
 	serviceconfigpb "google.golang.org/genproto/googleapis/api/serviceconfig"
-	servicemanagementpb "google.golang.org/genproto/googleapis/api/servicemanagement/v1"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -71,19 +77,89 @@ func defaultServiceManagerGRPCClientOptions() []option.ClientOption {
 
 func defaultServiceManagerCallOptions() *ServiceManagerCallOptions {
 	return &ServiceManagerCallOptions{
-		ListServices:         []gax.CallOption{},
-		GetService:           []gax.CallOption{},
-		CreateService:        []gax.CallOption{},
-		DeleteService:        []gax.CallOption{},
-		UndeleteService:      []gax.CallOption{},
-		ListServiceConfigs:   []gax.CallOption{},
-		GetServiceConfig:     []gax.CallOption{},
-		CreateServiceConfig:  []gax.CallOption{},
-		SubmitConfigSource:   []gax.CallOption{},
-		ListServiceRollouts:  []gax.CallOption{},
-		GetServiceRollout:    []gax.CallOption{},
-		CreateServiceRollout: []gax.CallOption{},
-		GenerateConfigReport: []gax.CallOption{},
+		ListServices: []gax.CallOption{
+			gax.WithTimeout(10000 * time.Millisecond),
+		},
+		GetService: []gax.CallOption{
+			gax.WithTimeout(10000 * time.Millisecond),
+		},
+		CreateService: []gax.CallOption{
+			gax.WithTimeout(10000 * time.Millisecond),
+		},
+		DeleteService: []gax.CallOption{
+			gax.WithTimeout(10000 * time.Millisecond),
+		},
+		UndeleteService: []gax.CallOption{
+			gax.WithTimeout(10000 * time.Millisecond),
+		},
+		ListServiceConfigs: []gax.CallOption{
+			gax.WithTimeout(10000 * time.Millisecond),
+		},
+		GetServiceConfig: []gax.CallOption{
+			gax.WithTimeout(10000 * time.Millisecond),
+		},
+		CreateServiceConfig: []gax.CallOption{
+			gax.WithTimeout(10000 * time.Millisecond),
+		},
+		SubmitConfigSource: []gax.CallOption{
+			gax.WithTimeout(10000 * time.Millisecond),
+		},
+		ListServiceRollouts: []gax.CallOption{
+			gax.WithTimeout(10000 * time.Millisecond),
+		},
+		GetServiceRollout: []gax.CallOption{
+			gax.WithTimeout(10000 * time.Millisecond),
+		},
+		CreateServiceRollout: []gax.CallOption{
+			gax.WithTimeout(10000 * time.Millisecond),
+		},
+		GenerateConfigReport: []gax.CallOption{
+			gax.WithTimeout(10000 * time.Millisecond),
+		},
+	}
+}
+
+func defaultServiceManagerRESTCallOptions() *ServiceManagerCallOptions {
+	return &ServiceManagerCallOptions{
+		ListServices: []gax.CallOption{
+			gax.WithTimeout(10000 * time.Millisecond),
+		},
+		GetService: []gax.CallOption{
+			gax.WithTimeout(10000 * time.Millisecond),
+		},
+		CreateService: []gax.CallOption{
+			gax.WithTimeout(10000 * time.Millisecond),
+		},
+		DeleteService: []gax.CallOption{
+			gax.WithTimeout(10000 * time.Millisecond),
+		},
+		UndeleteService: []gax.CallOption{
+			gax.WithTimeout(10000 * time.Millisecond),
+		},
+		ListServiceConfigs: []gax.CallOption{
+			gax.WithTimeout(10000 * time.Millisecond),
+		},
+		GetServiceConfig: []gax.CallOption{
+			gax.WithTimeout(10000 * time.Millisecond),
+		},
+		CreateServiceConfig: []gax.CallOption{
+			gax.WithTimeout(10000 * time.Millisecond),
+		},
+		SubmitConfigSource: []gax.CallOption{
+			gax.WithTimeout(10000 * time.Millisecond),
+		},
+		ListServiceRollouts: []gax.CallOption{
+			gax.WithTimeout(10000 * time.Millisecond),
+		},
+		GetServiceRollout: []gax.CallOption{
+			gax.WithTimeout(10000 * time.Millisecond),
+		},
+		CreateServiceRollout: []gax.CallOption{
+			gax.WithTimeout(10000 * time.Millisecond),
+		},
+		GenerateConfigReport: []gax.CallOption{
+			gax.WithTimeout(10000 * time.Millisecond),
+		},
 	}
 }
 
@@ -328,9 +404,6 @@ type serviceManagerGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing ServiceManagerClient
 	CallOptions **ServiceManagerCallOptions
 
@@ -361,11 +434,6 @@ func NewServiceManagerClient(ctx context.Context, opts ...option.ClientOption) (
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -374,7 +442,6 @@ func NewServiceManagerClient(ctx context.Context, opts ...option.ClientOption) (
 
 	c := &serviceManagerGRPCClient{
 		connPool:             connPool,
-		disableDeadlines:     disableDeadlines,
 		serviceManagerClient: servicemanagementpb.NewServiceManagerClient(connPool),
 		CallOptions:          &client.CallOptions,
 	}
@@ -408,7 +475,7 @@ func (c *serviceManagerGRPCClient) Connection() *grpc.ClientConn {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *serviceManagerGRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -419,6 +486,90 @@ func (c *serviceManagerGRPCClient) Close() error {
 	return c.connPool.Close()
 }
 
+// Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
+type serviceManagerRESTClient struct {
+	// The http endpoint to connect to.
+	endpoint string
+
+	// The http client.
+	httpClient *http.Client
+
+	// LROClient is used internally to handle long-running operations.
+	// It is exposed so that its CallOptions can be modified if required.
+	// Users should not Close this client.
+	LROClient **lroauto.OperationsClient
+
+	// The x-goog-* metadata to be sent with each request.
+	xGoogMetadata metadata.MD
+
+	// Points back to the CallOptions field of the containing ServiceManagerClient
+	CallOptions **ServiceManagerCallOptions
+}
+
+// NewServiceManagerRESTClient creates a new service manager rest client.
+//
+// Google Service Management
+// API (at https://cloud.google.com/service-infrastructure/docs/overview)
+func NewServiceManagerRESTClient(ctx context.Context, opts ...option.ClientOption) (*ServiceManagerClient, error) {
+	clientOpts := append(defaultServiceManagerRESTClientOptions(), opts...)
+	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
+	if err != nil {
+		return nil, err
+	}
+
+	callOpts := defaultServiceManagerRESTCallOptions()
+	c := &serviceManagerRESTClient{
+		endpoint:    endpoint,
+		httpClient:  httpClient,
+		CallOptions: &callOpts,
+	}
+	c.setGoogleClientInfo()
+
+	lroOpts := []option.ClientOption{
+		option.WithHTTPClient(httpClient),
+		option.WithEndpoint(endpoint),
+	}
+	opClient, err := lroauto.NewOperationsRESTClient(ctx, lroOpts...)
+	if err != nil {
+		return nil, err
+	}
+	c.LROClient = &opClient
+
+	return &ServiceManagerClient{internalClient: c, CallOptions: callOpts}, nil
+}
+
+func defaultServiceManagerRESTClientOptions() []option.ClientOption {
+	return []option.ClientOption{
+		internaloption.WithDefaultEndpoint("https://servicemanagement.googleapis.com"),
+		internaloption.WithDefaultMTLSEndpoint("https://servicemanagement.mtls.googleapis.com"),
+		internaloption.WithDefaultAudience("https://servicemanagement.googleapis.com/"),
+		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+	}
+}
+
+// setGoogleClientInfo sets the name and version of the application in
+// the `x-goog-api-client` header passed on each request. Intended for
+// use by Google-written clients.
+func (c *serviceManagerRESTClient) setGoogleClientInfo(keyval ...string) {
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
+	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+}
+
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *serviceManagerRESTClient) Close() error {
+	// Replace httpClient with nil to force cleanup.
+	c.httpClient = nil
+	return nil
+}
+
+// Connection returns a connection to the API service.
+//
+// Deprecated: This method always returns nil.
+func (c *serviceManagerRESTClient) Connection() *grpc.ClientConn {
+	return nil
+}
 func (c *serviceManagerGRPCClient) ListServices(ctx context.Context, req *servicemanagementpb.ListServicesRequest, opts ...gax.CallOption) *ManagedServiceIterator {
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
 	opts = append((*c.CallOptions).ListServices[0:len((*c.CallOptions).ListServices):len((*c.CallOptions).ListServices)], opts...)
@@ -463,11 +614,6 @@ func (c *serviceManagerGRPCClient) ListServices(ctx context.Context, req *servic
 }
 
 func (c *serviceManagerGRPCClient) GetService(ctx context.Context, req *servicemanagementpb.GetServiceRequest, opts ...gax.CallOption) (*servicemanagementpb.ManagedService, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 10000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "service_name", url.QueryEscape(req.GetServiceName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -485,11 +631,6 @@ func (c *serviceManagerGRPCClient) GetService(ctx context.Context, req *servicem
 }
 
 func (c *serviceManagerGRPCClient) CreateService(ctx context.Context, req *servicemanagementpb.CreateServiceRequest, opts ...gax.CallOption) (*CreateServiceOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 10000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
 	opts = append((*c.CallOptions).CreateService[0:len((*c.CallOptions).CreateService):len((*c.CallOptions).CreateService)], opts...)
 	var resp *longrunningpb.Operation
@@ -507,11 +648,6 @@ func (c *serviceManagerGRPCClient) CreateService(ctx context.Context, req *servi
 }
 
 func (c *serviceManagerGRPCClient) DeleteService(ctx context.Context, req *servicemanagementpb.DeleteServiceRequest, opts ...gax.CallOption) (*DeleteServiceOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 10000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "service_name", url.QueryEscape(req.GetServiceName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -531,11 +667,6 @@ func (c *serviceManagerGRPCClient) DeleteService(ctx context.Context, req *servi
 }
 
 func (c *serviceManagerGRPCClient) UndeleteService(ctx context.Context, req *servicemanagementpb.UndeleteServiceRequest, opts ...gax.CallOption) (*UndeleteServiceOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 10000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "service_name", url.QueryEscape(req.GetServiceName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -600,11 +731,6 @@ func (c *serviceManagerGRPCClient) ListServiceConfigs(ctx context.Context, req *
 }
 
 func (c *serviceManagerGRPCClient) GetServiceConfig(ctx context.Context, req *servicemanagementpb.GetServiceConfigRequest, opts ...gax.CallOption) (*serviceconfigpb.Service, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 10000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "service_name", url.QueryEscape(req.GetServiceName()), "config_id", url.QueryEscape(req.GetConfigId())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -622,11 +748,6 @@ func (c *serviceManagerGRPCClient) GetServiceConfig(ctx context.Context, req *se
 }
 
 func (c *serviceManagerGRPCClient) CreateServiceConfig(ctx context.Context, req *servicemanagementpb.CreateServiceConfigRequest, opts ...gax.CallOption) (*serviceconfigpb.Service, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 10000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "service_name", url.QueryEscape(req.GetServiceName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -644,11 +765,6 @@ func (c *serviceManagerGRPCClient) CreateServiceConfig(ctx context.Context, req 
 }
 
 func (c *serviceManagerGRPCClient) SubmitConfigSource(ctx context.Context, req *servicemanagementpb.SubmitConfigSourceRequest, opts ...gax.CallOption) (*SubmitConfigSourceOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 10000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "service_name", url.QueryEscape(req.GetServiceName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -713,11 +829,6 @@ func (c *serviceManagerGRPCClient) ListServiceRollouts(ctx context.Context, req 
 }
 
 func (c *serviceManagerGRPCClient) GetServiceRollout(ctx context.Context, req *servicemanagementpb.GetServiceRolloutRequest, opts ...gax.CallOption) (*servicemanagementpb.Rollout, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 10000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "service_name", url.QueryEscape(req.GetServiceName()), "rollout_id", url.QueryEscape(req.GetRolloutId())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -735,11 +846,6 @@ func (c *serviceManagerGRPCClient) GetServiceRollout(ctx context.Context, req *s
 }
 
 func (c *serviceManagerGRPCClient) CreateServiceRollout(ctx context.Context, req *servicemanagementpb.CreateServiceRolloutRequest, opts ...gax.CallOption) (*CreateServiceRolloutOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 10000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "service_name", url.QueryEscape(req.GetServiceName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -759,11 +865,6 @@ func (c *serviceManagerGRPCClient) CreateServiceRollout(ctx context.Context, req
 }
 
 func (c *serviceManagerGRPCClient) GenerateConfigReport(ctx context.Context, req *servicemanagementpb.GenerateConfigReportRequest, opts ...gax.CallOption) (*servicemanagementpb.GenerateConfigReportResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 10000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
 	opts = append((*c.CallOptions).GenerateConfigReport[0:len((*c.CallOptions).GenerateConfigReport):len((*c.CallOptions).GenerateConfigReport)], opts...)
 	var resp *servicemanagementpb.GenerateConfigReportResponse
@@ -778,9 +879,986 @@ func (c *serviceManagerGRPCClient) GenerateConfigReport(ctx context.Context, req
 	return resp, nil
 }
 
+// ListServices lists managed services.
+//
+// Returns all public services. For authenticated users, also returns all
+// services the calling user has “servicemanagement.services.get” permission
+// for.
+func (c *serviceManagerRESTClient) ListServices(ctx context.Context, req *servicemanagementpb.ListServicesRequest, opts ...gax.CallOption) *ManagedServiceIterator {
+	it := &ManagedServiceIterator{}
+	req = proto.Clone(req).(*servicemanagementpb.ListServicesRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*servicemanagementpb.ManagedService, string, error) {
+		resp := &servicemanagementpb.ListServicesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/services")
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetConsumerId() != "" {
+			params.Add("consumerId", fmt.Sprintf("%v", req.GetConsumerId()))
+		}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+		if req.GetProducerProjectId() != "" {
+			params.Add("producerProjectId", fmt.Sprintf("%v", req.GetProducerProjectId()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			httpRsp, err := c.httpClient.Do(httpReq)
+			if err != nil {
+				return err
+			}
+			defer httpRsp.Body.Close()
+
+			if err = googleapi.CheckResponse(httpRsp); err != nil {
+				return err
+			}
+
+			buf, err := io.ReadAll(httpRsp.Body)
+			if err != nil {
+				return err
+			}
+
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetServices(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// GetService gets a managed service. Authentication is required unless the service is
+// public.
+func (c *serviceManagerRESTClient) GetService(ctx context.Context, req *servicemanagementpb.GetServiceRequest, opts ...gax.CallOption) (*servicemanagementpb.ManagedService, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/services/%v", req.GetServiceName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "service_name", url.QueryEscape(req.GetServiceName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).GetService[0:len((*c.CallOptions).GetService):len((*c.CallOptions).GetService)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &servicemanagementpb.ManagedService{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// CreateService creates a new managed service.
+//
+// A managed service is immutable, and is subject to mandatory 30-day
+// data retention. You cannot move a service or recreate it within 30 days
+// after deletion.
+//
+// One producer project can own no more than 500 services. For security and
+// reliability purposes, a production service should be hosted in a
+// dedicated producer project.
+//
+// Operation<response: ManagedService>
+func (c *serviceManagerRESTClient) CreateService(ctx context.Context, req *servicemanagementpb.CreateServiceRequest, opts ...gax.CallOption) (*CreateServiceOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetService()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/services")
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &CreateServiceOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// DeleteService deletes a managed service. This method will change the service to the
+// Soft-Delete state for 30 days. Within this period, service producers may
+// call
+// UndeleteService
+// to restore the service. After 30 days, the service will be permanently
+// deleted.
+//
+// Operation<response: google.protobuf.Empty>
+func (c *serviceManagerRESTClient) DeleteService(ctx context.Context, req *servicemanagementpb.DeleteServiceRequest, opts ...gax.CallOption) (*DeleteServiceOperation, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/services/%v", req.GetServiceName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "service_name", url.QueryEscape(req.GetServiceName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &DeleteServiceOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// UndeleteService revives a previously deleted managed service. The method restores the
+// service using the configuration at the time the service was deleted.
+// The target service must exist and must have been deleted within the
+// last 30 days.
+//
+// Operation<response: UndeleteServiceResponse>
+func (c *serviceManagerRESTClient) UndeleteService(ctx context.Context, req *servicemanagementpb.UndeleteServiceRequest, opts ...gax.CallOption) (*UndeleteServiceOperation, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/services/%v:undelete", req.GetServiceName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "service_name", url.QueryEscape(req.GetServiceName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &UndeleteServiceOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// ListServiceConfigs lists the history of the service configuration for a managed service,
+// from the newest to the oldest.
+func (c *serviceManagerRESTClient) ListServiceConfigs(ctx context.Context, req *servicemanagementpb.ListServiceConfigsRequest, opts ...gax.CallOption) *ServiceIterator {
+	it := &ServiceIterator{}
+	req = proto.Clone(req).(*servicemanagementpb.ListServiceConfigsRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*serviceconfigpb.Service, string, error) {
+		resp := &servicemanagementpb.ListServiceConfigsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/services/%v/configs", req.GetServiceName())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			httpRsp, err := c.httpClient.Do(httpReq)
+			if err != nil {
+				return err
+			}
+			defer httpRsp.Body.Close()
+
+			if err = googleapi.CheckResponse(httpRsp); err != nil {
+				return err
+			}
+
+			buf, err := io.ReadAll(httpRsp.Body)
+			if err != nil {
+				return err
+			}
+
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetServiceConfigs(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// GetServiceConfig gets a service configuration (version) for a managed service.
+func (c *serviceManagerRESTClient) GetServiceConfig(ctx context.Context, req *servicemanagementpb.GetServiceConfigRequest, opts ...gax.CallOption) (*serviceconfigpb.Service, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/services/%v/configs/%v", req.GetServiceName(), req.GetConfigId())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetView() != 0 {
+		params.Add("view", fmt.Sprintf("%v", req.GetView()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "service_name", url.QueryEscape(req.GetServiceName()), "config_id", url.QueryEscape(req.GetConfigId())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).GetServiceConfig[0:len((*c.CallOptions).GetServiceConfig):len((*c.CallOptions).GetServiceConfig)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &serviceconfigpb.Service{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// CreateServiceConfig creates a new service configuration (version) for a managed service.
+// This method only stores the service configuration. To roll out the service
+// configuration to backend systems please call
+// CreateServiceRollout.
+//
+// Only the 100 most recent service configurations and ones referenced by
+// existing rollouts are kept for each service. The rest will be deleted
+// eventually.
+func (c *serviceManagerRESTClient) CreateServiceConfig(ctx context.Context, req *servicemanagementpb.CreateServiceConfigRequest, opts ...gax.CallOption) (*serviceconfigpb.Service, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetServiceConfig()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/services/%v/configs", req.GetServiceName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "service_name", url.QueryEscape(req.GetServiceName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).CreateServiceConfig[0:len((*c.CallOptions).CreateServiceConfig):len((*c.CallOptions).CreateServiceConfig)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &serviceconfigpb.Service{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// SubmitConfigSource creates a new service configuration (version) for a managed service based
+// on
+// user-supplied configuration source files (for example: OpenAPI
+// Specification). This method stores the source configurations as well as the
+// generated service configuration. To rollout the service configuration to
+// other services,
+// please call
+// CreateServiceRollout.
+//
+// Only the 100 most recent configuration sources and ones referenced by
+// existing service configurtions are kept for each service. The rest will be
+// deleted eventually.
+//
+// Operation<response: SubmitConfigSourceResponse>
+func (c *serviceManagerRESTClient) SubmitConfigSource(ctx context.Context, req *servicemanagementpb.SubmitConfigSourceRequest, opts ...gax.CallOption) (*SubmitConfigSourceOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/services/%v/configs:submit", req.GetServiceName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "service_name", url.QueryEscape(req.GetServiceName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &SubmitConfigSourceOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// ListServiceRollouts lists the history of the service configuration rollouts for a managed
+// service, from the newest to the oldest.
+func (c *serviceManagerRESTClient) ListServiceRollouts(ctx context.Context, req *servicemanagementpb.ListServiceRolloutsRequest, opts ...gax.CallOption) *RolloutIterator {
+	it := &RolloutIterator{}
+	req = proto.Clone(req).(*servicemanagementpb.ListServiceRolloutsRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*servicemanagementpb.Rollout, string, error) {
+		resp := &servicemanagementpb.ListServiceRolloutsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/services/%v/rollouts", req.GetServiceName())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			httpRsp, err := c.httpClient.Do(httpReq)
+			if err != nil {
+				return err
+			}
+			defer httpRsp.Body.Close()
+
+			if err = googleapi.CheckResponse(httpRsp); err != nil {
+				return err
+			}
+
+			buf, err := io.ReadAll(httpRsp.Body)
+			if err != nil {
+				return err
+			}
+
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetRollouts(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// GetServiceRollout gets a service configuration
+// rollout.
+func (c *serviceManagerRESTClient) GetServiceRollout(ctx context.Context, req *servicemanagementpb.GetServiceRolloutRequest, opts ...gax.CallOption) (*servicemanagementpb.Rollout, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/services/%v/rollouts/%v", req.GetServiceName(), req.GetRolloutId())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "service_name", url.QueryEscape(req.GetServiceName()), "rollout_id", url.QueryEscape(req.GetRolloutId())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).GetServiceRollout[0:len((*c.CallOptions).GetServiceRollout):len((*c.CallOptions).GetServiceRollout)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &servicemanagementpb.Rollout{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// CreateServiceRollout creates a new service configuration rollout. Based on rollout, the
+// Google Service Management will roll out the service configurations to
+// different backend services. For example, the logging configuration will be
+// pushed to Google Cloud Logging.
+//
+// Please note that any previous pending and running Rollouts and associated
+// Operations will be automatically cancelled so that the latest Rollout will
+// not be blocked by previous Rollouts.
+//
+// Only the 100 most recent (in any state) and the last 10 successful (if not
+// already part of the set of 100 most recent) rollouts are kept for each
+// service. The rest will be deleted eventually.
+//
+// Operation<response: Rollout>
+func (c *serviceManagerRESTClient) CreateServiceRollout(ctx context.Context, req *servicemanagementpb.CreateServiceRolloutRequest, opts ...gax.CallOption) (*CreateServiceRolloutOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetRollout()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/services/%v/rollouts", req.GetServiceName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "service_name", url.QueryEscape(req.GetServiceName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &CreateServiceRolloutOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// GenerateConfigReport generates and returns a report (errors, warnings and changes from
+// existing configurations) associated with
+// GenerateConfigReportRequest.new_value
+//
+// If GenerateConfigReportRequest.old_value is specified,
+// GenerateConfigReportRequest will contain a single ChangeReport based on the
+// comparison between GenerateConfigReportRequest.new_value and
+// GenerateConfigReportRequest.old_value.
+// If GenerateConfigReportRequest.old_value is not specified, this method
+// will compare GenerateConfigReportRequest.new_value with the last pushed
+// service configuration.
+func (c *serviceManagerRESTClient) GenerateConfigReport(ctx context.Context, req *servicemanagementpb.GenerateConfigReportRequest, opts ...gax.CallOption) (*servicemanagementpb.GenerateConfigReportResponse, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/services:generateConfigReport")
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).GenerateConfigReport[0:len((*c.CallOptions).GenerateConfigReport):len((*c.CallOptions).GenerateConfigReport)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &servicemanagementpb.GenerateConfigReportResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
 // CreateServiceOperation manages a long-running operation from CreateService.
 type CreateServiceOperation struct {
-	lro *longrunning.Operation
+	lro      *longrunning.Operation
+	pollPath string
 }
 
 // CreateServiceOperation returns a new CreateServiceOperation from a given name.
@@ -791,10 +1869,21 @@ func (c *serviceManagerGRPCClient) CreateServiceOperation(name string) *CreateSe
 	}
 }
 
+// CreateServiceOperation returns a new CreateServiceOperation from a given name.
+// The name must be that of a previously created CreateServiceOperation, possibly from a different process.
+func (c *serviceManagerRESTClient) CreateServiceOperation(name string) *CreateServiceOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &CreateServiceOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
 // Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
 //
 // See documentation of Poll for error-handling information.
 func (op *CreateServiceOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*servicemanagementpb.ManagedService, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
 	var resp servicemanagementpb.ManagedService
 	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
 		return nil, err
@@ -812,6 +1901,7 @@ func (op *CreateServiceOperation) Wait(ctx context.Context, opts ...gax.CallOpti
 // op.Done will return true, and the response of the operation is returned.
 // If Poll succeeds and the operation has not completed, the returned response and error are both nil.
 func (op *CreateServiceOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*servicemanagementpb.ManagedService, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
 	var resp servicemanagementpb.ManagedService
 	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
 		return nil, err
@@ -849,7 +1939,8 @@ func (op *CreateServiceOperation) Name() string {
 
 // CreateServiceRolloutOperation manages a long-running operation from CreateServiceRollout.
 type CreateServiceRolloutOperation struct {
-	lro *longrunning.Operation
+	lro      *longrunning.Operation
+	pollPath string
 }
 
 // CreateServiceRolloutOperation returns a new CreateServiceRolloutOperation from a given name.
@@ -860,10 +1951,21 @@ func (c *serviceManagerGRPCClient) CreateServiceRolloutOperation(name string) *C
 	}
 }
 
+// CreateServiceRolloutOperation returns a new CreateServiceRolloutOperation from a given name.
+// The name must be that of a previously created CreateServiceRolloutOperation, possibly from a different process.
+func (c *serviceManagerRESTClient) CreateServiceRolloutOperation(name string) *CreateServiceRolloutOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &CreateServiceRolloutOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
 // Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
 //
 // See documentation of Poll for error-handling information.
 func (op *CreateServiceRolloutOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*servicemanagementpb.Rollout, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
 	var resp servicemanagementpb.Rollout
 	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
 		return nil, err
@@ -881,6 +1983,7 @@ func (op *CreateServiceRolloutOperation) Wait(ctx context.Context, opts ...gax.C
 // op.Done will return true, and the response of the operation is returned.
 // If Poll succeeds and the operation has not completed, the returned response and error are both nil.
 func (op *CreateServiceRolloutOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*servicemanagementpb.Rollout, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
 	var resp servicemanagementpb.Rollout
 	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
 		return nil, err
@@ -918,7 +2021,8 @@ func (op *CreateServiceRolloutOperation) Name() string {
 
 // DeleteServiceOperation manages a long-running operation from DeleteService.
 type DeleteServiceOperation struct {
-	lro *longrunning.Operation
+	lro      *longrunning.Operation
+	pollPath string
 }
 
 // DeleteServiceOperation returns a new DeleteServiceOperation from a given name.
@@ -929,10 +2033,21 @@ func (c *serviceManagerGRPCClient) DeleteServiceOperation(name string) *DeleteSe
 	}
 }
 
+// DeleteServiceOperation returns a new DeleteServiceOperation from a given name.
+// The name must be that of a previously created DeleteServiceOperation, possibly from a different process.
+func (c *serviceManagerRESTClient) DeleteServiceOperation(name string) *DeleteServiceOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &DeleteServiceOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
 // Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
 //
 // See documentation of Poll for error-handling information.
 func (op *DeleteServiceOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
 	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
 }
 
@@ -946,6 +2061,7 @@ func (op *DeleteServiceOperation) Wait(ctx context.Context, opts ...gax.CallOpti
 // op.Done will return true, and the response of the operation is returned.
 // If Poll succeeds and the operation has not completed, the returned response and error are both nil.
 func (op *DeleteServiceOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
 	return op.lro.Poll(ctx, nil, opts...)
 }
 
@@ -976,7 +2092,8 @@ func (op *DeleteServiceOperation) Name() string {
 
 // SubmitConfigSourceOperation manages a long-running operation from SubmitConfigSource.
 type SubmitConfigSourceOperation struct {
-	lro *longrunning.Operation
+	lro      *longrunning.Operation
+	pollPath string
 }
 
 // SubmitConfigSourceOperation returns a new SubmitConfigSourceOperation from a given name.
@@ -987,10 +2104,21 @@ func (c *serviceManagerGRPCClient) SubmitConfigSourceOperation(name string) *Sub
 	}
 }
 
+// SubmitConfigSourceOperation returns a new SubmitConfigSourceOperation from a given name.
+// The name must be that of a previously created SubmitConfigSourceOperation, possibly from a different process.
+func (c *serviceManagerRESTClient) SubmitConfigSourceOperation(name string) *SubmitConfigSourceOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &SubmitConfigSourceOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
 // Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
 //
 // See documentation of Poll for error-handling information.
 func (op *SubmitConfigSourceOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*servicemanagementpb.SubmitConfigSourceResponse, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
 	var resp servicemanagementpb.SubmitConfigSourceResponse
 	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
 		return nil, err
@@ -1008,6 +2136,7 @@ func (op *SubmitConfigSourceOperation) Wait(ctx context.Context, opts ...gax.Cal
 // op.Done will return true, and the response of the operation is returned.
 // If Poll succeeds and the operation has not completed, the returned response and error are both nil.
 func (op *SubmitConfigSourceOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*servicemanagementpb.SubmitConfigSourceResponse, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
 	var resp servicemanagementpb.SubmitConfigSourceResponse
 	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
 		return nil, err
@@ -1045,7 +2174,8 @@ func (op *SubmitConfigSourceOperation) Name() string {
 
 // UndeleteServiceOperation manages a long-running operation from UndeleteService.
 type UndeleteServiceOperation struct {
-	lro *longrunning.Operation
+	lro      *longrunning.Operation
+	pollPath string
 }
 
 // UndeleteServiceOperation returns a new UndeleteServiceOperation from a given name.
@@ -1056,10 +2186,21 @@ func (c *serviceManagerGRPCClient) UndeleteServiceOperation(name string) *Undele
 	}
 }
 
+// UndeleteServiceOperation returns a new UndeleteServiceOperation from a given name.
+// The name must be that of a previously created UndeleteServiceOperation, possibly from a different process.
+func (c *serviceManagerRESTClient) UndeleteServiceOperation(name string) *UndeleteServiceOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &UndeleteServiceOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
 // Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
 //
 // See documentation of Poll for error-handling information.
 func (op *UndeleteServiceOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*servicemanagementpb.UndeleteServiceResponse, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
 	var resp servicemanagementpb.UndeleteServiceResponse
 	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
 		return nil, err
@@ -1077,6 +2218,7 @@ func (op *UndeleteServiceOperation) Wait(ctx context.Context, opts ...gax.CallOp
 // op.Done will return true, and the response of the operation is returned.
 // If Poll succeeds and the operation has not completed, the returned response and error are both nil.
 func (op *UndeleteServiceOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*servicemanagementpb.UndeleteServiceResponse, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
 	var resp servicemanagementpb.UndeleteServiceResponse
 	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
 		return nil, err

@@ -8,8 +8,6 @@ sourceFileExtensions:
 ignoreFiles:
   # Automatically Generated
   - "bigtable/cmd/cbt/cbtdoc.go"
-  # BSD license, which is compatible, is embedded in the file.
-  - "cmd/go-cloud-debug-agent/internal/debug/elf/elf.go"
   # From https://github.com/golang/pkgsite.
   - "third_party/pkgsite/print_type.go"
   - "third_party/pkgsite/synopsis.go"

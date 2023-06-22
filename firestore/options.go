@@ -19,8 +19,8 @@ import (
 	"fmt"
 	"time"
 
+	pb "cloud.google.com/go/firestore/apiv1/firestorepb"
 	"github.com/golang/protobuf/ptypes"
-	pb "google.golang.org/genproto/googleapis/firestore/v1"
 )
 
 // A Precondition modifies a Firestore update or delete operation.

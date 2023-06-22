@@ -38,7 +38,7 @@ type serviceTestProxy struct {
 	terminated chan struct{}
 }
 
-func (sp *serviceTestProxy) initAndStart(t *testing.T, s service, name string, clients ...apiClient) {
+func (sp *serviceTestProxy) initAndStart(t *testing.T, s service, name string, clients ...closeable) {
 	sp.t = t
 	sp.service = s
 	sp.name = name

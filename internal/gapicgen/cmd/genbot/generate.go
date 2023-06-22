@@ -20,7 +20,6 @@ package main
 import (
 	"context"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
@@ -34,7 +33,7 @@ import (
 // google-cloud-go if needed.
 func generate(ctx context.Context, githubClient *git.GithubClient, forceAll bool) error {
 	log.Println("creating temp dir")
-	tmpDir, err := ioutil.TempDir("", "update-genproto")
+	tmpDir, err := os.MkdirTemp("", "update-genproto")
 	if err != nil {
 		return err
 	}
@@ -43,12 +42,10 @@ func generate(ctx context.Context, githubClient *git.GithubClient, forceAll bool
 	log.Printf("working out %s\n", tmpDir)
 
 	googleapisDir := filepath.Join(tmpDir, "googleapis")
-	gocloudDir := filepath.Join(tmpDir, "gocloud")
 	genprotoDir := filepath.Join(tmpDir, "genproto")
 	protoDir := filepath.Join(tmpDir, "proto")
 
 	// Clone repositories.
-
 	grp, _ := errgroup.WithContext(ctx)
 	grp.Go(func() error {
 		return git.DeepClone("https://github.com/googleapis/googleapis", googleapisDir)
@@ -56,9 +53,7 @@ func generate(ctx context.Context, githubClient *git.GithubClient, forceAll bool
 	grp.Go(func() error {
 		return git.DeepClone("https://github.com/googleapis/go-genproto", genprotoDir)
 	})
-	grp.Go(func() error {
-		return git.DeepClone("https://github.com/googleapis/google-cloud-go", gocloudDir)
-	})
+
 	grp.Go(func() error {
 		return git.DeepClone("https://github.com/protocolbuffers/protobuf", protoDir)
 	})
@@ -70,7 +65,6 @@ func generate(ctx context.Context, githubClient *git.GithubClient, forceAll bool
 	conf := &generator.Config{
 		GoogleapisDir: googleapisDir,
 		GenprotoDir:   genprotoDir,
-		GapicDir:      gocloudDir,
 		ProtoDir:      protoDir,
 		ForceAll:      forceAll,
 	}
@@ -79,61 +73,20 @@ func generate(ctx context.Context, githubClient *git.GithubClient, forceAll bool
 		return err
 	}
 
-	// Create PRs.
+	// Create PR
 	genprotoHasChanges, err := git.HasChanges(genprotoDir)
 	if err != nil {
 		return err
 	}
 
-	gocloudHasChanges, err := git.HasChanges(gocloudDir)
+	if !genprotoHasChanges {
+		log.Println("no changes detected")
+		return nil
+	}
+	genprotoPRNum, err := githubClient.CreateGenprotoPR(ctx, genprotoDir, false, changes)
 	if err != nil {
-		return err
+		return fmt.Errorf("error creating PR for genproto (may need to check logs for more errors): %w", err)
 	}
-
-	switch {
-	case genprotoHasChanges && gocloudHasChanges:
-		// Both have changes.
-		genprotoPRNum, err := githubClient.CreateGenprotoPR(ctx, genprotoDir, true, changes)
-		if err != nil {
-			return fmt.Errorf("error creating PR for genproto (may need to check logs for more errors): %v", err)
-		}
-
-		gocloudPRNum, err := githubClient.CreateGocloudPR(ctx, gocloudDir, genprotoPRNum, changes)
-		if err != nil {
-			return fmt.Errorf("error creating CL for veneers (may need to check logs for more errors): %v", err)
-		}
-
-		if err := githubClient.AmendGenprotoPR(ctx, genprotoPRNum, genprotoDir, gocloudPRNum, changes); err != nil {
-			return fmt.Errorf("error amending genproto PR: %v", err)
-		}
-
-		genprotoPRURL := fmt.Sprintf("https://github.com/googleapis/go-genproto/pull/%d", genprotoPRNum)
-		gocloudPRURL := fmt.Sprintf("https://github.com/googleapis/google-cloud-go/pull/%d", genprotoPRNum)
-		log.Println(genprotoPRURL)
-		log.Println(gocloudPRURL)
-	case genprotoHasChanges:
-		// Only genproto has changes.
-		genprotoPRNum, err := githubClient.CreateGenprotoPR(ctx, genprotoDir, false, changes)
-		if err != nil {
-			return fmt.Errorf("error creating PR for genproto (may need to check logs for more errors): %v", err)
-		}
-
-		genprotoPRURL := fmt.Sprintf("https://github.com/googleapis/go-genproto/pull/%d", genprotoPRNum)
-		log.Println(genprotoPRURL)
-		log.Println("gocloud had no changes")
-	case gocloudHasChanges:
-		// Only gocloud has changes.
-		gocloudPRNum, err := githubClient.CreateGocloudPR(ctx, gocloudDir, -1, changes)
-		if err != nil {
-			return fmt.Errorf("error creating CL for veneers (may need to check logs for more errors): %v", err)
-		}
-
-		gocloudPRURL := fmt.Sprintf("https://github.com/googleapis/google-cloud-go/pull/%d", gocloudPRNum)
-		log.Println("genproto had no changes")
-		log.Println(gocloudPRURL)
-	default:
-		// Neither have changes.
-		log.Println("Neither genproto nor gocloud had changes")
-	}
+	log.Printf("https://github.com/googleapis/go-genproto/pull/%d", genprotoPRNum)
 	return nil
 }

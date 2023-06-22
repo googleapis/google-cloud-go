@@ -32,6 +32,7 @@ import (
 	connection "cloud.google.com/go/bigquery/connection/apiv1"
 	"cloud.google.com/go/civil"
 	datacatalog "cloud.google.com/go/datacatalog/apiv1"
+	"cloud.google.com/go/datacatalog/apiv1/datacatalogpb"
 	"cloud.google.com/go/httpreplay"
 	"cloud.google.com/go/internal"
 	"cloud.google.com/go/internal/pretty"
@@ -45,7 +46,6 @@ import (
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
-	datacatalogpb "google.golang.org/genproto/googleapis/cloud/datacatalog/v1"
 )
 
 const replayFilename = "bigquery.replay"
@@ -54,6 +54,7 @@ var record = flag.Bool("record", false, "record RPCs")
 
 var (
 	client                 *Client
+	storageOptimizedClient *Client
 	storageClient          *storage.Client
 	connectionsClient      *connection.Client
 	policyTagManagerClient *datacatalog.PolicyTagManagerClient
@@ -121,6 +122,14 @@ func initIntegrationTest() func() {
 		if err != nil {
 			log.Fatal(err)
 		}
+		storageOptimizedClient, err = NewClient(ctx, projID, option.WithHTTPClient(hc))
+		if err != nil {
+			log.Fatal(err)
+		}
+		err = storageOptimizedClient.EnableStorageReadClient(ctx)
+		if err != nil {
+			log.Fatal(err)
+		}
 		storageClient, err = storage.NewClient(ctx, option.WithHTTPClient(hc))
 		if err != nil {
 			log.Fatal(err)
@@ -145,6 +154,7 @@ func initIntegrationTest() func() {
 			log.Print("replay not supported for Go versions before 1.8")
 		}
 		client = nil
+		storageOptimizedClient = nil
 		storageClient = nil
 		connectionsClient = nil
 		return func() {}
@@ -203,6 +213,14 @@ func initIntegrationTest() func() {
 		client, err = NewClient(ctx, projID, bqOpts...)
 		if err != nil {
 			log.Fatalf("NewClient: %v", err)
+		}
+		storageOptimizedClient, err = NewClient(ctx, projID, bqOpts...)
+		if err != nil {
+			log.Fatalf("NewClient: %v", err)
+		}
+		err = storageOptimizedClient.EnableStorageReadClient(ctx, bqOpts...)
+		if err != nil {
+			log.Fatalf("ConfigureStorageReadClient: %v", err)
 		}
 		storageClient, err = storage.NewClient(ctx, sOpts...)
 		if err != nil {
@@ -337,6 +355,26 @@ func TestIntegration_JobFrom(t *testing.T) {
 		}
 	}
 
+}
+
+func TestIntegration_QueryContextTimeout(t *testing.T) {
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), 200*time.Millisecond)
+	defer cancel()
+
+	q := client.Query("select count(*) from unnest(generate_array(1,1000000)), unnest(generate_array(1, 1000)) as foo")
+	q.DisableQueryCache = true
+	before := time.Now()
+	_, err := q.Read(ctx)
+	if err != context.DeadlineExceeded {
+		t.Errorf("Read() error, wanted %v, got %v", context.DeadlineExceeded, err)
+	}
+	wantMaxDur := 500 * time.Millisecond
+	if d := time.Since(before); d > wantMaxDur {
+		t.Errorf("return duration too long, wanted max %v got %v", wantMaxDur, d)
+	}
 }
 
 func TestIntegration_SnapshotRestoreClone(t *testing.T) {
@@ -563,6 +601,7 @@ func TestIntegration_RangePartitioning(t *testing.T) {
 		t.Errorf("Range.Interval: got %v, wanted %v", gotInt64, wantedRange.Interval)
 	}
 }
+
 func TestIntegration_RemoveTimePartitioning(t *testing.T) {
 	if client == nil {
 		t.Skip("Integration tests skipped")
@@ -1403,7 +1442,88 @@ func TestIntegration_Load(t *testing.T) {
 		t.Fatal(err)
 	}
 	checkReadAndTotalRows(t, "reader load", table.Read(ctx), wantRows)
+}
 
+func TestIntegration_LoadWithSessionSupport(t *testing.T) {
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
+
+	ctx := context.Background()
+	sessionDataset := client.Dataset("_SESSION")
+	sessionTable := sessionDataset.Table("test_temp_destination_table")
+
+	schema := Schema{
+		{Name: "username", Type: StringFieldType, Required: false},
+		{Name: "tweet", Type: StringFieldType, Required: false},
+		{Name: "timestamp", Type: StringFieldType, Required: false},
+		{Name: "likes", Type: IntegerFieldType, Required: false},
+	}
+	sourceURIs := []string{
+		"gs://cloud-samples-data/bigquery/federated-formats-reference-file-schema/a-twitter.parquet",
+	}
+
+	source := NewGCSReference(sourceURIs...)
+	source.SourceFormat = Parquet
+	source.Schema = schema
+	loader := sessionTable.LoaderFrom(source)
+	loader.CreateSession = true
+	loader.CreateDisposition = CreateIfNeeded
+
+	job, err := loader.Run(ctx)
+	if err != nil {
+		t.Fatalf("loader.Run: %v", err)
+	}
+	err = wait(ctx, job)
+	if err != nil {
+		t.Fatalf("wait: %v", err)
+	}
+
+	sessionInfo := job.lastStatus.Statistics.SessionInfo
+	if sessionInfo == nil {
+		t.Fatalf("empty job.lastStatus.Statistics.SessionInfo: %v", sessionInfo)
+	}
+
+	sessionID := sessionInfo.SessionID
+	loaderWithSession := sessionTable.LoaderFrom(source)
+	loaderWithSession.CreateDisposition = CreateIfNeeded
+	loaderWithSession.ConnectionProperties = []*ConnectionProperty{
+		{
+			Key:   "session_id",
+			Value: sessionID,
+		},
+	}
+	jobWithSession, err := loaderWithSession.Run(ctx)
+	if err != nil {
+		t.Fatalf("loaderWithSession.Run: %v", err)
+	}
+	err = wait(ctx, jobWithSession)
+	if err != nil {
+		t.Fatalf("wait: %v", err)
+	}
+
+	sessionJobInfo := jobWithSession.lastStatus.Statistics.SessionInfo
+	if sessionJobInfo == nil {
+		t.Fatalf("empty jobWithSession.lastStatus.Statistics.SessionInfo: %v", sessionJobInfo)
+	}
+
+	if sessionID != sessionJobInfo.SessionID {
+		t.Fatalf("expected session ID %q, but found %q", sessionID, sessionJobInfo.SessionID)
+	}
+
+	sql := "SELECT * FROM _SESSION.test_temp_destination_table;"
+	q := client.Query(sql)
+	q.ConnectionProperties = []*ConnectionProperty{
+		{
+			Key:   "session_id",
+			Value: sessionID,
+		},
+	}
+	sessionQueryJob, err := q.Run(ctx)
+	err = wait(ctx, sessionQueryJob)
+	if err != nil {
+		t.Fatalf("wait: %v", err)
+	}
 }
 
 func TestIntegration_LoadWithReferenceSchemaFile(t *testing.T) {
@@ -1902,12 +2022,16 @@ func TestIntegration_QuerySessionSupport(t *testing.T) {
 
 }
 
-func TestIntegration_QueryParameters(t *testing.T) {
-	if client == nil {
-		t.Skip("Integration tests skipped")
-	}
-	ctx := context.Background()
+var (
+	queryParameterTestCases = []struct {
+		query      string
+		parameters []QueryParameter
+		wantRow    []Value
+		wantConfig interface{}
+	}{}
+)
 
+func initQueryParameterTestCases() {
 	d := civil.Date{Year: 2016, Month: 3, Day: 20}
 	tm := civil.Time{Hour: 15, Minute: 04, Second: 05, Nanosecond: 3008}
 	rtm := tm
@@ -1928,7 +2052,7 @@ func TestIntegration_QueryParameters(t *testing.T) {
 		SubStructArray []ss
 	}
 
-	testCases := []struct {
+	queryParameterTestCases = []struct {
 		query      string
 		parameters []QueryParameter
 		wantRow    []Value
@@ -1999,6 +2123,22 @@ func TestIntegration_QueryParameters(t *testing.T) {
 			[]QueryParameter{{Name: "val", Value: tm}},
 			[]Value{rtm},
 			rtm,
+		},
+		{
+			"SELECT @val",
+			[]QueryParameter{
+				{
+					Name: "val",
+					Value: &QueryParameterValue{
+						Type: StandardSQLDataType{
+							TypeKind: "JSON",
+						},
+						Value: "{\"alpha\":\"beta\"}",
+					},
+				},
+			},
+			[]Value{"{\"alpha\":\"beta\"}"},
+			"{\"alpha\":\"beta\"}",
 		},
 		{
 			"SELECT @val",
@@ -2167,7 +2307,17 @@ func TestIntegration_QueryParameters(t *testing.T) {
 			},
 		},
 	}
-	for _, c := range testCases {
+}
+
+func TestIntegration_QueryParameters(t *testing.T) {
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
+	ctx := context.Background()
+
+	initQueryParameterTestCases()
+
+	for _, c := range queryParameterTestCases {
 		q := client.Query(c.query)
 		q.Parameters = c.parameters
 		job, err := q.Run(ctx)

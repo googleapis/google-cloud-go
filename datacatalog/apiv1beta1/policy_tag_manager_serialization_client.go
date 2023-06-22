@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"math"
 	"net/http"
 	"net/url"
@@ -140,9 +140,6 @@ type policyTagManagerSerializationGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing PolicyTagManagerSerializationClient
 	CallOptions **PolicyTagManagerSerializationCallOptions
 
@@ -168,11 +165,6 @@ func NewPolicyTagManagerSerializationClient(ctx context.Context, opts ...option.
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -181,7 +173,6 @@ func NewPolicyTagManagerSerializationClient(ctx context.Context, opts ...option.
 
 	c := &policyTagManagerSerializationGRPCClient{
 		connPool:                            connPool,
-		disableDeadlines:                    disableDeadlines,
 		policyTagManagerSerializationClient: datacatalogpb.NewPolicyTagManagerSerializationClient(connPool),
 		CallOptions:                         &client.CallOptions,
 	}
@@ -204,7 +195,7 @@ func (c *policyTagManagerSerializationGRPCClient) Connection() *grpc.ClientConn 
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *policyTagManagerSerializationGRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -265,7 +256,7 @@ func defaultPolicyTagManagerSerializationRESTClientOptions() []option.ClientOpti
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *policyTagManagerSerializationRESTClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -364,13 +355,13 @@ func (c *policyTagManagerSerializationRESTClient) ImportTaxonomies(ctx context.C
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -396,8 +387,10 @@ func (c *policyTagManagerSerializationRESTClient) ExportTaxonomies(ctx context.C
 	if req.GetSerializedTaxonomies() {
 		params.Add("serializedTaxonomies", fmt.Sprintf("%v", req.GetSerializedTaxonomies()))
 	}
-	if req.GetTaxonomies() != nil {
-		params.Add("taxonomies", fmt.Sprintf("%v", req.GetTaxonomies()))
+	if items := req.GetTaxonomies(); len(items) > 0 {
+		for _, item := range items {
+			params.Add("taxonomies", fmt.Sprintf("%v", item))
+		}
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -430,13 +423,13 @@ func (c *policyTagManagerSerializationRESTClient) ExportTaxonomies(ctx context.C
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil

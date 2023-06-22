@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ package dataflow
 import (
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"math"
 	"net/http"
 	"net/url"
@@ -62,17 +62,29 @@ func defaultMetricsV1Beta3GRPCClientOptions() []option.ClientOption {
 
 func defaultMetricsV1Beta3CallOptions() *MetricsV1Beta3CallOptions {
 	return &MetricsV1Beta3CallOptions{
-		GetJobMetrics:            []gax.CallOption{},
-		GetJobExecutionDetails:   []gax.CallOption{},
-		GetStageExecutionDetails: []gax.CallOption{},
+		GetJobMetrics: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetJobExecutionDetails: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetStageExecutionDetails: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 	}
 }
 
 func defaultMetricsV1Beta3RESTCallOptions() *MetricsV1Beta3CallOptions {
 	return &MetricsV1Beta3CallOptions{
-		GetJobMetrics:            []gax.CallOption{},
-		GetJobExecutionDetails:   []gax.CallOption{},
-		GetStageExecutionDetails: []gax.CallOption{},
+		GetJobMetrics: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetJobExecutionDetails: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetStageExecutionDetails: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 	}
 }
 
@@ -155,9 +167,6 @@ type metricsV1Beta3GRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing MetricsV1Beta3Client
 	CallOptions **MetricsV1Beta3CallOptions
 
@@ -183,11 +192,6 @@ func NewMetricsV1Beta3Client(ctx context.Context, opts ...option.ClientOption) (
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -196,7 +200,6 @@ func NewMetricsV1Beta3Client(ctx context.Context, opts ...option.ClientOption) (
 
 	c := &metricsV1Beta3GRPCClient{
 		connPool:             connPool,
-		disableDeadlines:     disableDeadlines,
 		metricsV1Beta3Client: dataflowpb.NewMetricsV1Beta3Client(connPool),
 		CallOptions:          &client.CallOptions,
 	}
@@ -219,7 +222,7 @@ func (c *metricsV1Beta3GRPCClient) Connection() *grpc.ClientConn {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *metricsV1Beta3GRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -280,7 +283,7 @@ func defaultMetricsV1Beta3RESTClientOptions() []option.ClientOption {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *metricsV1Beta3RESTClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -300,11 +303,6 @@ func (c *metricsV1Beta3RESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 func (c *metricsV1Beta3GRPCClient) GetJobMetrics(ctx context.Context, req *dataflowpb.GetJobMetricsRequest, opts ...gax.CallOption) (*dataflowpb.JobMetrics, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project_id", url.QueryEscape(req.GetProjectId()), "location", url.QueryEscape(req.GetLocation()), "job_id", url.QueryEscape(req.GetJobId())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -426,12 +424,13 @@ func (c *metricsV1Beta3RESTClient) GetJobMetrics(ctx context.Context, req *dataf
 	baseUrl.Path += fmt.Sprintf("/v1b3/projects/%v/locations/%v/jobs/%v/metrics", req.GetProjectId(), req.GetLocation(), req.GetJobId())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetStartTime() != nil {
 		startTime, err := protojson.Marshal(req.GetStartTime())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("startTime", string(startTime))
+		params.Add("startTime", string(startTime[1:len(startTime)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -464,13 +463,13 @@ func (c *metricsV1Beta3RESTClient) GetJobMetrics(ctx context.Context, req *dataf
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -505,6 +504,7 @@ func (c *metricsV1Beta3RESTClient) GetJobExecutionDetails(ctx context.Context, r
 		baseUrl.Path += fmt.Sprintf("/v1b3/projects/%v/locations/%v/jobs/%v/executionDetails", req.GetProjectId(), req.GetLocation(), req.GetJobId())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetPageSize() != 0 {
 			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
 		}
@@ -536,13 +536,13 @@ func (c *metricsV1Beta3RESTClient) GetJobExecutionDetails(ctx context.Context, r
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -595,12 +595,13 @@ func (c *metricsV1Beta3RESTClient) GetStageExecutionDetails(ctx context.Context,
 		baseUrl.Path += fmt.Sprintf("/v1b3/projects/%v/locations/%v/jobs/%v/stages/%v/executionDetails", req.GetProjectId(), req.GetLocation(), req.GetJobId(), req.GetStageId())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetEndTime() != nil {
 			endTime, err := protojson.Marshal(req.GetEndTime())
 			if err != nil {
 				return nil, "", err
 			}
-			params.Add("endTime", string(endTime))
+			params.Add("endTime", string(endTime[1:len(endTime)-1]))
 		}
 		if req.GetPageSize() != 0 {
 			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
@@ -613,7 +614,7 @@ func (c *metricsV1Beta3RESTClient) GetStageExecutionDetails(ctx context.Context,
 			if err != nil {
 				return nil, "", err
 			}
-			params.Add("startTime", string(startTime))
+			params.Add("startTime", string(startTime[1:len(startTime)-1]))
 		}
 
 		baseUrl.RawQuery = params.Encode()
@@ -640,13 +641,13 @@ func (c *metricsV1Beta3RESTClient) GetStageExecutionDetails(ctx context.Context,
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil

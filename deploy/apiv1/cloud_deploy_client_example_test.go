@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,11 +20,11 @@ import (
 	"context"
 
 	deploy "cloud.google.com/go/deploy/apiv1"
+	deploypb "cloud.google.com/go/deploy/apiv1/deploypb"
+	iampb "cloud.google.com/go/iam/apiv1/iampb"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	"google.golang.org/api/iterator"
-	deploypb "google.golang.org/genproto/googleapis/cloud/deploy/v1"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
-	iampb "google.golang.org/genproto/googleapis/iam/v1"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 )
 
 func ExampleNewCloudDeployClient() {
@@ -35,6 +35,23 @@ func ExampleNewCloudDeployClient() {
 	// - It may require specifying regional endpoints when creating the service client as shown in:
 	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := deploy.NewCloudDeployClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
+func ExampleNewCloudDeployRESTClient() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := deploy.NewCloudDeployRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -59,7 +76,7 @@ func ExampleCloudDeployClient_ListDeliveryPipelines() {
 
 	req := &deploypb.ListDeliveryPipelinesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/deploy/v1#ListDeliveryPipelinesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/deploy/apiv1/deploypb#ListDeliveryPipelinesRequest.
 	}
 	it := c.ListDeliveryPipelines(ctx, req)
 	for {
@@ -90,7 +107,7 @@ func ExampleCloudDeployClient_GetDeliveryPipeline() {
 
 	req := &deploypb.GetDeliveryPipelineRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/deploy/v1#GetDeliveryPipelineRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/deploy/apiv1/deploypb#GetDeliveryPipelineRequest.
 	}
 	resp, err := c.GetDeliveryPipeline(ctx, req)
 	if err != nil {
@@ -115,7 +132,7 @@ func ExampleCloudDeployClient_CreateDeliveryPipeline() {
 
 	req := &deploypb.CreateDeliveryPipelineRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/deploy/v1#CreateDeliveryPipelineRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/deploy/apiv1/deploypb#CreateDeliveryPipelineRequest.
 	}
 	op, err := c.CreateDeliveryPipeline(ctx, req)
 	if err != nil {
@@ -145,7 +162,7 @@ func ExampleCloudDeployClient_UpdateDeliveryPipeline() {
 
 	req := &deploypb.UpdateDeliveryPipelineRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/deploy/v1#UpdateDeliveryPipelineRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/deploy/apiv1/deploypb#UpdateDeliveryPipelineRequest.
 	}
 	op, err := c.UpdateDeliveryPipeline(ctx, req)
 	if err != nil {
@@ -175,7 +192,7 @@ func ExampleCloudDeployClient_DeleteDeliveryPipeline() {
 
 	req := &deploypb.DeleteDeliveryPipelineRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/deploy/v1#DeleteDeliveryPipelineRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/deploy/apiv1/deploypb#DeleteDeliveryPipelineRequest.
 	}
 	op, err := c.DeleteDeliveryPipeline(ctx, req)
 	if err != nil {
@@ -203,7 +220,7 @@ func ExampleCloudDeployClient_ListTargets() {
 
 	req := &deploypb.ListTargetsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/deploy/v1#ListTargetsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/deploy/apiv1/deploypb#ListTargetsRequest.
 	}
 	it := c.ListTargets(ctx, req)
 	for {
@@ -234,7 +251,7 @@ func ExampleCloudDeployClient_GetTarget() {
 
 	req := &deploypb.GetTargetRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/deploy/v1#GetTargetRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/deploy/apiv1/deploypb#GetTargetRequest.
 	}
 	resp, err := c.GetTarget(ctx, req)
 	if err != nil {
@@ -259,7 +276,7 @@ func ExampleCloudDeployClient_CreateTarget() {
 
 	req := &deploypb.CreateTargetRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/deploy/v1#CreateTargetRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/deploy/apiv1/deploypb#CreateTargetRequest.
 	}
 	op, err := c.CreateTarget(ctx, req)
 	if err != nil {
@@ -289,7 +306,7 @@ func ExampleCloudDeployClient_UpdateTarget() {
 
 	req := &deploypb.UpdateTargetRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/deploy/v1#UpdateTargetRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/deploy/apiv1/deploypb#UpdateTargetRequest.
 	}
 	op, err := c.UpdateTarget(ctx, req)
 	if err != nil {
@@ -319,7 +336,7 @@ func ExampleCloudDeployClient_DeleteTarget() {
 
 	req := &deploypb.DeleteTargetRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/deploy/v1#DeleteTargetRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/deploy/apiv1/deploypb#DeleteTargetRequest.
 	}
 	op, err := c.DeleteTarget(ctx, req)
 	if err != nil {
@@ -347,7 +364,7 @@ func ExampleCloudDeployClient_ListReleases() {
 
 	req := &deploypb.ListReleasesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/deploy/v1#ListReleasesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/deploy/apiv1/deploypb#ListReleasesRequest.
 	}
 	it := c.ListReleases(ctx, req)
 	for {
@@ -378,7 +395,7 @@ func ExampleCloudDeployClient_GetRelease() {
 
 	req := &deploypb.GetReleaseRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/deploy/v1#GetReleaseRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/deploy/apiv1/deploypb#GetReleaseRequest.
 	}
 	resp, err := c.GetRelease(ctx, req)
 	if err != nil {
@@ -403,7 +420,7 @@ func ExampleCloudDeployClient_CreateRelease() {
 
 	req := &deploypb.CreateReleaseRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/deploy/v1#CreateReleaseRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/deploy/apiv1/deploypb#CreateReleaseRequest.
 	}
 	op, err := c.CreateRelease(ctx, req)
 	if err != nil {
@@ -433,7 +450,7 @@ func ExampleCloudDeployClient_AbandonRelease() {
 
 	req := &deploypb.AbandonReleaseRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/deploy/v1#AbandonReleaseRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/deploy/apiv1/deploypb#AbandonReleaseRequest.
 	}
 	resp, err := c.AbandonRelease(ctx, req)
 	if err != nil {
@@ -458,9 +475,59 @@ func ExampleCloudDeployClient_ApproveRollout() {
 
 	req := &deploypb.ApproveRolloutRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/deploy/v1#ApproveRolloutRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/deploy/apiv1/deploypb#ApproveRolloutRequest.
 	}
 	resp, err := c.ApproveRollout(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleCloudDeployClient_AdvanceRollout() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := deploy.NewCloudDeployClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &deploypb.AdvanceRolloutRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/deploy/apiv1/deploypb#AdvanceRolloutRequest.
+	}
+	resp, err := c.AdvanceRollout(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleCloudDeployClient_CancelRollout() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := deploy.NewCloudDeployClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &deploypb.CancelRolloutRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/deploy/apiv1/deploypb#CancelRolloutRequest.
+	}
+	resp, err := c.CancelRollout(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -483,7 +550,7 @@ func ExampleCloudDeployClient_ListRollouts() {
 
 	req := &deploypb.ListRolloutsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/deploy/v1#ListRolloutsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/deploy/apiv1/deploypb#ListRolloutsRequest.
 	}
 	it := c.ListRollouts(ctx, req)
 	for {
@@ -514,7 +581,7 @@ func ExampleCloudDeployClient_GetRollout() {
 
 	req := &deploypb.GetRolloutRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/deploy/v1#GetRolloutRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/deploy/apiv1/deploypb#GetRolloutRequest.
 	}
 	resp, err := c.GetRollout(ctx, req)
 	if err != nil {
@@ -539,7 +606,7 @@ func ExampleCloudDeployClient_CreateRollout() {
 
 	req := &deploypb.CreateRolloutRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/deploy/v1#CreateRolloutRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/deploy/apiv1/deploypb#CreateRolloutRequest.
 	}
 	op, err := c.CreateRollout(ctx, req)
 	if err != nil {
@@ -547,6 +614,31 @@ func ExampleCloudDeployClient_CreateRollout() {
 	}
 
 	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleCloudDeployClient_IgnoreJob() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := deploy.NewCloudDeployClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &deploypb.IgnoreJobRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/deploy/apiv1/deploypb#IgnoreJobRequest.
+	}
+	resp, err := c.IgnoreJob(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -569,7 +661,7 @@ func ExampleCloudDeployClient_RetryJob() {
 
 	req := &deploypb.RetryJobRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/deploy/v1#RetryJobRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/deploy/apiv1/deploypb#RetryJobRequest.
 	}
 	resp, err := c.RetryJob(ctx, req)
 	if err != nil {
@@ -594,7 +686,7 @@ func ExampleCloudDeployClient_ListJobRuns() {
 
 	req := &deploypb.ListJobRunsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/deploy/v1#ListJobRunsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/deploy/apiv1/deploypb#ListJobRunsRequest.
 	}
 	it := c.ListJobRuns(ctx, req)
 	for {
@@ -625,9 +717,34 @@ func ExampleCloudDeployClient_GetJobRun() {
 
 	req := &deploypb.GetJobRunRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/deploy/v1#GetJobRunRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/deploy/apiv1/deploypb#GetJobRunRequest.
 	}
 	resp, err := c.GetJobRun(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleCloudDeployClient_TerminateJobRun() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := deploy.NewCloudDeployClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &deploypb.TerminateJobRunRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/deploy/apiv1/deploypb#TerminateJobRunRequest.
+	}
+	resp, err := c.TerminateJobRun(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -650,7 +767,7 @@ func ExampleCloudDeployClient_GetConfig() {
 
 	req := &deploypb.GetConfigRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/deploy/v1#GetConfigRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/deploy/apiv1/deploypb#GetConfigRequest.
 	}
 	resp, err := c.GetConfig(ctx, req)
 	if err != nil {
@@ -731,7 +848,7 @@ func ExampleCloudDeployClient_GetIamPolicy() {
 
 	req := &iampb.GetIamPolicyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/iam/v1#GetIamPolicyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/iam/apiv1/iampb#GetIamPolicyRequest.
 	}
 	resp, err := c.GetIamPolicy(ctx, req)
 	if err != nil {
@@ -756,7 +873,7 @@ func ExampleCloudDeployClient_SetIamPolicy() {
 
 	req := &iampb.SetIamPolicyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/iam/v1#SetIamPolicyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/iam/apiv1/iampb#SetIamPolicyRequest.
 	}
 	resp, err := c.SetIamPolicy(ctx, req)
 	if err != nil {
@@ -781,7 +898,7 @@ func ExampleCloudDeployClient_TestIamPermissions() {
 
 	req := &iampb.TestIamPermissionsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/iam/v1#TestIamPermissionsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/iam/apiv1/iampb#TestIamPermissionsRequest.
 	}
 	resp, err := c.TestIamPermissions(ctx, req)
 	if err != nil {
@@ -806,7 +923,7 @@ func ExampleCloudDeployClient_CancelOperation() {
 
 	req := &longrunningpb.CancelOperationRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/longrunning#CancelOperationRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/longrunning/autogen/longrunningpb#CancelOperationRequest.
 	}
 	err = c.CancelOperation(ctx, req)
 	if err != nil {
@@ -829,7 +946,7 @@ func ExampleCloudDeployClient_DeleteOperation() {
 
 	req := &longrunningpb.DeleteOperationRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/longrunning#DeleteOperationRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/longrunning/autogen/longrunningpb#DeleteOperationRequest.
 	}
 	err = c.DeleteOperation(ctx, req)
 	if err != nil {
@@ -852,7 +969,7 @@ func ExampleCloudDeployClient_GetOperation() {
 
 	req := &longrunningpb.GetOperationRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/longrunning#GetOperationRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/longrunning/autogen/longrunningpb#GetOperationRequest.
 	}
 	resp, err := c.GetOperation(ctx, req)
 	if err != nil {
@@ -877,7 +994,7 @@ func ExampleCloudDeployClient_ListOperations() {
 
 	req := &longrunningpb.ListOperationsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/longrunning#ListOperationsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/longrunning/autogen/longrunningpb#ListOperationsRequest.
 	}
 	it := c.ListOperations(ctx, req)
 	for {

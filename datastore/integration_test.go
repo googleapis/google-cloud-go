@@ -198,6 +198,51 @@ func TestIntegration_Basics(t *testing.T) {
 	}
 }
 
+func TestIntegration_GetWithReadTime(t *testing.T) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*20)
+	client := newTestClient(ctx, t)
+	defer cancel()
+	defer client.Close()
+
+	type RT struct {
+		TimeCreated time.Time
+	}
+
+	rt1 := RT{time.Now()}
+	k := NameKey("RT", "ReadTime", nil)
+
+	tx, err := client.NewTransaction(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if _, err := tx.Put(k, &rt1); err != nil {
+		t.Fatalf("Transaction.Put: %v\n", err)
+	}
+
+	if _, err := tx.Commit(); err != nil {
+		t.Fatalf("Transaction.Commit: %v\n", err)
+	}
+
+	testutil.Retry(t, 5, time.Duration(10*time.Second), func(r *testutil.R) {
+		got := RT{}
+		tm := ReadTime(time.Now())
+
+		client.WithReadOptions(tm)
+
+		// If the Entity isn't available at the requested read time, we get
+		// a "datastore: no such entity" error. The ReadTime is otherwise not
+		// exposed in anyway in the response.
+		err = client.Get(ctx, k, &got)
+		if err != nil {
+			r.Errorf("client.Get: %v", err)
+		}
+	})
+
+	// Cleanup
+	_ = client.Delete(ctx, k)
+}
+
 func TestIntegration_TopLevelKeyLoaded(t *testing.T) {
 	ctx, _ := context.WithTimeout(context.Background(), time.Second*20)
 	client := newTestClient(ctx, t)
@@ -292,6 +337,7 @@ func TestIntegration_GetMulti(t *testing.T) {
 	if _, err := client.PutMulti(ctx, srcKeys, src); err != nil {
 		t.Error(err)
 	}
+
 	err := client.GetMulti(ctx, dstKeys, dst)
 	if err == nil {
 		t.Errorf("client.GetMulti got %v, expected error", err)
@@ -437,6 +483,70 @@ func testSmallQueries(ctx context.Context, t *testing.T, client *Client, parent 
 	for _, x := range extraTests {
 		x()
 	}
+}
+
+func TestIntegration_FilterEntity(t *testing.T) {
+	ctx := context.Background()
+	client := newTestClient(ctx, t)
+	defer client.Close()
+
+	parent := NameKey("SQParent", "TestIntegration_Filters"+suffix, nil)
+	now := timeNow.Truncate(time.Millisecond).Unix()
+	tomorrow := timeNow.Truncate(time.Millisecond).AddDate(0, 0, 1).Unix()
+	children := []*SQChild{
+		{I: 0, J: 99, T: tomorrow, U: now},
+		{I: 1, J: 98, T: tomorrow, U: now},
+		{I: 2, J: 97, T: tomorrow, U: now},
+		{I: 3, J: 96, T: now, U: now},
+		{I: 4, J: 95, T: now, U: now},
+		{I: 5, J: 94, T: now, U: now},
+		{I: 6, J: 93, T: now, U: now},
+		{I: 7, J: 92, T: now, U: now},
+	}
+	baseQuery := NewQuery("SQChild").Ancestor(parent)
+	testSmallQueries(ctx, t, client, parent, children, []SQTestCase{
+		{
+			desc: "I>1",
+			q: baseQuery.Filter("T=", now).FilterEntity(
+				PropertyFilter{FieldName: "I", Operator: ">", Value: 1}),
+			wantCount: 5,
+			wantSum:   3 + 4 + 5 + 6 + 7 + 96 + 95 + 94 + 93 + 92,
+		},
+		{
+			desc: "I<=1 or I >= 6",
+			q: baseQuery.Filter("T=", now).FilterEntity(OrFilter{
+				[]EntityFilter{
+					PropertyFilter{FieldName: "I", Operator: "<", Value: 4},
+					PropertyFilter{FieldName: "I", Operator: ">=", Value: 6},
+				},
+			}),
+			wantCount: 3,
+			wantSum:   3 + 6 + 7 + 92 + 93 + 96,
+		},
+		{
+			desc: "(T = now) and (((J > 97) and (T = tomorrow)) or (J < 94))",
+			q: baseQuery.FilterEntity(
+				AndFilter{
+					Filters: []EntityFilter{
+						OrFilter{
+							Filters: []EntityFilter{
+								AndFilter{
+									[]EntityFilter{
+										PropertyFilter{FieldName: "J", Operator: ">", Value: 97},
+										PropertyFilter{FieldName: "T", Operator: "=", Value: tomorrow},
+									},
+								},
+								PropertyFilter{FieldName: "J", Operator: "<", Value: 94},
+							},
+						},
+						PropertyFilter{FieldName: "T", Operator: "=", Value: now},
+					},
+				},
+			),
+			wantCount: 2,
+			wantSum:   6 + 7 + 92 + 93,
+		},
+	})
 }
 
 func TestIntegration_Filters(t *testing.T) {

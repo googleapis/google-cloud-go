@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"math"
 	"net/http"
 	"net/url"
@@ -29,6 +29,7 @@ import (
 	assuredworkloadspb "cloud.google.com/go/assuredworkloads/apiv1beta1/assuredworkloadspb"
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
@@ -36,7 +37,6 @@ import (
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -73,10 +73,15 @@ func defaultGRPCClientOptions() []option.ClientOption {
 
 func defaultCallOptions() *CallOptions {
 	return &CallOptions{
-		CreateWorkload:           []gax.CallOption{},
-		UpdateWorkload:           []gax.CallOption{},
+		CreateWorkload: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateWorkload: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		RestrictAllowedResources: []gax.CallOption{},
 		DeleteWorkload: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -88,6 +93,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		GetWorkload: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -99,6 +105,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		AnalyzeWorkloadMove: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -110,6 +117,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		ListWorkloads: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -121,6 +129,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		GetOperation: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -132,6 +141,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		ListOperations: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -147,10 +157,15 @@ func defaultCallOptions() *CallOptions {
 
 func defaultRESTCallOptions() *CallOptions {
 	return &CallOptions{
-		CreateWorkload:           []gax.CallOption{},
-		UpdateWorkload:           []gax.CallOption{},
+		CreateWorkload: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateWorkload: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		RestrictAllowedResources: []gax.CallOption{},
 		DeleteWorkload: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    200 * time.Millisecond,
@@ -161,6 +176,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		GetWorkload: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    200 * time.Millisecond,
@@ -171,6 +187,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		AnalyzeWorkloadMove: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    200 * time.Millisecond,
@@ -181,6 +198,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		ListWorkloads: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    200 * time.Millisecond,
@@ -191,6 +209,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		GetOperation: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    200 * time.Millisecond,
@@ -201,6 +220,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		ListOperations: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    200 * time.Millisecond,
@@ -342,9 +362,6 @@ type gRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing Client
 	CallOptions **CallOptions
 
@@ -376,11 +393,6 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -389,7 +401,6 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 
 	c := &gRPCClient{
 		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
 		client:           assuredworkloadspb.NewAssuredWorkloadsServiceClient(connPool),
 		CallOptions:      &client.CallOptions,
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
@@ -424,7 +435,7 @@ func (c *gRPCClient) Connection() *grpc.ClientConn {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -499,7 +510,7 @@ func defaultRESTClientOptions() []option.ClientOption {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *restClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -519,11 +530,6 @@ func (c *restClient) Connection() *grpc.ClientConn {
 	return nil
 }
 func (c *gRPCClient) CreateWorkload(ctx context.Context, req *assuredworkloadspb.CreateWorkloadRequest, opts ...gax.CallOption) (*CreateWorkloadOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -543,11 +549,6 @@ func (c *gRPCClient) CreateWorkload(ctx context.Context, req *assuredworkloadspb
 }
 
 func (c *gRPCClient) UpdateWorkload(ctx context.Context, req *assuredworkloadspb.UpdateWorkloadRequest, opts ...gax.CallOption) (*assuredworkloadspb.Workload, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
 	opts = append((*c.CallOptions).UpdateWorkload[0:len((*c.CallOptions).UpdateWorkload):len((*c.CallOptions).UpdateWorkload)], opts...)
 	var resp *assuredworkloadspb.Workload
@@ -580,11 +581,6 @@ func (c *gRPCClient) RestrictAllowedResources(ctx context.Context, req *assuredw
 }
 
 func (c *gRPCClient) DeleteWorkload(ctx context.Context, req *assuredworkloadspb.DeleteWorkloadRequest, opts ...gax.CallOption) error {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -598,11 +594,6 @@ func (c *gRPCClient) DeleteWorkload(ctx context.Context, req *assuredworkloadspb
 }
 
 func (c *gRPCClient) GetWorkload(ctx context.Context, req *assuredworkloadspb.GetWorkloadRequest, opts ...gax.CallOption) (*assuredworkloadspb.Workload, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
 	opts = append((*c.CallOptions).GetWorkload[0:len((*c.CallOptions).GetWorkload):len((*c.CallOptions).GetWorkload)], opts...)
 	var resp *assuredworkloadspb.Workload
@@ -618,11 +609,6 @@ func (c *gRPCClient) GetWorkload(ctx context.Context, req *assuredworkloadspb.Ge
 }
 
 func (c *gRPCClient) AnalyzeWorkloadMove(ctx context.Context, req *assuredworkloadspb.AnalyzeWorkloadMoveRequest, opts ...gax.CallOption) (*assuredworkloadspb.AnalyzeWorkloadMoveResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
 	opts = append((*c.CallOptions).AnalyzeWorkloadMove[0:len((*c.CallOptions).AnalyzeWorkloadMove):len((*c.CallOptions).AnalyzeWorkloadMove)], opts...)
 	var resp *assuredworkloadspb.AnalyzeWorkloadMoveResponse
@@ -681,11 +667,6 @@ func (c *gRPCClient) ListWorkloads(ctx context.Context, req *assuredworkloadspb.
 }
 
 func (c *gRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -763,6 +744,7 @@ func (c *restClient) CreateWorkload(ctx context.Context, req *assuredworkloadspb
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/workloads", req.GetParent())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetExternalId() != "" {
 		params.Add("externalId", fmt.Sprintf("%v", req.GetExternalId()))
 	}
@@ -796,13 +778,13 @@ func (c *restClient) CreateWorkload(ctx context.Context, req *assuredworkloadspb
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -830,12 +812,13 @@ func (c *restClient) UpdateWorkload(ctx context.Context, req *assuredworkloadspb
 	baseUrl.Path += fmt.Sprintf("")
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
 		updateMask, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask))
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
 	}
 	if req.GetWorkload().GetBillingAccount() != "" {
 		params.Add("workload.billingAccount", fmt.Sprintf("%v", req.GetWorkload().GetBillingAccount()))
@@ -845,25 +828,27 @@ func (c *restClient) UpdateWorkload(ctx context.Context, req *assuredworkloadspb
 		if err != nil {
 			return nil, err
 		}
-		params.Add("workload.cjisSettings.kmsSettings.nextRotationTime", string(nextRotationTime))
+		params.Add("workload.cjisSettings.kmsSettings.nextRotationTime", string(nextRotationTime[1:len(nextRotationTime)-1]))
 	}
 	if req.GetWorkload().GetCjisSettings().GetKmsSettings().GetRotationPeriod() != nil {
 		rotationPeriod, err := protojson.Marshal(req.GetWorkload().GetCjisSettings().GetKmsSettings().GetRotationPeriod())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("workload.cjisSettings.kmsSettings.rotationPeriod", string(rotationPeriod))
+		params.Add("workload.cjisSettings.kmsSettings.rotationPeriod", string(rotationPeriod[1:len(rotationPeriod)-1]))
 	}
 	params.Add("workload.complianceRegime", fmt.Sprintf("%v", req.GetWorkload().GetComplianceRegime()))
-	if req.GetWorkload().GetCompliantButDisallowedServices() != nil {
-		params.Add("workload.compliantButDisallowedServices", fmt.Sprintf("%v", req.GetWorkload().GetCompliantButDisallowedServices()))
+	if items := req.GetWorkload().GetCompliantButDisallowedServices(); len(items) > 0 {
+		for _, item := range items {
+			params.Add("workload.compliantButDisallowedServices", fmt.Sprintf("%v", item))
+		}
 	}
 	if req.GetWorkload().GetCreateTime() != nil {
 		createTime, err := protojson.Marshal(req.GetWorkload().GetCreateTime())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("workload.createTime", string(createTime))
+		params.Add("workload.createTime", string(createTime[1:len(createTime)-1]))
 	}
 	params.Add("workload.displayName", fmt.Sprintf("%v", req.GetWorkload().GetDisplayName()))
 	if req.GetWorkload().GetEnableSovereignControls() {
@@ -877,42 +862,42 @@ func (c *restClient) UpdateWorkload(ctx context.Context, req *assuredworkloadspb
 		if err != nil {
 			return nil, err
 		}
-		params.Add("workload.fedrampHighSettings.kmsSettings.nextRotationTime", string(nextRotationTime))
+		params.Add("workload.fedrampHighSettings.kmsSettings.nextRotationTime", string(nextRotationTime[1:len(nextRotationTime)-1]))
 	}
 	if req.GetWorkload().GetFedrampHighSettings().GetKmsSettings().GetRotationPeriod() != nil {
 		rotationPeriod, err := protojson.Marshal(req.GetWorkload().GetFedrampHighSettings().GetKmsSettings().GetRotationPeriod())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("workload.fedrampHighSettings.kmsSettings.rotationPeriod", string(rotationPeriod))
+		params.Add("workload.fedrampHighSettings.kmsSettings.rotationPeriod", string(rotationPeriod[1:len(rotationPeriod)-1]))
 	}
 	if req.GetWorkload().GetFedrampModerateSettings().GetKmsSettings().GetNextRotationTime() != nil {
 		nextRotationTime, err := protojson.Marshal(req.GetWorkload().GetFedrampModerateSettings().GetKmsSettings().GetNextRotationTime())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("workload.fedrampModerateSettings.kmsSettings.nextRotationTime", string(nextRotationTime))
+		params.Add("workload.fedrampModerateSettings.kmsSettings.nextRotationTime", string(nextRotationTime[1:len(nextRotationTime)-1]))
 	}
 	if req.GetWorkload().GetFedrampModerateSettings().GetKmsSettings().GetRotationPeriod() != nil {
 		rotationPeriod, err := protojson.Marshal(req.GetWorkload().GetFedrampModerateSettings().GetKmsSettings().GetRotationPeriod())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("workload.fedrampModerateSettings.kmsSettings.rotationPeriod", string(rotationPeriod))
+		params.Add("workload.fedrampModerateSettings.kmsSettings.rotationPeriod", string(rotationPeriod[1:len(rotationPeriod)-1]))
 	}
 	if req.GetWorkload().GetIl4Settings().GetKmsSettings().GetNextRotationTime() != nil {
 		nextRotationTime, err := protojson.Marshal(req.GetWorkload().GetIl4Settings().GetKmsSettings().GetNextRotationTime())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("workload.il4Settings.kmsSettings.nextRotationTime", string(nextRotationTime))
+		params.Add("workload.il4Settings.kmsSettings.nextRotationTime", string(nextRotationTime[1:len(nextRotationTime)-1]))
 	}
 	if req.GetWorkload().GetIl4Settings().GetKmsSettings().GetRotationPeriod() != nil {
 		rotationPeriod, err := protojson.Marshal(req.GetWorkload().GetIl4Settings().GetKmsSettings().GetRotationPeriod())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("workload.il4Settings.kmsSettings.rotationPeriod", string(rotationPeriod))
+		params.Add("workload.il4Settings.kmsSettings.rotationPeriod", string(rotationPeriod[1:len(rotationPeriod)-1]))
 	}
 	if req.GetWorkload().GetKajEnrollmentState() != 0 {
 		params.Add("workload.kajEnrollmentState", fmt.Sprintf("%v", req.GetWorkload().GetKajEnrollmentState()))
@@ -922,14 +907,14 @@ func (c *restClient) UpdateWorkload(ctx context.Context, req *assuredworkloadspb
 		if err != nil {
 			return nil, err
 		}
-		params.Add("workload.kmsSettings.nextRotationTime", string(nextRotationTime))
+		params.Add("workload.kmsSettings.nextRotationTime", string(nextRotationTime[1:len(nextRotationTime)-1]))
 	}
 	if req.GetWorkload().GetKmsSettings().GetRotationPeriod() != nil {
 		rotationPeriod, err := protojson.Marshal(req.GetWorkload().GetKmsSettings().GetRotationPeriod())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("workload.kmsSettings.rotationPeriod", string(rotationPeriod))
+		params.Add("workload.kmsSettings.rotationPeriod", string(rotationPeriod[1:len(rotationPeriod)-1]))
 	}
 	if req.GetWorkload().GetName() != "" {
 		params.Add("workload.name", fmt.Sprintf("%v", req.GetWorkload().GetName()))
@@ -937,8 +922,10 @@ func (c *restClient) UpdateWorkload(ctx context.Context, req *assuredworkloadspb
 	if req.GetWorkload().GetProvisionedResourcesParent() != "" {
 		params.Add("workload.provisionedResourcesParent", fmt.Sprintf("%v", req.GetWorkload().GetProvisionedResourcesParent()))
 	}
-	if req.GetWorkload().GetSaaEnrollmentResponse().GetSetupErrors() != nil {
-		params.Add("workload.saaEnrollmentResponse.setupErrors", fmt.Sprintf("%v", req.GetWorkload().GetSaaEnrollmentResponse().GetSetupErrors()))
+	if items := req.GetWorkload().GetSaaEnrollmentResponse().GetSetupErrors(); len(items) > 0 {
+		for _, item := range items {
+			params.Add("workload.saaEnrollmentResponse.setupErrors", fmt.Sprintf("%v", item))
+		}
 	}
 	if req.GetWorkload().GetSaaEnrollmentResponse() != nil && req.GetWorkload().GetSaaEnrollmentResponse().SetupStatus != nil {
 		params.Add("workload.saaEnrollmentResponse.setupStatus", fmt.Sprintf("%v", req.GetWorkload().GetSaaEnrollmentResponse().GetSetupStatus()))
@@ -972,13 +959,13 @@ func (c *restClient) UpdateWorkload(ctx context.Context, req *assuredworkloadspb
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1008,6 +995,11 @@ func (c *restClient) RestrictAllowedResources(ctx context.Context, req *assuredw
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:restrictAllowedResources", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
@@ -1036,13 +1028,13 @@ func (c *restClient) RestrictAllowedResources(ctx context.Context, req *assuredw
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1067,6 +1059,7 @@ func (c *restClient) DeleteWorkload(ctx context.Context, req *assuredworkloadspb
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetEtag() != "" {
 		params.Add("etag", fmt.Sprintf("%v", req.GetEtag()))
 	}
@@ -1109,6 +1102,7 @@ func (c *restClient) GetWorkload(ctx context.Context, req *assuredworkloadspb.Ge
 	baseUrl.Path += fmt.Sprintf("")
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	params.Add("name", fmt.Sprintf("%v", req.GetName()))
 
 	baseUrl.RawQuery = params.Encode()
@@ -1139,13 +1133,13 @@ func (c *restClient) GetWorkload(ctx context.Context, req *assuredworkloadspb.Ge
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1166,6 +1160,7 @@ func (c *restClient) AnalyzeWorkloadMove(ctx context.Context, req *assuredworklo
 	baseUrl.Path += fmt.Sprintf("")
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetProject() != "" {
 		params.Add("project", fmt.Sprintf("%v", req.GetProject()))
 	}
@@ -1202,13 +1197,13 @@ func (c *restClient) AnalyzeWorkloadMove(ctx context.Context, req *assuredworklo
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1241,6 +1236,7 @@ func (c *restClient) ListWorkloads(ctx context.Context, req *assuredworkloadspb.
 		baseUrl.Path += fmt.Sprintf("")
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -1276,13 +1272,13 @@ func (c *restClient) ListWorkloads(ctx context.Context, req *assuredworkloadspb.
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -1318,6 +1314,11 @@ func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
@@ -1346,13 +1347,13 @@ func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1385,6 +1386,7 @@ func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.List
 		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/operations", req.GetName())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -1419,13 +1421,13 @@ func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.List
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil

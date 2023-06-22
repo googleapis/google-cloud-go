@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,15 +20,17 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"math"
 	"net/http"
 	"net/url"
 	"time"
 
 	aiplatformpb "cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb"
+	iampb "cloud.google.com/go/iam/apiv1/iampb"
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
@@ -37,8 +39,6 @@ import (
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
-	iampb "google.golang.org/genproto/googleapis/iam/v1"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/encoding/protojson"
@@ -57,6 +57,7 @@ type DatasetCallOptions struct {
 	ImportData         []gax.CallOption
 	ExportData         []gax.CallOption
 	ListDataItems      []gax.CallOption
+	SearchDataItems    []gax.CallOption
 	ListSavedQueries   []gax.CallOption
 	GetAnnotationSpec  []gax.CallOption
 	ListAnnotations    []gax.CallOption
@@ -86,17 +87,38 @@ func defaultDatasetGRPCClientOptions() []option.ClientOption {
 
 func defaultDatasetCallOptions() *DatasetCallOptions {
 	return &DatasetCallOptions{
-		CreateDataset:      []gax.CallOption{},
-		GetDataset:         []gax.CallOption{},
-		UpdateDataset:      []gax.CallOption{},
-		ListDatasets:       []gax.CallOption{},
-		DeleteDataset:      []gax.CallOption{},
-		ImportData:         []gax.CallOption{},
-		ExportData:         []gax.CallOption{},
-		ListDataItems:      []gax.CallOption{},
-		ListSavedQueries:   []gax.CallOption{},
-		GetAnnotationSpec:  []gax.CallOption{},
-		ListAnnotations:    []gax.CallOption{},
+		CreateDataset: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		GetDataset: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		UpdateDataset: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		ListDatasets: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		DeleteDataset: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		ImportData: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		ExportData: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		ListDataItems: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		SearchDataItems:  []gax.CallOption{},
+		ListSavedQueries: []gax.CallOption{},
+		GetAnnotationSpec: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		ListAnnotations: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
 		GetLocation:        []gax.CallOption{},
 		ListLocations:      []gax.CallOption{},
 		GetIamPolicy:       []gax.CallOption{},
@@ -112,17 +134,38 @@ func defaultDatasetCallOptions() *DatasetCallOptions {
 
 func defaultDatasetRESTCallOptions() *DatasetCallOptions {
 	return &DatasetCallOptions{
-		CreateDataset:      []gax.CallOption{},
-		GetDataset:         []gax.CallOption{},
-		UpdateDataset:      []gax.CallOption{},
-		ListDatasets:       []gax.CallOption{},
-		DeleteDataset:      []gax.CallOption{},
-		ImportData:         []gax.CallOption{},
-		ExportData:         []gax.CallOption{},
-		ListDataItems:      []gax.CallOption{},
-		ListSavedQueries:   []gax.CallOption{},
-		GetAnnotationSpec:  []gax.CallOption{},
-		ListAnnotations:    []gax.CallOption{},
+		CreateDataset: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		GetDataset: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		UpdateDataset: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		ListDatasets: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		DeleteDataset: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		ImportData: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		ExportData: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		ListDataItems: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		SearchDataItems:  []gax.CallOption{},
+		ListSavedQueries: []gax.CallOption{},
+		GetAnnotationSpec: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		ListAnnotations: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
 		GetLocation:        []gax.CallOption{},
 		ListLocations:      []gax.CallOption{},
 		GetIamPolicy:       []gax.CallOption{},
@@ -153,6 +196,7 @@ type internalDatasetClient interface {
 	ExportData(context.Context, *aiplatformpb.ExportDataRequest, ...gax.CallOption) (*ExportDataOperation, error)
 	ExportDataOperation(name string) *ExportDataOperation
 	ListDataItems(context.Context, *aiplatformpb.ListDataItemsRequest, ...gax.CallOption) *DataItemIterator
+	SearchDataItems(context.Context, *aiplatformpb.SearchDataItemsRequest, ...gax.CallOption) *DataItemViewIterator
 	ListSavedQueries(context.Context, *aiplatformpb.ListSavedQueriesRequest, ...gax.CallOption) *SavedQueryIterator
 	GetAnnotationSpec(context.Context, *aiplatformpb.GetAnnotationSpecRequest, ...gax.CallOption) (*aiplatformpb.AnnotationSpec, error)
 	ListAnnotations(context.Context, *aiplatformpb.ListAnnotationsRequest, ...gax.CallOption) *AnnotationIterator
@@ -273,6 +317,11 @@ func (c *DatasetClient) ListDataItems(ctx context.Context, req *aiplatformpb.Lis
 	return c.internalClient.ListDataItems(ctx, req, opts...)
 }
 
+// SearchDataItems searches DataItems in a Dataset.
+func (c *DatasetClient) SearchDataItems(ctx context.Context, req *aiplatformpb.SearchDataItemsRequest, opts ...gax.CallOption) *DataItemViewIterator {
+	return c.internalClient.SearchDataItems(ctx, req, opts...)
+}
+
 // ListSavedQueries lists SavedQueries in a Dataset.
 func (c *DatasetClient) ListSavedQueries(ctx context.Context, req *aiplatformpb.ListSavedQueriesRequest, opts ...gax.CallOption) *SavedQueryIterator {
 	return c.internalClient.ListSavedQueries(ctx, req, opts...)
@@ -356,9 +405,6 @@ type datasetGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing DatasetClient
 	CallOptions **DatasetCallOptions
 
@@ -395,11 +441,6 @@ func NewDatasetClient(ctx context.Context, opts ...option.ClientOption) (*Datase
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -408,7 +449,6 @@ func NewDatasetClient(ctx context.Context, opts ...option.ClientOption) (*Datase
 
 	c := &datasetGRPCClient{
 		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
 		datasetClient:    aiplatformpb.NewDatasetServiceClient(connPool),
 		CallOptions:      &client.CallOptions,
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
@@ -445,7 +485,7 @@ func (c *datasetGRPCClient) Connection() *grpc.ClientConn {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *datasetGRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -521,7 +561,7 @@ func defaultDatasetRESTClientOptions() []option.ClientOption {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *datasetRESTClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -541,11 +581,6 @@ func (c *datasetRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 func (c *datasetGRPCClient) CreateDataset(ctx context.Context, req *aiplatformpb.CreateDatasetRequest, opts ...gax.CallOption) (*CreateDatasetOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -565,11 +600,6 @@ func (c *datasetGRPCClient) CreateDataset(ctx context.Context, req *aiplatformpb
 }
 
 func (c *datasetGRPCClient) GetDataset(ctx context.Context, req *aiplatformpb.GetDatasetRequest, opts ...gax.CallOption) (*aiplatformpb.Dataset, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -587,11 +617,6 @@ func (c *datasetGRPCClient) GetDataset(ctx context.Context, req *aiplatformpb.Ge
 }
 
 func (c *datasetGRPCClient) UpdateDataset(ctx context.Context, req *aiplatformpb.UpdateDatasetRequest, opts ...gax.CallOption) (*aiplatformpb.Dataset, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "dataset.name", url.QueryEscape(req.GetDataset().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -654,11 +679,6 @@ func (c *datasetGRPCClient) ListDatasets(ctx context.Context, req *aiplatformpb.
 }
 
 func (c *datasetGRPCClient) DeleteDataset(ctx context.Context, req *aiplatformpb.DeleteDatasetRequest, opts ...gax.CallOption) (*DeleteDatasetOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -678,11 +698,6 @@ func (c *datasetGRPCClient) DeleteDataset(ctx context.Context, req *aiplatformpb
 }
 
 func (c *datasetGRPCClient) ImportData(ctx context.Context, req *aiplatformpb.ImportDataRequest, opts ...gax.CallOption) (*ImportDataOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -702,11 +717,6 @@ func (c *datasetGRPCClient) ImportData(ctx context.Context, req *aiplatformpb.Im
 }
 
 func (c *datasetGRPCClient) ExportData(ctx context.Context, req *aiplatformpb.ExportDataRequest, opts ...gax.CallOption) (*ExportDataOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -770,6 +780,51 @@ func (c *datasetGRPCClient) ListDataItems(ctx context.Context, req *aiplatformpb
 	return it
 }
 
+func (c *datasetGRPCClient) SearchDataItems(ctx context.Context, req *aiplatformpb.SearchDataItemsRequest, opts ...gax.CallOption) *DataItemViewIterator {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "dataset", url.QueryEscape(req.GetDataset())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).SearchDataItems[0:len((*c.CallOptions).SearchDataItems):len((*c.CallOptions).SearchDataItems)], opts...)
+	it := &DataItemViewIterator{}
+	req = proto.Clone(req).(*aiplatformpb.SearchDataItemsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*aiplatformpb.DataItemView, string, error) {
+		resp := &aiplatformpb.SearchDataItemsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.datasetClient.SearchDataItems(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetDataItemViews(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
 func (c *datasetGRPCClient) ListSavedQueries(ctx context.Context, req *aiplatformpb.ListSavedQueriesRequest, opts ...gax.CallOption) *SavedQueryIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
@@ -816,11 +871,6 @@ func (c *datasetGRPCClient) ListSavedQueries(ctx context.Context, req *aiplatfor
 }
 
 func (c *datasetGRPCClient) GetAnnotationSpec(ctx context.Context, req *aiplatformpb.GetAnnotationSpecRequest, opts ...gax.CallOption) (*aiplatformpb.AnnotationSpec, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1142,13 +1192,13 @@ func (c *datasetRESTClient) CreateDataset(ctx context.Context, req *aiplatformpb
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1178,7 +1228,7 @@ func (c *datasetRESTClient) GetDataset(ctx context.Context, req *aiplatformpb.Ge
 		if err != nil {
 			return nil, err
 		}
-		params.Add("readMask", string(readMask))
+		params.Add("readMask", string(readMask[1:len(readMask)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1211,13 +1261,13 @@ func (c *datasetRESTClient) GetDataset(ctx context.Context, req *aiplatformpb.Ge
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1249,7 +1299,7 @@ func (c *datasetRESTClient) UpdateDataset(ctx context.Context, req *aiplatformpb
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask))
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1282,13 +1332,13 @@ func (c *datasetRESTClient) UpdateDataset(ctx context.Context, req *aiplatformpb
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1338,7 +1388,7 @@ func (c *datasetRESTClient) ListDatasets(ctx context.Context, req *aiplatformpb.
 			if err != nil {
 				return nil, "", err
 			}
-			params.Add("readMask", string(readMask))
+			params.Add("readMask", string(readMask[1:len(readMask)-1]))
 		}
 
 		baseUrl.RawQuery = params.Encode()
@@ -1365,13 +1415,13 @@ func (c *datasetRESTClient) ListDatasets(ctx context.Context, req *aiplatformpb.
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -1434,13 +1484,13 @@ func (c *datasetRESTClient) DeleteDataset(ctx context.Context, req *aiplatformpb
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1497,13 +1547,13 @@ func (c *datasetRESTClient) ImportData(ctx context.Context, req *aiplatformpb.Im
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1560,13 +1610,13 @@ func (c *datasetRESTClient) ExportData(ctx context.Context, req *aiplatformpb.Ex
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1621,7 +1671,7 @@ func (c *datasetRESTClient) ListDataItems(ctx context.Context, req *aiplatformpb
 			if err != nil {
 				return nil, "", err
 			}
-			params.Add("readMask", string(readMask))
+			params.Add("readMask", string(readMask[1:len(readMask)-1]))
 		}
 
 		baseUrl.RawQuery = params.Encode()
@@ -1648,13 +1698,13 @@ func (c *datasetRESTClient) ListDataItems(ctx context.Context, req *aiplatformpb
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -1664,6 +1714,130 @@ func (c *datasetRESTClient) ListDataItems(ctx context.Context, req *aiplatformpb
 		}
 		it.Response = resp
 		return resp.GetDataItems(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// SearchDataItems searches DataItems in a Dataset.
+func (c *datasetRESTClient) SearchDataItems(ctx context.Context, req *aiplatformpb.SearchDataItemsRequest, opts ...gax.CallOption) *DataItemViewIterator {
+	it := &DataItemViewIterator{}
+	req = proto.Clone(req).(*aiplatformpb.SearchDataItemsRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*aiplatformpb.DataItemView, string, error) {
+		resp := &aiplatformpb.SearchDataItemsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1beta1/%v:searchDataItems", req.GetDataset())
+
+		params := url.Values{}
+		if items := req.GetAnnotationFilters(); len(items) > 0 {
+			for _, item := range items {
+				params.Add("annotationFilters", fmt.Sprintf("%v", item))
+			}
+		}
+		if req.GetAnnotationsFilter() != "" {
+			params.Add("annotationsFilter", fmt.Sprintf("%v", req.GetAnnotationsFilter()))
+		}
+		if req.GetAnnotationsLimit() != 0 {
+			params.Add("annotationsLimit", fmt.Sprintf("%v", req.GetAnnotationsLimit()))
+		}
+		if req.GetDataItemFilter() != "" {
+			params.Add("dataItemFilter", fmt.Sprintf("%v", req.GetDataItemFilter()))
+		}
+		if req.GetDataLabelingJob() != "" {
+			params.Add("dataLabelingJob", fmt.Sprintf("%v", req.GetDataLabelingJob()))
+		}
+		if req.GetFieldMask() != nil {
+			fieldMask, err := protojson.Marshal(req.GetFieldMask())
+			if err != nil {
+				return nil, "", err
+			}
+			params.Add("fieldMask", string(fieldMask[1:len(fieldMask)-1]))
+		}
+		if req.GetOrderBy() != "" {
+			params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))
+		}
+		if req.GetOrderByAnnotation().GetOrderBy() != "" {
+			params.Add("orderByAnnotation.orderBy", fmt.Sprintf("%v", req.GetOrderByAnnotation().GetOrderBy()))
+		}
+		params.Add("orderByAnnotation.savedQuery", fmt.Sprintf("%v", req.GetOrderByAnnotation().GetSavedQuery()))
+		if req.GetOrderByDataItem() != "" {
+			params.Add("orderByDataItem", fmt.Sprintf("%v", req.GetOrderByDataItem()))
+		}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+		if req.GetSavedQuery() != "" {
+			params.Add("savedQuery", fmt.Sprintf("%v", req.GetSavedQuery()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			httpRsp, err := c.httpClient.Do(httpReq)
+			if err != nil {
+				return err
+			}
+			defer httpRsp.Body.Close()
+
+			if err = googleapi.CheckResponse(httpRsp); err != nil {
+				return err
+			}
+
+			buf, err := io.ReadAll(httpRsp.Body)
+			if err != nil {
+				return err
+			}
+
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetDataItemViews(), resp.GetNextPageToken(), nil
 	}
 
 	fetch := func(pageSize int, pageToken string) (string, error) {
@@ -1721,7 +1895,7 @@ func (c *datasetRESTClient) ListSavedQueries(ctx context.Context, req *aiplatfor
 			if err != nil {
 				return nil, "", err
 			}
-			params.Add("readMask", string(readMask))
+			params.Add("readMask", string(readMask[1:len(readMask)-1]))
 		}
 
 		baseUrl.RawQuery = params.Encode()
@@ -1748,13 +1922,13 @@ func (c *datasetRESTClient) ListSavedQueries(ctx context.Context, req *aiplatfor
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -1796,7 +1970,7 @@ func (c *datasetRESTClient) GetAnnotationSpec(ctx context.Context, req *aiplatfo
 		if err != nil {
 			return nil, err
 		}
-		params.Add("readMask", string(readMask))
+		params.Add("readMask", string(readMask[1:len(readMask)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1829,13 +2003,13 @@ func (c *datasetRESTClient) GetAnnotationSpec(ctx context.Context, req *aiplatfo
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1885,7 +2059,7 @@ func (c *datasetRESTClient) ListAnnotations(ctx context.Context, req *aiplatform
 			if err != nil {
 				return nil, "", err
 			}
-			params.Add("readMask", string(readMask))
+			params.Add("readMask", string(readMask[1:len(readMask)-1]))
 		}
 
 		baseUrl.RawQuery = params.Encode()
@@ -1912,13 +2086,13 @@ func (c *datasetRESTClient) ListAnnotations(ctx context.Context, req *aiplatform
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -1982,13 +2156,13 @@ func (c *datasetRESTClient) GetLocation(ctx context.Context, req *locationpb.Get
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2055,13 +2229,13 @@ func (c *datasetRESTClient) ListLocations(ctx context.Context, req *locationpb.L
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -2132,13 +2306,13 @@ func (c *datasetRESTClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamP
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2195,13 +2369,13 @@ func (c *datasetRESTClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamP
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2260,13 +2434,13 @@ func (c *datasetRESTClient) TestIamPermissions(ctx context.Context, req *iampb.T
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2383,13 +2557,13 @@ func (c *datasetRESTClient) GetOperation(ctx context.Context, req *longrunningpb
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2456,13 +2630,13 @@ func (c *datasetRESTClient) ListOperations(ctx context.Context, req *longrunning
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -2504,7 +2678,7 @@ func (c *datasetRESTClient) WaitOperation(ctx context.Context, req *longrunningp
 		if err != nil {
 			return nil, err
 		}
-		params.Add("timeout", string(timeout))
+		params.Add("timeout", string(timeout[1:len(timeout)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -2537,13 +2711,13 @@ func (c *datasetRESTClient) WaitOperation(ctx context.Context, req *longrunningp
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2960,6 +3134,53 @@ func (it *DataItemIterator) bufLen() int {
 }
 
 func (it *DataItemIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// DataItemViewIterator manages a stream of *aiplatformpb.DataItemView.
+type DataItemViewIterator struct {
+	items    []*aiplatformpb.DataItemView
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*aiplatformpb.DataItemView, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *DataItemViewIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *DataItemViewIterator) Next() (*aiplatformpb.DataItemView, error) {
+	var item *aiplatformpb.DataItemView
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *DataItemViewIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *DataItemViewIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b

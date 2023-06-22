@@ -149,6 +149,9 @@ type QueryConfig struct {
 	// Experimental: this option is experimental and may be modified or removed in future versions,
 	// regardless of any other documented package stability guarantees.
 	JobTimeout time.Duration
+
+	// Force usage of Storage API if client is available. For test scenarios
+	forceStorageAPI bool
 }
 
 func (qc *QueryConfig) toBQ() (*bq.JobConfiguration, error) {
@@ -382,11 +385,13 @@ func (q *Query) Read(ctx context.Context) (it *RowIterator, err error) {
 		}
 		return job.Read(ctx)
 	}
+
 	// we have a config, run on fastPath.
 	resp, err := q.client.runQuery(ctx, queryRequest)
 	if err != nil {
 		return nil, err
 	}
+
 	// construct a minimal job for backing the row iterator.
 	minimalJob := &Job{
 		c:         q.client,
@@ -394,7 +399,15 @@ func (q *Query) Read(ctx context.Context) (it *RowIterator, err error) {
 		location:  resp.JobReference.Location,
 		projectID: resp.JobReference.ProjectId,
 	}
+
 	if resp.JobComplete {
+		// If more pages are available, discard and use the Storage API instead
+		if resp.PageToken != "" && q.client.isStorageReadAvailable() {
+			it, err = newStorageRowIteratorFromJob(ctx, minimalJob)
+			if err == nil {
+				return it, nil
+			}
+		}
 		rowSource := &rowSource{
 			j: minimalJob,
 			// RowIterator can precache results from the iterator to save a lookup.
@@ -421,6 +434,9 @@ func (q *Query) Read(ctx context.Context) (it *RowIterator, err error) {
 // user's Query configuration.  If all the options set on the job are supported on the
 // faster query path, this method returns a QueryRequest suitable for execution.
 func (q *Query) probeFastPath() (*bq.QueryRequest, error) {
+	if q.forceStorageAPI && q.client.isStorageReadAvailable() {
+		return nil, fmt.Errorf("force Storage API usage")
+	}
 	// This is a denylist of settings which prevent us from composing an equivalent
 	// bq.QueryRequest due to differences between configuration parameters accepted
 	// by jobs.insert vs jobs.query.
@@ -471,7 +487,7 @@ func (q *Query) probeFastPath() (*bq.QueryRequest, error) {
 	return qRequest, nil
 }
 
-// ConnectionProperty represents a single key and value pair that can be sent alongside a query request.
+// ConnectionProperty represents a single key and value pair that can be sent alongside a query request or load job.
 type ConnectionProperty struct {
 	// Name of the connection property to set.
 	Key string

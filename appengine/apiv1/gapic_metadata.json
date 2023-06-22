@@ -31,12 +31,67 @@
               ]
             }
           }
+        },
+        "rest": {
+          "libraryClient": "ApplicationsClient",
+          "rpcs": {
+            "CreateApplication": {
+              "methods": [
+                "CreateApplication"
+              ]
+            },
+            "GetApplication": {
+              "methods": [
+                "GetApplication"
+              ]
+            },
+            "RepairApplication": {
+              "methods": [
+                "RepairApplication"
+              ]
+            },
+            "UpdateApplication": {
+              "methods": [
+                "UpdateApplication"
+              ]
+            }
+          }
         }
       }
     },
     "AuthorizedCertificates": {
       "clients": {
         "grpc": {
+          "libraryClient": "AuthorizedCertificatesClient",
+          "rpcs": {
+            "CreateAuthorizedCertificate": {
+              "methods": [
+                "CreateAuthorizedCertificate"
+              ]
+            },
+            "DeleteAuthorizedCertificate": {
+              "methods": [
+                "DeleteAuthorizedCertificate"
+              ]
+            },
+            "GetAuthorizedCertificate": {
+              "methods": [
+                "GetAuthorizedCertificate"
+              ]
+            },
+            "ListAuthorizedCertificates": {
+              "methods": [
+                "ListAuthorizedCertificates"
+              ]
+            },
+            "UpdateAuthorizedCertificate": {
+              "methods": [
+                "UpdateAuthorizedCertificate"
+              ]
+            }
+          }
+        },
+        "rest": {
           "libraryClient": "AuthorizedCertificatesClient",
           "rpcs": {
             "CreateAuthorizedCertificate": {
@@ -79,12 +134,52 @@
               ]
             }
           }
+        },
+        "rest": {
+          "libraryClient": "AuthorizedDomainsClient",
+          "rpcs": {
+            "ListAuthorizedDomains": {
+              "methods": [
+                "ListAuthorizedDomains"
+              ]
+            }
+          }
         }
       }
     },
     "DomainMappings": {
       "clients": {
         "grpc": {
+          "libraryClient": "DomainMappingsClient",
+          "rpcs": {
+            "CreateDomainMapping": {
+              "methods": [
+                "CreateDomainMapping"
+              ]
+            },
+            "DeleteDomainMapping": {
+              "methods": [
+                "DeleteDomainMapping"
+              ]
+            },
+            "GetDomainMapping": {
+              "methods": [
+                "GetDomainMapping"
+              ]
+            },
+            "ListDomainMappings": {
+              "methods": [
+                "ListDomainMappings"
+              ]
+            },
+            "UpdateDomainMapping": {
+              "methods": [
+                "UpdateDomainMapping"
+              ]
+            }
+          }
+        },
+        "rest": {
           "libraryClient": "DomainMappingsClient",
           "rpcs": {
             "CreateDomainMapping": {
@@ -152,12 +247,72 @@
               ]
             }
           }
+        },
+        "rest": {
+          "libraryClient": "FirewallClient",
+          "rpcs": {
+            "BatchUpdateIngressRules": {
+              "methods": [
+                "BatchUpdateIngressRules"
+              ]
+            },
+            "CreateIngressRule": {
+              "methods": [
+                "CreateIngressRule"
+              ]
+            },
+            "DeleteIngressRule": {
+              "methods": [
+                "DeleteIngressRule"
+              ]
+            },
+            "GetIngressRule": {
+              "methods": [
+                "GetIngressRule"
+              ]
+            },
+            "ListIngressRules": {
+              "methods": [
+                "ListIngressRules"
+              ]
+            },
+            "UpdateIngressRule": {
+              "methods": [
+                "UpdateIngressRule"
+              ]
+            }
+          }
         }
       }
     },
     "Instances": {
       "clients": {
         "grpc": {
+          "libraryClient": "InstancesClient",
+          "rpcs": {
+            "DebugInstance": {
+              "methods": [
+                "DebugInstance"
+              ]
+            },
+            "DeleteInstance": {
+              "methods": [
+                "DeleteInstance"
+              ]
+            },
+            "GetInstance": {
+              "methods": [
+                "GetInstance"
+              ]
+            },
+            "ListInstances": {
+              "methods": [
+                "ListInstances"
+              ]
+            }
+          }
+        },
+        "rest": {
           "libraryClient": "InstancesClient",
           "rpcs": {
             "DebugInstance": {
@@ -210,12 +365,67 @@
               ]
             }
           }
+        },
+        "rest": {
+          "libraryClient": "ServicesClient",
+          "rpcs": {
+            "DeleteService": {
+              "methods": [
+                "DeleteService"
+              ]
+            },
+            "GetService": {
+              "methods": [
+                "GetService"
+              ]
+            },
+            "ListServices": {
+              "methods": [
+                "ListServices"
+              ]
+            },
+            "UpdateService": {
+              "methods": [
+                "UpdateService"
+              ]
+            }
+          }
         }
       }
     },
     "Versions": {
       "clients": {
         "grpc": {
+          "libraryClient": "VersionsClient",
+          "rpcs": {
+            "CreateVersion": {
+              "methods": [
+                "CreateVersion"
+              ]
+            },
+            "DeleteVersion": {
+              "methods": [
+                "DeleteVersion"
+              ]
+            },
+            "GetVersion": {
+              "methods": [
+                "GetVersion"
+              ]
+            },
+            "ListVersions": {
+              "methods": [
+                "ListVersions"
+              ]
+            },
+            "UpdateVersion": {
+              "methods": [
+                "UpdateVersion"
+              ]
+            }
+          }
+        },
+        "rest": {
           "libraryClient": "VersionsClient",
           "rpcs": {
             "CreateVersion": {

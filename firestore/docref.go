@@ -23,9 +23,9 @@ import (
 	"sort"
 
 	vkit "cloud.google.com/go/firestore/apiv1"
+	pb "cloud.google.com/go/firestore/apiv1/firestorepb"
 	"cloud.google.com/go/internal/trace"
 	"google.golang.org/api/iterator"
-	pb "google.golang.org/genproto/googleapis/firestore/v1"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -47,14 +47,18 @@ type DocumentRef struct {
 
 	// The ID of the document: the last component of the resource path.
 	ID string
+
+	// The options (only read time currently supported) for reading this document
+	readSettings *readSettings
 }
 
 func newDocRef(parent *CollectionRef, id string) *DocumentRef {
 	return &DocumentRef{
-		Parent:    parent,
-		ID:        id,
-		Path:      parent.Path + "/" + id,
-		shortPath: parent.selfPath + "/" + id,
+		Parent:       parent,
+		ID:           id,
+		Path:         parent.Path + "/" + id,
+		shortPath:    parent.selfPath + "/" + id,
+		readSettings: &readSettings{},
 	}
 }
 
@@ -77,7 +81,8 @@ func (d *DocumentRef) Get(ctx context.Context) (_ *DocumentSnapshot, err error) 
 	if d == nil {
 		return nil, errNilDocRef
 	}
-	docsnaps, err := d.Parent.c.getAll(ctx, []*DocumentRef{d}, nil)
+
+	docsnaps, err := d.Parent.c.getAll(ctx, []*DocumentRef{d}, nil, d.readSettings)
 	if err != nil {
 		return nil, err
 	}
@@ -358,7 +363,7 @@ func (d *DocumentRef) fpvsToWrites(fpvs []fpv, pc *pb.Precondition) ([]*pb.Write
 }
 
 // newUpdateWithTransform constructs operations for a commit. Most generally, it
-// returns an update operation followed by a transform.
+// returns an update operation with update transforms.
 //
 // If there are no serverTimestampPaths, the transform is omitted.
 //
@@ -366,32 +371,35 @@ func (d *DocumentRef) fpvsToWrites(fpvs []fpv, pc *pb.Precondition) ([]*pb.Write
 // the update is omitted, unless updateOnEmpty is true.
 func (d *DocumentRef) newUpdateWithTransform(doc *pb.Document, updatePaths []FieldPath, pc *pb.Precondition, transforms []*pb.DocumentTransform_FieldTransform, updateOnEmpty bool) []*pb.Write {
 	var ws []*pb.Write
+	var w *pb.Write
+	initializedW := &pb.Write{
+		Operation: &pb.Write_Update{
+			Update: doc,
+		},
+		CurrentDocument: pc,
+		// If the mask is not set for an `update` and the document exists, any
+		// existing data will be overwritten.
+		UpdateMask: &pb.DocumentMask{},
+	}
 	if updateOnEmpty || len(doc.Fields) > 0 ||
 		len(updatePaths) > 0 || (pc != nil && len(transforms) == 0) {
+		w = initializedW
 		var mask *pb.DocumentMask
 		if updatePaths != nil {
 			sfps := toServiceFieldPaths(updatePaths)
 			sort.Strings(sfps) // TODO(jba): make tests pass without this
 			mask = &pb.DocumentMask{FieldPaths: sfps}
 		}
-		w := &pb.Write{
-			Operation:       &pb.Write_Update{doc},
-			UpdateMask:      mask,
-			CurrentDocument: pc,
-		}
-		ws = append(ws, w)
-		pc = nil // If the precondition is in the write, we don't need it in the transform.
+		w.UpdateMask = mask
 	}
 	if len(transforms) > 0 || pc != nil {
-		ws = append(ws, &pb.Write{
-			Operation: &pb.Write_Transform{
-				Transform: &pb.DocumentTransform{
-					Document:        d.Path,
-					FieldTransforms: transforms,
-				},
-			},
-			CurrentDocument: pc,
-		})
+		if w == nil {
+			w = initializedW
+		}
+		w.UpdateTransforms = transforms
+	}
+	if w != nil {
+		ws = append(ws, w)
 	}
 	return ws
 }
@@ -803,7 +811,7 @@ type DocumentSnapshotIterator struct {
 // Next is not expected to return iterator.Done unless it is called after Stop.
 // Rarely, networking issues may also cause iterator.Done to be returned.
 func (it *DocumentSnapshotIterator) Next() (*DocumentSnapshot, error) {
-	btree, _, readTime, err := it.ws.nextSnapshot()
+	btree, _, rt, err := it.ws.nextSnapshot()
 	if err != nil {
 		if err == io.EOF {
 			err = iterator.Done
@@ -812,7 +820,7 @@ func (it *DocumentSnapshotIterator) Next() (*DocumentSnapshot, error) {
 		return nil, err
 	}
 	if btree.Len() == 0 { // document deleted
-		return &DocumentSnapshot{Ref: it.docref, ReadTime: readTime}, nil
+		return &DocumentSnapshot{Ref: it.docref, ReadTime: rt}, nil
 	}
 	snap, _ := btree.At(0)
 	return snap.(*DocumentSnapshot), nil
@@ -823,4 +831,13 @@ func (it *DocumentSnapshotIterator) Next() (*DocumentSnapshot, error) {
 // concurrently with Next.
 func (it *DocumentSnapshotIterator) Stop() {
 	it.ws.stop()
+}
+
+// WithReadOptions specifies constraints for accessing documents from the database,
+// e.g. at what time snapshot to read the documents.
+func (d *DocumentRef) WithReadOptions(opts ...ReadOption) *DocumentRef {
+	for _, ro := range opts {
+		ro.apply(d.readSettings)
+	}
+	return d
 }

@@ -169,10 +169,11 @@ func TestInvoke(t *testing.T) {
 		t.Run(test.desc, func(s *testing.T) {
 			counter := 0
 			req := &fakeApiaryRequest{header: http.Header{}}
-			var initialHeader string
+			var initialClientHeader, initialIdempotencyHeader string
 			call := func() error {
 				if counter == 0 {
-					initialHeader = req.Header()["X-Goog-Api-Client"][0]
+					initialClientHeader = req.Header()["X-Goog-Api-Client"][0]
+					initialIdempotencyHeader = req.Header()["X-Goog-Gcs-Idempotency-Token"][0]
 				}
 				counter++
 				if counter <= test.count {
@@ -186,22 +187,26 @@ func TestInvoke(t *testing.T) {
 			} else if !test.expectFinalErr && got != test.initialErr {
 				s.Errorf("got %v, want %v", got, test.initialErr)
 			}
-			gotHeader := req.Header()["X-Goog-Api-Client"][0]
+			gotClientHeader := req.Header()["X-Goog-Api-Client"][0]
+			gotIdempotencyHeader := req.Header()["X-Goog-Gcs-Idempotency-Token"][0]
 			wantAttempts := 1 + test.count
 			if !test.expectFinalErr {
 				wantAttempts = 1
 			}
-			wantHeader := strings.ReplaceAll(initialHeader, "gccl-attempt-count/1", fmt.Sprintf("gccl-attempt-count/%v", wantAttempts))
-			if gotHeader != wantHeader {
-				t.Errorf("case %q, retry header:\ngot %v\nwant %v", test.desc, gotHeader, wantHeader)
+			wantClientHeader := strings.ReplaceAll(initialClientHeader, "gccl-attempt-count/1", fmt.Sprintf("gccl-attempt-count/%v", wantAttempts))
+			if gotClientHeader != wantClientHeader {
+				t.Errorf("case %q, retry header:\ngot %v\nwant %v", test.desc, gotClientHeader, wantClientHeader)
 			}
-			wantHeaderFormat := "gccl-invocation-id/.{36} gccl-attempt-count/[0-9]+ gl-go/.* gccl/"
-			match, err := regexp.MatchString(wantHeaderFormat, gotHeader)
+			wantClientHeaderFormat := "gccl-invocation-id/.{36} gccl-attempt-count/[0-9]+ gl-go/.* gccl/"
+			match, err := regexp.MatchString(wantClientHeaderFormat, gotClientHeader)
 			if err != nil {
 				s.Fatalf("compiling regexp: %v", err)
 			}
 			if !match {
-				s.Errorf("X-Goog-Api-Client header has wrong format\ngot %v\nwant regex matching %v", gotHeader, wantHeaderFormat)
+				s.Errorf("X-Goog-Api-Client header has wrong format\ngot %v\nwant regex matching %v", gotClientHeader, wantClientHeaderFormat)
+			}
+			if gotIdempotencyHeader != initialIdempotencyHeader {
+				t.Errorf("case %q, idempotency header:\ngot %v\nwant %v", test.desc, gotIdempotencyHeader, initialIdempotencyHeader)
 			}
 		})
 	}

@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"math"
 	"net/http"
 	"net/url"
@@ -29,6 +29,7 @@ import (
 	gamingpb "cloud.google.com/go/gaming/apiv1beta/gamingpb"
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
@@ -36,7 +37,6 @@ import (
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -74,6 +74,7 @@ func defaultGameServerDeploymentsGRPCClientOptions() []option.ClientOption {
 func defaultGameServerDeploymentsCallOptions() *GameServerDeploymentsCallOptions {
 	return &GameServerDeploymentsCallOptions{
 		ListGameServerDeployments: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -85,6 +86,7 @@ func defaultGameServerDeploymentsCallOptions() *GameServerDeploymentsCallOptions
 			}),
 		},
 		GetGameServerDeployment: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -95,10 +97,17 @@ func defaultGameServerDeploymentsCallOptions() *GameServerDeploymentsCallOptions
 				})
 			}),
 		},
-		CreateGameServerDeployment: []gax.CallOption{},
-		DeleteGameServerDeployment: []gax.CallOption{},
-		UpdateGameServerDeployment: []gax.CallOption{},
+		CreateGameServerDeployment: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteGameServerDeployment: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateGameServerDeployment: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		GetGameServerDeploymentRollout: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -109,8 +118,11 @@ func defaultGameServerDeploymentsCallOptions() *GameServerDeploymentsCallOptions
 				})
 			}),
 		},
-		UpdateGameServerDeploymentRollout: []gax.CallOption{},
+		UpdateGameServerDeploymentRollout: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		PreviewGameServerDeploymentRollout: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -122,6 +134,7 @@ func defaultGameServerDeploymentsCallOptions() *GameServerDeploymentsCallOptions
 			}),
 		},
 		FetchDeploymentState: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -138,6 +151,7 @@ func defaultGameServerDeploymentsCallOptions() *GameServerDeploymentsCallOptions
 func defaultGameServerDeploymentsRESTCallOptions() *GameServerDeploymentsCallOptions {
 	return &GameServerDeploymentsCallOptions{
 		ListGameServerDeployments: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -148,6 +162,7 @@ func defaultGameServerDeploymentsRESTCallOptions() *GameServerDeploymentsCallOpt
 			}),
 		},
 		GetGameServerDeployment: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -157,10 +172,17 @@ func defaultGameServerDeploymentsRESTCallOptions() *GameServerDeploymentsCallOpt
 					http.StatusServiceUnavailable)
 			}),
 		},
-		CreateGameServerDeployment: []gax.CallOption{},
-		DeleteGameServerDeployment: []gax.CallOption{},
-		UpdateGameServerDeployment: []gax.CallOption{},
+		CreateGameServerDeployment: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteGameServerDeployment: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateGameServerDeployment: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		GetGameServerDeploymentRollout: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -170,8 +192,11 @@ func defaultGameServerDeploymentsRESTCallOptions() *GameServerDeploymentsCallOpt
 					http.StatusServiceUnavailable)
 			}),
 		},
-		UpdateGameServerDeploymentRollout: []gax.CallOption{},
+		UpdateGameServerDeploymentRollout: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		PreviewGameServerDeploymentRollout: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -182,6 +207,7 @@ func defaultGameServerDeploymentsRESTCallOptions() *GameServerDeploymentsCallOpt
 			}),
 		},
 		FetchDeploymentState: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -339,9 +365,6 @@ type gameServerDeploymentsGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing GameServerDeploymentsClient
 	CallOptions **GameServerDeploymentsCallOptions
 
@@ -372,11 +395,6 @@ func NewGameServerDeploymentsClient(ctx context.Context, opts ...option.ClientOp
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -385,7 +403,6 @@ func NewGameServerDeploymentsClient(ctx context.Context, opts ...option.ClientOp
 
 	c := &gameServerDeploymentsGRPCClient{
 		connPool:                    connPool,
-		disableDeadlines:            disableDeadlines,
 		gameServerDeploymentsClient: gamingpb.NewGameServerDeploymentsServiceClient(connPool),
 		CallOptions:                 &client.CallOptions,
 	}
@@ -419,7 +436,7 @@ func (c *gameServerDeploymentsGRPCClient) Connection() *grpc.ClientConn {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *gameServerDeploymentsGRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -495,7 +512,7 @@ func defaultGameServerDeploymentsRESTClientOptions() []option.ClientOption {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *gameServerDeploymentsRESTClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -560,11 +577,6 @@ func (c *gameServerDeploymentsGRPCClient) ListGameServerDeployments(ctx context.
 }
 
 func (c *gameServerDeploymentsGRPCClient) GetGameServerDeployment(ctx context.Context, req *gamingpb.GetGameServerDeploymentRequest, opts ...gax.CallOption) (*gamingpb.GameServerDeployment, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -582,11 +594,6 @@ func (c *gameServerDeploymentsGRPCClient) GetGameServerDeployment(ctx context.Co
 }
 
 func (c *gameServerDeploymentsGRPCClient) CreateGameServerDeployment(ctx context.Context, req *gamingpb.CreateGameServerDeploymentRequest, opts ...gax.CallOption) (*CreateGameServerDeploymentOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -606,11 +613,6 @@ func (c *gameServerDeploymentsGRPCClient) CreateGameServerDeployment(ctx context
 }
 
 func (c *gameServerDeploymentsGRPCClient) DeleteGameServerDeployment(ctx context.Context, req *gamingpb.DeleteGameServerDeploymentRequest, opts ...gax.CallOption) (*DeleteGameServerDeploymentOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -630,11 +632,6 @@ func (c *gameServerDeploymentsGRPCClient) DeleteGameServerDeployment(ctx context
 }
 
 func (c *gameServerDeploymentsGRPCClient) UpdateGameServerDeployment(ctx context.Context, req *gamingpb.UpdateGameServerDeploymentRequest, opts ...gax.CallOption) (*UpdateGameServerDeploymentOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "game_server_deployment.name", url.QueryEscape(req.GetGameServerDeployment().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -654,11 +651,6 @@ func (c *gameServerDeploymentsGRPCClient) UpdateGameServerDeployment(ctx context
 }
 
 func (c *gameServerDeploymentsGRPCClient) GetGameServerDeploymentRollout(ctx context.Context, req *gamingpb.GetGameServerDeploymentRolloutRequest, opts ...gax.CallOption) (*gamingpb.GameServerDeploymentRollout, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -676,11 +668,6 @@ func (c *gameServerDeploymentsGRPCClient) GetGameServerDeploymentRollout(ctx con
 }
 
 func (c *gameServerDeploymentsGRPCClient) UpdateGameServerDeploymentRollout(ctx context.Context, req *gamingpb.UpdateGameServerDeploymentRolloutRequest, opts ...gax.CallOption) (*UpdateGameServerDeploymentRolloutOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "rollout.name", url.QueryEscape(req.GetRollout().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -700,11 +687,6 @@ func (c *gameServerDeploymentsGRPCClient) UpdateGameServerDeploymentRollout(ctx 
 }
 
 func (c *gameServerDeploymentsGRPCClient) PreviewGameServerDeploymentRollout(ctx context.Context, req *gamingpb.PreviewGameServerDeploymentRolloutRequest, opts ...gax.CallOption) (*gamingpb.PreviewGameServerDeploymentRolloutResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "rollout.name", url.QueryEscape(req.GetRollout().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -722,11 +704,6 @@ func (c *gameServerDeploymentsGRPCClient) PreviewGameServerDeploymentRollout(ctx
 }
 
 func (c *gameServerDeploymentsGRPCClient) FetchDeploymentState(ctx context.Context, req *gamingpb.FetchDeploymentStateRequest, opts ...gax.CallOption) (*gamingpb.FetchDeploymentStateResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -765,6 +742,7 @@ func (c *gameServerDeploymentsRESTClient) ListGameServerDeployments(ctx context.
 		baseUrl.Path += fmt.Sprintf("/v1beta/%v/gameServerDeployments", req.GetParent())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -802,13 +780,13 @@ func (c *gameServerDeploymentsRESTClient) ListGameServerDeployments(ctx context.
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -844,6 +822,11 @@ func (c *gameServerDeploymentsRESTClient) GetGameServerDeployment(ctx context.Co
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
@@ -872,13 +855,13 @@ func (c *gameServerDeploymentsRESTClient) GetGameServerDeployment(ctx context.Co
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -905,6 +888,7 @@ func (c *gameServerDeploymentsRESTClient) CreateGameServerDeployment(ctx context
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v/gameServerDeployments", req.GetParent())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	params.Add("deploymentId", fmt.Sprintf("%v", req.GetDeploymentId()))
 
 	baseUrl.RawQuery = params.Encode()
@@ -936,13 +920,13 @@ func (c *gameServerDeploymentsRESTClient) CreateGameServerDeployment(ctx context
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -965,6 +949,11 @@ func (c *gameServerDeploymentsRESTClient) DeleteGameServerDeployment(ctx context
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
@@ -993,13 +982,13 @@ func (c *gameServerDeploymentsRESTClient) DeleteGameServerDeployment(ctx context
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1031,12 +1020,13 @@ func (c *gameServerDeploymentsRESTClient) UpdateGameServerDeployment(ctx context
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetGameServerDeployment().GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
 		updateMask, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask))
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1068,13 +1058,13 @@ func (c *gameServerDeploymentsRESTClient) UpdateGameServerDeployment(ctx context
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1097,6 +1087,11 @@ func (c *gameServerDeploymentsRESTClient) GetGameServerDeploymentRollout(ctx con
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v/rollout", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
@@ -1126,13 +1121,13 @@ func (c *gameServerDeploymentsRESTClient) GetGameServerDeploymentRollout(ctx con
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1164,12 +1159,13 @@ func (c *gameServerDeploymentsRESTClient) UpdateGameServerDeploymentRollout(ctx 
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v/rollout", req.GetRollout().GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
 		updateMask, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask))
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1201,13 +1197,13 @@ func (c *gameServerDeploymentsRESTClient) UpdateGameServerDeploymentRollout(ctx 
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1240,19 +1236,20 @@ func (c *gameServerDeploymentsRESTClient) PreviewGameServerDeploymentRollout(ctx
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v/rollout:preview", req.GetRollout().GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetPreviewTime() != nil {
 		previewTime, err := protojson.Marshal(req.GetPreviewTime())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("previewTime", string(previewTime))
+		params.Add("previewTime", string(previewTime[1:len(previewTime)-1]))
 	}
 	if req.GetUpdateMask() != nil {
 		updateMask, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask))
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1285,13 +1282,13 @@ func (c *gameServerDeploymentsRESTClient) PreviewGameServerDeploymentRollout(ctx
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1317,6 +1314,11 @@ func (c *gameServerDeploymentsRESTClient) FetchDeploymentState(ctx context.Conte
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta/%v:fetchDeploymentState", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
@@ -1346,13 +1348,13 @@ func (c *gameServerDeploymentsRESTClient) FetchDeploymentState(ctx context.Conte
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil

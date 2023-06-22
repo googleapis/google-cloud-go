@@ -86,6 +86,9 @@ if [[ $ENVIRONMENT == *"kubernetes"* ]]; then
   mkdir -p ~/.local/bin
   mv ./kubectl ~/.local/bin
   export PATH=$PATH:~/.local/bin/
+  # install auth plugin
+  apt-get install google-cloud-sdk-gke-gcloud-auth-plugin
+  export USE_GKE_GCLOUD_AUTH_PLUGIN=True
 fi
 
 # If Functions, use python3.8, since that's what's in go116 container

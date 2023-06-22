@@ -41,6 +41,41 @@
               ]
             }
           }
+        },
+        "rest": {
+          "libraryClient": "ReachabilityClient",
+          "rpcs": {
+            "CreateConnectivityTest": {
+              "methods": [
+                "CreateConnectivityTest"
+              ]
+            },
+            "DeleteConnectivityTest": {
+              "methods": [
+                "DeleteConnectivityTest"
+              ]
+            },
+            "GetConnectivityTest": {
+              "methods": [
+                "GetConnectivityTest"
+              ]
+            },
+            "ListConnectivityTests": {
+              "methods": [
+                "ListConnectivityTests"
+              ]
+            },
+            "RerunConnectivityTest": {
+              "methods": [
+                "RerunConnectivityTest"
+              ]
+            },
+            "UpdateConnectivityTest": {
+              "methods": [
+                "UpdateConnectivityTest"
+              ]
+            }
+          }
         }
       }
     }

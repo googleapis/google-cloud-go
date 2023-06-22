@@ -437,7 +437,7 @@ Example code:
 
 	func printWidgets(ctx context.Context, client *datastore.Client) {
 		q := datastore.NewQuery("Widget").
-			Filter("Price <", 1000).
+			FilterField("Price", "<", 1000).
 			Order("-Price")
 
 		t := client.Run(ctx, q)
@@ -498,5 +498,22 @@ directed to the emulator instead of the production Datastore service.
 
 To install and set up the emulator and its environment variables, see the documentation
 at https://cloud.google.com/datastore/docs/tools/datastore-emulator.
+
+To use the emulator with this library, you can set the DATASTORE_EMULATOR_HOST
+environment variable to the address at which your emulator is running. This will
+send requests to that address instead of to Cloud Datastore. You can then create
+and use a client as usual:
+
+	// Set DATASTORE_EMULATOR_HOST environment variable.
+	err := os.Setenv("DATASTORE_EMULATOR_HOST", "localhost:9000")
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// Create client as usual.
+	client, err := datastore.NewClient(ctx, "my-project-id")
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer client.Close()
 */
 package datastore // import "cloud.google.com/go/datastore"

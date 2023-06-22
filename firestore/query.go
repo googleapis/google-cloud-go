@@ -23,12 +23,12 @@ import (
 	"reflect"
 	"time"
 
+	pb "cloud.google.com/go/firestore/apiv1/firestorepb"
 	"cloud.google.com/go/internal/btree"
 	"cloud.google.com/go/internal/trace"
 	"github.com/golang/protobuf/proto"
 	"github.com/golang/protobuf/ptypes/wrappers"
 	"google.golang.org/api/iterator"
-	pb "google.golang.org/genproto/googleapis/firestore/v1"
 )
 
 // Query represents a Firestore query.
@@ -54,6 +54,10 @@ type Query struct {
 	// allDescendants indicates whether this query is for all collections
 	// that match the ID under the specified parentPath.
 	allDescendants bool
+
+	// readOptions specifies constraints for reading results from the query
+	// e.g. read time
+	readSettings *readSettings
 }
 
 // DocumentID is the special field name representing the ID of a document
@@ -114,6 +118,7 @@ func (q Query) SelectPaths(fieldPaths ...FieldPath) Query {
 // fields, and must not contain any of the runes "˜*/[]".
 // The op argument must be one of "==", "!=", "<", "<=", ">", ">=",
 // "array-contains", "array-contains-any", "in" or "not-in".
+// WARNING: Using WhereEntity with Simple and Composite filters is recommended.
 func (q Query) Where(path, op string, value interface{}) Query {
 	fp, err := parseDotSeparatedString(path)
 	if err != nil {
@@ -127,8 +132,23 @@ func (q Query) Where(path, op string, value interface{}) Query {
 // A Query can have multiple filters.
 // The op argument must be one of "==", "!=", "<", "<=", ">", ">=",
 // "array-contains", "array-contains-any", "in" or "not-in".
+// WARNING: Using WhereEntity with Simple and Composite filters is recommended.
 func (q Query) WherePath(fp FieldPath, op string, value interface{}) Query {
-	proto, err := filter{fp, op, value}.toProto()
+	return q.WhereEntity(PropertyPathFilter{
+		Path:     fp,
+		Operator: op,
+		Value:    value,
+	})
+}
+
+// WhereEntity returns a query with provided filter.
+//
+// EntityFilter can be a simple filter or a composite filter
+// PropertyFilter and PropertyPathFilter are supported simple filters
+// AndFilter and OrFilter are supported composite filters
+// Entity filters in multiple calls are joined together by AND
+func (q Query) WhereEntity(ef EntityFilter) Query {
+	proto, err := ef.toProto()
 	if err != nil {
 		q.err = err
 		return q
@@ -460,7 +480,9 @@ func (q Query) toProto() (*pb.StructuredQuery, error) {
 			Op: pb.StructuredQuery_CompositeFilter_AND,
 		}
 		p.Where = &pb.StructuredQuery_Filter{
-			FilterType: &pb.StructuredQuery_Filter_CompositeFilter{cf},
+			FilterType: &pb.StructuredQuery_Filter_CompositeFilter{
+				CompositeFilter: cf,
+			},
 		}
 		cf.Filters = append(cf.Filters, q.filters...)
 	}
@@ -639,21 +661,143 @@ func (q Query) compareFunc() func(d1, d2 *DocumentSnapshot) (int, error) {
 	}
 }
 
-type filter struct {
-	fieldPath FieldPath
-	op        string
-	value     interface{}
+// EntityFilter represents a Firestore filter.
+type EntityFilter interface {
+	toProto() (*pb.StructuredQuery_Filter, error)
 }
 
-func (f filter) toProto() (*pb.StructuredQuery_Filter, error) {
-	if err := f.fieldPath.validate(); err != nil {
+// CompositeFilter represents a composite Firestore filter.
+type CompositeFilter interface {
+	EntityFilter
+	isCompositeFilter()
+}
+
+// OrFilter represents a union of two or more filters.
+type OrFilter struct {
+	Filters []EntityFilter
+}
+
+func (OrFilter) isCompositeFilter() {}
+
+func (f OrFilter) toProto() (*pb.StructuredQuery_Filter, error) {
+	var pbFilters []*pb.StructuredQuery_Filter
+
+	for _, filter := range f.Filters {
+		pbFilter, err := filter.toProto()
+		if err != nil {
+			return nil, err
+		}
+		pbFilters = append(pbFilters, pbFilter)
+	}
+
+	cf := &pb.StructuredQuery_CompositeFilter{
+		Op: pb.StructuredQuery_CompositeFilter_OR,
+	}
+	cf.Filters = append(cf.Filters, pbFilters...)
+
+	return &pb.StructuredQuery_Filter{
+		FilterType: &pb.StructuredQuery_Filter_CompositeFilter{
+			CompositeFilter: cf,
+		},
+	}, nil
+
+}
+
+// AndFilter represents the intersection of two or more filters.
+type AndFilter struct {
+	Filters []EntityFilter
+}
+
+func (AndFilter) isCompositeFilter() {}
+
+func (f AndFilter) toProto() (*pb.StructuredQuery_Filter, error) {
+	var pbFilters []*pb.StructuredQuery_Filter
+
+	for _, filter := range f.Filters {
+		pbFilter, err := filter.toProto()
+		if err != nil {
+			return nil, err
+		}
+		pbFilters = append(pbFilters, pbFilter)
+	}
+
+	cf := &pb.StructuredQuery_CompositeFilter{
+		Op: pb.StructuredQuery_CompositeFilter_AND,
+	}
+	cf.Filters = append(cf.Filters, pbFilters...)
+
+	return &pb.StructuredQuery_Filter{
+		FilterType: &pb.StructuredQuery_Filter_CompositeFilter{
+			CompositeFilter: cf,
+		},
+	}, nil
+
+}
+
+// SimpleFilter represents a simple Firestore filter.
+type SimpleFilter interface {
+	EntityFilter
+	isSimpleFilter()
+}
+
+// PropertyFilter represents a filter on single property.
+//
+// Path can be a single field or a dot-separated sequence of fields
+// denoting property path, and must not contain any of the runes "˜*/[]".
+// Operator must be one of "==", "!=", "<", "<=", ">", ">=",
+// "array-contains", "array-contains-any", "in" or "not-in".
+type PropertyFilter struct {
+	Path     string
+	Operator string
+	Value    interface{}
+}
+
+func (PropertyFilter) isSimpleFilter() {}
+
+func (f PropertyFilter) toPropertyPathFilter() (PropertyPathFilter, error) {
+	fp, err := parseDotSeparatedString(f.Path)
+	if err != nil {
+		return PropertyPathFilter{}, err
+	}
+
+	ppf := PropertyPathFilter{
+		Path:     fp,
+		Operator: f.Operator,
+		Value:    f.Value,
+	}
+	return ppf, nil
+}
+
+func (f PropertyFilter) toProto() (*pb.StructuredQuery_Filter, error) {
+	ppf, err := f.toPropertyPathFilter()
+	if err != nil {
 		return nil, err
 	}
-	if uop, ok := unaryOpFor(f.value); ok {
-		if f.op != "==" {
-			return nil, fmt.Errorf("firestore: must use '==' when comparing %v", f.value)
+	return ppf.toProto()
+}
+
+// PropertyPathFilter represents a filter on single property.
+//
+// Path can be an array of fields denoting property path.
+// Operator must be one of "==", "!=", "<", "<=", ">", ">=",
+// "array-contains", "array-contains-any", "in" or "not-in".
+type PropertyPathFilter struct {
+	Path     FieldPath
+	Operator string
+	Value    interface{}
+}
+
+func (PropertyPathFilter) isSimpleFilter() {}
+
+func (f PropertyPathFilter) toProto() (*pb.StructuredQuery_Filter, error) {
+	if err := f.Path.validate(); err != nil {
+		return nil, err
+	}
+	if uop, ok := unaryOpFor(f.Value); ok {
+		if f.Operator != "==" {
+			return nil, fmt.Errorf("firestore: must use '==' when comparing %v", f.Value)
 		}
-		ref, err := fref(f.fieldPath)
+		ref, err := fref(f.Path)
 		if err != nil {
 			return nil, err
 		}
@@ -669,7 +813,7 @@ func (f filter) toProto() (*pb.StructuredQuery_Filter, error) {
 		}, nil
 	}
 	var op pb.StructuredQuery_FieldFilter_Operator
-	switch f.op {
+	switch f.Operator {
 	case "<":
 		op = pb.StructuredQuery_FieldFilter_LESS_THAN
 	case "<=":
@@ -691,16 +835,16 @@ func (f filter) toProto() (*pb.StructuredQuery_Filter, error) {
 	case "array-contains-any":
 		op = pb.StructuredQuery_FieldFilter_ARRAY_CONTAINS_ANY
 	default:
-		return nil, fmt.Errorf("firestore: invalid operator %q", f.op)
+		return nil, fmt.Errorf("firestore: invalid operator %q", f.Operator)
 	}
-	val, sawTransform, err := toProtoValue(reflect.ValueOf(f.value))
+	val, sawTransform, err := toProtoValue(reflect.ValueOf(f.Value))
 	if err != nil {
 		return nil, err
 	}
 	if sawTransform {
 		return nil, errors.New("firestore: transforms disallowed in query value")
 	}
-	ref, err := fref(f.fieldPath)
+	ref, err := fref(f.Path)
 	if err != nil {
 		return nil, err
 	}
@@ -787,7 +931,7 @@ func trunc32(i int) int32 {
 // Documents returns an iterator over the query's resulting documents.
 func (q Query) Documents(ctx context.Context) *DocumentIterator {
 	return &DocumentIterator{
-		iter: newQueryDocumentIterator(withResourceHeader(ctx, q.c.path()), &q, nil), q: &q,
+		iter: newQueryDocumentIterator(withResourceHeader(ctx, q.c.path()), &q, nil, q.readSettings), q: &q,
 	}
 }
 
@@ -892,15 +1036,17 @@ type queryDocumentIterator struct {
 	q            *Query
 	tid          []byte // transaction ID, if any
 	streamClient pb.Firestore_RunQueryClient
+	readSettings *readSettings // readOptions, if any
 }
 
-func newQueryDocumentIterator(ctx context.Context, q *Query, tid []byte) *queryDocumentIterator {
+func newQueryDocumentIterator(ctx context.Context, q *Query, tid []byte, rs *readSettings) *queryDocumentIterator {
 	ctx, cancel := context.WithCancel(ctx)
 	return &queryDocumentIterator{
-		ctx:    ctx,
-		cancel: cancel,
-		q:      q,
-		tid:    tid,
+		ctx:          ctx,
+		cancel:       cancel,
+		q:            q,
+		tid:          tid,
+		readSettings: rs,
 	}
 }
 
@@ -908,7 +1054,13 @@ func (it *queryDocumentIterator) next() (_ *DocumentSnapshot, err error) {
 	client := it.q.c
 	if it.streamClient == nil {
 		it.ctx = trace.StartSpan(it.ctx, "cloud.google.com/go/firestore.Query.RunQuery")
-		defer func() { trace.EndSpan(it.ctx, err) }()
+		defer func() {
+			if errors.Is(err, iterator.Done) {
+				trace.EndSpan(it.ctx, nil)
+			} else {
+				trace.EndSpan(it.ctx, err)
+			}
+		}()
 
 		sq, err := it.q.toProto()
 		if err != nil {
@@ -916,10 +1068,15 @@ func (it *queryDocumentIterator) next() (_ *DocumentSnapshot, err error) {
 		}
 		req := &pb.RunQueryRequest{
 			Parent:    it.q.parentPath,
-			QueryType: &pb.RunQueryRequest_StructuredQuery{sq},
+			QueryType: &pb.RunQueryRequest_StructuredQuery{StructuredQuery: sq},
+		}
+
+		// Respect transactions first and read options (read time) second
+		if rt, hasOpts := parseReadTime(client, it.readSettings); hasOpts {
+			req.ConsistencySelector = &pb.RunQueryRequest_ReadTime{ReadTime: rt}
 		}
 		if it.tid != nil {
-			req.ConsistencySelector = &pb.RunQueryRequest_Transaction{it.tid}
+			req.ConsistencySelector = &pb.RunQueryRequest_Transaction{Transaction: it.tid}
 		}
 		it.streamClient, err = client.c.RunQuery(it.ctx, req)
 		if err != nil {
@@ -1044,6 +1201,15 @@ func (it *btreeDocumentIterator) next() (*DocumentSnapshot, error) {
 }
 
 func (*btreeDocumentIterator) stop() {}
+
+// WithReadOptions specifies constraints for accessing documents from the database,
+// e.g. at what time snapshot to read the documents.
+func (q *Query) WithReadOptions(opts ...ReadOption) *Query {
+	for _, ro := range opts {
+		ro.apply(q.readSettings)
+	}
+	return q
+}
 
 // AggregationQuery allows for generating aggregation results of an underlying
 // basic query. A single AggregationQuery can contain multiple aggregations.

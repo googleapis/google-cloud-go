@@ -95,6 +95,11 @@
                 "ListSavedQueries"
               ]
             },
+            "SearchDataItems": {
+              "methods": [
+                "SearchDataItems"
+              ]
+            },
             "SetIamPolicy": {
               "methods": [
                 "SetIamPolicy"
@@ -182,6 +187,11 @@
             "ListOperations": {
               "methods": [
                 "ListOperations"
+              ]
+            },
+            "MutateDeployedModel": {
+              "methods": [
+                "MutateDeployedModel"
               ]
             },
             "SetIamPolicy": {
@@ -277,6 +287,11 @@
               "methods": [
                 "WaitOperation"
               ]
+            },
+            "WriteFeatureValues": {
+              "methods": [
+                "WriteFeatureValues"
+              ]
             }
           }
         }
@@ -325,6 +340,11 @@
             "DeleteFeature": {
               "methods": [
                 "DeleteFeature"
+              ]
+            },
+            "DeleteFeatureValues": {
+              "methods": [
+                "DeleteFeatureValues"
               ]
             },
             "DeleteFeaturestore": {
@@ -659,6 +679,11 @@
                 "CancelHyperparameterTuningJob"
               ]
             },
+            "CancelNasJob": {
+              "methods": [
+                "CancelNasJob"
+              ]
+            },
             "CancelOperation": {
               "methods": [
                 "CancelOperation"
@@ -689,6 +714,11 @@
                 "CreateModelDeploymentMonitoringJob"
               ]
             },
+            "CreateNasJob": {
+              "methods": [
+                "CreateNasJob"
+              ]
+            },
             "DeleteBatchPredictionJob": {
               "methods": [
                 "DeleteBatchPredictionJob"
@@ -712,6 +742,11 @@
             "DeleteModelDeploymentMonitoringJob": {
               "methods": [
                 "DeleteModelDeploymentMonitoringJob"
+              ]
+            },
+            "DeleteNasJob": {
+              "methods": [
+                "DeleteNasJob"
               ]
             },
             "DeleteOperation": {
@@ -754,6 +789,16 @@
                 "GetModelDeploymentMonitoringJob"
               ]
             },
+            "GetNasJob": {
+              "methods": [
+                "GetNasJob"
+              ]
+            },
+            "GetNasTrialDetail": {
+              "methods": [
+                "GetNasTrialDetail"
+              ]
+            },
             "GetOperation": {
               "methods": [
                 "GetOperation"
@@ -789,6 +834,16 @@
                 "ListModelDeploymentMonitoringJobs"
               ]
             },
+            "ListNasJobs": {
+              "methods": [
+                "ListNasJobs"
+              ]
+            },
+            "ListNasTrialDetails": {
+              "methods": [
+                "ListNasTrialDetails"
+              ]
+            },
             "ListOperations": {
               "methods": [
                 "ListOperations"
@@ -822,6 +877,75 @@
             "UpdateModelDeploymentMonitoringJob": {
               "methods": [
                 "UpdateModelDeploymentMonitoringJob"
+              ]
+            },
+            "WaitOperation": {
+              "methods": [
+                "WaitOperation"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "MatchService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "MatchClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "FindNeighbors": {
+              "methods": [
+                "FindNeighbors"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ReadIndexDatapoints": {
+              "methods": [
+                "ReadIndexDatapoints"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
               ]
             },
             "WaitOperation": {
@@ -1121,11 +1245,80 @@
         }
       }
     },
+    "ModelGardenService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "ModelGardenClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetPublisherModel": {
+              "methods": [
+                "GetPublisherModel"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
+            "WaitOperation": {
+              "methods": [
+                "WaitOperation"
+              ]
+            }
+          }
+        }
+      }
+    },
     "ModelService": {
       "clients": {
         "grpc": {
           "libraryClient": "ModelClient",
           "rpcs": {
+            "BatchImportEvaluatedAnnotations": {
+              "methods": [
+                "BatchImportEvaluatedAnnotations"
+              ]
+            },
             "BatchImportModelEvaluationSlices": {
               "methods": [
                 "BatchImportModelEvaluationSlices"
@@ -1134,6 +1327,11 @@
             "CancelOperation": {
               "methods": [
                 "CancelOperation"
+              ]
+            },
+            "CopyModel": {
+              "methods": [
+                "CopyModel"
               ]
             },
             "DeleteModel": {
@@ -1234,6 +1432,11 @@
             "TestIamPermissions": {
               "methods": [
                 "TestIamPermissions"
+              ]
+            },
+            "UpdateExplanationDataset": {
+              "methods": [
+                "UpdateExplanationDataset"
               ]
             },
             "UpdateModel": {
@@ -1670,6 +1873,11 @@
             "ReadTensorboardTimeSeriesData": {
               "methods": [
                 "ReadTensorboardTimeSeriesData"
+              ]
+            },
+            "ReadTensorboardUsage": {
+              "methods": [
+                "ReadTensorboardUsage"
               ]
             },
             "SetIamPolicy": {

@@ -41,7 +41,7 @@ import (
 	"cloud.google.com/go/internal/optional"
 	"cloud.google.com/go/internal/trace"
 	"cloud.google.com/go/storage/internal"
-	storagepb "cloud.google.com/go/storage/internal/apiv2/stubs"
+	"cloud.google.com/go/storage/internal/apiv2/storagepb"
 	"github.com/googleapis/gax-go/v2"
 	"golang.org/x/oauth2/google"
 	"google.golang.org/api/googleapi"
@@ -129,8 +129,10 @@ type Client struct {
 //
 // Clients should be reused instead of created as needed. The methods of Client
 // are safe for concurrent use by multiple goroutines.
+//
+// You may configure the client by passing in options from the [google.golang.org/api/option]
+// package. You may also use options defined in this package, such as [WithJSONReads].
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
-
 	// Use the experimental gRPC client if the env var is set.
 	// This is an experimental API and not intended for public use.
 	if withGRPC := os.Getenv("STORAGE_USE_GRPC"); withGRPC != "" {
@@ -179,10 +181,12 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		endpoint := hostURL.String()
 
 		// Append the emulator host as default endpoint for the user
-		opts = append([]option.ClientOption{option.WithoutAuthentication()}, opts...)
-
-		opts = append(opts, internaloption.WithDefaultEndpoint(endpoint))
-		opts = append(opts, internaloption.WithDefaultMTLSEndpoint(endpoint))
+		opts = append([]option.ClientOption{
+			option.WithoutAuthentication(),
+			internaloption.SkipDialSettingsValidation(),
+			internaloption.WithDefaultEndpoint(endpoint),
+			internaloption.WithDefaultMTLSEndpoint(endpoint),
+		}, opts...)
 	}
 
 	// htransport selects the correct endpoint among WithEndpoint (user override), WithDefaultEndpoint, and WithDefaultMTLSEndpoint.
@@ -535,7 +539,7 @@ func v4SanitizeHeaders(hdrs []string) []string {
 		sanitizedHeader := strings.TrimSpace(hdr)
 
 		var key, value string
-		headerMatches := strings.Split(sanitizedHeader, ":")
+		headerMatches := strings.SplitN(sanitizedHeader, ":", 2)
 		if len(headerMatches) < 2 {
 			continue
 		}
@@ -649,7 +653,7 @@ var utcNow = func() time.Time {
 func extractHeaderNames(kvs []string) []string {
 	var res []string
 	for _, header := range kvs {
-		nameValue := strings.Split(header, ":")
+		nameValue := strings.SplitN(header, ":", 2)
 		res = append(res, nameValue[0])
 	}
 	return res
@@ -793,7 +797,7 @@ func sortHeadersByKey(hdrs []string) []string {
 	headersMap := map[string]string{}
 	var headersKeys []string
 	for _, h := range hdrs {
-		parts := strings.Split(h, ":")
+		parts := strings.SplitN(h, ":", 2)
 		k := parts[0]
 		v := parts[1]
 		headersMap[k] = v
@@ -889,7 +893,9 @@ func (o *ObjectHandle) Generation(gen int64) *ObjectHandle {
 }
 
 // If returns a new ObjectHandle that applies a set of preconditions.
-// Preconditions already set on the ObjectHandle are ignored.
+// Preconditions already set on the ObjectHandle are ignored. The supplied
+// Conditions must have at least one field set to a non-default value;
+// otherwise an error will be returned from any operation on the ObjectHandle.
 // Operations on the new handle will return an error if the preconditions are not
 // satisfied. See https://cloud.google.com/storage/docs/generations-preconditions
 // for more details.
@@ -1159,7 +1165,7 @@ func (uattrs *ObjectAttrsToUpdate) toProtoObject(bucket, object string) *storage
 		o.Acl = toProtoObjectACL(uattrs.ACL)
 	}
 
-	// TODO(cathyo): Handle metadata. Pending b/230510191.
+	o.Metadata = uattrs.Metadata
 
 	return o
 }
@@ -1315,6 +1321,11 @@ type ObjectAttrs struct {
 	// later value but not to an earlier one. For more information see
 	// https://cloud.google.com/storage/docs/metadata#custom-time .
 	CustomTime time.Time
+
+	// ComponentCount is the number of objects contained within a composite object.
+	// For non-composite objects, the value will be zero.
+	// This field is read-only.
+	ComponentCount int64
 }
 
 // convertTime converts a time in RFC3339 format to time.Time.
@@ -1385,6 +1396,7 @@ func newObject(o *raw.Object) *ObjectAttrs {
 		Updated:                 convertTime(o.Updated),
 		Etag:                    o.Etag,
 		CustomTime:              convertTime(o.CustomTime),
+		ComponentCount:          o.ComponentCount,
 	}
 }
 
@@ -1412,12 +1424,14 @@ func newObjectFromProto(o *storagepb.Object) *ObjectAttrs {
 		Generation:              o.Generation,
 		Metageneration:          o.Metageneration,
 		StorageClass:            o.StorageClass,
-		CustomerKeySHA256:       string(o.GetCustomerEncryption().GetKeySha256Bytes()),
-		KMSKeyName:              o.GetKmsKey(),
-		Created:                 convertProtoTime(o.GetCreateTime()),
-		Deleted:                 convertProtoTime(o.GetDeleteTime()),
-		Updated:                 convertProtoTime(o.GetUpdateTime()),
-		CustomTime:              convertProtoTime(o.GetCustomTime()),
+		// CustomerKeySHA256 needs to be presented as base64 encoded, but the response from gRPC is not.
+		CustomerKeySHA256: base64.StdEncoding.EncodeToString(o.GetCustomerEncryption().GetKeySha256Bytes()),
+		KMSKeyName:        o.GetKmsKey(),
+		Created:           convertProtoTime(o.GetCreateTime()),
+		Deleted:           convertProtoTime(o.GetDeleteTime()),
+		Updated:           convertProtoTime(o.GetUpdateTime()),
+		CustomTime:        convertProtoTime(o.GetCustomTime()),
+		ComponentCount:    int64(o.ComponentCount),
 	}
 }
 
@@ -1472,6 +1486,8 @@ type Query struct {
 	// aside from the prefix, contain delimiter will have their name,
 	// truncated after the delimiter, returned in prefixes.
 	// Duplicate prefixes are omitted.
+	// Must be set to / when used with the MatchGlob parameter to filter results
+	// in a directory-like mode.
 	// Optional.
 	Delimiter string
 
@@ -1485,9 +1501,9 @@ type Query struct {
 	Versions bool
 
 	// attrSelection is used to select only specific fields to be returned by
-	// the query. It is set by the user calling calling SetAttrSelection. These
+	// the query. It is set by the user calling SetAttrSelection. These
 	// are used by toFieldMask and toFieldSelection for gRPC and HTTP/JSON
-	// clients repsectively.
+	// clients respectively.
 	attrSelection []string
 
 	// StartOffset is used to filter results to objects whose names are
@@ -1513,6 +1529,12 @@ type Query struct {
 	// true, they will also be included as objects and their metadata will be
 	// populated in the returned ObjectAttrs.
 	IncludeTrailingDelimiter bool
+
+	// MatchGlob is a glob pattern used to filter results (for example, foo*bar). See
+	// https://cloud.google.com/storage/docs/json_api/v1/objects/list#list-object-glob
+	// for syntax details. When Delimiter is set in conjunction with MatchGlob,
+	// it must be set to /.
+	MatchGlob string
 }
 
 // attrToFieldMap maps the field names of ObjectAttrs to the underlying field
@@ -1546,6 +1568,7 @@ var attrToFieldMap = map[string]string{
 	"Updated":                 "updated",
 	"Etag":                    "etag",
 	"CustomTime":              "customTime",
+	"ComponentCount":          "componentCount",
 }
 
 // attrToProtoFieldMap maps the field names of ObjectAttrs to the underlying field
@@ -1577,6 +1600,7 @@ var attrToProtoFieldMap = map[string]string{
 	"Owner":                   "owner",
 	"CustomerKeySHA256":       "customer_encryption",
 	"CustomTime":              "custom_time",
+	"ComponentCount":          "component_count",
 	// MediaLink was explicitly excluded from the proto as it is an HTTP-ism.
 	// "MediaLink":               "mediaLink",
 }
@@ -1703,6 +1727,8 @@ type Conditions struct {
 	// GenerationNotMatch specifies that the object must not have the given
 	// generation for the operation to occur.
 	// If GenerationNotMatch is zero, it has no effect.
+	// This condition only works for object reads if the WithJSONReads client
+	// option is set.
 	GenerationNotMatch int64
 
 	// DoesNotExist specifies that the object must not exist in the bucket for
@@ -1721,6 +1747,8 @@ type Conditions struct {
 	// MetagenerationNotMatch specifies that the object must not have the given
 	// metageneration for the operation to occur.
 	// If MetagenerationNotMatch is zero, it has no effect.
+	// This condition only works for object reads if the WithJSONReads client
+	// option is set.
 	MetagenerationNotMatch int64
 }
 
@@ -2076,6 +2104,25 @@ func toProtoCommonObjectRequestParams(key []byte) *storagepb.CommonObjectRequest
 		EncryptionKeyBytes:       key,
 		EncryptionKeySha256Bytes: keyHash[:],
 	}
+}
+
+func toProtoChecksums(sendCRC32C bool, attrs *ObjectAttrs) *storagepb.ObjectChecksums {
+	var checksums *storagepb.ObjectChecksums
+	if sendCRC32C {
+		checksums = &storagepb.ObjectChecksums{
+			Crc32C: proto.Uint32(attrs.CRC32C),
+		}
+	}
+	if len(attrs.MD5) != 0 {
+		if checksums == nil {
+			checksums = &storagepb.ObjectChecksums{
+				Md5Hash: attrs.MD5,
+			}
+		} else {
+			checksums.Md5Hash = attrs.MD5
+		}
+	}
+	return checksums
 }
 
 // ServiceAccount fetches the email address of the given project's Google Cloud Storage service account.

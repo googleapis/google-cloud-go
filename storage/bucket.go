@@ -27,7 +27,7 @@ import (
 	"cloud.google.com/go/compute/metadata"
 	"cloud.google.com/go/internal/optional"
 	"cloud.google.com/go/internal/trace"
-	storagepb "cloud.google.com/go/storage/internal/apiv2/stubs"
+	"cloud.google.com/go/storage/internal/apiv2/storagepb"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iamcredentials/v1"
 	"google.golang.org/api/iterator"
@@ -35,6 +35,7 @@ import (
 	raw "google.golang.org/api/storage/v1"
 	dpb "google.golang.org/genproto/googleapis/type/date"
 	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/types/known/durationpb"
 )
 
 // BucketHandle provides operations on a Google Cloud Storage bucket.
@@ -444,6 +445,11 @@ type BucketAttrs struct {
 	// See https://cloud.google.com/storage/docs/managing-turbo-replication for
 	// more information.
 	RPO RPO
+
+	// Autoclass holds the bucket's autoclass configuration. If enabled,
+	// allows for the automatic selection of the best storage class
+	// based on object access patterns.
+	Autoclass *Autoclass
 }
 
 // BucketPolicyOnly is an alias for UniformBucketLevelAccess.
@@ -710,6 +716,20 @@ type CustomPlacementConfig struct {
 	DataLocations []string
 }
 
+// Autoclass holds the bucket's autoclass configuration. If enabled,
+// allows for the automatic selection of the best storage class
+// based on object access patterns. See
+// https://cloud.google.com/storage/docs/using-autoclass for more information.
+type Autoclass struct {
+	// Enabled specifies whether the autoclass feature is enabled
+	// on the bucket.
+	Enabled bool
+	// ToggleTime is the time from which Autoclass was last toggled.
+	// If Autoclass is enabled when the bucket is created, the ToggleTime
+	// is set to the bucket creation time. This field is read-only.
+	ToggleTime time.Time
+}
+
 func newBucket(b *raw.Bucket) (*BucketAttrs, error) {
 	if b == nil {
 		return nil, nil
@@ -744,6 +764,7 @@ func newBucket(b *raw.Bucket) (*BucketAttrs, error) {
 		ProjectNumber:            b.ProjectNumber,
 		RPO:                      toRPO(b),
 		CustomPlacementConfig:    customPlacementFromRaw(b.CustomPlacementConfig),
+		Autoclass:                toAutoclassFromRaw(b.Autoclass),
 	}, nil
 }
 
@@ -776,6 +797,7 @@ func newBucketFromProto(b *storagepb.Bucket) *BucketAttrs {
 		RPO:                      toRPOFromProto(b),
 		CustomPlacementConfig:    customPlacementFromProto(b.GetCustomPlacementConfig()),
 		ProjectNumber:            parseProjectNumber(b.GetProject()), // this can return 0 the project resource name is ID based
+		Autoclass:                toAutoclassFromProto(b.GetAutoclass()),
 	}
 }
 
@@ -830,6 +852,7 @@ func (b *BucketAttrs) toRawBucket() *raw.Bucket {
 		IamConfiguration:      bktIAM,
 		Rpo:                   b.RPO.String(),
 		CustomPlacementConfig: b.CustomPlacementConfig.toRawCustomPlacement(),
+		Autoclass:             b.Autoclass.toRawAutoclass(),
 	}
 }
 
@@ -889,6 +912,7 @@ func (b *BucketAttrs) toProtoBucket() *storagepb.Bucket {
 		IamConfig:             bktIAM,
 		Rpo:                   b.RPO.String(),
 		CustomPlacementConfig: b.CustomPlacementConfig.toProtoCustomPlacement(),
+		Autoclass:             b.Autoclass.toProtoAutoclass(),
 	}
 }
 
@@ -896,8 +920,6 @@ func (ua *BucketAttrsToUpdate) toProtoBucket() *storagepb.Bucket {
 	if ua == nil {
 		return &storagepb.Bucket{}
 	}
-
-	// TODO(cathyo): Handle labels. Pending b/230510191.
 
 	var v *storagepb.Bucket_Versioning
 	if ua.VersioningEnabled != nil {
@@ -971,6 +993,8 @@ func (ua *BucketAttrsToUpdate) toProtoBucket() *storagepb.Bucket {
 		Website:               ua.Website.toProtoBucketWebsite(),
 		IamConfig:             bktIAM,
 		Rpo:                   ua.RPO.String(),
+		Autoclass:             ua.Autoclass.toProtoAutoclass(),
+		Labels:                ua.setLabels,
 	}
 }
 
@@ -1086,6 +1110,10 @@ type BucketAttrsToUpdate struct {
 	// more information.
 	RPO RPO
 
+	// If set, updates the autoclass configuration of the bucket.
+	// See https://cloud.google.com/storage/docs/using-autoclass for more information.
+	Autoclass *Autoclass
+
 	// acl is the list of access control rules on the bucket.
 	// It is unexported and only used internally by the gRPC client.
 	// Library users should use ACLHandle methods directly.
@@ -1199,6 +1227,12 @@ func (ua *BucketAttrsToUpdate) toRawBucket() *raw.Bucket {
 			rb.Website = ua.Website.toRawBucketWebsite()
 		}
 	}
+	if ua.Autoclass != nil {
+		rb.Autoclass = &raw.BucketAutoclass{
+			Enabled:         ua.Autoclass.Enabled,
+			ForceSendFields: []string{"Enabled"},
+		}
+	}
 	if ua.PredefinedACL != "" {
 		// Clear ACL or the call will fail.
 		rb.Acl = nil
@@ -1229,7 +1263,9 @@ func (ua *BucketAttrsToUpdate) toRawBucket() *raw.Bucket {
 }
 
 // If returns a new BucketHandle that applies a set of preconditions.
-// Preconditions already set on the BucketHandle are ignored.
+// Preconditions already set on the BucketHandle are ignored. The supplied
+// BucketConditions must have exactly one field set to a non-zero value;
+// otherwise an error will be returned from any operation on the BucketHandle.
 // Operations on the new handle will return an error if the preconditions are not
 // satisfied. The only valid preconditions for buckets are MetagenerationMatch
 // and MetagenerationNotMatch.
@@ -1355,12 +1391,12 @@ func (rp *RetentionPolicy) toProtoRetentionPolicy() *storagepb.Bucket_RetentionP
 	}
 	// RetentionPeriod must be greater than 0, so if it is 0, the user left it
 	// unset, and so we should not send it in the request i.e. nil is sent.
-	var period *int64
+	var dur *durationpb.Duration
 	if rp.RetentionPeriod != 0 {
-		period = proto.Int64(int64(rp.RetentionPeriod / time.Second))
+		dur = durationpb.New(rp.RetentionPeriod)
 	}
 	return &storagepb.Bucket_RetentionPolicy{
-		RetentionPeriod: period,
+		RetentionDuration: dur,
 	}
 }
 
@@ -1384,7 +1420,7 @@ func toRetentionPolicyFromProto(rp *storagepb.Bucket_RetentionPolicy) *Retention
 		return nil
 	}
 	return &RetentionPolicy{
-		RetentionPeriod: time.Duration(rp.GetRetentionPeriod()) * time.Second,
+		RetentionPeriod: rp.GetRetentionDuration().AsDuration(),
 		EffectiveTime:   rp.GetEffectiveTime().AsTime(),
 		IsLocked:        rp.GetIsLocked(),
 	}
@@ -1897,6 +1933,53 @@ func customPlacementFromProto(c *storagepb.Bucket_CustomPlacementConfig) *Custom
 		return nil
 	}
 	return &CustomPlacementConfig{DataLocations: c.GetDataLocations()}
+}
+
+func (a *Autoclass) toRawAutoclass() *raw.BucketAutoclass {
+	if a == nil {
+		return nil
+	}
+	// Excluding read only field ToggleTime.
+	return &raw.BucketAutoclass{
+		Enabled: a.Enabled,
+	}
+}
+
+func (a *Autoclass) toProtoAutoclass() *storagepb.Bucket_Autoclass {
+	if a == nil {
+		return nil
+	}
+	// Excluding read only field ToggleTime.
+	return &storagepb.Bucket_Autoclass{
+		Enabled: a.Enabled,
+	}
+}
+
+func toAutoclassFromRaw(a *raw.BucketAutoclass) *Autoclass {
+	if a == nil || a.ToggleTime == "" {
+		return nil
+	}
+	// Return Autoclass.ToggleTime only if parsed with a valid value.
+	t, err := time.Parse(time.RFC3339, a.ToggleTime)
+	if err != nil {
+		return &Autoclass{
+			Enabled: a.Enabled,
+		}
+	}
+	return &Autoclass{
+		Enabled:    a.Enabled,
+		ToggleTime: t,
+	}
+}
+
+func toAutoclassFromProto(a *storagepb.Bucket_Autoclass) *Autoclass {
+	if a == nil || a.GetToggleTime().AsTime().Unix() == 0 {
+		return nil
+	}
+	return &Autoclass{
+		Enabled:    a.GetEnabled(),
+		ToggleTime: a.GetToggleTime().AsTime(),
+	}
 }
 
 // Objects returns an iterator over the objects in the bucket that match the

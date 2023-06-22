@@ -26,14 +26,14 @@ import (
 	"cloud.google.com/go/iam"
 	"cloud.google.com/go/internal/optional"
 	ipubsub "cloud.google.com/go/internal/pubsub"
+	pb "cloud.google.com/go/pubsub/apiv1/pubsubpb"
 	"cloud.google.com/go/pubsub/internal/scheduler"
 	gax "github.com/googleapis/gax-go/v2"
 	"golang.org/x/sync/errgroup"
-	pb "google.golang.org/genproto/googleapis/pubsub/v1"
-	fmpb "google.golang.org/genproto/protobuf/field_mask"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	durpb "google.golang.org/protobuf/types/known/durationpb"
+	fmpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 
 	vkit "cloud.google.com/go/pubsub/apiv1"
 )
@@ -265,6 +265,11 @@ func (bc *BigQueryConfig) toProto() *pb.BigQueryConfig {
 	if bc == nil {
 		return nil
 	}
+	// If the config is zero valued, this is the sentinel for
+	// clearing bigquery config and switch back to pull.
+	if *bc == (BigQueryConfig{}) {
+		return nil
+	}
 	pbCfg := &pb.BigQueryConfig{
 		Table:             bc.Table,
 		UseTopicSchema:    bc.UseTopicSchema,
@@ -397,8 +402,8 @@ type SubscriptionConfig struct {
 	// by Pub/Sub and have distinct MessageID values.
 	//
 	// Lastly, to guarantee messages have been acked or nacked properly, you must
-	// call Message.AckWithResponse() or Message.NackWithResponse(). These return an
-	// AckResponse which will be ready if the message has been acked (or failed to be acked).
+	// call Message.AckWithResult() or Message.NackWithResult(). These return an
+	// AckResult which will be ready if the message has been acked (or failed to be acked).
 	EnableExactlyOnceDelivery bool
 
 	// State indicates whether or not the subscription can receive messages.
@@ -580,7 +585,7 @@ type RetryPolicy struct {
 	// given message. Value should be between 0 and 600 seconds. Defaults to 10 seconds.
 	MinimumBackoff optional.Duration
 	// MaximumBackoff is the maximum delay between consecutive deliveries of a
-	// given message. Value should be between 0 and 600 seconds. Defaults to 10 seconds.
+	// given message. Value should be between 0 and 600 seconds. Defaults to 600 seconds.
 	MaximumBackoff optional.Duration
 }
 
@@ -690,9 +695,8 @@ type ReceiveSettings struct {
 	// The default is false.
 	UseLegacyFlowControl bool
 
-	// NumGoroutines is the number of goroutines that each datastructure along
-	// the Receive path will spawn. Adjusting this value adjusts concurrency
-	// along the receive path.
+	// NumGoroutines sets the number of StreamingPull streams to pull messages
+	// from the subscription.
 	//
 	// NumGoroutines defaults to DefaultReceiveSettings.NumGoroutines.
 	//

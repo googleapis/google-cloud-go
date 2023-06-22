@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,10 +20,10 @@ import (
 	"context"
 
 	dataplex "cloud.google.com/go/dataplex/apiv1"
+	dataplexpb "cloud.google.com/go/dataplex/apiv1/dataplexpb"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	"google.golang.org/api/iterator"
-	dataplexpb "google.golang.org/genproto/googleapis/cloud/dataplex/v1"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 )
 
 func ExampleNewMetadataClient() {
@@ -58,7 +58,7 @@ func ExampleMetadataClient_CreateEntity() {
 
 	req := &dataplexpb.CreateEntityRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataplex/v1#CreateEntityRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataplex/apiv1/dataplexpb#CreateEntityRequest.
 	}
 	resp, err := c.CreateEntity(ctx, req)
 	if err != nil {
@@ -83,7 +83,7 @@ func ExampleMetadataClient_UpdateEntity() {
 
 	req := &dataplexpb.UpdateEntityRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataplex/v1#UpdateEntityRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataplex/apiv1/dataplexpb#UpdateEntityRequest.
 	}
 	resp, err := c.UpdateEntity(ctx, req)
 	if err != nil {
@@ -108,7 +108,7 @@ func ExampleMetadataClient_DeleteEntity() {
 
 	req := &dataplexpb.DeleteEntityRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataplex/v1#DeleteEntityRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataplex/apiv1/dataplexpb#DeleteEntityRequest.
 	}
 	err = c.DeleteEntity(ctx, req)
 	if err != nil {
@@ -131,7 +131,7 @@ func ExampleMetadataClient_GetEntity() {
 
 	req := &dataplexpb.GetEntityRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataplex/v1#GetEntityRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataplex/apiv1/dataplexpb#GetEntityRequest.
 	}
 	resp, err := c.GetEntity(ctx, req)
 	if err != nil {
@@ -156,7 +156,7 @@ func ExampleMetadataClient_ListEntities() {
 
 	req := &dataplexpb.ListEntitiesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataplex/v1#ListEntitiesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataplex/apiv1/dataplexpb#ListEntitiesRequest.
 	}
 	it := c.ListEntities(ctx, req)
 	for {
@@ -187,7 +187,7 @@ func ExampleMetadataClient_CreatePartition() {
 
 	req := &dataplexpb.CreatePartitionRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataplex/v1#CreatePartitionRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataplex/apiv1/dataplexpb#CreatePartitionRequest.
 	}
 	resp, err := c.CreatePartition(ctx, req)
 	if err != nil {
@@ -212,7 +212,7 @@ func ExampleMetadataClient_DeletePartition() {
 
 	req := &dataplexpb.DeletePartitionRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataplex/v1#DeletePartitionRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataplex/apiv1/dataplexpb#DeletePartitionRequest.
 	}
 	err = c.DeletePartition(ctx, req)
 	if err != nil {
@@ -235,7 +235,7 @@ func ExampleMetadataClient_GetPartition() {
 
 	req := &dataplexpb.GetPartitionRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataplex/v1#GetPartitionRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataplex/apiv1/dataplexpb#GetPartitionRequest.
 	}
 	resp, err := c.GetPartition(ctx, req)
 	if err != nil {
@@ -260,7 +260,7 @@ func ExampleMetadataClient_ListPartitions() {
 
 	req := &dataplexpb.ListPartitionsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataplex/v1#ListPartitionsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataplex/apiv1/dataplexpb#ListPartitionsRequest.
 	}
 	it := c.ListPartitions(ctx, req)
 	for {
@@ -347,7 +347,7 @@ func ExampleMetadataClient_CancelOperation() {
 
 	req := &longrunningpb.CancelOperationRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/longrunning#CancelOperationRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/longrunning/autogen/longrunningpb#CancelOperationRequest.
 	}
 	err = c.CancelOperation(ctx, req)
 	if err != nil {
@@ -370,7 +370,7 @@ func ExampleMetadataClient_DeleteOperation() {
 
 	req := &longrunningpb.DeleteOperationRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/longrunning#DeleteOperationRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/longrunning/autogen/longrunningpb#DeleteOperationRequest.
 	}
 	err = c.DeleteOperation(ctx, req)
 	if err != nil {
@@ -393,7 +393,7 @@ func ExampleMetadataClient_GetOperation() {
 
 	req := &longrunningpb.GetOperationRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/longrunning#GetOperationRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/longrunning/autogen/longrunningpb#GetOperationRequest.
 	}
 	resp, err := c.GetOperation(ctx, req)
 	if err != nil {
@@ -418,7 +418,7 @@ func ExampleMetadataClient_ListOperations() {
 
 	req := &longrunningpb.ListOperationsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/longrunning#ListOperationsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/longrunning/autogen/longrunningpb#ListOperationsRequest.
 	}
 	it := c.ListOperations(ctx, req)
 	for {

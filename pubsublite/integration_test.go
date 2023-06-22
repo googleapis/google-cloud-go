@@ -21,13 +21,14 @@ import (
 
 	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/internal/uid"
+	"cloud.google.com/go/pubsub"
 	"cloud.google.com/go/pubsublite/internal/test"
 	"cloud.google.com/go/pubsublite/internal/wire"
-	"google.golang.org/api/cloudresourcemanager/v1"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 
 	vkit "cloud.google.com/go/pubsublite/apiv1"
+	cloudresourcemanager "google.golang.org/api/cloudresourcemanager/v1"
 )
 
 const gibi = 1 << 30
@@ -86,6 +87,19 @@ func adminClient(ctx context.Context, t *testing.T, region string, opts ...optio
 	return admin
 }
 
+func pubsubClient(ctx context.Context, t *testing.T, opts ...option.ClientOption) *pubsub.Client {
+	ts := testutil.TokenSource(ctx, vkit.DefaultAuthScopes()...)
+	if ts == nil {
+		t.Skip("Integration tests skipped. See CONTRIBUTING.md for details")
+	}
+	opts = append(withGRPCHeadersAssertion(t, option.WithTokenSource(ts)), opts...)
+	client, err := pubsub.NewClient(ctx, testutil.ProjID())
+	if err != nil {
+		t.Fatalf("Failed to create pubsub client: %v", err)
+	}
+	return client
+}
+
 func cleanUpReservation(ctx context.Context, t *testing.T, admin *AdminClient, name string) {
 	if err := admin.DeleteReservation(ctx, name); err != nil {
 		t.Errorf("Failed to delete reservation %s: %v", name, err)
@@ -95,6 +109,12 @@ func cleanUpReservation(ctx context.Context, t *testing.T, admin *AdminClient, n
 func cleanUpTopic(ctx context.Context, t *testing.T, admin *AdminClient, name string) {
 	if err := admin.DeleteTopic(ctx, name); err != nil {
 		t.Errorf("Failed to delete topic %s: %v", name, err)
+	}
+}
+
+func cleanUpPubsubTopic(ctx context.Context, t *testing.T, topic *pubsub.Topic) {
+	if err := topic.Delete(ctx); err != nil {
+		t.Errorf("Failed to delete pubsub topic %s: %v", topic, err)
 	}
 }
 
@@ -141,7 +161,9 @@ func TestIntegration_ResourceAdminOperations(t *testing.T) {
 
 	locationPath := wire.LocationPath{Project: proj, Location: zone}.String()
 	topicPath := wire.TopicPath{Project: proj, Location: zone, TopicID: resourceID}.String()
+	pubsubTopicPath := fmt.Sprintf("projects/%s/topics/%s", proj, resourceID)
 	subscriptionPath := wire.SubscriptionPath{Project: proj, Location: zone, SubscriptionID: resourceID}.String()
+	exportSubscriptionPath := wire.SubscriptionPath{Project: proj, Location: zone, SubscriptionID: resourceID + "export"}.String()
 	reservationPath := wire.ReservationPath{Project: proj, Region: region, ReservationID: resourceID}.String()
 	t.Logf("Topic path: %s", topicPath)
 
@@ -385,5 +407,63 @@ func TestIntegration_ResourceAdminOperations(t *testing.T) {
 		t.Errorf("SeekSubscription() got err: %v", err)
 	} else {
 		validateNewSeekOperation(t, subscriptionPath, seekOp)
+	}
+
+	// Create an export subscription to a Pub/Sub topic.
+	client := pubsubClient(ctx, t)
+	defer client.Close()
+	pubsubTopic, err := client.CreateTopic(ctx, resourceID)
+	if err != nil {
+		t.Fatalf("Failed to create pubsub topic: %v", err)
+	}
+	defer cleanUpPubsubTopic(ctx, t, pubsubTopic)
+	t.Logf("Pub/Sub topic: %s", pubsubTopic)
+
+	newExportSubsConfig := &SubscriptionConfig{
+		Name:                exportSubscriptionPath,
+		Topic:               topicPath,
+		DeliveryRequirement: DeliverImmediately,
+		ExportConfig: &ExportConfig{
+			DesiredState: ExportActive,
+			CurrentState: ExportActive,
+			Destination:  &PubSubDestinationConfig{Topic: pubsubTopicPath},
+		},
+	}
+
+	gotExportSubsConfig, err := admin.CreateSubscription(ctx, *newExportSubsConfig, AtTargetLocation(PublishTime(time.Now())))
+	if err != nil {
+		t.Fatalf("Failed to create export subscription: %v", err)
+	}
+	defer cleanUpSubscription(ctx, t, admin, exportSubscriptionPath)
+	if diff := testutil.Diff(gotExportSubsConfig, newExportSubsConfig); diff != "" {
+		t.Errorf("CreateSubscription() got: -, want: +\n%s", diff)
+	}
+
+	if gotExportSubsConfig, err := admin.Subscription(ctx, exportSubscriptionPath); err != nil {
+		t.Errorf("Failed to get export subscription: %v", err)
+	} else if diff := testutil.Diff(gotExportSubsConfig, newExportSubsConfig); diff != "" {
+		t.Errorf("Subscription() got: -, want: +\n%s", diff)
+	}
+
+	exportSubsUpdate := SubscriptionConfigToUpdate{
+		Name: exportSubscriptionPath,
+		ExportConfig: &ExportConfigToUpdate{
+			DesiredState: ExportPaused,
+		},
+	}
+	wantUpdatedExportSubsConfig := &SubscriptionConfig{
+		Name:                exportSubscriptionPath,
+		Topic:               topicPath,
+		DeliveryRequirement: DeliverImmediately,
+		ExportConfig: &ExportConfig{
+			DesiredState: ExportPaused,
+			CurrentState: ExportPaused,
+			Destination:  &PubSubDestinationConfig{Topic: pubsubTopicPath},
+		},
+	}
+	if gotExportSubsConfig, err := admin.UpdateSubscription(ctx, exportSubsUpdate); err != nil {
+		t.Errorf("Failed to update export subscription: %v", err)
+	} else if diff := testutil.Diff(gotExportSubsConfig, wantUpdatedExportSubsConfig); diff != "" {
+		t.Errorf("UpdateSubscription() got: -, want: +\n%s", diff)
 	}
 }

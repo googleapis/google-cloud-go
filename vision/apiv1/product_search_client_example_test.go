@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,14 +19,36 @@ package vision_test
 import (
 	"context"
 
-	vision "cloud.google.com/go/vision/apiv1"
+	vision "cloud.google.com/go/vision/v2/apiv1"
+	visionpb "cloud.google.com/go/vision/v2/apiv1/visionpb"
 	"google.golang.org/api/iterator"
-	visionpb "google.golang.org/genproto/googleapis/cloud/vision/v1"
 )
 
 func ExampleNewProductSearchClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := vision.NewProductSearchClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
+func ExampleNewProductSearchRESTClient() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := vision.NewProductSearchRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -38,6 +60,11 @@ func ExampleNewProductSearchClient() {
 
 func ExampleProductSearchClient_CreateProductSet() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := vision.NewProductSearchClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -46,7 +73,7 @@ func ExampleProductSearchClient_CreateProductSet() {
 
 	req := &visionpb.CreateProductSetRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/vision/v1#CreateProductSetRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/vision/v2/apiv1/visionpb#CreateProductSetRequest.
 	}
 	resp, err := c.CreateProductSet(ctx, req)
 	if err != nil {
@@ -58,6 +85,11 @@ func ExampleProductSearchClient_CreateProductSet() {
 
 func ExampleProductSearchClient_ListProductSets() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := vision.NewProductSearchClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -66,7 +98,7 @@ func ExampleProductSearchClient_ListProductSets() {
 
 	req := &visionpb.ListProductSetsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/vision/v1#ListProductSetsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/vision/v2/apiv1/visionpb#ListProductSetsRequest.
 	}
 	it := c.ListProductSets(ctx, req)
 	for {
@@ -84,6 +116,11 @@ func ExampleProductSearchClient_ListProductSets() {
 
 func ExampleProductSearchClient_GetProductSet() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := vision.NewProductSearchClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -92,7 +129,7 @@ func ExampleProductSearchClient_GetProductSet() {
 
 	req := &visionpb.GetProductSetRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/vision/v1#GetProductSetRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/vision/v2/apiv1/visionpb#GetProductSetRequest.
 	}
 	resp, err := c.GetProductSet(ctx, req)
 	if err != nil {
@@ -104,6 +141,11 @@ func ExampleProductSearchClient_GetProductSet() {
 
 func ExampleProductSearchClient_UpdateProductSet() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := vision.NewProductSearchClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -112,7 +154,7 @@ func ExampleProductSearchClient_UpdateProductSet() {
 
 	req := &visionpb.UpdateProductSetRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/vision/v1#UpdateProductSetRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/vision/v2/apiv1/visionpb#UpdateProductSetRequest.
 	}
 	resp, err := c.UpdateProductSet(ctx, req)
 	if err != nil {
@@ -124,6 +166,11 @@ func ExampleProductSearchClient_UpdateProductSet() {
 
 func ExampleProductSearchClient_DeleteProductSet() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := vision.NewProductSearchClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -132,7 +179,7 @@ func ExampleProductSearchClient_DeleteProductSet() {
 
 	req := &visionpb.DeleteProductSetRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/vision/v1#DeleteProductSetRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/vision/v2/apiv1/visionpb#DeleteProductSetRequest.
 	}
 	err = c.DeleteProductSet(ctx, req)
 	if err != nil {
@@ -142,6 +189,11 @@ func ExampleProductSearchClient_DeleteProductSet() {
 
 func ExampleProductSearchClient_CreateProduct() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := vision.NewProductSearchClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -150,7 +202,7 @@ func ExampleProductSearchClient_CreateProduct() {
 
 	req := &visionpb.CreateProductRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/vision/v1#CreateProductRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/vision/v2/apiv1/visionpb#CreateProductRequest.
 	}
 	resp, err := c.CreateProduct(ctx, req)
 	if err != nil {
@@ -162,6 +214,11 @@ func ExampleProductSearchClient_CreateProduct() {
 
 func ExampleProductSearchClient_ListProducts() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := vision.NewProductSearchClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -170,7 +227,7 @@ func ExampleProductSearchClient_ListProducts() {
 
 	req := &visionpb.ListProductsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/vision/v1#ListProductsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/vision/v2/apiv1/visionpb#ListProductsRequest.
 	}
 	it := c.ListProducts(ctx, req)
 	for {
@@ -188,6 +245,11 @@ func ExampleProductSearchClient_ListProducts() {
 
 func ExampleProductSearchClient_GetProduct() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := vision.NewProductSearchClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -196,7 +258,7 @@ func ExampleProductSearchClient_GetProduct() {
 
 	req := &visionpb.GetProductRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/vision/v1#GetProductRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/vision/v2/apiv1/visionpb#GetProductRequest.
 	}
 	resp, err := c.GetProduct(ctx, req)
 	if err != nil {
@@ -208,6 +270,11 @@ func ExampleProductSearchClient_GetProduct() {
 
 func ExampleProductSearchClient_UpdateProduct() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := vision.NewProductSearchClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -216,7 +283,7 @@ func ExampleProductSearchClient_UpdateProduct() {
 
 	req := &visionpb.UpdateProductRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/vision/v1#UpdateProductRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/vision/v2/apiv1/visionpb#UpdateProductRequest.
 	}
 	resp, err := c.UpdateProduct(ctx, req)
 	if err != nil {
@@ -228,6 +295,11 @@ func ExampleProductSearchClient_UpdateProduct() {
 
 func ExampleProductSearchClient_DeleteProduct() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := vision.NewProductSearchClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -236,7 +308,7 @@ func ExampleProductSearchClient_DeleteProduct() {
 
 	req := &visionpb.DeleteProductRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/vision/v1#DeleteProductRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/vision/v2/apiv1/visionpb#DeleteProductRequest.
 	}
 	err = c.DeleteProduct(ctx, req)
 	if err != nil {
@@ -246,6 +318,11 @@ func ExampleProductSearchClient_DeleteProduct() {
 
 func ExampleProductSearchClient_CreateReferenceImage() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := vision.NewProductSearchClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -254,7 +331,7 @@ func ExampleProductSearchClient_CreateReferenceImage() {
 
 	req := &visionpb.CreateReferenceImageRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/vision/v1#CreateReferenceImageRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/vision/v2/apiv1/visionpb#CreateReferenceImageRequest.
 	}
 	resp, err := c.CreateReferenceImage(ctx, req)
 	if err != nil {
@@ -266,6 +343,11 @@ func ExampleProductSearchClient_CreateReferenceImage() {
 
 func ExampleProductSearchClient_DeleteReferenceImage() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := vision.NewProductSearchClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -274,7 +356,7 @@ func ExampleProductSearchClient_DeleteReferenceImage() {
 
 	req := &visionpb.DeleteReferenceImageRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/vision/v1#DeleteReferenceImageRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/vision/v2/apiv1/visionpb#DeleteReferenceImageRequest.
 	}
 	err = c.DeleteReferenceImage(ctx, req)
 	if err != nil {
@@ -284,6 +366,11 @@ func ExampleProductSearchClient_DeleteReferenceImage() {
 
 func ExampleProductSearchClient_ListReferenceImages() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := vision.NewProductSearchClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -292,7 +379,7 @@ func ExampleProductSearchClient_ListReferenceImages() {
 
 	req := &visionpb.ListReferenceImagesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/vision/v1#ListReferenceImagesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/vision/v2/apiv1/visionpb#ListReferenceImagesRequest.
 	}
 	it := c.ListReferenceImages(ctx, req)
 	for {
@@ -310,6 +397,11 @@ func ExampleProductSearchClient_ListReferenceImages() {
 
 func ExampleProductSearchClient_GetReferenceImage() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := vision.NewProductSearchClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -318,7 +410,7 @@ func ExampleProductSearchClient_GetReferenceImage() {
 
 	req := &visionpb.GetReferenceImageRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/vision/v1#GetReferenceImageRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/vision/v2/apiv1/visionpb#GetReferenceImageRequest.
 	}
 	resp, err := c.GetReferenceImage(ctx, req)
 	if err != nil {
@@ -330,6 +422,11 @@ func ExampleProductSearchClient_GetReferenceImage() {
 
 func ExampleProductSearchClient_AddProductToProductSet() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := vision.NewProductSearchClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -338,7 +435,7 @@ func ExampleProductSearchClient_AddProductToProductSet() {
 
 	req := &visionpb.AddProductToProductSetRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/vision/v1#AddProductToProductSetRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/vision/v2/apiv1/visionpb#AddProductToProductSetRequest.
 	}
 	err = c.AddProductToProductSet(ctx, req)
 	if err != nil {
@@ -348,6 +445,11 @@ func ExampleProductSearchClient_AddProductToProductSet() {
 
 func ExampleProductSearchClient_RemoveProductFromProductSet() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := vision.NewProductSearchClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -356,7 +458,7 @@ func ExampleProductSearchClient_RemoveProductFromProductSet() {
 
 	req := &visionpb.RemoveProductFromProductSetRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/vision/v1#RemoveProductFromProductSetRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/vision/v2/apiv1/visionpb#RemoveProductFromProductSetRequest.
 	}
 	err = c.RemoveProductFromProductSet(ctx, req)
 	if err != nil {
@@ -366,6 +468,11 @@ func ExampleProductSearchClient_RemoveProductFromProductSet() {
 
 func ExampleProductSearchClient_ListProductsInProductSet() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := vision.NewProductSearchClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -374,7 +481,7 @@ func ExampleProductSearchClient_ListProductsInProductSet() {
 
 	req := &visionpb.ListProductsInProductSetRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/vision/v1#ListProductsInProductSetRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/vision/v2/apiv1/visionpb#ListProductsInProductSetRequest.
 	}
 	it := c.ListProductsInProductSet(ctx, req)
 	for {
@@ -392,6 +499,11 @@ func ExampleProductSearchClient_ListProductsInProductSet() {
 
 func ExampleProductSearchClient_ImportProductSets() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := vision.NewProductSearchClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -400,7 +512,7 @@ func ExampleProductSearchClient_ImportProductSets() {
 
 	req := &visionpb.ImportProductSetsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/vision/v1#ImportProductSetsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/vision/v2/apiv1/visionpb#ImportProductSetsRequest.
 	}
 	op, err := c.ImportProductSets(ctx, req)
 	if err != nil {
@@ -417,6 +529,11 @@ func ExampleProductSearchClient_ImportProductSets() {
 
 func ExampleProductSearchClient_PurgeProducts() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := vision.NewProductSearchClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -425,7 +542,7 @@ func ExampleProductSearchClient_PurgeProducts() {
 
 	req := &visionpb.PurgeProductsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/vision/v1#PurgeProductsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/vision/v2/apiv1/visionpb#PurgeProductsRequest.
 	}
 	op, err := c.PurgeProducts(ctx, req)
 	if err != nil {
