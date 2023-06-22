@@ -655,7 +655,7 @@
     "description": "Container Analysis API",
     "language": "go",
     "client_library_type": "generated",
-    "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/containeranalysis/latest/apiv1beta1",
+    "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/latest/containeranalysis/apiv1beta1",
     "release_level": "preview",
     "library_type": "GAPIC_AUTO"
   },
@@ -940,7 +940,7 @@
     "library_type": "GAPIC_AUTO"
   },
   "cloud.google.com/go/errorreporting": {
-    "api_shortname": "errorreporting",
+    "api_shortname": "clouderrorreporting",
     "distribution_name": "cloud.google.com/go/errorreporting",
     "description": "Cloud Error Reporting API",
     "language": "go",
@@ -1620,7 +1620,7 @@
     "library_type": "GAPIC_AUTO"
   },
   "cloud.google.com/go/profiler": {
-    "api_shortname": "profiler",
+    "api_shortname": "cloudprofiler",
     "distribution_name": "cloud.google.com/go/profiler",
     "description": "Cloud Profiler",
     "language": "go",

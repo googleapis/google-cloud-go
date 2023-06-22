@@ -154,7 +154,6 @@ func (c *grpcStorageClient) GetServiceAccount(ctx context.Context, project strin
 func (c *grpcStorageClient) CreateBucket(ctx context.Context, project, bucket string, attrs *BucketAttrs, opts ...storageOption) (*BucketAttrs, error) {
 	s := callSettings(c.settings, opts...)
 	b := attrs.toProtoBucket()
-	b.Name = bucket
 	b.Project = toProjectResource(project)
 	// If there is lifecycle information but no location, explicitly set
 	// the location. This is a GCS quirk/bug.
@@ -165,7 +164,7 @@ func (c *grpcStorageClient) CreateBucket(ctx context.Context, project, bucket st
 	req := &storagepb.CreateBucketRequest{
 		Parent:   fmt.Sprintf("projects/%s", globalProjectAlias),
 		Bucket:   b,
-		BucketId: b.GetName(),
+		BucketId: bucket,
 	}
 	if attrs != nil {
 		req.PredefinedAcl = attrs.PredefinedACL
@@ -415,6 +414,11 @@ func (c *grpcStorageClient) ListObjects(ctx context.Context, bucket string, q *Q
 	}
 	gitr := c.raw.ListObjects(it.ctx, req, s.gax...)
 	fetch := func(pageSize int, pageToken string) (token string, err error) {
+		// MatchGlob not yet supported for gRPC.
+		// TODO: add support when b/287306063 resolved.
+		if q != nil && q.MatchGlob != "" {
+			return "", status.Errorf(codes.Unimplemented, "MatchGlob is not supported for gRPC")
+		}
 		var objects []*storagepb.Object
 		err = run(it.ctx, func() error {
 			objects, token, err = gitr.InternalFetch(pageSize, pageToken)
@@ -1611,7 +1615,7 @@ func (w *gRPCWriter) uploadBuffer(recvd int, start int64, doneReading bool) (*st
 		// The first message on the WriteObject stream must either be the
 		// Object or the Resumable Upload ID.
 		if first {
-			ctx := gapic.InsertMetadata(w.ctx, metadata.Pairs("x-goog-request-params", "bucket="+url.QueryEscape(w.bucket)))
+			ctx := gapic.InsertMetadata(w.ctx, metadata.Pairs("x-goog-request-params", fmt.Sprintf("bucket=projects/_/buckets/%s", url.QueryEscape(w.bucket))))
 			w.stream, err = w.c.raw.WriteObject(ctx)
 			if err != nil {
 				return nil, 0, false, err

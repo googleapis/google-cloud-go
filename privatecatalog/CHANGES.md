@@ -1,5 +1,12 @@
 # Changes
 
+## [0.9.1](https://github.com/googleapis/google-cloud-go/compare/privatecatalog/v0.9.0...privatecatalog/v0.9.1) (2023-06-20)
+
+
+### Bug Fixes
+
+* **privatecatalog:** REST query UpdateMask bug ([df52820](https://github.com/googleapis/google-cloud-go/commit/df52820b0e7721954809a8aa8700b93c5662dc9b))
+
 ## [0.9.0](https://github.com/googleapis/google-cloud-go/compare/privatecatalog/v0.8.1...privatecatalog/v0.9.0) (2023-05-30)
 
 
