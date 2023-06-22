@@ -53,13 +53,13 @@ func TestClient_CustomRetry(t *testing.T) {
 
 	cs := &gax.CallSettings{}
 	// This is the default retry setting.
-	c.pubc.CallOptions.Publish[0].Resolve(cs)
+	c.pubc.CallOptions.Publish[1].Resolve(cs)
 	if got, want := fmt.Sprintf("%v", cs.Retry()), "&{{100000000 60000000000 1.3 0} [10 1 13 8 2 14 4]}"; got != want {
 		t.Fatalf("got: %v, want: %v", got, want)
 	}
 
 	// This is the custom retry setting.
-	c.pubc.CallOptions.Publish[1].Resolve(cs)
+	c.pubc.CallOptions.Publish[2].Resolve(cs)
 	if got, want := fmt.Sprintf("%v", cs.Retry()), "&{{200000000 30000000000 1.25 0} [14 4]}"; got != want {
 		t.Fatalf("merged CallOptions is incorrect: got %v, want %v", got, want)
 	}
