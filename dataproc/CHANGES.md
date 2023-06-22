@@ -1,5 +1,12 @@
 # Changes
 
+## [2.0.1](https://github.com/googleapis/google-cloud-go/compare/dataproc-v2.0.0...dataproc/v2.0.1) (2023-06-20)
+
+
+### Bug Fixes
+
+* **dataproc:** REST query UpdateMask bug ([df52820](https://github.com/googleapis/google-cloud-go/commit/df52820b0e7721954809a8aa8700b93c5662dc9b))
+
 ## [2.0.0](https://github.com/googleapis/google-cloud-go/compare/dataproc/v1.12.0...dataproc/v2.0.0) (2023-04-25)
 
 
