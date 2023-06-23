@@ -420,19 +420,19 @@ type SubscriptionConfig struct {
 
 	// If push delivery is used with this subscription, this field is
 	// used to configure it. At most one of `PushConfig`, `BigQueryConfig`,
-	// and `CloudStorageConfig` can be set. If all are empty, then the
+	// or `CloudStorageConfig` can be set. If all are empty, then the
 	// subscriber will pull and ack messages using API methods.
 	PushConfig PushConfig
 
 	// If delivery to BigQuery is used with this subscription, this field is
 	// used to configure it. At most one of `PushConfig`, `BigQueryConfig`,
-	// and `CloudStorageConfig` can be set. If all are empty, then the
+	// or `CloudStorageConfig` can be set. If all are empty, then the
 	// subscriber will pull and ack messages using API methods.
 	BigQueryConfig BigQueryConfig
 
 	// If delivery to Cloud Storage is used with this subscription, this field is
 	// used to configure it. At most one of `PushConfig`, `BigQueryConfig`,
-	// and `CloudStorageConfig` can be set. If all are empty, then the
+	// or `CloudStorageConfig` can be set. If all are empty, then the
 	// subscriber will pull and ack messages using API methods.
 	CloudStorageConfig CloudStorageConfig
 
