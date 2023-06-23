@@ -844,6 +844,8 @@ func (c *Client) GetSource(ctx context.Context, req *securitycenterpb.GetSourceR
 
 // GroupAssets filters an organization’s assets and  groups them by their specified
 // properties.
+//
+// Deprecated: GroupAssets may be removed in a future version.
 func (c *Client) GroupAssets(ctx context.Context, req *securitycenterpb.GroupAssetsRequest, opts ...gax.CallOption) *GroupResultIterator {
 	return c.internalClient.GroupAssets(ctx, req, opts...)
 }
@@ -860,6 +862,8 @@ func (c *Client) GroupFindings(ctx context.Context, req *securitycenterpb.GroupF
 }
 
 // ListAssets lists an organization’s assets.
+//
+// Deprecated: ListAssets may be removed in a future version.
 func (c *Client) ListAssets(ctx context.Context, req *securitycenterpb.ListAssetsRequest, opts ...gax.CallOption) *ListAssetsResponse_ListAssetsResultIterator {
 	return c.internalClient.ListAssets(ctx, req, opts...)
 }
@@ -913,6 +917,8 @@ func (c *Client) ListSources(ctx context.Context, req *securitycenterpb.ListSour
 // This API can only be called with limited frequency for an organization. If
 // it is called too frequently the caller will receive a TOO_MANY_REQUESTS
 // error.
+//
+// Deprecated: RunAssetDiscovery may be removed in a future version.
 func (c *Client) RunAssetDiscovery(ctx context.Context, req *securitycenterpb.RunAssetDiscoveryRequest, opts ...gax.CallOption) (*RunAssetDiscoveryOperation, error) {
 	return c.internalClient.RunAssetDiscovery(ctx, req, opts...)
 }
@@ -3335,6 +3341,8 @@ func (c *restClient) GetSource(ctx context.Context, req *securitycenterpb.GetSou
 
 // GroupAssets filters an organization’s assets and  groups them by their specified
 // properties.
+//
+// Deprecated: GroupAssets may be removed in a future version.
 func (c *restClient) GroupAssets(ctx context.Context, req *securitycenterpb.GroupAssetsRequest, opts ...gax.CallOption) *GroupResultIterator {
 	it := &GroupResultIterator{}
 	req = proto.Clone(req).(*securitycenterpb.GroupAssetsRequest)
@@ -3517,6 +3525,8 @@ func (c *restClient) GroupFindings(ctx context.Context, req *securitycenterpb.Gr
 }
 
 // ListAssets lists an organization’s assets.
+//
+// Deprecated: ListAssets may be removed in a future version.
 func (c *restClient) ListAssets(ctx context.Context, req *securitycenterpb.ListAssetsRequest, opts ...gax.CallOption) *ListAssetsResponse_ListAssetsResultIterator {
 	it := &ListAssetsResponse_ListAssetsResultIterator{}
 	req = proto.Clone(req).(*securitycenterpb.ListAssetsRequest)
@@ -4288,6 +4298,8 @@ func (c *restClient) ListSources(ctx context.Context, req *securitycenterpb.List
 // This API can only be called with limited frequency for an organization. If
 // it is called too frequently the caller will receive a TOO_MANY_REQUESTS
 // error.
+//
+// Deprecated: RunAssetDiscovery may be removed in a future version.
 func (c *restClient) RunAssetDiscovery(ctx context.Context, req *securitycenterpb.RunAssetDiscoveryRequest, opts ...gax.CallOption) (*RunAssetDiscoveryOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
