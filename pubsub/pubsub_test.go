@@ -117,3 +117,11 @@ func TestClient_ApplyClientConfig(t *testing.T) {
 		}
 	}
 }
+
+func TestClient_EmptyProjectID(t *testing.T) {
+	ctx := context.Background()
+	_, err := NewClient(ctx, "")
+	if err != ErrEmptyProjectID {
+		t.Fatalf("passing empty project ID got %v, want%v", err, ErrEmptyProjectID)
+	}
+}
