@@ -1486,6 +1486,8 @@ type Query struct {
 	// aside from the prefix, contain delimiter will have their name,
 	// truncated after the delimiter, returned in prefixes.
 	// Duplicate prefixes are omitted.
+	// Must be set to / when used with the MatchGlob parameter to filter results
+	// in a directory-like mode.
 	// Optional.
 	Delimiter string
 
@@ -1499,9 +1501,9 @@ type Query struct {
 	Versions bool
 
 	// attrSelection is used to select only specific fields to be returned by
-	// the query. It is set by the user calling calling SetAttrSelection. These
+	// the query. It is set by the user calling SetAttrSelection. These
 	// are used by toFieldMask and toFieldSelection for gRPC and HTTP/JSON
-	// clients repsectively.
+	// clients respectively.
 	attrSelection []string
 
 	// StartOffset is used to filter results to objects whose names are
@@ -1527,6 +1529,12 @@ type Query struct {
 	// true, they will also be included as objects and their metadata will be
 	// populated in the returned ObjectAttrs.
 	IncludeTrailingDelimiter bool
+
+	// MatchGlob is a glob pattern used to filter results (for example, foo*bar). See
+	// https://cloud.google.com/storage/docs/json_api/v1/objects/list#list-object-glob
+	// for syntax details. When Delimiter is set in conjunction with MatchGlob,
+	// it must be set to /.
+	MatchGlob string
 }
 
 // attrToFieldMap maps the field names of ObjectAttrs to the underlying field
