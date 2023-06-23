@@ -2068,8 +2068,12 @@ func TestIntegration_DetectProjectID(t *testing.T) {
 		t.Skip("test credentials not present, skipping")
 	}
 
-	if _, err := NewClient(ctx, DetectProjectID, option.WithCredentials(testCreds)); err != nil {
+	goodClient, err := NewClient(ctx, DetectProjectID, option.WithCredentials(testCreds))
+	if err != nil {
 		t.Errorf("test pubsub.NewClient: %v", err)
+	}
+	if goodClient.Project() != testutil.ProjID() {
+		t.Errorf("client.Project() got %q, want %q", goodClient.Project(), testutil.ProjID())
 	}
 
 	badTS := testutil.ErroringTokenSource{}
