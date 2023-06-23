@@ -1,5 +1,17 @@
 # Changes
 
+## [1.16.0](https://github.com/googleapis/google-cloud-go/compare/channel/v1.15.0...channel/v1.16.0) (2023-06-20)
+
+
+### Features
+
+* **channel:** Add support for ListSkuGroups and ListSkuGroupBillableSkus APIs in Cloud Channel APIs ([#8092](https://github.com/googleapis/google-cloud-go/issues/8092)) ([3382ef8](https://github.com/googleapis/google-cloud-go/commit/3382ef81b6bcefe1c7bfc14aa5ff9bbf25850966))
+
+
+### Bug Fixes
+
+* **channel:** REST query UpdateMask bug ([df52820](https://github.com/googleapis/google-cloud-go/commit/df52820b0e7721954809a8aa8700b93c5662dc9b))
+
 ## [1.15.0](https://github.com/googleapis/google-cloud-go/compare/channel/v1.14.0...channel/v1.15.0) (2023-05-30)
 
 
