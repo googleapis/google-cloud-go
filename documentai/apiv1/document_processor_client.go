@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"math"
 	"net/http"
 	"net/url"
@@ -93,7 +93,7 @@ func defaultDocumentProcessorGRPCClientOptions() []option.ClientOption {
 func defaultDocumentProcessorCallOptions() *DocumentProcessorCallOptions {
 	return &DocumentProcessorCallOptions{
 		ProcessDocument: []gax.CallOption{
-			gax.WithTimeout(120000 * time.Millisecond),
+			gax.WithTimeout(300000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -161,7 +161,7 @@ func defaultDocumentProcessorCallOptions() *DocumentProcessorCallOptions {
 func defaultDocumentProcessorRESTCallOptions() *DocumentProcessorCallOptions {
 	return &DocumentProcessorCallOptions{
 		ProcessDocument: []gax.CallOption{
-			gax.WithTimeout(120000 * time.Millisecond),
+			gax.WithTimeout(300000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -271,7 +271,7 @@ type internalDocumentProcessorClient interface {
 // DocumentProcessorClient is a client for interacting with Cloud Document AI API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
-// Service to call Cloud DocumentAI to process documents according to the
+// Service to call Document AI to process documents according to the
 // processor’s definition. Processors are built using state-of-the-art Google
 // AI such as natural language, computer vision, and translation to extract
 // structured information from unstructured or semi-structured documents.
@@ -328,8 +328,9 @@ func (c *DocumentProcessorClient) BatchProcessDocumentsOperation(name string) *B
 	return c.internalClient.BatchProcessDocumentsOperation(name)
 }
 
-// FetchProcessorTypes fetches processor types. Note that we do not use ListProcessorTypes here
-// because it is not paginated.
+// FetchProcessorTypes fetches processor types. Note that we don’t use
+// ListProcessorTypes
+// here, because it isn’t paginated.
 func (c *DocumentProcessorClient) FetchProcessorTypes(ctx context.Context, req *documentaipb.FetchProcessorTypesRequest, opts ...gax.CallOption) (*documentaipb.FetchProcessorTypesResponse, error) {
 	return c.internalClient.FetchProcessorTypes(ctx, req, opts...)
 }
@@ -356,7 +357,7 @@ func (c *DocumentProcessorClient) GetProcessor(ctx context.Context, req *documen
 
 // TrainProcessorVersion trains a new processor version.
 // Operation metadata is returned as
-// cloud_documentai_core.TrainProcessorVersionMetadata.
+// TrainProcessorVersionMetadata.
 func (c *DocumentProcessorClient) TrainProcessorVersion(ctx context.Context, req *documentaipb.TrainProcessorVersionRequest, opts ...gax.CallOption) (*TrainProcessorVersionOperation, error) {
 	return c.internalClient.TrainProcessorVersion(ctx, req, opts...)
 }
@@ -411,8 +412,9 @@ func (c *DocumentProcessorClient) UndeployProcessorVersionOperation(name string)
 	return c.internalClient.UndeployProcessorVersionOperation(name)
 }
 
-// CreateProcessor creates a processor from the type processor that the user chose.
-// The processor will be at “ENABLED” state by default after its creation.
+// CreateProcessor creates a processor from the
+// ProcessorType provided. The
+// processor will be at ENABLED state by default after its creation.
 func (c *DocumentProcessorClient) CreateProcessor(ctx context.Context, req *documentaipb.CreateProcessorRequest, opts ...gax.CallOption) (*documentaipb.Processor, error) {
 	return c.internalClient.CreateProcessor(ctx, req, opts...)
 }
@@ -554,7 +556,7 @@ type documentProcessorGRPCClient struct {
 // NewDocumentProcessorClient creates a new document processor service client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
-// Service to call Cloud DocumentAI to process documents according to the
+// Service to call Document AI to process documents according to the
 // processor’s definition. Processors are built using state-of-the-art Google
 // AI such as natural language, computer vision, and translation to extract
 // structured information from unstructured or semi-structured documents.
@@ -611,7 +613,7 @@ func (c *documentProcessorGRPCClient) Connection() *grpc.ClientConn {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *documentProcessorGRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -644,7 +646,7 @@ type documentProcessorRESTClient struct {
 
 // NewDocumentProcessorRESTClient creates a new document processor service rest client.
 //
-// Service to call Cloud DocumentAI to process documents according to the
+// Service to call Document AI to process documents according to the
 // processor’s definition. Processors are built using state-of-the-art Google
 // AI such as natural language, computer vision, and translation to extract
 // structured information from unstructured or semi-structured documents.
@@ -689,7 +691,7 @@ func defaultDocumentProcessorRESTClientOptions() []option.ClientOption {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *documentProcessorRESTClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -1400,13 +1402,13 @@ func (c *documentProcessorRESTClient) ProcessDocument(ctx context.Context, req *
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1464,13 +1466,13 @@ func (c *documentProcessorRESTClient) BatchProcessDocuments(ctx context.Context,
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1486,8 +1488,9 @@ func (c *documentProcessorRESTClient) BatchProcessDocuments(ctx context.Context,
 	}, nil
 }
 
-// FetchProcessorTypes fetches processor types. Note that we do not use ListProcessorTypes here
-// because it is not paginated.
+// FetchProcessorTypes fetches processor types. Note that we don’t use
+// ListProcessorTypes
+// here, because it isn’t paginated.
 func (c *documentProcessorRESTClient) FetchProcessorTypes(ctx context.Context, req *documentaipb.FetchProcessorTypesRequest, opts ...gax.CallOption) (*documentaipb.FetchProcessorTypesResponse, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -1528,13 +1531,13 @@ func (c *documentProcessorRESTClient) FetchProcessorTypes(ctx context.Context, r
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1599,13 +1602,13 @@ func (c *documentProcessorRESTClient) ListProcessorTypes(ctx context.Context, re
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -1674,13 +1677,13 @@ func (c *documentProcessorRESTClient) GetProcessorType(ctx context.Context, req 
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1745,13 +1748,13 @@ func (c *documentProcessorRESTClient) ListProcessors(ctx context.Context, req *d
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -1820,13 +1823,13 @@ func (c *documentProcessorRESTClient) GetProcessor(ctx context.Context, req *doc
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1839,7 +1842,7 @@ func (c *documentProcessorRESTClient) GetProcessor(ctx context.Context, req *doc
 
 // TrainProcessorVersion trains a new processor version.
 // Operation metadata is returned as
-// cloud_documentai_core.TrainProcessorVersionMetadata.
+// TrainProcessorVersionMetadata.
 func (c *documentProcessorRESTClient) TrainProcessorVersion(ctx context.Context, req *documentaipb.TrainProcessorVersionRequest, opts ...gax.CallOption) (*TrainProcessorVersionOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -1885,13 +1888,13 @@ func (c *documentProcessorRESTClient) TrainProcessorVersion(ctx context.Context,
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1948,13 +1951,13 @@ func (c *documentProcessorRESTClient) GetProcessorVersion(ctx context.Context, r
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2019,13 +2022,13 @@ func (c *documentProcessorRESTClient) ListProcessorVersions(ctx context.Context,
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -2094,13 +2097,13 @@ func (c *documentProcessorRESTClient) DeleteProcessorVersion(ctx context.Context
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2162,13 +2165,13 @@ func (c *documentProcessorRESTClient) DeployProcessorVersion(ctx context.Context
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2230,13 +2233,13 @@ func (c *documentProcessorRESTClient) UndeployProcessorVersion(ctx context.Conte
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2252,8 +2255,9 @@ func (c *documentProcessorRESTClient) UndeployProcessorVersion(ctx context.Conte
 	}, nil
 }
 
-// CreateProcessor creates a processor from the type processor that the user chose.
-// The processor will be at “ENABLED” state by default after its creation.
+// CreateProcessor creates a processor from the
+// ProcessorType provided. The
+// processor will be at ENABLED state by default after its creation.
 func (c *documentProcessorRESTClient) CreateProcessor(ctx context.Context, req *documentaipb.CreateProcessorRequest, opts ...gax.CallOption) (*documentaipb.Processor, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetProcessor()
@@ -2301,13 +2305,13 @@ func (c *documentProcessorRESTClient) CreateProcessor(ctx context.Context, req *
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2359,13 +2363,13 @@ func (c *documentProcessorRESTClient) DeleteProcessor(ctx context.Context, req *
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2427,13 +2431,13 @@ func (c *documentProcessorRESTClient) EnableProcessor(ctx context.Context, req *
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2495,13 +2499,13 @@ func (c *documentProcessorRESTClient) DisableProcessor(ctx context.Context, req 
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2567,13 +2571,13 @@ func (c *documentProcessorRESTClient) SetDefaultProcessorVersion(ctx context.Con
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2636,13 +2640,13 @@ func (c *documentProcessorRESTClient) ReviewDocument(ctx context.Context, req *d
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2705,13 +2709,13 @@ func (c *documentProcessorRESTClient) EvaluateProcessorVersion(ctx context.Conte
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2768,13 +2772,13 @@ func (c *documentProcessorRESTClient) GetEvaluation(ctx context.Context, req *do
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2839,13 +2843,13 @@ func (c *documentProcessorRESTClient) ListEvaluations(ctx context.Context, req *
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -2914,13 +2918,13 @@ func (c *documentProcessorRESTClient) GetLocation(ctx context.Context, req *loca
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2988,13 +2992,13 @@ func (c *documentProcessorRESTClient) ListLocations(ctx context.Context, req *lo
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -3103,13 +3107,13 @@ func (c *documentProcessorRESTClient) GetOperation(ctx context.Context, req *lon
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -3177,13 +3181,13 @@ func (c *documentProcessorRESTClient) ListOperations(ctx context.Context, req *l
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil

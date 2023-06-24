@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.4.1](https://github.com/googleapis/google-cloud-go/compare/ids/v1.4.0...ids/v1.4.1) (2023-06-20)
+
+
+### Bug Fixes
+
+* **ids:** REST query UpdateMask bug ([df52820](https://github.com/googleapis/google-cloud-go/commit/df52820b0e7721954809a8aa8700b93c5662dc9b))
+
 ## [1.4.0](https://github.com/googleapis/google-cloud-go/compare/ids/v1.3.1...ids/v1.4.0) (2023-05-30)
 
 
