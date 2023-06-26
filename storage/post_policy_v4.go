@@ -115,7 +115,7 @@ type PostPolicyV4Options struct {
 
 	// Hostname sets the host of the signed post policy. This field overrides
 	// any endpoint set on a storage Client or through STORAGE_EMULATOR_HOST.
-	// Not compatible with BucketBoundHostname URLStyle.
+	// Only compatible with PathStyle URLStyle.
 	// Optional.
 	Hostname string
 

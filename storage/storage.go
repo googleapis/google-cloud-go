@@ -296,16 +296,12 @@ func (s pathStyle) host(hostname, bucket string) string {
 	return "storage.googleapis.com"
 }
 
-func (s virtualHostedStyle) host(hostname, bucket string) string {
-	if hostname != "" {
-		return bucket + "." + stripScheme(hostname)
-	}
-
+func (s virtualHostedStyle) host(_, bucket string) string {
 	if host := os.Getenv("STORAGE_EMULATOR_HOST"); host != "" {
 		return bucket + "." + stripScheme(host)
 	}
 
-	return bucket + "." + "storage.googleapis.com"
+	return bucket + ".storage.googleapis.com"
 }
 
 func (s bucketBoundHostname) host(_, bucket string) string {
@@ -456,7 +452,7 @@ type SignedURLOptions struct {
 
 	// Hostname sets the host of the signed URL. This field overrides any
 	// endpoint set on a storage Client or through STORAGE_EMULATOR_HOST.
-	// Not compatible with BucketBoundHostname URLStyle.
+	// Only compatible with PathStyle URLStyle.
 	// Optional.
 	Hostname string
 }
