@@ -1,5 +1,5 @@
 {
-  "bigquery": "1.51.2",
+  "bigquery": "1.52.0",
   "bigtable": "1.18.1",
   "datastore": "1.11.0",
   "errorreporting": "0.3.0",
