@@ -22,9 +22,6 @@ package pubsubpb
 
 import (
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -35,6 +32,8 @@ import (
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -2109,7 +2108,8 @@ type CloudStorageConfig struct {
 	// requirements](https://cloud.google.com/storage/docs/objects#naming).
 	FilenamePrefix string `protobuf:"bytes,2,opt,name=filename_prefix,json=filenamePrefix,proto3" json:"filename_prefix,omitempty"`
 	// User-provided suffix for Cloud Storage filename. See the [object naming
-	// requirements](https://cloud.google.com/storage/docs/objects#naming).
+	// requirements](https://cloud.google.com/storage/docs/objects#naming). Must
+	// not end in "/".
 	FilenameSuffix string `protobuf:"bytes,3,opt,name=filename_suffix,json=filenameSuffix,proto3" json:"filename_suffix,omitempty"`
 	// Defaults to text format.
 	//
