@@ -160,6 +160,11 @@ func bqToJobConfig(q *bq.JobConfiguration, c *Client) (JobConfig, error) {
 	}
 }
 
+func (j *Job) retryer() *retryConfig {
+	// TODO: extend to allow per Job retry config
+	return j.c.retry
+}
+
 // JobIDConfig  describes how to create an ID for a job.
 type JobIDConfig struct {
 	// JobID is the ID to use for the job. If empty, a random job ID will be generated.
@@ -239,7 +244,7 @@ func (j *Job) Cancel(ctx context.Context) error {
 		Fields(). // We don't need any of the response data.
 		Context(ctx)
 	setClientHeader(call.Header())
-	return runWithRetry(ctx, func() error {
+	return runWithRetry(ctx, j.retryer(), func() error {
 		sCtx := trace.StartSpan(ctx, "bigquery.jobs.cancel")
 		_, err := call.Do()
 		trace.EndSpan(sCtx, err)
@@ -258,7 +263,7 @@ func (j *Job) Delete(ctx context.Context) (err error) {
 	}
 	setClientHeader(call.Header())
 
-	return runWithRetry(ctx, func() (err error) {
+	return runWithRetry(ctx, j.retryer(), func() (err error) {
 		sCtx := trace.StartSpan(ctx, "bigquery.jobs.delete")
 		err = call.Do()
 		trace.EndSpan(sCtx, err)
@@ -853,7 +858,7 @@ func (it *JobIterator) fetch(pageSize int, pageToken string) (string, error) {
 		req.ParentJobId(it.ParentJobID)
 	}
 	var res *bq.JobList
-	err := runWithRetry(it.ctx, func() (err error) {
+	err := runWithRetry(it.ctx, it.c.retry, func() (err error) {
 		sCtx := trace.StartSpan(it.ctx, "bigquery.jobs.list")
 		res, err = req.Do()
 		trace.EndSpan(sCtx, err)
@@ -891,7 +896,7 @@ func (c *Client) getJobInternal(ctx context.Context, jobID, location, projectID 
 		call = call.Fields(fields...)
 	}
 	setClientHeader(call.Header())
-	err := runWithRetry(ctx, func() (err error) {
+	err := runWithRetry(ctx, c.retry, func() (err error) {
 		sCtx := trace.StartSpan(ctx, "bigquery.jobs.get")
 		job, err = call.Do()
 		trace.EndSpan(sCtx, err)

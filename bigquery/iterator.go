@@ -242,7 +242,7 @@ func fetchTableResultPage(ctx context.Context, src *rowSource, schema Schema, st
 	} else {
 		go func() {
 			var bqt *bq.Table
-			err := runWithRetry(ctx, func() (err error) {
+			err := runWithRetry(ctx, src.t.retryer(), func() (err error) {
 				bqt, err = src.t.c.bqs.Tables.Get(src.t.ProjectID, src.t.DatasetID, src.t.TableID).
 					Fields("schema").
 					Context(ctx).
@@ -266,7 +266,7 @@ func fetchTableResultPage(ctx context.Context, src *rowSource, schema Schema, st
 		call.MaxResults(pageSize)
 	}
 	var res *bq.TableDataList
-	err := runWithRetry(ctx, func() (err error) {
+	err := runWithRetry(ctx, src.t.retryer(), func() (err error) {
 		res, err = call.Context(ctx).Do()
 		return err
 	})
@@ -308,7 +308,7 @@ func fetchJobResultPage(ctx context.Context, src *rowSource, schema Schema, star
 		call.MaxResults(pageSize)
 	}
 	var res *bq.GetQueryResultsResponse
-	err := runWithRetry(ctx, func() (err error) {
+	err := runWithRetry(ctx, src.j.retryer(), func() (err error) {
 		res, err = call.Do()
 		return err
 	})

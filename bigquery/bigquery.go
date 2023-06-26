@@ -16,22 +16,16 @@ package bigquery
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"io"
 	"net/http"
-	"net/url"
-	"strings"
 	"time"
 
 	"cloud.google.com/go/bigquery/internal"
-	cloudinternal "cloud.google.com/go/internal"
 	"cloud.google.com/go/internal/detect"
 	"cloud.google.com/go/internal/trace"
 	"cloud.google.com/go/internal/version"
-	gax "github.com/googleapis/gax-go/v2"
 	bq "google.golang.org/api/bigquery/v2"
-	"google.golang.org/api/googleapi"
 	"google.golang.org/api/option"
 )
 
@@ -59,6 +53,7 @@ type Client struct {
 	projectID string
 	bqs       *bq.Service
 	rc        *readClient
+	retry     *retryConfig
 }
 
 // DetectProjectID is a sentinel value that instructs NewClient to detect the
@@ -95,6 +90,7 @@ func NewClient(ctx context.Context, projectID string, opts ...option.ClientOptio
 	c := &Client{
 		projectID: projectID,
 		bqs:       bqs,
+		retry:     defaultRetryConfig(),
 	}
 	return c, nil
 }
@@ -159,7 +155,7 @@ func (c *Client) insertJob(ctx context.Context, job *bq.Job, media io.Reader) (*
 	// TODO(jba): Look into retrying if media != nil.
 	if job.JobReference != nil && media == nil {
 		// We deviate from default retries due to BigQuery wanting to retry structured internal job errors.
-		err = runWithRetryExplicit(ctx, invoke, jobRetryReasons)
+		err = runWithRetryExplicit(ctx, c.retry, invoke, jobRetryReasons)
 	} else {
 		err = invoke()
 	}
@@ -186,11 +182,28 @@ func (c *Client) runQuery(ctx context.Context, queryRequest *bq.QueryRequest) (*
 	}
 
 	// We control request ID, so we can always runWithRetry.
-	err = runWithRetryExplicit(ctx, invoke, jobRetryReasons)
+	err = runWithRetryExplicit(ctx, c.retry, invoke, jobRetryReasons)
 	if err != nil {
 		return nil, err
 	}
 	return res, nil
+}
+
+// SetRetry configures the client with custom retry behavior as specified by the
+// options that are passed to it. All operations using this client will use the
+// customized retry configuration.
+func (c *Client) SetRetry(opts ...RetryOption) {
+	var retry *retryConfig
+	if c.retry != nil {
+		// merge the options with the existing retry
+		retry = c.retry
+	} else {
+		retry = defaultRetryConfig()
+	}
+	for _, opt := range opts {
+		opt.apply(retry)
+	}
+	c.retry = retry
 }
 
 // Convert a number of milliseconds since the Unix epoch to a time.Time.
@@ -201,90 +214,4 @@ func unixMillisToTime(m int64) time.Time {
 		return time.Time{}
 	}
 	return time.Unix(0, m*1e6)
-}
-
-// runWithRetry calls the function until it returns nil or a non-retryable error, or
-// the context is done.
-// See the similar function in ../storage/invoke.go. The main difference is the
-// reason for retrying.
-func runWithRetry(ctx context.Context, call func() error) error {
-	return runWithRetryExplicit(ctx, call, defaultRetryReasons)
-}
-
-func runWithRetryExplicit(ctx context.Context, call func() error, allowedReasons []string) error {
-	// These parameters match the suggestions in https://cloud.google.com/bigquery/sla.
-	backoff := gax.Backoff{
-		Initial:    1 * time.Second,
-		Max:        32 * time.Second,
-		Multiplier: 2,
-	}
-	return cloudinternal.Retry(ctx, backoff, func() (stop bool, err error) {
-		err = call()
-		if err == nil {
-			return true, nil
-		}
-		return !retryableError(err, allowedReasons), err
-	})
-}
-
-var (
-	defaultRetryReasons = []string{"backendError", "rateLimitExceeded"}
-	jobRetryReasons     = []string{"backendError", "rateLimitExceeded", "internalError"}
-	retry5xxCodes       = []int{
-		http.StatusInternalServerError,
-		http.StatusBadGateway,
-		http.StatusServiceUnavailable,
-		http.StatusGatewayTimeout,
-	}
-)
-
-// retryableError is the unary retry predicate for this library.  In addition to structured error
-// reasons, it specifies some HTTP codes (500, 502, 503, 504) and network/transport reasons.
-func retryableError(err error, allowedReasons []string) bool {
-	if err == nil {
-		return false
-	}
-	if err == io.ErrUnexpectedEOF {
-		return true
-	}
-	// Special case due to http2: https://github.com/googleapis/google-cloud-go/issues/1793
-	// Due to Go's default being higher for streams-per-connection than is accepted by the
-	// BQ backend, it's possible to get streams refused immediately after a connection is
-	// started but before we receive SETTINGS frame from the backend.  This generally only
-	// happens when we try to enqueue > 100 requests onto a newly initiated connection.
-	if err.Error() == "http2: stream closed" {
-		return true
-	}
-
-	switch e := err.(type) {
-	case *googleapi.Error:
-		// We received a structured error from backend.
-		var reason string
-		if len(e.Errors) > 0 {
-			reason = e.Errors[0].Reason
-			for _, r := range allowedReasons {
-				if reason == r {
-					return true
-				}
-			}
-		}
-		for _, code := range retry5xxCodes {
-			if e.Code == code {
-				return true
-			}
-		}
-	case *url.Error:
-		retryable := []string{"connection refused", "connection reset"}
-		for _, s := range retryable {
-			if strings.Contains(e.Error(), s) {
-				return true
-			}
-		}
-	case interface{ Temporary() bool }:
-		if e.Temporary() {
-			return true
-		}
-	}
-	// Check wrapped error.
-	return retryableError(errors.Unwrap(err), allowedReasons)
 }

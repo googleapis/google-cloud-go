@@ -270,7 +270,7 @@ func (d *Dataset) deleteInternal(ctx context.Context, deleteContents bool) (err 
 
 	call := d.c.bqs.Datasets.Delete(d.ProjectID, d.DatasetID).Context(ctx).DeleteContents(deleteContents)
 	setClientHeader(call.Header())
-	return runWithRetry(ctx, func() (err error) {
+	return runWithRetry(ctx, d.retryer(), func() (err error) {
 		sCtx := trace.StartSpan(ctx, "bigquery.datasets.delete")
 		err = call.Do()
 		trace.EndSpan(sCtx, err)
@@ -286,7 +286,7 @@ func (d *Dataset) Metadata(ctx context.Context) (md *DatasetMetadata, err error)
 	call := d.c.bqs.Datasets.Get(d.ProjectID, d.DatasetID).Context(ctx)
 	setClientHeader(call.Header())
 	var ds *bq.Dataset
-	if err := runWithRetry(ctx, func() (err error) {
+	if err := runWithRetry(ctx, d.retryer(), func() (err error) {
 		sCtx := trace.StartSpan(ctx, "bigquery.datasets.get")
 		ds, err = call.Do()
 		trace.EndSpan(sCtx, err)
@@ -348,7 +348,7 @@ func (d *Dataset) Update(ctx context.Context, dm DatasetMetadataToUpdate, etag s
 		call.Header().Set("If-Match", etag)
 	}
 	var ds2 *bq.Dataset
-	if err := runWithRetry(ctx, func() (err error) {
+	if err := runWithRetry(ctx, d.retryer(), func() (err error) {
 		sCtx := trace.StartSpan(ctx, "bigquery.datasets.patch")
 		ds2, err = call.Do()
 		trace.EndSpan(sCtx, err)
@@ -449,6 +449,11 @@ func (d *Dataset) Tables(ctx context.Context) *TableIterator {
 	return it
 }
 
+func (d *Dataset) retryer() *retryConfig {
+	// TODO: extend to allow per Dataset retry config
+	return d.c.retry
+}
+
 // A TableIterator is an iterator over Tables.
 type TableIterator struct {
 	ctx      context.Context
@@ -483,7 +488,7 @@ var listTables = func(it *TableIterator, pageSize int, pageToken string) (*bq.Ta
 		call.MaxResults(int64(pageSize))
 	}
 	var res *bq.TableList
-	err := runWithRetry(it.ctx, func() (err error) {
+	err := runWithRetry(it.ctx, it.dataset.retryer(), func() (err error) {
 		sCtx := trace.StartSpan(it.ctx, "bigquery.tables.list")
 		res, err = call.Do()
 		trace.EndSpan(sCtx, err)
@@ -570,7 +575,7 @@ var listModels = func(it *ModelIterator, pageSize int, pageToken string) (*bq.Li
 		call.MaxResults(int64(pageSize))
 	}
 	var res *bq.ListModelsResponse
-	err := runWithRetry(it.ctx, func() (err error) {
+	err := runWithRetry(it.ctx, it.dataset.retryer(), func() (err error) {
 		sCtx := trace.StartSpan(it.ctx, "bigquery.models.list")
 		res, err = call.Do()
 		trace.EndSpan(sCtx, err)
@@ -659,7 +664,7 @@ var listRoutines = func(it *RoutineIterator, pageSize int, pageToken string) (*b
 		call.MaxResults(int64(pageSize))
 	}
 	var res *bq.ListRoutinesResponse
-	err := runWithRetry(it.ctx, func() (err error) {
+	err := runWithRetry(it.ctx, it.dataset.retryer(), func() (err error) {
 		sCtx := trace.StartSpan(it.ctx, "bigquery.routines.list")
 		res, err = call.Do()
 		trace.EndSpan(sCtx, err)
@@ -765,7 +770,7 @@ var listDatasets = func(it *DatasetIterator, pageSize int, pageToken string) (*b
 		call.Filter(it.Filter)
 	}
 	var res *bq.DatasetList
-	err := runWithRetry(it.ctx, func() (err error) {
+	err := runWithRetry(it.ctx, it.c.retry, func() (err error) {
 		sCtx := trace.StartSpan(it.ctx, "bigquery.datasets.list")
 		res, err = call.Do()
 		trace.EndSpan(sCtx, err)

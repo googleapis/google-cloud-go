@@ -591,7 +591,7 @@ func (t *Table) Create(ctx context.Context, tm *TableMetadata) (err error) {
 
 	req := t.c.bqs.Tables.Insert(t.ProjectID, t.DatasetID, table).Context(ctx)
 	setClientHeader(req.Header())
-	return runWithRetry(ctx, func() (err error) {
+	return runWithRetry(ctx, t.retryer(), func() (err error) {
 		ctx = trace.StartSpan(ctx, "bigquery.tables.insert")
 		_, err = req.Do()
 		trace.EndSpan(ctx, err)
@@ -729,7 +729,7 @@ func (t *Table) Metadata(ctx context.Context, opts ...TableMetadataOption) (md *
 
 	setClientHeader(tgc.call.Header())
 	var res *bq.Table
-	if err := runWithRetry(ctx, func() (err error) {
+	if err := runWithRetry(ctx, t.retryer(), func() (err error) {
 		sCtx := trace.StartSpan(ctx, "bigquery.tables.get")
 		res, err = tgc.call.Do()
 		trace.EndSpan(sCtx, err)
@@ -799,7 +799,7 @@ func (t *Table) Delete(ctx context.Context) (err error) {
 	call := t.c.bqs.Tables.Delete(t.ProjectID, t.DatasetID, t.TableID).Context(ctx)
 	setClientHeader(call.Header())
 
-	return runWithRetry(ctx, func() (err error) {
+	return runWithRetry(ctx, t.retryer(), func() (err error) {
 		ctx = trace.StartSpan(ctx, "bigquery.tables.delete")
 		err = call.Do()
 		trace.EndSpan(ctx, err)
@@ -820,6 +820,11 @@ func (t *Table) read(ctx context.Context, pf pageFetcher) *RowIterator {
 		}
 	}
 	return newRowIterator(ctx, &rowSource{t: t}, pf)
+}
+
+func (t *Table) retryer() *retryConfig {
+	// TODO: extend to allow per Table retry config
+	return t.c.retry
 }
 
 // NeverExpire is a sentinel value used to remove a table'e expiration time.
@@ -865,7 +870,7 @@ func (t *Table) Update(ctx context.Context, tm TableMetadataToUpdate, etag strin
 		tpc.call.Header().Set("If-Match", etag)
 	}
 	var res *bq.Table
-	if err := runWithRetry(ctx, func() (err error) {
+	if err := runWithRetry(ctx, t.retryer(), func() (err error) {
 		ctx = trace.StartSpan(ctx, "bigquery.tables.patch")
 		res, err = tpc.call.Do()
 		trace.EndSpan(ctx, err)
