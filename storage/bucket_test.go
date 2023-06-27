@@ -1349,9 +1349,9 @@ func TestBucketSignedURL_Endpoint_Emulator_Host(t *testing.T) {
 				"&X-Goog-SignedHeaders=host",
 		},
 		{
-			desc:         "VirtualHostedStyle - endpoint",
-			emulatorHost: "localhost:8000",
-			endpoint:     &localhost9000,
+			desc:         "VirtualHostedStyle - endpoint does not have effect",
+			emulatorHost: "localhost:9000",
+			endpoint:     &localhost6000Https,
 			now:          expires.Add(-24 * time.Hour),
 			opts: &SignedURLOptions{
 				GoogleAccessID: "xxx@clientid",
