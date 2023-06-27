@@ -561,7 +561,11 @@ func (c *Client) rwTransaction(ctx context.Context, f func(context.Context, *Rea
 			sh, err = c.idleSessions.take(ctx)
 			if t != nil {
 				// when a batch update operation is called on this transaction, isLongRunningTransaction will be true
+				sh.mu.Lock()
+				t.mu.Lock()
 				sh.isLongRunningTransaction = t.isLongRunningTransaction
+				t.mu.Unlock()
+				sh.mu.Unlock()
 			}
 			if err != nil {
 				// If session retrieval fails, just fail the transaction.
