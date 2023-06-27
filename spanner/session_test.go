@@ -864,68 +864,6 @@ func TestMaintainer_LongRunningTransactions_WhenDurationBelowThreshold_VerifyIna
 	}
 }
 
-func TestSessionLeak1(t *testing.T) {
-	t.Parallel()
-	ctx := context.Background()
-	_, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
-		SessionPoolConfig: SessionPoolConfig{
-			MinOpened: 1,
-			MaxOpened: 1,
-			//CloseInactiveTransactions: true,
-			healthCheckSampleInterval: 1 * time.Second, // maintainer runs every 1 sec
-		},
-	})
-	defer teardown()
-	//idleTimeThreshold = 3  // recycle sessions checked out for >3sec
-	//executionFrequency = 2 // inactive transactions get checked every 2 secs
-
-	/*server.TestSpanner.PutExecutionTime(MethodExecuteStreamingSql,
-	SimulatedExecutionTime{
-		MinimumExecutionTime: 1 * time.Minute,
-	})*/
-	single := client.Single()
-	iter := single.Query(ctx, NewStatement(SelectFooFromBar))
-	for {
-		_, err := iter.Next()
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			t.Fatalf("Got unexpected error while iterating results: %v\n", err)
-		}
-	}
-	// The session should not have been returned to the pool.
-	p := client.idleSessions
-	p.mu.Lock()
-	if g, w := p.idleList.Len(), 0; g != w { // No of sessions in the pool must be 0
-		p.mu.Unlock()
-		t.Fatalf("Idle sessions count mismatch\nGot: %d\nWant: %d\n", g, w)
-	}
-	p.mu.Unlock()
-	// The checked out session should contain a stack trace as Logging is true.
-	single.sh.mu.Lock()
-	if single.sh.stack == nil {
-		single.sh.mu.Unlock()
-		t.Fatalf("Missing stacktrace from session handle")
-	}
-	if g, w := single.sh.isLongRunningTransaction, false; g != w {
-		single.sh.mu.Unlock()
-		t.Fatalf("isLongRunningTransaction mismatch\nGot: %v\nWant: %v\n", g, w)
-	}
-	single.sh.mu.Unlock()
-	// Sleep for 10 secs so that background task cleans up the session
-	time.Sleep(5 * time.Second)
-	// The session should have been returned to the pool.
-	p.mu.Lock()
-	if g, w := p.idleList.Len(), 1; g != w {
-		p.mu.Unlock() // If we don't unlock then it will be a deadlock and test never ends
-		t.Fatalf("Idle sessions count mismatch\nGot: %d\nWant: %d\n", g, w)
-	}
-	p.mu.Unlock()
-	// Return the session to the pool.
-	iter.Stop()
-}
-
 // TestMaxOpenedSessions tests max open sessions constraint.
 func TestMaxOpenedSessions(t *testing.T) {
 	t.Parallel()
