@@ -417,8 +417,7 @@ func (c *Client) BatchReadOnlyTransaction(ctx context.Context, tb TimestampBound
 	if err != nil {
 		return nil, err
 	}
-	// TODO(harsha): isLongRunningTransaction is not needed here as this will not be registerd in trackSessions list
-	sh = &sessionHandle{session: s, isLongRunningTransaction: true}
+	sh = &sessionHandle{session: s}
 
 	// Begin transaction.
 	res, err := sh.getClient().BeginTransaction(contextWithOutgoingMetadata(ctx, sh.getMetadata(), true), &sppb.BeginTransactionRequest{
@@ -470,7 +469,7 @@ func (c *Client) BatchReadOnlyTransactionFromID(tid BatchReadOnlyTransactionID) 
 		// the error instead of this, but that would mean an API change.
 		s = &session{}
 	}
-	sh := &sessionHandle{session: s, isLongRunningTransaction: true}
+	sh := &sessionHandle{session: s}
 
 	t := &BatchReadOnlyTransaction{
 		ReadOnlyTransaction: ReadOnlyTransaction{
@@ -561,6 +560,7 @@ func (c *Client) rwTransaction(ctx context.Context, f func(context.Context, *Rea
 			// Session handle hasn't been allocated or has been destroyed.
 			sh, err = c.idleSessions.take(ctx)
 			if t != nil {
+				// when a batch update operation is called on this transaction, isLongRunningTransaction will be true
 				sh.isLongRunningTransaction = t.isLongRunningTransaction
 			}
 			if err != nil {
