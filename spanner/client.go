@@ -417,7 +417,8 @@ func (c *Client) BatchReadOnlyTransaction(ctx context.Context, tb TimestampBound
 	if err != nil {
 		return nil, err
 	}
-	sh = &sessionHandle{session: s}
+	// TODO(harsha): isLongRunningTransaction is not needed here as this will not be registerd in trackSessions list
+	sh = &sessionHandle{session: s, isLongRunningTransaction: true}
 
 	// Begin transaction.
 	res, err := sh.getClient().BeginTransaction(contextWithOutgoingMetadata(ctx, sh.getMetadata(), true), &sppb.BeginTransactionRequest{
@@ -438,10 +439,11 @@ func (c *Client) BatchReadOnlyTransaction(ctx context.Context, tb TimestampBound
 
 	t := &BatchReadOnlyTransaction{
 		ReadOnlyTransaction: ReadOnlyTransaction{
-			tx:              tx,
-			txReadyOrClosed: make(chan struct{}),
-			state:           txActive,
-			rts:             rts,
+			tx:                       tx,
+			txReadyOrClosed:          make(chan struct{}),
+			state:                    txActive,
+			rts:                      rts,
+			isLongRunningTransaction: true,
 		},
 		ID: BatchReadOnlyTransactionID{
 			tid: tx,
@@ -468,14 +470,15 @@ func (c *Client) BatchReadOnlyTransactionFromID(tid BatchReadOnlyTransactionID) 
 		// the error instead of this, but that would mean an API change.
 		s = &session{}
 	}
-	sh := &sessionHandle{session: s}
+	sh := &sessionHandle{session: s, isLongRunningTransaction: true}
 
 	t := &BatchReadOnlyTransaction{
 		ReadOnlyTransaction: ReadOnlyTransaction{
-			tx:              tid.tid,
-			txReadyOrClosed: make(chan struct{}),
-			state:           txActive,
-			rts:             tid.rts,
+			tx:                       tid.tid,
+			txReadyOrClosed:          make(chan struct{}),
+			state:                    txActive,
+			rts:                      tid.rts,
+			isLongRunningTransaction: true,
 		},
 		ID: tid,
 	}
@@ -557,6 +560,9 @@ func (c *Client) rwTransaction(ctx context.Context, f func(context.Context, *Rea
 		if sh == nil || sh.getID() == "" || sh.getClient() == nil {
 			// Session handle hasn't been allocated or has been destroyed.
 			sh, err = c.idleSessions.take(ctx)
+			if t != nil {
+				sh.isLongRunningTransaction = t.isLongRunningTransaction
+			}
 			if err != nil {
 				// If session retrieval fails, just fail the transaction.
 				return err

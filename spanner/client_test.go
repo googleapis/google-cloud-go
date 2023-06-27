@@ -208,6 +208,76 @@ func TestClient_Single_Read_SessionNotFound(t *testing.T) {
 	}
 }
 
+func TestClient_Single_WhenInactiveTransactionsAndSessionIsNotFoundOnBackend_RemoveSessionFromPool(t *testing.T) {
+	t.Parallel()
+	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
+		SessionPoolConfig: SessionPoolConfig{
+			MinOpened:                 1,
+			MaxOpened:                 1,
+			healthCheckSampleInterval: 1 * time.Second, // maintainer runs every 1s
+			InactiveTransactionRemovalOptions: InactiveTransactionRemovalOptions{
+				CloseInactiveTransactions: true,
+				executionFrequency:        1 * time.Second, // check long-running sessions every 1s
+			},
+		},
+	})
+	defer teardown()
+	server.TestSpanner.PutExecutionTime(
+		MethodExecuteStreamingSql,
+		SimulatedExecutionTime{Errors: []error{newSessionNotFoundError("projects/p/instances/i/databases/d/sessions/s")}},
+	)
+	ctx := context.Background()
+	single := client.Single()
+	iter := single.Query(ctx, NewStatement(SelectSingerIDAlbumIDAlbumTitleFromAlbums))
+	p := client.idleSessions
+	sh := single.sh
+	// simulate session to be checked out for more than 60mins
+	sh.mu.Lock()
+	sh.checkoutTime = time.Now().Add(-time.Hour)
+	sh.mu.Unlock()
+	// Allow maintainer to clean up long-running sessions
+	time.Sleep(3 * time.Second)
+	rowCount := int64(0)
+	for {
+		// Backend throws SessionNotFoundError. Session gets replaced with new session
+		_, err := iter.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			t.Fatal(err)
+		}
+		rowCount++
+	}
+	// New session returns back to pool
+	iter.Stop()
+
+	p.mu.Lock()
+	if g, w := p.idleList.Len(), 1; g != w {
+		p.mu.Unlock() // If we don't unlock then it will be a deadlock and test never ends
+		t.Fatalf("Sessions in pool count mismatch\nGot: %d\nWant: %d\n", g, w)
+	}
+	if p.numInUse != 0 {
+		t.Fatalf("Expect number of sessions in use to be 0, got %d", p.numInUse)
+	}
+	if p.numOpened != 1 {
+		t.Fatalf("Expect session pool size 1, got %d", p.numOpened)
+	}
+	p.mu.Unlock()
+
+	sh.mu.Lock()
+	if g, w := sh.isLongRunningTransaction, false; g != w {
+		sh.mu.Unlock()
+		t.Fatalf("isLongRunningTransaction mismatch\nGot: %v\nWant: %v\n", g, w)
+	}
+	sh.mu.Unlock()
+	p.InactiveTransactionRemovalOptions.mu.Lock()
+	defer p.InactiveTransactionRemovalOptions.mu.Unlock()
+	if g, w := p.numOfLeakedSessionsRemoved, uint64(1); g != w {
+		t.Fatalf("Number of leaked sessions removed mismatch\nGot: %d\nWant: %d\n", g, w)
+	}
+}
+
 func TestClient_Single_ReadRow_SessionNotFound(t *testing.T) {
 	t.Parallel()
 
@@ -870,6 +940,58 @@ func TestClient_ReadWriteTransaction_SessionNotFoundOnExecuteUpdate(t *testing.T
 	}
 }
 
+func TestClient_ReadWriteTransaction_WhenLongRunningSessionCleaned_TransactionShouldFail(t *testing.T) {
+	t.Parallel()
+	_, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
+		SessionPoolConfig: SessionPoolConfig{
+			MinOpened:                 1,
+			MaxOpened:                 1,
+			healthCheckSampleInterval: 1 * time.Second, // maintainer runs every 1s
+			InactiveTransactionRemovalOptions: InactiveTransactionRemovalOptions{
+				CloseInactiveTransactions: true,
+				executionFrequency:        1 * time.Second, // check long-running sessions every 1s
+			},
+		},
+	})
+	defer teardown()
+	ctx := context.Background()
+	msg := "session is already recycled / destroyed"
+	_, err := client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
+		rowCount, err := tx.Update(ctx, NewStatement(UpdateBarSetFoo))
+		if err != nil {
+			return err
+		}
+		if g, w := rowCount, int64(UpdateBarSetFooRowCount); g != w {
+			return status.Errorf(codes.FailedPrecondition, "Row count mismatch\nGot: %v\nWant: %v", g, w)
+		}
+
+		// Simulate the session to be checked out for more than 60 mins. The background task cleans up this long-running session.
+		tx.sh.mu.Lock()
+		tx.sh.checkoutTime = time.Now().Add(-time.Hour)
+		if g, w := tx.sh.isLongRunningTransaction, false; g != w {
+			tx.sh.mu.Unlock()
+			return status.Errorf(codes.FailedPrecondition, "isLongRunningTransaction value mismatch\nGot: %v\nWant: %v", g, w)
+		}
+		tx.sh.mu.Unlock()
+		// wait for maintainer to clean up long-running sessions
+		time.Sleep(5 * time.Second)
+
+		// The session associated with this transaction tx has been destroyed. So the below call should fail.
+		// Eventually this means the entire transaction should not succeed.
+		_, err = tx.Update(ctx, NewStatement("UPDATE FOO SET BAR='value' WHERE ID=1"))
+		if err != nil {
+			return err
+		}
+		return nil
+	})
+	if err == nil {
+		t.Fatalf("Missing expected exception")
+	}
+	if status.Code(err) != codes.FailedPrecondition || !strings.Contains(err.Error(), msg) {
+		t.Fatalf("error mismatch\nGot: %v\nWant: %v", err, msg)
+	}
+}
+
 func TestClient_ReadWriteTransaction_SessionNotFoundOnExecuteBatchUpdate(t *testing.T) {
 	t.Parallel()
 
@@ -900,6 +1022,66 @@ func TestClient_ReadWriteTransaction_SessionNotFoundOnExecuteBatchUpdate(t *test
 	}
 	if g, w := attempts, 2; g != w {
 		t.Fatalf("number of attempts mismatch:\nGot%d\nWant:%d", g, w)
+	}
+}
+
+func TestClient_ReadWriteTransaction_WhenLongRunningExecuteBatchUpdate_TakeNoAction(t *testing.T) {
+	t.Parallel()
+	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
+		SessionPoolConfig: SessionPoolConfig{
+			MinOpened:                 1,
+			MaxOpened:                 1,
+			healthCheckSampleInterval: 1 * time.Second, // maintainer runs every 1s
+			InactiveTransactionRemovalOptions: InactiveTransactionRemovalOptions{
+				CloseInactiveTransactions: true,
+				executionFrequency:        1 * time.Second, // check long-running sessions every 1s
+			},
+		},
+	})
+	defer teardown()
+	server.TestSpanner.PutExecutionTime(
+		MethodExecuteBatchDml,
+		SimulatedExecutionTime{Errors: []error{newSessionNotFoundError("projects/p/instances/i/databases/d/sessions/s")}},
+	)
+	ctx := context.Background()
+	var attempts int
+	_, err := client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
+		attempts++
+		if attempts == 2 {
+			// Simulate the session to be long-running. The background task should not clean up this long-running session.
+			tx.sh.mu.Lock()
+			tx.sh.checkoutTime = time.Now().Add(-time.Hour)
+			if g, w := tx.sh.isLongRunningTransaction, true; g != w {
+				tx.sh.mu.Unlock()
+				return status.Errorf(codes.FailedPrecondition, "isLongRunningTransaction value mismatch\nGot: %v\nWant: %v", g, w)
+			}
+			tx.sh.mu.Unlock()
+			// wait for maintainer to clean up long-running sessions
+			time.Sleep(5 * time.Second)
+		}
+		rowCounts, err := tx.BatchUpdate(ctx, []Statement{NewStatement(UpdateBarSetFoo)})
+		if err != nil {
+			return err
+		}
+		if g, w := len(rowCounts), 1; g != w {
+			return status.Errorf(codes.FailedPrecondition, "Row counts length mismatch\nGot: %v\nWant: %v", g, w)
+		}
+		if g, w := rowCounts[0], int64(UpdateBarSetFooRowCount); g != w {
+			return status.Errorf(codes.FailedPrecondition, "Row count mismatch\nGot: %v\nWant: %v", g, w)
+		}
+		return nil
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if g, w := attempts, 2; g != w {
+		t.Fatalf("number of attempts mismatch:\nGot%d\nWant:%d", g, w)
+	}
+	p := client.idleSessions
+	p.InactiveTransactionRemovalOptions.mu.Lock()
+	defer p.InactiveTransactionRemovalOptions.mu.Unlock()
+	if g, w := p.numOfLeakedSessionsRemoved, uint64(0); g != w {
+		t.Fatalf("Number of leaked sessions removed mismatch\nGot: %d\nWant: %d\n", g, w)
 	}
 }
 
@@ -3411,6 +3593,45 @@ func TestClient_PDML_Priority(t *testing.T) {
 	} {
 		client.PartitionedUpdateWithOptions(context.Background(), NewStatement(UpdateBarSetFoo), qo)
 		checkRequestsForExpectedRequestOptions(t, server.TestSpanner, 1, sppb.RequestOptions{Priority: qo.Priority})
+	}
+}
+
+func TestClient_WhenLongRunningPartitionedUpdateRequest_TakeNoAction(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
+		SessionPoolConfig: SessionPoolConfig{
+			MinOpened:                 1,
+			MaxOpened:                 1,
+			healthCheckSampleInterval: 1 * time.Second, // maintainer runs every 1s
+			InactiveTransactionRemovalOptions: InactiveTransactionRemovalOptions{
+				CloseInactiveTransactions: true,
+				executionFrequency:        1 * time.Second, // check long-running sessions every 1s
+			},
+		},
+	})
+	defer teardown()
+	// delay the rpc by 5 sec. The background task runs to clean long-running sessions.
+	server.TestSpanner.PutExecutionTime(MethodExecuteSql,
+		SimulatedExecutionTime{
+			MinimumExecutionTime: 5 * time.Second,
+		})
+
+	stmt := NewStatement(UpdateBarSetFoo)
+	// This transaction is eligible to be long-running, so the background task should not clean its session.
+	rowCount, err := client.PartitionedUpdate(ctx, stmt)
+	if err != nil {
+		t.Fatal(err)
+	}
+	want := int64(UpdateBarSetFooRowCount)
+	if rowCount != want {
+		t.Errorf("got %d, want %d", rowCount, want)
+	}
+	p := client.idleSessions
+	p.InactiveTransactionRemovalOptions.mu.Lock()
+	defer p.InactiveTransactionRemovalOptions.mu.Unlock()
+	if g, w := p.numOfLeakedSessionsRemoved, uint64(0); g != w {
+		t.Fatalf("Number of leaked sessions removed mismatch\nGot: %d\nWant: %d\n", g, w)
 	}
 }
 
