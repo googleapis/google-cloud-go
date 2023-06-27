@@ -42,6 +42,7 @@ import (
 
 const healthCheckIntervalMins = 50
 
+// InactiveTransactionRemovalOptions has configurations for action on long-running transactions.
 type InactiveTransactionRemovalOptions struct {
 	mu sync.Mutex
 	// CloseInactiveTransactions is the configuration to close inactive transactions.
@@ -1464,7 +1465,7 @@ func (hc *healthChecker) maintainer() {
 			for _, sh := range longRunningSessions {
 				sh.destroy()
 				hc.pool.InactiveTransactionRemovalOptions.mu.Lock()
-				hc.pool.InactiveTransactionRemovalOptions.numOfLeakedSessionsRemoved += 1
+				hc.pool.InactiveTransactionRemovalOptions.numOfLeakedSessionsRemoved++
 				hc.pool.InactiveTransactionRemovalOptions.mu.Unlock()
 			}
 		}
