@@ -165,16 +165,21 @@ type ReadOptions struct {
 
 	// The request tag to use for this request.
 	RequestTag string
+
+	// If this is for a partitioned read and DataBoostEnabled field is set to true, the request will be executed
+	// via Spanner independent compute resources. Setting this option for regular read operations has no effect.
+	DataBoostEnabled bool
 }
 
 // merge combines two ReadOptions that the input parameter will have higher
 // order of precedence.
 func (ro ReadOptions) merge(opts ReadOptions) ReadOptions {
 	merged := ReadOptions{
-		Index:      ro.Index,
-		Limit:      ro.Limit,
-		Priority:   ro.Priority,
-		RequestTag: ro.RequestTag,
+		Index:            ro.Index,
+		Limit:            ro.Limit,
+		Priority:         ro.Priority,
+		RequestTag:       ro.RequestTag,
+		DataBoostEnabled: ro.DataBoostEnabled,
 	}
 	if opts.Index != "" {
 		merged.Index = opts.Index
@@ -187,6 +192,9 @@ func (ro ReadOptions) merge(opts ReadOptions) ReadOptions {
 	}
 	if opts.RequestTag != "" {
 		merged.RequestTag = opts.RequestTag
+	}
+	if opts.DataBoostEnabled {
+		merged.DataBoostEnabled = opts.DataBoostEnabled
 	}
 	return merged
 }
@@ -218,6 +226,7 @@ func (t *txReadOnly) ReadWithOptions(ctx context.Context, table string, keys Key
 	limit := t.ro.Limit
 	prio := t.ro.Priority
 	requestTag := t.ro.RequestTag
+	dataBoostEnabled := t.ro.DataBoostEnabled
 	if opts != nil {
 		index = opts.Index
 		if opts.Limit > 0 {
@@ -225,6 +234,9 @@ func (t *txReadOnly) ReadWithOptions(ctx context.Context, table string, keys Key
 		}
 		prio = opts.Priority
 		requestTag = opts.RequestTag
+		if opts.DataBoostEnabled {
+			dataBoostEnabled = opts.DataBoostEnabled
+		}
 	}
 	var setTransactionID func(transactionID)
 	if _, ok := ts.Selector.(*sppb.TransactionSelector_Begin); ok {
@@ -238,15 +250,16 @@ func (t *txReadOnly) ReadWithOptions(ctx context.Context, table string, keys Key
 		func(ctx context.Context, resumeToken []byte) (streamingReceiver, error) {
 			client, err := client.StreamingRead(ctx,
 				&sppb.ReadRequest{
-					Session:        t.sh.getID(),
-					Transaction:    t.getTransactionSelector(),
-					Table:          table,
-					Index:          index,
-					Columns:        columns,
-					KeySet:         kset,
-					ResumeToken:    resumeToken,
-					Limit:          int64(limit),
-					RequestOptions: createRequestOptions(prio, requestTag, t.txOpts.TransactionTag),
+					Session:          t.sh.getID(),
+					Transaction:      t.getTransactionSelector(),
+					Table:            table,
+					Index:            index,
+					Columns:          columns,
+					KeySet:           kset,
+					ResumeToken:      resumeToken,
+					Limit:            int64(limit),
+					RequestOptions:   createRequestOptions(prio, requestTag, t.txOpts.TransactionTag),
+					DataBoostEnabled: dataBoostEnabled,
 				})
 			if err != nil {
 				if _, ok := t.getTransactionSelector().GetSelector().(*sppb.TransactionSelector_Begin); ok {
@@ -357,16 +370,21 @@ type QueryOptions struct {
 
 	// The request tag to use for this request.
 	RequestTag string
+
+	// If this is for a partitioned query and DataBoostEnabled field is set to true, the request will be executed
+	// via Spanner independent compute resources. Setting this option for regular query operations has no effect.
+	DataBoostEnabled bool
 }
 
 // merge combines two QueryOptions that the input parameter will have higher
 // order of precedence.
 func (qo QueryOptions) merge(opts QueryOptions) QueryOptions {
 	merged := QueryOptions{
-		Mode:       qo.Mode,
-		Options:    &sppb.ExecuteSqlRequest_QueryOptions{},
-		RequestTag: qo.RequestTag,
-		Priority:   qo.Priority,
+		Mode:             qo.Mode,
+		Options:          &sppb.ExecuteSqlRequest_QueryOptions{},
+		RequestTag:       qo.RequestTag,
+		Priority:         qo.Priority,
+		DataBoostEnabled: qo.DataBoostEnabled,
 	}
 	if opts.Mode != nil {
 		merged.Mode = opts.Mode
@@ -376,6 +394,9 @@ func (qo QueryOptions) merge(opts QueryOptions) QueryOptions {
 	}
 	if opts.Priority != sppb.RequestOptions_PRIORITY_UNSPECIFIED {
 		merged.Priority = opts.Priority
+	}
+	if opts.DataBoostEnabled {
+		merged.DataBoostEnabled = opts.DataBoostEnabled
 	}
 	proto.Merge(merged.Options, qo.Options)
 	proto.Merge(merged.Options, opts.Options)
@@ -517,15 +538,16 @@ func (t *txReadOnly) prepareExecuteSQL(ctx context.Context, stmt Statement, opti
 		mode = *options.Mode
 	}
 	req := &sppb.ExecuteSqlRequest{
-		Session:        sid,
-		Transaction:    ts,
-		Sql:            stmt.SQL,
-		QueryMode:      mode,
-		Seqno:          atomic.AddInt64(&t.sequenceNumber, 1),
-		Params:         params,
-		ParamTypes:     paramTypes,
-		QueryOptions:   options.Options,
-		RequestOptions: createRequestOptions(options.Priority, options.RequestTag, t.txOpts.TransactionTag),
+		Session:          sid,
+		Transaction:      ts,
+		Sql:              stmt.SQL,
+		QueryMode:        mode,
+		Seqno:            atomic.AddInt64(&t.sequenceNumber, 1),
+		Params:           params,
+		ParamTypes:       paramTypes,
+		QueryOptions:     options.Options,
+		RequestOptions:   createRequestOptions(options.Priority, options.RequestTag, t.txOpts.TransactionTag),
+		DataBoostEnabled: options.DataBoostEnabled,
 	}
 	return req, sh, nil
 }

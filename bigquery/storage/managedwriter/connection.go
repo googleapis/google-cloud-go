@@ -368,8 +368,12 @@ func (co *connection) lockingAppend(pw *pendingWrite) error {
 	forceReconnect := false
 	if pw.writer != nil && pw.descVersion != nil && pw.descVersion.isNewer(pw.writer.curDescVersion) {
 		pw.writer.curDescVersion = pw.descVersion
-		if !canMultiplex(pw.writeStreamID) {
+		if co.optimizer == nil {
 			forceReconnect = true
+		} else {
+			if !co.optimizer.isMultiplexing() {
+				forceReconnect = true
+			}
 		}
 	}
 

@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [0.4.1](https://github.com/googleapis/google-cloud-go/compare/workstations/v0.4.0...workstations/v0.4.1) (2023-06-20)
+
+
+### Bug Fixes
+
+* **workstations:** REST query UpdateMask bug ([df52820](https://github.com/googleapis/google-cloud-go/commit/df52820b0e7721954809a8aa8700b93c5662dc9b))
+
 ## [0.4.0](https://github.com/googleapis/google-cloud-go/compare/workstations/v0.3.0...workstations/v0.4.0) (2023-05-30)
 
 

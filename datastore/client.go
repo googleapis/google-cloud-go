@@ -73,6 +73,17 @@ func (dc *datastoreClient) RunQuery(ctx context.Context, in *pb.RunQueryRequest,
 	return res, err
 }
 
+func (dc *datastoreClient) RunAggregationQuery(ctx context.Context, in *pb.RunAggregationQueryRequest, opts ...grpc.CallOption) (res *pb.RunAggregationQueryResponse, err error) {
+	ctx = trace.StartSpan(ctx, "cloud.google.com/go/datastore.datastoreClient.RunAggregationQuery")
+	defer func() { trace.EndSpan(ctx, err) }()
+
+	err = dc.invoke(ctx, func(ctx context.Context) error {
+		res, err = dc.c.RunAggregationQuery(ctx, in, opts...)
+		return err
+	})
+	return res, nil
+}
+
 func (dc *datastoreClient) BeginTransaction(ctx context.Context, in *pb.BeginTransactionRequest, opts ...grpc.CallOption) (res *pb.BeginTransactionResponse, err error) {
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/datastore.datastoreClient.BeginTransaction")
 	defer func() { trace.EndSpan(ctx, err) }()
