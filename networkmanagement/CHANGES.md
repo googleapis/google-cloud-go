@@ -1,5 +1,12 @@
 # Changes
 
+## [1.8.0](https://github.com/googleapis/google-cloud-go/compare/networkmanagement/v1.7.1...networkmanagement/v1.8.0) (2023-06-27)
+
+
+### Features
+
+* **networkmanagement:** Add forwarding_rule field to Connectivity Test Endpoint proto ([#8156](https://github.com/googleapis/google-cloud-go/issues/8156)) ([94ea341](https://github.com/googleapis/google-cloud-go/commit/94ea3410e233db6040a7cb0a931948f1e3bb4c9a))
+
 ## [1.7.1](https://github.com/googleapis/google-cloud-go/compare/networkmanagement/v1.7.0...networkmanagement/v1.7.1) (2023-06-20)
 
 
