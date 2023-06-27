@@ -1463,6 +1463,8 @@ func (hc *healthChecker) maintainer() {
 		// destroy long-running sessions
 		if hc.pool.CloseInactiveTransactions {
 			for _, sh := range longRunningSessions {
+				// removes inner session out of the pool to reduce the probability of two processes trying
+				// to use the same session at the same time.
 				sh.destroy()
 				hc.pool.InactiveTransactionRemovalOptions.mu.Lock()
 				hc.pool.InactiveTransactionRemovalOptions.numOfLeakedSessionsRemoved++

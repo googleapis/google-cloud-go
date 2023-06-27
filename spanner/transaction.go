@@ -649,7 +649,6 @@ func (t *ReadOnlyTransaction) begin(ctx context.Context) error {
 	// Retry the BeginTransaction call if a 'Session not found' is returned.
 	for {
 		sh, err = t.sp.take(ctx)
-		// todo(harsha): my expectation is this will always be false and hence can be removed.
 		sh.isLongRunningTransaction = t.isLongRunningTransaction
 		if err != nil {
 			return err
@@ -736,8 +735,6 @@ func (t *ReadOnlyTransaction) acquireSingleUse(ctx context.Context) (*sessionHan
 			},
 		}
 		sh, err := t.sp.take(ctx)
-		// todo(harsha): batch or pdml will not use this. so always false. can remove belwo line
-		// sh.isLongRunningTransaction = t.isLongRunningTransaction
 		if err != nil {
 			return nil, nil, err
 		}
@@ -1107,6 +1104,9 @@ func (t *ReadWriteTransaction) batchUpdateWithOptions(ctx context.Context, stmts
 	defer func() { trace.EndSpan(ctx, err) }()
 
 	sh, ts, err := t.acquire(ctx)
+	if err != nil {
+		return nil, err
+	}
 	// mark transaction and session to be eligible for long-running
 	t.mu.Lock()
 	t.isLongRunningTransaction = true
@@ -1114,9 +1114,7 @@ func (t *ReadWriteTransaction) batchUpdateWithOptions(ctx context.Context, stmts
 	t.sh.mu.Lock()
 	t.sh.isLongRunningTransaction = true
 	t.sh.mu.Unlock()
-	if err != nil {
-		return nil, err
-	}
+
 	// Cloud Spanner will return "Session not found" on bad sessions.
 	sid := sh.getID()
 	if sid == "" {
@@ -1375,10 +1373,16 @@ func (t *ReadWriteTransaction) begin(ctx context.Context) error {
 	for {
 		if sh == nil || sh.getID() == "" || sh.getClient() == nil {
 			sh, err = t.sp.take(ctx)
-			sh.isLongRunningTransaction = t.isLongRunningTransaction
 			if err != nil {
 				return err
 			}
+
+			sh.mu.Lock()
+			t.mu.Lock()
+			// for batch update operations, isLongRunningTransaction will be true
+			sh.isLongRunningTransaction = t.isLongRunningTransaction
+			t.mu.Unlock()
+			sh.mu.Unlock()
 		}
 		tx, err = beginTransaction(contextWithOutgoingMetadata(ctx, sh.getMetadata(), t.disableRouteToLeader), sh.getID(), sh.getClient(), t.txOpts)
 		if isSessionNotFoundError(err) {
@@ -1605,8 +1609,6 @@ func NewReadWriteStmtBasedTransactionWithOptions(ctx context.Context, c *Client,
 			txReadyOrClosed: make(chan struct{}),
 		},
 	}
-	// todo(harsha): long running transaction is always false here
-	sh.isLongRunningTransaction = t.isLongRunningTransaction
 	t.txReadOnly.sh = sh
 	t.txReadOnly.txReadEnv = t
 	t.txReadOnly.qo = c.qo
@@ -1668,8 +1670,6 @@ type writeOnlyTransaction struct {
 	commitPriority sppb.RequestOptions_Priority
 	// disableRouteToLeader specifies if we want to disable RW/PDML requests to be routed to leader.
 	disableRouteToLeader bool
-	// isLongRunningTransaction indicates whether the transaction is long-running or not.
-	isLongRunningTransaction bool
 }
 
 // applyAtLeastOnce commits a list of mutations to Cloud Spanner at least once,
@@ -1702,8 +1702,6 @@ func (t *writeOnlyTransaction) applyAtLeastOnce(ctx context.Context, ms ...*Muta
 			if sh == nil || sh.getID() == "" || sh.getClient() == nil {
 				// No usable session for doing the commit, take one from pool.
 				sh, err = t.sp.take(ctx)
-				// todo(harsha): long running is always false here. can be removed
-				sh.isLongRunningTransaction = t.isLongRunningTransaction
 				if err != nil {
 					// sessionPool.Take already retries for session
 					// creations/retrivals.
