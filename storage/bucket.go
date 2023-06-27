@@ -178,7 +178,7 @@ func (b *BucketHandle) SignedURL(object string, opts *SignedURLOptions) (string,
 
 	if newopts.Hostname == "" {
 		// Extract the correct host from the readhost set on the client
-		newopts.Hostname = b.c.readHost
+		newopts.Hostname = b.c.xmlHost
 	}
 
 	if opts.GoogleAccessID != "" && (opts.SignBytes != nil || len(opts.PrivateKey) > 0) {
@@ -226,7 +226,7 @@ func (b *BucketHandle) GenerateSignedPostPolicyV4(object string, opts *PostPolic
 
 	if newopts.Hostname == "" {
 		// Extract the correct host from the readhost set on the client
-		newopts.Hostname = b.c.readHost
+		newopts.Hostname = b.c.xmlHost
 	}
 
 	if opts.GoogleAccessID != "" && (opts.SignRawBytes != nil || opts.SignBytes != nil || len(opts.PrivateKey) > 0) {
