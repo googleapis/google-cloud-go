@@ -43,13 +43,25 @@ import (
 const healthCheckIntervalMins = 50
 
 type InactiveTransactionRemovalOptions struct {
-	mu                         sync.Mutex
-	CloseInactiveTransactions  bool
-	LogInactiveTransactions    bool
+	mu sync.Mutex
+	// CloseInactiveTransactions is the configuration to close inactive transactions.
+	CloseInactiveTransactions bool
+	// LogInactiveTransactions is the configuration to log inactive transactions.
+	// Any inactive transaction gets logged only once.
+	LogInactiveTransactions bool
+	// long-running transactions will be cleaned up if utilisation is
+	// greater than the below value.
 	usedSessionsRatioThreshold float64
-	idleTimeThresholdSecs      uint64
-	executionFrequency         time.Duration
-	lastExecutionTime          time.Time
+	// A transaction is considered to be idle if it has not been used for
+	// a duration greater than the below value.
+	idleTimeThresholdSecs uint64
+	// frequency for closing inactive transactions
+	executionFrequency time.Duration
+	// variable that keeps track of the last execution time when inactive transactions
+	// were removed by the maintainer task.
+	lastExecutionTime time.Time
+	// indicates the number of leaked sessions removed from the session pool.
+	// This is valid only when CloseInactiveTransactions is true.
 	numOfLeakedSessionsRemoved uint64
 }
 
@@ -70,9 +82,11 @@ type sessionHandle struct {
 	trackedSessionHandle *list.Element
 	// stack is the call stack of the goroutine that checked out the session
 	// from the pool. This can be used to track down session leak problems.
-	stack                    []byte
+	stack []byte
+	// isLongRunningTransaction tells if the inner session is eligible to be long-running.
 	isLongRunningTransaction bool
-	isSessionLeakLogged      bool
+	// if the inner session object is long-running then the stack gets logged once.
+	isSessionLeakLogged bool
 }
 
 // recycle gives the inner session object back to its home session pool. It is
@@ -675,6 +689,7 @@ func (p *sessionPool) getRatioOfSessionsInUseLocked() float64 {
 	return float64(p.numInUse) / float64(maxSessions)
 }
 
+// gets sessions which are unexpectedly long-running.
 func (p *sessionPool) getLongRunningSessionsLocked() []*sessionHandle {
 	usedSessionsRatio := p.getRatioOfSessionsInUseLocked()
 	var longRunningSessions []*sessionHandle
@@ -1045,7 +1060,7 @@ func (p *sessionPool) remove(s *session, isExpire bool) bool {
 	if s.invalidate() {
 		// Decrease the number of opened sessions.
 		p.numOpened--
-		// TODO(harsha): check if this is the right place
+		// Decrease the number of sessions in use.
 		p.decNumInUseLocked(ctx)
 		p.recordStat(ctx, OpenSessionCount, int64(p.numOpened))
 		// Broadcast that a session has been destroyed.
@@ -1435,6 +1450,7 @@ func (hc *healthChecker) maintainer() {
 			hc.pool.lastResetTime = now
 		}
 
+		// task that fetches sessions which are unexpectedly long-running
 		if now.After(hc.pool.InactiveTransactionRemovalOptions.lastExecutionTime.Add(hc.pool.executionFrequency)) {
 			if hc.pool.CloseInactiveTransactions || hc.pool.LogInactiveTransactions {
 				longRunningSessions = hc.pool.getLongRunningSessionsLocked()
@@ -1443,11 +1459,9 @@ func (hc *healthChecker) maintainer() {
 		}
 		hc.pool.mu.Unlock()
 
-		// recycle long-running sessions
+		// destroy long-running sessions
 		if hc.pool.CloseInactiveTransactions {
 			for _, sh := range longRunningSessions {
-				// sh.recycle()
-				// TODO(harsha): destroy doesn't reduce the numInUse. This affects the ratio as even though we destroy session the ratio assumes it is above threshold
 				sh.destroy()
 				hc.pool.InactiveTransactionRemovalOptions.mu.Lock()
 				hc.pool.InactiveTransactionRemovalOptions.numOfLeakedSessionsRemoved += 1
