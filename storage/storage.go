@@ -262,13 +262,13 @@ const (
 	SigningSchemeV4
 )
 
-// URLStyle determines the style to use for the signed URL. pathStyle is the
+// URLStyle determines the style to use for the signed URL. PathStyle is the
 // default. All non-default options work with V4 scheme only. See
 // https://cloud.google.com/storage/docs/request-endpoints for details.
 type URLStyle interface {
 	// host should return the host portion of the signed URL, not including
 	// the scheme (e.g. storage.googleapis.com).
-	host(bucket string) string
+	host(hostname, bucket string) string
 
 	// path should return the path portion of the signed URL, which may include
 	// both the bucket and object name or only the object name depending on the
@@ -284,7 +284,11 @@ type bucketBoundHostname struct {
 	hostname string
 }
 
-func (s pathStyle) host(bucket string) string {
+func (s pathStyle) host(hostname, bucket string) string {
+	if hostname != "" {
+		return stripScheme(hostname)
+	}
+
 	if host := os.Getenv("STORAGE_EMULATOR_HOST"); host != "" {
 		return stripScheme(host)
 	}
@@ -292,7 +296,7 @@ func (s pathStyle) host(bucket string) string {
 	return "storage.googleapis.com"
 }
 
-func (s virtualHostedStyle) host(bucket string) string {
+func (s virtualHostedStyle) host(_, bucket string) string {
 	if host := os.Getenv("STORAGE_EMULATOR_HOST"); host != "" {
 		return bucket + "." + stripScheme(host)
 	}
@@ -300,7 +304,7 @@ func (s virtualHostedStyle) host(bucket string) string {
 	return bucket + ".storage.googleapis.com"
 }
 
-func (s bucketBoundHostname) host(bucket string) string {
+func (s bucketBoundHostname) host(_, bucket string) string {
 	return s.hostname
 }
 
@@ -321,7 +325,10 @@ func (s bucketBoundHostname) path(bucket, object string) string {
 }
 
 // PathStyle is the default style, and will generate a URL of the form
-// "storage.googleapis.com/<bucket-name>/<object-name>".
+// "<host-name>/<bucket-name>/<object-name>". By default, <host-name> is
+// storage.googleapis.com, but setting an endpoint on the storage Client or
+// through STORAGE_EMULATOR_HOST overrides this. Setting Hostname on
+// SignedURLOptions or PostPolicyV4Options overrides everything else.
 func PathStyle() URLStyle {
 	return pathStyle{}
 }
@@ -442,6 +449,12 @@ type SignedURLOptions struct {
 	// Scheme determines the version of URL signing to use. Default is
 	// SigningSchemeV2.
 	Scheme SigningScheme
+
+	// Hostname sets the host of the signed URL. This field overrides any
+	// endpoint set on a storage Client or through STORAGE_EMULATOR_HOST.
+	// Only compatible with PathStyle URLStyle.
+	// Optional.
+	Hostname string
 }
 
 func (opts *SignedURLOptions) clone() *SignedURLOptions {
@@ -458,6 +471,7 @@ func (opts *SignedURLOptions) clone() *SignedURLOptions {
 		Style:           opts.Style,
 		Insecure:        opts.Insecure,
 		Scheme:          opts.Scheme,
+		Hostname:        opts.Hostname,
 	}
 }
 
@@ -716,7 +730,7 @@ func signedURLV4(bucket, name string, opts *SignedURLOptions, now time.Time) (st
 	fmt.Fprintf(buf, "%s\n", escapedQuery)
 
 	// Fill in the hostname based on the desired URL style.
-	u.Host = opts.Style.host(bucket)
+	u.Host = opts.Style.host(opts.Hostname, bucket)
 
 	// Fill in the URL scheme.
 	if opts.Insecure {
@@ -850,7 +864,7 @@ func signedURLV2(bucket, name string, opts *SignedURLOptions) (string, error) {
 	}
 	encoded := base64.StdEncoding.EncodeToString(b)
 	u.Scheme = "https"
-	u.Host = PathStyle().host(bucket)
+	u.Host = PathStyle().host(opts.Hostname, bucket)
 	q := u.Query()
 	q.Set("GoogleAccessId", opts.GoogleAccessID)
 	q.Set("Expires", fmt.Sprintf("%d", opts.Expires.Unix()))
@@ -1486,6 +1500,8 @@ type Query struct {
 	// aside from the prefix, contain delimiter will have their name,
 	// truncated after the delimiter, returned in prefixes.
 	// Duplicate prefixes are omitted.
+	// Must be set to / when used with the MatchGlob parameter to filter results
+	// in a directory-like mode.
 	// Optional.
 	Delimiter string
 
@@ -1499,9 +1515,9 @@ type Query struct {
 	Versions bool
 
 	// attrSelection is used to select only specific fields to be returned by
-	// the query. It is set by the user calling calling SetAttrSelection. These
+	// the query. It is set by the user calling SetAttrSelection. These
 	// are used by toFieldMask and toFieldSelection for gRPC and HTTP/JSON
-	// clients repsectively.
+	// clients respectively.
 	attrSelection []string
 
 	// StartOffset is used to filter results to objects whose names are
@@ -1527,6 +1543,12 @@ type Query struct {
 	// true, they will also be included as objects and their metadata will be
 	// populated in the returned ObjectAttrs.
 	IncludeTrailingDelimiter bool
+
+	// MatchGlob is a glob pattern used to filter results (for example, foo*bar). See
+	// https://cloud.google.com/storage/docs/json_api/v1/objects/list#list-object-glob
+	// for syntax details. When Delimiter is set in conjunction with MatchGlob,
+	// it must be set to /.
+	MatchGlob string
 }
 
 // attrToFieldMap maps the field names of ObjectAttrs to the underlying field

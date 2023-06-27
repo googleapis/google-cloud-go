@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.15.1](https://github.com/googleapis/google-cloud-go/compare/functions/v1.15.0...functions/v1.15.1) (2023-06-20)
+
+
+### Bug Fixes
+
+* **functions:** REST query UpdateMask bug ([df52820](https://github.com/googleapis/google-cloud-go/commit/df52820b0e7721954809a8aa8700b93c5662dc9b))
+
 ## [1.15.0](https://github.com/googleapis/google-cloud-go/compare/functions/v1.14.0...functions/v1.15.0) (2023-05-30)
 
 

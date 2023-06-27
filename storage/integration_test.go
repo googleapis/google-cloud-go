@@ -80,7 +80,6 @@ var (
 	record = flag.Bool("record", false, "record RPCs")
 
 	uidSpace        *uid.Space
-	uidSpaceGRPC    *uid.Space
 	uidSpaceObjects *uid.Space
 	bucketName      string
 	grpcBucketName  string
@@ -209,11 +208,10 @@ func initIntegrationTest() func() error {
 }
 
 func initUIDsAndRand(t time.Time) {
-	uidSpace = uid.NewSpace(testPrefix, &uid.Options{Time: t, Short: true})
-	bucketName = uidSpace.New()
+	uidSpace = uid.NewSpace("", &uid.Options{Time: t, Short: true})
+	bucketName = testPrefix + uidSpace.New()
 	uidSpaceObjects = uid.NewSpace("obj", &uid.Options{Time: t})
-	uidSpaceGRPC = uid.NewSpace(grpcTestPrefix, &uid.Options{Time: t, Short: true})
-	grpcBucketName = uidSpaceGRPC.New()
+	grpcBucketName = grpcTestPrefix + uidSpace.New()
 	// Use our own random source, to avoid other parts of the program taking
 	// random numbers from the global source and putting record and replay
 	// out of sync.
@@ -281,10 +279,10 @@ func multiTransportTest(ctx context.Context, t *testing.T,
 			}
 
 			bucket := bucketName
-			var prefix string
+			prefix := testPrefix
 			if transport == "grpc" {
 				bucket = grpcBucketName
-				prefix = grpcTestPrefix + "-"
+				prefix = grpcTestPrefix
 			}
 
 			test(t, ctx, bucket, prefix, client)
@@ -1290,6 +1288,68 @@ func TestIntegration_ObjectIteration(t *testing.T) {
 				t.Errorf("prefixes = %v, want %v", gotPrefixes, sortedPrefixes)
 			}
 		})
+	})
+}
+
+func TestIntegration_ObjectIterationMatchGlob(t *testing.T) {
+	// This is a separate test from the Object Iteration test above because
+	// MatchGlob is not yet implemented for gRPC.
+	ctx := skipGRPC("https://github.com/googleapis/google-cloud-go/issues/7727")
+	multiTransportTest(skipJSONReads(ctx, "no reads in test"), t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
+		// Reset testTime, 'cause object last modification time should be within 5 min
+		// from test (test iteration if -count passed) start time.
+		testTime = time.Now().UTC()
+		newBucketName := prefix + uidSpace.New()
+		h := testHelper{t}
+		bkt := client.Bucket(newBucketName).Retryer(WithPolicy(RetryAlways))
+
+		h.mustCreate(bkt, testutil.ProjID(), nil)
+		defer func() {
+			if err := killBucket(ctx, client, newBucketName); err != nil {
+				log.Printf("deleting %q: %v", newBucketName, err)
+			}
+		}()
+		const defaultType = "text/plain"
+
+		// Populate object names and make a map for their contents.
+		objects := []string{
+			"obj1",
+			"obj2",
+			"obj/with/slashes",
+			"obj/",
+			"other/obj1",
+		}
+		contents := make(map[string][]byte)
+
+		// Test Writer.
+		for _, obj := range objects {
+			c := randomContents()
+			if err := writeObject(ctx, bkt.Object(obj), defaultType, c); err != nil {
+				t.Errorf("Write for %v failed with %v", obj, err)
+			}
+			contents[obj] = c
+		}
+		query := &Query{MatchGlob: "**obj1"}
+
+		var gotNames []string
+		it := bkt.Objects(context.Background(), query)
+		for {
+			attrs, err := it.Next()
+			if err == iterator.Done {
+				break
+			}
+			if err != nil {
+				t.Fatalf("iterator.Next: %v", err)
+			}
+			if attrs.Name != "" {
+				gotNames = append(gotNames, attrs.Name)
+			}
+		}
+
+		sortedNames := []string{"obj1", "other/obj1"}
+		if !cmp.Equal(sortedNames, gotNames) {
+			t.Errorf("names = %v, want %v", gotNames, sortedNames)
+		}
 	})
 }
 
@@ -4750,11 +4810,9 @@ func TestIntegration_SignedURL_WithCreds(t *testing.T) {
 			t.Fatalf("problem with the signed URL: %v", err)
 		}
 	}, option.WithCredentials(creds))
-
 }
 
 func TestIntegration_SignedURL_DefaultSignBytes(t *testing.T) {
-
 	ctx := context.Background()
 
 	// Create another client to test the sign byte function as well

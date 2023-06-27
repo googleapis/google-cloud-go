@@ -347,6 +347,7 @@ func (c *httpStorageClient) ListObjects(ctx context.Context, bucket string, q *Q
 		req.EndOffset(it.query.EndOffset)
 		req.Versions(it.query.Versions)
 		req.IncludeTrailingDelimiter(it.query.IncludeTrailingDelimiter)
+		req.MatchGlob(it.query.MatchGlob)
 		if selection := it.query.toFieldSelection(); selection != "" {
 			req.Fields("nextPageToken", googleapi.Field(selection))
 		}

@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.5.0](https://github.com/googleapis/google-cloud-go/compare/discoveryengine/v0.4.1...discoveryengine/v0.5.0) (2023-06-20)
+
+
+### Features
+
+* **discoveryengine:** Support extractive content in search ([b726d41](https://github.com/googleapis/google-cloud-go/commit/b726d413166faa8c84c0a09c6019ff50f3249b9d))
+
+
+### Bug Fixes
+
+* **discoveryengine:** REST query UpdateMask bug ([df52820](https://github.com/googleapis/google-cloud-go/commit/df52820b0e7721954809a8aa8700b93c5662dc9b))
+
 ## [0.4.1](https://github.com/googleapis/google-cloud-go/compare/discoveryengine/v0.4.0...discoveryengine/v0.4.1) (2023-06-07)
 
 
