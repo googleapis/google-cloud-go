@@ -253,8 +253,8 @@ func TestClient_Single_WhenInactiveTransactionsAndSessionIsNotFoundOnBackend_Rem
 	iter.Stop()
 
 	p.mu.Lock()
+	defer p.mu.Unlock()
 	if g, w := p.idleList.Len(), 1; g != w {
-		p.mu.Unlock() // If we don't unlock then it will be a deadlock and test never ends
 		t.Fatalf("Sessions in pool count mismatch\nGot: %d\nWant: %d\n", g, w)
 	}
 	if p.numInUse != 0 {
@@ -263,14 +263,12 @@ func TestClient_Single_WhenInactiveTransactionsAndSessionIsNotFoundOnBackend_Rem
 	if p.numOpened != 1 {
 		t.Fatalf("Expect session pool size 1, got %d", p.numOpened)
 	}
-	p.mu.Unlock()
 
 	sh.mu.Lock()
+	defer sh.mu.Unlock()
 	if g, w := sh.isLongRunningTransaction, false; g != w {
-		sh.mu.Unlock()
 		t.Fatalf("isLongRunningTransaction mismatch\nGot: %v\nWant: %v\n", g, w)
 	}
-	sh.mu.Unlock()
 	p.InactiveTransactionRemovalOptions.mu.Lock()
 	defer p.InactiveTransactionRemovalOptions.mu.Unlock()
 	if g, w := p.numOfLeakedSessionsRemoved, uint64(1); g != w {
@@ -965,7 +963,8 @@ func TestClient_ReadWriteTransaction_WhenLongRunningSessionCleaned_TransactionSh
 			return status.Errorf(codes.FailedPrecondition, "Row count mismatch\nGot: %v\nWant: %v", g, w)
 		}
 
-		// Simulate the session to be checked out for more than 60 mins. The background task cleans up this long-running session.
+		// Simulate the session to be checked out for more than 60 mins.
+		// The background task cleans up this long-running session.
 		tx.sh.mu.Lock()
 		tx.sh.checkoutTime = time.Now().Add(-time.Hour)
 		if g, w := tx.sh.isLongRunningTransaction, false; g != w {
