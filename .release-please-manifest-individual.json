@@ -1,9 +1,9 @@
 {
-  "bigquery": "1.51.2",
+  "bigquery": "1.52.0",
   "bigtable": "1.18.1",
   "datastore": "1.11.0",
   "errorreporting": "0.3.0",
-  "firestore": "1.10.0",
+  "firestore": "1.11.0",
   "logging": "1.7.0",
   "profiler": "0.3.1",
   "pubsub": "1.31.0",
