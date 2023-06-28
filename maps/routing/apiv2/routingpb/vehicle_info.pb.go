@@ -21,11 +21,10 @@
 package routingpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -35,15 +34,15 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-// Encapsulates the vehicle information, such as the license plate last
-// character.
+// Contains the vehicle information, such as the vehicle emission type.
 type VehicleInfo struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
 	// Describes the vehicle's emission type.
-	// Applies only to the `DRIVE` travel mode.
+	// Applies only to the `DRIVE`
+	// [RouteTravelMode][google.maps.routing.v2.RouteTravelMode].
 	EmissionType VehicleEmissionType `protobuf:"varint,2,opt,name=emission_type,json=emissionType,proto3,enum=google.maps.routing.v2.VehicleEmissionType" json:"emission_type,omitempty"`
 }
 
