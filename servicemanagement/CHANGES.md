@@ -1,5 +1,12 @@
 # Changes
 
+## [1.9.2](https://github.com/googleapis/google-cloud-go/compare/servicemanagement/v1.9.1...servicemanagement/v1.9.2) (2023-06-27)
+
+
+### Documentation
+
+* **servicemanagement:** Update docs to existing services ([1da334c](https://github.com/googleapis/google-cloud-go/commit/1da334c0cbeed9cfb8df0551714721284d164d60))
+
 ## [1.9.1](https://github.com/googleapis/google-cloud-go/compare/servicemanagement/v1.9.0...servicemanagement/v1.9.1) (2023-06-20)
 
 
