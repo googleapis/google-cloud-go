@@ -550,8 +550,8 @@ func (c *Client) CreateTransferJob(ctx context.Context, req *storagetransferpb.C
 // UpdateTransferJob updates a transfer job. Updating a job’s transfer spec does not affect
 // transfer operations that are running already.
 //
-// Note: The job’s status field can be modified
-// using this RPC (for example, to set a job’s status to
+// Note: The job’s status
+// field can be modified using this RPC (for example, to set a job’s status to
 // DELETED,
 // DISABLED, or
 // ENABLED).
@@ -579,9 +579,10 @@ func (c *Client) ResumeTransferOperation(ctx context.Context, req *storagetransf
 	return c.internalClient.ResumeTransferOperation(ctx, req, opts...)
 }
 
-// RunTransferJob attempts to start a new TransferOperation for the current TransferJob. A
-// TransferJob has a maximum of one active TransferOperation. If this method
-// is called while a TransferOperation is active, an error will be returned.
+// RunTransferJob starts a new operation for the specified transfer job.
+// A TransferJob has a maximum of one active TransferOperation. If this
+// method is called while a TransferOperation is active, an error is
+// returned.
 func (c *Client) RunTransferJob(ctx context.Context, req *storagetransferpb.RunTransferJobRequest, opts ...gax.CallOption) (*RunTransferJobOperation, error) {
 	return c.internalClient.RunTransferJob(ctx, req, opts...)
 }
@@ -1319,8 +1320,8 @@ func (c *restClient) CreateTransferJob(ctx context.Context, req *storagetransfer
 // UpdateTransferJob updates a transfer job. Updating a job’s transfer spec does not affect
 // transfer operations that are running already.
 //
-// Note: The job’s status field can be modified
-// using this RPC (for example, to set a job’s status to
+// Note: The job’s status
+// field can be modified using this RPC (for example, to set a job’s status to
 // DELETED,
 // DISABLED, or
 // ENABLED).
@@ -1627,9 +1628,10 @@ func (c *restClient) ResumeTransferOperation(ctx context.Context, req *storagetr
 	}, opts...)
 }
 
-// RunTransferJob attempts to start a new TransferOperation for the current TransferJob. A
-// TransferJob has a maximum of one active TransferOperation. If this method
-// is called while a TransferOperation is active, an error will be returned.
+// RunTransferJob starts a new operation for the specified transfer job.
+// A TransferJob has a maximum of one active TransferOperation. If this
+// method is called while a TransferOperation is active, an error is
+// returned.
 func (c *restClient) RunTransferJob(ctx context.Context, req *storagetransferpb.RunTransferJobRequest, opts ...gax.CallOption) (*RunTransferJobOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)

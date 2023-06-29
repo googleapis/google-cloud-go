@@ -1,5 +1,12 @@
 # Changes
 
+## [1.6.2](https://github.com/googleapis/google-cloud-go/compare/essentialcontacts/v1.6.1...essentialcontacts/v1.6.2) (2023-06-27)
+
+
+### Bug Fixes
+
+* **essentialcontacts:** Mark fields in Contacts message as REQUIRED ([94ea341](https://github.com/googleapis/google-cloud-go/commit/94ea3410e233db6040a7cb0a931948f1e3bb4c9a))
+
 ## [1.6.1](https://github.com/googleapis/google-cloud-go/compare/essentialcontacts/v1.6.0...essentialcontacts/v1.6.1) (2023-06-20)
 
 
