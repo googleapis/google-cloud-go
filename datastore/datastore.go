@@ -58,6 +58,7 @@ type Client struct {
 	connPool     gtransport.ConnPool
 	client       pb.DatastoreClient
 	dataset      string // Called dataset by the datastore API, synonym for project ID.
+	databaseID   string // Default value is empty string
 	readSettings *readSettings
 }
 
@@ -126,6 +127,27 @@ func NewClient(ctx context.Context, projectID string, opts ...option.ClientOptio
 		dataset:      projectID,
 		readSettings: &readSettings{},
 	}, nil
+}
+
+// NewClientWithDatabase creates a new Client for given dataset and database.  If the project ID is
+// empty, it is derived from the DATASTORE_PROJECT_ID environment variable.
+// If the DATASTORE_EMULATOR_HOST environment variable is set, client will use
+// its value to connect to a locally-running datastore emulator.
+// DetectProjectID can be passed as the projectID argument to instruct
+// NewClientWithDatabase to detect the project ID from the credentials.
+// Call (*Client).Close() when done with the client.
+func NewClientWithDatabase(ctx context.Context, projectID, databaseID string, opts ...option.ClientOption) (*Client, error) {
+	if databaseID == "" {
+		return nil, errors.New("firestore: databaseID is empty")
+	}
+
+	client, err := NewClient(ctx, projectID, opts...)
+	if err != nil {
+		return nil, err
+	}
+
+	client.databaseID = databaseID
+	return client, nil
 }
 
 func detectProjectID(ctx context.Context, opts ...option.ClientOption) (string, error) {
@@ -468,6 +490,7 @@ func (c *Client) get(ctx context.Context, keys []*Key, dst interface{}, opts *pb
 	}
 	req := &pb.LookupRequest{
 		ProjectId:   c.dataset,
+		DatabaseId:  c.databaseID,
 		Keys:        pbKeys,
 		ReadOptions: opts,
 	}
@@ -565,9 +588,10 @@ func (c *Client) PutMulti(ctx context.Context, keys []*Key, src interface{}) (re
 
 	// Make the request.
 	req := &pb.CommitRequest{
-		ProjectId: c.dataset,
-		Mutations: mutations,
-		Mode:      pb.CommitRequest_NON_TRANSACTIONAL,
+		ProjectId:  c.dataset,
+		DatabaseId: c.databaseID,
+		Mutations:  mutations,
+		Mode:       pb.CommitRequest_NON_TRANSACTIONAL,
 	}
 	resp, err := c.client.Commit(ctx, req)
 	if err != nil {
@@ -688,9 +712,10 @@ func (c *Client) DeleteMulti(ctx context.Context, keys []*Key) (err error) {
 	}
 
 	req := &pb.CommitRequest{
-		ProjectId: c.dataset,
-		Mutations: mutations,
-		Mode:      pb.CommitRequest_NON_TRANSACTIONAL,
+		ProjectId:  c.dataset,
+		DatabaseId: c.databaseID,
+		Mutations:  mutations,
+		Mode:       pb.CommitRequest_NON_TRANSACTIONAL,
 	}
 	_, err = c.client.Commit(ctx, req)
 	return err
@@ -740,9 +765,10 @@ func (c *Client) Mutate(ctx context.Context, muts ...*Mutation) (ret []*Key, err
 		return nil, err
 	}
 	req := &pb.CommitRequest{
-		ProjectId: c.dataset,
-		Mutations: pmuts,
-		Mode:      pb.CommitRequest_NON_TRANSACTIONAL,
+		ProjectId:  c.dataset,
+		DatabaseId: c.databaseID,
+		Mutations:  pmuts,
+		Mode:       pb.CommitRequest_NON_TRANSACTIONAL,
 	}
 	resp, err := c.client.Commit(ctx, req)
 	if err != nil {

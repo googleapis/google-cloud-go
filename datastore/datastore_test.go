@@ -29,6 +29,37 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
+func TestNewClientWithDatabase(t *testing.T) {
+	tests := []struct {
+		desc       string
+		databaseId string
+		wantErr    string
+	}{
+		{
+			desc:       "Emmpty databaseID",
+			databaseId: "",
+			wantErr:    "firestore: databaseID is empty",
+		},
+	}
+
+	for _, test := range tests {
+		_, gotErr := NewClientWithDatabase(context.Background(), "my-project", "")
+		if gotErr != nil && test.wantErr == "" {
+			t.Errorf("%s: got error %v, but none was expected", test.desc, gotErr)
+			continue
+		}
+		if gotErr == nil && test.wantErr != "" {
+			t.Errorf("%s: wanted error, but none returned", test.desc)
+			continue
+		}
+
+		if gotErr.Error() != test.wantErr {
+			t.Errorf("%s: error mismatch: got %q want something containing %q", test.desc, gotErr, test.wantErr)
+			continue
+		}
+	}
+}
+
 func TestQueryConstruction(t *testing.T) {
 	tests := []struct {
 		q, exp *Query
