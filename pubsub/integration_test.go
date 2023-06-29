@@ -2060,3 +2060,25 @@ func TestIntegration_TopicUpdateSchema(t *testing.T) {
 		t.Fatalf("schema settings for update -want, +got: %v", diff)
 	}
 }
+
+func TestIntegration_DetectProjectID(t *testing.T) {
+	ctx := context.Background()
+	testCreds := testutil.Credentials(ctx)
+	if testCreds == nil {
+		t.Skip("test credentials not present, skipping")
+	}
+
+	goodClient, err := NewClient(ctx, DetectProjectID, option.WithCredentials(testCreds))
+	if err != nil {
+		t.Errorf("test pubsub.NewClient: %v", err)
+	}
+	if goodClient.Project() != testutil.ProjID() {
+		t.Errorf("client.Project() got %q, want %q", goodClient.Project(), testutil.ProjID())
+	}
+
+	badTS := testutil.ErroringTokenSource{}
+
+	if badClient, err := NewClient(ctx, DetectProjectID, option.WithTokenSource(badTS)); err == nil {
+		t.Errorf("expected error from bad token source, NewClient succeeded with project: %s", badClient.projectID)
+	}
+}

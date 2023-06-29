@@ -1,5 +1,12 @@
 # Changes
 
+## [0.21.2](https://github.com/googleapis/google-cloud-go/compare/analytics/v0.21.1...analytics/v0.21.2) (2023-06-27)
+
+
+### Documentation
+
+* **analytics/admin:** Announce the deprecation of first-click, linear, time-decay and position-based attribution models ([94ea341](https://github.com/googleapis/google-cloud-go/commit/94ea3410e233db6040a7cb0a931948f1e3bb4c9a))
+
 ## [0.21.1](https://github.com/googleapis/google-cloud-go/compare/analytics-v0.21.0...analytics/v0.21.1) (2023-06-20)
 
 
