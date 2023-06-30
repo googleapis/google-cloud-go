@@ -799,32 +799,7 @@ func (c *Client) RunAggregationQuery(ctx context.Context, aq *AggregationQuery) 
 	// TODO(developer): change batch parsing logic if other aggregations are supported.
 	for _, a := range res.Batch.AggregationResults {
 		for k, v := range a.AggregateProperties {
-			switch v.ValueType.(type) {
-			case *pb.Value_NullValue:
-				ar[k] = v.GetNullValue()
-			case *pb.Value_BooleanValue:
-				ar[k] = v.GetBooleanValue()
-			case *pb.Value_IntegerValue:
-				ar[k] = v.GetIntegerValue()
-			case *pb.Value_DoubleValue:
-				ar[k] = v.GetDoubleValue()
-			case *pb.Value_TimestampValue:
-				ar[k] = v.GetTimestampValue()
-			case *pb.Value_KeyValue:
-				ar[k] = v.GetKeyValue()
-			case *pb.Value_StringValue:
-				ar[k] = v.GetStringValue()
-			case *pb.Value_BlobValue:
-				ar[k] = v.GetBlobValue()
-			case *pb.Value_GeoPointValue:
-				ar[k] = v.GetGeoPointValue()
-			case *pb.Value_EntityValue:
-				ar[k] = v.GetEntityValue()
-			case *pb.Value_ArrayValue:
-				ar[k] = v.GetArrayValue()
-			default:
-				ar[k] = v
-			}
+			ar[k] = v
 		}
 	}
 
