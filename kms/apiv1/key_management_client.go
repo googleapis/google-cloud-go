@@ -68,6 +68,8 @@ type KeyManagementCallOptions struct {
 	RestoreCryptoKeyVersion       []gax.CallOption
 	Encrypt                       []gax.CallOption
 	Decrypt                       []gax.CallOption
+	RawEncrypt                    []gax.CallOption
+	RawDecrypt                    []gax.CallOption
 	AsymmetricSign                []gax.CallOption
 	AsymmetricDecrypt             []gax.CallOption
 	MacSign                       []gax.CallOption
@@ -347,6 +349,8 @@ func defaultKeyManagementCallOptions() *KeyManagementCallOptions {
 				})
 			}),
 		},
+		RawEncrypt: []gax.CallOption{},
+		RawDecrypt: []gax.CallOption{},
 		AsymmetricSign: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -656,6 +660,8 @@ func defaultKeyManagementRESTCallOptions() *KeyManagementCallOptions {
 					http.StatusGatewayTimeout)
 			}),
 		},
+		RawEncrypt: []gax.CallOption{},
+		RawDecrypt: []gax.CallOption{},
 		AsymmetricSign: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -750,6 +756,8 @@ type internalKeyManagementClient interface {
 	RestoreCryptoKeyVersion(context.Context, *kmspb.RestoreCryptoKeyVersionRequest, ...gax.CallOption) (*kmspb.CryptoKeyVersion, error)
 	Encrypt(context.Context, *kmspb.EncryptRequest, ...gax.CallOption) (*kmspb.EncryptResponse, error)
 	Decrypt(context.Context, *kmspb.DecryptRequest, ...gax.CallOption) (*kmspb.DecryptResponse, error)
+	RawEncrypt(context.Context, *kmspb.RawEncryptRequest, ...gax.CallOption) (*kmspb.RawEncryptResponse, error)
+	RawDecrypt(context.Context, *kmspb.RawDecryptRequest, ...gax.CallOption) (*kmspb.RawDecryptResponse, error)
 	AsymmetricSign(context.Context, *kmspb.AsymmetricSignRequest, ...gax.CallOption) (*kmspb.AsymmetricSignResponse, error)
 	AsymmetricDecrypt(context.Context, *kmspb.AsymmetricDecryptRequest, ...gax.CallOption) (*kmspb.AsymmetricDecryptResponse, error)
 	MacSign(context.Context, *kmspb.MacSignRequest, ...gax.CallOption) (*kmspb.MacSignResponse, error)
@@ -765,18 +773,18 @@ type internalKeyManagementClient interface {
 // KeyManagementClient is a client for interacting with Cloud Key Management Service (KMS) API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
-// # Google Cloud Key Management Service
+// Google Cloud Key Management Service
 //
 // Manages cryptographic keys and operations using those keys. Implements a REST
 // model with the following objects:
 //
-//	KeyRing
+//   KeyRing
 //
-//	CryptoKey
+//   CryptoKey
 //
-//	CryptoKeyVersion
+//   CryptoKeyVersion
 //
-//	ImportJob
+//   ImportJob
 //
 // If you are using manual gRPC libraries, see
 // Using gRPC with Cloud KMS (at https://cloud.google.com/kms/docs/grpc).
@@ -996,6 +1004,24 @@ func (c *KeyManagementClient) Decrypt(ctx context.Context, req *kmspb.DecryptReq
 	return c.internalClient.Decrypt(ctx, req, opts...)
 }
 
+// RawEncrypt encrypts data using portable cryptographic primitives. Most users should
+// choose Encrypt and
+// Decrypt rather than
+// their raw counterparts. The
+// CryptoKey.purpose must be
+// RAW_ENCRYPT_DECRYPT.
+func (c *KeyManagementClient) RawEncrypt(ctx context.Context, req *kmspb.RawEncryptRequest, opts ...gax.CallOption) (*kmspb.RawEncryptResponse, error) {
+	return c.internalClient.RawEncrypt(ctx, req, opts...)
+}
+
+// RawDecrypt decrypts data that was originally encrypted using a raw cryptographic
+// mechanism. The CryptoKey.purpose
+// must be
+// RAW_ENCRYPT_DECRYPT.
+func (c *KeyManagementClient) RawDecrypt(ctx context.Context, req *kmspb.RawDecryptRequest, opts ...gax.CallOption) (*kmspb.RawDecryptResponse, error) {
+	return c.internalClient.RawDecrypt(ctx, req, opts...)
+}
+
 // AsymmetricSign signs data using a CryptoKeyVersion
 // with CryptoKey.purpose
 // ASYMMETRIC_SIGN, producing a signature that can be verified with the public
@@ -1095,18 +1121,18 @@ type keyManagementGRPCClient struct {
 // NewKeyManagementClient creates a new key management service client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
-// # Google Cloud Key Management Service
+// Google Cloud Key Management Service
 //
 // Manages cryptographic keys and operations using those keys. Implements a REST
 // model with the following objects:
 //
-//	KeyRing
+//   KeyRing
 //
-//	CryptoKey
+//   CryptoKey
 //
-//	CryptoKeyVersion
+//   CryptoKeyVersion
 //
-//	ImportJob
+//   ImportJob
 //
 // If you are using manual gRPC libraries, see
 // Using gRPC with Cloud KMS (at https://cloud.google.com/kms/docs/grpc).
@@ -1180,18 +1206,18 @@ type keyManagementRESTClient struct {
 
 // NewKeyManagementRESTClient creates a new key management service rest client.
 //
-// # Google Cloud Key Management Service
+// Google Cloud Key Management Service
 //
 // Manages cryptographic keys and operations using those keys. Implements a REST
 // model with the following objects:
 //
-//	KeyRing
+//   KeyRing
 //
-//	CryptoKey
+//   CryptoKey
 //
-//	CryptoKeyVersion
+//   CryptoKeyVersion
 //
-//	ImportJob
+//   ImportJob
 //
 // If you are using manual gRPC libraries, see
 // Using gRPC with Cloud KMS (at https://cloud.google.com/kms/docs/grpc).
@@ -1706,6 +1732,40 @@ func (c *keyManagementGRPCClient) Decrypt(ctx context.Context, req *kmspb.Decryp
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.keyManagementClient.Decrypt(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *keyManagementGRPCClient) RawEncrypt(ctx context.Context, req *kmspb.RawEncryptRequest, opts ...gax.CallOption) (*kmspb.RawEncryptResponse, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).RawEncrypt[0:len((*c.CallOptions).RawEncrypt):len((*c.CallOptions).RawEncrypt)], opts...)
+	var resp *kmspb.RawEncryptResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.keyManagementClient.RawEncrypt(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *keyManagementGRPCClient) RawDecrypt(ctx context.Context, req *kmspb.RawDecryptRequest, opts ...gax.CallOption) (*kmspb.RawDecryptResponse, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).RawDecrypt[0:len((*c.CallOptions).RawDecrypt):len((*c.CallOptions).RawDecrypt)], opts...)
+	var resp *kmspb.RawDecryptResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.keyManagementClient.RawDecrypt(ctx, req, settings.GRPC...)
 		return err
 	}, opts...)
 	if err != nil {
@@ -3420,6 +3480,142 @@ func (c *keyManagementRESTClient) Decrypt(ctx context.Context, req *kmspb.Decryp
 	opts = append((*c.CallOptions).Decrypt[0:len((*c.CallOptions).Decrypt):len((*c.CallOptions).Decrypt)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &kmspb.DecryptResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// RawEncrypt encrypts data using portable cryptographic primitives. Most users should
+// choose Encrypt and
+// Decrypt rather than
+// their raw counterparts. The
+// CryptoKey.purpose must be
+// RAW_ENCRYPT_DECRYPT.
+func (c *keyManagementRESTClient) RawEncrypt(ctx context.Context, req *kmspb.RawEncryptRequest, opts ...gax.CallOption) (*kmspb.RawEncryptResponse, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:rawEncrypt", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).RawEncrypt[0:len((*c.CallOptions).RawEncrypt):len((*c.CallOptions).RawEncrypt)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &kmspb.RawEncryptResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// RawDecrypt decrypts data that was originally encrypted using a raw cryptographic
+// mechanism. The CryptoKey.purpose
+// must be
+// RAW_ENCRYPT_DECRYPT.
+func (c *keyManagementRESTClient) RawDecrypt(ctx context.Context, req *kmspb.RawDecryptRequest, opts ...gax.CallOption) (*kmspb.RawDecryptResponse, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:rawDecrypt", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).RawDecrypt[0:len((*c.CallOptions).RawDecrypt):len((*c.CallOptions).RawDecrypt)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &kmspb.RawDecryptResponse{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
