@@ -73,7 +73,8 @@ type benchmarkOptions struct {
 	forceGC      bool
 	connPoolSize int
 
-	timeout time.Duration
+	timeout      time.Duration
+	timeoutPerOp time.Duration
 
 	continueOnFail bool
 
@@ -162,6 +163,7 @@ func parseFlags() {
 	flag.BoolVar(&opts.forceGC, "force_garbage_collection", false, "force garbage collection at the beginning of each upload")
 
 	flag.DurationVar(&opts.timeout, "timeout", time.Hour, "timeout")
+	flag.DurationVar(&opts.timeoutPerOp, "timeout_per_op", time.Minute*5, "timeout per upload/download")
 	flag.StringVar(&outputFile, "o", "", "file to output results to - if empty, will output to stdout")
 
 	flag.BoolVar(&opts.continueOnFail, "continue_on_fail", false, "continue even if a run fails")
@@ -204,6 +206,12 @@ func main() {
 	start := time.Now()
 	ctx, cancel := context.WithDeadline(context.Background(), start.Add(opts.timeout))
 	defer cancel()
+
+	// Print a message once deadline is exceeded
+	go func() {
+		<-ctx.Done()
+		log.Printf("total configured timeout exceeded")
+	}()
 
 	// Create bucket if necessary
 	if len(opts.bucket) < 1 {
