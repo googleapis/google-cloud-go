@@ -20,9 +20,9 @@ import (
 	"cloud.google.com/go/internal/testutil"
 	"google.golang.org/protobuf/proto"
 
+	pb "cloud.google.com/go/pubsublite/apiv1/pubsublitepb"
 	dpb "github.com/golang/protobuf/ptypes/duration"
-	pb "google.golang.org/genproto/googleapis/cloud/pubsublite/v1"
-	fmpb "google.golang.org/genproto/protobuf/field_mask"
+	fmpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 )
 
 func TestTopicConfigToProtoConversion(t *testing.T) {
@@ -32,7 +32,7 @@ func TestTopicConfigToProtoConversion(t *testing.T) {
 		wantConfig *TopicConfig
 	}{
 		{
-			desc: "retention duration set",
+			desc: "all fields set",
 			topicpb: &pb.Topic{
 				Name: "projects/my-proj/locations/us-central1-c/topics/my-topic",
 				PartitionConfig: &pb.Topic_PartitionConfig{
@@ -51,6 +51,9 @@ func TestTopicConfigToProtoConversion(t *testing.T) {
 						Nanos:   600,
 					},
 				},
+				ReservationConfig: &pb.Topic_ReservationConfig{
+					ThroughputReservation: "projects/my-proj/locations/us-central1/reservations/my-reservation",
+				},
 			},
 			wantConfig: &TopicConfig{
 				Name:                       "projects/my-proj/locations/us-central1-c/topics/my-topic",
@@ -59,10 +62,11 @@ func TestTopicConfigToProtoConversion(t *testing.T) {
 				SubscribeCapacityMiBPerSec: 16,
 				PerPartitionBytes:          1073741824,
 				RetentionDuration:          time.Duration(86400*1e9 + 600),
+				ThroughputReservation:      "projects/my-proj/locations/us-central1/reservations/my-reservation",
 			},
 		},
 		{
-			desc: "retention duration unset",
+			desc: "optional fields unset",
 			topicpb: &pb.Topic{
 				Name: "projects/my-proj/locations/europe-west1-b/topics/my-topic",
 				PartitionConfig: &pb.Topic_PartitionConfig{
@@ -112,15 +116,18 @@ func TestTopicUpdateRequest(t *testing.T) {
 			desc: "all fields set",
 			config: &TopicConfigToUpdate{
 				Name:                       "projects/my-proj/locations/us-central1-c/topics/my-topic",
+				PartitionCount:             2,
 				PublishCapacityMiBPerSec:   4,
 				SubscribeCapacityMiBPerSec: 12,
 				PerPartitionBytes:          500000,
 				RetentionDuration:          time.Duration(0),
+				ThroughputReservation:      "projects/my-proj/locations/us-central1/reservations/my-reservation",
 			},
 			want: &pb.UpdateTopicRequest{
 				Topic: &pb.Topic{
 					Name: "projects/my-proj/locations/us-central1-c/topics/my-topic",
 					PartitionConfig: &pb.Topic_PartitionConfig{
+						Count: 2,
 						Dimension: &pb.Topic_PartitionConfig_Capacity_{
 							Capacity: &pb.Topic_PartitionConfig_Capacity{
 								PublishMibPerSec:   4,
@@ -132,13 +139,18 @@ func TestTopicUpdateRequest(t *testing.T) {
 						PerPartitionBytes: 500000,
 						Period:            &dpb.Duration{},
 					},
+					ReservationConfig: &pb.Topic_ReservationConfig{
+						ThroughputReservation: "projects/my-proj/locations/us-central1/reservations/my-reservation",
+					},
 				},
 				UpdateMask: &fmpb.FieldMask{
 					Paths: []string{
+						"partition_config.count",
 						"partition_config.capacity.publish_mib_per_sec",
 						"partition_config.capacity.subscribe_mib_per_sec",
 						"retention_config.per_partition_bytes",
 						"retention_config.period",
+						"reservation_config.throughput_reservation",
 					},
 				},
 			},
@@ -167,6 +179,32 @@ func TestTopicUpdateRequest(t *testing.T) {
 			},
 		},
 		{
+			desc: "clear throughput reservation",
+			config: &TopicConfigToUpdate{
+				Name:                  "projects/my-proj/locations/us-central1-c/topics/my-topic",
+				ThroughputReservation: "",
+			},
+			want: &pb.UpdateTopicRequest{
+				Topic: &pb.Topic{
+					Name: "projects/my-proj/locations/us-central1-c/topics/my-topic",
+					PartitionConfig: &pb.Topic_PartitionConfig{
+						Dimension: &pb.Topic_PartitionConfig_Capacity_{
+							Capacity: &pb.Topic_PartitionConfig_Capacity{},
+						},
+					},
+					RetentionConfig: &pb.Topic_RetentionConfig{},
+					ReservationConfig: &pb.Topic_ReservationConfig{
+						ThroughputReservation: "",
+					},
+				},
+				UpdateMask: &fmpb.FieldMask{
+					Paths: []string{
+						"reservation_config.throughput_reservation",
+					},
+				},
+			},
+		},
+		{
 			desc: "no fields set",
 			config: &TopicConfigToUpdate{
 				Name: "projects/my-proj/locations/us-central1-c/topics/my-topic",
@@ -187,7 +225,7 @@ func TestTopicUpdateRequest(t *testing.T) {
 	} {
 		t.Run(tc.desc, func(t *testing.T) {
 			if got := tc.config.toUpdateRequest(); !proto.Equal(got, tc.want) {
-				t.Errorf("TopicConfigToUpdate: %v toUpdateRequest():\ngot: %v\nwant: %v", tc.config, got, tc.want)
+				t.Errorf("TopicConfigToUpdate(%v).toUpdateRequest():\ngot: %v\nwant: %v", tc.config, got, tc.want)
 			}
 		})
 	}
@@ -226,6 +264,58 @@ func TestSubscriptionConfigToProtoConversion(t *testing.T) {
 				DeliveryRequirement: UnspecifiedDeliveryRequirement,
 			},
 		},
+		{
+			desc: "minimal export config",
+			subspb: &pb.Subscription{
+				Name:  "projects/my-proj/locations/us-central1-c/subscriptions/my-subs",
+				Topic: "projects/my-proj/locations/us-central1-c/topics/my-topic",
+				DeliveryConfig: &pb.Subscription_DeliveryConfig{
+					DeliveryRequirement: pb.Subscription_DeliveryConfig_DELIVER_AFTER_STORED,
+				},
+				ExportConfig: &pb.ExportConfig{},
+			},
+			wantConfig: &SubscriptionConfig{
+				Name:                "projects/my-proj/locations/us-central1-c/subscriptions/my-subs",
+				Topic:               "projects/my-proj/locations/us-central1-c/topics/my-topic",
+				DeliveryRequirement: DeliverAfterStored,
+				ExportConfig: &ExportConfig{
+					DesiredState: UnspecifiedExportState,
+				},
+			},
+		},
+		{
+			desc: "pubsub export config",
+			subspb: &pb.Subscription{
+				Name:  "projects/my-proj/locations/us-central1-c/subscriptions/my-subs",
+				Topic: "projects/my-proj/locations/us-central1-c/topics/my-topic",
+				DeliveryConfig: &pb.Subscription_DeliveryConfig{
+					DeliveryRequirement: pb.Subscription_DeliveryConfig_DELIVER_AFTER_STORED,
+				},
+				ExportConfig: &pb.ExportConfig{
+					DesiredState:    pb.ExportConfig_ACTIVE,
+					CurrentState:    pb.ExportConfig_NOT_FOUND,
+					DeadLetterTopic: "projects/my-proj/locations/us-central1-c/topics/dead-letter-topic",
+					Destination: &pb.ExportConfig_PubsubConfig{
+						PubsubConfig: &pb.ExportConfig_PubSubConfig{
+							Topic: "projects/my-proj/topics/destination-topic",
+						},
+					},
+				},
+			},
+			wantConfig: &SubscriptionConfig{
+				Name:                "projects/my-proj/locations/us-central1-c/subscriptions/my-subs",
+				Topic:               "projects/my-proj/locations/us-central1-c/topics/my-topic",
+				DeliveryRequirement: DeliverAfterStored,
+				ExportConfig: &ExportConfig{
+					DesiredState:    ExportActive,
+					CurrentState:    ExportResourceNotFound,
+					DeadLetterTopic: "projects/my-proj/locations/us-central1-c/topics/dead-letter-topic",
+					Destination: &PubSubDestinationConfig{
+						Topic: "projects/my-proj/topics/destination-topic",
+					},
+				},
+			},
+		},
 	} {
 		t.Run(tc.desc, func(t *testing.T) {
 			gotConfig := protoToSubscriptionConfig(tc.subspb)
@@ -252,6 +342,13 @@ func TestSubscriptionUpdateRequest(t *testing.T) {
 			config: &SubscriptionConfigToUpdate{
 				Name:                "projects/my-proj/locations/us-central1-c/subscriptions/my-subs",
 				DeliveryRequirement: DeliverImmediately,
+				ExportConfig: &ExportConfigToUpdate{
+					DesiredState:    ExportPaused,
+					DeadLetterTopic: "projects/my-proj/topics/updated-dead-letter",
+					Destination: &PubSubDestinationConfig{
+						Topic: "projects/my-proj/topics/updated-destination",
+					},
+				},
 			},
 			want: &pb.UpdateSubscriptionRequest{
 				Subscription: &pb.Subscription{
@@ -259,11 +356,40 @@ func TestSubscriptionUpdateRequest(t *testing.T) {
 					DeliveryConfig: &pb.Subscription_DeliveryConfig{
 						DeliveryRequirement: pb.Subscription_DeliveryConfig_DELIVER_IMMEDIATELY,
 					},
+					ExportConfig: &pb.ExportConfig{
+						DesiredState:    pb.ExportConfig_PAUSED,
+						DeadLetterTopic: "projects/my-proj/topics/updated-dead-letter",
+						Destination: &pb.ExportConfig_PubsubConfig{
+							PubsubConfig: &pb.ExportConfig_PubSubConfig{
+								Topic: "projects/my-proj/topics/updated-destination",
+							},
+						},
+					},
 				},
 				UpdateMask: &fmpb.FieldMask{
 					Paths: []string{
+						"export_config.desired_state",
+						"export_config.pubsub_config",
+						"export_config.dead_letter_topic",
 						"delivery_config.delivery_requirement",
 					},
+				},
+			},
+		},
+		{
+			desc: "clear dead letter topic",
+			config: &SubscriptionConfigToUpdate{
+				Name:         "projects/my-proj/locations/us-central1-c/subscriptions/my-subs",
+				ExportConfig: &ExportConfigToUpdate{DeadLetterTopic: ""},
+			},
+			want: &pb.UpdateSubscriptionRequest{
+				Subscription: &pb.Subscription{
+					Name:           "projects/my-proj/locations/us-central1-c/subscriptions/my-subs",
+					DeliveryConfig: &pb.Subscription_DeliveryConfig{},
+					ExportConfig:   &pb.ExportConfig{DeadLetterTopic: ""},
+				},
+				UpdateMask: &fmpb.FieldMask{
+					Paths: []string{"export_config.dead_letter_topic"},
 				},
 			},
 		},
@@ -280,10 +406,102 @@ func TestSubscriptionUpdateRequest(t *testing.T) {
 				UpdateMask: &fmpb.FieldMask{},
 			},
 		},
+		{
+			desc: "no export config fields set",
+			config: &SubscriptionConfigToUpdate{
+				Name:         "projects/my-proj/locations/us-central1-c/subscriptions/my-subs",
+				ExportConfig: &ExportConfigToUpdate{},
+			},
+			want: &pb.UpdateSubscriptionRequest{
+				Subscription: &pb.Subscription{
+					Name:           "projects/my-proj/locations/us-central1-c/subscriptions/my-subs",
+					DeliveryConfig: &pb.Subscription_DeliveryConfig{},
+					ExportConfig:   &pb.ExportConfig{},
+				},
+				UpdateMask: &fmpb.FieldMask{},
+			},
+		},
 	} {
 		t.Run(tc.desc, func(t *testing.T) {
 			if got := tc.config.toUpdateRequest(); !proto.Equal(got, tc.want) {
 				t.Errorf("SubscriptionConfigToUpdate: %v toUpdateRequest():\ngot: %v\nwant: %v", tc.config, got, tc.want)
+			}
+		})
+	}
+}
+
+func TestReservationConfigToProtoConversion(t *testing.T) {
+	for _, tc := range []struct {
+		desc       string
+		respb      *pb.Reservation
+		wantConfig *ReservationConfig
+	}{
+		{
+			desc: "all fields set",
+			respb: &pb.Reservation{
+				Name:               "projects/my-proj/locations/us-central1/reservations/my-reservation",
+				ThroughputCapacity: 5,
+			},
+			wantConfig: &ReservationConfig{
+				Name:               "projects/my-proj/locations/us-central1/reservations/my-reservation",
+				ThroughputCapacity: 5,
+			},
+		},
+	} {
+		t.Run(tc.desc, func(t *testing.T) {
+			gotConfig := protoToReservationConfig(tc.respb)
+			if !testutil.Equal(gotConfig, tc.wantConfig) {
+				t.Errorf("protoToReservationConfig(%v)\ngot: %v\nwant: %v", tc.respb, gotConfig, tc.wantConfig)
+			}
+
+			// Check that the config converts back to an identical proto.
+			if gotProto := tc.wantConfig.toProto(); !proto.Equal(gotProto, tc.respb) {
+				t.Errorf("ReservationConfig: %v toProto():\ngot: %v\nwant: %v", tc.wantConfig, gotProto, tc.respb)
+			}
+		})
+	}
+}
+
+func TestReservationUpdateRequest(t *testing.T) {
+	for _, tc := range []struct {
+		desc   string
+		config *ReservationConfigToUpdate
+		want   *pb.UpdateReservationRequest
+	}{
+		{
+			desc: "all fields set",
+			config: &ReservationConfigToUpdate{
+				Name:               "projects/my-proj/locations/us-central1/reservations/my-reservation",
+				ThroughputCapacity: 4,
+			},
+			want: &pb.UpdateReservationRequest{
+				Reservation: &pb.Reservation{
+					Name:               "projects/my-proj/locations/us-central1/reservations/my-reservation",
+					ThroughputCapacity: 4,
+				},
+				UpdateMask: &fmpb.FieldMask{
+					Paths: []string{
+						"throughput_capacity",
+					},
+				},
+			},
+		},
+		{
+			desc: "no fields set",
+			config: &ReservationConfigToUpdate{
+				Name: "projects/my-proj/locations/us-central1/reservations/my-reservation",
+			},
+			want: &pb.UpdateReservationRequest{
+				Reservation: &pb.Reservation{
+					Name: "projects/my-proj/locations/us-central1/reservations/my-reservation",
+				},
+				UpdateMask: &fmpb.FieldMask{},
+			},
+		},
+	} {
+		t.Run(tc.desc, func(t *testing.T) {
+			if got := tc.config.toUpdateRequest(); !proto.Equal(got, tc.want) {
+				t.Errorf("ReservationConfigToUpdate: %v toUpdateRequest():\ngot: %v\nwant: %v", tc.config, got, tc.want)
 			}
 		})
 	}

@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,32 +20,60 @@ import (
 	"context"
 
 	executions "cloud.google.com/go/workflows/executions/apiv1beta"
+	executionspb "cloud.google.com/go/workflows/executions/apiv1beta/executionspb"
 	"google.golang.org/api/iterator"
-	executionspb "google.golang.org/genproto/googleapis/cloud/workflows/executions/v1beta"
 )
 
 func ExampleNewClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := executions.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
+func ExampleNewRESTClient() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := executions.NewRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleClient_ListExecutions() {
-	// import executionspb "google.golang.org/genproto/googleapis/cloud/workflows/executions/v1beta"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := executions.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &executionspb.ListExecutionsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/workflows/executions/apiv1beta/executionspb#ListExecutionsRequest.
 	}
 	it := c.ListExecutions(ctx, req)
 	for {
@@ -62,16 +90,21 @@ func ExampleClient_ListExecutions() {
 }
 
 func ExampleClient_CreateExecution() {
-	// import executionspb "google.golang.org/genproto/googleapis/cloud/workflows/executions/v1beta"
-
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := executions.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &executionspb.CreateExecutionRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/workflows/executions/apiv1beta/executionspb#CreateExecutionRequest.
 	}
 	resp, err := c.CreateExecution(ctx, req)
 	if err != nil {
@@ -82,16 +115,21 @@ func ExampleClient_CreateExecution() {
 }
 
 func ExampleClient_GetExecution() {
-	// import executionspb "google.golang.org/genproto/googleapis/cloud/workflows/executions/v1beta"
-
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := executions.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &executionspb.GetExecutionRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/workflows/executions/apiv1beta/executionspb#GetExecutionRequest.
 	}
 	resp, err := c.GetExecution(ctx, req)
 	if err != nil {
@@ -102,16 +140,21 @@ func ExampleClient_GetExecution() {
 }
 
 func ExampleClient_CancelExecution() {
-	// import executionspb "google.golang.org/genproto/googleapis/cloud/workflows/executions/v1beta"
-
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := executions.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &executionspb.CancelExecutionRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/workflows/executions/apiv1beta/executionspb#CancelExecutionRequest.
 	}
 	resp, err := c.CancelExecution(ctx, req)
 	if err != nil {

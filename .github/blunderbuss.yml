@@ -4,7 +4,7 @@ assign_issues_by:
   - 'api: datastore'
   - 'api: firestore'
   to:
-  - crwilcox
+  - bhshkh
 - labels:
   - 'api: storage'
   to:
@@ -18,11 +18,15 @@ assign_issues_by:
   to:
   - hongalex
 - labels:
+  - 'api: pubsublite'
+  to:
+  - tmdiep
+- labels:
   - 'api: spanner'
   to:
-  - skuruppu
+  - rahul2393
 - labels:
   - 'api: logging'
   - 'api: clouderrorreporting'
   to:
-  - nicolezhu
+  - googleapis/api-logging

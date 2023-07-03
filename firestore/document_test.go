@@ -21,8 +21,8 @@ import (
 	"testing"
 	"time"
 
+	pb "cloud.google.com/go/firestore/apiv1/firestorepb"
 	tspb "github.com/golang/protobuf/ptypes/timestamp"
-	pb "google.golang.org/genproto/googleapis/firestore/v1"
 )
 
 func TestToProtoDocument(t *testing.T) {
@@ -156,6 +156,38 @@ func TestDataAt(t *testing.T) {
 		_, err := testDoc.DataAt(bad)
 		if err == nil {
 			t.Errorf("%q: got nil, want error", bad)
+		}
+	}
+}
+
+func TestDataTo(t *testing.T) {
+	doc := &DocumentSnapshot{
+		proto: &pb.Document{
+			Fields: map[string]*pb.Value{
+				"tags": arrayval(strval("value1"), strval("value2")),
+				"Tags": arrayval(strval("value3"), strval("value4")),
+				"TaGs": {ValueType: &pb.Value_NullValue{}},
+			},
+		},
+	}
+
+	type test struct {
+		Nothing string
+		Tags    []string
+	}
+
+	// DataTo displayed indeterminate results run to run.
+	// https://github.com/googleapis/google-cloud-go/issues/4722
+	want := &test{Tags: []string{"value3", "value4"}}
+
+	for i := 0; i < 20; i++ {
+		got := &test{}
+		if err := doc.DataTo(got); err != nil {
+			t.Fatal(err)
+		}
+
+		if !testEqual(got, want) {
+			t.Fatalf("got %#v\nwant %#v", got, want)
 		}
 	}
 }

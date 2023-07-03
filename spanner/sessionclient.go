@@ -21,16 +21,19 @@ import (
 	"fmt"
 	"log"
 	"reflect"
+	"strings"
 	"sync"
 	"time"
 
 	"cloud.google.com/go/internal/trace"
-	"cloud.google.com/go/internal/version"
 	vkit "cloud.google.com/go/spanner/apiv1"
+	sppb "cloud.google.com/go/spanner/apiv1/spannerpb"
+	"cloud.google.com/go/spanner/internal"
 	"github.com/googleapis/gax-go/v2"
+	"go.opencensus.io/tag"
 	"google.golang.org/api/option"
 	gtransport "google.golang.org/api/transport/grpc"
-	sppb "google.golang.org/genproto/googleapis/spanner/v1"
+	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 )
@@ -82,13 +85,16 @@ type sessionConsumer interface {
 // will ensure that the sessions that are created are evenly distributed over
 // all available channels.
 type sessionClient struct {
-	mu     sync.Mutex
-	closed bool
+	mu                   sync.Mutex
+	closed               bool
+	disableRouteToLeader bool
 
 	connPool      gtransport.ConnPool
 	database      string
 	id            string
+	userAgent     string
 	sessionLabels map[string]string
+	databaseRole  string
 	md            metadata.MD
 	batchTimeout  time.Duration
 	logger        *log.Logger
@@ -96,16 +102,19 @@ type sessionClient struct {
 }
 
 // newSessionClient creates a session client to use for a database.
-func newSessionClient(connPool gtransport.ConnPool, database string, sessionLabels map[string]string, md metadata.MD, logger *log.Logger, callOptions *vkit.CallOptions) *sessionClient {
+func newSessionClient(connPool gtransport.ConnPool, database, userAgent string, sessionLabels map[string]string, databaseRole string, disableRouteToLeader bool, md metadata.MD, batchTimeout time.Duration, logger *log.Logger, callOptions *vkit.CallOptions) *sessionClient {
 	return &sessionClient{
-		connPool:      connPool,
-		database:      database,
-		id:            cidGen.nextID(database),
-		sessionLabels: sessionLabels,
-		md:            md,
-		batchTimeout:  time.Minute,
-		logger:        logger,
-		callOptions:   callOptions,
+		connPool:             connPool,
+		database:             database,
+		userAgent:            userAgent,
+		id:                   cidGen.nextID(database),
+		sessionLabels:        sessionLabels,
+		databaseRole:         databaseRole,
+		disableRouteToLeader: disableRouteToLeader,
+		md:                   md,
+		batchTimeout:         batchTimeout,
+		logger:               logger,
+		callOptions:          callOptions,
 	}
 }
 
@@ -129,11 +138,32 @@ func (sc *sessionClient) createSession(ctx context.Context) (*session, error) {
 	if err != nil {
 		return nil, err
 	}
-	ctx = contextWithOutgoingMetadata(ctx, sc.md)
-	sid, err := client.CreateSession(ctx, &sppb.CreateSessionRequest{
+
+	var md metadata.MD
+	sid, err := client.CreateSession(contextWithOutgoingMetadata(ctx, sc.md, sc.disableRouteToLeader), &sppb.CreateSessionRequest{
 		Database: sc.database,
-		Session:  &sppb.Session{Labels: sc.sessionLabels},
-	})
+		Session:  &sppb.Session{Labels: sc.sessionLabels, CreatorRole: sc.databaseRole},
+	}, gax.WithGRPCOptions(grpc.Header(&md)))
+
+	if getGFELatencyMetricsFlag() && md != nil {
+		_, instance, database, err := parseDatabaseName(sc.database)
+		if err != nil {
+			return nil, ToSpannerError(err)
+		}
+		ctxGFE, err := tag.New(ctx,
+			tag.Upsert(tagKeyClientID, sc.id),
+			tag.Upsert(tagKeyDatabase, database),
+			tag.Upsert(tagKeyInstance, instance),
+			tag.Upsert(tagKeyLibVersion, internal.Version),
+		)
+		if err != nil {
+			trace.TracePrintf(ctx, nil, "Error in recording GFE Latency. Try disabling and rerunning. Error: %v", ToSpannerError(err))
+		}
+		err = captureGFELatencyStats(ctxGFE, md, "createSession")
+		if err != nil {
+			trace.TracePrintf(ctx, nil, "Error in recording GFE Latency. Try disabling and rerunning. Error: %v", ToSpannerError(err))
+		}
+	}
 	if err != nil {
 		return nil, ToSpannerError(err)
 	}
@@ -209,8 +239,6 @@ func (sc *sessionClient) batchCreateSessions(createSessionCount int32, distribut
 func (sc *sessionClient) executeBatchCreateSessions(client *vkit.Client, createCount int32, labels map[string]string, md metadata.MD, consumer sessionConsumer) {
 	ctx, cancel := context.WithTimeout(context.Background(), sc.batchTimeout)
 	defer cancel()
-	ctx = contextWithOutgoingMetadata(ctx, sc.md)
-
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/spanner.BatchCreateSessions")
 	defer func() { trace.EndSpan(ctx, nil) }()
 	trace.TracePrintf(ctx, nil, "Creating a batch of %d sessions", createCount)
@@ -230,11 +258,33 @@ func (sc *sessionClient) executeBatchCreateSessions(client *vkit.Client, createC
 			consumer.sessionCreationFailed(ToSpannerError(ctx.Err()), remainingCreateCount)
 			break
 		}
-		response, err := client.BatchCreateSessions(ctx, &sppb.BatchCreateSessionsRequest{
+		var mdForGFELatency metadata.MD
+		response, err := client.BatchCreateSessions(contextWithOutgoingMetadata(ctx, sc.md, sc.disableRouteToLeader), &sppb.BatchCreateSessionsRequest{
 			SessionCount:    remainingCreateCount,
 			Database:        sc.database,
-			SessionTemplate: &sppb.Session{Labels: labels},
-		})
+			SessionTemplate: &sppb.Session{Labels: labels, CreatorRole: sc.databaseRole},
+		}, gax.WithGRPCOptions(grpc.Header(&mdForGFELatency)))
+
+		if getGFELatencyMetricsFlag() && mdForGFELatency != nil {
+			_, instance, database, err := parseDatabaseName(sc.database)
+			if err != nil {
+				trace.TracePrintf(ctx, nil, "Error getting instance and database name: %v", err)
+			}
+			// Errors should not prevent initializing the session pool.
+			ctxGFE, err := tag.New(ctx,
+				tag.Upsert(tagKeyClientID, sc.id),
+				tag.Upsert(tagKeyDatabase, database),
+				tag.Upsert(tagKeyInstance, instance),
+				tag.Upsert(tagKeyLibVersion, internal.Version),
+			)
+			if err != nil {
+				trace.TracePrintf(ctx, nil, "Error in adding tags in BatchCreateSessions for GFE Latency: %v", err)
+			}
+			err = captureGFELatencyStats(ctxGFE, mdForGFELatency, "executeBatchCreateSessions")
+			if err != nil {
+				trace.TracePrintf(ctx, nil, "Error in Capturing GFE Latency and Header Missing count. Try disabling and rerunning. Error: %v", err)
+			}
+		}
 		if err != nil {
 			trace.TracePrintf(ctx, nil, "Error creating a batch of %d sessions: %v", remainingCreateCount, err)
 			consumer.sessionCreationFailed(ToSpannerError(err), remainingCreateCount)
@@ -277,7 +327,14 @@ func (sc *sessionClient) nextClient() (*vkit.Client, error) {
 	if err != nil {
 		return nil, err
 	}
-	client.SetGoogleClientInfo("gccl", version.Repo)
+	clientInfo := []string{"gccl", internal.Version}
+	if sc.userAgent != "" {
+		agentWithVersion := strings.SplitN(sc.userAgent, "/", 2)
+		if len(agentWithVersion) == 2 {
+			clientInfo = append(clientInfo, agentWithVersion[0], agentWithVersion[1])
+		}
+	}
+	client.SetGoogleClientInfo(clientInfo...)
 	if sc.callOptions != nil {
 		client.CallOptions = mergeCallOptions(client.CallOptions, sc.callOptions)
 	}

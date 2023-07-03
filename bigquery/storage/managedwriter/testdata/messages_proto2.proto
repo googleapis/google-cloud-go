@@ -1,0 +1,89 @@
+// Copyright 2021 Google LLC
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     https://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+syntax = "proto2";
+package testdata;
+option go_package = "cloud.google.com/go/bigquery/storage/managedwriter/testdata";
+
+
+// SimpleMessage represents a simple message that transmits a string and int64 value.
+message SimpleMessageProto2 {
+    // name is a simple scalar string.
+    optional string name = 1;
+
+    // value is a simple int64 value.
+    optional int64 value = 2;
+}
+
+message SimpleMessageEvolvedProto2 {
+    // name is a simple scalar string.
+    optional string name = 1;
+
+    // value is a simple int64 value.
+    optional int64 value = 2;
+    
+    // other is an additional string.
+    optional string other = 3;
+}
+
+message GithubArchiveEntityProto2 {
+    optional int64 id = 1;
+    optional string login = 2;
+    optional string gravatar_id = 3;
+    optional string avatar_url = 4;
+    optional string url = 5;
+}
+
+message GithubArchiveRepoProto2 {
+    optional int64 id = 1;
+    optional string name = 2;
+    optional string url = 3;
+}
+
+// GithubArchiveMessageProto2 is the proto2 version of github archive row.
+message GithubArchiveMessageProto2 {
+    optional string type = 1;
+    optional bool public = 2;
+    optional string payload = 3;
+    optional GithubArchiveRepoProto2 repo = 4;
+    optional GithubArchiveEntityProto2 actor = 5;
+    optional GithubArchiveEntityProto2 org = 6;
+    optional int64 created_at = 7;
+    optional string id = 8;
+    optional string other = 9;
+}
+
+// ExtEnum is an externally define enum.
+enum ExtEnum {
+    UNDEFINED = 0;
+    THING = 1;
+    OTHER_THING = 2;
+}
+
+// ExternalEnumMessage demonstrates an externally defined enum
+// being present in two different submessages.
+message ExternalEnumMessage {
+    optional EnumMsgA msg_a = 1;
+    optional EnumMsgB msg_b = 2;
+}
+
+message EnumMsgA {
+    optional string foo = 1;
+    optional ExtEnum bar = 2;
+}
+
+message EnumMsgB {
+    optional ExtEnum baz = 1;
+}
+

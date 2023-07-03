@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,20 +17,26 @@
 package storage
 
 import (
+	"bytes"
 	"context"
 	"fmt"
+	"io/ioutil"
 	"math"
+	"net/http"
 	"net/url"
 	"time"
 
+	storagepb "cloud.google.com/go/bigquery/storage/apiv1beta2/storagepb"
 	gax "github.com/googleapis/gax-go/v2"
+	"google.golang.org/api/googleapi"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
-	storagepb "google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1beta2"
+	httptransport "google.golang.org/api/transport/http"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/protobuf/encoding/protojson"
 )
 
 var newBigQueryReadClientHook clientHook
@@ -42,13 +48,13 @@ type BigQueryReadCallOptions struct {
 	SplitReadStream   []gax.CallOption
 }
 
-func defaultBigQueryReadClientOptions() []option.ClientOption {
+func defaultBigQueryReadGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("bigquerystorage.googleapis.com:443"),
 		internaloption.WithDefaultMTLSEndpoint("bigquerystorage.mtls.googleapis.com:443"),
 		internaloption.WithDefaultAudience("https://bigquerystorage.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
-		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
+		internaloption.EnableJwtWithScope(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -57,6 +63,7 @@ func defaultBigQueryReadClientOptions() []option.ClientOption {
 func defaultBigQueryReadCallOptions() *BigQueryReadCallOptions {
 	return &BigQueryReadCallOptions{
 		CreateReadSession: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -80,6 +87,7 @@ func defaultBigQueryReadCallOptions() *BigQueryReadCallOptions {
 			}),
 		},
 		SplitReadStream: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -94,27 +102,58 @@ func defaultBigQueryReadCallOptions() *BigQueryReadCallOptions {
 	}
 }
 
-// BigQueryReadClient is a client for interacting with BigQuery Storage API.
-//
-// Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
-type BigQueryReadClient struct {
-	// Connection pool of gRPC connections to the service.
-	connPool gtransport.ConnPool
-
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
-	// The gRPC API client.
-	bigQueryReadClient storagepb.BigQueryReadClient
-
-	// The call options for this service.
-	CallOptions *BigQueryReadCallOptions
-
-	// The x-goog-* metadata to be sent with each request.
-	xGoogMetadata metadata.MD
+func defaultBigQueryReadRESTCallOptions() *BigQueryReadCallOptions {
+	return &BigQueryReadCallOptions{
+		CreateReadSession: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
+		ReadRows: []gax.CallOption{
+			gax.WithTimeout(86400000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		SplitReadStream: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
+	}
 }
 
-// NewBigQueryReadClient creates a new big query read client.
+// internalBigQueryReadClient is an interface that defines the methods available from BigQuery Storage API.
+type internalBigQueryReadClient interface {
+	Close() error
+	setGoogleClientInfo(...string)
+	Connection() *grpc.ClientConn
+	CreateReadSession(context.Context, *storagepb.CreateReadSessionRequest, ...gax.CallOption) (*storagepb.ReadSession, error)
+	ReadRows(context.Context, *storagepb.ReadRowsRequest, ...gax.CallOption) (storagepb.BigQueryRead_ReadRowsClient, error)
+	SplitReadStream(context.Context, *storagepb.SplitReadStreamRequest, ...gax.CallOption) (*storagepb.SplitReadStreamResponse, error)
+}
+
+// BigQueryReadClient is a client for interacting with BigQuery Storage API.
+// Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // BigQuery Read API.
 //
@@ -122,58 +161,35 @@ type BigQueryReadClient struct {
 //
 // New code should use the v1 Read API going forward, if they don’t use Write
 // API at the same time.
-func NewBigQueryReadClient(ctx context.Context, opts ...option.ClientOption) (*BigQueryReadClient, error) {
-	clientOpts := defaultBigQueryReadClientOptions()
+type BigQueryReadClient struct {
+	// The internal transport-dependent client.
+	internalClient internalBigQueryReadClient
 
-	if newBigQueryReadClientHook != nil {
-		hookOpts, err := newBigQueryReadClientHook(ctx, clientHookParams{})
-		if err != nil {
-			return nil, err
-		}
-		clientOpts = append(clientOpts, hookOpts...)
-	}
-
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
-	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
-	if err != nil {
-		return nil, err
-	}
-	c := &BigQueryReadClient{
-		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
-		CallOptions:      defaultBigQueryReadCallOptions(),
-
-		bigQueryReadClient: storagepb.NewBigQueryReadClient(connPool),
-	}
-	c.setGoogleClientInfo()
-
-	return c, nil
+	// The call options for this service.
+	CallOptions *BigQueryReadCallOptions
 }
 
-// Connection returns a connection to the API service.
-//
-// Deprecated.
-func (c *BigQueryReadClient) Connection() *grpc.ClientConn {
-	return c.connPool.Conn()
-}
+// Wrapper methods routed to the internal client.
 
 // Close closes the connection to the API service. The user should invoke this when
 // the client is no longer required.
 func (c *BigQueryReadClient) Close() error {
-	return c.connPool.Close()
+	return c.internalClient.Close()
 }
 
 // setGoogleClientInfo sets the name and version of the application in
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *BigQueryReadClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+	c.internalClient.setGoogleClientInfo(keyval...)
+}
+
+// Connection returns a connection to the API service.
+//
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
+func (c *BigQueryReadClient) Connection() *grpc.ClientConn {
+	return c.internalClient.Connection()
 }
 
 // CreateReadSession creates a new read session. A read session divides the contents of a
@@ -193,27 +209,10 @@ func (c *BigQueryReadClient) setGoogleClientInfo(keyval ...string) {
 // limits are enforced based on the number of pre-filtered rows, so some
 // filters can lead to lopsided assignments.
 //
-// Read sessions automatically expire 24 hours after they are created and do
+// Read sessions automatically expire 6 hours after they are created and do
 // not require manual clean-up by the caller.
 func (c *BigQueryReadClient) CreateReadSession(ctx context.Context, req *storagepb.CreateReadSessionRequest, opts ...gax.CallOption) (*storagepb.ReadSession, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "read_session.table", url.QueryEscape(req.GetReadSession().GetTable())))
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.CreateReadSession[0:len(c.CallOptions.CreateReadSession):len(c.CallOptions.CreateReadSession)], opts...)
-	var resp *storagepb.ReadSession
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = c.bigQueryReadClient.CreateReadSession(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return resp, nil
+	return c.internalClient.CreateReadSession(ctx, req, opts...)
 }
 
 // ReadRows reads rows from the stream in the format prescribed by the ReadSession.
@@ -224,19 +223,7 @@ func (c *BigQueryReadClient) CreateReadSession(ctx context.Context, req *storage
 // Each request also returns a set of stream statistics reflecting the current
 // state of the stream.
 func (c *BigQueryReadClient) ReadRows(ctx context.Context, req *storagepb.ReadRowsRequest, opts ...gax.CallOption) (storagepb.BigQueryRead_ReadRowsClient, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "read_stream", url.QueryEscape(req.GetReadStream())))
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ReadRows[0:len(c.CallOptions.ReadRows):len(c.CallOptions.ReadRows)], opts...)
-	var resp storagepb.BigQueryRead_ReadRowsClient
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = c.bigQueryReadClient.ReadRows(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return resp, nil
+	return c.internalClient.ReadRows(ctx, req, opts...)
 }
 
 // SplitReadStream splits a given ReadStream into two ReadStream objects. These
@@ -252,14 +239,198 @@ func (c *BigQueryReadClient) ReadRows(ctx context.Context, req *storagepb.ReadRo
 // original[j-n] = residual[0-m] once the streams have been read to
 // completion.
 func (c *BigQueryReadClient) SplitReadStream(ctx context.Context, req *storagepb.SplitReadStreamRequest, opts ...gax.CallOption) (*storagepb.SplitReadStreamResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
+	return c.internalClient.SplitReadStream(ctx, req, opts...)
+}
+
+// bigQueryReadGRPCClient is a client for interacting with BigQuery Storage API over gRPC transport.
+//
+// Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
+type bigQueryReadGRPCClient struct {
+	// Connection pool of gRPC connections to the service.
+	connPool gtransport.ConnPool
+
+	// Points back to the CallOptions field of the containing BigQueryReadClient
+	CallOptions **BigQueryReadCallOptions
+
+	// The gRPC API client.
+	bigQueryReadClient storagepb.BigQueryReadClient
+
+	// The x-goog-* metadata to be sent with each request.
+	xGoogMetadata metadata.MD
+}
+
+// NewBigQueryReadClient creates a new big query read client based on gRPC.
+// The returned client must be Closed when it is done being used to clean up its underlying connections.
+//
+// BigQuery Read API.
+//
+// The Read API can be used to read data from BigQuery.
+//
+// New code should use the v1 Read API going forward, if they don’t use Write
+// API at the same time.
+func NewBigQueryReadClient(ctx context.Context, opts ...option.ClientOption) (*BigQueryReadClient, error) {
+	clientOpts := defaultBigQueryReadGRPCClientOptions()
+	if newBigQueryReadClientHook != nil {
+		hookOpts, err := newBigQueryReadClientHook(ctx, clientHookParams{})
+		if err != nil {
+			return nil, err
+		}
+		clientOpts = append(clientOpts, hookOpts...)
 	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
+	if err != nil {
+		return nil, err
+	}
+	client := BigQueryReadClient{CallOptions: defaultBigQueryReadCallOptions()}
+
+	c := &bigQueryReadGRPCClient{
+		connPool:           connPool,
+		bigQueryReadClient: storagepb.NewBigQueryReadClient(connPool),
+		CallOptions:        &client.CallOptions,
+	}
+	c.setGoogleClientInfo()
+
+	client.internalClient = c
+
+	return &client, nil
+}
+
+// Connection returns a connection to the API service.
+//
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
+func (c *bigQueryReadGRPCClient) Connection() *grpc.ClientConn {
+	return c.connPool.Conn()
+}
+
+// setGoogleClientInfo sets the name and version of the application in
+// the `x-goog-api-client` header passed on each request. Intended for
+// use by Google-written clients.
+func (c *bigQueryReadGRPCClient) setGoogleClientInfo(keyval ...string) {
+	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
+	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+}
+
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *bigQueryReadGRPCClient) Close() error {
+	return c.connPool.Close()
+}
+
+// Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
+type bigQueryReadRESTClient struct {
+	// The http endpoint to connect to.
+	endpoint string
+
+	// The http client.
+	httpClient *http.Client
+
+	// The x-goog-* metadata to be sent with each request.
+	xGoogMetadata metadata.MD
+
+	// Points back to the CallOptions field of the containing BigQueryReadClient
+	CallOptions **BigQueryReadCallOptions
+}
+
+// NewBigQueryReadRESTClient creates a new big query read rest client.
+//
+// BigQuery Read API.
+//
+// The Read API can be used to read data from BigQuery.
+//
+// New code should use the v1 Read API going forward, if they don’t use Write
+// API at the same time.
+func NewBigQueryReadRESTClient(ctx context.Context, opts ...option.ClientOption) (*BigQueryReadClient, error) {
+	clientOpts := append(defaultBigQueryReadRESTClientOptions(), opts...)
+	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
+	if err != nil {
+		return nil, err
+	}
+
+	callOpts := defaultBigQueryReadRESTCallOptions()
+	c := &bigQueryReadRESTClient{
+		endpoint:    endpoint,
+		httpClient:  httpClient,
+		CallOptions: &callOpts,
+	}
+	c.setGoogleClientInfo()
+
+	return &BigQueryReadClient{internalClient: c, CallOptions: callOpts}, nil
+}
+
+func defaultBigQueryReadRESTClientOptions() []option.ClientOption {
+	return []option.ClientOption{
+		internaloption.WithDefaultEndpoint("https://bigquerystorage.googleapis.com"),
+		internaloption.WithDefaultMTLSEndpoint("https://bigquerystorage.mtls.googleapis.com"),
+		internaloption.WithDefaultAudience("https://bigquerystorage.googleapis.com/"),
+		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+	}
+}
+
+// setGoogleClientInfo sets the name and version of the application in
+// the `x-goog-api-client` header passed on each request. Intended for
+// use by Google-written clients.
+func (c *bigQueryReadRESTClient) setGoogleClientInfo(keyval ...string) {
+	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
+	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+}
+
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *bigQueryReadRESTClient) Close() error {
+	// Replace httpClient with nil to force cleanup.
+	c.httpClient = nil
+	return nil
+}
+
+// Connection returns a connection to the API service.
+//
+// Deprecated: This method always returns nil.
+func (c *bigQueryReadRESTClient) Connection() *grpc.ClientConn {
+	return nil
+}
+func (c *bigQueryReadGRPCClient) CreateReadSession(ctx context.Context, req *storagepb.CreateReadSessionRequest, opts ...gax.CallOption) (*storagepb.ReadSession, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "read_session.table", url.QueryEscape(req.GetReadSession().GetTable())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.SplitReadStream[0:len(c.CallOptions.SplitReadStream):len(c.CallOptions.SplitReadStream)], opts...)
+	opts = append((*c.CallOptions).CreateReadSession[0:len((*c.CallOptions).CreateReadSession):len((*c.CallOptions).CreateReadSession)], opts...)
+	var resp *storagepb.ReadSession
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.bigQueryReadClient.CreateReadSession(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *bigQueryReadGRPCClient) ReadRows(ctx context.Context, req *storagepb.ReadRowsRequest, opts ...gax.CallOption) (storagepb.BigQueryRead_ReadRowsClient, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "read_stream", url.QueryEscape(req.GetReadStream())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).ReadRows[0:len((*c.CallOptions).ReadRows):len((*c.CallOptions).ReadRows)], opts...)
+	var resp storagepb.BigQueryRead_ReadRowsClient
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.bigQueryReadClient.ReadRows(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *bigQueryReadGRPCClient) SplitReadStream(ctx context.Context, req *storagepb.SplitReadStreamRequest, opts ...gax.CallOption) (*storagepb.SplitReadStreamResponse, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).SplitReadStream[0:len((*c.CallOptions).SplitReadStream):len((*c.CallOptions).SplitReadStream)], opts...)
 	var resp *storagepb.SplitReadStreamResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -268,6 +439,260 @@ func (c *BigQueryReadClient) SplitReadStream(ctx context.Context, req *storagepb
 	}, opts...)
 	if err != nil {
 		return nil, err
+	}
+	return resp, nil
+}
+
+// CreateReadSession creates a new read session. A read session divides the contents of a
+// BigQuery table into one or more streams, which can then be used to read
+// data from the table. The read session also specifies properties of the
+// data to be read, such as a list of columns or a push-down filter describing
+// the rows to be returned.
+//
+// A particular row can be read by at most one stream. When the caller has
+// reached the end of each stream in the session, then all the data in the
+// table has been read.
+//
+// Data is assigned to each stream such that roughly the same number of
+// rows can be read from each stream. Because the server-side unit for
+// assigning data is collections of rows, the API does not guarantee that
+// each stream will return the same number or rows. Additionally, the
+// limits are enforced based on the number of pre-filtered rows, so some
+// filters can lead to lopsided assignments.
+//
+// Read sessions automatically expire 6 hours after they are created and do
+// not require manual clean-up by the caller.
+func (c *bigQueryReadRESTClient) CreateReadSession(ctx context.Context, req *storagepb.CreateReadSessionRequest, opts ...gax.CallOption) (*storagepb.ReadSession, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta2/%v", req.GetReadSession().GetTable())
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "read_session.table", url.QueryEscape(req.GetReadSession().GetTable())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).CreateReadSession[0:len((*c.CallOptions).CreateReadSession):len((*c.CallOptions).CreateReadSession)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &storagepb.ReadSession{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// ReadRows reads rows from the stream in the format prescribed by the ReadSession.
+// Each response contains one or more table rows, up to a maximum of 100 MiB
+// per response; read requests which attempt to read individual rows larger
+// than 100 MiB will fail.
+//
+// Each request also returns a set of stream statistics reflecting the current
+// state of the stream.
+func (c *bigQueryReadRESTClient) ReadRows(ctx context.Context, req *storagepb.ReadRowsRequest, opts ...gax.CallOption) (storagepb.BigQueryRead_ReadRowsClient, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta2/%v", req.GetReadStream())
+
+	params := url.Values{}
+	if req.GetOffset() != 0 {
+		params.Add("offset", fmt.Sprintf("%v", req.GetOffset()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "read_stream", url.QueryEscape(req.GetReadStream())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	var streamClient *readRowsRESTClient
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		streamClient = &readRowsRESTClient{
+			ctx:    ctx,
+			md:     metadata.MD(httpRsp.Header),
+			stream: gax.NewProtoJSONStreamReader(httpRsp.Body, (&storagepb.ReadRowsResponse{}).ProtoReflect().Type()),
+		}
+		return nil
+	}, opts...)
+
+	return streamClient, e
+}
+
+// readRowsRESTClient is the stream client used to consume the server stream created by
+// the REST implementation of ReadRows.
+type readRowsRESTClient struct {
+	ctx    context.Context
+	md     metadata.MD
+	stream *gax.ProtoJSONStream
+}
+
+func (c *readRowsRESTClient) Recv() (*storagepb.ReadRowsResponse, error) {
+	if err := c.ctx.Err(); err != nil {
+		defer c.stream.Close()
+		return nil, err
+	}
+	msg, err := c.stream.Recv()
+	if err != nil {
+		defer c.stream.Close()
+		return nil, err
+	}
+	res := msg.(*storagepb.ReadRowsResponse)
+	return res, nil
+}
+
+func (c *readRowsRESTClient) Header() (metadata.MD, error) {
+	return c.md, nil
+}
+
+func (c *readRowsRESTClient) Trailer() metadata.MD {
+	return c.md
+}
+
+func (c *readRowsRESTClient) CloseSend() error {
+	// This is a no-op to fulfill the interface.
+	return fmt.Errorf("this method is not implemented for a server-stream")
+}
+
+func (c *readRowsRESTClient) Context() context.Context {
+	return c.ctx
+}
+
+func (c *readRowsRESTClient) SendMsg(m interface{}) error {
+	// This is a no-op to fulfill the interface.
+	return fmt.Errorf("this method is not implemented for a server-stream")
+}
+
+func (c *readRowsRESTClient) RecvMsg(m interface{}) error {
+	// This is a no-op to fulfill the interface.
+	return fmt.Errorf("this method is not implemented, use Recv")
+}
+
+// SplitReadStream splits a given ReadStream into two ReadStream objects. These
+// ReadStream objects are referred to as the primary and the residual
+// streams of the split. The original ReadStream can still be read from in
+// the same manner as before. Both of the returned ReadStream objects can
+// also be read from, and the rows returned by both child streams will be
+// the same as the rows read from the original stream.
+//
+// Moreover, the two child streams will be allocated back-to-back in the
+// original ReadStream. Concretely, it is guaranteed that for streams
+// original, primary, and residual, that original[0-j] = primary[0-j] and
+// original[j-n] = residual[0-m] once the streams have been read to
+// completion.
+func (c *bigQueryReadRESTClient) SplitReadStream(ctx context.Context, req *storagepb.SplitReadStreamRequest, opts ...gax.CallOption) (*storagepb.SplitReadStreamResponse, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta2/%v", req.GetName())
+
+	params := url.Values{}
+	if req.GetFraction() != 0 {
+		params.Add("fraction", fmt.Sprintf("%v", req.GetFraction()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).SplitReadStream[0:len((*c.CallOptions).SplitReadStream):len((*c.CallOptions).SplitReadStream)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &storagepb.SplitReadStreamResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
 	}
 	return resp, nil
 }

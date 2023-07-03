@@ -3,7 +3,7 @@
 - [About BigQuery](https://cloud.google.com/bigquery/)
 - [API documentation](https://cloud.google.com/bigquery/docs)
 - [Go client documentation](https://pkg.go.dev/cloud.google.com/go/bigquery)
-- [Complete sample programs](https://github.com/GoogleCloudPlatform/golang-samples/tree/master/bigquery)
+- [Complete sample programs](https://github.com/GoogleCloudPlatform/golang-samples/tree/main/bigquery)
 
 ### Example Usage
 
@@ -36,7 +36,7 @@ if err != nil {
 for {
 	var values []bigquery.Value
 	err := it.Next(&values)
-	if err == iterator.Done {
+	if err == iterator.Done {  // from "google.golang.org/api/iterator"
 		break
 	}
 	if err != nil {

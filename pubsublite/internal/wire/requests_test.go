@@ -13,7 +13,7 @@
 
 package wire
 
-import pb "google.golang.org/genproto/googleapis/cloud/pubsublite/v1"
+import pb "cloud.google.com/go/pubsublite/apiv1/pubsublitepb"
 
 // AdminService
 
@@ -95,12 +95,13 @@ func assignmentResp(partitions []int64) *pb.PartitionAssignment {
 
 // PublisherService
 
-func initPubReq(topic topicPartition) *pb.PublishRequest {
+func initPubReq(topic topicPartition, clientID publisherClientID) *pb.PublishRequest {
 	return &pb.PublishRequest{
 		RequestType: &pb.PublishRequest_InitialRequest{
 			InitialRequest: &pb.InitialPublishRequest{
 				Topic:     topic.Path,
 				Partition: int64(topic.Partition),
+				ClientId:  clientID,
 			},
 		},
 	}
@@ -114,19 +115,34 @@ func initPubResp() *pb.PublishResponse {
 	}
 }
 
-func msgPubReq(msgs ...*pb.PubSubMessage) *pb.PublishRequest {
+func msgPubReq(firstSeqNum publishSequenceNumber, msgs ...*pb.PubSubMessage) *pb.PublishRequest {
 	return &pb.PublishRequest{
 		RequestType: &pb.PublishRequest_MessagePublishRequest{
-			MessagePublishRequest: &pb.MessagePublishRequest{Messages: msgs},
+			MessagePublishRequest: &pb.MessagePublishRequest{
+				Messages:            msgs,
+				FirstSequenceNumber: int64(firstSeqNum),
+			},
 		},
 	}
 }
 
-func msgPubResp(cursor int64) *pb.PublishResponse {
+func cursorRange(offset int64, start, end int32) *pb.MessagePublishResponse_CursorRange {
+	return &pb.MessagePublishResponse_CursorRange{
+		StartCursor: &pb.Cursor{Offset: offset},
+		StartIndex:  start,
+		EndIndex:    end,
+	}
+}
+
+func pubResp(ranges ...*pb.MessagePublishResponse_CursorRange) *pb.MessagePublishResponse {
+	return &pb.MessagePublishResponse{CursorRanges: ranges}
+}
+
+func msgPubResp(ranges ...*pb.MessagePublishResponse_CursorRange) *pb.PublishResponse {
 	return &pb.PublishResponse{
 		ResponseType: &pb.PublishResponse_MessageResponse{
 			MessageResponse: &pb.MessagePublishResponse{
-				StartCursor: &pb.Cursor{Offset: cursor},
+				CursorRanges: ranges,
 			},
 		},
 	}
@@ -134,12 +150,33 @@ func msgPubResp(cursor int64) *pb.PublishResponse {
 
 // SubscriberService
 
-func initSubReq(subscription subscriptionPartition) *pb.SubscribeRequest {
+func initSubReqCommit(subscription subscriptionPartition) *pb.SubscribeRequest {
 	return &pb.SubscribeRequest{
 		Request: &pb.SubscribeRequest_Initial{
 			Initial: &pb.InitialSubscribeRequest{
 				Subscription: subscription.Path,
 				Partition:    int64(subscription.Partition),
+				InitialLocation: &pb.SeekRequest{
+					Target: &pb.SeekRequest_NamedTarget_{
+						NamedTarget: pb.SeekRequest_COMMITTED_CURSOR,
+					},
+				},
+			},
+		},
+	}
+}
+
+func initSubReqCursor(subscription subscriptionPartition, offset int64) *pb.SubscribeRequest {
+	return &pb.SubscribeRequest{
+		Request: &pb.SubscribeRequest_Initial{
+			Initial: &pb.InitialSubscribeRequest{
+				Subscription: subscription.Path,
+				Partition:    int64(subscription.Partition),
+				InitialLocation: &pb.SeekRequest{
+					Target: &pb.SeekRequest_Cursor{
+						Cursor: &pb.Cursor{Offset: offset},
+					},
+				},
 			},
 		},
 	}
@@ -149,18 +186,6 @@ func initSubResp() *pb.SubscribeResponse {
 	return &pb.SubscribeResponse{
 		Response: &pb.SubscribeResponse_Initial{
 			Initial: &pb.InitialSubscribeResponse{},
-		},
-	}
-}
-
-func seekReq(offset int64) *pb.SubscribeRequest {
-	return &pb.SubscribeRequest{
-		Request: &pb.SubscribeRequest_Seek{
-			Seek: &pb.SeekRequest{
-				Target: &pb.SeekRequest_Cursor{
-					Cursor: &pb.Cursor{Offset: offset},
-				},
-			},
 		},
 	}
 }

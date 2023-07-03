@@ -1,0 +1,227 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.orchestration.airflow.service.v1",
+  "libraryPackage": "cloud.google.com/go/orchestration/airflow/service/apiv1",
+  "services": {
+    "Environments": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "EnvironmentsClient",
+          "rpcs": {
+            "CreateEnvironment": {
+              "methods": [
+                "CreateEnvironment"
+              ]
+            },
+            "DatabaseFailover": {
+              "methods": [
+                "DatabaseFailover"
+              ]
+            },
+            "DeleteEnvironment": {
+              "methods": [
+                "DeleteEnvironment"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "ExecuteAirflowCommand": {
+              "methods": [
+                "ExecuteAirflowCommand"
+              ]
+            },
+            "FetchDatabaseProperties": {
+              "methods": [
+                "FetchDatabaseProperties"
+              ]
+            },
+            "GetEnvironment": {
+              "methods": [
+                "GetEnvironment"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListEnvironments": {
+              "methods": [
+                "ListEnvironments"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "LoadSnapshot": {
+              "methods": [
+                "LoadSnapshot"
+              ]
+            },
+            "PollAirflowCommand": {
+              "methods": [
+                "PollAirflowCommand"
+              ]
+            },
+            "SaveSnapshot": {
+              "methods": [
+                "SaveSnapshot"
+              ]
+            },
+            "StopAirflowCommand": {
+              "methods": [
+                "StopAirflowCommand"
+              ]
+            },
+            "UpdateEnvironment": {
+              "methods": [
+                "UpdateEnvironment"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "EnvironmentsClient",
+          "rpcs": {
+            "CreateEnvironment": {
+              "methods": [
+                "CreateEnvironment"
+              ]
+            },
+            "DatabaseFailover": {
+              "methods": [
+                "DatabaseFailover"
+              ]
+            },
+            "DeleteEnvironment": {
+              "methods": [
+                "DeleteEnvironment"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "ExecuteAirflowCommand": {
+              "methods": [
+                "ExecuteAirflowCommand"
+              ]
+            },
+            "FetchDatabaseProperties": {
+              "methods": [
+                "FetchDatabaseProperties"
+              ]
+            },
+            "GetEnvironment": {
+              "methods": [
+                "GetEnvironment"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListEnvironments": {
+              "methods": [
+                "ListEnvironments"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "LoadSnapshot": {
+              "methods": [
+                "LoadSnapshot"
+              ]
+            },
+            "PollAirflowCommand": {
+              "methods": [
+                "PollAirflowCommand"
+              ]
+            },
+            "SaveSnapshot": {
+              "methods": [
+                "SaveSnapshot"
+              ]
+            },
+            "StopAirflowCommand": {
+              "methods": [
+                "StopAirflowCommand"
+              ]
+            },
+            "UpdateEnvironment": {
+              "methods": [
+                "UpdateEnvironment"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "ImageVersions": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "ImageVersionsClient",
+          "rpcs": {
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListImageVersions": {
+              "methods": [
+                "ListImageVersions"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "ImageVersionsClient",
+          "rpcs": {
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListImageVersions": {
+              "methods": [
+                "ListImageVersions"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

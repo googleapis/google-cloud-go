@@ -60,6 +60,14 @@ type NullGeography struct {
 
 func (n NullGeography) String() string { return nullstr(n.Valid, n.GeographyVal) }
 
+// NullJSON represents a BigQuery JSON string that may be NULL.
+type NullJSON struct {
+	JSONVal string
+	Valid   bool // Valid is true if JSONVal is not NULL.
+}
+
+func (n NullJSON) String() string { return nullstr(n.Valid, n.JSONVal) }
+
 // NullFloat64 represents a BigQuery FLOAT64 that may be NULL.
 type NullFloat64 struct {
 	Float64 float64
@@ -146,6 +154,9 @@ func (n NullString) MarshalJSON() ([]byte, error) { return nulljson(n.Valid, n.S
 
 // MarshalJSON converts the NullGeography to JSON.
 func (n NullGeography) MarshalJSON() ([]byte, error) { return nulljson(n.Valid, n.GeographyVal) }
+
+// MarshalJSON converts the NullJSON to JSON.
+func (n NullJSON) MarshalJSON() ([]byte, error) { return nulljson(n.Valid, n.JSONVal) }
 
 // MarshalJSON converts the NullTimestamp to JSON.
 func (n NullTimestamp) MarshalJSON() ([]byte, error) { return nulljson(n.Valid, n.Timestamp) }
@@ -268,6 +279,20 @@ func (n *NullGeography) UnmarshalJSON(b []byte) error {
 	return nil
 }
 
+// UnmarshalJSON converts JSON into a NullJSON.
+func (n *NullJSON) UnmarshalJSON(b []byte) error {
+	n.Valid = false
+	n.JSONVal = ""
+	if bytes.Equal(b, jsonNull) {
+		return nil
+	}
+	if err := json.Unmarshal(b, &n.JSONVal); err != nil {
+		return err
+	}
+	n.Valid = true
+	return nil
+}
+
 // UnmarshalJSON converts JSON into a NullTimestamp.
 func (n *NullTimestamp) UnmarshalJSON(b []byte) error {
 	n.Valid = false
@@ -350,6 +375,7 @@ var (
 	typeOfNullBool      = reflect.TypeOf(NullBool{})
 	typeOfNullString    = reflect.TypeOf(NullString{})
 	typeOfNullGeography = reflect.TypeOf(NullGeography{})
+	typeOfNullJSON      = reflect.TypeOf(NullJSON{})
 	typeOfNullTimestamp = reflect.TypeOf(NullTimestamp{})
 	typeOfNullDate      = reflect.TypeOf(NullDate{})
 	typeOfNullTime      = reflect.TypeOf(NullTime{})
@@ -368,6 +394,8 @@ func nullableFieldType(t reflect.Type) FieldType {
 		return StringFieldType
 	case typeOfNullGeography:
 		return GeographyFieldType
+	case typeOfNullJSON:
+		return JSONFieldType
 	case typeOfNullTimestamp:
 		return TimestampFieldType
 	case typeOfNullDate:

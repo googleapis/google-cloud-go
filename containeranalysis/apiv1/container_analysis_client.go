@@ -22,11 +22,11 @@ import (
 	"net/url"
 
 	grafeas "cloud.google.com/go/grafeas/apiv1"
+	"cloud.google.com/go/iam/apiv1/iampb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/option"
 	gtransport "google.golang.org/api/transport/grpc"
 	containeranalysispb "google.golang.org/genproto/googleapis/devtools/containeranalysis/v1"
-	iampb "google.golang.org/genproto/googleapis/iam/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 )
@@ -110,9 +110,6 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 }
 
 // GetGrafeasClient returns a grafeas client connected to containeranalysis.
-//
-// Calling Close on either the grafeas or containeranalysis client will close
-// the shared connection in both.
 func (c *Client) GetGrafeasClient() *grafeas.Client {
 	return c.grafeasClient
 }
@@ -124,7 +121,10 @@ func (c *Client) Connection() *grpc.ClientConn {
 
 // Close closes the connection to the API service. The user should invoke this when
 // the client is no longer required.
+//
+// Calling Close will also close the underlying grafeas client.
 func (c *Client) Close() error {
+	c.grafeasClient.Close()
 	return c.connPool.Close()
 }
 

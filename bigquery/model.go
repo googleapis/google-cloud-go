@@ -17,6 +17,7 @@ package bigquery
 import (
 	"context"
 	"fmt"
+	"strings"
 	"time"
 
 	"cloud.google.com/go/internal/optional"
@@ -41,9 +42,31 @@ type Model struct {
 	c *Client
 }
 
+// Identifier returns the ID of the model in the requested format.
+//
+// For Standard SQL format, the identifier will be quoted if the
+// ProjectID contains dash (-) characters.
+func (m *Model) Identifier(f IdentifierFormat) (string, error) {
+	switch f {
+	case LegacySQLID:
+		return fmt.Sprintf("%s:%s.%s", m.ProjectID, m.DatasetID, m.ModelID), nil
+	case StandardSQLID:
+		// Per https://cloud.google.com/bigquery-ml/docs/reference/standard-sql/bigqueryml-syntax-create#model_name
+		// we quote the entire identifier.
+		out := fmt.Sprintf("%s.%s.%s", m.ProjectID, m.DatasetID, m.ModelID)
+		if strings.Contains(out, "-") {
+			out = fmt.Sprintf("`%s`", out)
+		}
+		return out, nil
+	default:
+		return "", ErrUnknownIdentifierFormat
+	}
+}
+
 // FullyQualifiedName returns the ID of the model in projectID:datasetID.modelid format.
 func (m *Model) FullyQualifiedName() string {
-	return fmt.Sprintf("%s:%s.%s", m.ProjectID, m.DatasetID, m.ModelID)
+	s, _ := m.Identifier(LegacySQLID)
+	return s
 }
 
 func (m *Model) toBQ() *bq.ModelReference {
@@ -63,7 +86,9 @@ func (m *Model) Metadata(ctx context.Context) (mm *ModelMetadata, err error) {
 	setClientHeader(req.Header())
 	var model *bq.Model
 	err = runWithRetry(ctx, func() (err error) {
+		ctx = trace.StartSpan(ctx, "bigquery.models.get")
 		model, err = req.Do()
+		trace.EndSpan(ctx, err)
 		return err
 	})
 	if err != nil {
@@ -88,7 +113,9 @@ func (m *Model) Update(ctx context.Context, mm ModelMetadataToUpdate, etag strin
 	}
 	var res *bq.Model
 	if err := runWithRetry(ctx, func() (err error) {
+		ctx = trace.StartSpan(ctx, "bigquery.models.patch")
 		res, err = call.Do()
+		trace.EndSpan(ctx, err)
 		return err
 	}); err != nil {
 		return nil, err

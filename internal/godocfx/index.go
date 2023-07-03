@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// +build go1.15
-
 package main
 
 import (
@@ -28,7 +26,7 @@ import (
 
 // indexer gets a limited list of entries from index.golang.org.
 type indexer interface {
-	get(prefix string, since time.Time) (entries []indexEntry, last time.Time, err error)
+	get(prefixes []string, since time.Time) (entries []indexEntry, last time.Time, err error)
 }
 
 // indexClient is used to access index.golang.org.
@@ -49,7 +47,7 @@ type indexEntry struct {
 // versions since the given timestamp.
 //
 // newModules stores the timestamp of the last successful run with tSaver.
-func newModules(ctx context.Context, i indexer, tSaver timeSaver, prefix string) ([]indexEntry, error) {
+func newModules(ctx context.Context, i indexer, tSaver timeSaver, prefixes []string) ([]indexEntry, error) {
 	since, err := tSaver.get(ctx)
 	if err != nil {
 		return nil, err
@@ -61,7 +59,7 @@ func newModules(ctx context.Context, i indexer, tSaver timeSaver, prefix string)
 	for {
 		count++
 		var cur []indexEntry
-		cur, since, err = i.get(prefix, since)
+		cur, since, err = i.get(prefixes, since)
 		if err != nil {
 			return nil, err
 		}
@@ -80,7 +78,7 @@ func newModules(ctx context.Context, i indexer, tSaver timeSaver, prefix string)
 
 // get fetches a single chronological page of modules from
 // index.golang.org/index.
-func (indexClient) get(prefix string, since time.Time) ([]indexEntry, time.Time, error) {
+func (indexClient) get(prefixes []string, since time.Time) ([]indexEntry, time.Time, error) {
 	entries := []indexEntry{}
 	sinceString := since.Format(time.RFC3339)
 	resp, err := http.Get("https://index.golang.org/index?since=" + sinceString)
@@ -96,7 +94,7 @@ func (indexClient) get(prefix string, since time.Time) ([]indexEntry, time.Time,
 			return nil, time.Time{}, err
 		}
 		last = e.Timestamp // Always update the last timestamp.
-		if !strings.HasPrefix(e.Path, prefix) ||
+		if !hasPrefix(e.Path, prefixes) ||
 			strings.Contains(e.Path, "internal") ||
 			strings.Contains(e.Path, "third_party") ||
 			strings.Contains(e.Version, "-") { // Filter out pseudo-versions.

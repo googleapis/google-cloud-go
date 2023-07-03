@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,31 +20,60 @@ import (
 	"context"
 
 	tables "cloud.google.com/go/area120/tables/apiv1alpha1"
+	tablespb "cloud.google.com/go/area120/tables/apiv1alpha1/tablespb"
 	"google.golang.org/api/iterator"
-	tablespb "google.golang.org/genproto/googleapis/area120/tables/v1alpha1"
 )
 
 func ExampleNewClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := tables.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
+func ExampleNewRESTClient() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := tables.NewRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleClient_GetTable() {
-	// import tablespb "google.golang.org/genproto/googleapis/area120/tables/v1alpha1"
-
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := tables.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &tablespb.GetTableRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/area120/tables/apiv1alpha1/tablespb#GetTableRequest.
 	}
 	resp, err := c.GetTable(ctx, req)
 	if err != nil {
@@ -55,17 +84,21 @@ func ExampleClient_GetTable() {
 }
 
 func ExampleClient_ListTables() {
-	// import tablespb "google.golang.org/genproto/googleapis/area120/tables/v1alpha1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := tables.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &tablespb.ListTablesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/area120/tables/apiv1alpha1/tablespb#ListTablesRequest.
 	}
 	it := c.ListTables(ctx, req)
 	for {
@@ -81,17 +114,78 @@ func ExampleClient_ListTables() {
 	}
 }
 
-func ExampleClient_GetRow() {
-	// import tablespb "google.golang.org/genproto/googleapis/area120/tables/v1alpha1"
-
+func ExampleClient_GetWorkspace() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := tables.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
+	req := &tablespb.GetWorkspaceRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/area120/tables/apiv1alpha1/tablespb#GetWorkspaceRequest.
+	}
+	resp, err := c.GetWorkspace(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_ListWorkspaces() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := tables.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &tablespb.ListWorkspacesRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/area120/tables/apiv1alpha1/tablespb#ListWorkspacesRequest.
+	}
+	it := c.ListWorkspaces(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
+}
+
+func ExampleClient_GetRow() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := tables.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
 
 	req := &tablespb.GetRowRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/area120/tables/apiv1alpha1/tablespb#GetRowRequest.
 	}
 	resp, err := c.GetRow(ctx, req)
 	if err != nil {
@@ -102,17 +196,21 @@ func ExampleClient_GetRow() {
 }
 
 func ExampleClient_ListRows() {
-	// import tablespb "google.golang.org/genproto/googleapis/area120/tables/v1alpha1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := tables.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &tablespb.ListRowsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/area120/tables/apiv1alpha1/tablespb#ListRowsRequest.
 	}
 	it := c.ListRows(ctx, req)
 	for {
@@ -129,16 +227,21 @@ func ExampleClient_ListRows() {
 }
 
 func ExampleClient_CreateRow() {
-	// import tablespb "google.golang.org/genproto/googleapis/area120/tables/v1alpha1"
-
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := tables.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &tablespb.CreateRowRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/area120/tables/apiv1alpha1/tablespb#CreateRowRequest.
 	}
 	resp, err := c.CreateRow(ctx, req)
 	if err != nil {
@@ -149,16 +252,21 @@ func ExampleClient_CreateRow() {
 }
 
 func ExampleClient_BatchCreateRows() {
-	// import tablespb "google.golang.org/genproto/googleapis/area120/tables/v1alpha1"
-
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := tables.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &tablespb.BatchCreateRowsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/area120/tables/apiv1alpha1/tablespb#BatchCreateRowsRequest.
 	}
 	resp, err := c.BatchCreateRows(ctx, req)
 	if err != nil {
@@ -169,16 +277,21 @@ func ExampleClient_BatchCreateRows() {
 }
 
 func ExampleClient_UpdateRow() {
-	// import tablespb "google.golang.org/genproto/googleapis/area120/tables/v1alpha1"
-
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := tables.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &tablespb.UpdateRowRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/area120/tables/apiv1alpha1/tablespb#UpdateRowRequest.
 	}
 	resp, err := c.UpdateRow(ctx, req)
 	if err != nil {
@@ -189,16 +302,21 @@ func ExampleClient_UpdateRow() {
 }
 
 func ExampleClient_BatchUpdateRows() {
-	// import tablespb "google.golang.org/genproto/googleapis/area120/tables/v1alpha1"
-
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := tables.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &tablespb.BatchUpdateRowsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/area120/tables/apiv1alpha1/tablespb#BatchUpdateRowsRequest.
 	}
 	resp, err := c.BatchUpdateRows(ctx, req)
 	if err != nil {
@@ -210,15 +328,45 @@ func ExampleClient_BatchUpdateRows() {
 
 func ExampleClient_DeleteRow() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := tables.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &tablespb.DeleteRowRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/area120/tables/apiv1alpha1/tablespb#DeleteRowRequest.
 	}
 	err = c.DeleteRow(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleClient_BatchDeleteRows() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := tables.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &tablespb.BatchDeleteRowsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/area120/tables/apiv1alpha1/tablespb#BatchDeleteRowsRequest.
+	}
+	err = c.BatchDeleteRows(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}

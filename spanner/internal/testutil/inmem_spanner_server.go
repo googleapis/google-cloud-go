@@ -25,14 +25,16 @@ import (
 	"sync"
 	"time"
 
+	"cloud.google.com/go/spanner/apiv1/spannerpb"
 	"github.com/golang/protobuf/ptypes"
 	emptypb "github.com/golang/protobuf/ptypes/empty"
 	structpb "github.com/golang/protobuf/ptypes/struct"
 	"github.com/golang/protobuf/ptypes/timestamp"
 	"google.golang.org/genproto/googleapis/rpc/errdetails"
 	"google.golang.org/genproto/googleapis/rpc/status"
-	spannerpb "google.golang.org/genproto/googleapis/spanner/v1"
+	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/metadata"
 	gstatus "google.golang.org/grpc/status"
 )
 
@@ -172,8 +174,15 @@ func (s *StatementResult) updateCountToPartialResultSet(exact bool) *spannerpb.P
 // Converts an update count to a ResultSet, as DML statements also return the
 // update count as the statistics of a ResultSet.
 func (s *StatementResult) convertUpdateCountToResultSet(exact bool) *spannerpb.ResultSet {
+	rs := &spannerpb.ResultSet{
+		Stats: &spannerpb.ResultSetStats{
+			RowCount: &spannerpb.ResultSetStats_RowCountLowerBound{
+				RowCountLowerBound: s.UpdateCount,
+			},
+		},
+	}
 	if exact {
-		return &spannerpb.ResultSet{
+		rs = &spannerpb.ResultSet{
 			Stats: &spannerpb.ResultSetStats{
 				RowCount: &spannerpb.ResultSetStats_RowCountExact{
 					RowCountExact: s.UpdateCount,
@@ -181,13 +190,38 @@ func (s *StatementResult) convertUpdateCountToResultSet(exact bool) *spannerpb.R
 			},
 		}
 	}
-	return &spannerpb.ResultSet{
-		Stats: &spannerpb.ResultSetStats{
-			RowCount: &spannerpb.ResultSetStats_RowCountLowerBound{
-				RowCountLowerBound: s.UpdateCount,
-			},
-		},
+	if s.ResultSet != nil && s.ResultSet.Metadata != nil && s.ResultSet.Metadata.Transaction != nil {
+		rs.Metadata = &spannerpb.ResultSetMetadata{
+			Transaction: s.ResultSet.Metadata.Transaction,
+		}
 	}
+	return rs
+}
+
+func (s StatementResult) getResultSetWithTransactionSet(selector *spannerpb.TransactionSelector, tx []byte) *StatementResult {
+	res := &StatementResult{
+		Type:         s.Type,
+		Err:          s.Err,
+		UpdateCount:  s.UpdateCount,
+		ResumeTokens: s.ResumeTokens,
+	}
+	if s.ResultSet != nil {
+		res.ResultSet = &spannerpb.ResultSet{
+			Metadata: s.ResultSet.Metadata,
+			Rows:     s.ResultSet.Rows,
+			Stats:    s.ResultSet.Stats,
+		}
+	}
+	if _, ok := selector.GetSelector().(*spannerpb.TransactionSelector_Begin); ok {
+		if res.ResultSet == nil {
+			res.ResultSet = &spannerpb.ResultSet{}
+		}
+		if res.ResultSet.Metadata == nil {
+			res.ResultSet.Metadata = &spannerpb.ResultSetMetadata{}
+		}
+		res.ResultSet.Metadata.Transaction = &spannerpb.Transaction{Id: tx}
+	}
+	return res
 }
 
 // SimulatedExecutionTime represents the time the execution of a method
@@ -651,7 +685,11 @@ func (s *inMemSpannerServer) CreateSession(ctx context.Context, req *spannerpb.C
 	}
 	sessionName := s.generateSessionNameLocked(req.Database)
 	ts := getCurrentTimestamp()
-	session := &spannerpb.Session{Name: sessionName, CreateTime: ts, ApproximateLastUseTime: ts}
+	var creatorRole string
+	if req.Session != nil {
+		creatorRole = req.Session.CreatorRole
+	}
+	session := &spannerpb.Session{Name: sessionName, CreateTime: ts, ApproximateLastUseTime: ts, CreatorRole: creatorRole}
 	s.totalSessionsCreated++
 	s.sessions[sessionName] = session
 	return session, nil
@@ -683,9 +721,17 @@ func (s *inMemSpannerServer) BatchCreateSessions(ctx context.Context, req *spann
 	for i := int32(0); i < sessionsToCreate; i++ {
 		sessionName := s.generateSessionNameLocked(req.Database)
 		ts := getCurrentTimestamp()
-		sessions[i] = &spannerpb.Session{Name: sessionName, CreateTime: ts, ApproximateLastUseTime: ts}
+		var creatorRole string
+		if req.SessionTemplate != nil {
+			creatorRole = req.SessionTemplate.CreatorRole
+		}
+		sessions[i] = &spannerpb.Session{Name: sessionName, CreateTime: ts, ApproximateLastUseTime: ts, CreatorRole: creatorRole}
 		s.totalSessionsCreated++
 		s.sessions[sessionName] = sessions[i]
+	}
+	header := metadata.New(map[string]string{"server-timing": "gfet4t7; dur=123"})
+	if err := grpc.SendHeader(ctx, header); err != nil {
+		return nil, gstatus.Errorf(codes.Internal, "unable to send 'server-timing' header")
 	}
 	return &spannerpb.BatchCreateSessionsResponse{Session: sessions}, nil
 }
@@ -782,6 +828,7 @@ func (s *inMemSpannerServer) ExecuteSql(ctx context.Context, req *spannerpb.Exec
 		return nil, err
 	}
 	s.mu.Lock()
+	statementResult = statementResult.getResultSetWithTransactionSet(req.GetTransaction(), id)
 	isPartitionedDml := s.partitionedDmlTransactions[string(id)]
 	s.mu.Unlock()
 	switch statementResult.Type {
@@ -828,6 +875,7 @@ func (s *inMemSpannerServer) executeStreamingSQL(req *spannerpb.ExecuteSqlReques
 		return err
 	}
 	s.mu.Lock()
+	statementResult.getResultSetWithTransactionSet(req.GetTransaction(), id)
 	isPartitionedDml := s.partitionedDmlTransactions[string(id)]
 	s.mu.Unlock()
 	switch statementResult.Type {
@@ -900,6 +948,9 @@ func (s *inMemSpannerServer) ExecuteBatchDml(ctx context.Context, req *spannerpb
 		if err != nil {
 			return nil, err
 		}
+		s.mu.Lock()
+		statementResult = statementResult.getResultSetWithTransactionSet(req.GetTransaction(), id)
+		s.mu.Unlock()
 		switch statementResult.Type {
 		case StatementResultError:
 			resp.Status = &status.Status{Code: int32(gstatus.Code(statementResult.Err)), Message: statementResult.Err.Error()}
@@ -922,6 +973,10 @@ func (s *inMemSpannerServer) Read(ctx context.Context, req *spannerpb.ReadReques
 	}
 	s.receivedRequests <- req
 	s.mu.Unlock()
+	header := metadata.New(map[string]string{"server-timing": "gfet4t7; dur=123"})
+	if err := grpc.SendHeader(ctx, header); err != nil {
+		return nil, gstatus.Errorf(codes.Internal, "unable to send 'server-timing' header")
+	}
 	return nil, gstatus.Error(codes.Unimplemented, "Method not yet implemented")
 }
 
@@ -984,7 +1039,13 @@ func (s *inMemSpannerServer) Commit(ctx context.Context, req *spannerpb.CommitRe
 		return nil, gstatus.Error(codes.InvalidArgument, "Missing transaction in commit request")
 	}
 	s.removeTransaction(tx)
-	return &spannerpb.CommitResponse{CommitTimestamp: getCurrentTimestamp()}, nil
+	resp := &spannerpb.CommitResponse{CommitTimestamp: getCurrentTimestamp()}
+	if req.ReturnCommitStats {
+		resp.CommitStats = &spannerpb.CommitResponse_CommitStats{
+			MutationCount: int64(1),
+		}
+	}
+	return resp, nil
 }
 
 func (s *inMemSpannerServer) Rollback(ctx context.Context, req *spannerpb.RollbackRequest) (*emptypb.Empty, error) {
@@ -1051,14 +1112,17 @@ func (s *inMemSpannerServer) PartitionQuery(ctx context.Context, req *spannerpb.
 }
 
 func (s *inMemSpannerServer) PartitionRead(ctx context.Context, req *spannerpb.PartitionReadRequest) (*spannerpb.PartitionResponse, error) {
-	s.mu.Lock()
-	if s.stopped {
-		s.mu.Unlock()
-		return nil, gstatus.Error(codes.Unavailable, "server has been stopped")
-	}
-	s.receivedRequests <- req
-	s.mu.Unlock()
-	return nil, gstatus.Error(codes.Unimplemented, "Method not yet implemented")
+	return s.PartitionQuery(ctx, &spannerpb.PartitionQueryRequest{
+		Session:          req.Session,
+		Transaction:      req.Transaction,
+		PartitionOptions: req.PartitionOptions,
+		// KeySet is currently ignored.
+		Sql: fmt.Sprintf(
+			"SELECT %s FROM %s",
+			strings.Join(req.Columns, ", "),
+			req.Table,
+		),
+	})
 }
 
 // EncodeResumeToken return mock resume token encoding for an uint64 integer.

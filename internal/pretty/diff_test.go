@@ -12,9 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+//go:build linux
+// +build linux
+
 package pretty
 
-import "testing"
+import (
+	"testing"
+)
 
 func TestDiff(t *testing.T) {
 	for _, test := range []struct {

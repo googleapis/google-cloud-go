@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+//go:build !windows
 // +build !windows
 
 // genbot is a binary for generating gapics and creating CLs/PRs with the results.
@@ -20,134 +21,76 @@ package main
 
 import (
 	"context"
+	"errors"
 	"flag"
-	"fmt"
 	"log"
 	"os"
-	"time"
+	"strconv"
 
 	"cloud.google.com/go/internal/gapicgen"
-)
-
-var (
-	toolsNeeded = []string{"git", "go", "protoc"}
-
-	githubAccessToken = flag.String("githubAccessToken", "", "Get an access token at https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line")
-	githubUsername    = flag.String("githubUsername", "", "ex -githubUsername=jadekler")
-	githubName        = flag.String("githubName", "", "ex -githubName=\"Jean de Klerk\"")
-	githubEmail       = flag.String("githubEmail", "", "ex -githubEmail=deklerk@google.com")
-
-	usage = func() {
-		fmt.Fprintln(os.Stderr, `genbot \
-	-githubAccessToken=11223344556677889900aabbccddeeff11223344 \
-	-githubUsername=jadekler \
-	-githubEmail=deklerk@google.com \
-	-githubName="Jean de Klerk" \
-
--githubAccessToken
-	The access token to authenticate to github. Get this at https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line.
-
--githubUsername
-	The username to use in the github commit.
-
--githubName
-	The name to use in the github commit.
-
--githubEmail
-	The email to use in the github commit.`)
-		os.Exit(2)
-	}
-)
-
-type prStatus uint8
-
-func (ps prStatus) Has(status prStatus) bool { return ps&status != 0 }
-
-const (
-	noOpenPRs prStatus = 1 << iota
-	openGenprotoPR
-	openGocloudPR
+	"cloud.google.com/go/internal/gapicgen/generator"
 )
 
 func main() {
 	log.SetFlags(0)
-
-	flag.Usage = usage
-	flag.Parse()
-	if *githubAccessToken == "" {
-		*githubAccessToken = os.Getenv("GITHUB_ACCESS_TOKEN")
+	if err := gapicgen.VerifyAllToolsExist([]string{"git", "go", "protoc"}); err != nil {
+		log.Fatal(err)
 	}
-	if *githubUsername == "" {
-		*githubUsername = os.Getenv("GITHUB_USERNAME")
-	}
-	if *githubName == "" {
-		*githubName = os.Getenv("GITHUB_NAME")
-	}
-	if *githubEmail == "" {
-		*githubEmail = os.Getenv("GITHUB_EMAIL")
-	}
-
-	for k, v := range map[string]string{
-		"githubAccessToken": *githubAccessToken,
-		"githubUsername":    *githubUsername,
-		"githubName":        *githubName,
-		"githubEmail":       *githubEmail,
-	} {
-		if v == "" {
-			log.Printf("missing or empty value for required flag --%s\n", k)
-			usage()
-		}
-	}
-
 	ctx := context.Background()
 
-	// Setup the client and git environment.
-	if err := gapicgen.VerifyAllToolsExist(toolsNeeded); err != nil {
-		log.Fatal(err)
-	}
-	githubClient, err := NewGithubClient(ctx, *githubUsername, *githubName, *githubEmail, *githubAccessToken)
-	if err != nil {
-		log.Fatal(err)
-	}
+	// General bot flags
+	githubAccessToken := flag.String("githubAccessToken", os.Getenv("GITHUB_ACCESS_TOKEN"), "The token used to open pull requests.")
+	githubUsername := flag.String("githubUsername", os.Getenv("GITHUB_USERNAME"), "The GitHub user name for the author.")
+	githubName := flag.String("githubName", os.Getenv("GITHUB_NAME"), "The name of the author for git commits.")
+	githubEmail := flag.String("githubEmail", os.Getenv("GITHUB_EMAIL"), "The email address of the author.")
+	localMode := flag.Bool("local", strToBool(os.Getenv("GENBOT_LOCAL_MODE")), "Enables generating sources locally. This mode will not open any pull requests.")
+	forceAll := flag.Bool("forceAll", strToBool(os.Getenv("GENBOT_FORCE_ALL")), "Enables regenerating everything regardless of changes in googleapis.")
 
-	// Check current regen status.
-	if pr, err := githubClient.GetRegenPR(ctx, "go-genproto", "open"); err != nil {
-		log.Fatal(err)
-	} else if pr != nil {
-		log.Println("There is already a re-generation in progress")
-		return
-	}
-	if pr, err := githubClient.GetRegenPR(ctx, "google-cloud-go", "open"); err != nil {
-		log.Fatal(err)
-	} else if pr != nil {
-		if err := updateGocloudPR(ctx, githubClient, pr); err != nil {
+	// flags for local mode
+	googleapisDir := flag.String("googleapis-dir", os.Getenv("GOOGLEAPIS_DIR"), "Directory where sources of googleapis/googleapis resides. If unset the sources will be cloned to a temporary directory that is not cleaned up.")
+	genprotoDir := flag.String("genproto-dir", os.Getenv("GENPROTO_DIR"), "Directory where sources of googleapis/go-genproto resides. If unset the sources will be cloned to a temporary directory that is not cleaned up.")
+	protoDir := flag.String("proto-dir", os.Getenv("PROTO_DIR"), "Directory where sources of google/protobuf resides. If unset the sources will be cloned to a temporary directory that is not cleaned up.")
+	regenOnly := flag.Bool("regen-only", strToBool(os.Getenv("REGEN_ONLY")), "Enabling means no vetting, manifest updates, or compilation.")
+	genAlias := flag.Bool("generate-alias", strToBool(os.Getenv("GENERATE_ALIAS")), "Enabling means alias files will be generated.")
+
+	flag.Parse()
+
+	if *localMode {
+		if err := genLocal(ctx, localConfig{
+			googleapisDir: *googleapisDir,
+			genprotoDir:   *genprotoDir,
+			protoDir:      *protoDir,
+			regenOnly:     *regenOnly,
+			forceAll:      *forceAll,
+			genAlias:      *genAlias,
+		}); err != nil {
+			if errors.Is(err, generator.ErrNoProcessing) {
+				log.Println(err)
+				os.Exit(0)
+				return
+			}
 			log.Fatal(err)
 		}
 		return
 	}
-	log.Println("checking if a pull request was already opened and merged today")
-	if pr, err := githubClient.GetRegenPR(ctx, "go-genproto", "closed"); err != nil {
-		log.Fatal(err)
-	} else if pr != nil && hasCreatedPRToday(pr.Created) {
-		log.Println("skipping generation, already created and merged a go-genproto PR today")
-		return
-	}
-	if pr, err := githubClient.GetRegenPR(ctx, "google-cloud-go", "closed"); err != nil {
-		log.Fatal(err)
-	} else if pr != nil && hasCreatedPRToday(pr.Created) {
-		log.Println("skipping generation, already created and merged a google-cloud-go PR today")
-		return
-	}
-
-	if err := generate(ctx, githubClient); err != nil {
+	if err := genBot(ctx, botConfig{
+		githubAccessToken: *githubAccessToken,
+		githubUsername:    *githubUsername,
+		githubName:        *githubName,
+		githubEmail:       *githubEmail,
+		forceAll:          *forceAll,
+	}); err != nil {
+		if errors.Is(err, generator.ErrNoProcessing) {
+			log.Println(err)
+			os.Exit(0)
+			return
+		}
 		log.Fatal(err)
 	}
 }
 
-// hasCreatedPRToday checks if the created time of a PR is from today.
-func hasCreatedPRToday(created time.Time) bool {
-	now := time.Now()
-	today := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, now.Location())
-	log.Printf("Times -- Now: %v\tToday: %v\tPR Created: %v", now, today, created)
-	return created.After(today)
+func strToBool(s string) bool {
+	// Treat error as false
+	b, _ := strconv.ParseBool(s)
+	return b
 }

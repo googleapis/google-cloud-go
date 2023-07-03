@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,30 +20,59 @@ import (
 	"context"
 
 	datacatalog "cloud.google.com/go/datacatalog/apiv1beta1"
-	datacatalogpb "google.golang.org/genproto/googleapis/cloud/datacatalog/v1beta1"
+	datacatalogpb "cloud.google.com/go/datacatalog/apiv1beta1/datacatalogpb"
 )
 
 func ExampleNewPolicyTagManagerSerializationClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := datacatalog.NewPolicyTagManagerSerializationClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
+func ExampleNewPolicyTagManagerSerializationRESTClient() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := datacatalog.NewPolicyTagManagerSerializationRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExamplePolicyTagManagerSerializationClient_ImportTaxonomies() {
-	// import datacatalogpb "google.golang.org/genproto/googleapis/cloud/datacatalog/v1beta1"
-
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := datacatalog.NewPolicyTagManagerSerializationClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &datacatalogpb.ImportTaxonomiesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/datacatalog/apiv1beta1/datacatalogpb#ImportTaxonomiesRequest.
 	}
 	resp, err := c.ImportTaxonomies(ctx, req)
 	if err != nil {
@@ -54,16 +83,21 @@ func ExamplePolicyTagManagerSerializationClient_ImportTaxonomies() {
 }
 
 func ExamplePolicyTagManagerSerializationClient_ExportTaxonomies() {
-	// import datacatalogpb "google.golang.org/genproto/googleapis/cloud/datacatalog/v1beta1"
-
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := datacatalog.NewPolicyTagManagerSerializationClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &datacatalogpb.ExportTaxonomiesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/datacatalog/apiv1beta1/datacatalogpb#ExportTaxonomiesRequest.
 	}
 	resp, err := c.ExportTaxonomies(ctx, req)
 	if err != nil {

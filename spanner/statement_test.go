@@ -22,9 +22,9 @@ import (
 	"time"
 
 	"cloud.google.com/go/civil"
+	sppb "cloud.google.com/go/spanner/apiv1/spannerpb"
 	"github.com/golang/protobuf/proto"
 	proto3 "github.com/golang/protobuf/ptypes/struct"
-	sppb "google.golang.org/genproto/googleapis/spanner/v1"
 )
 
 func TestConvertParams(t *testing.T) {
@@ -159,6 +159,12 @@ func TestConvertParams(t *testing.T) {
 			listProto(listProto(intProto(10)), listProto(intProto(20))),
 			listType(structType(mkField("field", intType()))),
 		},
+		// Untyped null
+		{
+			nil,
+			nullProto(),
+			nil,
+		},
 	} {
 		st.Params["var"] = test.val
 		gotParams, gotParamTypes, gotErr := st.convertParams()
@@ -177,23 +183,6 @@ func TestConvertParams(t *testing.T) {
 		gotParamType := gotParamTypes["var"]
 		if !proto.Equal(gotParamType, test.wantType) {
 			t.Errorf("%#v: got %v, want %v\n", test.val, gotParamType, test.wantField)
-		}
-	}
-
-	// Verify type error reporting.
-	for _, test := range []struct {
-		val     interface{}
-		wantErr error
-	}{
-		{
-			nil,
-			errBindParam("var", nil, errNilParam),
-		},
-	} {
-		st.Params["var"] = test.val
-		_, _, gotErr := st.convertParams()
-		if !testEqual(gotErr, test.wantErr) {
-			t.Errorf("value %#v:\ngot:  %v\nwant: %v", test.val, gotErr, test.wantErr)
 		}
 	}
 }

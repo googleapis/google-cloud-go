@@ -20,10 +20,10 @@ import (
 	"time"
 
 	"cloud.google.com/go/internal/testutil"
+	pb "cloud.google.com/go/pubsub/apiv1/pubsubpb"
 	"cloud.google.com/go/pubsub/pstest"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/option"
-	pb "google.golang.org/genproto/googleapis/pubsub/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -101,10 +101,20 @@ func TestPullStreamGet_ResourceUnavailable(t *testing.T) {
 		t.Fatal(err)
 	}
 	defer client.Close()
+	topic, err := client.CreateTopic(ctx, "foo")
+	if err != nil {
+		t.Fatal(err)
+	}
+	sub, err := client.CreateSubscription(ctx, "foo", SubscriptionConfig{
+		Topic: topic,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
 
 	errc := make(chan error)
 	go func() {
-		errc <- client.Subscription("foo").Receive(ctx, func(context.Context, *Message) {
+		errc <- sub.Receive(ctx, func(context.Context, *Message) {
 			t.Error("should not have received any data")
 		})
 	}()
@@ -118,7 +128,7 @@ func TestPullStreamGet_ResourceUnavailable(t *testing.T) {
 				t.Fatal("expected to receive a grpc ResourceExhausted error")
 			}
 		} else {
-			t.Fatal("expected to receive a grpc ResourceExhausted error")
+			t.Fatalf("expected to receive a grpc ResourceExhausted error: %v", err)
 		}
 	}
 }

@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,25 +17,31 @@
 package gaming
 
 import (
+	"bytes"
 	"context"
 	"fmt"
+	"io/ioutil"
 	"math"
+	"net/http"
 	"net/url"
 	"time"
 
+	gamingpb "cloud.google.com/go/gaming/apiv1beta/gamingpb"
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
-	"github.com/golang/protobuf/proto"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
-	gamingpb "google.golang.org/genproto/googleapis/cloud/gaming/v1beta"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
+	httptransport "google.golang.org/api/transport/http"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/protobuf/encoding/protojson"
+	"google.golang.org/protobuf/proto"
 )
 
 var newGameServerDeploymentsClientHook clientHook
@@ -53,13 +59,13 @@ type GameServerDeploymentsCallOptions struct {
 	FetchDeploymentState               []gax.CallOption
 }
 
-func defaultGameServerDeploymentsClientOptions() []option.ClientOption {
+func defaultGameServerDeploymentsGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("gameservices.googleapis.com:443"),
 		internaloption.WithDefaultMTLSEndpoint("gameservices.mtls.googleapis.com:443"),
 		internaloption.WithDefaultAudience("https://gameservices.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
-		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
+		internaloption.EnableJwtWithScope(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -68,6 +74,7 @@ func defaultGameServerDeploymentsClientOptions() []option.ClientOption {
 func defaultGameServerDeploymentsCallOptions() *GameServerDeploymentsCallOptions {
 	return &GameServerDeploymentsCallOptions{
 		ListGameServerDeployments: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -79,6 +86,7 @@ func defaultGameServerDeploymentsCallOptions() *GameServerDeploymentsCallOptions
 			}),
 		},
 		GetGameServerDeployment: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -89,10 +97,17 @@ func defaultGameServerDeploymentsCallOptions() *GameServerDeploymentsCallOptions
 				})
 			}),
 		},
-		CreateGameServerDeployment: []gax.CallOption{},
-		DeleteGameServerDeployment: []gax.CallOption{},
-		UpdateGameServerDeployment: []gax.CallOption{},
+		CreateGameServerDeployment: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteGameServerDeployment: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateGameServerDeployment: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		GetGameServerDeploymentRollout: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -103,8 +118,11 @@ func defaultGameServerDeploymentsCallOptions() *GameServerDeploymentsCallOptions
 				})
 			}),
 		},
-		UpdateGameServerDeploymentRollout: []gax.CallOption{},
+		UpdateGameServerDeploymentRollout: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		PreviewGameServerDeploymentRollout: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -116,6 +134,7 @@ func defaultGameServerDeploymentsCallOptions() *GameServerDeploymentsCallOptions
 			}),
 		},
 		FetchDeploymentState: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -129,38 +148,245 @@ func defaultGameServerDeploymentsCallOptions() *GameServerDeploymentsCallOptions
 	}
 }
 
-// GameServerDeploymentsClient is a client for interacting with .
+func defaultGameServerDeploymentsRESTCallOptions() *GameServerDeploymentsCallOptions {
+	return &GameServerDeploymentsCallOptions{
+		ListGameServerDeployments: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		GetGameServerDeployment: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		CreateGameServerDeployment: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteGameServerDeployment: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateGameServerDeployment: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetGameServerDeploymentRollout: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		UpdateGameServerDeploymentRollout: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		PreviewGameServerDeploymentRollout: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		FetchDeploymentState: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+	}
+}
+
+// internalGameServerDeploymentsClient is an interface that defines the methods available from Game Services API.
+type internalGameServerDeploymentsClient interface {
+	Close() error
+	setGoogleClientInfo(...string)
+	Connection() *grpc.ClientConn
+	ListGameServerDeployments(context.Context, *gamingpb.ListGameServerDeploymentsRequest, ...gax.CallOption) *GameServerDeploymentIterator
+	GetGameServerDeployment(context.Context, *gamingpb.GetGameServerDeploymentRequest, ...gax.CallOption) (*gamingpb.GameServerDeployment, error)
+	CreateGameServerDeployment(context.Context, *gamingpb.CreateGameServerDeploymentRequest, ...gax.CallOption) (*CreateGameServerDeploymentOperation, error)
+	CreateGameServerDeploymentOperation(name string) *CreateGameServerDeploymentOperation
+	DeleteGameServerDeployment(context.Context, *gamingpb.DeleteGameServerDeploymentRequest, ...gax.CallOption) (*DeleteGameServerDeploymentOperation, error)
+	DeleteGameServerDeploymentOperation(name string) *DeleteGameServerDeploymentOperation
+	UpdateGameServerDeployment(context.Context, *gamingpb.UpdateGameServerDeploymentRequest, ...gax.CallOption) (*UpdateGameServerDeploymentOperation, error)
+	UpdateGameServerDeploymentOperation(name string) *UpdateGameServerDeploymentOperation
+	GetGameServerDeploymentRollout(context.Context, *gamingpb.GetGameServerDeploymentRolloutRequest, ...gax.CallOption) (*gamingpb.GameServerDeploymentRollout, error)
+	UpdateGameServerDeploymentRollout(context.Context, *gamingpb.UpdateGameServerDeploymentRolloutRequest, ...gax.CallOption) (*UpdateGameServerDeploymentRolloutOperation, error)
+	UpdateGameServerDeploymentRolloutOperation(name string) *UpdateGameServerDeploymentRolloutOperation
+	PreviewGameServerDeploymentRollout(context.Context, *gamingpb.PreviewGameServerDeploymentRolloutRequest, ...gax.CallOption) (*gamingpb.PreviewGameServerDeploymentRolloutResponse, error)
+	FetchDeploymentState(context.Context, *gamingpb.FetchDeploymentStateRequest, ...gax.CallOption) (*gamingpb.FetchDeploymentStateResponse, error)
+}
+
+// GameServerDeploymentsClient is a client for interacting with Game Services API.
+// Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
+//
+// The game server deployment is used to control the deployment of Agones
+// fleets.
+type GameServerDeploymentsClient struct {
+	// The internal transport-dependent client.
+	internalClient internalGameServerDeploymentsClient
+
+	// The call options for this service.
+	CallOptions *GameServerDeploymentsCallOptions
+
+	// LROClient is used internally to handle long-running operations.
+	// It is exposed so that its CallOptions can be modified if required.
+	// Users should not Close this client.
+	LROClient *lroauto.OperationsClient
+}
+
+// Wrapper methods routed to the internal client.
+
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *GameServerDeploymentsClient) Close() error {
+	return c.internalClient.Close()
+}
+
+// setGoogleClientInfo sets the name and version of the application in
+// the `x-goog-api-client` header passed on each request. Intended for
+// use by Google-written clients.
+func (c *GameServerDeploymentsClient) setGoogleClientInfo(keyval ...string) {
+	c.internalClient.setGoogleClientInfo(keyval...)
+}
+
+// Connection returns a connection to the API service.
+//
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
+func (c *GameServerDeploymentsClient) Connection() *grpc.ClientConn {
+	return c.internalClient.Connection()
+}
+
+// ListGameServerDeployments lists game server deployments in a given project and location.
+func (c *GameServerDeploymentsClient) ListGameServerDeployments(ctx context.Context, req *gamingpb.ListGameServerDeploymentsRequest, opts ...gax.CallOption) *GameServerDeploymentIterator {
+	return c.internalClient.ListGameServerDeployments(ctx, req, opts...)
+}
+
+// GetGameServerDeployment gets details of a single game server deployment.
+func (c *GameServerDeploymentsClient) GetGameServerDeployment(ctx context.Context, req *gamingpb.GetGameServerDeploymentRequest, opts ...gax.CallOption) (*gamingpb.GameServerDeployment, error) {
+	return c.internalClient.GetGameServerDeployment(ctx, req, opts...)
+}
+
+// CreateGameServerDeployment creates a new game server deployment in a given project and location.
+func (c *GameServerDeploymentsClient) CreateGameServerDeployment(ctx context.Context, req *gamingpb.CreateGameServerDeploymentRequest, opts ...gax.CallOption) (*CreateGameServerDeploymentOperation, error) {
+	return c.internalClient.CreateGameServerDeployment(ctx, req, opts...)
+}
+
+// CreateGameServerDeploymentOperation returns a new CreateGameServerDeploymentOperation from a given name.
+// The name must be that of a previously created CreateGameServerDeploymentOperation, possibly from a different process.
+func (c *GameServerDeploymentsClient) CreateGameServerDeploymentOperation(name string) *CreateGameServerDeploymentOperation {
+	return c.internalClient.CreateGameServerDeploymentOperation(name)
+}
+
+// DeleteGameServerDeployment deletes a single game server deployment.
+func (c *GameServerDeploymentsClient) DeleteGameServerDeployment(ctx context.Context, req *gamingpb.DeleteGameServerDeploymentRequest, opts ...gax.CallOption) (*DeleteGameServerDeploymentOperation, error) {
+	return c.internalClient.DeleteGameServerDeployment(ctx, req, opts...)
+}
+
+// DeleteGameServerDeploymentOperation returns a new DeleteGameServerDeploymentOperation from a given name.
+// The name must be that of a previously created DeleteGameServerDeploymentOperation, possibly from a different process.
+func (c *GameServerDeploymentsClient) DeleteGameServerDeploymentOperation(name string) *DeleteGameServerDeploymentOperation {
+	return c.internalClient.DeleteGameServerDeploymentOperation(name)
+}
+
+// UpdateGameServerDeployment patches a game server deployment.
+func (c *GameServerDeploymentsClient) UpdateGameServerDeployment(ctx context.Context, req *gamingpb.UpdateGameServerDeploymentRequest, opts ...gax.CallOption) (*UpdateGameServerDeploymentOperation, error) {
+	return c.internalClient.UpdateGameServerDeployment(ctx, req, opts...)
+}
+
+// UpdateGameServerDeploymentOperation returns a new UpdateGameServerDeploymentOperation from a given name.
+// The name must be that of a previously created UpdateGameServerDeploymentOperation, possibly from a different process.
+func (c *GameServerDeploymentsClient) UpdateGameServerDeploymentOperation(name string) *UpdateGameServerDeploymentOperation {
+	return c.internalClient.UpdateGameServerDeploymentOperation(name)
+}
+
+// GetGameServerDeploymentRollout gets details a single game server deployment rollout.
+func (c *GameServerDeploymentsClient) GetGameServerDeploymentRollout(ctx context.Context, req *gamingpb.GetGameServerDeploymentRolloutRequest, opts ...gax.CallOption) (*gamingpb.GameServerDeploymentRollout, error) {
+	return c.internalClient.GetGameServerDeploymentRollout(ctx, req, opts...)
+}
+
+// UpdateGameServerDeploymentRollout patches a single game server deployment rollout.
+// The method will not return an error if the update does not affect any
+// existing realms. For example - if the default_game_server_config is changed
+// but all existing realms use the override, that is valid. Similarly, if a
+// non existing realm is explicitly called out in game_server_config_overrides
+// field, that will also not result in an error.
+func (c *GameServerDeploymentsClient) UpdateGameServerDeploymentRollout(ctx context.Context, req *gamingpb.UpdateGameServerDeploymentRolloutRequest, opts ...gax.CallOption) (*UpdateGameServerDeploymentRolloutOperation, error) {
+	return c.internalClient.UpdateGameServerDeploymentRollout(ctx, req, opts...)
+}
+
+// UpdateGameServerDeploymentRolloutOperation returns a new UpdateGameServerDeploymentRolloutOperation from a given name.
+// The name must be that of a previously created UpdateGameServerDeploymentRolloutOperation, possibly from a different process.
+func (c *GameServerDeploymentsClient) UpdateGameServerDeploymentRolloutOperation(name string) *UpdateGameServerDeploymentRolloutOperation {
+	return c.internalClient.UpdateGameServerDeploymentRolloutOperation(name)
+}
+
+// PreviewGameServerDeploymentRollout previews the game server deployment rollout. This API does not mutate the
+// rollout resource.
+func (c *GameServerDeploymentsClient) PreviewGameServerDeploymentRollout(ctx context.Context, req *gamingpb.PreviewGameServerDeploymentRolloutRequest, opts ...gax.CallOption) (*gamingpb.PreviewGameServerDeploymentRolloutResponse, error) {
+	return c.internalClient.PreviewGameServerDeploymentRollout(ctx, req, opts...)
+}
+
+// FetchDeploymentState retrieves information about the current state of the game server
+// deployment. Gathers all the Agones fleets and Agones autoscalers,
+// including fleets running an older version of the game server deployment.
+func (c *GameServerDeploymentsClient) FetchDeploymentState(ctx context.Context, req *gamingpb.FetchDeploymentStateRequest, opts ...gax.CallOption) (*gamingpb.FetchDeploymentStateResponse, error) {
+	return c.internalClient.FetchDeploymentState(ctx, req, opts...)
+}
+
+// gameServerDeploymentsGRPCClient is a client for interacting with Game Services API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
-type GameServerDeploymentsClient struct {
+type gameServerDeploymentsGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
+	// Points back to the CallOptions field of the containing GameServerDeploymentsClient
+	CallOptions **GameServerDeploymentsCallOptions
 
 	// The gRPC API client.
 	gameServerDeploymentsClient gamingpb.GameServerDeploymentsServiceClient
 
-	// LROClient is used internally to handle longrunning operations.
+	// LROClient is used internally to handle long-running operations.
 	// It is exposed so that its CallOptions can be modified if required.
 	// Users should not Close this client.
-	LROClient *lroauto.OperationsClient
-
-	// The call options for this service.
-	CallOptions *GameServerDeploymentsCallOptions
+	LROClient **lroauto.OperationsClient
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
 }
 
-// NewGameServerDeploymentsClient creates a new game server deployments service client.
+// NewGameServerDeploymentsClient creates a new game server deployments service client based on gRPC.
+// The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
 // The game server deployment is used to control the deployment of Agones
 // fleets.
 func NewGameServerDeploymentsClient(ctx context.Context, opts ...option.ClientOption) (*GameServerDeploymentsClient, error) {
-	clientOpts := defaultGameServerDeploymentsClientOptions()
-
+	clientOpts := defaultGameServerDeploymentsGRPCClientOptions()
 	if newGameServerDeploymentsClientHook != nil {
 		hookOpts, err := newGameServerDeploymentsClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -169,25 +395,22 @@ func NewGameServerDeploymentsClient(ctx context.Context, opts ...option.ClientOp
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
 	}
-	c := &GameServerDeploymentsClient{
-		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
-		CallOptions:      defaultGameServerDeploymentsCallOptions(),
+	client := GameServerDeploymentsClient{CallOptions: defaultGameServerDeploymentsCallOptions()}
 
+	c := &gameServerDeploymentsGRPCClient{
+		connPool:                    connPool,
 		gameServerDeploymentsClient: gamingpb.NewGameServerDeploymentsServiceClient(connPool),
+		CallOptions:                 &client.CallOptions,
 	}
 	c.setGoogleClientInfo()
 
-	c.LROClient, err = lroauto.NewOperationsClient(ctx, gtransport.WithConnPool(connPool))
+	client.internalClient = c
+
+	client.LROClient, err = lroauto.NewOperationsClient(ctx, gtransport.WithConnPool(connPool))
 	if err != nil {
 		// This error "should not happen", since we are just reusing old connection pool
 		// and never actually need to dial.
@@ -197,44 +420,132 @@ func NewGameServerDeploymentsClient(ctx context.Context, opts ...option.ClientOp
 		// TODO: investigate error conditions.
 		return nil, err
 	}
-	return c, nil
+	c.LROClient = &client.LROClient
+	return &client, nil
 }
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
-func (c *GameServerDeploymentsClient) Connection() *grpc.ClientConn {
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
+func (c *gameServerDeploymentsGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
-}
-
-// Close closes the connection to the API service. The user should invoke this when
-// the client is no longer required.
-func (c *GameServerDeploymentsClient) Close() error {
-	return c.connPool.Close()
 }
 
 // setGoogleClientInfo sets the name and version of the application in
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
-func (c *GameServerDeploymentsClient) setGoogleClientInfo(keyval ...string) {
+func (c *gameServerDeploymentsGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
-// ListGameServerDeployments lists game server deployments in a given project and location.
-func (c *GameServerDeploymentsClient) ListGameServerDeployments(ctx context.Context, req *gamingpb.ListGameServerDeploymentsRequest, opts ...gax.CallOption) *GameServerDeploymentIterator {
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *gameServerDeploymentsGRPCClient) Close() error {
+	return c.connPool.Close()
+}
+
+// Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
+type gameServerDeploymentsRESTClient struct {
+	// The http endpoint to connect to.
+	endpoint string
+
+	// The http client.
+	httpClient *http.Client
+
+	// LROClient is used internally to handle long-running operations.
+	// It is exposed so that its CallOptions can be modified if required.
+	// Users should not Close this client.
+	LROClient **lroauto.OperationsClient
+
+	// The x-goog-* metadata to be sent with each request.
+	xGoogMetadata metadata.MD
+
+	// Points back to the CallOptions field of the containing GameServerDeploymentsClient
+	CallOptions **GameServerDeploymentsCallOptions
+}
+
+// NewGameServerDeploymentsRESTClient creates a new game server deployments service rest client.
+//
+// The game server deployment is used to control the deployment of Agones
+// fleets.
+func NewGameServerDeploymentsRESTClient(ctx context.Context, opts ...option.ClientOption) (*GameServerDeploymentsClient, error) {
+	clientOpts := append(defaultGameServerDeploymentsRESTClientOptions(), opts...)
+	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
+	if err != nil {
+		return nil, err
+	}
+
+	callOpts := defaultGameServerDeploymentsRESTCallOptions()
+	c := &gameServerDeploymentsRESTClient{
+		endpoint:    endpoint,
+		httpClient:  httpClient,
+		CallOptions: &callOpts,
+	}
+	c.setGoogleClientInfo()
+
+	lroOpts := []option.ClientOption{
+		option.WithHTTPClient(httpClient),
+		option.WithEndpoint(endpoint),
+	}
+	opClient, err := lroauto.NewOperationsRESTClient(ctx, lroOpts...)
+	if err != nil {
+		return nil, err
+	}
+	c.LROClient = &opClient
+
+	return &GameServerDeploymentsClient{internalClient: c, CallOptions: callOpts}, nil
+}
+
+func defaultGameServerDeploymentsRESTClientOptions() []option.ClientOption {
+	return []option.ClientOption{
+		internaloption.WithDefaultEndpoint("https://gameservices.googleapis.com"),
+		internaloption.WithDefaultMTLSEndpoint("https://gameservices.mtls.googleapis.com"),
+		internaloption.WithDefaultAudience("https://gameservices.googleapis.com/"),
+		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+	}
+}
+
+// setGoogleClientInfo sets the name and version of the application in
+// the `x-goog-api-client` header passed on each request. Intended for
+// use by Google-written clients.
+func (c *gameServerDeploymentsRESTClient) setGoogleClientInfo(keyval ...string) {
+	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
+	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+}
+
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *gameServerDeploymentsRESTClient) Close() error {
+	// Replace httpClient with nil to force cleanup.
+	c.httpClient = nil
+	return nil
+}
+
+// Connection returns a connection to the API service.
+//
+// Deprecated: This method always returns nil.
+func (c *gameServerDeploymentsRESTClient) Connection() *grpc.ClientConn {
+	return nil
+}
+func (c *gameServerDeploymentsGRPCClient) ListGameServerDeployments(ctx context.Context, req *gamingpb.ListGameServerDeploymentsRequest, opts ...gax.CallOption) *GameServerDeploymentIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ListGameServerDeployments[0:len(c.CallOptions.ListGameServerDeployments):len(c.CallOptions.ListGameServerDeployments)], opts...)
+	opts = append((*c.CallOptions).ListGameServerDeployments[0:len((*c.CallOptions).ListGameServerDeployments):len((*c.CallOptions).ListGameServerDeployments)], opts...)
 	it := &GameServerDeploymentIterator{}
 	req = proto.Clone(req).(*gamingpb.ListGameServerDeploymentsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*gamingpb.GameServerDeployment, string, error) {
-		var resp *gamingpb.ListGameServerDeploymentsResponse
-		req.PageToken = pageToken
+		resp := &gamingpb.ListGameServerDeploymentsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -257,22 +568,19 @@ func (c *GameServerDeploymentsClient) ListGameServerDeployments(ctx context.Cont
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
-// GetGameServerDeployment gets details of a single game server deployment.
-func (c *GameServerDeploymentsClient) GetGameServerDeployment(ctx context.Context, req *gamingpb.GetGameServerDeploymentRequest, opts ...gax.CallOption) (*gamingpb.GameServerDeployment, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
+func (c *gameServerDeploymentsGRPCClient) GetGameServerDeployment(ctx context.Context, req *gamingpb.GetGameServerDeploymentRequest, opts ...gax.CallOption) (*gamingpb.GameServerDeployment, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GetGameServerDeployment[0:len(c.CallOptions.GetGameServerDeployment):len(c.CallOptions.GetGameServerDeployment)], opts...)
+	opts = append((*c.CallOptions).GetGameServerDeployment[0:len((*c.CallOptions).GetGameServerDeployment):len((*c.CallOptions).GetGameServerDeployment)], opts...)
 	var resp *gamingpb.GameServerDeployment
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -285,16 +593,11 @@ func (c *GameServerDeploymentsClient) GetGameServerDeployment(ctx context.Contex
 	return resp, nil
 }
 
-// CreateGameServerDeployment creates a new game server deployment in a given project and location.
-func (c *GameServerDeploymentsClient) CreateGameServerDeployment(ctx context.Context, req *gamingpb.CreateGameServerDeploymentRequest, opts ...gax.CallOption) (*CreateGameServerDeploymentOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
+func (c *gameServerDeploymentsGRPCClient) CreateGameServerDeployment(ctx context.Context, req *gamingpb.CreateGameServerDeploymentRequest, opts ...gax.CallOption) (*CreateGameServerDeploymentOperation, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.CreateGameServerDeployment[0:len(c.CallOptions.CreateGameServerDeployment):len(c.CallOptions.CreateGameServerDeployment)], opts...)
+	opts = append((*c.CallOptions).CreateGameServerDeployment[0:len((*c.CallOptions).CreateGameServerDeployment):len((*c.CallOptions).CreateGameServerDeployment)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -305,20 +608,15 @@ func (c *GameServerDeploymentsClient) CreateGameServerDeployment(ctx context.Con
 		return nil, err
 	}
 	return &CreateGameServerDeploymentOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// DeleteGameServerDeployment deletes a single game server deployment.
-func (c *GameServerDeploymentsClient) DeleteGameServerDeployment(ctx context.Context, req *gamingpb.DeleteGameServerDeploymentRequest, opts ...gax.CallOption) (*DeleteGameServerDeploymentOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
+func (c *gameServerDeploymentsGRPCClient) DeleteGameServerDeployment(ctx context.Context, req *gamingpb.DeleteGameServerDeploymentRequest, opts ...gax.CallOption) (*DeleteGameServerDeploymentOperation, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.DeleteGameServerDeployment[0:len(c.CallOptions.DeleteGameServerDeployment):len(c.CallOptions.DeleteGameServerDeployment)], opts...)
+	opts = append((*c.CallOptions).DeleteGameServerDeployment[0:len((*c.CallOptions).DeleteGameServerDeployment):len((*c.CallOptions).DeleteGameServerDeployment)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -329,20 +627,15 @@ func (c *GameServerDeploymentsClient) DeleteGameServerDeployment(ctx context.Con
 		return nil, err
 	}
 	return &DeleteGameServerDeploymentOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// UpdateGameServerDeployment patches a game server deployment.
-func (c *GameServerDeploymentsClient) UpdateGameServerDeployment(ctx context.Context, req *gamingpb.UpdateGameServerDeploymentRequest, opts ...gax.CallOption) (*UpdateGameServerDeploymentOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
+func (c *gameServerDeploymentsGRPCClient) UpdateGameServerDeployment(ctx context.Context, req *gamingpb.UpdateGameServerDeploymentRequest, opts ...gax.CallOption) (*UpdateGameServerDeploymentOperation, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "game_server_deployment.name", url.QueryEscape(req.GetGameServerDeployment().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.UpdateGameServerDeployment[0:len(c.CallOptions.UpdateGameServerDeployment):len(c.CallOptions.UpdateGameServerDeployment)], opts...)
+	opts = append((*c.CallOptions).UpdateGameServerDeployment[0:len((*c.CallOptions).UpdateGameServerDeployment):len((*c.CallOptions).UpdateGameServerDeployment)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -353,20 +646,15 @@ func (c *GameServerDeploymentsClient) UpdateGameServerDeployment(ctx context.Con
 		return nil, err
 	}
 	return &UpdateGameServerDeploymentOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// GetGameServerDeploymentRollout gets details a single game server deployment rollout.
-func (c *GameServerDeploymentsClient) GetGameServerDeploymentRollout(ctx context.Context, req *gamingpb.GetGameServerDeploymentRolloutRequest, opts ...gax.CallOption) (*gamingpb.GameServerDeploymentRollout, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
+func (c *gameServerDeploymentsGRPCClient) GetGameServerDeploymentRollout(ctx context.Context, req *gamingpb.GetGameServerDeploymentRolloutRequest, opts ...gax.CallOption) (*gamingpb.GameServerDeploymentRollout, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GetGameServerDeploymentRollout[0:len(c.CallOptions.GetGameServerDeploymentRollout):len(c.CallOptions.GetGameServerDeploymentRollout)], opts...)
+	opts = append((*c.CallOptions).GetGameServerDeploymentRollout[0:len((*c.CallOptions).GetGameServerDeploymentRollout):len((*c.CallOptions).GetGameServerDeploymentRollout)], opts...)
 	var resp *gamingpb.GameServerDeploymentRollout
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -379,21 +667,11 @@ func (c *GameServerDeploymentsClient) GetGameServerDeploymentRollout(ctx context
 	return resp, nil
 }
 
-// UpdateGameServerDeploymentRollout patches a single game server deployment rollout.
-// The method will not return an error if the update does not affect any
-// existing realms. For example - if the default_game_server_config is changed
-// but all existing realms use the override, that is valid. Similarly, if a
-// non existing realm is explicitly called out in game_server_config_overrides
-// field, that will also not result in an error.
-func (c *GameServerDeploymentsClient) UpdateGameServerDeploymentRollout(ctx context.Context, req *gamingpb.UpdateGameServerDeploymentRolloutRequest, opts ...gax.CallOption) (*UpdateGameServerDeploymentRolloutOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
+func (c *gameServerDeploymentsGRPCClient) UpdateGameServerDeploymentRollout(ctx context.Context, req *gamingpb.UpdateGameServerDeploymentRolloutRequest, opts ...gax.CallOption) (*UpdateGameServerDeploymentRolloutOperation, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "rollout.name", url.QueryEscape(req.GetRollout().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.UpdateGameServerDeploymentRollout[0:len(c.CallOptions.UpdateGameServerDeploymentRollout):len(c.CallOptions.UpdateGameServerDeploymentRollout)], opts...)
+	opts = append((*c.CallOptions).UpdateGameServerDeploymentRollout[0:len((*c.CallOptions).UpdateGameServerDeploymentRollout):len((*c.CallOptions).UpdateGameServerDeploymentRollout)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -404,21 +682,15 @@ func (c *GameServerDeploymentsClient) UpdateGameServerDeploymentRollout(ctx cont
 		return nil, err
 	}
 	return &UpdateGameServerDeploymentRolloutOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// PreviewGameServerDeploymentRollout previews the game server deployment rollout. This API does not mutate the
-// rollout resource.
-func (c *GameServerDeploymentsClient) PreviewGameServerDeploymentRollout(ctx context.Context, req *gamingpb.PreviewGameServerDeploymentRolloutRequest, opts ...gax.CallOption) (*gamingpb.PreviewGameServerDeploymentRolloutResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
+func (c *gameServerDeploymentsGRPCClient) PreviewGameServerDeploymentRollout(ctx context.Context, req *gamingpb.PreviewGameServerDeploymentRolloutRequest, opts ...gax.CallOption) (*gamingpb.PreviewGameServerDeploymentRolloutResponse, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "rollout.name", url.QueryEscape(req.GetRollout().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.PreviewGameServerDeploymentRollout[0:len(c.CallOptions.PreviewGameServerDeploymentRollout):len(c.CallOptions.PreviewGameServerDeploymentRollout)], opts...)
+	opts = append((*c.CallOptions).PreviewGameServerDeploymentRollout[0:len((*c.CallOptions).PreviewGameServerDeploymentRollout):len((*c.CallOptions).PreviewGameServerDeploymentRollout)], opts...)
 	var resp *gamingpb.PreviewGameServerDeploymentRolloutResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -431,18 +703,11 @@ func (c *GameServerDeploymentsClient) PreviewGameServerDeploymentRollout(ctx con
 	return resp, nil
 }
 
-// FetchDeploymentState retrieves information about the current state of the game server
-// deployment. Gathers all the Agones fleets and Agones autoscalers,
-// including fleets running an older version of the game server deployment.
-func (c *GameServerDeploymentsClient) FetchDeploymentState(ctx context.Context, req *gamingpb.FetchDeploymentStateRequest, opts ...gax.CallOption) (*gamingpb.FetchDeploymentStateResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
+func (c *gameServerDeploymentsGRPCClient) FetchDeploymentState(ctx context.Context, req *gamingpb.FetchDeploymentStateRequest, opts ...gax.CallOption) (*gamingpb.FetchDeploymentStateResponse, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.FetchDeploymentState[0:len(c.CallOptions.FetchDeploymentState):len(c.CallOptions.FetchDeploymentState)], opts...)
+	opts = append((*c.CallOptions).FetchDeploymentState[0:len((*c.CallOptions).FetchDeploymentState):len((*c.CallOptions).FetchDeploymentState)], opts...)
 	var resp *gamingpb.FetchDeploymentStateResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -455,16 +720,672 @@ func (c *GameServerDeploymentsClient) FetchDeploymentState(ctx context.Context, 
 	return resp, nil
 }
 
+// ListGameServerDeployments lists game server deployments in a given project and location.
+func (c *gameServerDeploymentsRESTClient) ListGameServerDeployments(ctx context.Context, req *gamingpb.ListGameServerDeploymentsRequest, opts ...gax.CallOption) *GameServerDeploymentIterator {
+	it := &GameServerDeploymentIterator{}
+	req = proto.Clone(req).(*gamingpb.ListGameServerDeploymentsRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*gamingpb.GameServerDeployment, string, error) {
+		resp := &gamingpb.ListGameServerDeploymentsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1beta/%v/gameServerDeployments", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req.GetOrderBy() != "" {
+			params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))
+		}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			httpRsp, err := c.httpClient.Do(httpReq)
+			if err != nil {
+				return err
+			}
+			defer httpRsp.Body.Close()
+
+			if err = googleapi.CheckResponse(httpRsp); err != nil {
+				return err
+			}
+
+			buf, err := ioutil.ReadAll(httpRsp.Body)
+			if err != nil {
+				return err
+			}
+
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return maybeUnknownEnum(err)
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetGameServerDeployments(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// GetGameServerDeployment gets details of a single game server deployment.
+func (c *gameServerDeploymentsRESTClient) GetGameServerDeployment(ctx context.Context, req *gamingpb.GetGameServerDeploymentRequest, opts ...gax.CallOption) (*gamingpb.GameServerDeployment, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).GetGameServerDeployment[0:len((*c.CallOptions).GetGameServerDeployment):len((*c.CallOptions).GetGameServerDeployment)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &gamingpb.GameServerDeployment{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// CreateGameServerDeployment creates a new game server deployment in a given project and location.
+func (c *gameServerDeploymentsRESTClient) CreateGameServerDeployment(ctx context.Context, req *gamingpb.CreateGameServerDeploymentRequest, opts ...gax.CallOption) (*CreateGameServerDeploymentOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetGameServerDeployment()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta/%v/gameServerDeployments", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	params.Add("deploymentId", fmt.Sprintf("%v", req.GetDeploymentId()))
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1beta/%s", resp.GetName())
+	return &CreateGameServerDeploymentOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// DeleteGameServerDeployment deletes a single game server deployment.
+func (c *gameServerDeploymentsRESTClient) DeleteGameServerDeployment(ctx context.Context, req *gamingpb.DeleteGameServerDeploymentRequest, opts ...gax.CallOption) (*DeleteGameServerDeploymentOperation, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1beta/%s", resp.GetName())
+	return &DeleteGameServerDeploymentOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// UpdateGameServerDeployment patches a game server deployment.
+func (c *gameServerDeploymentsRESTClient) UpdateGameServerDeployment(ctx context.Context, req *gamingpb.UpdateGameServerDeploymentRequest, opts ...gax.CallOption) (*UpdateGameServerDeploymentOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetGameServerDeployment()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetGameServerDeployment().GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetUpdateMask() != nil {
+		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(updateMask))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "game_server_deployment.name", url.QueryEscape(req.GetGameServerDeployment().GetName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1beta/%s", resp.GetName())
+	return &UpdateGameServerDeploymentOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// GetGameServerDeploymentRollout gets details a single game server deployment rollout.
+func (c *gameServerDeploymentsRESTClient) GetGameServerDeploymentRollout(ctx context.Context, req *gamingpb.GetGameServerDeploymentRolloutRequest, opts ...gax.CallOption) (*gamingpb.GameServerDeploymentRollout, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta/%v/rollout", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).GetGameServerDeploymentRollout[0:len((*c.CallOptions).GetGameServerDeploymentRollout):len((*c.CallOptions).GetGameServerDeploymentRollout)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &gamingpb.GameServerDeploymentRollout{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// UpdateGameServerDeploymentRollout patches a single game server deployment rollout.
+// The method will not return an error if the update does not affect any
+// existing realms. For example - if the default_game_server_config is changed
+// but all existing realms use the override, that is valid. Similarly, if a
+// non existing realm is explicitly called out in game_server_config_overrides
+// field, that will also not result in an error.
+func (c *gameServerDeploymentsRESTClient) UpdateGameServerDeploymentRollout(ctx context.Context, req *gamingpb.UpdateGameServerDeploymentRolloutRequest, opts ...gax.CallOption) (*UpdateGameServerDeploymentRolloutOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetRollout()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta/%v/rollout", req.GetRollout().GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetUpdateMask() != nil {
+		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(updateMask))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "rollout.name", url.QueryEscape(req.GetRollout().GetName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1beta/%s", resp.GetName())
+	return &UpdateGameServerDeploymentRolloutOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// PreviewGameServerDeploymentRollout previews the game server deployment rollout. This API does not mutate the
+// rollout resource.
+func (c *gameServerDeploymentsRESTClient) PreviewGameServerDeploymentRollout(ctx context.Context, req *gamingpb.PreviewGameServerDeploymentRolloutRequest, opts ...gax.CallOption) (*gamingpb.PreviewGameServerDeploymentRolloutResponse, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetRollout()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta/%v/rollout:preview", req.GetRollout().GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetPreviewTime() != nil {
+		previewTime, err := protojson.Marshal(req.GetPreviewTime())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("previewTime", string(previewTime))
+	}
+	if req.GetUpdateMask() != nil {
+		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(updateMask))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "rollout.name", url.QueryEscape(req.GetRollout().GetName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).PreviewGameServerDeploymentRollout[0:len((*c.CallOptions).PreviewGameServerDeploymentRollout):len((*c.CallOptions).PreviewGameServerDeploymentRollout)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &gamingpb.PreviewGameServerDeploymentRolloutResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// FetchDeploymentState retrieves information about the current state of the game server
+// deployment. Gathers all the Agones fleets and Agones autoscalers,
+// including fleets running an older version of the game server deployment.
+func (c *gameServerDeploymentsRESTClient) FetchDeploymentState(ctx context.Context, req *gamingpb.FetchDeploymentStateRequest, opts ...gax.CallOption) (*gamingpb.FetchDeploymentStateResponse, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta/%v:fetchDeploymentState", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).FetchDeploymentState[0:len((*c.CallOptions).FetchDeploymentState):len((*c.CallOptions).FetchDeploymentState)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &gamingpb.FetchDeploymentStateResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
 // CreateGameServerDeploymentOperation manages a long-running operation from CreateGameServerDeployment.
 type CreateGameServerDeploymentOperation struct {
-	lro *longrunning.Operation
+	lro      *longrunning.Operation
+	pollPath string
 }
 
 // CreateGameServerDeploymentOperation returns a new CreateGameServerDeploymentOperation from a given name.
 // The name must be that of a previously created CreateGameServerDeploymentOperation, possibly from a different process.
-func (c *GameServerDeploymentsClient) CreateGameServerDeploymentOperation(name string) *CreateGameServerDeploymentOperation {
+func (c *gameServerDeploymentsGRPCClient) CreateGameServerDeploymentOperation(name string) *CreateGameServerDeploymentOperation {
 	return &CreateGameServerDeploymentOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// CreateGameServerDeploymentOperation returns a new CreateGameServerDeploymentOperation from a given name.
+// The name must be that of a previously created CreateGameServerDeploymentOperation, possibly from a different process.
+func (c *gameServerDeploymentsRESTClient) CreateGameServerDeploymentOperation(name string) *CreateGameServerDeploymentOperation {
+	override := fmt.Sprintf("/v1beta/%s", name)
+	return &CreateGameServerDeploymentOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
 	}
 }
 
@@ -472,6 +1393,7 @@ func (c *GameServerDeploymentsClient) CreateGameServerDeploymentOperation(name s
 //
 // See documentation of Poll for error-handling information.
 func (op *CreateGameServerDeploymentOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*gamingpb.GameServerDeployment, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
 	var resp gamingpb.GameServerDeployment
 	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
 		return nil, err
@@ -489,6 +1411,7 @@ func (op *CreateGameServerDeploymentOperation) Wait(ctx context.Context, opts ..
 // op.Done will return true, and the response of the operation is returned.
 // If Poll succeeds and the operation has not completed, the returned response and error are both nil.
 func (op *CreateGameServerDeploymentOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*gamingpb.GameServerDeployment, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
 	var resp gamingpb.GameServerDeployment
 	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
 		return nil, err
@@ -526,14 +1449,25 @@ func (op *CreateGameServerDeploymentOperation) Name() string {
 
 // DeleteGameServerDeploymentOperation manages a long-running operation from DeleteGameServerDeployment.
 type DeleteGameServerDeploymentOperation struct {
-	lro *longrunning.Operation
+	lro      *longrunning.Operation
+	pollPath string
 }
 
 // DeleteGameServerDeploymentOperation returns a new DeleteGameServerDeploymentOperation from a given name.
 // The name must be that of a previously created DeleteGameServerDeploymentOperation, possibly from a different process.
-func (c *GameServerDeploymentsClient) DeleteGameServerDeploymentOperation(name string) *DeleteGameServerDeploymentOperation {
+func (c *gameServerDeploymentsGRPCClient) DeleteGameServerDeploymentOperation(name string) *DeleteGameServerDeploymentOperation {
 	return &DeleteGameServerDeploymentOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// DeleteGameServerDeploymentOperation returns a new DeleteGameServerDeploymentOperation from a given name.
+// The name must be that of a previously created DeleteGameServerDeploymentOperation, possibly from a different process.
+func (c *gameServerDeploymentsRESTClient) DeleteGameServerDeploymentOperation(name string) *DeleteGameServerDeploymentOperation {
+	override := fmt.Sprintf("/v1beta/%s", name)
+	return &DeleteGameServerDeploymentOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
 	}
 }
 
@@ -541,6 +1475,7 @@ func (c *GameServerDeploymentsClient) DeleteGameServerDeploymentOperation(name s
 //
 // See documentation of Poll for error-handling information.
 func (op *DeleteGameServerDeploymentOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
 	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
 }
 
@@ -554,6 +1489,7 @@ func (op *DeleteGameServerDeploymentOperation) Wait(ctx context.Context, opts ..
 // op.Done will return true, and the response of the operation is returned.
 // If Poll succeeds and the operation has not completed, the returned response and error are both nil.
 func (op *DeleteGameServerDeploymentOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
 	return op.lro.Poll(ctx, nil, opts...)
 }
 
@@ -584,14 +1520,25 @@ func (op *DeleteGameServerDeploymentOperation) Name() string {
 
 // UpdateGameServerDeploymentOperation manages a long-running operation from UpdateGameServerDeployment.
 type UpdateGameServerDeploymentOperation struct {
-	lro *longrunning.Operation
+	lro      *longrunning.Operation
+	pollPath string
 }
 
 // UpdateGameServerDeploymentOperation returns a new UpdateGameServerDeploymentOperation from a given name.
 // The name must be that of a previously created UpdateGameServerDeploymentOperation, possibly from a different process.
-func (c *GameServerDeploymentsClient) UpdateGameServerDeploymentOperation(name string) *UpdateGameServerDeploymentOperation {
+func (c *gameServerDeploymentsGRPCClient) UpdateGameServerDeploymentOperation(name string) *UpdateGameServerDeploymentOperation {
 	return &UpdateGameServerDeploymentOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// UpdateGameServerDeploymentOperation returns a new UpdateGameServerDeploymentOperation from a given name.
+// The name must be that of a previously created UpdateGameServerDeploymentOperation, possibly from a different process.
+func (c *gameServerDeploymentsRESTClient) UpdateGameServerDeploymentOperation(name string) *UpdateGameServerDeploymentOperation {
+	override := fmt.Sprintf("/v1beta/%s", name)
+	return &UpdateGameServerDeploymentOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
 	}
 }
 
@@ -599,6 +1546,7 @@ func (c *GameServerDeploymentsClient) UpdateGameServerDeploymentOperation(name s
 //
 // See documentation of Poll for error-handling information.
 func (op *UpdateGameServerDeploymentOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*gamingpb.GameServerDeployment, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
 	var resp gamingpb.GameServerDeployment
 	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
 		return nil, err
@@ -616,6 +1564,7 @@ func (op *UpdateGameServerDeploymentOperation) Wait(ctx context.Context, opts ..
 // op.Done will return true, and the response of the operation is returned.
 // If Poll succeeds and the operation has not completed, the returned response and error are both nil.
 func (op *UpdateGameServerDeploymentOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*gamingpb.GameServerDeployment, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
 	var resp gamingpb.GameServerDeployment
 	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
 		return nil, err
@@ -653,14 +1602,25 @@ func (op *UpdateGameServerDeploymentOperation) Name() string {
 
 // UpdateGameServerDeploymentRolloutOperation manages a long-running operation from UpdateGameServerDeploymentRollout.
 type UpdateGameServerDeploymentRolloutOperation struct {
-	lro *longrunning.Operation
+	lro      *longrunning.Operation
+	pollPath string
 }
 
 // UpdateGameServerDeploymentRolloutOperation returns a new UpdateGameServerDeploymentRolloutOperation from a given name.
 // The name must be that of a previously created UpdateGameServerDeploymentRolloutOperation, possibly from a different process.
-func (c *GameServerDeploymentsClient) UpdateGameServerDeploymentRolloutOperation(name string) *UpdateGameServerDeploymentRolloutOperation {
+func (c *gameServerDeploymentsGRPCClient) UpdateGameServerDeploymentRolloutOperation(name string) *UpdateGameServerDeploymentRolloutOperation {
 	return &UpdateGameServerDeploymentRolloutOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// UpdateGameServerDeploymentRolloutOperation returns a new UpdateGameServerDeploymentRolloutOperation from a given name.
+// The name must be that of a previously created UpdateGameServerDeploymentRolloutOperation, possibly from a different process.
+func (c *gameServerDeploymentsRESTClient) UpdateGameServerDeploymentRolloutOperation(name string) *UpdateGameServerDeploymentRolloutOperation {
+	override := fmt.Sprintf("/v1beta/%s", name)
+	return &UpdateGameServerDeploymentRolloutOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
 	}
 }
 
@@ -668,6 +1628,7 @@ func (c *GameServerDeploymentsClient) UpdateGameServerDeploymentRolloutOperation
 //
 // See documentation of Poll for error-handling information.
 func (op *UpdateGameServerDeploymentRolloutOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*gamingpb.GameServerDeployment, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
 	var resp gamingpb.GameServerDeployment
 	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
 		return nil, err
@@ -685,6 +1646,7 @@ func (op *UpdateGameServerDeploymentRolloutOperation) Wait(ctx context.Context, 
 // op.Done will return true, and the response of the operation is returned.
 // If Poll succeeds and the operation has not completed, the returned response and error are both nil.
 func (op *UpdateGameServerDeploymentRolloutOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*gamingpb.GameServerDeployment, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
 	var resp gamingpb.GameServerDeployment
 	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
 		return nil, err

@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+//go:build linux
 // +build linux
 
 package profiler
@@ -64,8 +65,9 @@ retry apt-get -y -q install git >/dev/null
 mkdir -p /tmp/gocache
 export GOCACHE=/tmp/gocache
 
-# Install gcc, needed to install go master
-if [ "{{.GoVersion}}" = "master" ]
+# Install gcc, needed to install go master and cgo depencencies when using
+# go1.11.
+if [ "{{.GoVersion}}" = "master" ] || [[ "{{.GoVersion}}" =~ 1.11.* ]]
 then
 retry apt-get -y -q install gcc >/dev/null
 fi
@@ -76,7 +78,14 @@ retry curl -sL -o /tmp/bin/gimme https://raw.githubusercontent.com/travis-ci/gim
 chmod +x /tmp/bin/gimme
 export PATH=$PATH:/tmp/bin
 
-retry eval "$(gimme {{.GoVersion}})"
+gimme_retrier() {
+  eval "$(gimme {{.GoVersion}})"
+  which go # To retry on non-zero code if go not installed.
+}
+retry gimme_retrier
+
+# Use go modules
+export GO111MODULE="on"
 
 # Set $GOPATH
 export GOPATH="$HOME/go"
@@ -85,7 +94,7 @@ export GOCLOUD_HOME=$GOPATH/src/cloud.google.com/go
 mkdir -p $GOCLOUD_HOME
 
 # Install agent
-retry git clone https://code.googlesource.com/gocloud $GOCLOUD_HOME >/dev/null
+retry git clone https://github.com/googleapis/google-cloud-go.git $GOCLOUD_HOME >/dev/null
 cd $GOCLOUD_HOME
 retry git fetch origin {{.Commit}}
 git reset --hard {{.Commit}}
@@ -109,13 +118,17 @@ echo "{{.FinishString}}"
 {{ define "integration_backoff" -}}
 {{- template "prologue" . }}
 {{- template "setup" . }}
+
+# Compile first so each spawned process can just use the same binary.
+go build busybench.go
+
 # Do not display commands being run to simplify logging output.
 set +x
 
 # Run benchmarks with agent.
 echo "Starting {{.NumBackoffBenchmarks}} benchmarks."
 for (( i = 0; i < {{.NumBackoffBenchmarks}}; i++ )); do
-	(go run busybench.go --service="{{.Service}}" --duration={{.DurationSec}} \
+	(./busybench --service="{{.Service}}" --duration={{.DurationSec}} \
 		--num_busyworkers=1) |& while read line; \
 		do echo "benchmark $i: ${line}"; done &
 done
@@ -201,7 +214,7 @@ func pstTimeStr() (string, error) {
 	if err != nil {
 		return "", fmt.Errorf("failed to initialize PST location: %v", err)
 	}
-	return strings.Replace(time.Now().In(pst).Format("2006-01-02-15-04-05.000000-0700"), ".", "-", -1), nil
+	return strings.ToLower(strings.Replace(time.Now().In(pst).Format("2006-01-02-15-04-05.000000-MST"), ".", "-", -1)), nil
 }
 
 func TestAgentIntegration(t *testing.T) {
@@ -264,9 +277,11 @@ func TestAgentIntegration(t *testing.T) {
 	testcases := []goGCETestCase{
 		{
 			InstanceConfig: proftest.InstanceConfig{
-				ProjectID:   projectID,
-				Name:        fmt.Sprintf("profiler-test-gomaster-%s", runID),
-				MachineType: "n1-standard-1",
+				ProjectID:    projectID,
+				Name:         fmt.Sprintf("profiler-test-gomaster-%s", runID),
+				MachineType:  "n1-standard-1",
+				ImageProject: "debian-cloud",
+				ImageFamily:  "debian-11",
 			},
 			name:             "profiler-test-gomaster",
 			wantProfileTypes: []string{"CPU", "HEAP", "THREADS", "CONTENTION", "HEAP_ALLOC"},
@@ -277,9 +292,11 @@ func TestAgentIntegration(t *testing.T) {
 		},
 		{
 			InstanceConfig: proftest.InstanceConfig{
-				ProjectID:   projectID,
-				Name:        fmt.Sprintf("profiler-test-go%s-%s", goVersionName, runID),
-				MachineType: "n1-standard-1",
+				ProjectID:    projectID,
+				Name:         fmt.Sprintf("profiler-test-go%s-%s", goVersionName, runID),
+				MachineType:  "n1-standard-1",
+				ImageProject: "debian-cloud",
+				ImageFamily:  "debian-11",
 			},
 			name:             fmt.Sprintf("profiler-test-go%s", goVersionName),
 			wantProfileTypes: []string{"CPU", "HEAP", "THREADS", "CONTENTION", "HEAP_ALLOC"},
@@ -301,6 +318,9 @@ func TestAgentIntegration(t *testing.T) {
 					// memory than is available on an n1-standard-1. Use a
 					// machine type with more memory for backoff test.
 					MachineType: "n1-highmem-2",
+
+					ImageProject: "debian-cloud",
+					ImageFamily:  "debian-11",
 				},
 				name:          fmt.Sprintf("profiler-backoff-test-go%s", goVersionName),
 				goVersion:     goVersion,

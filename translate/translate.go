@@ -26,6 +26,7 @@ import (
 	"net/http"
 
 	"cloud.google.com/go/internal/version"
+	"cloud.google.com/go/translate/internal"
 	"golang.org/x/text/language"
 	"google.golang.org/api/option"
 	raw "google.golang.org/api/translate/v2"
@@ -57,11 +58,11 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 	o = append(o, opts...)
 	httpClient, endpoint, err := htransport.NewClient(ctx, o...)
 	if err != nil {
-		return nil, fmt.Errorf("dialing: %v", err)
+		return nil, fmt.Errorf("dialing: %w", err)
 	}
 	rawService, err := raw.New(httpClient)
 	if err != nil {
-		return nil, fmt.Errorf("translate client: %v", err)
+		return nil, fmt.Errorf("translate client: %w", err)
 	}
 	rawService.BasePath = endpoint
 	return &Client{raw: rawService}, nil
@@ -236,5 +237,5 @@ type Language struct {
 }
 
 func setClientHeader(headers http.Header) {
-	headers.Set("x-goog-api-client", fmt.Sprintf("gl-go/%s gccl/%s", version.Go(), version.Repo))
+	headers.Set("x-goog-api-client", fmt.Sprintf("gl-go/%s gccl/%s", version.Go(), internal.Version))
 }

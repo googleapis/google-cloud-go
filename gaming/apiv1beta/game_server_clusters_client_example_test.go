@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,32 +20,60 @@ import (
 	"context"
 
 	gaming "cloud.google.com/go/gaming/apiv1beta"
+	gamingpb "cloud.google.com/go/gaming/apiv1beta/gamingpb"
 	"google.golang.org/api/iterator"
-	gamingpb "google.golang.org/genproto/googleapis/cloud/gaming/v1beta"
 )
 
 func ExampleNewGameServerClustersClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := gaming.NewGameServerClustersClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
+func ExampleNewGameServerClustersRESTClient() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := gaming.NewGameServerClustersRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleGameServerClustersClient_ListGameServerClusters() {
-	// import gamingpb "google.golang.org/genproto/googleapis/cloud/gaming/v1beta"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := gaming.NewGameServerClustersClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &gamingpb.ListGameServerClustersRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/gaming/apiv1beta/gamingpb#ListGameServerClustersRequest.
 	}
 	it := c.ListGameServerClusters(ctx, req)
 	for {
@@ -62,16 +90,21 @@ func ExampleGameServerClustersClient_ListGameServerClusters() {
 }
 
 func ExampleGameServerClustersClient_GetGameServerCluster() {
-	// import gamingpb "google.golang.org/genproto/googleapis/cloud/gaming/v1beta"
-
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := gaming.NewGameServerClustersClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &gamingpb.GetGameServerClusterRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/gaming/apiv1beta/gamingpb#GetGameServerClusterRequest.
 	}
 	resp, err := c.GetGameServerCluster(ctx, req)
 	if err != nil {
@@ -82,16 +115,21 @@ func ExampleGameServerClustersClient_GetGameServerCluster() {
 }
 
 func ExampleGameServerClustersClient_CreateGameServerCluster() {
-	// import gamingpb "google.golang.org/genproto/googleapis/cloud/gaming/v1beta"
-
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := gaming.NewGameServerClustersClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &gamingpb.CreateGameServerClusterRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/gaming/apiv1beta/gamingpb#CreateGameServerClusterRequest.
 	}
 	op, err := c.CreateGameServerCluster(ctx, req)
 	if err != nil {
@@ -107,16 +145,21 @@ func ExampleGameServerClustersClient_CreateGameServerCluster() {
 }
 
 func ExampleGameServerClustersClient_PreviewCreateGameServerCluster() {
-	// import gamingpb "google.golang.org/genproto/googleapis/cloud/gaming/v1beta"
-
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := gaming.NewGameServerClustersClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &gamingpb.PreviewCreateGameServerClusterRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/gaming/apiv1beta/gamingpb#PreviewCreateGameServerClusterRequest.
 	}
 	resp, err := c.PreviewCreateGameServerCluster(ctx, req)
 	if err != nil {
@@ -127,16 +170,21 @@ func ExampleGameServerClustersClient_PreviewCreateGameServerCluster() {
 }
 
 func ExampleGameServerClustersClient_DeleteGameServerCluster() {
-	// import gamingpb "google.golang.org/genproto/googleapis/cloud/gaming/v1beta"
-
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := gaming.NewGameServerClustersClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &gamingpb.DeleteGameServerClusterRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/gaming/apiv1beta/gamingpb#DeleteGameServerClusterRequest.
 	}
 	op, err := c.DeleteGameServerCluster(ctx, req)
 	if err != nil {
@@ -150,16 +198,21 @@ func ExampleGameServerClustersClient_DeleteGameServerCluster() {
 }
 
 func ExampleGameServerClustersClient_PreviewDeleteGameServerCluster() {
-	// import gamingpb "google.golang.org/genproto/googleapis/cloud/gaming/v1beta"
-
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := gaming.NewGameServerClustersClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &gamingpb.PreviewDeleteGameServerClusterRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/gaming/apiv1beta/gamingpb#PreviewDeleteGameServerClusterRequest.
 	}
 	resp, err := c.PreviewDeleteGameServerCluster(ctx, req)
 	if err != nil {
@@ -170,16 +223,21 @@ func ExampleGameServerClustersClient_PreviewDeleteGameServerCluster() {
 }
 
 func ExampleGameServerClustersClient_UpdateGameServerCluster() {
-	// import gamingpb "google.golang.org/genproto/googleapis/cloud/gaming/v1beta"
-
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := gaming.NewGameServerClustersClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &gamingpb.UpdateGameServerClusterRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/gaming/apiv1beta/gamingpb#UpdateGameServerClusterRequest.
 	}
 	op, err := c.UpdateGameServerCluster(ctx, req)
 	if err != nil {
@@ -195,16 +253,21 @@ func ExampleGameServerClustersClient_UpdateGameServerCluster() {
 }
 
 func ExampleGameServerClustersClient_PreviewUpdateGameServerCluster() {
-	// import gamingpb "google.golang.org/genproto/googleapis/cloud/gaming/v1beta"
-
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := gaming.NewGameServerClustersClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &gamingpb.PreviewUpdateGameServerClusterRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/gaming/apiv1beta/gamingpb#PreviewUpdateGameServerClusterRequest.
 	}
 	resp, err := c.PreviewUpdateGameServerCluster(ctx, req)
 	if err != nil {

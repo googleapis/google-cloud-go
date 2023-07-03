@@ -30,9 +30,18 @@ set -x
 
 cd $(dirname $0)/..
 
+git config --global --add safe.directory /tmpfs/src/github/google-cloud-go
+
 export GOOGLE_APPLICATION_CREDENTIALS="${KOKORO_KEYSTORE_DIR}/72935_cloud-profiler-e2e-service-account-key"
 export GCLOUD_TESTS_GOLANG_PROJECT_ID="cloud-profiler-e2e"
 
+# Ensure a newer version of Go is used so it is compatible with newer libraries.
+# Here we install v1.18.4 which is the current version as of July 2022.
+retry curl -LO https://go.dev/dl/go1.18.4.linux-amd64.tar.gz
+sudo rm -rf /usr/local/go && tar -C /usr/local -xzf go1.18.4.linux-amd64.tar.gz
+export PATH=$PATH:/usr/local/go/bin
+
 # Run test.
+go version
 retry go mod download
 go test -run TestAgentIntegration -run_only_profiler_backoff_test -timeout 1h

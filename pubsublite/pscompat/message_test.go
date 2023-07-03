@@ -22,12 +22,12 @@ import (
 	"cloud.google.com/go/pubsub"
 	"github.com/google/go-cmp/cmp/cmpopts"
 
+	pb "cloud.google.com/go/pubsublite/apiv1/pubsublitepb"
 	tspb "github.com/golang/protobuf/ptypes/timestamp"
-	pb "google.golang.org/genproto/googleapis/cloud/pubsublite/v1"
 )
 
 func encodeTimestamp(seconds int64, nanos int32) string {
-	val, err := encodeEventTimestamp(&tspb.Timestamp{
+	val, err := EncodeEventTimeAttribute(&tspb.Timestamp{
 		Seconds: seconds,
 		Nanos:   nanos,
 	})
@@ -66,7 +66,6 @@ func TestMessageTransforms(t *testing.T) {
 				},
 			},
 			wantMsg: &pubsub.Message{
-				ID:          "10",
 				PublishTime: time.Unix(1577836800, 900800700),
 				Data:        []byte("foo"),
 				OrderingKey: "bar",
@@ -138,6 +137,54 @@ func TestMessageTransforms(t *testing.T) {
 				}
 				if diff := testutil.Diff(gotPubMsg, tc.wireMsg.Message, cmpopts.EquateEmpty()); diff != "" {
 					t.Errorf("transformPublishedMessage() got: -, want: +\n%s", diff)
+				}
+			}
+		})
+	}
+}
+
+func TestMessageMetadataStringEncoding(t *testing.T) {
+	for _, tc := range []struct {
+		desc    string
+		input   string
+		want    *MessageMetadata
+		wantErr bool
+	}{
+		{
+			desc:  "valid: zero",
+			input: "0:0",
+			want:  &MessageMetadata{Partition: 0, Offset: 0},
+		},
+		{
+			desc:  "valid: non-zero",
+			input: "3:1234",
+			want:  &MessageMetadata{Partition: 3, Offset: 1234},
+		},
+		{
+			desc:    "invalid: number",
+			input:   "1234",
+			wantErr: true,
+		},
+		{
+			desc:    "invalid: partition",
+			input:   "p:1234",
+			wantErr: true,
+		},
+		{
+			desc:    "invalid: offset",
+			input:   "10:9offset",
+			wantErr: true,
+		},
+	} {
+		t.Run(tc.desc, func(t *testing.T) {
+			got, gotErr := ParseMessageMetadata(tc.input)
+			if !testutil.Equal(got, tc.want) || (gotErr != nil) != tc.wantErr {
+				t.Errorf("ParseMessageMetadata(%q): got (%v, %v), want (%v, err=%v)", tc.input, got, gotErr, tc.want, tc.wantErr)
+			}
+
+			if tc.want != nil {
+				if got := tc.want.String(); got != tc.input {
+					t.Errorf("MessageMetadata(%v).String(): got %q, want: %q", tc.want, got, tc.input)
 				}
 			}
 		})

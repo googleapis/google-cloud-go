@@ -44,6 +44,8 @@ type RowIterator struct {
 	ctx context.Context
 	src *rowSource
 
+	arrowIterator *arrowIterator
+
 	pageInfo *iterator.PageInfo
 	nextFunc func() error
 	pf       pageFetcher
@@ -61,6 +63,23 @@ type RowIterator struct {
 
 	rows         [][]Value
 	structLoader structLoader // used to populate a pointer to a struct
+}
+
+// SourceJob returns an instance of a Job if the RowIterator is backed by a query,
+// or a nil.
+func (ri *RowIterator) SourceJob() *Job {
+	if ri.src == nil {
+		return nil
+	}
+	if ri.src.j == nil {
+		return nil
+	}
+	return &Job{
+		c:         ri.src.j.c,
+		projectID: ri.src.j.projectID,
+		location:  ri.src.j.location,
+		jobID:     ri.src.j.jobID,
+	}
 }
 
 // We declare a function signature for fetching results.  The primary reason
@@ -88,15 +107,21 @@ type pageFetcher func(ctx context.Context, _ *rowSource, _ Schema, startIndex ui
 // Each BigQuery column type corresponds to one or more Go types; a matching struct
 // field must be of the correct type. The correspondences are:
 //
-//   STRING      string
-//   BOOL        bool
-//   INTEGER     int, int8, int16, int32, int64, uint8, uint16, uint32
-//   FLOAT       float32, float64
-//   BYTES       []byte
-//   TIMESTAMP   time.Time
-//   DATE        civil.Date
-//   TIME        civil.Time
-//   DATETIME    civil.DateTime
+//	STRING      string
+//	BOOL        bool
+//	INTEGER     int, int8, int16, int32, int64, uint8, uint16, uint32
+//	FLOAT       float32, float64
+//	BYTES       []byte
+//	TIMESTAMP   time.Time
+//	DATE        civil.Date
+//	TIME        civil.Time
+//	DATETIME    civil.DateTime
+//	NUMERIC     *big.Rat
+//	BIGNUMERIC  *big.Rat
+//
+// The big.Rat type supports numbers of arbitrary size and precision.
+// See https://cloud.google.com/bigquery/docs/reference/standard-sql/data-types#numeric-type
+// for more on NUMERIC.
 //
 // A repeated field corresponds to a slice or array of the element type. A STRUCT
 // type (RECORD or nested schema) corresponds to a nested struct or struct pointer.
@@ -167,12 +192,12 @@ func (it *RowIterator) fetch(pageSize int, pageToken string) (string, error) {
 // fast execution query path which can return status, rows, and schema all at
 // once.  Our cache data expectations are as follows:
 //
-// * We can only cache data from the start of a source.
-// * We need to cache schema, rows, and next page token to effective service
-//   a request from cache.
-// * cache references are destroyed as soon as they're interrogated.  We don't
-//   want to retain the data unnecessarily, and we expect that the backend
-//   can always provide them if needed.
+//   - We can only cache data from the start of a source.
+//   - We need to cache schema, rows, and next page token to effective service
+//     a request from cache.
+//   - cache references are destroyed as soon as they're interrogated.  We don't
+//     want to retain the data unnecessarily, and we expect that the backend
+//     can always provide them if needed.
 type rowSource struct {
 	j *Job
 	t *Table
@@ -267,7 +292,7 @@ func fetchTableResultPage(ctx context.Context, src *rowSource, schema Schema, st
 func fetchJobResultPage(ctx context.Context, src *rowSource, schema Schema, startIndex uint64, pageSize int64, pageToken string) (*fetchPageResult, error) {
 	// reduce data transfered by leveraging api projections
 	projectedFields := []googleapi.Field{"rows", "pageToken", "totalRows"}
-	call := src.j.c.bqs.Jobs.GetQueryResults(src.j.projectID, src.j.jobID).Location(src.j.location)
+	call := src.j.c.bqs.Jobs.GetQueryResults(src.j.projectID, src.j.jobID).Location(src.j.location).Context(ctx)
 	if schema == nil {
 		// only project schema if we weren't supplied one.
 		projectedFields = append(projectedFields, "schema")
@@ -284,7 +309,7 @@ func fetchJobResultPage(ctx context.Context, src *rowSource, schema Schema, star
 	}
 	var res *bq.GetQueryResultsResponse
 	err := runWithRetry(ctx, func() (err error) {
-		res, err = call.Context(ctx).Do()
+		res, err = call.Do()
 		return err
 	})
 	if err != nil {
@@ -306,7 +331,7 @@ func fetchJobResultPage(ctx context.Context, src *rowSource, schema Schema, star
 	}, nil
 }
 
-var errNoCacheData = errors.New("No rows in rowSource cache")
+var errNoCacheData = errors.New("no rows in rowSource cache")
 
 // fetchCachedPage attempts to service the first page of results.  For the jobs path specifically, we have an
 // opportunity to fetch rows before the iterator is constructed, and thus serve that data as the first request

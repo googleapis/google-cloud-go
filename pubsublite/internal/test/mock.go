@@ -17,6 +17,7 @@ import (
 	"context"
 	"io"
 	"log"
+	"math"
 	"reflect"
 	"sync"
 
@@ -27,8 +28,9 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
+	lrpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	pb "cloud.google.com/go/pubsublite/apiv1/pubsublitepb"
 	emptypb "github.com/golang/protobuf/ptypes/empty"
-	pb "google.golang.org/genproto/googleapis/cloud/pubsublite/v1"
 )
 
 // MockServer is an in-memory mock implementation of a Pub/Sub Lite service,
@@ -52,7 +54,9 @@ type Server struct {
 
 // NewServer creates a new mock Pub/Sub Lite server.
 func NewServer() (*Server, error) {
-	srv, err := testutil.NewServer()
+	srv, err := testutil.NewServer(
+		grpc.MaxRecvMsgSize(math.MaxInt32),
+		grpc.MaxSendMsgSize(math.MaxInt32))
 	if err != nil {
 		return nil, err
 	}
@@ -62,13 +66,16 @@ func NewServer() (*Server, error) {
 	pb.RegisterSubscriberServiceServer(srv.Gsrv, liteServer)
 	pb.RegisterCursorServiceServer(srv.Gsrv, liteServer)
 	pb.RegisterPartitionAssignmentServiceServer(srv.Gsrv, liteServer)
+	lrpb.RegisterOperationsServer(srv.Gsrv, liteServer)
 	srv.Start()
 	return &Server{LiteServer: liteServer, gRPCServer: srv}, nil
 }
 
 // ClientConn creates a client connection to the gRPC test server.
 func (s *Server) ClientConn() option.ClientOption {
-	conn, err := grpc.Dial(s.gRPCServer.Addr, grpc.WithInsecure())
+	conn, err := grpc.Dial(s.gRPCServer.Addr, grpc.WithInsecure(),
+		grpc.WithDefaultCallOptions(grpc.MaxCallRecvMsgSize(math.MaxInt32)),
+		grpc.WithDefaultCallOptions(grpc.MaxCallSendMsgSize(math.MaxInt32)))
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -87,6 +94,7 @@ type mockLiteServer struct {
 	pb.SubscriberServiceServer
 	pb.CursorServiceServer
 	pb.PartitionAssignmentServiceServer
+	lrpb.OperationsServer
 
 	mu sync.Mutex
 
@@ -277,7 +285,7 @@ func (s *mockLiteServer) doTopicResponse(ctx context.Context, req interface{}) (
 	}
 	resp, ok := retResponse.(*pb.Topic)
 	if !ok {
-		return nil, status.Errorf(codes.FailedPrecondition, "mockserver: invalid response type %v", reflect.TypeOf(retResponse))
+		return nil, status.Errorf(codes.FailedPrecondition, "mockserver: invalid response type %T", retResponse)
 	}
 	return resp, nil
 }
@@ -289,7 +297,31 @@ func (s *mockLiteServer) doSubscriptionResponse(ctx context.Context, req interfa
 	}
 	resp, ok := retResponse.(*pb.Subscription)
 	if !ok {
-		return nil, status.Errorf(codes.FailedPrecondition, "mockserver: invalid response type %v", reflect.TypeOf(retResponse))
+		return nil, status.Errorf(codes.FailedPrecondition, "mockserver: invalid response type %T", retResponse)
+	}
+	return resp, nil
+}
+
+func (s *mockLiteServer) doOperationResponse(ctx context.Context, req interface{}) (*lrpb.Operation, error) {
+	retResponse, retErr := s.popGlobalVerifiers(req)
+	if retErr != nil {
+		return nil, retErr
+	}
+	resp, ok := retResponse.(*lrpb.Operation)
+	if !ok {
+		return nil, status.Errorf(codes.FailedPrecondition, "mockserver: invalid response type %T", retResponse)
+	}
+	return resp, nil
+}
+
+func (s *mockLiteServer) doReservationResponse(ctx context.Context, req interface{}) (*pb.Reservation, error) {
+	retResponse, retErr := s.popGlobalVerifiers(req)
+	if retErr != nil {
+		return nil, retErr
+	}
+	resp, ok := retResponse.(*pb.Reservation)
+	if !ok {
+		return nil, status.Errorf(codes.FailedPrecondition, "mockserver: invalid response type %T", retResponse)
 	}
 	return resp, nil
 }
@@ -301,7 +333,7 @@ func (s *mockLiteServer) doEmptyResponse(ctx context.Context, req interface{}) (
 	}
 	resp, ok := retResponse.(*emptypb.Empty)
 	if !ok {
-		return nil, status.Errorf(codes.FailedPrecondition, "mockserver: invalid response type %v", reflect.TypeOf(retResponse))
+		return nil, status.Errorf(codes.FailedPrecondition, "mockserver: invalid response type %T", retResponse)
 	}
 	return resp, nil
 }
@@ -325,7 +357,7 @@ func (s *mockLiteServer) GetTopicPartitions(ctx context.Context, req *pb.GetTopi
 	}
 	resp, ok := retResponse.(*pb.TopicPartitions)
 	if !ok {
-		return nil, status.Errorf(codes.FailedPrecondition, "mockserver: invalid response type %v", reflect.TypeOf(retResponse))
+		return nil, status.Errorf(codes.FailedPrecondition, "mockserver: invalid response type %T", retResponse)
 	}
 	return resp, nil
 }
@@ -346,7 +378,27 @@ func (s *mockLiteServer) UpdateSubscription(ctx context.Context, req *pb.UpdateS
 	return s.doSubscriptionResponse(ctx, req)
 }
 
+func (s *mockLiteServer) SeekSubscription(ctx context.Context, req *pb.SeekSubscriptionRequest) (*lrpb.Operation, error) {
+	return s.doOperationResponse(ctx, req)
+}
+
 func (s *mockLiteServer) DeleteSubscription(ctx context.Context, req *pb.DeleteSubscriptionRequest) (*emptypb.Empty, error) {
+	return s.doEmptyResponse(ctx, req)
+}
+
+func (s *mockLiteServer) CreateReservation(ctx context.Context, req *pb.CreateReservationRequest) (*pb.Reservation, error) {
+	return s.doReservationResponse(ctx, req)
+}
+
+func (s *mockLiteServer) GetReservation(ctx context.Context, req *pb.GetReservationRequest) (*pb.Reservation, error) {
+	return s.doReservationResponse(ctx, req)
+}
+
+func (s *mockLiteServer) UpdateReservation(ctx context.Context, req *pb.UpdateReservationRequest) (*pb.Reservation, error) {
+	return s.doReservationResponse(ctx, req)
+}
+
+func (s *mockLiteServer) DeleteReservation(ctx context.Context, req *pb.DeleteReservationRequest) (*emptypb.Empty, error) {
 	return s.doEmptyResponse(ctx, req)
 }
 
@@ -357,7 +409,7 @@ func (s *mockLiteServer) ListTopics(ctx context.Context, req *pb.ListTopicsReque
 	}
 	resp, ok := retResponse.(*pb.ListTopicsResponse)
 	if !ok {
-		return nil, status.Errorf(codes.FailedPrecondition, "mockserver: invalid response type %v", reflect.TypeOf(retResponse))
+		return nil, status.Errorf(codes.FailedPrecondition, "mockserver: invalid response type %T", retResponse)
 	}
 	return resp, nil
 }
@@ -369,7 +421,7 @@ func (s *mockLiteServer) ListTopicSubscriptions(ctx context.Context, req *pb.Lis
 	}
 	resp, ok := retResponse.(*pb.ListTopicSubscriptionsResponse)
 	if !ok {
-		return nil, status.Errorf(codes.FailedPrecondition, "mockserver: invalid response type %v", reflect.TypeOf(retResponse))
+		return nil, status.Errorf(codes.FailedPrecondition, "mockserver: invalid response type %T", retResponse)
 	}
 	return resp, nil
 }
@@ -381,7 +433,51 @@ func (s *mockLiteServer) ListSubscriptions(ctx context.Context, req *pb.ListSubs
 	}
 	resp, ok := retResponse.(*pb.ListSubscriptionsResponse)
 	if !ok {
-		return nil, status.Errorf(codes.FailedPrecondition, "mockserver: invalid response type %v", reflect.TypeOf(retResponse))
+		return nil, status.Errorf(codes.FailedPrecondition, "mockserver: invalid response type %T", retResponse)
 	}
 	return resp, nil
+}
+
+func (s *mockLiteServer) ListReservations(ctx context.Context, req *pb.ListReservationsRequest) (*pb.ListReservationsResponse, error) {
+	retResponse, retErr := s.popGlobalVerifiers(req)
+	if retErr != nil {
+		return nil, retErr
+	}
+	resp, ok := retResponse.(*pb.ListReservationsResponse)
+	if !ok {
+		return nil, status.Errorf(codes.FailedPrecondition, "mockserver: invalid response type %T", retResponse)
+	}
+	return resp, nil
+}
+
+func (s *mockLiteServer) ListReservationTopics(ctx context.Context, req *pb.ListReservationTopicsRequest) (*pb.ListReservationTopicsResponse, error) {
+	retResponse, retErr := s.popGlobalVerifiers(req)
+	if retErr != nil {
+		return nil, retErr
+	}
+	resp, ok := retResponse.(*pb.ListReservationTopicsResponse)
+	if !ok {
+		return nil, status.Errorf(codes.FailedPrecondition, "mockserver: invalid response type %T", retResponse)
+	}
+	return resp, nil
+}
+
+func (s *mockLiteServer) GetOperation(ctx context.Context, req *lrpb.GetOperationRequest) (*lrpb.Operation, error) {
+	return s.doOperationResponse(ctx, req)
+}
+
+func (s *mockLiteServer) ListOperations(ctx context.Context, req *lrpb.ListOperationsRequest) (*lrpb.ListOperationsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "Unexpected ListOperations call")
+}
+
+func (s *mockLiteServer) DeleteOperation(ctx context.Context, req *lrpb.DeleteOperationRequest) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "Unexpected DeleteOperation call")
+}
+
+func (s *mockLiteServer) CancelOperation(ctx context.Context, req *lrpb.CancelOperationRequest) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "Unexpected CancelOperation call")
+}
+
+func (s *mockLiteServer) WaitOperation(ctx context.Context, req *lrpb.WaitOperationRequest) (*lrpb.Operation, error) {
+	return nil, status.Errorf(codes.Unimplemented, "Unexpected WaitOperation call")
 }

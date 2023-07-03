@@ -21,11 +21,8 @@ import (
 	"cloud.google.com/go/pubsub"
 	"cloud.google.com/go/pubsublite/internal/test"
 	"cloud.google.com/go/pubsublite/internal/wire"
-	"cloud.google.com/go/pubsublite/publish"
-	"golang.org/x/xerrors"
-	"google.golang.org/api/support/bundler"
 
-	pb "google.golang.org/genproto/googleapis/cloud/pubsublite/v1"
+	pb "cloud.google.com/go/pubsublite/apiv1/pubsublitepb"
 )
 
 // mockWirePublisher is a mock implementation of the wire.Publisher interface.
@@ -44,7 +41,7 @@ func (mp *mockWirePublisher) Publish(msg *pb.PubSubMessage, onResult wire.Publis
 		onResult(nil, err)
 		return
 	}
-	result := resp.(*publish.Metadata)
+	result := resp.(*wire.MessageMetadata)
 	onResult(result, nil)
 }
 
@@ -68,7 +65,7 @@ func TestPublisherClientTransformMessage(t *testing.T) {
 		OrderingKey: "ordering_key",
 		Attributes:  map[string]string{"attr": "value"},
 	}
-	fakeResponse := &publish.Metadata{
+	fakeResponse := &wire.MessageMetadata{
 		Partition: 2,
 		Offset:    42,
 	}
@@ -175,64 +172,5 @@ func TestPublisherClientTransformMessageError(t *testing.T) {
 	}
 	if got, want := pubClient.wirePub.(*mockWirePublisher).Stopped, true; got != want {
 		t.Errorf("Publisher.Stopped: got %v, want %v", got, want)
-	}
-}
-
-func TestPublisherClientTranslatePublishResultErrors(t *testing.T) {
-	ctx := context.Background()
-	input := &pubsub.Message{
-		Data:        []byte("data"),
-		OrderingKey: "ordering_key",
-	}
-	wantMsg := &pb.PubSubMessage{
-		Data: []byte("data"),
-		Key:  []byte("ordering_key"),
-	}
-
-	for _, tc := range []struct {
-		desc    string
-		wireErr error
-		wantErr error
-	}{
-		{
-			desc:    "oversized message",
-			wireErr: wire.ErrOversizedMessage,
-			wantErr: bundler.ErrOversizedItem,
-		},
-		{
-			desc:    "oversized message wrapped",
-			wireErr: xerrors.Errorf("placeholder error message: %w", wire.ErrOversizedMessage),
-			wantErr: bundler.ErrOversizedItem,
-		},
-		{
-			desc:    "buffer overflow",
-			wireErr: wire.ErrOverflow,
-			wantErr: bundler.ErrOverflow,
-		},
-		{
-			desc:    "service stopped",
-			wireErr: wire.ErrServiceStopped,
-			wantErr: wire.ErrServiceStopped,
-		},
-	} {
-		t.Run(tc.desc, func(t *testing.T) {
-			verifier := test.NewRPCVerifier(t)
-			verifier.Push(wantMsg, nil, tc.wireErr)
-			defer verifier.Flush()
-
-			pubClient := newTestPublisherClient(verifier, DefaultPublishSettings)
-			result := pubClient.Publish(ctx, input)
-
-			_, gotErr := result.Get(ctx)
-			if !test.ErrorEqual(gotErr, tc.wantErr) {
-				t.Errorf("Publish() got err: (%v), want err: (%v)", gotErr, tc.wantErr)
-			}
-			if !test.ErrorEqual(pubClient.Error(), tc.wireErr) {
-				t.Errorf("PublisherClient.Error() got: (%v), want: (%v)", pubClient.Error(), tc.wireErr)
-			}
-			if got, want := pubClient.wirePub.(*mockWirePublisher).Stopped, false; got != want {
-				t.Errorf("Publisher.Stopped: got %v, want %v", got, want)
-			}
-		})
 	}
 }

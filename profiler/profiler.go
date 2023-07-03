@@ -16,11 +16,11 @@
 //
 // Usage example:
 //
-//   import "cloud.google.com/go/profiler"
-//   ...
-//   if err := profiler.Start(profiler.Config{Service: "my-service"}); err != nil {
-//       // TODO: Handle error.
-//   }
+//	import "cloud.google.com/go/profiler"
+//	...
+//	if err := profiler.Start(profiler.Config{Service: "my-service"}); err != nil {
+//	    // TODO: Handle error.
+//	}
 //
 // Calling Start will start a goroutine to collect profiles and upload to
 // the profiler server, at the rhythm specified by the server.
@@ -39,6 +39,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"io"
 	"log"
 	"os"
 	"regexp"
@@ -50,6 +51,7 @@ import (
 
 	gcemd "cloud.google.com/go/compute/metadata"
 	"cloud.google.com/go/internal/version"
+	"cloud.google.com/go/profiler/internal"
 	"github.com/golang/protobuf/proto"
 	"github.com/golang/protobuf/ptypes"
 	"github.com/google/pprof/profile"
@@ -79,7 +81,7 @@ var (
 	sleep            = gax.Sleep
 	dialGRPC         = gtransport.DialPool
 	onGCE            = gcemd.OnGCE
-	serviceRegexp    = regexp.MustCompile(`^[a-z]([-a-z0-9_.]{0,253}[a-z0-9])?$`)
+	serviceRegexp    = regexp.MustCompile(`^[a-z0-9]([-a-z0-9_.]{0,253}[a-z0-9])?$`)
 
 	// For testing only.
 	// When the profiling loop has exited without error and this channel is
@@ -128,6 +130,10 @@ type Config struct {
 	// DebugLogging enables detailed debug logging from profiler. It
 	// defaults to false.
 	DebugLogging bool
+
+	// DebugLoggingOutput is where the logger will write debug logs to, if enabled.
+	// It defaults to os.Stderr.
+	DebugLoggingOutput io.Writer
 
 	// MutexProfiling enables mutex profiling. It defaults to false.
 	// Note that mutex profiling is not supported by Go versions older
@@ -224,7 +230,10 @@ func Start(cfg Config, options ...option.ClientOption) error {
 }
 
 func start(cfg Config, options ...option.ClientOption) error {
-	logger = log.New(os.Stderr, "Cloud Profiler: ", log.LstdFlags)
+	if cfg.DebugLoggingOutput == nil {
+		cfg.DebugLoggingOutput = os.Stderr
+	}
+	logger = log.New(cfg.DebugLoggingOutput, "Cloud Profiler: ", log.LstdFlags)
 	if err := initializeConfig(cfg); err != nil {
 		debugLog("failed to initialize config: %v", err)
 		return err
@@ -240,7 +249,7 @@ func start(cfg Config, options ...option.ClientOption) error {
 	opts := []option.ClientOption{
 		option.WithEndpoint(config.APIAddr),
 		option.WithScopes(scope),
-		option.WithUserAgent(fmt.Sprintf("gcloud-go-profiler/%s", version.Repo)),
+		option.WithUserAgent(fmt.Sprintf("gcloud-go-profiler/%s", internal.Version)),
 	}
 	if !config.EnableOCTelemetry {
 		opts = append(opts, option.WithTelemetryDisabled())
@@ -300,13 +309,13 @@ func abortedBackoffDuration(md grpcmd.MD) (time.Duration, error) {
 
 type retryer struct {
 	backoff gax.Backoff
-	md      grpcmd.MD
+	md      *grpcmd.MD
 }
 
 func (r *retryer) Retry(err error) (time.Duration, bool) {
 	st, _ := status.FromError(err)
 	if st != nil && st.Code() == codes.Aborted {
-		dur, err := abortedBackoffDuration(r.md)
+		dur, err := abortedBackoffDuration(*r.md)
 		if err == nil {
 			return dur, true
 		}
@@ -328,7 +337,7 @@ func (a *agent) createProfile(ctx context.Context) *pb.Profile {
 	}
 
 	var p *pb.Profile
-	md := grpcmd.New(map[string]string{})
+	md := grpcmd.New(nil)
 
 	gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		debugLog("creating a new profile via profiler service")
@@ -350,7 +359,7 @@ func (a *agent) createProfile(ctx context.Context) *pb.Profile {
 				Max:        maxBackoff,
 				Multiplier: backoffMultiplier,
 			},
-			md: md,
+			md: &md,
 		}
 	}))
 
@@ -475,7 +484,7 @@ func mutexProfile() (*profile.Profile, error) {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func withXGoogHeader(ctx context.Context, keyval ...string) context.Context {
-	kv := append([]string{"gl-go", version.Go(), "gccl", version.Repo}, keyval...)
+	kv := append([]string{"gl-go", version.Go(), "gccl", internal.Version}, keyval...)
 	kv = append(kv, "gax", gax.Version, "grpc", grpc.Version)
 
 	md, _ := grpcmd.FromOutgoingContext(ctx)
@@ -576,20 +585,20 @@ func initializeConfig(cfg Config) error {
 		var err error
 		if config.ProjectID == "" {
 			if config.ProjectID, err = getProjectID(); err != nil {
-				return fmt.Errorf("failed to get the project ID from Compute Engine metadata: %v", err)
+				return fmt.Errorf("failed to get the project ID from Compute Engine metadata: %w", err)
 			}
 		}
 
 		if config.Zone == "" {
 			if config.Zone, err = getZone(); err != nil {
-				return fmt.Errorf("failed to get zone from Compute Engine metadata: %v", err)
+				return fmt.Errorf("failed to get zone from Compute Engine metadata: %w", err)
 			}
 		}
 
 		if config.Instance == "" {
 			if config.Instance, err = getInstanceName(); err != nil {
 				if _, ok := err.(gcemd.NotDefinedError); !ok {
-					return fmt.Errorf("failed to get instance name from Compute Engine metadata: %v", err)
+					return fmt.Errorf("failed to get instance name from Compute Engine metadata: %w", err)
 				}
 				debugLog("failed to get instance name from Compute Engine metadata, will use empty name: %v", err)
 			}
@@ -610,7 +619,7 @@ func initializeConfig(cfg Config) error {
 // server for instructions, and collects and uploads profiles as
 // requested.
 func pollProfilerService(ctx context.Context, a *agent) {
-	debugLog("Cloud Profiler Go Agent version: %s", version.Repo)
+	debugLog("Cloud Profiler Go Agent version: %s", internal.Version)
 	debugLog("profiler has started")
 	for i := 0; config.numProfiles == 0 || i < config.numProfiles; i++ {
 		p := a.createProfile(ctx)

@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,32 +20,61 @@ import (
 	"context"
 
 	billing "cloud.google.com/go/billing/apiv1"
+	billingpb "cloud.google.com/go/billing/apiv1/billingpb"
+	iampb "cloud.google.com/go/iam/apiv1/iampb"
 	"google.golang.org/api/iterator"
-	billingpb "google.golang.org/genproto/googleapis/cloud/billing/v1"
-	iampb "google.golang.org/genproto/googleapis/iam/v1"
 )
 
 func ExampleNewCloudBillingClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := billing.NewCloudBillingClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
+func ExampleNewCloudBillingRESTClient() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := billing.NewCloudBillingRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleCloudBillingClient_GetBillingAccount() {
-	// import billingpb "google.golang.org/genproto/googleapis/cloud/billing/v1"
-
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := billing.NewCloudBillingClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &billingpb.GetBillingAccountRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/billing/apiv1/billingpb#GetBillingAccountRequest.
 	}
 	resp, err := c.GetBillingAccount(ctx, req)
 	if err != nil {
@@ -56,17 +85,21 @@ func ExampleCloudBillingClient_GetBillingAccount() {
 }
 
 func ExampleCloudBillingClient_ListBillingAccounts() {
-	// import billingpb "google.golang.org/genproto/googleapis/cloud/billing/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := billing.NewCloudBillingClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &billingpb.ListBillingAccountsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/billing/apiv1/billingpb#ListBillingAccountsRequest.
 	}
 	it := c.ListBillingAccounts(ctx, req)
 	for {
@@ -83,16 +116,21 @@ func ExampleCloudBillingClient_ListBillingAccounts() {
 }
 
 func ExampleCloudBillingClient_UpdateBillingAccount() {
-	// import billingpb "google.golang.org/genproto/googleapis/cloud/billing/v1"
-
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := billing.NewCloudBillingClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &billingpb.UpdateBillingAccountRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/billing/apiv1/billingpb#UpdateBillingAccountRequest.
 	}
 	resp, err := c.UpdateBillingAccount(ctx, req)
 	if err != nil {
@@ -103,16 +141,21 @@ func ExampleCloudBillingClient_UpdateBillingAccount() {
 }
 
 func ExampleCloudBillingClient_CreateBillingAccount() {
-	// import billingpb "google.golang.org/genproto/googleapis/cloud/billing/v1"
-
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := billing.NewCloudBillingClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &billingpb.CreateBillingAccountRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/billing/apiv1/billingpb#CreateBillingAccountRequest.
 	}
 	resp, err := c.CreateBillingAccount(ctx, req)
 	if err != nil {
@@ -123,17 +166,21 @@ func ExampleCloudBillingClient_CreateBillingAccount() {
 }
 
 func ExampleCloudBillingClient_ListProjectBillingInfo() {
-	// import billingpb "google.golang.org/genproto/googleapis/cloud/billing/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := billing.NewCloudBillingClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &billingpb.ListProjectBillingInfoRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/billing/apiv1/billingpb#ListProjectBillingInfoRequest.
 	}
 	it := c.ListProjectBillingInfo(ctx, req)
 	for {
@@ -150,16 +197,21 @@ func ExampleCloudBillingClient_ListProjectBillingInfo() {
 }
 
 func ExampleCloudBillingClient_GetProjectBillingInfo() {
-	// import billingpb "google.golang.org/genproto/googleapis/cloud/billing/v1"
-
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := billing.NewCloudBillingClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &billingpb.GetProjectBillingInfoRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/billing/apiv1/billingpb#GetProjectBillingInfoRequest.
 	}
 	resp, err := c.GetProjectBillingInfo(ctx, req)
 	if err != nil {
@@ -170,16 +222,21 @@ func ExampleCloudBillingClient_GetProjectBillingInfo() {
 }
 
 func ExampleCloudBillingClient_UpdateProjectBillingInfo() {
-	// import billingpb "google.golang.org/genproto/googleapis/cloud/billing/v1"
-
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := billing.NewCloudBillingClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &billingpb.UpdateProjectBillingInfoRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/billing/apiv1/billingpb#UpdateProjectBillingInfoRequest.
 	}
 	resp, err := c.UpdateProjectBillingInfo(ctx, req)
 	if err != nil {
@@ -190,16 +247,21 @@ func ExampleCloudBillingClient_UpdateProjectBillingInfo() {
 }
 
 func ExampleCloudBillingClient_GetIamPolicy() {
-	// import iampb "google.golang.org/genproto/googleapis/iam/v1"
-
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := billing.NewCloudBillingClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &iampb.GetIamPolicyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/iam/apiv1/iampb#GetIamPolicyRequest.
 	}
 	resp, err := c.GetIamPolicy(ctx, req)
 	if err != nil {
@@ -210,16 +272,21 @@ func ExampleCloudBillingClient_GetIamPolicy() {
 }
 
 func ExampleCloudBillingClient_SetIamPolicy() {
-	// import iampb "google.golang.org/genproto/googleapis/iam/v1"
-
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := billing.NewCloudBillingClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &iampb.SetIamPolicyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/iam/apiv1/iampb#SetIamPolicyRequest.
 	}
 	resp, err := c.SetIamPolicy(ctx, req)
 	if err != nil {
@@ -230,16 +297,21 @@ func ExampleCloudBillingClient_SetIamPolicy() {
 }
 
 func ExampleCloudBillingClient_TestIamPermissions() {
-	// import iampb "google.golang.org/genproto/googleapis/iam/v1"
-
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := billing.NewCloudBillingClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &iampb.TestIamPermissionsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/iam/apiv1/iampb#TestIamPermissionsRequest.
 	}
 	resp, err := c.TestIamPermissions(ctx, req)
 	if err != nil {

@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,28 +20,59 @@ import (
 	"context"
 
 	trace "cloud.google.com/go/trace/apiv2"
-	cloudtracepb "google.golang.org/genproto/googleapis/devtools/cloudtrace/v2"
+	tracepb "cloud.google.com/go/trace/apiv2/tracepb"
 )
 
 func ExampleNewClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := trace.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
+func ExampleNewRESTClient() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := trace.NewRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleClient_BatchWriteSpans() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := trace.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
-	req := &cloudtracepb.BatchWriteSpansRequest{
+	req := &tracepb.BatchWriteSpansRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/trace/apiv2/tracepb#BatchWriteSpansRequest.
 	}
 	err = c.BatchWriteSpans(ctx, req)
 	if err != nil {
@@ -50,16 +81,21 @@ func ExampleClient_BatchWriteSpans() {
 }
 
 func ExampleClient_CreateSpan() {
-	// import cloudtracepb "google.golang.org/genproto/googleapis/devtools/cloudtrace/v2"
-
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := trace.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
-	req := &cloudtracepb.Span{
+	req := &tracepb.Span{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/trace/apiv2/tracepb#Span.
 	}
 	resp, err := c.CreateSpan(ctx, req)
 	if err != nil {

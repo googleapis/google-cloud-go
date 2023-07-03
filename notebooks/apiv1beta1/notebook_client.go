@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,24 +17,32 @@
 package notebooks
 
 import (
+	"bytes"
 	"context"
 	"fmt"
+	"io/ioutil"
 	"math"
+	"net/http"
 	"net/url"
 	"time"
 
+	iampb "cloud.google.com/go/iam/apiv1/iampb"
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
-	"github.com/golang/protobuf/proto"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	notebookspb "cloud.google.com/go/notebooks/apiv1beta1/notebookspb"
 	gax "github.com/googleapis/gax-go/v2"
+	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
-	notebookspb "google.golang.org/genproto/googleapis/cloud/notebooks/v1beta1"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
+	httptransport "google.golang.org/api/transport/http"
+	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/protobuf/encoding/protojson"
+	"google.golang.org/protobuf/proto"
 )
 
 var newNotebookClientHook clientHook
@@ -60,15 +68,24 @@ type NotebookCallOptions struct {
 	GetEnvironment          []gax.CallOption
 	CreateEnvironment       []gax.CallOption
 	DeleteEnvironment       []gax.CallOption
+	GetLocation             []gax.CallOption
+	ListLocations           []gax.CallOption
+	GetIamPolicy            []gax.CallOption
+	SetIamPolicy            []gax.CallOption
+	TestIamPermissions      []gax.CallOption
+	CancelOperation         []gax.CallOption
+	DeleteOperation         []gax.CallOption
+	GetOperation            []gax.CallOption
+	ListOperations          []gax.CallOption
 }
 
-func defaultNotebookClientOptions() []option.ClientOption {
+func defaultNotebookGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("notebooks.googleapis.com:443"),
 		internaloption.WithDefaultMTLSEndpoint("notebooks.mtls.googleapis.com:443"),
 		internaloption.WithDefaultAudience("https://notebooks.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
-		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
+		internaloption.EnableJwtWithScope(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -76,59 +93,520 @@ func defaultNotebookClientOptions() []option.ClientOption {
 
 func defaultNotebookCallOptions() *NotebookCallOptions {
 	return &NotebookCallOptions{
-		ListInstances:           []gax.CallOption{},
-		GetInstance:             []gax.CallOption{},
-		CreateInstance:          []gax.CallOption{},
-		RegisterInstance:        []gax.CallOption{},
-		SetInstanceAccelerator:  []gax.CallOption{},
-		SetInstanceMachineType:  []gax.CallOption{},
-		SetInstanceLabels:       []gax.CallOption{},
-		DeleteInstance:          []gax.CallOption{},
-		StartInstance:           []gax.CallOption{},
-		StopInstance:            []gax.CallOption{},
-		ResetInstance:           []gax.CallOption{},
-		ReportInstanceInfo:      []gax.CallOption{},
-		IsInstanceUpgradeable:   []gax.CallOption{},
-		UpgradeInstance:         []gax.CallOption{},
-		UpgradeInstanceInternal: []gax.CallOption{},
-		ListEnvironments:        []gax.CallOption{},
-		GetEnvironment:          []gax.CallOption{},
-		CreateEnvironment:       []gax.CallOption{},
-		DeleteEnvironment:       []gax.CallOption{},
+		ListInstances: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetInstance: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		CreateInstance: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		RegisterInstance: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		SetInstanceAccelerator: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		SetInstanceMachineType: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		SetInstanceLabels: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteInstance: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		StartInstance: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		StopInstance: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ResetInstance: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ReportInstanceInfo: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		IsInstanceUpgradeable: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpgradeInstance: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpgradeInstanceInternal: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ListEnvironments: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetEnvironment: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		CreateEnvironment: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteEnvironment: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetLocation:        []gax.CallOption{},
+		ListLocations:      []gax.CallOption{},
+		GetIamPolicy:       []gax.CallOption{},
+		SetIamPolicy:       []gax.CallOption{},
+		TestIamPermissions: []gax.CallOption{},
+		CancelOperation:    []gax.CallOption{},
+		DeleteOperation:    []gax.CallOption{},
+		GetOperation:       []gax.CallOption{},
+		ListOperations:     []gax.CallOption{},
 	}
 }
 
+func defaultNotebookRESTCallOptions() *NotebookCallOptions {
+	return &NotebookCallOptions{
+		ListInstances: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetInstance: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		CreateInstance: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		RegisterInstance: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		SetInstanceAccelerator: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		SetInstanceMachineType: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		SetInstanceLabels: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteInstance: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		StartInstance: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		StopInstance: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ResetInstance: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ReportInstanceInfo: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		IsInstanceUpgradeable: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpgradeInstance: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpgradeInstanceInternal: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ListEnvironments: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetEnvironment: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		CreateEnvironment: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteEnvironment: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetLocation:        []gax.CallOption{},
+		ListLocations:      []gax.CallOption{},
+		GetIamPolicy:       []gax.CallOption{},
+		SetIamPolicy:       []gax.CallOption{},
+		TestIamPermissions: []gax.CallOption{},
+		CancelOperation:    []gax.CallOption{},
+		DeleteOperation:    []gax.CallOption{},
+		GetOperation:       []gax.CallOption{},
+		ListOperations:     []gax.CallOption{},
+	}
+}
+
+// internalNotebookClient is an interface that defines the methods available from Notebooks API.
+type internalNotebookClient interface {
+	Close() error
+	setGoogleClientInfo(...string)
+	Connection() *grpc.ClientConn
+	ListInstances(context.Context, *notebookspb.ListInstancesRequest, ...gax.CallOption) *InstanceIterator
+	GetInstance(context.Context, *notebookspb.GetInstanceRequest, ...gax.CallOption) (*notebookspb.Instance, error)
+	CreateInstance(context.Context, *notebookspb.CreateInstanceRequest, ...gax.CallOption) (*CreateInstanceOperation, error)
+	CreateInstanceOperation(name string) *CreateInstanceOperation
+	RegisterInstance(context.Context, *notebookspb.RegisterInstanceRequest, ...gax.CallOption) (*RegisterInstanceOperation, error)
+	RegisterInstanceOperation(name string) *RegisterInstanceOperation
+	SetInstanceAccelerator(context.Context, *notebookspb.SetInstanceAcceleratorRequest, ...gax.CallOption) (*SetInstanceAcceleratorOperation, error)
+	SetInstanceAcceleratorOperation(name string) *SetInstanceAcceleratorOperation
+	SetInstanceMachineType(context.Context, *notebookspb.SetInstanceMachineTypeRequest, ...gax.CallOption) (*SetInstanceMachineTypeOperation, error)
+	SetInstanceMachineTypeOperation(name string) *SetInstanceMachineTypeOperation
+	SetInstanceLabels(context.Context, *notebookspb.SetInstanceLabelsRequest, ...gax.CallOption) (*SetInstanceLabelsOperation, error)
+	SetInstanceLabelsOperation(name string) *SetInstanceLabelsOperation
+	DeleteInstance(context.Context, *notebookspb.DeleteInstanceRequest, ...gax.CallOption) (*DeleteInstanceOperation, error)
+	DeleteInstanceOperation(name string) *DeleteInstanceOperation
+	StartInstance(context.Context, *notebookspb.StartInstanceRequest, ...gax.CallOption) (*StartInstanceOperation, error)
+	StartInstanceOperation(name string) *StartInstanceOperation
+	StopInstance(context.Context, *notebookspb.StopInstanceRequest, ...gax.CallOption) (*StopInstanceOperation, error)
+	StopInstanceOperation(name string) *StopInstanceOperation
+	ResetInstance(context.Context, *notebookspb.ResetInstanceRequest, ...gax.CallOption) (*ResetInstanceOperation, error)
+	ResetInstanceOperation(name string) *ResetInstanceOperation
+	ReportInstanceInfo(context.Context, *notebookspb.ReportInstanceInfoRequest, ...gax.CallOption) (*ReportInstanceInfoOperation, error)
+	ReportInstanceInfoOperation(name string) *ReportInstanceInfoOperation
+	IsInstanceUpgradeable(context.Context, *notebookspb.IsInstanceUpgradeableRequest, ...gax.CallOption) (*notebookspb.IsInstanceUpgradeableResponse, error)
+	UpgradeInstance(context.Context, *notebookspb.UpgradeInstanceRequest, ...gax.CallOption) (*UpgradeInstanceOperation, error)
+	UpgradeInstanceOperation(name string) *UpgradeInstanceOperation
+	UpgradeInstanceInternal(context.Context, *notebookspb.UpgradeInstanceInternalRequest, ...gax.CallOption) (*UpgradeInstanceInternalOperation, error)
+	UpgradeInstanceInternalOperation(name string) *UpgradeInstanceInternalOperation
+	ListEnvironments(context.Context, *notebookspb.ListEnvironmentsRequest, ...gax.CallOption) *EnvironmentIterator
+	GetEnvironment(context.Context, *notebookspb.GetEnvironmentRequest, ...gax.CallOption) (*notebookspb.Environment, error)
+	CreateEnvironment(context.Context, *notebookspb.CreateEnvironmentRequest, ...gax.CallOption) (*CreateEnvironmentOperation, error)
+	CreateEnvironmentOperation(name string) *CreateEnvironmentOperation
+	DeleteEnvironment(context.Context, *notebookspb.DeleteEnvironmentRequest, ...gax.CallOption) (*DeleteEnvironmentOperation, error)
+	DeleteEnvironmentOperation(name string) *DeleteEnvironmentOperation
+	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
+	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
+	GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
+	SetIamPolicy(context.Context, *iampb.SetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
+	TestIamPermissions(context.Context, *iampb.TestIamPermissionsRequest, ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error)
+	CancelOperation(context.Context, *longrunningpb.CancelOperationRequest, ...gax.CallOption) error
+	DeleteOperation(context.Context, *longrunningpb.DeleteOperationRequest, ...gax.CallOption) error
+	GetOperation(context.Context, *longrunningpb.GetOperationRequest, ...gax.CallOption) (*longrunningpb.Operation, error)
+	ListOperations(context.Context, *longrunningpb.ListOperationsRequest, ...gax.CallOption) *OperationIterator
+}
+
 // NotebookClient is a client for interacting with Notebooks API.
+// Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
+//
+// API v1beta1 service for Cloud AI Platform Notebooks.
+type NotebookClient struct {
+	// The internal transport-dependent client.
+	internalClient internalNotebookClient
+
+	// The call options for this service.
+	CallOptions *NotebookCallOptions
+
+	// LROClient is used internally to handle long-running operations.
+	// It is exposed so that its CallOptions can be modified if required.
+	// Users should not Close this client.
+	LROClient *lroauto.OperationsClient
+}
+
+// Wrapper methods routed to the internal client.
+
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *NotebookClient) Close() error {
+	return c.internalClient.Close()
+}
+
+// setGoogleClientInfo sets the name and version of the application in
+// the `x-goog-api-client` header passed on each request. Intended for
+// use by Google-written clients.
+func (c *NotebookClient) setGoogleClientInfo(keyval ...string) {
+	c.internalClient.setGoogleClientInfo(keyval...)
+}
+
+// Connection returns a connection to the API service.
+//
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
+func (c *NotebookClient) Connection() *grpc.ClientConn {
+	return c.internalClient.Connection()
+}
+
+// ListInstances lists instances in a given project and location.
+func (c *NotebookClient) ListInstances(ctx context.Context, req *notebookspb.ListInstancesRequest, opts ...gax.CallOption) *InstanceIterator {
+	return c.internalClient.ListInstances(ctx, req, opts...)
+}
+
+// GetInstance gets details of a single Instance.
+func (c *NotebookClient) GetInstance(ctx context.Context, req *notebookspb.GetInstanceRequest, opts ...gax.CallOption) (*notebookspb.Instance, error) {
+	return c.internalClient.GetInstance(ctx, req, opts...)
+}
+
+// CreateInstance creates a new Instance in a given project and location.
+func (c *NotebookClient) CreateInstance(ctx context.Context, req *notebookspb.CreateInstanceRequest, opts ...gax.CallOption) (*CreateInstanceOperation, error) {
+	return c.internalClient.CreateInstance(ctx, req, opts...)
+}
+
+// CreateInstanceOperation returns a new CreateInstanceOperation from a given name.
+// The name must be that of a previously created CreateInstanceOperation, possibly from a different process.
+func (c *NotebookClient) CreateInstanceOperation(name string) *CreateInstanceOperation {
+	return c.internalClient.CreateInstanceOperation(name)
+}
+
+// RegisterInstance registers an existing legacy notebook instance to the Notebooks API server.
+// Legacy instances are instances created with the legacy Compute Engine
+// calls. They are not manageable by the Notebooks API out of the box. This
+// call makes these instances manageable by the Notebooks API.
+func (c *NotebookClient) RegisterInstance(ctx context.Context, req *notebookspb.RegisterInstanceRequest, opts ...gax.CallOption) (*RegisterInstanceOperation, error) {
+	return c.internalClient.RegisterInstance(ctx, req, opts...)
+}
+
+// RegisterInstanceOperation returns a new RegisterInstanceOperation from a given name.
+// The name must be that of a previously created RegisterInstanceOperation, possibly from a different process.
+func (c *NotebookClient) RegisterInstanceOperation(name string) *RegisterInstanceOperation {
+	return c.internalClient.RegisterInstanceOperation(name)
+}
+
+// SetInstanceAccelerator updates the guest accelerators of a single Instance.
+func (c *NotebookClient) SetInstanceAccelerator(ctx context.Context, req *notebookspb.SetInstanceAcceleratorRequest, opts ...gax.CallOption) (*SetInstanceAcceleratorOperation, error) {
+	return c.internalClient.SetInstanceAccelerator(ctx, req, opts...)
+}
+
+// SetInstanceAcceleratorOperation returns a new SetInstanceAcceleratorOperation from a given name.
+// The name must be that of a previously created SetInstanceAcceleratorOperation, possibly from a different process.
+func (c *NotebookClient) SetInstanceAcceleratorOperation(name string) *SetInstanceAcceleratorOperation {
+	return c.internalClient.SetInstanceAcceleratorOperation(name)
+}
+
+// SetInstanceMachineType updates the machine type of a single Instance.
+func (c *NotebookClient) SetInstanceMachineType(ctx context.Context, req *notebookspb.SetInstanceMachineTypeRequest, opts ...gax.CallOption) (*SetInstanceMachineTypeOperation, error) {
+	return c.internalClient.SetInstanceMachineType(ctx, req, opts...)
+}
+
+// SetInstanceMachineTypeOperation returns a new SetInstanceMachineTypeOperation from a given name.
+// The name must be that of a previously created SetInstanceMachineTypeOperation, possibly from a different process.
+func (c *NotebookClient) SetInstanceMachineTypeOperation(name string) *SetInstanceMachineTypeOperation {
+	return c.internalClient.SetInstanceMachineTypeOperation(name)
+}
+
+// SetInstanceLabels updates the labels of an Instance.
+func (c *NotebookClient) SetInstanceLabels(ctx context.Context, req *notebookspb.SetInstanceLabelsRequest, opts ...gax.CallOption) (*SetInstanceLabelsOperation, error) {
+	return c.internalClient.SetInstanceLabels(ctx, req, opts...)
+}
+
+// SetInstanceLabelsOperation returns a new SetInstanceLabelsOperation from a given name.
+// The name must be that of a previously created SetInstanceLabelsOperation, possibly from a different process.
+func (c *NotebookClient) SetInstanceLabelsOperation(name string) *SetInstanceLabelsOperation {
+	return c.internalClient.SetInstanceLabelsOperation(name)
+}
+
+// DeleteInstance deletes a single Instance.
+func (c *NotebookClient) DeleteInstance(ctx context.Context, req *notebookspb.DeleteInstanceRequest, opts ...gax.CallOption) (*DeleteInstanceOperation, error) {
+	return c.internalClient.DeleteInstance(ctx, req, opts...)
+}
+
+// DeleteInstanceOperation returns a new DeleteInstanceOperation from a given name.
+// The name must be that of a previously created DeleteInstanceOperation, possibly from a different process.
+func (c *NotebookClient) DeleteInstanceOperation(name string) *DeleteInstanceOperation {
+	return c.internalClient.DeleteInstanceOperation(name)
+}
+
+// StartInstance starts a notebook instance.
+func (c *NotebookClient) StartInstance(ctx context.Context, req *notebookspb.StartInstanceRequest, opts ...gax.CallOption) (*StartInstanceOperation, error) {
+	return c.internalClient.StartInstance(ctx, req, opts...)
+}
+
+// StartInstanceOperation returns a new StartInstanceOperation from a given name.
+// The name must be that of a previously created StartInstanceOperation, possibly from a different process.
+func (c *NotebookClient) StartInstanceOperation(name string) *StartInstanceOperation {
+	return c.internalClient.StartInstanceOperation(name)
+}
+
+// StopInstance stops a notebook instance.
+func (c *NotebookClient) StopInstance(ctx context.Context, req *notebookspb.StopInstanceRequest, opts ...gax.CallOption) (*StopInstanceOperation, error) {
+	return c.internalClient.StopInstance(ctx, req, opts...)
+}
+
+// StopInstanceOperation returns a new StopInstanceOperation from a given name.
+// The name must be that of a previously created StopInstanceOperation, possibly from a different process.
+func (c *NotebookClient) StopInstanceOperation(name string) *StopInstanceOperation {
+	return c.internalClient.StopInstanceOperation(name)
+}
+
+// ResetInstance resets a notebook instance.
+func (c *NotebookClient) ResetInstance(ctx context.Context, req *notebookspb.ResetInstanceRequest, opts ...gax.CallOption) (*ResetInstanceOperation, error) {
+	return c.internalClient.ResetInstance(ctx, req, opts...)
+}
+
+// ResetInstanceOperation returns a new ResetInstanceOperation from a given name.
+// The name must be that of a previously created ResetInstanceOperation, possibly from a different process.
+func (c *NotebookClient) ResetInstanceOperation(name string) *ResetInstanceOperation {
+	return c.internalClient.ResetInstanceOperation(name)
+}
+
+// ReportInstanceInfo allows notebook instances to
+// report their latest instance information to the Notebooks
+// API server. The server will merge the reported information to
+// the instance metadata store. Do not use this method directly.
+func (c *NotebookClient) ReportInstanceInfo(ctx context.Context, req *notebookspb.ReportInstanceInfoRequest, opts ...gax.CallOption) (*ReportInstanceInfoOperation, error) {
+	return c.internalClient.ReportInstanceInfo(ctx, req, opts...)
+}
+
+// ReportInstanceInfoOperation returns a new ReportInstanceInfoOperation from a given name.
+// The name must be that of a previously created ReportInstanceInfoOperation, possibly from a different process.
+func (c *NotebookClient) ReportInstanceInfoOperation(name string) *ReportInstanceInfoOperation {
+	return c.internalClient.ReportInstanceInfoOperation(name)
+}
+
+// IsInstanceUpgradeable check if a notebook instance is upgradable.
+// Deprecated. Please consider using v1.
+//
+// Deprecated: IsInstanceUpgradeable may be removed in a future version.
+func (c *NotebookClient) IsInstanceUpgradeable(ctx context.Context, req *notebookspb.IsInstanceUpgradeableRequest, opts ...gax.CallOption) (*notebookspb.IsInstanceUpgradeableResponse, error) {
+	return c.internalClient.IsInstanceUpgradeable(ctx, req, opts...)
+}
+
+// UpgradeInstance upgrades a notebook instance to the latest version.
+// Deprecated. Please consider using v1.
+//
+// Deprecated: UpgradeInstance may be removed in a future version.
+func (c *NotebookClient) UpgradeInstance(ctx context.Context, req *notebookspb.UpgradeInstanceRequest, opts ...gax.CallOption) (*UpgradeInstanceOperation, error) {
+	return c.internalClient.UpgradeInstance(ctx, req, opts...)
+}
+
+// UpgradeInstanceOperation returns a new UpgradeInstanceOperation from a given name.
+// The name must be that of a previously created UpgradeInstanceOperation, possibly from a different process.
+func (c *NotebookClient) UpgradeInstanceOperation(name string) *UpgradeInstanceOperation {
+	return c.internalClient.UpgradeInstanceOperation(name)
+}
+
+// UpgradeInstanceInternal allows notebook instances to
+// call this endpoint to upgrade themselves. Do not use this method directly.
+// Deprecated. Please consider using v1.
+//
+// Deprecated: UpgradeInstanceInternal may be removed in a future version.
+func (c *NotebookClient) UpgradeInstanceInternal(ctx context.Context, req *notebookspb.UpgradeInstanceInternalRequest, opts ...gax.CallOption) (*UpgradeInstanceInternalOperation, error) {
+	return c.internalClient.UpgradeInstanceInternal(ctx, req, opts...)
+}
+
+// UpgradeInstanceInternalOperation returns a new UpgradeInstanceInternalOperation from a given name.
+// The name must be that of a previously created UpgradeInstanceInternalOperation, possibly from a different process.
+func (c *NotebookClient) UpgradeInstanceInternalOperation(name string) *UpgradeInstanceInternalOperation {
+	return c.internalClient.UpgradeInstanceInternalOperation(name)
+}
+
+// ListEnvironments lists environments in a project.
+func (c *NotebookClient) ListEnvironments(ctx context.Context, req *notebookspb.ListEnvironmentsRequest, opts ...gax.CallOption) *EnvironmentIterator {
+	return c.internalClient.ListEnvironments(ctx, req, opts...)
+}
+
+// GetEnvironment gets details of a single Environment.
+func (c *NotebookClient) GetEnvironment(ctx context.Context, req *notebookspb.GetEnvironmentRequest, opts ...gax.CallOption) (*notebookspb.Environment, error) {
+	return c.internalClient.GetEnvironment(ctx, req, opts...)
+}
+
+// CreateEnvironment creates a new Environment.
+func (c *NotebookClient) CreateEnvironment(ctx context.Context, req *notebookspb.CreateEnvironmentRequest, opts ...gax.CallOption) (*CreateEnvironmentOperation, error) {
+	return c.internalClient.CreateEnvironment(ctx, req, opts...)
+}
+
+// CreateEnvironmentOperation returns a new CreateEnvironmentOperation from a given name.
+// The name must be that of a previously created CreateEnvironmentOperation, possibly from a different process.
+func (c *NotebookClient) CreateEnvironmentOperation(name string) *CreateEnvironmentOperation {
+	return c.internalClient.CreateEnvironmentOperation(name)
+}
+
+// DeleteEnvironment deletes a single Environment.
+func (c *NotebookClient) DeleteEnvironment(ctx context.Context, req *notebookspb.DeleteEnvironmentRequest, opts ...gax.CallOption) (*DeleteEnvironmentOperation, error) {
+	return c.internalClient.DeleteEnvironment(ctx, req, opts...)
+}
+
+// DeleteEnvironmentOperation returns a new DeleteEnvironmentOperation from a given name.
+// The name must be that of a previously created DeleteEnvironmentOperation, possibly from a different process.
+func (c *NotebookClient) DeleteEnvironmentOperation(name string) *DeleteEnvironmentOperation {
+	return c.internalClient.DeleteEnvironmentOperation(name)
+}
+
+// GetLocation gets information about a location.
+func (c *NotebookClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
+	return c.internalClient.GetLocation(ctx, req, opts...)
+}
+
+// ListLocations lists information about the supported locations for this service.
+func (c *NotebookClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
+	return c.internalClient.ListLocations(ctx, req, opts...)
+}
+
+// GetIamPolicy gets the access control policy for a resource. Returns an empty policy
+// if the resource exists and does not have a policy set.
+func (c *NotebookClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
+	return c.internalClient.GetIamPolicy(ctx, req, opts...)
+}
+
+// SetIamPolicy sets the access control policy on the specified resource. Replaces
+// any existing policy.
+//
+// Can return NOT_FOUND, INVALID_ARGUMENT, and PERMISSION_DENIED
+// errors.
+func (c *NotebookClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
+	return c.internalClient.SetIamPolicy(ctx, req, opts...)
+}
+
+// TestIamPermissions returns permissions that a caller has on the specified resource. If the
+// resource does not exist, this will return an empty set of
+// permissions, not a NOT_FOUND error.
+//
+// Note: This operation is designed to be used for building
+// permission-aware UIs and command-line tools, not for authorization
+// checking. This operation may “fail open” without warning.
+func (c *NotebookClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermissionsRequest, opts ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error) {
+	return c.internalClient.TestIamPermissions(ctx, req, opts...)
+}
+
+// CancelOperation is a utility method from google.longrunning.Operations.
+func (c *NotebookClient) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
+	return c.internalClient.CancelOperation(ctx, req, opts...)
+}
+
+// DeleteOperation is a utility method from google.longrunning.Operations.
+func (c *NotebookClient) DeleteOperation(ctx context.Context, req *longrunningpb.DeleteOperationRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteOperation(ctx, req, opts...)
+}
+
+// GetOperation is a utility method from google.longrunning.Operations.
+func (c *NotebookClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+	return c.internalClient.GetOperation(ctx, req, opts...)
+}
+
+// ListOperations is a utility method from google.longrunning.Operations.
+func (c *NotebookClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
+	return c.internalClient.ListOperations(ctx, req, opts...)
+}
+
+// notebookGRPCClient is a client for interacting with Notebooks API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
-type NotebookClient struct {
+type notebookGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
+	// Points back to the CallOptions field of the containing NotebookClient
+	CallOptions **NotebookCallOptions
 
 	// The gRPC API client.
 	notebookClient notebookspb.NotebookServiceClient
 
-	// LROClient is used internally to handle longrunning operations.
+	// LROClient is used internally to handle long-running operations.
 	// It is exposed so that its CallOptions can be modified if required.
 	// Users should not Close this client.
-	LROClient *lroauto.OperationsClient
+	LROClient **lroauto.OperationsClient
 
-	// The call options for this service.
-	CallOptions *NotebookCallOptions
+	operationsClient longrunningpb.OperationsClient
+
+	iamPolicyClient iampb.IAMPolicyClient
+
+	locationsClient locationpb.LocationsClient
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
 }
 
-// NewNotebookClient creates a new notebook service client.
+// NewNotebookClient creates a new notebook service client based on gRPC.
+// The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
 // API v1beta1 service for Cloud AI Platform Notebooks.
 func NewNotebookClient(ctx context.Context, opts ...option.ClientOption) (*NotebookClient, error) {
-	clientOpts := defaultNotebookClientOptions()
-
+	clientOpts := defaultNotebookGRPCClientOptions()
 	if newNotebookClientHook != nil {
 		hookOpts, err := newNotebookClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -137,25 +615,25 @@ func NewNotebookClient(ctx context.Context, opts ...option.ClientOption) (*Noteb
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
 	}
-	c := &NotebookClient{
-		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
-		CallOptions:      defaultNotebookCallOptions(),
+	client := NotebookClient{CallOptions: defaultNotebookCallOptions()}
 
-		notebookClient: notebookspb.NewNotebookServiceClient(connPool),
+	c := &notebookGRPCClient{
+		connPool:         connPool,
+		notebookClient:   notebookspb.NewNotebookServiceClient(connPool),
+		CallOptions:      &client.CallOptions,
+		operationsClient: longrunningpb.NewOperationsClient(connPool),
+		iamPolicyClient:  iampb.NewIAMPolicyClient(connPool),
+		locationsClient:  locationpb.NewLocationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
 
-	c.LROClient, err = lroauto.NewOperationsClient(ctx, gtransport.WithConnPool(connPool))
+	client.internalClient = c
+
+	client.LROClient, err = lroauto.NewOperationsClient(ctx, gtransport.WithConnPool(connPool))
 	if err != nil {
 		// This error "should not happen", since we are just reusing old connection pool
 		// and never actually need to dial.
@@ -165,44 +643,131 @@ func NewNotebookClient(ctx context.Context, opts ...option.ClientOption) (*Noteb
 		// TODO: investigate error conditions.
 		return nil, err
 	}
-	return c, nil
+	c.LROClient = &client.LROClient
+	return &client, nil
 }
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
-func (c *NotebookClient) Connection() *grpc.ClientConn {
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
+func (c *notebookGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
-}
-
-// Close closes the connection to the API service. The user should invoke this when
-// the client is no longer required.
-func (c *NotebookClient) Close() error {
-	return c.connPool.Close()
 }
 
 // setGoogleClientInfo sets the name and version of the application in
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
-func (c *NotebookClient) setGoogleClientInfo(keyval ...string) {
+func (c *notebookGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
-// ListInstances lists instances in a given project and location.
-func (c *NotebookClient) ListInstances(ctx context.Context, req *notebookspb.ListInstancesRequest, opts ...gax.CallOption) *InstanceIterator {
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *notebookGRPCClient) Close() error {
+	return c.connPool.Close()
+}
+
+// Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
+type notebookRESTClient struct {
+	// The http endpoint to connect to.
+	endpoint string
+
+	// The http client.
+	httpClient *http.Client
+
+	// LROClient is used internally to handle long-running operations.
+	// It is exposed so that its CallOptions can be modified if required.
+	// Users should not Close this client.
+	LROClient **lroauto.OperationsClient
+
+	// The x-goog-* metadata to be sent with each request.
+	xGoogMetadata metadata.MD
+
+	// Points back to the CallOptions field of the containing NotebookClient
+	CallOptions **NotebookCallOptions
+}
+
+// NewNotebookRESTClient creates a new notebook service rest client.
+//
+// API v1beta1 service for Cloud AI Platform Notebooks.
+func NewNotebookRESTClient(ctx context.Context, opts ...option.ClientOption) (*NotebookClient, error) {
+	clientOpts := append(defaultNotebookRESTClientOptions(), opts...)
+	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
+	if err != nil {
+		return nil, err
+	}
+
+	callOpts := defaultNotebookRESTCallOptions()
+	c := &notebookRESTClient{
+		endpoint:    endpoint,
+		httpClient:  httpClient,
+		CallOptions: &callOpts,
+	}
+	c.setGoogleClientInfo()
+
+	lroOpts := []option.ClientOption{
+		option.WithHTTPClient(httpClient),
+		option.WithEndpoint(endpoint),
+	}
+	opClient, err := lroauto.NewOperationsRESTClient(ctx, lroOpts...)
+	if err != nil {
+		return nil, err
+	}
+	c.LROClient = &opClient
+
+	return &NotebookClient{internalClient: c, CallOptions: callOpts}, nil
+}
+
+func defaultNotebookRESTClientOptions() []option.ClientOption {
+	return []option.ClientOption{
+		internaloption.WithDefaultEndpoint("https://notebooks.googleapis.com"),
+		internaloption.WithDefaultMTLSEndpoint("https://notebooks.mtls.googleapis.com"),
+		internaloption.WithDefaultAudience("https://notebooks.googleapis.com/"),
+		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+	}
+}
+
+// setGoogleClientInfo sets the name and version of the application in
+// the `x-goog-api-client` header passed on each request. Intended for
+// use by Google-written clients.
+func (c *notebookRESTClient) setGoogleClientInfo(keyval ...string) {
+	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
+	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+}
+
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *notebookRESTClient) Close() error {
+	// Replace httpClient with nil to force cleanup.
+	c.httpClient = nil
+	return nil
+}
+
+// Connection returns a connection to the API service.
+//
+// Deprecated: This method always returns nil.
+func (c *notebookRESTClient) Connection() *grpc.ClientConn {
+	return nil
+}
+func (c *notebookGRPCClient) ListInstances(ctx context.Context, req *notebookspb.ListInstancesRequest, opts ...gax.CallOption) *InstanceIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ListInstances[0:len(c.CallOptions.ListInstances):len(c.CallOptions.ListInstances)], opts...)
+	opts = append((*c.CallOptions).ListInstances[0:len((*c.CallOptions).ListInstances):len((*c.CallOptions).ListInstances)], opts...)
 	it := &InstanceIterator{}
 	req = proto.Clone(req).(*notebookspb.ListInstancesRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*notebookspb.Instance, string, error) {
-		var resp *notebookspb.ListInstancesResponse
-		req.PageToken = pageToken
+		resp := &notebookspb.ListInstancesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -225,22 +790,19 @@ func (c *NotebookClient) ListInstances(ctx context.Context, req *notebookspb.Lis
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
-// GetInstance gets details of a single Instance.
-func (c *NotebookClient) GetInstance(ctx context.Context, req *notebookspb.GetInstanceRequest, opts ...gax.CallOption) (*notebookspb.Instance, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
+func (c *notebookGRPCClient) GetInstance(ctx context.Context, req *notebookspb.GetInstanceRequest, opts ...gax.CallOption) (*notebookspb.Instance, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GetInstance[0:len(c.CallOptions.GetInstance):len(c.CallOptions.GetInstance)], opts...)
+	opts = append((*c.CallOptions).GetInstance[0:len((*c.CallOptions).GetInstance):len((*c.CallOptions).GetInstance)], opts...)
 	var resp *notebookspb.Instance
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -253,16 +815,11 @@ func (c *NotebookClient) GetInstance(ctx context.Context, req *notebookspb.GetIn
 	return resp, nil
 }
 
-// CreateInstance creates a new Instance in a given project and location.
-func (c *NotebookClient) CreateInstance(ctx context.Context, req *notebookspb.CreateInstanceRequest, opts ...gax.CallOption) (*CreateInstanceOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
+func (c *notebookGRPCClient) CreateInstance(ctx context.Context, req *notebookspb.CreateInstanceRequest, opts ...gax.CallOption) (*CreateInstanceOperation, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.CreateInstance[0:len(c.CallOptions.CreateInstance):len(c.CallOptions.CreateInstance)], opts...)
+	opts = append((*c.CallOptions).CreateInstance[0:len((*c.CallOptions).CreateInstance):len((*c.CallOptions).CreateInstance)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -273,23 +830,15 @@ func (c *NotebookClient) CreateInstance(ctx context.Context, req *notebookspb.Cr
 		return nil, err
 	}
 	return &CreateInstanceOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// RegisterInstance registers an existing legacy notebook instance to the Notebooks API server.
-// Legacy instances are instances created with the legacy Compute Engine
-// calls. They are not manageable by the Notebooks API out of the box. This
-// call makes these instances manageable by the Notebooks API.
-func (c *NotebookClient) RegisterInstance(ctx context.Context, req *notebookspb.RegisterInstanceRequest, opts ...gax.CallOption) (*RegisterInstanceOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
+func (c *notebookGRPCClient) RegisterInstance(ctx context.Context, req *notebookspb.RegisterInstanceRequest, opts ...gax.CallOption) (*RegisterInstanceOperation, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.RegisterInstance[0:len(c.CallOptions.RegisterInstance):len(c.CallOptions.RegisterInstance)], opts...)
+	opts = append((*c.CallOptions).RegisterInstance[0:len((*c.CallOptions).RegisterInstance):len((*c.CallOptions).RegisterInstance)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -300,20 +849,15 @@ func (c *NotebookClient) RegisterInstance(ctx context.Context, req *notebookspb.
 		return nil, err
 	}
 	return &RegisterInstanceOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// SetInstanceAccelerator updates the guest accelerators of a single Instance.
-func (c *NotebookClient) SetInstanceAccelerator(ctx context.Context, req *notebookspb.SetInstanceAcceleratorRequest, opts ...gax.CallOption) (*SetInstanceAcceleratorOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
+func (c *notebookGRPCClient) SetInstanceAccelerator(ctx context.Context, req *notebookspb.SetInstanceAcceleratorRequest, opts ...gax.CallOption) (*SetInstanceAcceleratorOperation, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.SetInstanceAccelerator[0:len(c.CallOptions.SetInstanceAccelerator):len(c.CallOptions.SetInstanceAccelerator)], opts...)
+	opts = append((*c.CallOptions).SetInstanceAccelerator[0:len((*c.CallOptions).SetInstanceAccelerator):len((*c.CallOptions).SetInstanceAccelerator)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -324,20 +868,15 @@ func (c *NotebookClient) SetInstanceAccelerator(ctx context.Context, req *notebo
 		return nil, err
 	}
 	return &SetInstanceAcceleratorOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// SetInstanceMachineType updates the machine type of a single Instance.
-func (c *NotebookClient) SetInstanceMachineType(ctx context.Context, req *notebookspb.SetInstanceMachineTypeRequest, opts ...gax.CallOption) (*SetInstanceMachineTypeOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
+func (c *notebookGRPCClient) SetInstanceMachineType(ctx context.Context, req *notebookspb.SetInstanceMachineTypeRequest, opts ...gax.CallOption) (*SetInstanceMachineTypeOperation, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.SetInstanceMachineType[0:len(c.CallOptions.SetInstanceMachineType):len(c.CallOptions.SetInstanceMachineType)], opts...)
+	opts = append((*c.CallOptions).SetInstanceMachineType[0:len((*c.CallOptions).SetInstanceMachineType):len((*c.CallOptions).SetInstanceMachineType)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -348,20 +887,15 @@ func (c *NotebookClient) SetInstanceMachineType(ctx context.Context, req *notebo
 		return nil, err
 	}
 	return &SetInstanceMachineTypeOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// SetInstanceLabels updates the labels of an Instance.
-func (c *NotebookClient) SetInstanceLabels(ctx context.Context, req *notebookspb.SetInstanceLabelsRequest, opts ...gax.CallOption) (*SetInstanceLabelsOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
+func (c *notebookGRPCClient) SetInstanceLabels(ctx context.Context, req *notebookspb.SetInstanceLabelsRequest, opts ...gax.CallOption) (*SetInstanceLabelsOperation, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.SetInstanceLabels[0:len(c.CallOptions.SetInstanceLabels):len(c.CallOptions.SetInstanceLabels)], opts...)
+	opts = append((*c.CallOptions).SetInstanceLabels[0:len((*c.CallOptions).SetInstanceLabels):len((*c.CallOptions).SetInstanceLabels)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -372,20 +906,15 @@ func (c *NotebookClient) SetInstanceLabels(ctx context.Context, req *notebookspb
 		return nil, err
 	}
 	return &SetInstanceLabelsOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// DeleteInstance deletes a single Instance.
-func (c *NotebookClient) DeleteInstance(ctx context.Context, req *notebookspb.DeleteInstanceRequest, opts ...gax.CallOption) (*DeleteInstanceOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
+func (c *notebookGRPCClient) DeleteInstance(ctx context.Context, req *notebookspb.DeleteInstanceRequest, opts ...gax.CallOption) (*DeleteInstanceOperation, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.DeleteInstance[0:len(c.CallOptions.DeleteInstance):len(c.CallOptions.DeleteInstance)], opts...)
+	opts = append((*c.CallOptions).DeleteInstance[0:len((*c.CallOptions).DeleteInstance):len((*c.CallOptions).DeleteInstance)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -396,20 +925,15 @@ func (c *NotebookClient) DeleteInstance(ctx context.Context, req *notebookspb.De
 		return nil, err
 	}
 	return &DeleteInstanceOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// StartInstance starts a notebook instance.
-func (c *NotebookClient) StartInstance(ctx context.Context, req *notebookspb.StartInstanceRequest, opts ...gax.CallOption) (*StartInstanceOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
+func (c *notebookGRPCClient) StartInstance(ctx context.Context, req *notebookspb.StartInstanceRequest, opts ...gax.CallOption) (*StartInstanceOperation, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.StartInstance[0:len(c.CallOptions.StartInstance):len(c.CallOptions.StartInstance)], opts...)
+	opts = append((*c.CallOptions).StartInstance[0:len((*c.CallOptions).StartInstance):len((*c.CallOptions).StartInstance)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -420,20 +944,15 @@ func (c *NotebookClient) StartInstance(ctx context.Context, req *notebookspb.Sta
 		return nil, err
 	}
 	return &StartInstanceOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// StopInstance stops a notebook instance.
-func (c *NotebookClient) StopInstance(ctx context.Context, req *notebookspb.StopInstanceRequest, opts ...gax.CallOption) (*StopInstanceOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
+func (c *notebookGRPCClient) StopInstance(ctx context.Context, req *notebookspb.StopInstanceRequest, opts ...gax.CallOption) (*StopInstanceOperation, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.StopInstance[0:len(c.CallOptions.StopInstance):len(c.CallOptions.StopInstance)], opts...)
+	opts = append((*c.CallOptions).StopInstance[0:len((*c.CallOptions).StopInstance):len((*c.CallOptions).StopInstance)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -444,20 +963,15 @@ func (c *NotebookClient) StopInstance(ctx context.Context, req *notebookspb.Stop
 		return nil, err
 	}
 	return &StopInstanceOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// ResetInstance resets a notebook instance.
-func (c *NotebookClient) ResetInstance(ctx context.Context, req *notebookspb.ResetInstanceRequest, opts ...gax.CallOption) (*ResetInstanceOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
+func (c *notebookGRPCClient) ResetInstance(ctx context.Context, req *notebookspb.ResetInstanceRequest, opts ...gax.CallOption) (*ResetInstanceOperation, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ResetInstance[0:len(c.CallOptions.ResetInstance):len(c.CallOptions.ResetInstance)], opts...)
+	opts = append((*c.CallOptions).ResetInstance[0:len((*c.CallOptions).ResetInstance):len((*c.CallOptions).ResetInstance)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -468,23 +982,15 @@ func (c *NotebookClient) ResetInstance(ctx context.Context, req *notebookspb.Res
 		return nil, err
 	}
 	return &ResetInstanceOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// ReportInstanceInfo allows notebook instances to
-// report their latest instance information to the Notebooks
-// API server. The server will merge the reported information to
-// the instance metadata store. Do not use this method directly.
-func (c *NotebookClient) ReportInstanceInfo(ctx context.Context, req *notebookspb.ReportInstanceInfoRequest, opts ...gax.CallOption) (*ReportInstanceInfoOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
+func (c *notebookGRPCClient) ReportInstanceInfo(ctx context.Context, req *notebookspb.ReportInstanceInfoRequest, opts ...gax.CallOption) (*ReportInstanceInfoOperation, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ReportInstanceInfo[0:len(c.CallOptions.ReportInstanceInfo):len(c.CallOptions.ReportInstanceInfo)], opts...)
+	opts = append((*c.CallOptions).ReportInstanceInfo[0:len((*c.CallOptions).ReportInstanceInfo):len((*c.CallOptions).ReportInstanceInfo)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -495,20 +1001,15 @@ func (c *NotebookClient) ReportInstanceInfo(ctx context.Context, req *notebooksp
 		return nil, err
 	}
 	return &ReportInstanceInfoOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// IsInstanceUpgradeable check if a notebook instance is upgradable.
-func (c *NotebookClient) IsInstanceUpgradeable(ctx context.Context, req *notebookspb.IsInstanceUpgradeableRequest, opts ...gax.CallOption) (*notebookspb.IsInstanceUpgradeableResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
+func (c *notebookGRPCClient) IsInstanceUpgradeable(ctx context.Context, req *notebookspb.IsInstanceUpgradeableRequest, opts ...gax.CallOption) (*notebookspb.IsInstanceUpgradeableResponse, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "notebook_instance", url.QueryEscape(req.GetNotebookInstance())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.IsInstanceUpgradeable[0:len(c.CallOptions.IsInstanceUpgradeable):len(c.CallOptions.IsInstanceUpgradeable)], opts...)
+	opts = append((*c.CallOptions).IsInstanceUpgradeable[0:len((*c.CallOptions).IsInstanceUpgradeable):len((*c.CallOptions).IsInstanceUpgradeable)], opts...)
 	var resp *notebookspb.IsInstanceUpgradeableResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -521,16 +1022,11 @@ func (c *NotebookClient) IsInstanceUpgradeable(ctx context.Context, req *noteboo
 	return resp, nil
 }
 
-// UpgradeInstance upgrades a notebook instance to the latest version.
-func (c *NotebookClient) UpgradeInstance(ctx context.Context, req *notebookspb.UpgradeInstanceRequest, opts ...gax.CallOption) (*UpgradeInstanceOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
+func (c *notebookGRPCClient) UpgradeInstance(ctx context.Context, req *notebookspb.UpgradeInstanceRequest, opts ...gax.CallOption) (*UpgradeInstanceOperation, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.UpgradeInstance[0:len(c.CallOptions.UpgradeInstance):len(c.CallOptions.UpgradeInstance)], opts...)
+	opts = append((*c.CallOptions).UpgradeInstance[0:len((*c.CallOptions).UpgradeInstance):len((*c.CallOptions).UpgradeInstance)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -541,21 +1037,15 @@ func (c *NotebookClient) UpgradeInstance(ctx context.Context, req *notebookspb.U
 		return nil, err
 	}
 	return &UpgradeInstanceOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// UpgradeInstanceInternal allows notebook instances to
-// call this endpoint to upgrade themselves. Do not use this method directly.
-func (c *NotebookClient) UpgradeInstanceInternal(ctx context.Context, req *notebookspb.UpgradeInstanceInternalRequest, opts ...gax.CallOption) (*UpgradeInstanceInternalOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
+func (c *notebookGRPCClient) UpgradeInstanceInternal(ctx context.Context, req *notebookspb.UpgradeInstanceInternalRequest, opts ...gax.CallOption) (*UpgradeInstanceInternalOperation, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.UpgradeInstanceInternal[0:len(c.CallOptions.UpgradeInstanceInternal):len(c.CallOptions.UpgradeInstanceInternal)], opts...)
+	opts = append((*c.CallOptions).UpgradeInstanceInternal[0:len((*c.CallOptions).UpgradeInstanceInternal):len((*c.CallOptions).UpgradeInstanceInternal)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -566,23 +1056,25 @@ func (c *NotebookClient) UpgradeInstanceInternal(ctx context.Context, req *noteb
 		return nil, err
 	}
 	return &UpgradeInstanceInternalOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// ListEnvironments lists environments in a project.
-func (c *NotebookClient) ListEnvironments(ctx context.Context, req *notebookspb.ListEnvironmentsRequest, opts ...gax.CallOption) *EnvironmentIterator {
+func (c *notebookGRPCClient) ListEnvironments(ctx context.Context, req *notebookspb.ListEnvironmentsRequest, opts ...gax.CallOption) *EnvironmentIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ListEnvironments[0:len(c.CallOptions.ListEnvironments):len(c.CallOptions.ListEnvironments)], opts...)
+	opts = append((*c.CallOptions).ListEnvironments[0:len((*c.CallOptions).ListEnvironments):len((*c.CallOptions).ListEnvironments)], opts...)
 	it := &EnvironmentIterator{}
 	req = proto.Clone(req).(*notebookspb.ListEnvironmentsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*notebookspb.Environment, string, error) {
-		var resp *notebookspb.ListEnvironmentsResponse
-		req.PageToken = pageToken
+		resp := &notebookspb.ListEnvironmentsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -605,22 +1097,19 @@ func (c *NotebookClient) ListEnvironments(ctx context.Context, req *notebookspb.
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
-// GetEnvironment gets details of a single Environment.
-func (c *NotebookClient) GetEnvironment(ctx context.Context, req *notebookspb.GetEnvironmentRequest, opts ...gax.CallOption) (*notebookspb.Environment, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
+func (c *notebookGRPCClient) GetEnvironment(ctx context.Context, req *notebookspb.GetEnvironmentRequest, opts ...gax.CallOption) (*notebookspb.Environment, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GetEnvironment[0:len(c.CallOptions.GetEnvironment):len(c.CallOptions.GetEnvironment)], opts...)
+	opts = append((*c.CallOptions).GetEnvironment[0:len((*c.CallOptions).GetEnvironment):len((*c.CallOptions).GetEnvironment)], opts...)
 	var resp *notebookspb.Environment
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -633,16 +1122,11 @@ func (c *NotebookClient) GetEnvironment(ctx context.Context, req *notebookspb.Ge
 	return resp, nil
 }
 
-// CreateEnvironment creates a new Environment.
-func (c *NotebookClient) CreateEnvironment(ctx context.Context, req *notebookspb.CreateEnvironmentRequest, opts ...gax.CallOption) (*CreateEnvironmentOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
+func (c *notebookGRPCClient) CreateEnvironment(ctx context.Context, req *notebookspb.CreateEnvironmentRequest, opts ...gax.CallOption) (*CreateEnvironmentOperation, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.CreateEnvironment[0:len(c.CallOptions.CreateEnvironment):len(c.CallOptions.CreateEnvironment)], opts...)
+	opts = append((*c.CallOptions).CreateEnvironment[0:len((*c.CallOptions).CreateEnvironment):len((*c.CallOptions).CreateEnvironment)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -653,20 +1137,15 @@ func (c *NotebookClient) CreateEnvironment(ctx context.Context, req *notebookspb
 		return nil, err
 	}
 	return &CreateEnvironmentOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// DeleteEnvironment deletes a single Environment.
-func (c *NotebookClient) DeleteEnvironment(ctx context.Context, req *notebookspb.DeleteEnvironmentRequest, opts ...gax.CallOption) (*DeleteEnvironmentOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
+func (c *notebookGRPCClient) DeleteEnvironment(ctx context.Context, req *notebookspb.DeleteEnvironmentRequest, opts ...gax.CallOption) (*DeleteEnvironmentOperation, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.DeleteEnvironment[0:len(c.CallOptions.DeleteEnvironment):len(c.CallOptions.DeleteEnvironment)], opts...)
+	opts = append((*c.CallOptions).DeleteEnvironment[0:len((*c.CallOptions).DeleteEnvironment):len((*c.CallOptions).DeleteEnvironment)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -677,20 +1156,2126 @@ func (c *NotebookClient) DeleteEnvironment(ctx context.Context, req *notebookspb
 		return nil, err
 	}
 	return &DeleteEnvironmentOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
+}
+
+func (c *notebookGRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).GetLocation[0:len((*c.CallOptions).GetLocation):len((*c.CallOptions).GetLocation)], opts...)
+	var resp *locationpb.Location
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.locationsClient.GetLocation(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *notebookGRPCClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
+	it := &LocationIterator{}
+	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
+		resp := &locationpb.ListLocationsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.locationsClient.ListLocations(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetLocations(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *notebookGRPCClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).GetIamPolicy[0:len((*c.CallOptions).GetIamPolicy):len((*c.CallOptions).GetIamPolicy)], opts...)
+	var resp *iampb.Policy
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.iamPolicyClient.GetIamPolicy(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *notebookGRPCClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).SetIamPolicy[0:len((*c.CallOptions).SetIamPolicy):len((*c.CallOptions).SetIamPolicy)], opts...)
+	var resp *iampb.Policy
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.iamPolicyClient.SetIamPolicy(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *notebookGRPCClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermissionsRequest, opts ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).TestIamPermissions[0:len((*c.CallOptions).TestIamPermissions):len((*c.CallOptions).TestIamPermissions)], opts...)
+	var resp *iampb.TestIamPermissionsResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.iamPolicyClient.TestIamPermissions(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *notebookGRPCClient) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = c.operationsClient.CancelOperation(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	return err
+}
+
+func (c *notebookGRPCClient) DeleteOperation(ctx context.Context, req *longrunningpb.DeleteOperationRequest, opts ...gax.CallOption) error {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = c.operationsClient.DeleteOperation(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	return err
+}
+
+func (c *notebookGRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *notebookGRPCClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
+	it := &OperationIterator{}
+	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
+		resp := &longrunningpb.ListOperationsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetOperations(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// ListInstances lists instances in a given project and location.
+func (c *notebookRESTClient) ListInstances(ctx context.Context, req *notebookspb.ListInstancesRequest, opts ...gax.CallOption) *InstanceIterator {
+	it := &InstanceIterator{}
+	req = proto.Clone(req).(*notebookspb.ListInstancesRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*notebookspb.Instance, string, error) {
+		resp := &notebookspb.ListInstancesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/instances", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			httpRsp, err := c.httpClient.Do(httpReq)
+			if err != nil {
+				return err
+			}
+			defer httpRsp.Body.Close()
+
+			if err = googleapi.CheckResponse(httpRsp); err != nil {
+				return err
+			}
+
+			buf, err := ioutil.ReadAll(httpRsp.Body)
+			if err != nil {
+				return err
+			}
+
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return maybeUnknownEnum(err)
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetInstances(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// GetInstance gets details of a single Instance.
+func (c *notebookRESTClient) GetInstance(ctx context.Context, req *notebookspb.GetInstanceRequest, opts ...gax.CallOption) (*notebookspb.Instance, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).GetInstance[0:len((*c.CallOptions).GetInstance):len((*c.CallOptions).GetInstance)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &notebookspb.Instance{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// CreateInstance creates a new Instance in a given project and location.
+func (c *notebookRESTClient) CreateInstance(ctx context.Context, req *notebookspb.CreateInstanceRequest, opts ...gax.CallOption) (*CreateInstanceOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetInstance()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/instances", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	params.Add("instanceId", fmt.Sprintf("%v", req.GetInstanceId()))
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1beta1/%s", resp.GetName())
+	return &CreateInstanceOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// RegisterInstance registers an existing legacy notebook instance to the Notebooks API server.
+// Legacy instances are instances created with the legacy Compute Engine
+// calls. They are not manageable by the Notebooks API out of the box. This
+// call makes these instances manageable by the Notebooks API.
+func (c *notebookRESTClient) RegisterInstance(ctx context.Context, req *notebookspb.RegisterInstanceRequest, opts ...gax.CallOption) (*RegisterInstanceOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/instances:register", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1beta1/%s", resp.GetName())
+	return &RegisterInstanceOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// SetInstanceAccelerator updates the guest accelerators of a single Instance.
+func (c *notebookRESTClient) SetInstanceAccelerator(ctx context.Context, req *notebookspb.SetInstanceAcceleratorRequest, opts ...gax.CallOption) (*SetInstanceAcceleratorOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:setAccelerator", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1beta1/%s", resp.GetName())
+	return &SetInstanceAcceleratorOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// SetInstanceMachineType updates the machine type of a single Instance.
+func (c *notebookRESTClient) SetInstanceMachineType(ctx context.Context, req *notebookspb.SetInstanceMachineTypeRequest, opts ...gax.CallOption) (*SetInstanceMachineTypeOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:setMachineType", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1beta1/%s", resp.GetName())
+	return &SetInstanceMachineTypeOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// SetInstanceLabels updates the labels of an Instance.
+func (c *notebookRESTClient) SetInstanceLabels(ctx context.Context, req *notebookspb.SetInstanceLabelsRequest, opts ...gax.CallOption) (*SetInstanceLabelsOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:setLabels", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1beta1/%s", resp.GetName())
+	return &SetInstanceLabelsOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// DeleteInstance deletes a single Instance.
+func (c *notebookRESTClient) DeleteInstance(ctx context.Context, req *notebookspb.DeleteInstanceRequest, opts ...gax.CallOption) (*DeleteInstanceOperation, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1beta1/%s", resp.GetName())
+	return &DeleteInstanceOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// StartInstance starts a notebook instance.
+func (c *notebookRESTClient) StartInstance(ctx context.Context, req *notebookspb.StartInstanceRequest, opts ...gax.CallOption) (*StartInstanceOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:start", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1beta1/%s", resp.GetName())
+	return &StartInstanceOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// StopInstance stops a notebook instance.
+func (c *notebookRESTClient) StopInstance(ctx context.Context, req *notebookspb.StopInstanceRequest, opts ...gax.CallOption) (*StopInstanceOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:stop", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1beta1/%s", resp.GetName())
+	return &StopInstanceOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// ResetInstance resets a notebook instance.
+func (c *notebookRESTClient) ResetInstance(ctx context.Context, req *notebookspb.ResetInstanceRequest, opts ...gax.CallOption) (*ResetInstanceOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:reset", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1beta1/%s", resp.GetName())
+	return &ResetInstanceOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// ReportInstanceInfo allows notebook instances to
+// report their latest instance information to the Notebooks
+// API server. The server will merge the reported information to
+// the instance metadata store. Do not use this method directly.
+func (c *notebookRESTClient) ReportInstanceInfo(ctx context.Context, req *notebookspb.ReportInstanceInfoRequest, opts ...gax.CallOption) (*ReportInstanceInfoOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:report", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1beta1/%s", resp.GetName())
+	return &ReportInstanceInfoOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// IsInstanceUpgradeable check if a notebook instance is upgradable.
+// Deprecated. Please consider using v1.
+//
+// Deprecated: IsInstanceUpgradeable may be removed in a future version.
+func (c *notebookRESTClient) IsInstanceUpgradeable(ctx context.Context, req *notebookspb.IsInstanceUpgradeableRequest, opts ...gax.CallOption) (*notebookspb.IsInstanceUpgradeableResponse, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:isUpgradeable", req.GetNotebookInstance())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "notebook_instance", url.QueryEscape(req.GetNotebookInstance())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).IsInstanceUpgradeable[0:len((*c.CallOptions).IsInstanceUpgradeable):len((*c.CallOptions).IsInstanceUpgradeable)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &notebookspb.IsInstanceUpgradeableResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// UpgradeInstance upgrades a notebook instance to the latest version.
+// Deprecated. Please consider using v1.
+//
+// Deprecated: UpgradeInstance may be removed in a future version.
+func (c *notebookRESTClient) UpgradeInstance(ctx context.Context, req *notebookspb.UpgradeInstanceRequest, opts ...gax.CallOption) (*UpgradeInstanceOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:upgrade", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1beta1/%s", resp.GetName())
+	return &UpgradeInstanceOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// UpgradeInstanceInternal allows notebook instances to
+// call this endpoint to upgrade themselves. Do not use this method directly.
+// Deprecated. Please consider using v1.
+//
+// Deprecated: UpgradeInstanceInternal may be removed in a future version.
+func (c *notebookRESTClient) UpgradeInstanceInternal(ctx context.Context, req *notebookspb.UpgradeInstanceInternalRequest, opts ...gax.CallOption) (*UpgradeInstanceInternalOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:upgradeInternal", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1beta1/%s", resp.GetName())
+	return &UpgradeInstanceInternalOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// ListEnvironments lists environments in a project.
+func (c *notebookRESTClient) ListEnvironments(ctx context.Context, req *notebookspb.ListEnvironmentsRequest, opts ...gax.CallOption) *EnvironmentIterator {
+	it := &EnvironmentIterator{}
+	req = proto.Clone(req).(*notebookspb.ListEnvironmentsRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*notebookspb.Environment, string, error) {
+		resp := &notebookspb.ListEnvironmentsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/environments", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			httpRsp, err := c.httpClient.Do(httpReq)
+			if err != nil {
+				return err
+			}
+			defer httpRsp.Body.Close()
+
+			if err = googleapi.CheckResponse(httpRsp); err != nil {
+				return err
+			}
+
+			buf, err := ioutil.ReadAll(httpRsp.Body)
+			if err != nil {
+				return err
+			}
+
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return maybeUnknownEnum(err)
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetEnvironments(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// GetEnvironment gets details of a single Environment.
+func (c *notebookRESTClient) GetEnvironment(ctx context.Context, req *notebookspb.GetEnvironmentRequest, opts ...gax.CallOption) (*notebookspb.Environment, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).GetEnvironment[0:len((*c.CallOptions).GetEnvironment):len((*c.CallOptions).GetEnvironment)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &notebookspb.Environment{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// CreateEnvironment creates a new Environment.
+func (c *notebookRESTClient) CreateEnvironment(ctx context.Context, req *notebookspb.CreateEnvironmentRequest, opts ...gax.CallOption) (*CreateEnvironmentOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetEnvironment()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/environments", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	params.Add("environmentId", fmt.Sprintf("%v", req.GetEnvironmentId()))
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1beta1/%s", resp.GetName())
+	return &CreateEnvironmentOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// DeleteEnvironment deletes a single Environment.
+func (c *notebookRESTClient) DeleteEnvironment(ctx context.Context, req *notebookspb.DeleteEnvironmentRequest, opts ...gax.CallOption) (*DeleteEnvironmentOperation, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1beta1/%s", resp.GetName())
+	return &DeleteEnvironmentOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// GetLocation gets information about a location.
+func (c *notebookRESTClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).GetLocation[0:len((*c.CallOptions).GetLocation):len((*c.CallOptions).GetLocation)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &locationpb.Location{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// ListLocations lists information about the supported locations for this service.
+func (c *notebookRESTClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
+	it := &LocationIterator{}
+	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
+		resp := &locationpb.ListLocationsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/locations", req.GetName())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			httpRsp, err := c.httpClient.Do(httpReq)
+			if err != nil {
+				return err
+			}
+			defer httpRsp.Body.Close()
+
+			if err = googleapi.CheckResponse(httpRsp); err != nil {
+				return err
+			}
+
+			buf, err := ioutil.ReadAll(httpRsp.Body)
+			if err != nil {
+				return err
+			}
+
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return maybeUnknownEnum(err)
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetLocations(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// GetIamPolicy gets the access control policy for a resource. Returns an empty policy
+// if the resource exists and does not have a policy set.
+func (c *notebookRESTClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:getIamPolicy", req.GetResource())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetOptions().GetRequestedPolicyVersion() != 0 {
+		params.Add("options.requestedPolicyVersion", fmt.Sprintf("%v", req.GetOptions().GetRequestedPolicyVersion()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).GetIamPolicy[0:len((*c.CallOptions).GetIamPolicy):len((*c.CallOptions).GetIamPolicy)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &iampb.Policy{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// SetIamPolicy sets the access control policy on the specified resource. Replaces
+// any existing policy.
+//
+// Can return NOT_FOUND, INVALID_ARGUMENT, and PERMISSION_DENIED
+// errors.
+func (c *notebookRESTClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:setIamPolicy", req.GetResource())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).SetIamPolicy[0:len((*c.CallOptions).SetIamPolicy):len((*c.CallOptions).SetIamPolicy)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &iampb.Policy{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// TestIamPermissions returns permissions that a caller has on the specified resource. If the
+// resource does not exist, this will return an empty set of
+// permissions, not a NOT_FOUND error.
+//
+// Note: This operation is designed to be used for building
+// permission-aware UIs and command-line tools, not for authorization
+// checking. This operation may “fail open” without warning.
+func (c *notebookRESTClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermissionsRequest, opts ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:testIamPermissions", req.GetResource())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).TestIamPermissions[0:len((*c.CallOptions).TestIamPermissions):len((*c.CallOptions).TestIamPermissions)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &iampb.TestIamPermissionsResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// CancelOperation is a utility method from google.longrunning.Operations.
+func (c *notebookRESTClient) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:cancel", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		// Returns nil if there is no error, otherwise wraps
+		// the response code and body into a non-nil error
+		return googleapi.CheckResponse(httpRsp)
+	}, opts...)
+}
+
+// DeleteOperation is a utility method from google.longrunning.Operations.
+func (c *notebookRESTClient) DeleteOperation(ctx context.Context, req *longrunningpb.DeleteOperationRequest, opts ...gax.CallOption) error {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		// Returns nil if there is no error, otherwise wraps
+		// the response code and body into a non-nil error
+		return googleapi.CheckResponse(httpRsp)
+	}, opts...)
+}
+
+// GetOperation is a utility method from google.longrunning.Operations.
+func (c *notebookRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// ListOperations is a utility method from google.longrunning.Operations.
+func (c *notebookRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
+	it := &OperationIterator{}
+	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
+		resp := &longrunningpb.ListOperationsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/operations", req.GetName())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			httpRsp, err := c.httpClient.Do(httpReq)
+			if err != nil {
+				return err
+			}
+			defer httpRsp.Body.Close()
+
+			if err = googleapi.CheckResponse(httpRsp); err != nil {
+				return err
+			}
+
+			buf, err := ioutil.ReadAll(httpRsp.Body)
+			if err != nil {
+				return err
+			}
+
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return maybeUnknownEnum(err)
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetOperations(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
 }
 
 // CreateEnvironmentOperation manages a long-running operation from CreateEnvironment.
 type CreateEnvironmentOperation struct {
-	lro *longrunning.Operation
+	lro      *longrunning.Operation
+	pollPath string
 }
 
 // CreateEnvironmentOperation returns a new CreateEnvironmentOperation from a given name.
 // The name must be that of a previously created CreateEnvironmentOperation, possibly from a different process.
-func (c *NotebookClient) CreateEnvironmentOperation(name string) *CreateEnvironmentOperation {
+func (c *notebookGRPCClient) CreateEnvironmentOperation(name string) *CreateEnvironmentOperation {
 	return &CreateEnvironmentOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// CreateEnvironmentOperation returns a new CreateEnvironmentOperation from a given name.
+// The name must be that of a previously created CreateEnvironmentOperation, possibly from a different process.
+func (c *notebookRESTClient) CreateEnvironmentOperation(name string) *CreateEnvironmentOperation {
+	override := fmt.Sprintf("/v1beta1/%s", name)
+	return &CreateEnvironmentOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
 	}
 }
 
@@ -698,6 +3283,7 @@ func (c *NotebookClient) CreateEnvironmentOperation(name string) *CreateEnvironm
 //
 // See documentation of Poll for error-handling information.
 func (op *CreateEnvironmentOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*notebookspb.Environment, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
 	var resp notebookspb.Environment
 	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
 		return nil, err
@@ -715,6 +3301,7 @@ func (op *CreateEnvironmentOperation) Wait(ctx context.Context, opts ...gax.Call
 // op.Done will return true, and the response of the operation is returned.
 // If Poll succeeds and the operation has not completed, the returned response and error are both nil.
 func (op *CreateEnvironmentOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*notebookspb.Environment, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
 	var resp notebookspb.Environment
 	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
 		return nil, err
@@ -752,14 +3339,25 @@ func (op *CreateEnvironmentOperation) Name() string {
 
 // CreateInstanceOperation manages a long-running operation from CreateInstance.
 type CreateInstanceOperation struct {
-	lro *longrunning.Operation
+	lro      *longrunning.Operation
+	pollPath string
 }
 
 // CreateInstanceOperation returns a new CreateInstanceOperation from a given name.
 // The name must be that of a previously created CreateInstanceOperation, possibly from a different process.
-func (c *NotebookClient) CreateInstanceOperation(name string) *CreateInstanceOperation {
+func (c *notebookGRPCClient) CreateInstanceOperation(name string) *CreateInstanceOperation {
 	return &CreateInstanceOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// CreateInstanceOperation returns a new CreateInstanceOperation from a given name.
+// The name must be that of a previously created CreateInstanceOperation, possibly from a different process.
+func (c *notebookRESTClient) CreateInstanceOperation(name string) *CreateInstanceOperation {
+	override := fmt.Sprintf("/v1beta1/%s", name)
+	return &CreateInstanceOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
 	}
 }
 
@@ -767,6 +3365,7 @@ func (c *NotebookClient) CreateInstanceOperation(name string) *CreateInstanceOpe
 //
 // See documentation of Poll for error-handling information.
 func (op *CreateInstanceOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*notebookspb.Instance, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
 	var resp notebookspb.Instance
 	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
 		return nil, err
@@ -784,6 +3383,7 @@ func (op *CreateInstanceOperation) Wait(ctx context.Context, opts ...gax.CallOpt
 // op.Done will return true, and the response of the operation is returned.
 // If Poll succeeds and the operation has not completed, the returned response and error are both nil.
 func (op *CreateInstanceOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*notebookspb.Instance, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
 	var resp notebookspb.Instance
 	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
 		return nil, err
@@ -821,14 +3421,25 @@ func (op *CreateInstanceOperation) Name() string {
 
 // DeleteEnvironmentOperation manages a long-running operation from DeleteEnvironment.
 type DeleteEnvironmentOperation struct {
-	lro *longrunning.Operation
+	lro      *longrunning.Operation
+	pollPath string
 }
 
 // DeleteEnvironmentOperation returns a new DeleteEnvironmentOperation from a given name.
 // The name must be that of a previously created DeleteEnvironmentOperation, possibly from a different process.
-func (c *NotebookClient) DeleteEnvironmentOperation(name string) *DeleteEnvironmentOperation {
+func (c *notebookGRPCClient) DeleteEnvironmentOperation(name string) *DeleteEnvironmentOperation {
 	return &DeleteEnvironmentOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// DeleteEnvironmentOperation returns a new DeleteEnvironmentOperation from a given name.
+// The name must be that of a previously created DeleteEnvironmentOperation, possibly from a different process.
+func (c *notebookRESTClient) DeleteEnvironmentOperation(name string) *DeleteEnvironmentOperation {
+	override := fmt.Sprintf("/v1beta1/%s", name)
+	return &DeleteEnvironmentOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
 	}
 }
 
@@ -836,6 +3447,7 @@ func (c *NotebookClient) DeleteEnvironmentOperation(name string) *DeleteEnvironm
 //
 // See documentation of Poll for error-handling information.
 func (op *DeleteEnvironmentOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
 	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
 }
 
@@ -849,6 +3461,7 @@ func (op *DeleteEnvironmentOperation) Wait(ctx context.Context, opts ...gax.Call
 // op.Done will return true, and the response of the operation is returned.
 // If Poll succeeds and the operation has not completed, the returned response and error are both nil.
 func (op *DeleteEnvironmentOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
 	return op.lro.Poll(ctx, nil, opts...)
 }
 
@@ -879,14 +3492,25 @@ func (op *DeleteEnvironmentOperation) Name() string {
 
 // DeleteInstanceOperation manages a long-running operation from DeleteInstance.
 type DeleteInstanceOperation struct {
-	lro *longrunning.Operation
+	lro      *longrunning.Operation
+	pollPath string
 }
 
 // DeleteInstanceOperation returns a new DeleteInstanceOperation from a given name.
 // The name must be that of a previously created DeleteInstanceOperation, possibly from a different process.
-func (c *NotebookClient) DeleteInstanceOperation(name string) *DeleteInstanceOperation {
+func (c *notebookGRPCClient) DeleteInstanceOperation(name string) *DeleteInstanceOperation {
 	return &DeleteInstanceOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// DeleteInstanceOperation returns a new DeleteInstanceOperation from a given name.
+// The name must be that of a previously created DeleteInstanceOperation, possibly from a different process.
+func (c *notebookRESTClient) DeleteInstanceOperation(name string) *DeleteInstanceOperation {
+	override := fmt.Sprintf("/v1beta1/%s", name)
+	return &DeleteInstanceOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
 	}
 }
 
@@ -894,6 +3518,7 @@ func (c *NotebookClient) DeleteInstanceOperation(name string) *DeleteInstanceOpe
 //
 // See documentation of Poll for error-handling information.
 func (op *DeleteInstanceOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
 	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
 }
 
@@ -907,6 +3532,7 @@ func (op *DeleteInstanceOperation) Wait(ctx context.Context, opts ...gax.CallOpt
 // op.Done will return true, and the response of the operation is returned.
 // If Poll succeeds and the operation has not completed, the returned response and error are both nil.
 func (op *DeleteInstanceOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
 	return op.lro.Poll(ctx, nil, opts...)
 }
 
@@ -937,14 +3563,25 @@ func (op *DeleteInstanceOperation) Name() string {
 
 // RegisterInstanceOperation manages a long-running operation from RegisterInstance.
 type RegisterInstanceOperation struct {
-	lro *longrunning.Operation
+	lro      *longrunning.Operation
+	pollPath string
 }
 
 // RegisterInstanceOperation returns a new RegisterInstanceOperation from a given name.
 // The name must be that of a previously created RegisterInstanceOperation, possibly from a different process.
-func (c *NotebookClient) RegisterInstanceOperation(name string) *RegisterInstanceOperation {
+func (c *notebookGRPCClient) RegisterInstanceOperation(name string) *RegisterInstanceOperation {
 	return &RegisterInstanceOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// RegisterInstanceOperation returns a new RegisterInstanceOperation from a given name.
+// The name must be that of a previously created RegisterInstanceOperation, possibly from a different process.
+func (c *notebookRESTClient) RegisterInstanceOperation(name string) *RegisterInstanceOperation {
+	override := fmt.Sprintf("/v1beta1/%s", name)
+	return &RegisterInstanceOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
 	}
 }
 
@@ -952,6 +3589,7 @@ func (c *NotebookClient) RegisterInstanceOperation(name string) *RegisterInstanc
 //
 // See documentation of Poll for error-handling information.
 func (op *RegisterInstanceOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*notebookspb.Instance, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
 	var resp notebookspb.Instance
 	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
 		return nil, err
@@ -969,6 +3607,7 @@ func (op *RegisterInstanceOperation) Wait(ctx context.Context, opts ...gax.CallO
 // op.Done will return true, and the response of the operation is returned.
 // If Poll succeeds and the operation has not completed, the returned response and error are both nil.
 func (op *RegisterInstanceOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*notebookspb.Instance, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
 	var resp notebookspb.Instance
 	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
 		return nil, err
@@ -1006,14 +3645,25 @@ func (op *RegisterInstanceOperation) Name() string {
 
 // ReportInstanceInfoOperation manages a long-running operation from ReportInstanceInfo.
 type ReportInstanceInfoOperation struct {
-	lro *longrunning.Operation
+	lro      *longrunning.Operation
+	pollPath string
 }
 
 // ReportInstanceInfoOperation returns a new ReportInstanceInfoOperation from a given name.
 // The name must be that of a previously created ReportInstanceInfoOperation, possibly from a different process.
-func (c *NotebookClient) ReportInstanceInfoOperation(name string) *ReportInstanceInfoOperation {
+func (c *notebookGRPCClient) ReportInstanceInfoOperation(name string) *ReportInstanceInfoOperation {
 	return &ReportInstanceInfoOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// ReportInstanceInfoOperation returns a new ReportInstanceInfoOperation from a given name.
+// The name must be that of a previously created ReportInstanceInfoOperation, possibly from a different process.
+func (c *notebookRESTClient) ReportInstanceInfoOperation(name string) *ReportInstanceInfoOperation {
+	override := fmt.Sprintf("/v1beta1/%s", name)
+	return &ReportInstanceInfoOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
 	}
 }
 
@@ -1021,6 +3671,7 @@ func (c *NotebookClient) ReportInstanceInfoOperation(name string) *ReportInstanc
 //
 // See documentation of Poll for error-handling information.
 func (op *ReportInstanceInfoOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*notebookspb.Instance, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
 	var resp notebookspb.Instance
 	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
 		return nil, err
@@ -1038,6 +3689,7 @@ func (op *ReportInstanceInfoOperation) Wait(ctx context.Context, opts ...gax.Cal
 // op.Done will return true, and the response of the operation is returned.
 // If Poll succeeds and the operation has not completed, the returned response and error are both nil.
 func (op *ReportInstanceInfoOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*notebookspb.Instance, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
 	var resp notebookspb.Instance
 	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
 		return nil, err
@@ -1075,14 +3727,25 @@ func (op *ReportInstanceInfoOperation) Name() string {
 
 // ResetInstanceOperation manages a long-running operation from ResetInstance.
 type ResetInstanceOperation struct {
-	lro *longrunning.Operation
+	lro      *longrunning.Operation
+	pollPath string
 }
 
 // ResetInstanceOperation returns a new ResetInstanceOperation from a given name.
 // The name must be that of a previously created ResetInstanceOperation, possibly from a different process.
-func (c *NotebookClient) ResetInstanceOperation(name string) *ResetInstanceOperation {
+func (c *notebookGRPCClient) ResetInstanceOperation(name string) *ResetInstanceOperation {
 	return &ResetInstanceOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// ResetInstanceOperation returns a new ResetInstanceOperation from a given name.
+// The name must be that of a previously created ResetInstanceOperation, possibly from a different process.
+func (c *notebookRESTClient) ResetInstanceOperation(name string) *ResetInstanceOperation {
+	override := fmt.Sprintf("/v1beta1/%s", name)
+	return &ResetInstanceOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
 	}
 }
 
@@ -1090,6 +3753,7 @@ func (c *NotebookClient) ResetInstanceOperation(name string) *ResetInstanceOpera
 //
 // See documentation of Poll for error-handling information.
 func (op *ResetInstanceOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*notebookspb.Instance, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
 	var resp notebookspb.Instance
 	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
 		return nil, err
@@ -1107,6 +3771,7 @@ func (op *ResetInstanceOperation) Wait(ctx context.Context, opts ...gax.CallOpti
 // op.Done will return true, and the response of the operation is returned.
 // If Poll succeeds and the operation has not completed, the returned response and error are both nil.
 func (op *ResetInstanceOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*notebookspb.Instance, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
 	var resp notebookspb.Instance
 	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
 		return nil, err
@@ -1144,14 +3809,25 @@ func (op *ResetInstanceOperation) Name() string {
 
 // SetInstanceAcceleratorOperation manages a long-running operation from SetInstanceAccelerator.
 type SetInstanceAcceleratorOperation struct {
-	lro *longrunning.Operation
+	lro      *longrunning.Operation
+	pollPath string
 }
 
 // SetInstanceAcceleratorOperation returns a new SetInstanceAcceleratorOperation from a given name.
 // The name must be that of a previously created SetInstanceAcceleratorOperation, possibly from a different process.
-func (c *NotebookClient) SetInstanceAcceleratorOperation(name string) *SetInstanceAcceleratorOperation {
+func (c *notebookGRPCClient) SetInstanceAcceleratorOperation(name string) *SetInstanceAcceleratorOperation {
 	return &SetInstanceAcceleratorOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// SetInstanceAcceleratorOperation returns a new SetInstanceAcceleratorOperation from a given name.
+// The name must be that of a previously created SetInstanceAcceleratorOperation, possibly from a different process.
+func (c *notebookRESTClient) SetInstanceAcceleratorOperation(name string) *SetInstanceAcceleratorOperation {
+	override := fmt.Sprintf("/v1beta1/%s", name)
+	return &SetInstanceAcceleratorOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
 	}
 }
 
@@ -1159,6 +3835,7 @@ func (c *NotebookClient) SetInstanceAcceleratorOperation(name string) *SetInstan
 //
 // See documentation of Poll for error-handling information.
 func (op *SetInstanceAcceleratorOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*notebookspb.Instance, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
 	var resp notebookspb.Instance
 	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
 		return nil, err
@@ -1176,6 +3853,7 @@ func (op *SetInstanceAcceleratorOperation) Wait(ctx context.Context, opts ...gax
 // op.Done will return true, and the response of the operation is returned.
 // If Poll succeeds and the operation has not completed, the returned response and error are both nil.
 func (op *SetInstanceAcceleratorOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*notebookspb.Instance, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
 	var resp notebookspb.Instance
 	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
 		return nil, err
@@ -1213,14 +3891,25 @@ func (op *SetInstanceAcceleratorOperation) Name() string {
 
 // SetInstanceLabelsOperation manages a long-running operation from SetInstanceLabels.
 type SetInstanceLabelsOperation struct {
-	lro *longrunning.Operation
+	lro      *longrunning.Operation
+	pollPath string
 }
 
 // SetInstanceLabelsOperation returns a new SetInstanceLabelsOperation from a given name.
 // The name must be that of a previously created SetInstanceLabelsOperation, possibly from a different process.
-func (c *NotebookClient) SetInstanceLabelsOperation(name string) *SetInstanceLabelsOperation {
+func (c *notebookGRPCClient) SetInstanceLabelsOperation(name string) *SetInstanceLabelsOperation {
 	return &SetInstanceLabelsOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// SetInstanceLabelsOperation returns a new SetInstanceLabelsOperation from a given name.
+// The name must be that of a previously created SetInstanceLabelsOperation, possibly from a different process.
+func (c *notebookRESTClient) SetInstanceLabelsOperation(name string) *SetInstanceLabelsOperation {
+	override := fmt.Sprintf("/v1beta1/%s", name)
+	return &SetInstanceLabelsOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
 	}
 }
 
@@ -1228,6 +3917,7 @@ func (c *NotebookClient) SetInstanceLabelsOperation(name string) *SetInstanceLab
 //
 // See documentation of Poll for error-handling information.
 func (op *SetInstanceLabelsOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*notebookspb.Instance, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
 	var resp notebookspb.Instance
 	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
 		return nil, err
@@ -1245,6 +3935,7 @@ func (op *SetInstanceLabelsOperation) Wait(ctx context.Context, opts ...gax.Call
 // op.Done will return true, and the response of the operation is returned.
 // If Poll succeeds and the operation has not completed, the returned response and error are both nil.
 func (op *SetInstanceLabelsOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*notebookspb.Instance, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
 	var resp notebookspb.Instance
 	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
 		return nil, err
@@ -1282,14 +3973,25 @@ func (op *SetInstanceLabelsOperation) Name() string {
 
 // SetInstanceMachineTypeOperation manages a long-running operation from SetInstanceMachineType.
 type SetInstanceMachineTypeOperation struct {
-	lro *longrunning.Operation
+	lro      *longrunning.Operation
+	pollPath string
 }
 
 // SetInstanceMachineTypeOperation returns a new SetInstanceMachineTypeOperation from a given name.
 // The name must be that of a previously created SetInstanceMachineTypeOperation, possibly from a different process.
-func (c *NotebookClient) SetInstanceMachineTypeOperation(name string) *SetInstanceMachineTypeOperation {
+func (c *notebookGRPCClient) SetInstanceMachineTypeOperation(name string) *SetInstanceMachineTypeOperation {
 	return &SetInstanceMachineTypeOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// SetInstanceMachineTypeOperation returns a new SetInstanceMachineTypeOperation from a given name.
+// The name must be that of a previously created SetInstanceMachineTypeOperation, possibly from a different process.
+func (c *notebookRESTClient) SetInstanceMachineTypeOperation(name string) *SetInstanceMachineTypeOperation {
+	override := fmt.Sprintf("/v1beta1/%s", name)
+	return &SetInstanceMachineTypeOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
 	}
 }
 
@@ -1297,6 +3999,7 @@ func (c *NotebookClient) SetInstanceMachineTypeOperation(name string) *SetInstan
 //
 // See documentation of Poll for error-handling information.
 func (op *SetInstanceMachineTypeOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*notebookspb.Instance, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
 	var resp notebookspb.Instance
 	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
 		return nil, err
@@ -1314,6 +4017,7 @@ func (op *SetInstanceMachineTypeOperation) Wait(ctx context.Context, opts ...gax
 // op.Done will return true, and the response of the operation is returned.
 // If Poll succeeds and the operation has not completed, the returned response and error are both nil.
 func (op *SetInstanceMachineTypeOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*notebookspb.Instance, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
 	var resp notebookspb.Instance
 	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
 		return nil, err
@@ -1351,14 +4055,25 @@ func (op *SetInstanceMachineTypeOperation) Name() string {
 
 // StartInstanceOperation manages a long-running operation from StartInstance.
 type StartInstanceOperation struct {
-	lro *longrunning.Operation
+	lro      *longrunning.Operation
+	pollPath string
 }
 
 // StartInstanceOperation returns a new StartInstanceOperation from a given name.
 // The name must be that of a previously created StartInstanceOperation, possibly from a different process.
-func (c *NotebookClient) StartInstanceOperation(name string) *StartInstanceOperation {
+func (c *notebookGRPCClient) StartInstanceOperation(name string) *StartInstanceOperation {
 	return &StartInstanceOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// StartInstanceOperation returns a new StartInstanceOperation from a given name.
+// The name must be that of a previously created StartInstanceOperation, possibly from a different process.
+func (c *notebookRESTClient) StartInstanceOperation(name string) *StartInstanceOperation {
+	override := fmt.Sprintf("/v1beta1/%s", name)
+	return &StartInstanceOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
 	}
 }
 
@@ -1366,6 +4081,7 @@ func (c *NotebookClient) StartInstanceOperation(name string) *StartInstanceOpera
 //
 // See documentation of Poll for error-handling information.
 func (op *StartInstanceOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*notebookspb.Instance, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
 	var resp notebookspb.Instance
 	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
 		return nil, err
@@ -1383,6 +4099,7 @@ func (op *StartInstanceOperation) Wait(ctx context.Context, opts ...gax.CallOpti
 // op.Done will return true, and the response of the operation is returned.
 // If Poll succeeds and the operation has not completed, the returned response and error are both nil.
 func (op *StartInstanceOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*notebookspb.Instance, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
 	var resp notebookspb.Instance
 	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
 		return nil, err
@@ -1420,14 +4137,25 @@ func (op *StartInstanceOperation) Name() string {
 
 // StopInstanceOperation manages a long-running operation from StopInstance.
 type StopInstanceOperation struct {
-	lro *longrunning.Operation
+	lro      *longrunning.Operation
+	pollPath string
 }
 
 // StopInstanceOperation returns a new StopInstanceOperation from a given name.
 // The name must be that of a previously created StopInstanceOperation, possibly from a different process.
-func (c *NotebookClient) StopInstanceOperation(name string) *StopInstanceOperation {
+func (c *notebookGRPCClient) StopInstanceOperation(name string) *StopInstanceOperation {
 	return &StopInstanceOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// StopInstanceOperation returns a new StopInstanceOperation from a given name.
+// The name must be that of a previously created StopInstanceOperation, possibly from a different process.
+func (c *notebookRESTClient) StopInstanceOperation(name string) *StopInstanceOperation {
+	override := fmt.Sprintf("/v1beta1/%s", name)
+	return &StopInstanceOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
 	}
 }
 
@@ -1435,6 +4163,7 @@ func (c *NotebookClient) StopInstanceOperation(name string) *StopInstanceOperati
 //
 // See documentation of Poll for error-handling information.
 func (op *StopInstanceOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*notebookspb.Instance, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
 	var resp notebookspb.Instance
 	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
 		return nil, err
@@ -1452,6 +4181,7 @@ func (op *StopInstanceOperation) Wait(ctx context.Context, opts ...gax.CallOptio
 // op.Done will return true, and the response of the operation is returned.
 // If Poll succeeds and the operation has not completed, the returned response and error are both nil.
 func (op *StopInstanceOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*notebookspb.Instance, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
 	var resp notebookspb.Instance
 	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
 		return nil, err
@@ -1489,14 +4219,25 @@ func (op *StopInstanceOperation) Name() string {
 
 // UpgradeInstanceOperation manages a long-running operation from UpgradeInstance.
 type UpgradeInstanceOperation struct {
-	lro *longrunning.Operation
+	lro      *longrunning.Operation
+	pollPath string
 }
 
 // UpgradeInstanceOperation returns a new UpgradeInstanceOperation from a given name.
 // The name must be that of a previously created UpgradeInstanceOperation, possibly from a different process.
-func (c *NotebookClient) UpgradeInstanceOperation(name string) *UpgradeInstanceOperation {
+func (c *notebookGRPCClient) UpgradeInstanceOperation(name string) *UpgradeInstanceOperation {
 	return &UpgradeInstanceOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// UpgradeInstanceOperation returns a new UpgradeInstanceOperation from a given name.
+// The name must be that of a previously created UpgradeInstanceOperation, possibly from a different process.
+func (c *notebookRESTClient) UpgradeInstanceOperation(name string) *UpgradeInstanceOperation {
+	override := fmt.Sprintf("/v1beta1/%s", name)
+	return &UpgradeInstanceOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
 	}
 }
 
@@ -1504,6 +4245,7 @@ func (c *NotebookClient) UpgradeInstanceOperation(name string) *UpgradeInstanceO
 //
 // See documentation of Poll for error-handling information.
 func (op *UpgradeInstanceOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*notebookspb.Instance, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
 	var resp notebookspb.Instance
 	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
 		return nil, err
@@ -1521,6 +4263,7 @@ func (op *UpgradeInstanceOperation) Wait(ctx context.Context, opts ...gax.CallOp
 // op.Done will return true, and the response of the operation is returned.
 // If Poll succeeds and the operation has not completed, the returned response and error are both nil.
 func (op *UpgradeInstanceOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*notebookspb.Instance, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
 	var resp notebookspb.Instance
 	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
 		return nil, err
@@ -1558,14 +4301,25 @@ func (op *UpgradeInstanceOperation) Name() string {
 
 // UpgradeInstanceInternalOperation manages a long-running operation from UpgradeInstanceInternal.
 type UpgradeInstanceInternalOperation struct {
-	lro *longrunning.Operation
+	lro      *longrunning.Operation
+	pollPath string
 }
 
 // UpgradeInstanceInternalOperation returns a new UpgradeInstanceInternalOperation from a given name.
 // The name must be that of a previously created UpgradeInstanceInternalOperation, possibly from a different process.
-func (c *NotebookClient) UpgradeInstanceInternalOperation(name string) *UpgradeInstanceInternalOperation {
+func (c *notebookGRPCClient) UpgradeInstanceInternalOperation(name string) *UpgradeInstanceInternalOperation {
 	return &UpgradeInstanceInternalOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// UpgradeInstanceInternalOperation returns a new UpgradeInstanceInternalOperation from a given name.
+// The name must be that of a previously created UpgradeInstanceInternalOperation, possibly from a different process.
+func (c *notebookRESTClient) UpgradeInstanceInternalOperation(name string) *UpgradeInstanceInternalOperation {
+	override := fmt.Sprintf("/v1beta1/%s", name)
+	return &UpgradeInstanceInternalOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
 	}
 }
 
@@ -1573,6 +4327,7 @@ func (c *NotebookClient) UpgradeInstanceInternalOperation(name string) *UpgradeI
 //
 // See documentation of Poll for error-handling information.
 func (op *UpgradeInstanceInternalOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*notebookspb.Instance, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
 	var resp notebookspb.Instance
 	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
 		return nil, err
@@ -1590,6 +4345,7 @@ func (op *UpgradeInstanceInternalOperation) Wait(ctx context.Context, opts ...ga
 // op.Done will return true, and the response of the operation is returned.
 // If Poll succeeds and the operation has not completed, the returned response and error are both nil.
 func (op *UpgradeInstanceInternalOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*notebookspb.Instance, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
 	var resp notebookspb.Instance
 	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
 		return nil, err
@@ -1714,6 +4470,100 @@ func (it *InstanceIterator) bufLen() int {
 }
 
 func (it *InstanceIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// LocationIterator manages a stream of *locationpb.Location.
+type LocationIterator struct {
+	items    []*locationpb.Location
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*locationpb.Location, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *LocationIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *LocationIterator) Next() (*locationpb.Location, error) {
+	var item *locationpb.Location
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *LocationIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *LocationIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// OperationIterator manages a stream of *longrunningpb.Operation.
+type OperationIterator struct {
+	items    []*longrunningpb.Operation
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*longrunningpb.Operation, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *OperationIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *OperationIterator) Next() (*longrunningpb.Operation, error) {
+	var item *longrunningpb.Operation
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *OperationIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *OperationIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b

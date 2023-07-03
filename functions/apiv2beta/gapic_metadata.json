@@ -1,0 +1,163 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.functions.v2beta",
+  "libraryPackage": "cloud.google.com/go/functions/apiv2beta",
+  "services": {
+    "FunctionService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "FunctionClient",
+          "rpcs": {
+            "CreateFunction": {
+              "methods": [
+                "CreateFunction"
+              ]
+            },
+            "DeleteFunction": {
+              "methods": [
+                "DeleteFunction"
+              ]
+            },
+            "GenerateDownloadUrl": {
+              "methods": [
+                "GenerateDownloadUrl"
+              ]
+            },
+            "GenerateUploadUrl": {
+              "methods": [
+                "GenerateUploadUrl"
+              ]
+            },
+            "GetFunction": {
+              "methods": [
+                "GetFunction"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListFunctions": {
+              "methods": [
+                "ListFunctions"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListRuntimes": {
+              "methods": [
+                "ListRuntimes"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
+            "UpdateFunction": {
+              "methods": [
+                "UpdateFunction"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "FunctionClient",
+          "rpcs": {
+            "CreateFunction": {
+              "methods": [
+                "CreateFunction"
+              ]
+            },
+            "DeleteFunction": {
+              "methods": [
+                "DeleteFunction"
+              ]
+            },
+            "GenerateDownloadUrl": {
+              "methods": [
+                "GenerateDownloadUrl"
+              ]
+            },
+            "GenerateUploadUrl": {
+              "methods": [
+                "GenerateUploadUrl"
+              ]
+            },
+            "GetFunction": {
+              "methods": [
+                "GetFunction"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListFunctions": {
+              "methods": [
+                "ListFunctions"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListRuntimes": {
+              "methods": [
+                "ListRuntimes"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
+            "UpdateFunction": {
+              "methods": [
+                "UpdateFunction"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

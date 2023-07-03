@@ -17,13 +17,13 @@
 // Package grafeas is an auto-generated package for the
 // Container Analysis API.
 //
-//   NOTE: This package is in alpha. It is not stable, and is likely to change.
+//	NOTE: This package is in alpha. It is not stable, and is likely to change.
 //
 // An implementation of the Grafeas API, which stores, and enables querying
 // and
 // retrieval of critical metadata about all of your software artifacts.
 //
-// Use of Context
+// # Use of Context
 //
 // The ctx passed to NewClient is used for authentication requests and
 // for creating the underlying connection, but is not used for subsequent calls.
@@ -92,4 +92,4 @@ func versionGo() string {
 	return "UNKNOWN"
 }
 
-const versionClient = "20190910"
+var versionClient = "20220222"

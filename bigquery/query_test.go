@@ -323,6 +323,27 @@ func TestQuery(t *testing.T) {
 				return j
 			}(),
 		},
+		{
+			dst: c.Dataset("dataset-id").Table("table-id"),
+			src: &QueryConfig{
+				Q:                "query string",
+				DefaultProjectID: "def-project-id",
+				DefaultDatasetID: "def-dataset-id",
+				ConnectionProperties: []*ConnectionProperty{
+					{Key: "key-a", Value: "value-a"},
+					{Key: "key-b", Value: "value-b"},
+				},
+			},
+			want: func() *bq.Job {
+				j := defaultQueryJob()
+				j.Configuration.Query.ForceSendFields = nil
+				j.Configuration.Query.ConnectionProperties = []*bq.ConnectionProperty{
+					{Key: "key-a", Value: "value-a"},
+					{Key: "key-b", Value: "value-b"},
+				}
+				return j
+			}(),
+		},
 	}
 	for i, tc := range testCases {
 		query := c.Query("")
@@ -380,6 +401,7 @@ func TestQuery(t *testing.T) {
 		diff := testutil.Diff(jc.(*QueryConfig), &wantConfig,
 			cmp.Comparer(tableEqual),
 			cmp.Comparer(externalDataEqual),
+			cmp.AllowUnexported(QueryConfig{}),
 		)
 		if diff != "" {
 			t.Errorf("#%d: (got=-, want=+:\n%s", i, diff)
@@ -494,6 +516,7 @@ func TestConfiguringQuery(t *testing.T) {
 	}
 	query.DestinationEncryptionConfig = &EncryptionConfig{KMSKeyName: "keyName"}
 	query.SchemaUpdateOptions = []string{"ALLOW_FIELD_ADDITION"}
+	query.JobTimeout = time.Duration(5) * time.Second
 
 	// Note: Other configuration fields are tested in other tests above.
 	// A lot of that can be consolidated once Client.Copy is gone.
@@ -513,6 +536,7 @@ func TestConfiguringQuery(t *testing.T) {
 				DestinationEncryptionConfiguration: &bq.EncryptionConfiguration{KmsKeyName: "keyName"},
 				SchemaUpdateOptions:                []string{"ALLOW_FIELD_ADDITION"},
 			},
+			JobTimeoutMs: 5000,
 		},
 		JobReference: &bq.JobReference{
 			JobId:     "ajob",

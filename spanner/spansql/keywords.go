@@ -128,11 +128,23 @@ var keywords = map[string]bool{
 // funcs is the set of reserved keywords that are functions.
 // https://cloud.google.com/spanner/docs/functions-and-operators
 var funcs = make(map[string]bool)
+var funcArgParsers = make(map[string]func(*parser) (Expr, *parseError))
 
 func init() {
 	for _, f := range allFuncs {
 		funcs[f] = true
 	}
+	// Special case for CAST, SAFE_CAST and EXTRACT
+	funcArgParsers["CAST"] = typedArgParser
+	funcArgParsers["SAFE_CAST"] = typedArgParser
+	funcArgParsers["EXTRACT"] = extractArgParser
+	// Spacial case of INTERVAL arg for DATE_ADD, DATE_SUB, GENERATE_DATE_ARRAY
+	funcArgParsers["DATE_ADD"] = dateIntervalArgParser
+	funcArgParsers["DATE_SUB"] = dateIntervalArgParser
+	funcArgParsers["GENERATE_DATE_ARRAY"] = dateIntervalArgParser
+	// Spacial case of INTERVAL arg for TIMESTAMP_ADD, TIMESTAMP_SUB
+	funcArgParsers["TIMESTAMP_ADD"] = timestampIntervalArgParser
+	funcArgParsers["TIMESTAMP_SUB"] = timestampIntervalArgParser
 }
 
 var allFuncs = []string{
@@ -148,11 +160,18 @@ var allFuncs = []string{
 	"MIN",
 	"SUM",
 
+	// Cast functions.
+	"CAST",
+	"SAFE_CAST",
+
 	// Mathematical functions.
 	"ABS",
+	"MOD",
 
 	// Hash functions.
+	"FARM_FINGERPRINT",
 	"SHA1",
+	"SHA256", "SHA512",
 
 	// String functions.
 	"BYTE_LENGTH", "CHAR_LENGTH", "CHARACTER_LENGTH",
@@ -190,4 +209,38 @@ var allFuncs = []string{
 	"ARRAY_REVERSE",
 	"ARRAY_IS_DISTINCT",
 	"SAFE_OFFSET", "SAFE_ORDINAL",
+
+	// Date functions.
+	"CURRENT_DATE",
+	"EXTRACT",
+	"DATE",
+	"DATE_ADD",
+	"DATE_SUB",
+	"DATE_DIFF",
+	"DATE_TRUNC",
+	"DATE_FROM_UNIX_DATE",
+	"FORMAT_DATE",
+	"PARSE_DATE",
+	"UNIX_DATE",
+
+	// Timestamp functions.
+	"CURRENT_TIMESTAMP",
+	"STRING",
+	"TIMESTAMP",
+	"TIMESTAMP_ADD",
+	"TIMESTAMP_SUB",
+	"TIMESTAMP_DIFF",
+	"TIMESTAMP_TRUNC",
+	"FORMAT_TIMESTAMP",
+	"PARSE_TIMESTAMP",
+	"TIMESTAMP_SECONDS",
+	"TIMESTAMP_MILLIS",
+	"TIMESTAMP_MICROS",
+	"UNIX_SECONDS",
+	"UNIX_MILLIS",
+	"UNIX_MICROS",
+	"PENDING_COMMIT_TIMESTAMP",
+
+	// JSON functions.
+	"JSON_VALUE",
 }

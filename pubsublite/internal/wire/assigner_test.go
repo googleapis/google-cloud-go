@@ -16,8 +16,6 @@ package wire
 import (
 	"context"
 	"errors"
-	"sort"
-	"sync"
 	"testing"
 	"time"
 
@@ -27,7 +25,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	pb "google.golang.org/genproto/googleapis/cloud/pubsublite/v1"
+	pb "cloud.google.com/go/pubsublite/apiv1/pubsublitepb"
 )
 
 func TestPartitionSet(t *testing.T) {
@@ -47,9 +45,7 @@ func TestPartitionSet(t *testing.T) {
 		}
 	}
 
-	gotPartitions := partitions.Ints()
-	sort.Ints(gotPartitions)
-	if !testutil.Equal(gotPartitions, wantPartitions) {
+	if gotPartitions := partitions.SortedInts(); !testutil.Equal(gotPartitions, wantPartitions) {
 		t.Errorf("Ints() got %v, want %v", gotPartitions, wantPartitions)
 	}
 }
@@ -63,9 +59,7 @@ func fakeGenerateUUID() (uuid.UUID, error) {
 // testAssigner wraps an assigner for ease of testing.
 type testAssigner struct {
 	// Fake error to simulate receiver unable to handle assignment.
-	recvError error
-	mu        sync.Mutex
-
+	recvError  error
 	t          *testing.T
 	asn        *assigner
 	partitions chan []int
@@ -73,7 +67,7 @@ type testAssigner struct {
 	serviceTestProxy
 }
 
-func newTestAssigner(t *testing.T, subscription string) *testAssigner {
+func newTestAssigner(t *testing.T, subscription string, recvErr error) *testAssigner {
 	ctx := context.Background()
 	assignmentClient, err := newPartitionAssignmentClient(ctx, "ignored", testServer.ClientConn())
 	if err != nil {
@@ -81,6 +75,7 @@ func newTestAssigner(t *testing.T, subscription string) *testAssigner {
 	}
 
 	ta := &testAssigner{
+		recvError:  recvErr,
 		t:          t,
 		partitions: make(chan []int, 1),
 	}
@@ -93,23 +88,14 @@ func newTestAssigner(t *testing.T, subscription string) *testAssigner {
 	return ta
 }
 
-func (ta *testAssigner) receiveAssignment(partitions partitionSet) error {
-	p := partitions.Ints()
-	sort.Ints(p)
+func (ta *testAssigner) receiveAssignment(partitions PartitionSet) error {
+	p := partitions.SortedInts()
 	ta.partitions <- p
 
-	ta.mu.Lock()
-	defer ta.mu.Unlock()
 	if ta.recvError != nil {
 		return ta.recvError
 	}
 	return nil
-}
-
-func (ta *testAssigner) SetReceiveError(err error) {
-	ta.mu.Lock()
-	defer ta.mu.Unlock()
-	ta.recvError = err
 }
 
 func (ta *testAssigner) NextPartitions() []int {
@@ -133,7 +119,7 @@ func TestAssignerNoInitialResponse(t *testing.T) {
 	mockServer.OnTestStart(verifiers)
 	defer mockServer.OnTestEnd()
 
-	asn := newTestAssigner(t, subscription)
+	asn := newTestAssigner(t, subscription, nil)
 
 	// Assigner starts even though no initial response was received from the
 	// server.
@@ -167,7 +153,7 @@ func TestAssignerReconnect(t *testing.T) {
 	mockServer.OnTestStart(verifiers)
 	defer mockServer.OnTestEnd()
 
-	asn := newTestAssigner(t, subscription)
+	asn := newTestAssigner(t, subscription, nil)
 
 	if gotErr := asn.StartError(); gotErr != nil {
 		t.Errorf("Start() got err: (%v)", gotErr)
@@ -194,18 +180,14 @@ func TestAssignerHandlePartitionFailure(t *testing.T) {
 	mockServer.OnTestStart(verifiers)
 	defer mockServer.OnTestEnd()
 
-	asn := newTestAssigner(t, subscription)
 	// Simulates the assigningSubscriber discarding assignments.
 	wantErr := errors.New("subscriber shutting down")
-	asn.SetReceiveError(wantErr)
+	asn := newTestAssigner(t, subscription, wantErr)
 
-	if gotErr := asn.StartError(); gotErr != nil {
-		t.Errorf("Start() got err: (%v)", gotErr)
+	if gotErr := asn.FinalError(); !test.ErrorEqual(gotErr, wantErr) {
+		t.Errorf("Final err: (%v), want: (%v)", gotErr, wantErr)
 	}
 	if got, want := asn.NextPartitions(), []int{1, 2}; !testutil.Equal(got, want) {
 		t.Errorf("Partition assignments: got %v, want %v", got, want)
-	}
-	if gotErr := asn.FinalError(); !test.ErrorEqual(gotErr, wantErr) {
-		t.Errorf("Final err: (%v), want: (%v)", gotErr, wantErr)
 	}
 }

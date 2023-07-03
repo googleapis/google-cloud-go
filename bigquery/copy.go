@@ -16,8 +16,26 @@ package bigquery
 
 import (
 	"context"
+	"time"
 
 	bq "google.golang.org/api/bigquery/v2"
+)
+
+// TableCopyOperationType is used to indicate the type of operation performed by a BigQuery
+// copy job.
+type TableCopyOperationType string
+
+var (
+	// CopyOperation indicates normal table to table copying.
+	CopyOperation TableCopyOperationType = "COPY"
+	// SnapshotOperation indicates creating a snapshot from a regular table, which
+	// operates as an immutable copy.
+	SnapshotOperation TableCopyOperationType = "SNAPSHOT"
+	// RestoreOperation indicates creating/restoring a table from a snapshot.
+	RestoreOperation TableCopyOperationType = "RESTORE"
+	// CloneOperation indicates creating a table clone, which creates a writeable
+	// copy of a base table that is billed based on difference from the base table.
+	CloneOperation TableCopyOperationType = "CLONE"
 )
 
 // CopyConfig holds the configuration for a copy job.
@@ -41,6 +59,20 @@ type CopyConfig struct {
 
 	// Custom encryption configuration (e.g., Cloud KMS keys).
 	DestinationEncryptionConfig *EncryptionConfig
+
+	// One of the supported operation types when executing a Table Copy jobs.  By default this
+	// copies tables, but can also be set to perform snapshot or restore operations.
+	OperationType TableCopyOperationType
+
+	// Sets a best-effort deadline on a specific job.  If job execution exceeds this
+	// timeout, BigQuery may attempt to cancel this work automatically.
+	//
+	// This deadline cannot be adjusted or removed once the job is created.  Consider
+	// using Job.Cancel in situations where you need more dynamic behavior.
+	//
+	// Experimental: this option is experimental and may be modified or removed in future versions,
+	// regardless of any other documented package stability guarantees.
+	JobTimeout time.Duration
 }
 
 func (c *CopyConfig) toBQ() *bq.JobConfiguration {
@@ -56,7 +88,9 @@ func (c *CopyConfig) toBQ() *bq.JobConfiguration {
 			DestinationTable:                   c.Dst.toBQ(),
 			DestinationEncryptionConfiguration: c.DestinationEncryptionConfig.toBQ(),
 			SourceTables:                       ts,
+			OperationType:                      string(c.OperationType),
 		},
+		JobTimeoutMs: c.JobTimeout.Milliseconds(),
 	}
 }
 
@@ -67,6 +101,8 @@ func bqToCopyConfig(q *bq.JobConfiguration, c *Client) *CopyConfig {
 		WriteDisposition:            TableWriteDisposition(q.Copy.WriteDisposition),
 		Dst:                         bqToTable(q.Copy.DestinationTable, c),
 		DestinationEncryptionConfig: bqToEncryptionConfig(q.Copy.DestinationEncryptionConfiguration),
+		OperationType:               TableCopyOperationType(q.Copy.OperationType),
+		JobTimeout:                  time.Duration(q.JobTimeoutMs) * time.Millisecond,
 	}
 	for _, t := range q.Copy.SourceTables {
 		cc.Srcs = append(cc.Srcs, bqToTable(t, c))

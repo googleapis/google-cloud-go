@@ -22,6 +22,8 @@ import (
 	"os"
 
 	"cloud.google.com/go/logging"
+	vkit "cloud.google.com/go/logging/apiv2"
+	logpb "cloud.google.com/go/logging/apiv2/loggingpb"
 	"go.opencensus.io/trace"
 )
 
@@ -106,6 +108,27 @@ func ExampleHTTPRequest() {
 	lg.Log(httpEntry)
 }
 
+func ExampleToLogEntry() {
+	e := logging.Entry{
+		Payload: "Message",
+	}
+	le, err := logging.ToLogEntry(e, "my-project")
+	if err != nil {
+		// TODO: Handle error.
+	}
+	client, err := vkit.NewClient(context.Background())
+	if err != nil {
+		// TODO: Handle error.
+	}
+	_, err = client.WriteLogEntries(context.Background(), &logpb.WriteLogEntriesRequest{
+		Entries: []*logpb.LogEntry{le},
+		LogName: "stdout",
+	})
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
 func ExampleLogger_LogSync() {
 	ctx := context.Background()
 	client, err := logging.NewClient(ctx, "my-project")
@@ -178,6 +201,23 @@ func ExampleLogger_StandardLogger() {
 	lg := client.Logger("my-log")
 	slg := lg.StandardLogger(logging.Info)
 	slg.Println("an informative message")
+}
+
+func ExampleLogger_StandardLoggerFromTemplate() {
+	ctx := context.Background()
+	client, err := logging.NewClient(ctx, "my-project")
+	if err != nil {
+		// TODO: Handle error.
+	}
+	lg := client.Logger("my-log")
+	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		slg := lg.StandardLoggerFromTemplate(&logging.Entry{
+			Severity:    logging.Info,
+			HTTPRequest: &logging.HTTPRequest{Request: r},
+		})
+		slg.Println("Before hello world")
+		fmt.Fprintf(w, "Hello world!\n")
+	})
 }
 
 func ExampleParseSeverity() {

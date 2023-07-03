@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,31 +20,60 @@ import (
 	"context"
 
 	settings "cloud.google.com/go/securitycenter/settings/apiv1beta1"
+	settingspb "cloud.google.com/go/securitycenter/settings/apiv1beta1/settingspb"
 	"google.golang.org/api/iterator"
-	settingspb "google.golang.org/genproto/googleapis/cloud/securitycenter/settings/v1beta1"
 )
 
 func ExampleNewSecurityCenterSettingsClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := settings.NewSecurityCenterSettingsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
+func ExampleNewSecurityCenterSettingsRESTClient() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := settings.NewSecurityCenterSettingsRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleSecurityCenterSettingsClient_GetServiceAccount() {
-	// import settingspb "google.golang.org/genproto/googleapis/cloud/securitycenter/settings/v1beta1"
-
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := settings.NewSecurityCenterSettingsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &settingspb.GetServiceAccountRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/securitycenter/settings/apiv1beta1/settingspb#GetServiceAccountRequest.
 	}
 	resp, err := c.GetServiceAccount(ctx, req)
 	if err != nil {
@@ -55,16 +84,21 @@ func ExampleSecurityCenterSettingsClient_GetServiceAccount() {
 }
 
 func ExampleSecurityCenterSettingsClient_GetSettings() {
-	// import settingspb "google.golang.org/genproto/googleapis/cloud/securitycenter/settings/v1beta1"
-
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := settings.NewSecurityCenterSettingsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &settingspb.GetSettingsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/securitycenter/settings/apiv1beta1/settingspb#GetSettingsRequest.
 	}
 	resp, err := c.GetSettings(ctx, req)
 	if err != nil {
@@ -75,16 +109,21 @@ func ExampleSecurityCenterSettingsClient_GetSettings() {
 }
 
 func ExampleSecurityCenterSettingsClient_UpdateSettings() {
-	// import settingspb "google.golang.org/genproto/googleapis/cloud/securitycenter/settings/v1beta1"
-
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := settings.NewSecurityCenterSettingsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &settingspb.UpdateSettingsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/securitycenter/settings/apiv1beta1/settingspb#UpdateSettingsRequest.
 	}
 	resp, err := c.UpdateSettings(ctx, req)
 	if err != nil {
@@ -96,13 +135,20 @@ func ExampleSecurityCenterSettingsClient_UpdateSettings() {
 
 func ExampleSecurityCenterSettingsClient_ResetSettings() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := settings.NewSecurityCenterSettingsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &settingspb.ResetSettingsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/securitycenter/settings/apiv1beta1/settingspb#ResetSettingsRequest.
 	}
 	err = c.ResetSettings(ctx, req)
 	if err != nil {
@@ -111,16 +157,21 @@ func ExampleSecurityCenterSettingsClient_ResetSettings() {
 }
 
 func ExampleSecurityCenterSettingsClient_BatchGetSettings() {
-	// import settingspb "google.golang.org/genproto/googleapis/cloud/securitycenter/settings/v1beta1"
-
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := settings.NewSecurityCenterSettingsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &settingspb.BatchGetSettingsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/securitycenter/settings/apiv1beta1/settingspb#BatchGetSettingsRequest.
 	}
 	resp, err := c.BatchGetSettings(ctx, req)
 	if err != nil {
@@ -131,16 +182,21 @@ func ExampleSecurityCenterSettingsClient_BatchGetSettings() {
 }
 
 func ExampleSecurityCenterSettingsClient_CalculateEffectiveSettings() {
-	// import settingspb "google.golang.org/genproto/googleapis/cloud/securitycenter/settings/v1beta1"
-
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := settings.NewSecurityCenterSettingsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &settingspb.CalculateEffectiveSettingsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/securitycenter/settings/apiv1beta1/settingspb#CalculateEffectiveSettingsRequest.
 	}
 	resp, err := c.CalculateEffectiveSettings(ctx, req)
 	if err != nil {
@@ -151,16 +207,21 @@ func ExampleSecurityCenterSettingsClient_CalculateEffectiveSettings() {
 }
 
 func ExampleSecurityCenterSettingsClient_BatchCalculateEffectiveSettings() {
-	// import settingspb "google.golang.org/genproto/googleapis/cloud/securitycenter/settings/v1beta1"
-
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := settings.NewSecurityCenterSettingsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &settingspb.BatchCalculateEffectiveSettingsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/securitycenter/settings/apiv1beta1/settingspb#BatchCalculateEffectiveSettingsRequest.
 	}
 	resp, err := c.BatchCalculateEffectiveSettings(ctx, req)
 	if err != nil {
@@ -171,16 +232,21 @@ func ExampleSecurityCenterSettingsClient_BatchCalculateEffectiveSettings() {
 }
 
 func ExampleSecurityCenterSettingsClient_GetComponentSettings() {
-	// import settingspb "google.golang.org/genproto/googleapis/cloud/securitycenter/settings/v1beta1"
-
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := settings.NewSecurityCenterSettingsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &settingspb.GetComponentSettingsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/securitycenter/settings/apiv1beta1/settingspb#GetComponentSettingsRequest.
 	}
 	resp, err := c.GetComponentSettings(ctx, req)
 	if err != nil {
@@ -191,16 +257,21 @@ func ExampleSecurityCenterSettingsClient_GetComponentSettings() {
 }
 
 func ExampleSecurityCenterSettingsClient_UpdateComponentSettings() {
-	// import settingspb "google.golang.org/genproto/googleapis/cloud/securitycenter/settings/v1beta1"
-
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := settings.NewSecurityCenterSettingsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &settingspb.UpdateComponentSettingsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/securitycenter/settings/apiv1beta1/settingspb#UpdateComponentSettingsRequest.
 	}
 	resp, err := c.UpdateComponentSettings(ctx, req)
 	if err != nil {
@@ -212,13 +283,20 @@ func ExampleSecurityCenterSettingsClient_UpdateComponentSettings() {
 
 func ExampleSecurityCenterSettingsClient_ResetComponentSettings() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := settings.NewSecurityCenterSettingsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &settingspb.ResetComponentSettingsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/securitycenter/settings/apiv1beta1/settingspb#ResetComponentSettingsRequest.
 	}
 	err = c.ResetComponentSettings(ctx, req)
 	if err != nil {
@@ -227,16 +305,21 @@ func ExampleSecurityCenterSettingsClient_ResetComponentSettings() {
 }
 
 func ExampleSecurityCenterSettingsClient_CalculateEffectiveComponentSettings() {
-	// import settingspb "google.golang.org/genproto/googleapis/cloud/securitycenter/settings/v1beta1"
-
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := settings.NewSecurityCenterSettingsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &settingspb.CalculateEffectiveComponentSettingsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/securitycenter/settings/apiv1beta1/settingspb#CalculateEffectiveComponentSettingsRequest.
 	}
 	resp, err := c.CalculateEffectiveComponentSettings(ctx, req)
 	if err != nil {
@@ -247,17 +330,21 @@ func ExampleSecurityCenterSettingsClient_CalculateEffectiveComponentSettings() {
 }
 
 func ExampleSecurityCenterSettingsClient_ListDetectors() {
-	// import settingspb "google.golang.org/genproto/googleapis/cloud/securitycenter/settings/v1beta1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := settings.NewSecurityCenterSettingsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &settingspb.ListDetectorsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/securitycenter/settings/apiv1beta1/settingspb#ListDetectorsRequest.
 	}
 	it := c.ListDetectors(ctx, req)
 	for {
@@ -274,17 +361,21 @@ func ExampleSecurityCenterSettingsClient_ListDetectors() {
 }
 
 func ExampleSecurityCenterSettingsClient_ListComponents() {
-	// import settingspb "google.golang.org/genproto/googleapis/cloud/securitycenter/settings/v1beta1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := settings.NewSecurityCenterSettingsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &settingspb.ListComponentsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/securitycenter/settings/apiv1beta1/settingspb#ListComponentsRequest.
 	}
 	it := c.ListComponents(ctx, req)
 	for {

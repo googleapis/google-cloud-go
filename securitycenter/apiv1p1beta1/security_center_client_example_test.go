@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,33 +19,62 @@ package securitycenter_test
 import (
 	"context"
 
+	iampb "cloud.google.com/go/iam/apiv1/iampb"
 	securitycenter "cloud.google.com/go/securitycenter/apiv1p1beta1"
+	securitycenterpb "cloud.google.com/go/securitycenter/apiv1p1beta1/securitycenterpb"
 	"google.golang.org/api/iterator"
-	securitycenterpb "google.golang.org/genproto/googleapis/cloud/securitycenter/v1p1beta1"
-	iampb "google.golang.org/genproto/googleapis/iam/v1"
 )
 
 func ExampleNewClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := securitycenter.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
+func ExampleNewRESTClient() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := securitycenter.NewRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleClient_CreateSource() {
-	// import securitycenterpb "google.golang.org/genproto/googleapis/cloud/securitycenter/v1p1beta1"
-
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := securitycenter.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &securitycenterpb.CreateSourceRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/securitycenter/apiv1p1beta1/securitycenterpb#CreateSourceRequest.
 	}
 	resp, err := c.CreateSource(ctx, req)
 	if err != nil {
@@ -56,16 +85,21 @@ func ExampleClient_CreateSource() {
 }
 
 func ExampleClient_CreateFinding() {
-	// import securitycenterpb "google.golang.org/genproto/googleapis/cloud/securitycenter/v1p1beta1"
-
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := securitycenter.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &securitycenterpb.CreateFindingRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/securitycenter/apiv1p1beta1/securitycenterpb#CreateFindingRequest.
 	}
 	resp, err := c.CreateFinding(ctx, req)
 	if err != nil {
@@ -76,16 +110,21 @@ func ExampleClient_CreateFinding() {
 }
 
 func ExampleClient_CreateNotificationConfig() {
-	// import securitycenterpb "google.golang.org/genproto/googleapis/cloud/securitycenter/v1p1beta1"
-
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := securitycenter.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &securitycenterpb.CreateNotificationConfigRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/securitycenter/apiv1p1beta1/securitycenterpb#CreateNotificationConfigRequest.
 	}
 	resp, err := c.CreateNotificationConfig(ctx, req)
 	if err != nil {
@@ -97,13 +136,20 @@ func ExampleClient_CreateNotificationConfig() {
 
 func ExampleClient_DeleteNotificationConfig() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := securitycenter.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &securitycenterpb.DeleteNotificationConfigRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/securitycenter/apiv1p1beta1/securitycenterpb#DeleteNotificationConfigRequest.
 	}
 	err = c.DeleteNotificationConfig(ctx, req)
 	if err != nil {
@@ -112,16 +158,21 @@ func ExampleClient_DeleteNotificationConfig() {
 }
 
 func ExampleClient_GetIamPolicy() {
-	// import iampb "google.golang.org/genproto/googleapis/iam/v1"
-
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := securitycenter.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &iampb.GetIamPolicyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/iam/apiv1/iampb#GetIamPolicyRequest.
 	}
 	resp, err := c.GetIamPolicy(ctx, req)
 	if err != nil {
@@ -132,16 +183,21 @@ func ExampleClient_GetIamPolicy() {
 }
 
 func ExampleClient_GetNotificationConfig() {
-	// import securitycenterpb "google.golang.org/genproto/googleapis/cloud/securitycenter/v1p1beta1"
-
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := securitycenter.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &securitycenterpb.GetNotificationConfigRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/securitycenter/apiv1p1beta1/securitycenterpb#GetNotificationConfigRequest.
 	}
 	resp, err := c.GetNotificationConfig(ctx, req)
 	if err != nil {
@@ -152,16 +208,21 @@ func ExampleClient_GetNotificationConfig() {
 }
 
 func ExampleClient_GetOrganizationSettings() {
-	// import securitycenterpb "google.golang.org/genproto/googleapis/cloud/securitycenter/v1p1beta1"
-
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := securitycenter.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &securitycenterpb.GetOrganizationSettingsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/securitycenter/apiv1p1beta1/securitycenterpb#GetOrganizationSettingsRequest.
 	}
 	resp, err := c.GetOrganizationSettings(ctx, req)
 	if err != nil {
@@ -172,16 +233,21 @@ func ExampleClient_GetOrganizationSettings() {
 }
 
 func ExampleClient_GetSource() {
-	// import securitycenterpb "google.golang.org/genproto/googleapis/cloud/securitycenter/v1p1beta1"
-
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := securitycenter.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &securitycenterpb.GetSourceRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/securitycenter/apiv1p1beta1/securitycenterpb#GetSourceRequest.
 	}
 	resp, err := c.GetSource(ctx, req)
 	if err != nil {
@@ -192,17 +258,21 @@ func ExampleClient_GetSource() {
 }
 
 func ExampleClient_GroupAssets() {
-	// import securitycenterpb "google.golang.org/genproto/googleapis/cloud/securitycenter/v1p1beta1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := securitycenter.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &securitycenterpb.GroupAssetsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/securitycenter/apiv1p1beta1/securitycenterpb#GroupAssetsRequest.
 	}
 	it := c.GroupAssets(ctx, req)
 	for {
@@ -219,17 +289,21 @@ func ExampleClient_GroupAssets() {
 }
 
 func ExampleClient_GroupFindings() {
-	// import securitycenterpb "google.golang.org/genproto/googleapis/cloud/securitycenter/v1p1beta1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := securitycenter.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &securitycenterpb.GroupFindingsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/securitycenter/apiv1p1beta1/securitycenterpb#GroupFindingsRequest.
 	}
 	it := c.GroupFindings(ctx, req)
 	for {
@@ -246,17 +320,21 @@ func ExampleClient_GroupFindings() {
 }
 
 func ExampleClient_ListAssets() {
-	// import securitycenterpb "google.golang.org/genproto/googleapis/cloud/securitycenter/v1p1beta1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := securitycenter.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &securitycenterpb.ListAssetsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/securitycenter/apiv1p1beta1/securitycenterpb#ListAssetsRequest.
 	}
 	it := c.ListAssets(ctx, req)
 	for {
@@ -273,17 +351,21 @@ func ExampleClient_ListAssets() {
 }
 
 func ExampleClient_ListFindings() {
-	// import securitycenterpb "google.golang.org/genproto/googleapis/cloud/securitycenter/v1p1beta1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := securitycenter.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &securitycenterpb.ListFindingsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/securitycenter/apiv1p1beta1/securitycenterpb#ListFindingsRequest.
 	}
 	it := c.ListFindings(ctx, req)
 	for {
@@ -300,17 +382,21 @@ func ExampleClient_ListFindings() {
 }
 
 func ExampleClient_ListNotificationConfigs() {
-	// import securitycenterpb "google.golang.org/genproto/googleapis/cloud/securitycenter/v1p1beta1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := securitycenter.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &securitycenterpb.ListNotificationConfigsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/securitycenter/apiv1p1beta1/securitycenterpb#ListNotificationConfigsRequest.
 	}
 	it := c.ListNotificationConfigs(ctx, req)
 	for {
@@ -327,17 +413,21 @@ func ExampleClient_ListNotificationConfigs() {
 }
 
 func ExampleClient_ListSources() {
-	// import securitycenterpb "google.golang.org/genproto/googleapis/cloud/securitycenter/v1p1beta1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := securitycenter.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &securitycenterpb.ListSourcesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/securitycenter/apiv1p1beta1/securitycenterpb#ListSourcesRequest.
 	}
 	it := c.ListSources(ctx, req)
 	for {
@@ -354,16 +444,21 @@ func ExampleClient_ListSources() {
 }
 
 func ExampleClient_RunAssetDiscovery() {
-	// import securitycenterpb "google.golang.org/genproto/googleapis/cloud/securitycenter/v1p1beta1"
-
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := securitycenter.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &securitycenterpb.RunAssetDiscoveryRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/securitycenter/apiv1p1beta1/securitycenterpb#RunAssetDiscoveryRequest.
 	}
 	op, err := c.RunAssetDiscovery(ctx, req)
 	if err != nil {
@@ -379,16 +474,21 @@ func ExampleClient_RunAssetDiscovery() {
 }
 
 func ExampleClient_SetFindingState() {
-	// import securitycenterpb "google.golang.org/genproto/googleapis/cloud/securitycenter/v1p1beta1"
-
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := securitycenter.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &securitycenterpb.SetFindingStateRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/securitycenter/apiv1p1beta1/securitycenterpb#SetFindingStateRequest.
 	}
 	resp, err := c.SetFindingState(ctx, req)
 	if err != nil {
@@ -399,16 +499,21 @@ func ExampleClient_SetFindingState() {
 }
 
 func ExampleClient_SetIamPolicy() {
-	// import iampb "google.golang.org/genproto/googleapis/iam/v1"
-
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := securitycenter.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &iampb.SetIamPolicyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/iam/apiv1/iampb#SetIamPolicyRequest.
 	}
 	resp, err := c.SetIamPolicy(ctx, req)
 	if err != nil {
@@ -419,16 +524,21 @@ func ExampleClient_SetIamPolicy() {
 }
 
 func ExampleClient_TestIamPermissions() {
-	// import iampb "google.golang.org/genproto/googleapis/iam/v1"
-
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := securitycenter.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &iampb.TestIamPermissionsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/iam/apiv1/iampb#TestIamPermissionsRequest.
 	}
 	resp, err := c.TestIamPermissions(ctx, req)
 	if err != nil {
@@ -439,16 +549,21 @@ func ExampleClient_TestIamPermissions() {
 }
 
 func ExampleClient_UpdateFinding() {
-	// import securitycenterpb "google.golang.org/genproto/googleapis/cloud/securitycenter/v1p1beta1"
-
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := securitycenter.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &securitycenterpb.UpdateFindingRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/securitycenter/apiv1p1beta1/securitycenterpb#UpdateFindingRequest.
 	}
 	resp, err := c.UpdateFinding(ctx, req)
 	if err != nil {
@@ -459,16 +574,21 @@ func ExampleClient_UpdateFinding() {
 }
 
 func ExampleClient_UpdateNotificationConfig() {
-	// import securitycenterpb "google.golang.org/genproto/googleapis/cloud/securitycenter/v1p1beta1"
-
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := securitycenter.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &securitycenterpb.UpdateNotificationConfigRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/securitycenter/apiv1p1beta1/securitycenterpb#UpdateNotificationConfigRequest.
 	}
 	resp, err := c.UpdateNotificationConfig(ctx, req)
 	if err != nil {
@@ -479,16 +599,21 @@ func ExampleClient_UpdateNotificationConfig() {
 }
 
 func ExampleClient_UpdateOrganizationSettings() {
-	// import securitycenterpb "google.golang.org/genproto/googleapis/cloud/securitycenter/v1p1beta1"
-
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := securitycenter.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &securitycenterpb.UpdateOrganizationSettingsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/securitycenter/apiv1p1beta1/securitycenterpb#UpdateOrganizationSettingsRequest.
 	}
 	resp, err := c.UpdateOrganizationSettings(ctx, req)
 	if err != nil {
@@ -499,16 +624,21 @@ func ExampleClient_UpdateOrganizationSettings() {
 }
 
 func ExampleClient_UpdateSource() {
-	// import securitycenterpb "google.golang.org/genproto/googleapis/cloud/securitycenter/v1p1beta1"
-
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := securitycenter.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &securitycenterpb.UpdateSourceRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/securitycenter/apiv1p1beta1/securitycenterpb#UpdateSourceRequest.
 	}
 	resp, err := c.UpdateSource(ctx, req)
 	if err != nil {
@@ -519,16 +649,21 @@ func ExampleClient_UpdateSource() {
 }
 
 func ExampleClient_UpdateSecurityMarks() {
-	// import securitycenterpb "google.golang.org/genproto/googleapis/cloud/securitycenter/v1p1beta1"
-
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := securitycenter.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &securitycenterpb.UpdateSecurityMarksRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/securitycenter/apiv1p1beta1/securitycenterpb#UpdateSecurityMarksRequest.
 	}
 	resp, err := c.UpdateSecurityMarks(ctx, req)
 	if err != nil {

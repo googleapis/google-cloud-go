@@ -26,11 +26,12 @@ import (
 	"testing"
 	"time"
 
+	sppb "cloud.google.com/go/spanner/apiv1/spannerpb"
 	. "cloud.google.com/go/spanner/internal/testutil"
 	"github.com/golang/protobuf/ptypes"
 	"google.golang.org/api/iterator"
+	"google.golang.org/api/option"
 	"google.golang.org/genproto/googleapis/rpc/errdetails"
-	sppb "google.golang.org/genproto/googleapis/spanner/v1"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	gstatus "google.golang.org/grpc/status"
@@ -266,9 +267,7 @@ func TestReadWriteTransaction_ErrorReturned(t *testing.T) {
 	}
 	requests := drainRequestsFromServer(server.TestSpanner)
 	if err := compareRequests([]interface{}{
-		&sppb.BatchCreateSessionsRequest{},
-		&sppb.BeginTransactionRequest{},
-		&sppb.RollbackRequest{}}, requests); err != nil {
+		&sppb.BatchCreateSessionsRequest{}}, requests); err != nil {
 		// TODO: remove this once the session pool maintainer has been changed
 		// so that is doesn't delete sessions already during the first
 		// maintenance window.
@@ -277,9 +276,7 @@ func TestReadWriteTransaction_ErrorReturned(t *testing.T) {
 		// expected.
 		if err := compareRequests([]interface{}{
 			&sppb.BatchCreateSessionsRequest{},
-			&sppb.BeginTransactionRequest{},
-			&sppb.RollbackRequest{},
-			&sppb.DeleteSessionRequest{}}, requests); err != nil {
+			&sppb.RollbackRequest{}}, requests); err != nil {
 			t.Fatal(err)
 		}
 	}
@@ -310,7 +307,6 @@ func TestBatchDML_WithMultipleDML(t *testing.T) {
 
 	gotReqs, err := shouldHaveReceived(server.TestSpanner, []interface{}{
 		&sppb.BatchCreateSessionsRequest{},
-		&sppb.BeginTransactionRequest{},
 		&sppb.ExecuteSqlRequest{},
 		&sppb.ExecuteBatchDmlRequest{},
 		&sppb.ExecuteSqlRequest{},
@@ -321,16 +317,16 @@ func TestBatchDML_WithMultipleDML(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if got, want := gotReqs[2].(*sppb.ExecuteSqlRequest).Seqno, int64(1); got != want {
+	if got, want := gotReqs[1].(*sppb.ExecuteSqlRequest).Seqno, int64(1); got != want {
 		t.Errorf("got %d, want %d", got, want)
 	}
-	if got, want := gotReqs[3].(*sppb.ExecuteBatchDmlRequest).Seqno, int64(2); got != want {
+	if got, want := gotReqs[2].(*sppb.ExecuteBatchDmlRequest).Seqno, int64(2); got != want {
 		t.Errorf("got %d, want %d", got, want)
 	}
-	if got, want := gotReqs[4].(*sppb.ExecuteSqlRequest).Seqno, int64(3); got != want {
+	if got, want := gotReqs[3].(*sppb.ExecuteSqlRequest).Seqno, int64(3); got != want {
 		t.Errorf("got %d, want %d", got, want)
 	}
-	if got, want := gotReqs[5].(*sppb.ExecuteBatchDmlRequest).Seqno, int64(4); got != want {
+	if got, want := gotReqs[4].(*sppb.ExecuteBatchDmlRequest).Seqno, int64(4); got != want {
 		t.Errorf("got %d, want %d", got, want)
 	}
 }
@@ -510,6 +506,62 @@ func testReadWriteStmtBasedTransaction(t *testing.T, executionTimes map[string]S
 	return rowCount, attempts, err
 }
 
+func TestReadWriteStmtBasedTransactionWithOptions(t *testing.T) {
+	t.Parallel()
+
+	_, client, teardown := setupMockedTestServer(t)
+	defer teardown()
+	ctx := context.Background()
+
+	f := func(tx *ReadWriteStmtBasedTransaction) (int64, error) {
+		iter := tx.Query(ctx, NewStatement(SelectSingerIDAlbumIDAlbumTitleFromAlbums))
+		defer iter.Stop()
+		rowCount := int64(0)
+		for {
+			row, err := iter.Next()
+			if err == iterator.Done {
+				break
+			}
+			if err != nil {
+				return 0, err
+			}
+			var singerID, albumID int64
+			var albumTitle string
+			if err := row.Columns(&singerID, &albumID, &albumTitle); err != nil {
+				return 0, err
+			}
+			rowCount++
+		}
+		return rowCount, nil
+	}
+
+	var resp CommitResponse
+	for {
+		tx, err := NewReadWriteStmtBasedTransactionWithOptions(
+			ctx,
+			client,
+			TransactionOptions{CommitOptions: CommitOptions{ReturnCommitStats: true}},
+		)
+		_, err = f(tx)
+		if err != nil && status.Code(err) != codes.Aborted {
+			tx.Rollback(ctx)
+			break
+		} else if err == nil {
+			resp, err = tx.CommitWithReturnResp(ctx)
+			break
+		}
+		// Set a default sleep time if the server delay is absent.
+		delay := 10 * time.Millisecond
+		if serverDelay, hasServerDelay := ExtractRetryDelay(err); hasServerDelay {
+			delay = serverDelay
+		}
+		time.Sleep(delay)
+	}
+	if got, want := resp.CommitStats.MutationCount, int64(1); got != want {
+		t.Fatalf("Mismatch mutation count - got: %d, want: %d", got, want)
+	}
+}
+
 func TestBatchDML_StatementBased_WithMultipleDML(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
@@ -561,6 +613,79 @@ func TestBatchDML_StatementBased_WithMultipleDML(t *testing.T) {
 		t.Errorf("got %d, want %d", got, want)
 	}
 	if got, want := gotReqs[5].(*sppb.ExecuteBatchDmlRequest).Seqno, int64(4); got != want {
+		t.Errorf("got %d, want %d", got, want)
+	}
+}
+
+func TestPriorityInQueryOptions(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	server, client, teardown := setupMockedTestServerWithConfigAndClientOptions(
+		t, ClientConfig{QueryOptions: QueryOptions{Priority: sppb.RequestOptions_PRIORITY_LOW}},
+		[]option.ClientOption{},
+	)
+	defer teardown()
+
+	tx, err := NewReadWriteStmtBasedTransaction(ctx, client)
+	var iter *RowIterator
+	iter = tx.txReadOnly.Query(ctx, NewStatement("SELECT 1"))
+	err = iter.Do(func(r *Row) error { return nil })
+	if status.Code(err) != codes.Internal {
+		t.Fatalf("got unexpected error %v, expected Internal \"No result found for SELECT 1\"", err)
+	}
+	iter = tx.txReadOnly.QueryWithOptions(ctx, NewStatement("SELECT 1"),
+		QueryOptions{Priority: sppb.RequestOptions_PRIORITY_MEDIUM})
+	err = iter.Do(func(r *Row) error { return nil })
+	if status.Code(err) != codes.Internal {
+		t.Fatalf("got unexpected error %v, expected Internal \"No result found for SELECT 1\"", err)
+	}
+	iter = tx.txReadOnly.QueryWithStats(ctx, NewStatement("SELECT 1"))
+	err = iter.Do(func(r *Row) error { return nil })
+	if status.Code(err) != codes.Internal {
+		t.Fatalf("got unexpected error %v, expected Internal \"No result found for SELECT 1\"", err)
+	}
+	_, err = tx.txReadOnly.AnalyzeQuery(ctx, NewStatement("SELECT 1"))
+	if status.Code(err) != codes.Internal {
+		t.Fatalf("got unexpected error %v, expected Internal \"No result found for SELECT 1\"", err)
+	}
+	if _, err = tx.Update(ctx, Statement{SQL: UpdateBarSetFoo}); err != nil {
+		tx.Rollback(ctx)
+		t.Fatal(err)
+	}
+	if _, err = tx.UpdateWithOptions(ctx, Statement{SQL: UpdateBarSetFoo}, QueryOptions{Priority: sppb.RequestOptions_PRIORITY_MEDIUM}); err != nil {
+		tx.Rollback(ctx)
+		t.Fatal(err)
+	}
+
+	gotReqs, err := shouldHaveReceived(server.TestSpanner, []interface{}{
+		&sppb.BatchCreateSessionsRequest{},
+		&sppb.BeginTransactionRequest{},
+		&sppb.ExecuteSqlRequest{},
+		&sppb.ExecuteSqlRequest{},
+		&sppb.ExecuteSqlRequest{},
+		&sppb.ExecuteSqlRequest{},
+		&sppb.ExecuteSqlRequest{},
+		&sppb.ExecuteSqlRequest{},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got, want := gotReqs[2].(*sppb.ExecuteSqlRequest).RequestOptions.Priority, sppb.RequestOptions_PRIORITY_LOW; got != want {
+		t.Errorf("got %d, want %d", got, want)
+	}
+	if got, want := gotReqs[3].(*sppb.ExecuteSqlRequest).RequestOptions.Priority, sppb.RequestOptions_PRIORITY_MEDIUM; got != want {
+		t.Errorf("got %d, want %d", got, want)
+	}
+	if got, want := gotReqs[4].(*sppb.ExecuteSqlRequest).RequestOptions.Priority, sppb.RequestOptions_PRIORITY_LOW; got != want {
+		t.Errorf("got %d, want %d", got, want)
+	}
+	if got, want := gotReqs[5].(*sppb.ExecuteSqlRequest).RequestOptions.Priority, sppb.RequestOptions_PRIORITY_LOW; got != want {
+		t.Errorf("got %d, want %d", got, want)
+	}
+	if got, want := gotReqs[6].(*sppb.ExecuteSqlRequest).RequestOptions.Priority, sppb.RequestOptions_PRIORITY_LOW; got != want {
+		t.Errorf("got %d, want %d", got, want)
+	}
+	if got, want := gotReqs[7].(*sppb.ExecuteSqlRequest).RequestOptions.Priority, sppb.RequestOptions_PRIORITY_MEDIUM; got != want {
 		t.Errorf("got %d, want %d", got, want)
 	}
 }

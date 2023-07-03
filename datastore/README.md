@@ -4,7 +4,7 @@
 - [Activating the API for your project](https://cloud.google.com/datastore/docs/activate)
 - [API documentation](https://cloud.google.com/datastore/docs)
 - [Go client documentation](https://pkg.go.dev/cloud.google.com/go/datastore)
-- [Complete sample program](https://github.com/GoogleCloudPlatform/golang-samples/tree/master/datastore/tasks)
+- [Complete sample program](https://github.com/GoogleCloudPlatform/golang-samples/tree/main/datastore/tasks)
 
 ### Example Usage
 

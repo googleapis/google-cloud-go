@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,31 +20,60 @@ import (
 	"context"
 
 	dashboard "cloud.google.com/go/monitoring/dashboard/apiv1"
+	dashboardpb "cloud.google.com/go/monitoring/dashboard/apiv1/dashboardpb"
 	"google.golang.org/api/iterator"
-	dashboardpb "google.golang.org/genproto/googleapis/monitoring/dashboard/v1"
 )
 
 func ExampleNewDashboardsClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dashboard.NewDashboardsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
+func ExampleNewDashboardsRESTClient() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := dashboard.NewDashboardsRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleDashboardsClient_CreateDashboard() {
-	// import dashboardpb "google.golang.org/genproto/googleapis/monitoring/dashboard/v1"
-
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dashboard.NewDashboardsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dashboardpb.CreateDashboardRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/monitoring/dashboard/apiv1/dashboardpb#CreateDashboardRequest.
 	}
 	resp, err := c.CreateDashboard(ctx, req)
 	if err != nil {
@@ -55,17 +84,21 @@ func ExampleDashboardsClient_CreateDashboard() {
 }
 
 func ExampleDashboardsClient_ListDashboards() {
-	// import dashboardpb "google.golang.org/genproto/googleapis/monitoring/dashboard/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dashboard.NewDashboardsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dashboardpb.ListDashboardsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/monitoring/dashboard/apiv1/dashboardpb#ListDashboardsRequest.
 	}
 	it := c.ListDashboards(ctx, req)
 	for {
@@ -82,16 +115,21 @@ func ExampleDashboardsClient_ListDashboards() {
 }
 
 func ExampleDashboardsClient_GetDashboard() {
-	// import dashboardpb "google.golang.org/genproto/googleapis/monitoring/dashboard/v1"
-
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dashboard.NewDashboardsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dashboardpb.GetDashboardRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/monitoring/dashboard/apiv1/dashboardpb#GetDashboardRequest.
 	}
 	resp, err := c.GetDashboard(ctx, req)
 	if err != nil {
@@ -103,13 +141,20 @@ func ExampleDashboardsClient_GetDashboard() {
 
 func ExampleDashboardsClient_DeleteDashboard() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dashboard.NewDashboardsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dashboardpb.DeleteDashboardRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/monitoring/dashboard/apiv1/dashboardpb#DeleteDashboardRequest.
 	}
 	err = c.DeleteDashboard(ctx, req)
 	if err != nil {
@@ -118,16 +163,21 @@ func ExampleDashboardsClient_DeleteDashboard() {
 }
 
 func ExampleDashboardsClient_UpdateDashboard() {
-	// import dashboardpb "google.golang.org/genproto/googleapis/monitoring/dashboard/v1"
-
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dashboard.NewDashboardsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dashboardpb.UpdateDashboardRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/monitoring/dashboard/apiv1/dashboardpb#UpdateDashboardRequest.
 	}
 	resp, err := c.UpdateDashboard(ctx, req)
 	if err != nil {

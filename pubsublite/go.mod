@@ -1,22 +1,36 @@
 module cloud.google.com/go/pubsublite
 
-go 1.11
+go 1.19
 
 require (
-	cloud.google.com/go v0.75.0
-	cloud.google.com/go/pubsub v1.9.1
-	github.com/golang/protobuf v1.4.3
-	github.com/google/go-cmp v0.5.4
-	github.com/google/uuid v1.1.4
-	github.com/googleapis/gax-go/v2 v2.0.5
-	golang.org/x/mod v0.4.1 // indirect
-	golang.org/x/oauth2 v0.0.0-20210113160501-8b1d76fa0423 // indirect
-	golang.org/x/sync v0.0.0-20201207232520-09787c993a3a
-	golang.org/x/sys v0.0.0-20210124154548-22da62e12c0c // indirect
-	golang.org/x/tools v0.1.0 // indirect
-	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1
-	google.golang.org/api v0.36.0
-	google.golang.org/genproto v0.0.0-20210122163508-8081c04a3579
-	google.golang.org/grpc v1.34.1
-	google.golang.org/protobuf v1.25.0
+	cloud.google.com/go v0.110.2
+	cloud.google.com/go/longrunning v0.5.0
+	cloud.google.com/go/pubsub v1.31.0
+	github.com/golang/protobuf v1.5.3
+	github.com/google/go-cmp v0.5.9
+	github.com/google/uuid v1.3.0
+	github.com/googleapis/gax-go/v2 v2.11.0
+	golang.org/x/oauth2 v0.8.0
+	golang.org/x/sync v0.2.0
+	google.golang.org/api v0.126.0
+	google.golang.org/genproto v0.0.0-20230530153820-e85fd2cbaebc
+	google.golang.org/genproto/googleapis/api v0.0.0-20230530153820-e85fd2cbaebc
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20230530153820-e85fd2cbaebc
+	google.golang.org/grpc v1.55.0
+	google.golang.org/protobuf v1.30.0
+)
+
+require (
+	cloud.google.com/go/compute v1.19.3 // indirect
+	cloud.google.com/go/compute/metadata v0.2.3 // indirect
+	cloud.google.com/go/iam v1.0.1 // indirect
+	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
+	github.com/google/s2a-go v0.1.4 // indirect
+	github.com/googleapis/enterprise-certificate-proxy v0.2.3 // indirect
+	go.opencensus.io v0.24.0 // indirect
+	golang.org/x/crypto v0.9.0 // indirect
+	golang.org/x/net v0.10.0 // indirect
+	golang.org/x/sys v0.8.0 // indirect
+	golang.org/x/text v0.9.0 // indirect
+	google.golang.org/appengine v1.6.7 // indirect
 )

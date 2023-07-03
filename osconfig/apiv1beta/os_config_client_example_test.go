@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,31 +20,60 @@ import (
 	"context"
 
 	osconfig "cloud.google.com/go/osconfig/apiv1beta"
+	osconfigpb "cloud.google.com/go/osconfig/apiv1beta/osconfigpb"
 	"google.golang.org/api/iterator"
-	osconfigpb "google.golang.org/genproto/googleapis/cloud/osconfig/v1beta"
 )
 
 func ExampleNewClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := osconfig.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
+func ExampleNewRESTClient() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := osconfig.NewRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleClient_ExecutePatchJob() {
-	// import osconfigpb "google.golang.org/genproto/googleapis/cloud/osconfig/v1beta"
-
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := osconfig.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &osconfigpb.ExecutePatchJobRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/osconfig/apiv1beta/osconfigpb#ExecutePatchJobRequest.
 	}
 	resp, err := c.ExecutePatchJob(ctx, req)
 	if err != nil {
@@ -55,16 +84,21 @@ func ExampleClient_ExecutePatchJob() {
 }
 
 func ExampleClient_GetPatchJob() {
-	// import osconfigpb "google.golang.org/genproto/googleapis/cloud/osconfig/v1beta"
-
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := osconfig.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &osconfigpb.GetPatchJobRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/osconfig/apiv1beta/osconfigpb#GetPatchJobRequest.
 	}
 	resp, err := c.GetPatchJob(ctx, req)
 	if err != nil {
@@ -75,16 +109,21 @@ func ExampleClient_GetPatchJob() {
 }
 
 func ExampleClient_CancelPatchJob() {
-	// import osconfigpb "google.golang.org/genproto/googleapis/cloud/osconfig/v1beta"
-
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := osconfig.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &osconfigpb.CancelPatchJobRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/osconfig/apiv1beta/osconfigpb#CancelPatchJobRequest.
 	}
 	resp, err := c.CancelPatchJob(ctx, req)
 	if err != nil {
@@ -95,17 +134,21 @@ func ExampleClient_CancelPatchJob() {
 }
 
 func ExampleClient_ListPatchJobs() {
-	// import osconfigpb "google.golang.org/genproto/googleapis/cloud/osconfig/v1beta"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := osconfig.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &osconfigpb.ListPatchJobsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/osconfig/apiv1beta/osconfigpb#ListPatchJobsRequest.
 	}
 	it := c.ListPatchJobs(ctx, req)
 	for {
@@ -122,17 +165,21 @@ func ExampleClient_ListPatchJobs() {
 }
 
 func ExampleClient_ListPatchJobInstanceDetails() {
-	// import osconfigpb "google.golang.org/genproto/googleapis/cloud/osconfig/v1beta"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := osconfig.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &osconfigpb.ListPatchJobInstanceDetailsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/osconfig/apiv1beta/osconfigpb#ListPatchJobInstanceDetailsRequest.
 	}
 	it := c.ListPatchJobInstanceDetails(ctx, req)
 	for {
@@ -149,16 +196,21 @@ func ExampleClient_ListPatchJobInstanceDetails() {
 }
 
 func ExampleClient_CreatePatchDeployment() {
-	// import osconfigpb "google.golang.org/genproto/googleapis/cloud/osconfig/v1beta"
-
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := osconfig.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &osconfigpb.CreatePatchDeploymentRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/osconfig/apiv1beta/osconfigpb#CreatePatchDeploymentRequest.
 	}
 	resp, err := c.CreatePatchDeployment(ctx, req)
 	if err != nil {
@@ -169,16 +221,21 @@ func ExampleClient_CreatePatchDeployment() {
 }
 
 func ExampleClient_GetPatchDeployment() {
-	// import osconfigpb "google.golang.org/genproto/googleapis/cloud/osconfig/v1beta"
-
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := osconfig.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &osconfigpb.GetPatchDeploymentRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/osconfig/apiv1beta/osconfigpb#GetPatchDeploymentRequest.
 	}
 	resp, err := c.GetPatchDeployment(ctx, req)
 	if err != nil {
@@ -189,17 +246,21 @@ func ExampleClient_GetPatchDeployment() {
 }
 
 func ExampleClient_ListPatchDeployments() {
-	// import osconfigpb "google.golang.org/genproto/googleapis/cloud/osconfig/v1beta"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := osconfig.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &osconfigpb.ListPatchDeploymentsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/osconfig/apiv1beta/osconfigpb#ListPatchDeploymentsRequest.
 	}
 	it := c.ListPatchDeployments(ctx, req)
 	for {
@@ -217,13 +278,20 @@ func ExampleClient_ListPatchDeployments() {
 
 func ExampleClient_DeletePatchDeployment() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := osconfig.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &osconfigpb.DeletePatchDeploymentRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/osconfig/apiv1beta/osconfigpb#DeletePatchDeploymentRequest.
 	}
 	err = c.DeletePatchDeployment(ctx, req)
 	if err != nil {
@@ -231,17 +299,97 @@ func ExampleClient_DeletePatchDeployment() {
 	}
 }
 
-func ExampleClient_CreateGuestPolicy() {
-	// import osconfigpb "google.golang.org/genproto/googleapis/cloud/osconfig/v1beta"
-
+func ExampleClient_UpdatePatchDeployment() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := osconfig.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
+	req := &osconfigpb.UpdatePatchDeploymentRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/osconfig/apiv1beta/osconfigpb#UpdatePatchDeploymentRequest.
+	}
+	resp, err := c.UpdatePatchDeployment(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_PausePatchDeployment() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := osconfig.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &osconfigpb.PausePatchDeploymentRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/osconfig/apiv1beta/osconfigpb#PausePatchDeploymentRequest.
+	}
+	resp, err := c.PausePatchDeployment(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_ResumePatchDeployment() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := osconfig.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &osconfigpb.ResumePatchDeploymentRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/osconfig/apiv1beta/osconfigpb#ResumePatchDeploymentRequest.
+	}
+	resp, err := c.ResumePatchDeployment(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_CreateGuestPolicy() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := osconfig.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
 
 	req := &osconfigpb.CreateGuestPolicyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/osconfig/apiv1beta/osconfigpb#CreateGuestPolicyRequest.
 	}
 	resp, err := c.CreateGuestPolicy(ctx, req)
 	if err != nil {
@@ -252,16 +400,21 @@ func ExampleClient_CreateGuestPolicy() {
 }
 
 func ExampleClient_GetGuestPolicy() {
-	// import osconfigpb "google.golang.org/genproto/googleapis/cloud/osconfig/v1beta"
-
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := osconfig.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &osconfigpb.GetGuestPolicyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/osconfig/apiv1beta/osconfigpb#GetGuestPolicyRequest.
 	}
 	resp, err := c.GetGuestPolicy(ctx, req)
 	if err != nil {
@@ -272,17 +425,21 @@ func ExampleClient_GetGuestPolicy() {
 }
 
 func ExampleClient_ListGuestPolicies() {
-	// import osconfigpb "google.golang.org/genproto/googleapis/cloud/osconfig/v1beta"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := osconfig.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &osconfigpb.ListGuestPoliciesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/osconfig/apiv1beta/osconfigpb#ListGuestPoliciesRequest.
 	}
 	it := c.ListGuestPolicies(ctx, req)
 	for {
@@ -299,16 +456,21 @@ func ExampleClient_ListGuestPolicies() {
 }
 
 func ExampleClient_UpdateGuestPolicy() {
-	// import osconfigpb "google.golang.org/genproto/googleapis/cloud/osconfig/v1beta"
-
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := osconfig.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &osconfigpb.UpdateGuestPolicyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/osconfig/apiv1beta/osconfigpb#UpdateGuestPolicyRequest.
 	}
 	resp, err := c.UpdateGuestPolicy(ctx, req)
 	if err != nil {
@@ -320,13 +482,20 @@ func ExampleClient_UpdateGuestPolicy() {
 
 func ExampleClient_DeleteGuestPolicy() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := osconfig.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &osconfigpb.DeleteGuestPolicyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/osconfig/apiv1beta/osconfigpb#DeleteGuestPolicyRequest.
 	}
 	err = c.DeleteGuestPolicy(ctx, req)
 	if err != nil {
@@ -335,16 +504,21 @@ func ExampleClient_DeleteGuestPolicy() {
 }
 
 func ExampleClient_LookupEffectiveGuestPolicy() {
-	// import osconfigpb "google.golang.org/genproto/googleapis/cloud/osconfig/v1beta"
-
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := osconfig.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &osconfigpb.LookupEffectiveGuestPolicyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/osconfig/apiv1beta/osconfigpb#LookupEffectiveGuestPolicyRequest.
 	}
 	resp, err := c.LookupEffectiveGuestPolicy(ctx, req)
 	if err != nil {

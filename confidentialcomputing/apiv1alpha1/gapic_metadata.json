@@ -1,0 +1,63 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.confidentialcomputing.v1alpha1",
+  "libraryPackage": "cloud.google.com/go/confidentialcomputing/apiv1alpha1",
+  "services": {
+    "ConfidentialComputing": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "CreateChallenge": {
+              "methods": [
+                "CreateChallenge"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "VerifyAttestation": {
+              "methods": [
+                "VerifyAttestation"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "CreateChallenge": {
+              "methods": [
+                "CreateChallenge"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "VerifyAttestation": {
+              "methods": [
+                "VerifyAttestation"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,5 +1,84 @@
 # Changes
 
+## [1.11.0](https://github.com/googleapis/google-cloud-go/compare/datastore/v1.10.0...datastore/v1.11.0) (2023-04-04)
+
+
+### Features
+
+* **datastore:** Add REST client ([06a54a1](https://github.com/googleapis/google-cloud-go/commit/06a54a16a5866cce966547c51e203b9e09a25bc0))
+* **datastore:** EntityFilter for AND/OR queries ([#7589](https://github.com/googleapis/google-cloud-go/issues/7589)) ([81f7c87](https://github.com/googleapis/google-cloud-go/commit/81f7c876d377b5a2dadf38bc811e5c71338a4b78))
+* **datastore:** Return Get, GetMulti, Put and PutMulti errors with enhanced details ([#7061](https://github.com/googleapis/google-cloud-go/issues/7061)) ([c82b63a](https://github.com/googleapis/google-cloud-go/commit/c82b63ae9e2f24fff6f8c428c2444df679fed479))
+* **datastore:** Rewrite signatures and type in terms of new location ([620e6d8](https://github.com/googleapis/google-cloud-go/commit/620e6d828ad8641663ae351bfccfe46281e817ad))
+* **datastore:** Update iam and longrunning deps ([91a1f78](https://github.com/googleapis/google-cloud-go/commit/91a1f784a109da70f63b96414bba8a9b4254cddd))
+
+
+### Bug Fixes
+
+* **datastore:** Adds nil check to AggregationQuery ([#7376](https://github.com/googleapis/google-cloud-go/issues/7376)) ([c43b9ed](https://github.com/googleapis/google-cloud-go/commit/c43b9ed31e8af07c1e8bcfa5db15ad3a83c96c50))
+
+
+### Documentation
+
+* **datastore/admin:** Reference the correct main client gem name ([1fb0c5e](https://github.com/googleapis/google-cloud-go/commit/1fb0c5e105dcae3a30b2e5b10ee47b84cbef8295))
+
+## [1.10.0](https://github.com/googleapis/google-cloud-go/compare/datastore/v1.9.0...datastore/v1.10.0) (2022-11-29)
+
+
+### Features
+
+* **datastore:** start generating proto stubs ([eed371e](https://github.com/googleapis/google-cloud-go/commit/eed371e9b1639c81663c6858db119fb87a126454))
+
+## [1.9.0](https://github.com/googleapis/google-cloud-go/compare/datastore/v1.8.0...datastore/v1.9.0) (2022-10-26)
+
+
+### Features
+
+* **datastore:** Adds COUNT aggregation query ([#6714](https://github.com/googleapis/google-cloud-go/issues/6714)) ([27363ca](https://github.com/googleapis/google-cloud-go/commit/27363ca581e3ae38d3eff0174727429838fcb4ac))
+* **datastore:** Adds snapshot reads ([#6755](https://github.com/googleapis/google-cloud-go/issues/6755)) ([9240741](https://github.com/googleapis/google-cloud-go/commit/924074139a086aec7f12572d05909ee0b54e21f5))
+
+
+### Documentation
+
+* **datastore:** Adds emulator instructions ([#6928](https://github.com/googleapis/google-cloud-go/issues/6928)) ([553456a](https://github.com/googleapis/google-cloud-go/commit/553456a469662e8e14de13b55b4193740b21ff96))
+
+## [1.8.0](https://github.com/googleapis/google-cloud-go/compare/datastore-v1.7.0...datastore/v1.8.0) (2022-06-21)
+
+
+### Features
+
+* **datastore:** add better version metadata to calls ([d1ad921](https://github.com/googleapis/google-cloud-go/commit/d1ad921d0322e7ce728ca9d255a3cf0437d26add))
+* **datastore:** adds in, not-in, and != query operators ([#6017](https://github.com/googleapis/google-cloud-go/issues/6017)) ([e926fb4](https://github.com/googleapis/google-cloud-go/commit/e926fb479c5ad9695ce50c1ee4a773a8330c6e66))
+* **datastore:** set versionClient to module version ([55f0d92](https://github.com/googleapis/google-cloud-go/commit/55f0d92bf112f14b024b4ab0076c9875a17423c9))
+
+## [1.7.0](https://github.com/googleapis/google-cloud-go/compare/datastore/v1.6.0...datastore/v1.7.0) (2022-05-09)
+
+
+### Features
+
+* **datastore/admin:** define Datastore -> Firestore in Datastore mode migration long running operation metadata ([d9a0634](https://github.com/googleapis/google-cloud-go/commit/d9a0634042265f8c247e7dcbd8b85323a83c7235))
+* **datastore:** add better version metadata to calls ([d1ad921](https://github.com/googleapis/google-cloud-go/commit/d1ad921d0322e7ce728ca9d255a3cf0437d26add))
+* **datastore:** set versionClient to module version ([55f0d92](https://github.com/googleapis/google-cloud-go/commit/55f0d92bf112f14b024b4ab0076c9875a17423c9))
+
+## [1.6.0](https://www.github.com/googleapis/google-cloud-go/compare/datastore/v1.5.0...datastore/v1.6.0) (2021-09-17)
+
+
+### Features
+
+* **datastore/admin:** Publish message definitions for new Cloud Datastore migration logging steps. ([528ffc9](https://www.github.com/googleapis/google-cloud-go/commit/528ffc9bd63090129a8b1355cd31273f8c23e34c))
+
+
+### Bug Fixes
+
+* **datastore:** Initialize commit sentinel to avoid cross use of commits ([#4599](https://www.github.com/googleapis/google-cloud-go/issues/4599)) ([fcf13b0](https://www.github.com/googleapis/google-cloud-go/commit/fcf13b0abad4f837d4f4f53fad6c55eba1a0fe56))
+
+## [1.5.0](https://www.github.com/googleapis/google-cloud-go/compare/v1.4.0...v1.5.0) (2021-03-01)
+
+
+### Features
+
+* **datastore/admin:** Added methods for creating and deleting composite indexes feat: Populated php_namespace ([529925b](https://www.github.com/googleapis/google-cloud-go/commit/529925ba79f4d3191ef80a13e566d86210fe4d25))
+* **datastore/admin:** Publish message definitions for Cloud Datastore migration logging. ([529925b](https://www.github.com/googleapis/google-cloud-go/commit/529925ba79f4d3191ef80a13e566d86210fe4d25))
+
 ## [1.4.0](https://www.github.com/googleapis/google-cloud-go/compare/datastore/v1.3.0...v1.4.0) (2021-01-15)
 
 

@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,45 +17,55 @@
 package assuredworkloads
 
 import (
+	"bytes"
 	"context"
 	"fmt"
+	"io/ioutil"
 	"math"
+	"net/http"
 	"net/url"
 	"time"
 
+	assuredworkloadspb "cloud.google.com/go/assuredworkloads/apiv1beta1/assuredworkloadspb"
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
-	"github.com/golang/protobuf/proto"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
-	assuredworkloadspb "google.golang.org/genproto/googleapis/cloud/assuredworkloads/v1beta1"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
+	httptransport "google.golang.org/api/transport/http"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/protobuf/encoding/protojson"
+	"google.golang.org/protobuf/proto"
 )
 
 var newClientHook clientHook
 
 // CallOptions contains the retry settings for each method of Client.
 type CallOptions struct {
-	CreateWorkload []gax.CallOption
-	UpdateWorkload []gax.CallOption
-	DeleteWorkload []gax.CallOption
-	GetWorkload    []gax.CallOption
-	ListWorkloads  []gax.CallOption
+	CreateWorkload           []gax.CallOption
+	UpdateWorkload           []gax.CallOption
+	RestrictAllowedResources []gax.CallOption
+	DeleteWorkload           []gax.CallOption
+	GetWorkload              []gax.CallOption
+	AnalyzeWorkloadMove      []gax.CallOption
+	ListWorkloads            []gax.CallOption
+	GetOperation             []gax.CallOption
+	ListOperations           []gax.CallOption
 }
 
-func defaultClientOptions() []option.ClientOption {
+func defaultGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("assuredworkloads.googleapis.com:443"),
 		internaloption.WithDefaultMTLSEndpoint("assuredworkloads.mtls.googleapis.com:443"),
 		internaloption.WithDefaultAudience("https://assuredworkloads.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
-		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
+		internaloption.EnableJwtWithScope(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -63,9 +73,15 @@ func defaultClientOptions() []option.ClientOption {
 
 func defaultCallOptions() *CallOptions {
 	return &CallOptions{
-		CreateWorkload: []gax.CallOption{},
-		UpdateWorkload: []gax.CallOption{},
+		CreateWorkload: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateWorkload: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		RestrictAllowedResources: []gax.CallOption{},
 		DeleteWorkload: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -77,6 +93,19 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		GetWorkload: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    200 * time.Millisecond,
+					Max:        30000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		AnalyzeWorkloadMove: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -88,6 +117,31 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		ListWorkloads: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    200 * time.Millisecond,
+					Max:        30000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		GetOperation: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    200 * time.Millisecond,
+					Max:        30000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		ListOperations: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -101,37 +155,236 @@ func defaultCallOptions() *CallOptions {
 	}
 }
 
-// Client is a client for interacting with .
+func defaultRESTCallOptions() *CallOptions {
+	return &CallOptions{
+		CreateWorkload: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateWorkload: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		RestrictAllowedResources: []gax.CallOption{},
+		DeleteWorkload: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    200 * time.Millisecond,
+					Max:        30000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		GetWorkload: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    200 * time.Millisecond,
+					Max:        30000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		AnalyzeWorkloadMove: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    200 * time.Millisecond,
+					Max:        30000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		ListWorkloads: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    200 * time.Millisecond,
+					Max:        30000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		GetOperation: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    200 * time.Millisecond,
+					Max:        30000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		ListOperations: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    200 * time.Millisecond,
+					Max:        30000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+	}
+}
+
+// internalClient is an interface that defines the methods available from Assured Workloads API.
+type internalClient interface {
+	Close() error
+	setGoogleClientInfo(...string)
+	Connection() *grpc.ClientConn
+	CreateWorkload(context.Context, *assuredworkloadspb.CreateWorkloadRequest, ...gax.CallOption) (*CreateWorkloadOperation, error)
+	CreateWorkloadOperation(name string) *CreateWorkloadOperation
+	UpdateWorkload(context.Context, *assuredworkloadspb.UpdateWorkloadRequest, ...gax.CallOption) (*assuredworkloadspb.Workload, error)
+	RestrictAllowedResources(context.Context, *assuredworkloadspb.RestrictAllowedResourcesRequest, ...gax.CallOption) (*assuredworkloadspb.RestrictAllowedResourcesResponse, error)
+	DeleteWorkload(context.Context, *assuredworkloadspb.DeleteWorkloadRequest, ...gax.CallOption) error
+	GetWorkload(context.Context, *assuredworkloadspb.GetWorkloadRequest, ...gax.CallOption) (*assuredworkloadspb.Workload, error)
+	AnalyzeWorkloadMove(context.Context, *assuredworkloadspb.AnalyzeWorkloadMoveRequest, ...gax.CallOption) (*assuredworkloadspb.AnalyzeWorkloadMoveResponse, error)
+	ListWorkloads(context.Context, *assuredworkloadspb.ListWorkloadsRequest, ...gax.CallOption) *WorkloadIterator
+	GetOperation(context.Context, *longrunningpb.GetOperationRequest, ...gax.CallOption) (*longrunningpb.Operation, error)
+	ListOperations(context.Context, *longrunningpb.ListOperationsRequest, ...gax.CallOption) *OperationIterator
+}
+
+// Client is a client for interacting with Assured Workloads API.
+// Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
+//
+// Service to manage AssuredWorkloads.
+type Client struct {
+	// The internal transport-dependent client.
+	internalClient internalClient
+
+	// The call options for this service.
+	CallOptions *CallOptions
+
+	// LROClient is used internally to handle long-running operations.
+	// It is exposed so that its CallOptions can be modified if required.
+	// Users should not Close this client.
+	LROClient *lroauto.OperationsClient
+}
+
+// Wrapper methods routed to the internal client.
+
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *Client) Close() error {
+	return c.internalClient.Close()
+}
+
+// setGoogleClientInfo sets the name and version of the application in
+// the `x-goog-api-client` header passed on each request. Intended for
+// use by Google-written clients.
+func (c *Client) setGoogleClientInfo(keyval ...string) {
+	c.internalClient.setGoogleClientInfo(keyval...)
+}
+
+// Connection returns a connection to the API service.
+//
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
+func (c *Client) Connection() *grpc.ClientConn {
+	return c.internalClient.Connection()
+}
+
+// CreateWorkload creates Assured Workload.
+func (c *Client) CreateWorkload(ctx context.Context, req *assuredworkloadspb.CreateWorkloadRequest, opts ...gax.CallOption) (*CreateWorkloadOperation, error) {
+	return c.internalClient.CreateWorkload(ctx, req, opts...)
+}
+
+// CreateWorkloadOperation returns a new CreateWorkloadOperation from a given name.
+// The name must be that of a previously created CreateWorkloadOperation, possibly from a different process.
+func (c *Client) CreateWorkloadOperation(name string) *CreateWorkloadOperation {
+	return c.internalClient.CreateWorkloadOperation(name)
+}
+
+// UpdateWorkload updates an existing workload.
+// Currently allows updating of workload display_name and labels.
+// For force updates don’t set etag field in the Workload.
+// Only one update operation per workload can be in progress.
+func (c *Client) UpdateWorkload(ctx context.Context, req *assuredworkloadspb.UpdateWorkloadRequest, opts ...gax.CallOption) (*assuredworkloadspb.Workload, error) {
+	return c.internalClient.UpdateWorkload(ctx, req, opts...)
+}
+
+// RestrictAllowedResources restrict the list of resources allowed in the Workload environment.
+// The current list of allowed products can be found at
+// https://cloud.google.com/assured-workloads/docs/supported-products (at https://cloud.google.com/assured-workloads/docs/supported-products)
+// In addition to assuredworkloads.workload.update permission, the user should
+// also have orgpolicy.policy.set permission on the folder resource
+// to use this functionality.
+func (c *Client) RestrictAllowedResources(ctx context.Context, req *assuredworkloadspb.RestrictAllowedResourcesRequest, opts ...gax.CallOption) (*assuredworkloadspb.RestrictAllowedResourcesResponse, error) {
+	return c.internalClient.RestrictAllowedResources(ctx, req, opts...)
+}
+
+// DeleteWorkload deletes the workload. Make sure that workload’s direct children are already
+// in a deleted state, otherwise the request will fail with a
+// FAILED_PRECONDITION error.
+// In addition to assuredworkloads.workload.delete permission, the user should
+// also have orgpolicy.policy.set permission on the deleted folder to remove
+// Assured Workloads OrgPolicies.
+func (c *Client) DeleteWorkload(ctx context.Context, req *assuredworkloadspb.DeleteWorkloadRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteWorkload(ctx, req, opts...)
+}
+
+// GetWorkload gets Assured Workload associated with a CRM Node
+func (c *Client) GetWorkload(ctx context.Context, req *assuredworkloadspb.GetWorkloadRequest, opts ...gax.CallOption) (*assuredworkloadspb.Workload, error) {
+	return c.internalClient.GetWorkload(ctx, req, opts...)
+}
+
+// AnalyzeWorkloadMove analyze if the source Assured Workloads can be moved to the target Assured
+// Workload
+func (c *Client) AnalyzeWorkloadMove(ctx context.Context, req *assuredworkloadspb.AnalyzeWorkloadMoveRequest, opts ...gax.CallOption) (*assuredworkloadspb.AnalyzeWorkloadMoveResponse, error) {
+	return c.internalClient.AnalyzeWorkloadMove(ctx, req, opts...)
+}
+
+// ListWorkloads lists Assured Workloads under a CRM Node.
+func (c *Client) ListWorkloads(ctx context.Context, req *assuredworkloadspb.ListWorkloadsRequest, opts ...gax.CallOption) *WorkloadIterator {
+	return c.internalClient.ListWorkloads(ctx, req, opts...)
+}
+
+// GetOperation is a utility method from google.longrunning.Operations.
+func (c *Client) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+	return c.internalClient.GetOperation(ctx, req, opts...)
+}
+
+// ListOperations is a utility method from google.longrunning.Operations.
+func (c *Client) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
+	return c.internalClient.ListOperations(ctx, req, opts...)
+}
+
+// gRPCClient is a client for interacting with Assured Workloads API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
-type Client struct {
+type gRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
+	// Points back to the CallOptions field of the containing Client
+	CallOptions **CallOptions
 
 	// The gRPC API client.
 	client assuredworkloadspb.AssuredWorkloadsServiceClient
 
-	// LROClient is used internally to handle longrunning operations.
+	// LROClient is used internally to handle long-running operations.
 	// It is exposed so that its CallOptions can be modified if required.
 	// Users should not Close this client.
-	LROClient *lroauto.OperationsClient
+	LROClient **lroauto.OperationsClient
 
-	// The call options for this service.
-	CallOptions *CallOptions
+	operationsClient longrunningpb.OperationsClient
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
 }
 
-// NewClient creates a new assured workloads service client.
+// NewClient creates a new assured workloads service client based on gRPC.
+// The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
 // Service to manage AssuredWorkloads.
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
-	clientOpts := defaultClientOptions()
-
+	clientOpts := defaultGRPCClientOptions()
 	if newClientHook != nil {
 		hookOpts, err := newClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -140,25 +393,23 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
 	}
-	c := &Client{
-		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
-		CallOptions:      defaultCallOptions(),
+	client := Client{CallOptions: defaultCallOptions()}
 
-		client: assuredworkloadspb.NewAssuredWorkloadsServiceClient(connPool),
+	c := &gRPCClient{
+		connPool:         connPool,
+		client:           assuredworkloadspb.NewAssuredWorkloadsServiceClient(connPool),
+		CallOptions:      &client.CallOptions,
+		operationsClient: longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
 
-	c.LROClient, err = lroauto.NewOperationsClient(ctx, gtransport.WithConnPool(connPool))
+	client.internalClient = c
+
+	client.LROClient, err = lroauto.NewOperationsClient(ctx, gtransport.WithConnPool(connPool))
 	if err != nil {
 		// This error "should not happen", since we are just reusing old connection pool
 		// and never actually need to dial.
@@ -168,41 +419,121 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		// TODO: investigate error conditions.
 		return nil, err
 	}
-	return c, nil
+	c.LROClient = &client.LROClient
+	return &client, nil
 }
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
-func (c *Client) Connection() *grpc.ClientConn {
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
+func (c *gRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
-}
-
-// Close closes the connection to the API service. The user should invoke this when
-// the client is no longer required.
-func (c *Client) Close() error {
-	return c.connPool.Close()
 }
 
 // setGoogleClientInfo sets the name and version of the application in
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
-func (c *Client) setGoogleClientInfo(keyval ...string) {
+func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
-// CreateWorkload creates Assured Workload.
-func (c *Client) CreateWorkload(ctx context.Context, req *assuredworkloadspb.CreateWorkloadRequest, opts ...gax.CallOption) (*CreateWorkloadOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *gRPCClient) Close() error {
+	return c.connPool.Close()
+}
+
+// Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
+type restClient struct {
+	// The http endpoint to connect to.
+	endpoint string
+
+	// The http client.
+	httpClient *http.Client
+
+	// LROClient is used internally to handle long-running operations.
+	// It is exposed so that its CallOptions can be modified if required.
+	// Users should not Close this client.
+	LROClient **lroauto.OperationsClient
+
+	// The x-goog-* metadata to be sent with each request.
+	xGoogMetadata metadata.MD
+
+	// Points back to the CallOptions field of the containing Client
+	CallOptions **CallOptions
+}
+
+// NewRESTClient creates a new assured workloads service rest client.
+//
+// Service to manage AssuredWorkloads.
+func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
+	clientOpts := append(defaultRESTClientOptions(), opts...)
+	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
+	if err != nil {
+		return nil, err
 	}
+
+	callOpts := defaultRESTCallOptions()
+	c := &restClient{
+		endpoint:    endpoint,
+		httpClient:  httpClient,
+		CallOptions: &callOpts,
+	}
+	c.setGoogleClientInfo()
+
+	lroOpts := []option.ClientOption{
+		option.WithHTTPClient(httpClient),
+		option.WithEndpoint(endpoint),
+	}
+	opClient, err := lroauto.NewOperationsRESTClient(ctx, lroOpts...)
+	if err != nil {
+		return nil, err
+	}
+	c.LROClient = &opClient
+
+	return &Client{internalClient: c, CallOptions: callOpts}, nil
+}
+
+func defaultRESTClientOptions() []option.ClientOption {
+	return []option.ClientOption{
+		internaloption.WithDefaultEndpoint("https://assuredworkloads.googleapis.com"),
+		internaloption.WithDefaultMTLSEndpoint("https://assuredworkloads.mtls.googleapis.com"),
+		internaloption.WithDefaultAudience("https://assuredworkloads.googleapis.com/"),
+		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+	}
+}
+
+// setGoogleClientInfo sets the name and version of the application in
+// the `x-goog-api-client` header passed on each request. Intended for
+// use by Google-written clients.
+func (c *restClient) setGoogleClientInfo(keyval ...string) {
+	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
+	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+}
+
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *restClient) Close() error {
+	// Replace httpClient with nil to force cleanup.
+	c.httpClient = nil
+	return nil
+}
+
+// Connection returns a connection to the API service.
+//
+// Deprecated: This method always returns nil.
+func (c *restClient) Connection() *grpc.ClientConn {
+	return nil
+}
+func (c *gRPCClient) CreateWorkload(ctx context.Context, req *assuredworkloadspb.CreateWorkloadRequest, opts ...gax.CallOption) (*CreateWorkloadOperation, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.CreateWorkload[0:len(c.CallOptions.CreateWorkload):len(c.CallOptions.CreateWorkload)], opts...)
+	opts = append((*c.CallOptions).CreateWorkload[0:len((*c.CallOptions).CreateWorkload):len((*c.CallOptions).CreateWorkload)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -213,23 +544,13 @@ func (c *Client) CreateWorkload(ctx context.Context, req *assuredworkloadspb.Cre
 		return nil, err
 	}
 	return &CreateWorkloadOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// UpdateWorkload updates an existing workload.
-// Currently allows updating of workload display_name and labels.
-// For force updates don’t set etag field in the Workload.
-// Only one update operation per workload can be in progress.
-func (c *Client) UpdateWorkload(ctx context.Context, req *assuredworkloadspb.UpdateWorkloadRequest, opts ...gax.CallOption) (*assuredworkloadspb.Workload, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "workload.name", url.QueryEscape(req.GetWorkload().GetName())))
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.UpdateWorkload[0:len(c.CallOptions.UpdateWorkload):len(c.CallOptions.UpdateWorkload)], opts...)
+func (c *gRPCClient) UpdateWorkload(ctx context.Context, req *assuredworkloadspb.UpdateWorkloadRequest, opts ...gax.CallOption) (*assuredworkloadspb.Workload, error) {
+	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	opts = append((*c.CallOptions).UpdateWorkload[0:len((*c.CallOptions).UpdateWorkload):len((*c.CallOptions).UpdateWorkload)], opts...)
 	var resp *assuredworkloadspb.Workload
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -242,18 +563,28 @@ func (c *Client) UpdateWorkload(ctx context.Context, req *assuredworkloadspb.Upd
 	return resp, nil
 }
 
-// DeleteWorkload deletes the workload. Make sure that workload’s direct children are already
-// in a deleted state, otherwise the request will fail with a
-// FAILED_PRECONDITION error.
-func (c *Client) DeleteWorkload(ctx context.Context, req *assuredworkloadspb.DeleteWorkloadRequest, opts ...gax.CallOption) error {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
+func (c *gRPCClient) RestrictAllowedResources(ctx context.Context, req *assuredworkloadspb.RestrictAllowedResourcesRequest, opts ...gax.CallOption) (*assuredworkloadspb.RestrictAllowedResourcesResponse, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.DeleteWorkload[0:len(c.CallOptions.DeleteWorkload):len(c.CallOptions.DeleteWorkload)], opts...)
+	opts = append((*c.CallOptions).RestrictAllowedResources[0:len((*c.CallOptions).RestrictAllowedResources):len((*c.CallOptions).RestrictAllowedResources)], opts...)
+	var resp *assuredworkloadspb.RestrictAllowedResourcesResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.RestrictAllowedResources(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) DeleteWorkload(ctx context.Context, req *assuredworkloadspb.DeleteWorkloadRequest, opts ...gax.CallOption) error {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).DeleteWorkload[0:len((*c.CallOptions).DeleteWorkload):len((*c.CallOptions).DeleteWorkload)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		_, err = c.client.DeleteWorkload(ctx, req, settings.GRPC...)
@@ -262,16 +593,9 @@ func (c *Client) DeleteWorkload(ctx context.Context, req *assuredworkloadspb.Del
 	return err
 }
 
-// GetWorkload gets Assured Workload associated with a CRM Node
-func (c *Client) GetWorkload(ctx context.Context, req *assuredworkloadspb.GetWorkloadRequest, opts ...gax.CallOption) (*assuredworkloadspb.Workload, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GetWorkload[0:len(c.CallOptions.GetWorkload):len(c.CallOptions.GetWorkload)], opts...)
+func (c *gRPCClient) GetWorkload(ctx context.Context, req *assuredworkloadspb.GetWorkloadRequest, opts ...gax.CallOption) (*assuredworkloadspb.Workload, error) {
+	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	opts = append((*c.CallOptions).GetWorkload[0:len((*c.CallOptions).GetWorkload):len((*c.CallOptions).GetWorkload)], opts...)
 	var resp *assuredworkloadspb.Workload
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -284,19 +608,34 @@ func (c *Client) GetWorkload(ctx context.Context, req *assuredworkloadspb.GetWor
 	return resp, nil
 }
 
-// ListWorkloads lists Assured Workloads under a CRM Node.
-func (c *Client) ListWorkloads(ctx context.Context, req *assuredworkloadspb.ListWorkloadsRequest, opts ...gax.CallOption) *WorkloadIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ListWorkloads[0:len(c.CallOptions.ListWorkloads):len(c.CallOptions.ListWorkloads)], opts...)
+func (c *gRPCClient) AnalyzeWorkloadMove(ctx context.Context, req *assuredworkloadspb.AnalyzeWorkloadMoveRequest, opts ...gax.CallOption) (*assuredworkloadspb.AnalyzeWorkloadMoveResponse, error) {
+	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	opts = append((*c.CallOptions).AnalyzeWorkloadMove[0:len((*c.CallOptions).AnalyzeWorkloadMove):len((*c.CallOptions).AnalyzeWorkloadMove)], opts...)
+	var resp *assuredworkloadspb.AnalyzeWorkloadMoveResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.AnalyzeWorkloadMove(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) ListWorkloads(ctx context.Context, req *assuredworkloadspb.ListWorkloadsRequest, opts ...gax.CallOption) *WorkloadIterator {
+	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	opts = append((*c.CallOptions).ListWorkloads[0:len((*c.CallOptions).ListWorkloads):len((*c.CallOptions).ListWorkloads)], opts...)
 	it := &WorkloadIterator{}
 	req = proto.Clone(req).(*assuredworkloadspb.ListWorkloadsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*assuredworkloadspb.Workload, string, error) {
-		var resp *assuredworkloadspb.ListWorkloadsResponse
-		req.PageToken = pageToken
+		resp := &assuredworkloadspb.ListWorkloadsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -319,22 +658,824 @@ func (c *Client) ListWorkloads(ctx context.Context, req *assuredworkloadspb.List
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *gRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
+	it := &OperationIterator{}
+	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
+		resp := &longrunningpb.ListOperationsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetOperations(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// CreateWorkload creates Assured Workload.
+func (c *restClient) CreateWorkload(ctx context.Context, req *assuredworkloadspb.CreateWorkloadRequest, opts ...gax.CallOption) (*CreateWorkloadOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetWorkload()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/workloads", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetExternalId() != "" {
+		params.Add("externalId", fmt.Sprintf("%v", req.GetExternalId()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1beta1/%s", resp.GetName())
+	return &CreateWorkloadOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// UpdateWorkload updates an existing workload.
+// Currently allows updating of workload display_name and labels.
+// For force updates don’t set etag field in the Workload.
+// Only one update operation per workload can be in progress.
+func (c *restClient) UpdateWorkload(ctx context.Context, req *assuredworkloadspb.UpdateWorkloadRequest, opts ...gax.CallOption) (*assuredworkloadspb.Workload, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("")
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetUpdateMask() != nil {
+		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(updateMask))
+	}
+	if req.GetWorkload().GetBillingAccount() != "" {
+		params.Add("workload.billingAccount", fmt.Sprintf("%v", req.GetWorkload().GetBillingAccount()))
+	}
+	if req.GetWorkload().GetCjisSettings().GetKmsSettings().GetNextRotationTime() != nil {
+		nextRotationTime, err := protojson.Marshal(req.GetWorkload().GetCjisSettings().GetKmsSettings().GetNextRotationTime())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("workload.cjisSettings.kmsSettings.nextRotationTime", string(nextRotationTime))
+	}
+	if req.GetWorkload().GetCjisSettings().GetKmsSettings().GetRotationPeriod() != nil {
+		rotationPeriod, err := protojson.Marshal(req.GetWorkload().GetCjisSettings().GetKmsSettings().GetRotationPeriod())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("workload.cjisSettings.kmsSettings.rotationPeriod", string(rotationPeriod))
+	}
+	params.Add("workload.complianceRegime", fmt.Sprintf("%v", req.GetWorkload().GetComplianceRegime()))
+	if items := req.GetWorkload().GetCompliantButDisallowedServices(); len(items) > 0 {
+		for _, item := range items {
+			params.Add("workload.compliantButDisallowedServices", fmt.Sprintf("%v", item))
+		}
+	}
+	if req.GetWorkload().GetCreateTime() != nil {
+		createTime, err := protojson.Marshal(req.GetWorkload().GetCreateTime())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("workload.createTime", string(createTime))
+	}
+	params.Add("workload.displayName", fmt.Sprintf("%v", req.GetWorkload().GetDisplayName()))
+	if req.GetWorkload().GetEnableSovereignControls() {
+		params.Add("workload.enableSovereignControls", fmt.Sprintf("%v", req.GetWorkload().GetEnableSovereignControls()))
+	}
+	if req.GetWorkload().GetEtag() != "" {
+		params.Add("workload.etag", fmt.Sprintf("%v", req.GetWorkload().GetEtag()))
+	}
+	if req.GetWorkload().GetFedrampHighSettings().GetKmsSettings().GetNextRotationTime() != nil {
+		nextRotationTime, err := protojson.Marshal(req.GetWorkload().GetFedrampHighSettings().GetKmsSettings().GetNextRotationTime())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("workload.fedrampHighSettings.kmsSettings.nextRotationTime", string(nextRotationTime))
+	}
+	if req.GetWorkload().GetFedrampHighSettings().GetKmsSettings().GetRotationPeriod() != nil {
+		rotationPeriod, err := protojson.Marshal(req.GetWorkload().GetFedrampHighSettings().GetKmsSettings().GetRotationPeriod())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("workload.fedrampHighSettings.kmsSettings.rotationPeriod", string(rotationPeriod))
+	}
+	if req.GetWorkload().GetFedrampModerateSettings().GetKmsSettings().GetNextRotationTime() != nil {
+		nextRotationTime, err := protojson.Marshal(req.GetWorkload().GetFedrampModerateSettings().GetKmsSettings().GetNextRotationTime())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("workload.fedrampModerateSettings.kmsSettings.nextRotationTime", string(nextRotationTime))
+	}
+	if req.GetWorkload().GetFedrampModerateSettings().GetKmsSettings().GetRotationPeriod() != nil {
+		rotationPeriod, err := protojson.Marshal(req.GetWorkload().GetFedrampModerateSettings().GetKmsSettings().GetRotationPeriod())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("workload.fedrampModerateSettings.kmsSettings.rotationPeriod", string(rotationPeriod))
+	}
+	if req.GetWorkload().GetIl4Settings().GetKmsSettings().GetNextRotationTime() != nil {
+		nextRotationTime, err := protojson.Marshal(req.GetWorkload().GetIl4Settings().GetKmsSettings().GetNextRotationTime())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("workload.il4Settings.kmsSettings.nextRotationTime", string(nextRotationTime))
+	}
+	if req.GetWorkload().GetIl4Settings().GetKmsSettings().GetRotationPeriod() != nil {
+		rotationPeriod, err := protojson.Marshal(req.GetWorkload().GetIl4Settings().GetKmsSettings().GetRotationPeriod())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("workload.il4Settings.kmsSettings.rotationPeriod", string(rotationPeriod))
+	}
+	if req.GetWorkload().GetKajEnrollmentState() != 0 {
+		params.Add("workload.kajEnrollmentState", fmt.Sprintf("%v", req.GetWorkload().GetKajEnrollmentState()))
+	}
+	if req.GetWorkload().GetKmsSettings().GetNextRotationTime() != nil {
+		nextRotationTime, err := protojson.Marshal(req.GetWorkload().GetKmsSettings().GetNextRotationTime())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("workload.kmsSettings.nextRotationTime", string(nextRotationTime))
+	}
+	if req.GetWorkload().GetKmsSettings().GetRotationPeriod() != nil {
+		rotationPeriod, err := protojson.Marshal(req.GetWorkload().GetKmsSettings().GetRotationPeriod())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("workload.kmsSettings.rotationPeriod", string(rotationPeriod))
+	}
+	if req.GetWorkload().GetName() != "" {
+		params.Add("workload.name", fmt.Sprintf("%v", req.GetWorkload().GetName()))
+	}
+	if req.GetWorkload().GetProvisionedResourcesParent() != "" {
+		params.Add("workload.provisionedResourcesParent", fmt.Sprintf("%v", req.GetWorkload().GetProvisionedResourcesParent()))
+	}
+	if items := req.GetWorkload().GetSaaEnrollmentResponse().GetSetupErrors(); len(items) > 0 {
+		for _, item := range items {
+			params.Add("workload.saaEnrollmentResponse.setupErrors", fmt.Sprintf("%v", item))
+		}
+	}
+	if req.GetWorkload().GetSaaEnrollmentResponse() != nil && req.GetWorkload().GetSaaEnrollmentResponse().SetupStatus != nil {
+		params.Add("workload.saaEnrollmentResponse.setupStatus", fmt.Sprintf("%v", req.GetWorkload().GetSaaEnrollmentResponse().GetSetupStatus()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).UpdateWorkload[0:len((*c.CallOptions).UpdateWorkload):len((*c.CallOptions).UpdateWorkload)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &assuredworkloadspb.Workload{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// RestrictAllowedResources restrict the list of resources allowed in the Workload environment.
+// The current list of allowed products can be found at
+// https://cloud.google.com/assured-workloads/docs/supported-products (at https://cloud.google.com/assured-workloads/docs/supported-products)
+// In addition to assuredworkloads.workload.update permission, the user should
+// also have orgpolicy.policy.set permission on the folder resource
+// to use this functionality.
+func (c *restClient) RestrictAllowedResources(ctx context.Context, req *assuredworkloadspb.RestrictAllowedResourcesRequest, opts ...gax.CallOption) (*assuredworkloadspb.RestrictAllowedResourcesResponse, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:restrictAllowedResources", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).RestrictAllowedResources[0:len((*c.CallOptions).RestrictAllowedResources):len((*c.CallOptions).RestrictAllowedResources)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &assuredworkloadspb.RestrictAllowedResourcesResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// DeleteWorkload deletes the workload. Make sure that workload’s direct children are already
+// in a deleted state, otherwise the request will fail with a
+// FAILED_PRECONDITION error.
+// In addition to assuredworkloads.workload.delete permission, the user should
+// also have orgpolicy.policy.set permission on the deleted folder to remove
+// Assured Workloads OrgPolicies.
+func (c *restClient) DeleteWorkload(ctx context.Context, req *assuredworkloadspb.DeleteWorkloadRequest, opts ...gax.CallOption) error {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetEtag() != "" {
+		params.Add("etag", fmt.Sprintf("%v", req.GetEtag()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		// Returns nil if there is no error, otherwise wraps
+		// the response code and body into a non-nil error
+		return googleapi.CheckResponse(httpRsp)
+	}, opts...)
+}
+
+// GetWorkload gets Assured Workload associated with a CRM Node
+func (c *restClient) GetWorkload(ctx context.Context, req *assuredworkloadspb.GetWorkloadRequest, opts ...gax.CallOption) (*assuredworkloadspb.Workload, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("")
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	params.Add("name", fmt.Sprintf("%v", req.GetName()))
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).GetWorkload[0:len((*c.CallOptions).GetWorkload):len((*c.CallOptions).GetWorkload)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &assuredworkloadspb.Workload{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// AnalyzeWorkloadMove analyze if the source Assured Workloads can be moved to the target Assured
+// Workload
+func (c *restClient) AnalyzeWorkloadMove(ctx context.Context, req *assuredworkloadspb.AnalyzeWorkloadMoveRequest, opts ...gax.CallOption) (*assuredworkloadspb.AnalyzeWorkloadMoveResponse, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("")
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetProject() != "" {
+		params.Add("project", fmt.Sprintf("%v", req.GetProject()))
+	}
+	if req.GetSource() != "" {
+		params.Add("source", fmt.Sprintf("%v", req.GetSource()))
+	}
+	params.Add("target", fmt.Sprintf("%v", req.GetTarget()))
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).AnalyzeWorkloadMove[0:len((*c.CallOptions).AnalyzeWorkloadMove):len((*c.CallOptions).AnalyzeWorkloadMove)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &assuredworkloadspb.AnalyzeWorkloadMoveResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// ListWorkloads lists Assured Workloads under a CRM Node.
+func (c *restClient) ListWorkloads(ctx context.Context, req *assuredworkloadspb.ListWorkloadsRequest, opts ...gax.CallOption) *WorkloadIterator {
+	it := &WorkloadIterator{}
+	req = proto.Clone(req).(*assuredworkloadspb.ListWorkloadsRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*assuredworkloadspb.Workload, string, error) {
+		resp := &assuredworkloadspb.ListWorkloadsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("")
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+		params.Add("parent", fmt.Sprintf("%v", req.GetParent()))
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			httpRsp, err := c.httpClient.Do(httpReq)
+			if err != nil {
+				return err
+			}
+			defer httpRsp.Body.Close()
+
+			if err = googleapi.CheckResponse(httpRsp); err != nil {
+				return err
+			}
+
+			buf, err := ioutil.ReadAll(httpRsp.Body)
+			if err != nil {
+				return err
+			}
+
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return maybeUnknownEnum(err)
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetWorkloads(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// GetOperation is a utility method from google.longrunning.Operations.
+func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// ListOperations is a utility method from google.longrunning.Operations.
+func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
+	it := &OperationIterator{}
+	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
+		resp := &longrunningpb.ListOperationsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/operations", req.GetName())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			httpRsp, err := c.httpClient.Do(httpReq)
+			if err != nil {
+				return err
+			}
+			defer httpRsp.Body.Close()
+
+			if err = googleapi.CheckResponse(httpRsp); err != nil {
+				return err
+			}
+
+			buf, err := ioutil.ReadAll(httpRsp.Body)
+			if err != nil {
+				return err
+			}
+
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return maybeUnknownEnum(err)
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetOperations(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
 // CreateWorkloadOperation manages a long-running operation from CreateWorkload.
 type CreateWorkloadOperation struct {
-	lro *longrunning.Operation
+	lro      *longrunning.Operation
+	pollPath string
 }
 
 // CreateWorkloadOperation returns a new CreateWorkloadOperation from a given name.
 // The name must be that of a previously created CreateWorkloadOperation, possibly from a different process.
-func (c *Client) CreateWorkloadOperation(name string) *CreateWorkloadOperation {
+func (c *gRPCClient) CreateWorkloadOperation(name string) *CreateWorkloadOperation {
 	return &CreateWorkloadOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// CreateWorkloadOperation returns a new CreateWorkloadOperation from a given name.
+// The name must be that of a previously created CreateWorkloadOperation, possibly from a different process.
+func (c *restClient) CreateWorkloadOperation(name string) *CreateWorkloadOperation {
+	override := fmt.Sprintf("/v1beta1/%s", name)
+	return &CreateWorkloadOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
 	}
 }
 
@@ -342,6 +1483,7 @@ func (c *Client) CreateWorkloadOperation(name string) *CreateWorkloadOperation {
 //
 // See documentation of Poll for error-handling information.
 func (op *CreateWorkloadOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*assuredworkloadspb.Workload, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
 	var resp assuredworkloadspb.Workload
 	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
 		return nil, err
@@ -359,6 +1501,7 @@ func (op *CreateWorkloadOperation) Wait(ctx context.Context, opts ...gax.CallOpt
 // op.Done will return true, and the response of the operation is returned.
 // If Poll succeeds and the operation has not completed, the returned response and error are both nil.
 func (op *CreateWorkloadOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*assuredworkloadspb.Workload, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
 	var resp assuredworkloadspb.Workload
 	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
 		return nil, err
@@ -392,6 +1535,53 @@ func (op *CreateWorkloadOperation) Done() bool {
 // The name is assigned by the server and is unique within the service from which the operation is created.
 func (op *CreateWorkloadOperation) Name() string {
 	return op.lro.Name()
+}
+
+// OperationIterator manages a stream of *longrunningpb.Operation.
+type OperationIterator struct {
+	items    []*longrunningpb.Operation
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*longrunningpb.Operation, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *OperationIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *OperationIterator) Next() (*longrunningpb.Operation, error) {
+	var item *longrunningpb.Operation
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *OperationIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *OperationIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
 }
 
 // WorkloadIterator manages a stream of *assuredworkloadspb.Workload.

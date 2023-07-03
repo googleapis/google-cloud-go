@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -21,30 +21,59 @@ import (
 	"io"
 
 	storage "cloud.google.com/go/bigquery/storage/apiv1beta2"
-	storagepb "google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1beta2"
+	storagepb "cloud.google.com/go/bigquery/storage/apiv1beta2/storagepb"
 )
 
 func ExampleNewBigQueryWriteClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := storage.NewBigQueryWriteClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
+func ExampleNewBigQueryWriteRESTClient() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := storage.NewBigQueryWriteRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleBigQueryWriteClient_CreateWriteStream() {
-	// import storagepb "google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1beta2"
-
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := storage.NewBigQueryWriteClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &storagepb.CreateWriteStreamRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/bigquery/storage/apiv1beta2/storagepb#CreateWriteStreamRequest.
 	}
 	resp, err := c.CreateWriteStream(ctx, req)
 	if err != nil {
@@ -55,13 +84,17 @@ func ExampleBigQueryWriteClient_CreateWriteStream() {
 }
 
 func ExampleBigQueryWriteClient_AppendRows() {
-	// import storagepb "google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1beta2"
-
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := storage.NewBigQueryWriteClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 	stream, err := c.AppendRows(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -91,16 +124,21 @@ func ExampleBigQueryWriteClient_AppendRows() {
 }
 
 func ExampleBigQueryWriteClient_GetWriteStream() {
-	// import storagepb "google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1beta2"
-
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := storage.NewBigQueryWriteClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &storagepb.GetWriteStreamRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/bigquery/storage/apiv1beta2/storagepb#GetWriteStreamRequest.
 	}
 	resp, err := c.GetWriteStream(ctx, req)
 	if err != nil {
@@ -111,16 +149,21 @@ func ExampleBigQueryWriteClient_GetWriteStream() {
 }
 
 func ExampleBigQueryWriteClient_FinalizeWriteStream() {
-	// import storagepb "google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1beta2"
-
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := storage.NewBigQueryWriteClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &storagepb.FinalizeWriteStreamRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/bigquery/storage/apiv1beta2/storagepb#FinalizeWriteStreamRequest.
 	}
 	resp, err := c.FinalizeWriteStream(ctx, req)
 	if err != nil {
@@ -131,16 +174,21 @@ func ExampleBigQueryWriteClient_FinalizeWriteStream() {
 }
 
 func ExampleBigQueryWriteClient_BatchCommitWriteStreams() {
-	// import storagepb "google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1beta2"
-
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := storage.NewBigQueryWriteClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &storagepb.BatchCommitWriteStreamsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/bigquery/storage/apiv1beta2/storagepb#BatchCommitWriteStreamsRequest.
 	}
 	resp, err := c.BatchCommitWriteStreams(ctx, req)
 	if err != nil {
@@ -151,16 +199,21 @@ func ExampleBigQueryWriteClient_BatchCommitWriteStreams() {
 }
 
 func ExampleBigQueryWriteClient_FlushRows() {
-	// import storagepb "google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1beta2"
-
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := storage.NewBigQueryWriteClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &storagepb.FlushRowsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/bigquery/storage/apiv1beta2/storagepb#FlushRowsRequest.
 	}
 	resp, err := c.FlushRows(ctx, req)
 	if err != nil {

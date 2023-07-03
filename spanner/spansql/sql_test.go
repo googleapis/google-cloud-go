@@ -84,6 +84,8 @@ func TestSQL(t *testing.T) {
 					{Name: "Ck", Type: Type{Array: true, Base: String, Len: MaxLen}, Position: line(12)},
 					{Name: "Cl", Type: Type{Base: Timestamp}, Options: ColumnOptions{AllowCommitTimestamp: boolAddr(false)}, Position: line(13)},
 					{Name: "Cm", Type: Type{Base: Int64}, Generated: Func{Name: "CHAR_LENGTH", Args: []Expr{ID("Ce")}}, Position: line(14)},
+					{Name: "Cn", Type: Type{Base: JSON}, Position: line(15)},
+					{Name: "Co", Type: Type{Base: Int64}, Default: IntegerLiteral(1), Position: line(16)},
 				},
 				PrimaryKey: []KeyPart{
 					{Column: "Ca"},
@@ -105,6 +107,8 @@ func TestSQL(t *testing.T) {
   Ck ARRAY<STRING(MAX)>,
   Cl TIMESTAMP OPTIONS (allow_commit_timestamp = null),
   Cm INT64 AS (CHAR_LENGTH(Ce)) STORED,
+  Cn JSON,
+  Co INT64 DEFAULT (1),
 ) PRIMARY KEY(Ca, Cb DESC)`,
 			reparseDDL,
 		},
@@ -136,6 +140,27 @@ func TestSQL(t *testing.T) {
 			reparseDDL,
 		},
 		{
+			&CreateTable{
+				Name: "WithRowDeletionPolicy",
+				Columns: []ColumnDef{
+					{Name: "Name", Type: Type{Base: String, Len: MaxLen}, NotNull: true, Position: line(2)},
+					{Name: "DelTimestamp", Type: Type{Base: Timestamp}, NotNull: true, Position: line(3)},
+				},
+				PrimaryKey: []KeyPart{{Column: "Name"}},
+				RowDeletionPolicy: &RowDeletionPolicy{
+					Column:  ID("DelTimestamp"),
+					NumDays: 30,
+				},
+				Position: line(1),
+			},
+			`CREATE TABLE WithRowDeletionPolicy (
+  Name STRING(MAX) NOT NULL,
+  DelTimestamp TIMESTAMP NOT NULL,
+) PRIMARY KEY(Name),
+  ROW DELETION POLICY ( OLDER_THAN ( DelTimestamp, INTERVAL 30 DAY ))`,
+			reparseDDL,
+		},
+		{
 			&DropTable{
 				Name:     "Ta",
 				Position: line(1),
@@ -162,6 +187,139 @@ func TestSQL(t *testing.T) {
 				Position: line(1),
 			},
 			"DROP INDEX Ia",
+			reparseDDL,
+		},
+		{
+			&CreateView{
+				Name:      "SingersView",
+				OrReplace: true,
+				Query: Query{
+					Select: Select{
+						List: []Expr{ID("SingerId"), ID("FullName"), ID("Picture")},
+						From: []SelectFrom{SelectFromTable{
+							Table: "Singers",
+						}},
+					},
+					Order: []Order{
+						{Expr: ID("LastName")},
+						{Expr: ID("FirstName")},
+					},
+				},
+				Position: line(1),
+			},
+			"CREATE OR REPLACE VIEW SingersView SQL SECURITY INVOKER AS SELECT SingerId, FullName, Picture FROM Singers ORDER BY LastName, FirstName",
+			reparseDDL,
+		},
+		{
+			&DropView{
+				Name:     "SingersView",
+				Position: line(1),
+			},
+			"DROP VIEW SingersView",
+			reparseDDL,
+		},
+		{
+			&CreateRole{
+				Name:     "TestRole",
+				Position: line(1),
+			},
+			"CREATE ROLE TestRole",
+			reparseDDL,
+		},
+		{
+			&DropRole{
+				Name:     "TestRole",
+				Position: line(1),
+			},
+			"DROP ROLE TestRole",
+			reparseDDL,
+		},
+		{
+			&GrantRole{
+				ToRoleNames: []ID{"hr_manager"},
+				Privileges: []Privilege{
+					{Type: PrivilegeTypeSelect, Columns: []ID{"name", "level", "location"}},
+					{Type: PrivilegeTypeUpdate, Columns: []ID{"location"}},
+				},
+				TableNames: []ID{"employees", "contractors"},
+
+				Position: line(1),
+			},
+			"GRANT SELECT(name, level, location), UPDATE(location) ON TABLE employees, contractors TO ROLE hr_manager",
+			reparseDDL,
+		},
+		{
+			&GrantRole{
+				ToRoleNames: []ID{"hr_manager"},
+				TvfNames:    []ID{"tvf_name_one", "tvf_name_two"},
+
+				Position: line(1),
+			},
+			"GRANT EXECUTE ON TABLE FUNCTION tvf_name_one, tvf_name_two TO ROLE hr_manager",
+			reparseDDL,
+		},
+		{
+			&GrantRole{
+				ToRoleNames: []ID{"hr_manager"},
+				ViewNames:   []ID{"view_name_one", "view_name_two"},
+
+				Position: line(1),
+			},
+			"GRANT SELECT ON VIEW view_name_one, view_name_two TO ROLE hr_manager",
+			reparseDDL,
+		},
+		{
+			&GrantRole{
+				ToRoleNames:       []ID{"hr_manager"},
+				ChangeStreamNames: []ID{"cs_name_one", "cs_name_two"},
+
+				Position: line(1),
+			},
+			"GRANT SELECT ON CHANGE STREAM cs_name_one, cs_name_two TO ROLE hr_manager",
+			reparseDDL,
+		},
+		{
+			&RevokeRole{
+				FromRoleNames: []ID{"hr_manager"},
+				Privileges: []Privilege{
+					{Type: PrivilegeTypeSelect, Columns: []ID{"name", "level", "location"}},
+					{Type: PrivilegeTypeUpdate, Columns: []ID{"location"}},
+				},
+				TableNames: []ID{"employees", "contractors"},
+
+				Position: line(1),
+			},
+			"REVOKE SELECT(name, level, location), UPDATE(location) ON TABLE employees, contractors FROM ROLE hr_manager",
+			reparseDDL,
+		},
+		{
+			&RevokeRole{
+				FromRoleNames: []ID{"hr_manager"},
+				TvfNames:      []ID{"tvf_name_one", "tvf_name_two"},
+
+				Position: line(1),
+			},
+			"REVOKE EXECUTE ON TABLE FUNCTION tvf_name_one, tvf_name_two FROM ROLE hr_manager",
+			reparseDDL,
+		},
+		{
+			&RevokeRole{
+				FromRoleNames: []ID{"hr_manager"},
+				ViewNames:     []ID{"view_name_one", "view_name_two"},
+
+				Position: line(1),
+			},
+			"REVOKE SELECT ON VIEW view_name_one, view_name_two FROM ROLE hr_manager",
+			reparseDDL,
+		},
+		{
+			&RevokeRole{
+				FromRoleNames:     []ID{"hr_manager"},
+				ChangeStreamNames: []ID{"cs_name_one", "cs_name_two"},
+
+				Position: line(1),
+			},
+			"REVOKE SELECT ON CHANGE STREAM cs_name_one, cs_name_two FROM ROLE hr_manager",
 			reparseDDL,
 		},
 		{
@@ -218,6 +376,22 @@ func TestSQL(t *testing.T) {
 			&AlterTable{
 				Name: "Ta",
 				Alteration: AlterColumn{
+					Name: "Ch",
+					Alteration: SetColumnType{
+						Type:    Type{Base: String, Len: MaxLen},
+						NotNull: true,
+						Default: StringLiteral("1"),
+					},
+				},
+				Position: line(1),
+			},
+			"ALTER TABLE Ta ALTER COLUMN Ch STRING(MAX) NOT NULL DEFAULT (\"1\")",
+			reparseDDL,
+		},
+		{
+			&AlterTable{
+				Name: "Ta",
+				Alteration: AlterColumn{
 					Name: "Ci",
 					Alteration: SetColumnOptions{
 						Options: ColumnOptions{
@@ -229,6 +403,266 @@ func TestSQL(t *testing.T) {
 			},
 			"ALTER TABLE Ta ALTER COLUMN Ci SET OPTIONS (allow_commit_timestamp = null)",
 			reparseDDL,
+		},
+		{
+			&AlterTable{
+				Name: "Ta",
+				Alteration: AlterColumn{
+					Name: "Cj",
+					Alteration: SetDefault{
+						Default: StringLiteral("1"),
+					},
+				},
+				Position: line(1),
+			},
+			"ALTER TABLE Ta ALTER COLUMN Cj SET DEFAULT (\"1\")",
+			reparseDDL,
+		},
+		{
+			&AlterTable{
+				Name: "Ta",
+				Alteration: AlterColumn{
+					Name:       "Ck",
+					Alteration: DropDefault{},
+				},
+				Position: line(1),
+			},
+			"ALTER TABLE Ta ALTER COLUMN Ck DROP DEFAULT",
+			reparseDDL,
+		},
+		{
+			&AlterTable{
+				Name:       "WithRowDeletionPolicy",
+				Alteration: DropRowDeletionPolicy{},
+				Position:   line(1),
+			},
+			"ALTER TABLE WithRowDeletionPolicy DROP ROW DELETION POLICY",
+			reparseDDL,
+		},
+		{
+			&AlterTable{
+				Name: "WithRowDeletionPolicy",
+				Alteration: AddRowDeletionPolicy{
+					RowDeletionPolicy: RowDeletionPolicy{
+						Column:  ID("DelTimestamp"),
+						NumDays: 30,
+					},
+				},
+				Position: line(1),
+			},
+			"ALTER TABLE WithRowDeletionPolicy ADD ROW DELETION POLICY ( OLDER_THAN ( DelTimestamp, INTERVAL 30 DAY ))",
+			reparseDDL,
+		},
+		{
+			&AlterTable{
+				Name: "WithRowDeletionPolicy",
+				Alteration: ReplaceRowDeletionPolicy{
+					RowDeletionPolicy: RowDeletionPolicy{
+						Column:  ID("DelTimestamp"),
+						NumDays: 30,
+					},
+				},
+				Position: line(1),
+			},
+			"ALTER TABLE WithRowDeletionPolicy REPLACE ROW DELETION POLICY ( OLDER_THAN ( DelTimestamp, INTERVAL 30 DAY ))",
+			reparseDDL,
+		},
+		{
+			&AlterDatabase{
+				Name: "dbname",
+				Alteration: SetDatabaseOptions{Options: DatabaseOptions{
+					EnableKeyVisualizer: func(b bool) *bool { return &b }(true),
+				}},
+				Position: line(1),
+			},
+			"ALTER DATABASE dbname SET OPTIONS (enable_key_visualizer=true)",
+			reparseDDL,
+		},
+		{
+			&AlterDatabase{
+				Name: "dbname",
+				Alteration: SetDatabaseOptions{Options: DatabaseOptions{
+					OptimizerVersion: func(i int) *int { return &i }(2),
+				}},
+				Position: line(1),
+			},
+			"ALTER DATABASE dbname SET OPTIONS (optimizer_version=2)",
+			reparseDDL,
+		},
+		{
+			&AlterDatabase{
+				Name: "dbname",
+				Alteration: SetDatabaseOptions{Options: DatabaseOptions{
+					VersionRetentionPeriod:     func(s string) *string { return &s }("7d"),
+					OptimizerVersion:           func(i int) *int { return &i }(2),
+					OptimizerStatisticsPackage: func(s string) *string { return &s }("auto_20191128_14_47_22UTC"),
+					EnableKeyVisualizer:        func(b bool) *bool { return &b }(true),
+					DefaultLeader:              func(s string) *string { return &s }("europe-west1"),
+				}},
+				Position: line(1),
+			},
+			"ALTER DATABASE dbname SET OPTIONS (optimizer_version=2, optimizer_statistics_package='auto_20191128_14_47_22UTC', version_retention_period='7d', enable_key_visualizer=true, default_leader='europe-west1')",
+			reparseDDL,
+		},
+		{
+			&AlterDatabase{
+				Name: "dbname",
+				Alteration: SetDatabaseOptions{Options: DatabaseOptions{
+					VersionRetentionPeriod:     func(s string) *string { return &s }(""),
+					OptimizerVersion:           func(i int) *int { return &i }(0),
+					OptimizerStatisticsPackage: func(s string) *string { return &s }(""),
+					EnableKeyVisualizer:        func(b bool) *bool { return &b }(false),
+					DefaultLeader:              func(s string) *string { return &s }(""),
+				}},
+				Position: line(1),
+			},
+			"ALTER DATABASE dbname SET OPTIONS (optimizer_version=null, optimizer_statistics_package=null, version_retention_period=null, enable_key_visualizer=null, default_leader=null)",
+			reparseDDL,
+		},
+		{
+			&CreateChangeStream{
+				Name:     "csname",
+				Position: line(1),
+			},
+			"CREATE CHANGE STREAM csname",
+			reparseDDL,
+		},
+		{
+			&CreateChangeStream{
+				Name: "csname",
+				Watch: []WatchDef{
+					{Table: "Ta", WatchAllCols: true, Position: line(1)},
+					{Table: "Tsub", Columns: []ID{ID("Hash")}, Position: line(1)},
+				},
+				Position: line(1),
+			},
+			"CREATE CHANGE STREAM csname FOR Ta, Tsub(`Hash`)",
+			reparseDDL,
+		},
+		{
+			&DropChangeStream{
+				Name:     "csname",
+				Position: line(1),
+			},
+			"DROP CHANGE STREAM csname",
+			reparseDDL,
+		},
+		{
+			&CreateChangeStream{
+				Name:           "csname",
+				WatchAllTables: true,
+				Options: ChangeStreamOptions{
+					ValueCaptureType: func(s string) *string { return &s }("NEW_VALUES"),
+				},
+				Position: line(1),
+			},
+			"CREATE CHANGE STREAM csname FOR ALL OPTIONS (value_capture_type='NEW_VALUES')",
+			reparseDDL,
+		},
+		{
+			&CreateChangeStream{
+				Name:           "csname",
+				WatchAllTables: true,
+				Options: ChangeStreamOptions{
+					RetentionPeriod:  func(s string) *string { return &s }("7d"),
+					ValueCaptureType: func(s string) *string { return &s }("NEW_VALUES"),
+				},
+				Position: line(1),
+			},
+			"CREATE CHANGE STREAM csname FOR ALL OPTIONS (retention_period='7d', value_capture_type='NEW_VALUES')",
+			reparseDDL,
+		},
+		{
+			&AlterChangeStream{
+				Name: "csname",
+				Alteration: AlterWatch{
+					WatchAllTables: true,
+				},
+				Position: line(1),
+			},
+			"ALTER CHANGE STREAM csname SET FOR ALL",
+			reparseDDL,
+		},
+		{
+			&AlterChangeStream{
+				Name: "csname",
+				Alteration: AlterWatch{
+					Watch: []WatchDef{
+						{Table: "Ta", WatchAllCols: true, Position: Position{Line: 1, Offset: 35}},
+						{Table: "Tsub", Columns: []ID{ID("Hash")}, Position: Position{Line: 1, Offset: 39}},
+					},
+				},
+				Position: line(1),
+			},
+			"ALTER CHANGE STREAM csname SET FOR Ta, Tsub(`Hash`)",
+			reparseDDL,
+		},
+		{
+			&AlterChangeStream{
+				Name: "csname",
+				Alteration: AlterChangeStreamOptions{
+					Options: ChangeStreamOptions{
+						RetentionPeriod:  func(s string) *string { return &s }("7d"),
+						ValueCaptureType: func(s string) *string { return &s }("NEW_VALUES"),
+					},
+				},
+				Position: line(1),
+			},
+			"ALTER CHANGE STREAM csname SET OPTIONS (retention_period='7d', value_capture_type='NEW_VALUES')",
+			reparseDDL,
+		},
+		{
+			&AlterChangeStream{
+				Name:       "csname",
+				Alteration: DropChangeStreamWatch{},
+				Position:   line(1),
+			},
+			"ALTER CHANGE STREAM csname DROP FOR ALL",
+			reparseDDL,
+		},
+		{
+			&AlterStatistics{
+				Name: "auto_20191128_14_47_22UTC",
+				Alteration: SetStatisticsOptions{
+					Options: StatisticsOptions{
+						AllowGC: func(b bool) *bool { return &b }(false),
+					},
+				},
+				Position: line(1),
+			},
+			"ALTER STATISTICS auto_20191128_14_47_22UTC SET OPTIONS (allow_gc=false)",
+			reparseDDL,
+		},
+		{
+			&AlterIndex{
+				Name: "iname",
+				Alteration: AddStoredColumn{
+					Name: "cname",
+				},
+				Position: line(1),
+			},
+			"ALTER INDEX iname ADD STORED COLUMN cname",
+			reparseDDL,
+		},
+		{
+			&AlterIndex{
+				Name: "iname",
+				Alteration: DropStoredColumn{
+					Name: "cname",
+				},
+				Position: line(1),
+			},
+			"ALTER INDEX iname DROP STORED COLUMN cname",
+			reparseDDL,
+		},
+		{
+			&Insert{
+				Table:   "Singers",
+				Columns: []ID{ID("SingerId"), ID("FirstName"), ID("LastName")},
+				Input:   Values{{IntegerLiteral(1), StringLiteral("Marc"), StringLiteral("Richards")}},
+			},
+			`INSERT INTO Singers (SingerId, FirstName, LastName) VALUES (1, "Marc", "Richards")`,
+			reparseDML,
 		},
 		{
 			&Delete{
@@ -286,10 +720,70 @@ func TestSQL(t *testing.T) {
 		{
 			Query{
 				Select: Select{
+					List: []Expr{ID("A")},
+					From: []SelectFrom{SelectFromTable{
+						Table: "Table",
+						Hints: map[string]string{"FORCE_INDEX": "Idx"},
+					}},
+					Where: ComparisonOp{
+						LHS: ID("B"),
+						Op:  Eq,
+						RHS: Param("b"),
+					},
+				},
+			},
+			`SELECT A FROM Table@{FORCE_INDEX=Idx} WHERE B = @b`,
+			reparseQuery,
+		},
+		{
+			Query{
+				Select: Select{
+					List: []Expr{ID("A")},
+					From: []SelectFrom{SelectFromTable{
+						Table: "Table",
+						Hints: map[string]string{"FORCE_INDEX": "Idx", "GROUPBY_SCAN_OPTIMIZATION": "TRUE"},
+					}},
+					Where: ComparisonOp{
+						LHS: ID("B"),
+						Op:  Eq,
+						RHS: Param("b"),
+					},
+				},
+			},
+			`SELECT A FROM Table@{FORCE_INDEX=Idx,GROUPBY_SCAN_OPTIMIZATION=TRUE} WHERE B = @b`,
+			reparseQuery,
+		},
+		{
+			Query{
+				Select: Select{
 					List: []Expr{IntegerLiteral(7)},
 				},
 			},
 			`SELECT 7`,
+			reparseQuery,
+		},
+		{
+			Query{
+				Select: Select{
+					List: []Expr{Func{
+						Name: "CAST",
+						Args: []Expr{TypedExpr{Expr: IntegerLiteral(7), Type: Type{Base: String}}},
+					}},
+				},
+			},
+			`SELECT CAST(7 AS STRING)`,
+			reparseQuery,
+		},
+		{
+			Query{
+				Select: Select{
+					List: []Expr{Func{
+						Name: "SAFE_CAST",
+						Args: []Expr{TypedExpr{Expr: IntegerLiteral(7), Type: Type{Base: Date}}},
+					}},
+				},
+			},
+			`SELECT SAFE_CAST(7 AS DATE)`,
 			reparseQuery,
 		},
 		{
@@ -315,7 +809,12 @@ func TestSQL(t *testing.T) {
 		},
 		{
 			TimestampLiteral(time.Date(2014, time.September, 27, 12, 34, 56, 123456e3, latz)),
-			`TIMESTAMP '2014-09-27 12:34:56.123456 -07:00'`,
+			`TIMESTAMP '2014-09-27 12:34:56.123456-07:00'`,
+			reparseExpr,
+		},
+		{
+			JSONLiteral(`{"a": 1}`),
+			`JSON '{"a": 1}'`,
 			reparseExpr,
 		},
 		{
@@ -339,6 +838,128 @@ func TestSQL(t *testing.T) {
 				},
 			},
 			"SELECT A, B FROM Table1 INNER JOIN Table2 ON Table1.A = Table2.A",
+			reparseQuery,
+		},
+		{
+			Query{
+				Select: Select{
+					List: []Expr{
+						ID("A"), ID("B"),
+					},
+					From: []SelectFrom{
+						SelectFromJoin{
+							Type: InnerJoin,
+							LHS: SelectFromJoin{
+								Type: InnerJoin,
+								LHS:  SelectFromTable{Table: "Table1"},
+								RHS:  SelectFromTable{Table: "Table2"},
+								On: ComparisonOp{
+									LHS: PathExp{"Table1", "A"},
+									Op:  Eq,
+									RHS: PathExp{"Table2", "A"},
+								},
+							},
+							RHS:   SelectFromTable{Table: "Table3"},
+							Using: []ID{"X"},
+						},
+					},
+				},
+			},
+			"SELECT A, B FROM Table1 INNER JOIN Table2 ON Table1.A = Table2.A INNER JOIN Table3 USING (X)",
+			reparseQuery,
+		},
+		{
+			Query{
+				Select: Select{
+					List: []Expr{
+						Case{
+							Expr: ID("X"),
+							WhenClauses: []WhenClause{
+								{Cond: IntegerLiteral(1), Result: StringLiteral("X")},
+								{Cond: IntegerLiteral(2), Result: StringLiteral("Y")},
+							},
+							ElseResult: Null,
+						},
+					},
+				},
+			},
+			`SELECT CASE X WHEN 1 THEN "X" WHEN 2 THEN "Y" ELSE NULL END`,
+			reparseQuery,
+		},
+		{
+			Query{
+				Select: Select{
+					List: []Expr{
+						Case{
+							WhenClauses: []WhenClause{
+								{Cond: True, Result: StringLiteral("X")},
+								{Cond: False, Result: StringLiteral("Y")},
+							},
+						},
+					},
+				},
+			},
+			`SELECT CASE WHEN TRUE THEN "X" WHEN FALSE THEN "Y" END`,
+			reparseQuery,
+		},
+		{
+			Query{
+				Select: Select{
+					List: []Expr{
+						If{
+							Expr:       ComparisonOp{LHS: IntegerLiteral(1), Op: Lt, RHS: IntegerLiteral(2)},
+							TrueResult: True,
+							ElseResult: False,
+						},
+					},
+				},
+			},
+			`SELECT IF(1 < 2, TRUE, FALSE)`,
+			reparseQuery,
+		},
+		{
+			Query{
+				Select: Select{
+					List: []Expr{
+						IfNull{
+							Expr:       IntegerLiteral(10),
+							NullResult: IntegerLiteral(0),
+						},
+					},
+				},
+			},
+			`SELECT IFNULL(10, 0)`,
+			reparseQuery,
+		},
+		{
+			Query{
+				Select: Select{
+					List: []Expr{
+						NullIf{
+							Expr:        IntegerLiteral(10),
+							ExprToMatch: IntegerLiteral(0),
+						},
+					},
+				},
+			},
+			`SELECT NULLIF(10, 0)`,
+			reparseQuery,
+		},
+		{
+			Query{
+				Select: Select{
+					List: []Expr{
+						Coalesce{
+							ExprList: []Expr{
+								StringLiteral("A"),
+								Null,
+								StringLiteral("C"),
+							},
+						},
+					},
+				},
+			},
+			`SELECT COALESCE("A", NULL, "C")`,
 			reparseQuery,
 		},
 	}

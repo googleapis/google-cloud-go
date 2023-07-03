@@ -28,6 +28,7 @@ import (
 var (
 	errNackCalled       = errors.New("pubsublite: subscriber client does not support nack. See NackHandler for how to customize nack handling")
 	errDuplicateReceive = errors.New("pubsublite: receive is already in progress for this subscriber client")
+	errMessageIDSet     = errors.New("pubsublite: pubsub.Message.ID must not be set")
 )
 
 // handleNack is the default NackHandler implementation.
@@ -39,6 +40,7 @@ func handleNack(_ *pubsub.Message) error {
 type pslAckHandler struct {
 	ackh        wire.AckConsumer
 	msg         *pubsub.Message
+	partition   int
 	nackh       NackHandler
 	subInstance *subscriberInstance
 }
@@ -57,6 +59,11 @@ func (ah *pslAckHandler) OnNack() {
 		return
 	}
 
+	// Ignore nacks for partitions that have been assigned away.
+	if !ah.subInstance.wireSub.PartitionActive(ah.partition) {
+		return
+	}
+
 	err := ah.nackh(ah.msg)
 	if err != nil {
 		// If the NackHandler returns an error, shut down the subscriber client.
@@ -68,10 +75,30 @@ func (ah *pslAckHandler) OnNack() {
 	ah.subInstance = nil
 }
 
+// OnAckWithResult is required implementation for the ack handler
+// for Cloud Pub/Sub's exactly once delivery feature. This will
+// ack the message and return an AckResult that always resolves to success.
+func (ah *pslAckHandler) OnAckWithResult() *ipubsub.AckResult {
+	ah.OnAck()
+	ar := ipubsub.NewAckResult()
+	ipubsub.SetAckResult(ar, ipubsub.AcknowledgeStatusSuccess, nil)
+	return ar
+}
+
+// OnNackWithResult is required implementation for the ack handler
+// for Cloud Pub/Sub's exactly once delivery feature. This will
+// nack the message and return an AckResult that always resolves to success.
+func (ah *pslAckHandler) OnNackWithResult() *ipubsub.AckResult {
+	ah.OnNack()
+	ar := ipubsub.NewAckResult()
+	ipubsub.SetAckResult(ar, ipubsub.AcknowledgeStatusSuccess, nil)
+	return ar
+}
+
 // wireSubscriberFactory is a factory for creating wire subscribers, which can
 // be overridden with a mock in unit tests.
 type wireSubscriberFactory interface {
-	New(wire.MessageReceiverFunc) (wire.Subscriber, error)
+	New(context.Context, wire.MessageReceiverFunc, wire.ReassignmentHandlerFunc) (wire.Subscriber, error)
 }
 
 type wireSubscriberFactoryImpl struct {
@@ -81,15 +108,17 @@ type wireSubscriberFactoryImpl struct {
 	options      []option.ClientOption
 }
 
-func (f *wireSubscriberFactoryImpl) New(receiver wire.MessageReceiverFunc) (wire.Subscriber, error) {
-	return wire.NewSubscriber(context.Background(), f.settings, receiver, f.region, f.subscription.String(), f.options...)
+func (f *wireSubscriberFactoryImpl) New(ctx context.Context, receiver wire.MessageReceiverFunc, onReassignment wire.ReassignmentHandlerFunc) (wire.Subscriber, error) {
+	return wire.NewSubscriber(ctx, f.settings, receiver, onReassignment, f.region, f.subscription.String(), f.options...)
 }
+
+type messageReceiverFunc = func(context.Context, *pubsub.Message)
 
 // subscriberInstance wraps an instance of a wire.Subscriber. A new instance is
 // created for each invocation of SubscriberClient.Receive().
 type subscriberInstance struct {
 	settings        ReceiveSettings
-	receiver        MessageReceiverFunc
+	receiver        messageReceiverFunc
 	recvCtx         context.Context    // Context passed to the receiver
 	recvCancel      context.CancelFunc // Corresponding cancel func for recvCtx
 	wireSub         wire.Subscriber
@@ -100,8 +129,8 @@ type subscriberInstance struct {
 	err error
 }
 
-func newSubscriberInstance(ctx context.Context, factory wireSubscriberFactory, settings ReceiveSettings, receiver MessageReceiverFunc) (*subscriberInstance, error) {
-	recvCtx, recvCancel := context.WithCancel(ctx)
+func newSubscriberInstance(recvCtx, clientCtx context.Context, factory wireSubscriberFactory, settings ReceiveSettings, receiver messageReceiverFunc) (*subscriberInstance, error) {
+	recvCtx, recvCancel := context.WithCancel(recvCtx)
 	subInstance := &subscriberInstance{
 		settings:   settings,
 		recvCtx:    recvCtx,
@@ -109,10 +138,11 @@ func newSubscriberInstance(ctx context.Context, factory wireSubscriberFactory, s
 		receiver:   receiver,
 	}
 
-	// Note: ctx is not used to create the wire subscriber, because if it is
-	// cancelled, the subscriber will not be able to perform graceful shutdown
-	// (e.g. process acks and commit the final cursor offset).
-	wireSub, err := factory.New(subInstance.onMessage)
+	// Note: The context from Receive (recvCtx) should not be used, as when it is
+	// cancelled, the gRPC streams will be disconnected and the subscriber will
+	// not be able to process acks and commit the final cursor offset. Use the
+	// context from NewSubscriberClient (clientCtx) instead.
+	wireSub, err := factory.New(clientCtx, subInstance.onMessage, subInstance.onReassignment)
 	if err != nil {
 		return nil, err
 	}
@@ -127,15 +157,35 @@ func newSubscriberInstance(ctx context.Context, factory wireSubscriberFactory, s
 	return subInstance, nil
 }
 
+func (si *subscriberInstance) onReassignment(before, after wire.PartitionSet) error {
+	if si.settings.ReassignmentHandler != nil {
+		return si.settings.ReassignmentHandler(before.SortedInts(), after.SortedInts())
+	}
+	return nil
+}
+
+func (si *subscriberInstance) transformMessage(in *wire.ReceivedMessage, out *pubsub.Message) error {
+	if err := si.settings.MessageTransformer(in.Msg, out); err != nil {
+		return err
+	}
+	if len(out.ID) > 0 {
+		return errMessageIDSet
+	}
+	metadata := &MessageMetadata{Partition: in.Partition, Offset: in.Msg.GetCursor().GetOffset()}
+	out.ID = metadata.String()
+	return nil
+}
+
 func (si *subscriberInstance) onMessage(msg *wire.ReceivedMessage) {
 	pslAckh := &pslAckHandler{
 		ackh:        msg.Ack,
 		nackh:       si.settings.NackHandler,
+		partition:   msg.Partition,
 		subInstance: si,
 	}
 	psMsg := ipubsub.NewMessage(pslAckh)
 	pslAckh.msg = psMsg
-	if err := si.settings.MessageTransformer(msg.Msg, psMsg); err != nil {
+	if err := si.transformMessage(msg, psMsg); err != nil {
 		si.Terminate(err)
 		return
 	}
@@ -208,23 +258,13 @@ func (si *subscriberInstance) Wait(ctx context.Context) error {
 	return err
 }
 
-// MessageReceiverFunc handles messages sent by the Pub/Sub Lite service.
-//
-// The implementation must arrange for pubsub.Message.Ack() or
-// pubsub.Message.Nack() to be called after processing the message.
-//
-// The receiver func will be called from multiple goroutines if the subscriber
-// is connected to multiple partitions. Only one call from any connected
-// partition will be outstanding at a time, and blocking in this receiver
-// callback will block the delivery of subsequent messages for the partition.
-type MessageReceiverFunc func(context.Context, *pubsub.Message)
-
 // SubscriberClient is a Pub/Sub Lite client to receive messages for a given
 // subscription.
 //
 // See https://cloud.google.com/pubsub/lite/docs/subscribing for more
 // information about receiving messages.
 type SubscriberClient struct {
+	clientCtx      context.Context
 	settings       ReceiveSettings
 	wireSubFactory wireSubscriberFactory
 
@@ -236,7 +276,7 @@ type SubscriberClient struct {
 // NewSubscriberClient creates a new Pub/Sub Lite client to receive messages for
 // a given subscription, using DefaultReceiveSettings. A valid subscription path
 // has the format:
-// "projects/PROJECT_ID/locations/ZONE/subscriptions/SUBSCRIPTION_ID".
+// "projects/PROJECT_ID/locations/LOCATION/subscriptions/SUBSCRIPTION_ID".
 func NewSubscriberClient(ctx context.Context, subscription string, opts ...option.ClientOption) (*SubscriberClient, error) {
 	return NewSubscriberClientWithSettings(ctx, subscription, DefaultReceiveSettings, opts...)
 }
@@ -244,13 +284,13 @@ func NewSubscriberClient(ctx context.Context, subscription string, opts ...optio
 // NewSubscriberClientWithSettings creates a new Pub/Sub Lite client to receive
 // messages for a given subscription, using the specified ReceiveSettings. A
 // valid subscription path has the format:
-// "projects/PROJECT_ID/locations/ZONE/subscriptions/SUBSCRIPTION_ID".
+// "projects/PROJECT_ID/locations/LOCATION/subscriptions/SUBSCRIPTION_ID".
 func NewSubscriberClientWithSettings(ctx context.Context, subscription string, settings ReceiveSettings, opts ...option.ClientOption) (*SubscriberClient, error) {
 	subscriptionPath, err := wire.ParseSubscriptionPath(subscription)
 	if err != nil {
 		return nil, err
 	}
-	region, err := wire.ZoneToRegion(subscriptionPath.Zone)
+	region, err := wire.LocationToRegion(subscriptionPath.Location)
 	if err != nil {
 		return nil, err
 	}
@@ -261,6 +301,7 @@ func NewSubscriberClientWithSettings(ctx context.Context, subscription string, s
 		options:      opts,
 	}
 	subClient := &SubscriberClient{
+		clientCtx:      ctx,
 		settings:       settings,
 		wireSubFactory: factory,
 	}
@@ -272,32 +313,35 @@ func NewSubscriberClientWithSettings(ctx context.Context, subscription string, s
 //
 // The standard way to terminate a Receive is to cancel its context:
 //
-//   cctx, cancel := context.WithCancel(ctx)
-//   err := sub.Receive(cctx, callback)
-//   // Call cancel from callback, or another goroutine.
+//	cctx, cancel := context.WithCancel(ctx)
+//	err := sub.Receive(cctx, callback)
+//	// Call cancel from callback, or another goroutine.
 //
 // If there is a fatal service error, Receive returns that error after all of
 // the outstanding calls to f have returned. If ctx is done, Receive returns nil
 // after all of the outstanding calls to f have returned and all messages have
-// been acknowledged.
+// been acknowledged. The context passed to f will be canceled when ctx is Done
+// or there is a fatal service error.
 //
 // Receive calls f concurrently from multiple goroutines if the SubscriberClient
-// is connected to multiple partitions. All messages received by f must be ACKed
-// or NACKed. Failure to do so can prevent Receive from returning.
+// is connected to multiple partitions. Only one call from any connected
+// partition will be outstanding at a time, and blocking in the receiver
+// callback f will block the delivery of subsequent messages for the partition.
 //
-// The context passed to f will be canceled when ctx is Done or there is a fatal
-// service error.
+// All messages received by f must be ACKed or NACKed. Failure to do so can
+// prevent Receive from returning. Messages may be processed by the client
+// concurrently and ACKed asynchronously to increase throughput.
 //
 // Each SubscriberClient may have only one invocation of Receive active at a
 // time.
-func (s *SubscriberClient) Receive(ctx context.Context, f MessageReceiverFunc) error {
+func (s *SubscriberClient) Receive(ctx context.Context, f func(context.Context, *pubsub.Message)) error {
 	if err := s.setReceiveActive(true); err != nil {
 		return err
 	}
 	defer s.setReceiveActive(false)
 
 	// Initialize a subscriber instance.
-	subInstance, err := newSubscriberInstance(ctx, s.wireSubFactory, s.settings, f)
+	subInstance, err := newSubscriberInstance(ctx, s.clientCtx, s.wireSubFactory, s.settings, f)
 	if err != nil {
 		return err
 	}

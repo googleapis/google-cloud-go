@@ -16,6 +16,7 @@ package bigquery
 
 import (
 	"testing"
+	"time"
 
 	"cloud.google.com/go/internal/testutil"
 	"github.com/google/go-cmp/cmp"
@@ -83,10 +84,12 @@ func TestExtract(t *testing.T) {
 			config: ExtractConfig{
 				DisableHeader: true,
 				Labels:        map[string]string{"a": "b"},
+				JobTimeout:    8 * time.Second,
 			},
 			want: func() *bq.Job {
 				j := defaultExtractJob()
 				j.Configuration.Labels = map[string]string{"a": "b"}
+				j.Configuration.JobTimeoutMs = 8000
 				f := false
 				j.Configuration.Extract.PrintHeader = &f
 				return j

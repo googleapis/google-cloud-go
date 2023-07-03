@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,32 +19,60 @@ package recaptchaenterprise_test
 import (
 	"context"
 
-	recaptchaenterprise "cloud.google.com/go/recaptchaenterprise/apiv1beta1"
-	"google.golang.org/api/iterator"
-	recaptchaenterprisepb "google.golang.org/genproto/googleapis/cloud/recaptchaenterprise/v1beta1"
+	recaptchaenterprise "cloud.google.com/go/recaptchaenterprise/v2/apiv1beta1"
+	recaptchaenterprisepb "cloud.google.com/go/recaptchaenterprise/v2/apiv1beta1/recaptchaenterprisepb"
 )
 
 func ExampleNewRecaptchaEnterpriseServiceV1Beta1Client() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := recaptchaenterprise.NewRecaptchaEnterpriseServiceV1Beta1Client(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
+func ExampleNewRecaptchaEnterpriseServiceV1Beta1RESTClient() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := recaptchaenterprise.NewRecaptchaEnterpriseServiceV1Beta1RESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleRecaptchaEnterpriseServiceV1Beta1Client_CreateAssessment() {
-	// import recaptchaenterprisepb "google.golang.org/genproto/googleapis/cloud/recaptchaenterprise/v1beta1"
-
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := recaptchaenterprise.NewRecaptchaEnterpriseServiceV1Beta1Client(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &recaptchaenterprisepb.CreateAssessmentRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/recaptchaenterprise/v2/apiv1beta1/recaptchaenterprisepb#CreateAssessmentRequest.
 	}
 	resp, err := c.CreateAssessment(ctx, req)
 	if err != nil {
@@ -55,16 +83,21 @@ func ExampleRecaptchaEnterpriseServiceV1Beta1Client_CreateAssessment() {
 }
 
 func ExampleRecaptchaEnterpriseServiceV1Beta1Client_AnnotateAssessment() {
-	// import recaptchaenterprisepb "google.golang.org/genproto/googleapis/cloud/recaptchaenterprise/v1beta1"
-
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := recaptchaenterprise.NewRecaptchaEnterpriseServiceV1Beta1Client(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &recaptchaenterprisepb.AnnotateAssessmentRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/recaptchaenterprise/v2/apiv1beta1/recaptchaenterprisepb#AnnotateAssessmentRequest.
 	}
 	resp, err := c.AnnotateAssessment(ctx, req)
 	if err != nil {
@@ -72,107 +105,4 @@ func ExampleRecaptchaEnterpriseServiceV1Beta1Client_AnnotateAssessment() {
 	}
 	// TODO: Use resp.
 	_ = resp
-}
-
-func ExampleRecaptchaEnterpriseServiceV1Beta1Client_CreateKey() {
-	// import recaptchaenterprisepb "google.golang.org/genproto/googleapis/cloud/recaptchaenterprise/v1beta1"
-
-	ctx := context.Background()
-	c, err := recaptchaenterprise.NewRecaptchaEnterpriseServiceV1Beta1Client(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-
-	req := &recaptchaenterprisepb.CreateKeyRequest{
-		// TODO: Fill request struct fields.
-	}
-	resp, err := c.CreateKey(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleRecaptchaEnterpriseServiceV1Beta1Client_ListKeys() {
-	// import recaptchaenterprisepb "google.golang.org/genproto/googleapis/cloud/recaptchaenterprise/v1beta1"
-	// import "google.golang.org/api/iterator"
-
-	ctx := context.Background()
-	c, err := recaptchaenterprise.NewRecaptchaEnterpriseServiceV1Beta1Client(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-
-	req := &recaptchaenterprisepb.ListKeysRequest{
-		// TODO: Fill request struct fields.
-	}
-	it := c.ListKeys(ctx, req)
-	for {
-		resp, err := it.Next()
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			// TODO: Handle error.
-		}
-		// TODO: Use resp.
-		_ = resp
-	}
-}
-
-func ExampleRecaptchaEnterpriseServiceV1Beta1Client_GetKey() {
-	// import recaptchaenterprisepb "google.golang.org/genproto/googleapis/cloud/recaptchaenterprise/v1beta1"
-
-	ctx := context.Background()
-	c, err := recaptchaenterprise.NewRecaptchaEnterpriseServiceV1Beta1Client(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-
-	req := &recaptchaenterprisepb.GetKeyRequest{
-		// TODO: Fill request struct fields.
-	}
-	resp, err := c.GetKey(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleRecaptchaEnterpriseServiceV1Beta1Client_UpdateKey() {
-	// import recaptchaenterprisepb "google.golang.org/genproto/googleapis/cloud/recaptchaenterprise/v1beta1"
-
-	ctx := context.Background()
-	c, err := recaptchaenterprise.NewRecaptchaEnterpriseServiceV1Beta1Client(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-
-	req := &recaptchaenterprisepb.UpdateKeyRequest{
-		// TODO: Fill request struct fields.
-	}
-	resp, err := c.UpdateKey(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleRecaptchaEnterpriseServiceV1Beta1Client_DeleteKey() {
-	ctx := context.Background()
-	c, err := recaptchaenterprise.NewRecaptchaEnterpriseServiceV1Beta1Client(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-
-	req := &recaptchaenterprisepb.DeleteKeyRequest{
-		// TODO: Fill request struct fields.
-	}
-	err = c.DeleteKey(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
 }

@@ -14,12 +14,14 @@
 package pscompat
 
 import (
+	"log"
 	"time"
 
+	"cloud.google.com/go/internal/optional"
 	"cloud.google.com/go/pubsub"
 	"cloud.google.com/go/pubsublite/internal/wire"
 
-	pb "google.golang.org/genproto/googleapis/cloud/pubsublite/v1"
+	pb "cloud.google.com/go/pubsublite/apiv1/pubsublitepb"
 )
 
 const (
@@ -65,11 +67,19 @@ type PublishSettings struct {
 
 	// The maximum time that the client will attempt to open a publish stream
 	// to the server. If Timeout is 0, it will be treated as
-	// DefaultPublishSettings.Timeout. Otherwise must be > 0.
+	// DefaultPublishSettings.Timeout, otherwise will be clamped to 2 minutes. In
+	// the future, setting Timeout to less than 2 minutes will result in an error.
 	//
-	// The timeout is exceeded, the publisher will terminate with the last error
-	// that occurred while trying to reconnect. Note that if the timeout duration
-	// is long, ErrOverflow may occur first.
+	// If your application has a low tolerance to backend unavailability, set
+	// Timeout to a lower duration to detect and handle. When the timeout is
+	// exceeded, the PublisherClient will terminate with ErrBackendUnavailable and
+	// details of the last error that occurred while trying to reconnect to
+	// backends. Note that if the timeout duration is long, ErrOverflow may occur
+	// first.
+	//
+	// If no failover operations need to be performed by the application, it is
+	// recommended to just use the default timeout value to avoid the
+	// PublisherClient terminating during short periods of backend unavailability.
 	Timeout time.Duration
 
 	// The maximum number of bytes that the publisher will keep in memory before
@@ -88,6 +98,11 @@ type PublishSettings struct {
 	// information, see https://cloud.google.com/pubsub/lite/docs/topics.
 	BufferedByteLimit int
 
+	// Whether idempotence is enabled, where the server will ensure that unique
+	// messages within a single publisher session are stored only once. Default
+	// true.
+	EnableIdempotence optional.Bool
+
 	// Optional custom function that extracts an ordering key from a Message. The
 	// default implementation extracts the key from Message.OrderingKey.
 	KeyExtractor KeyExtractorFunc
@@ -95,6 +110,10 @@ type PublishSettings struct {
 	// Optional custom function that transforms a pubsub.Message to a
 	// PubSubMessage API proto.
 	MessageTransformer PublishMessageTransformerFunc
+
+	// The polling interval to watch for topic partition count updates.
+	// Currently internal only and overridden in tests.
+	configPollPeriod time.Duration
 }
 
 // DefaultPublishSettings holds the default values for PublishSettings.
@@ -102,8 +121,9 @@ var DefaultPublishSettings = PublishSettings{
 	DelayThreshold:    10 * time.Millisecond,
 	CountThreshold:    100,
 	ByteThreshold:     1e6,
-	Timeout:           60 * time.Second,
-	BufferedByteLimit: 1e8,
+	Timeout:           7 * 24 * time.Hour,
+	BufferedByteLimit: 1e10,
+	EnableIdempotence: true,
 }
 
 func (s *PublishSettings) toWireSettings() wire.PublishSettings {
@@ -113,6 +133,7 @@ func (s *PublishSettings) toWireSettings() wire.PublishSettings {
 		ByteThreshold:     DefaultPublishSettings.ByteThreshold,
 		Timeout:           DefaultPublishSettings.Timeout,
 		BufferedByteLimit: DefaultPublishSettings.BufferedByteLimit,
+		EnableIdempotence: wire.DefaultPublishSettings.EnableIdempotence,
 		ConfigPollPeriod:  wire.DefaultPublishSettings.ConfigPollPeriod,
 		Framework:         wire.FrameworkCloudPubSubShim,
 	}
@@ -127,10 +148,21 @@ func (s *PublishSettings) toWireSettings() wire.PublishSettings {
 		wireSettings.ByteThreshold = s.ByteThreshold
 	}
 	if s.Timeout != 0 {
-		wireSettings.Timeout = s.Timeout
+		if s.Timeout >= wire.MinTimeout {
+			wireSettings.Timeout = s.Timeout
+		} else {
+			log.Println("WARNING: PublishSettings.Timeout has been overridden to 2 minutes (the minimum value). A lower value will cause an error in the future.")
+			wireSettings.Timeout = wire.MinTimeout
+		}
 	}
 	if s.BufferedByteLimit != 0 {
 		wireSettings.BufferedByteLimit = s.BufferedByteLimit
+	}
+	if s.EnableIdempotence != nil {
+		wireSettings.EnableIdempotence = optional.ToBool(s.EnableIdempotence)
+	}
+	if s.configPollPeriod != 0 {
+		wireSettings.ConfigPollPeriod = s.configPollPeriod
 	}
 	return wireSettings
 }
@@ -146,9 +178,35 @@ func (s *PublishSettings) toWireSettings() wire.PublishSettings {
 type NackHandler func(*pubsub.Message) error
 
 // ReceiveMessageTransformerFunc transforms a Pub/Sub Lite SequencedMessage API
-// proto to a pubsub.Message. If this returns an error, the SubscriberClient
-// will consider this a fatal error and terminate.
+// proto to a pubsub.Message. The implementation must not set pubsub.Message.ID.
+//
+// If this returns an error, the SubscriberClient will consider this a fatal
+// error and terminate.
 type ReceiveMessageTransformerFunc func(*pb.SequencedMessage, *pubsub.Message) error
+
+// ReassignmentHandlerFunc is called any time a new partition assignment is
+// received from the server. It will be called with both the previous and new
+// partition numbers as decided by the server. Both slices of partition numbers
+// are sorted in ascending order.
+//
+// When this handler is called, partitions that are being assigned away are
+// stopping and new partitions are starting. Acks and nacks for messages from
+// partitions that are being assigned away will have no effect, but message
+// deliveries may still be in flight.
+//
+// The client library will not acknowledge the assignment until this handler
+// returns. The server will not assign any of the partitions in
+// `previousPartitions` to another client unless the assignment is acknowledged,
+// or a client takes too long to acknowledge (currently 30 seconds from the time
+// the assignment is sent from server's point of view).
+//
+// Because of the above, as long as reassignment handling is processed quickly,
+// it can be used to abort outstanding operations on partitions which are being
+// assigned away from this client.
+//
+// If this handler returns an error, the SubscriberClient will consider this a
+// fatal error and terminate.
+type ReassignmentHandlerFunc func(previousPartitions, nextPartitions []int) error
 
 // ReceiveSettings configure the SubscriberClient. Flow control settings
 // (MaxOutstandingMessages, MaxOutstandingBytes) apply per partition.
@@ -172,10 +230,19 @@ type ReceiveSettings struct {
 
 	// The maximum time that the client will attempt to open a subscribe stream
 	// to the server. If Timeout is 0, it will be treated as
-	// DefaultReceiveSettings.Timeout. Otherwise must be > 0.
+	// DefaultReceiveSettings.Timeout, otherwise will be clamped to 2 minutes. In
+	// the future, setting Timeout to less than 2 minutes will result in an error.
 	//
-	// The timeout is exceeded, the SubscriberClient will terminate with the last
-	// error that occurred while trying to reconnect.
+	// If your application has a low tolerance to backend unavailability, set
+	// Timeout to a lower duration to detect and handle. When the timeout is
+	// exceeded, the SubscriberClient will terminate with ErrBackendUnavailable
+	// and details of the last error that occurred while trying to reconnect to
+	// backends.
+	//
+	// If no failover operations need to be performed by the application, it is
+	// recommended to just use the default timeout value to avoid the
+	// SubscriberClient terminating during short periods of backend
+	// unavailability.
 	Timeout time.Duration
 
 	// The topic partition numbers (zero-indexed) to receive messages from.
@@ -191,13 +258,17 @@ type ReceiveSettings struct {
 	// Optional custom function that transforms a SequencedMessage API proto to a
 	// pubsub.Message.
 	MessageTransformer ReceiveMessageTransformerFunc
+
+	// Optional custom function that is called when a new partition assignment has
+	// been delivered to the client.
+	ReassignmentHandler ReassignmentHandlerFunc
 }
 
 // DefaultReceiveSettings holds the default values for ReceiveSettings.
 var DefaultReceiveSettings = ReceiveSettings{
 	MaxOutstandingMessages: 1000,
 	MaxOutstandingBytes:    1e9,
-	Timeout:                60 * time.Second,
+	Timeout:                7 * 24 * time.Hour,
 }
 
 func (s *ReceiveSettings) toWireSettings() wire.ReceiveSettings {
@@ -216,7 +287,12 @@ func (s *ReceiveSettings) toWireSettings() wire.ReceiveSettings {
 		wireSettings.MaxOutstandingBytes = s.MaxOutstandingBytes
 	}
 	if s.Timeout != 0 {
-		wireSettings.Timeout = s.Timeout
+		if s.Timeout >= wire.MinTimeout {
+			wireSettings.Timeout = s.Timeout
+		} else {
+			log.Println("WARNING: ReceiveSettings.Timeout has been overridden to 2 minutes (the minimum value). A lower value will cause an error in the future.")
+			wireSettings.Timeout = wire.MinTimeout
+		}
 	}
 	return wireSettings
 }

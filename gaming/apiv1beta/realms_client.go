@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,25 +17,31 @@
 package gaming
 
 import (
+	"bytes"
 	"context"
 	"fmt"
+	"io/ioutil"
 	"math"
+	"net/http"
 	"net/url"
 	"time"
 
+	gamingpb "cloud.google.com/go/gaming/apiv1beta/gamingpb"
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
-	"github.com/golang/protobuf/proto"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
-	gamingpb "google.golang.org/genproto/googleapis/cloud/gaming/v1beta"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
+	httptransport "google.golang.org/api/transport/http"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/protobuf/encoding/protojson"
+	"google.golang.org/protobuf/proto"
 )
 
 var newRealmsClientHook clientHook
@@ -50,13 +56,13 @@ type RealmsCallOptions struct {
 	PreviewRealmUpdate []gax.CallOption
 }
 
-func defaultRealmsClientOptions() []option.ClientOption {
+func defaultRealmsGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("gameservices.googleapis.com:443"),
 		internaloption.WithDefaultMTLSEndpoint("gameservices.mtls.googleapis.com:443"),
 		internaloption.WithDefaultAudience("https://gameservices.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
-		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
+		internaloption.EnableJwtWithScope(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -65,6 +71,7 @@ func defaultRealmsClientOptions() []option.ClientOption {
 func defaultRealmsCallOptions() *RealmsCallOptions {
 	return &RealmsCallOptions{
 		ListRealms: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -76,6 +83,7 @@ func defaultRealmsCallOptions() *RealmsCallOptions {
 			}),
 		},
 		GetRealm: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -86,10 +94,17 @@ func defaultRealmsCallOptions() *RealmsCallOptions {
 				})
 			}),
 		},
-		CreateRealm: []gax.CallOption{},
-		DeleteRealm: []gax.CallOption{},
-		UpdateRealm: []gax.CallOption{},
+		CreateRealm: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteRealm: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateRealm: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		PreviewRealmUpdate: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -103,38 +118,187 @@ func defaultRealmsCallOptions() *RealmsCallOptions {
 	}
 }
 
-// RealmsClient is a client for interacting with .
+func defaultRealmsRESTCallOptions() *RealmsCallOptions {
+	return &RealmsCallOptions{
+		ListRealms: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		GetRealm: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		CreateRealm: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteRealm: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateRealm: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		PreviewRealmUpdate: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+	}
+}
+
+// internalRealmsClient is an interface that defines the methods available from Game Services API.
+type internalRealmsClient interface {
+	Close() error
+	setGoogleClientInfo(...string)
+	Connection() *grpc.ClientConn
+	ListRealms(context.Context, *gamingpb.ListRealmsRequest, ...gax.CallOption) *RealmIterator
+	GetRealm(context.Context, *gamingpb.GetRealmRequest, ...gax.CallOption) (*gamingpb.Realm, error)
+	CreateRealm(context.Context, *gamingpb.CreateRealmRequest, ...gax.CallOption) (*CreateRealmOperation, error)
+	CreateRealmOperation(name string) *CreateRealmOperation
+	DeleteRealm(context.Context, *gamingpb.DeleteRealmRequest, ...gax.CallOption) (*DeleteRealmOperation, error)
+	DeleteRealmOperation(name string) *DeleteRealmOperation
+	UpdateRealm(context.Context, *gamingpb.UpdateRealmRequest, ...gax.CallOption) (*UpdateRealmOperation, error)
+	UpdateRealmOperation(name string) *UpdateRealmOperation
+	PreviewRealmUpdate(context.Context, *gamingpb.PreviewRealmUpdateRequest, ...gax.CallOption) (*gamingpb.PreviewRealmUpdateResponse, error)
+}
+
+// RealmsClient is a client for interacting with Game Services API.
+// Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
+//
+// A realm is a grouping of game server clusters that are considered
+// interchangeable.
+type RealmsClient struct {
+	// The internal transport-dependent client.
+	internalClient internalRealmsClient
+
+	// The call options for this service.
+	CallOptions *RealmsCallOptions
+
+	// LROClient is used internally to handle long-running operations.
+	// It is exposed so that its CallOptions can be modified if required.
+	// Users should not Close this client.
+	LROClient *lroauto.OperationsClient
+}
+
+// Wrapper methods routed to the internal client.
+
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *RealmsClient) Close() error {
+	return c.internalClient.Close()
+}
+
+// setGoogleClientInfo sets the name and version of the application in
+// the `x-goog-api-client` header passed on each request. Intended for
+// use by Google-written clients.
+func (c *RealmsClient) setGoogleClientInfo(keyval ...string) {
+	c.internalClient.setGoogleClientInfo(keyval...)
+}
+
+// Connection returns a connection to the API service.
+//
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
+func (c *RealmsClient) Connection() *grpc.ClientConn {
+	return c.internalClient.Connection()
+}
+
+// ListRealms lists realms in a given project and location.
+func (c *RealmsClient) ListRealms(ctx context.Context, req *gamingpb.ListRealmsRequest, opts ...gax.CallOption) *RealmIterator {
+	return c.internalClient.ListRealms(ctx, req, opts...)
+}
+
+// GetRealm gets details of a single realm.
+func (c *RealmsClient) GetRealm(ctx context.Context, req *gamingpb.GetRealmRequest, opts ...gax.CallOption) (*gamingpb.Realm, error) {
+	return c.internalClient.GetRealm(ctx, req, opts...)
+}
+
+// CreateRealm creates a new realm in a given project and location.
+func (c *RealmsClient) CreateRealm(ctx context.Context, req *gamingpb.CreateRealmRequest, opts ...gax.CallOption) (*CreateRealmOperation, error) {
+	return c.internalClient.CreateRealm(ctx, req, opts...)
+}
+
+// CreateRealmOperation returns a new CreateRealmOperation from a given name.
+// The name must be that of a previously created CreateRealmOperation, possibly from a different process.
+func (c *RealmsClient) CreateRealmOperation(name string) *CreateRealmOperation {
+	return c.internalClient.CreateRealmOperation(name)
+}
+
+// DeleteRealm deletes a single realm.
+func (c *RealmsClient) DeleteRealm(ctx context.Context, req *gamingpb.DeleteRealmRequest, opts ...gax.CallOption) (*DeleteRealmOperation, error) {
+	return c.internalClient.DeleteRealm(ctx, req, opts...)
+}
+
+// DeleteRealmOperation returns a new DeleteRealmOperation from a given name.
+// The name must be that of a previously created DeleteRealmOperation, possibly from a different process.
+func (c *RealmsClient) DeleteRealmOperation(name string) *DeleteRealmOperation {
+	return c.internalClient.DeleteRealmOperation(name)
+}
+
+// UpdateRealm patches a single realm.
+func (c *RealmsClient) UpdateRealm(ctx context.Context, req *gamingpb.UpdateRealmRequest, opts ...gax.CallOption) (*UpdateRealmOperation, error) {
+	return c.internalClient.UpdateRealm(ctx, req, opts...)
+}
+
+// UpdateRealmOperation returns a new UpdateRealmOperation from a given name.
+// The name must be that of a previously created UpdateRealmOperation, possibly from a different process.
+func (c *RealmsClient) UpdateRealmOperation(name string) *UpdateRealmOperation {
+	return c.internalClient.UpdateRealmOperation(name)
+}
+
+// PreviewRealmUpdate previews patches to a single realm.
+func (c *RealmsClient) PreviewRealmUpdate(ctx context.Context, req *gamingpb.PreviewRealmUpdateRequest, opts ...gax.CallOption) (*gamingpb.PreviewRealmUpdateResponse, error) {
+	return c.internalClient.PreviewRealmUpdate(ctx, req, opts...)
+}
+
+// realmsGRPCClient is a client for interacting with Game Services API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
-type RealmsClient struct {
+type realmsGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
+	// Points back to the CallOptions field of the containing RealmsClient
+	CallOptions **RealmsCallOptions
 
 	// The gRPC API client.
 	realmsClient gamingpb.RealmsServiceClient
 
-	// LROClient is used internally to handle longrunning operations.
+	// LROClient is used internally to handle long-running operations.
 	// It is exposed so that its CallOptions can be modified if required.
 	// Users should not Close this client.
-	LROClient *lroauto.OperationsClient
-
-	// The call options for this service.
-	CallOptions *RealmsCallOptions
+	LROClient **lroauto.OperationsClient
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
 }
 
-// NewRealmsClient creates a new realms service client.
+// NewRealmsClient creates a new realms service client based on gRPC.
+// The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
 // A realm is a grouping of game server clusters that are considered
 // interchangeable.
 func NewRealmsClient(ctx context.Context, opts ...option.ClientOption) (*RealmsClient, error) {
-	clientOpts := defaultRealmsClientOptions()
-
+	clientOpts := defaultRealmsGRPCClientOptions()
 	if newRealmsClientHook != nil {
 		hookOpts, err := newRealmsClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -143,25 +307,22 @@ func NewRealmsClient(ctx context.Context, opts ...option.ClientOption) (*RealmsC
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
 	}
-	c := &RealmsClient{
-		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
-		CallOptions:      defaultRealmsCallOptions(),
+	client := RealmsClient{CallOptions: defaultRealmsCallOptions()}
 
+	c := &realmsGRPCClient{
+		connPool:     connPool,
 		realmsClient: gamingpb.NewRealmsServiceClient(connPool),
+		CallOptions:  &client.CallOptions,
 	}
 	c.setGoogleClientInfo()
 
-	c.LROClient, err = lroauto.NewOperationsClient(ctx, gtransport.WithConnPool(connPool))
+	client.internalClient = c
+
+	client.LROClient, err = lroauto.NewOperationsClient(ctx, gtransport.WithConnPool(connPool))
 	if err != nil {
 		// This error "should not happen", since we are just reusing old connection pool
 		// and never actually need to dial.
@@ -171,44 +332,132 @@ func NewRealmsClient(ctx context.Context, opts ...option.ClientOption) (*RealmsC
 		// TODO: investigate error conditions.
 		return nil, err
 	}
-	return c, nil
+	c.LROClient = &client.LROClient
+	return &client, nil
 }
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
-func (c *RealmsClient) Connection() *grpc.ClientConn {
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
+func (c *realmsGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
-}
-
-// Close closes the connection to the API service. The user should invoke this when
-// the client is no longer required.
-func (c *RealmsClient) Close() error {
-	return c.connPool.Close()
 }
 
 // setGoogleClientInfo sets the name and version of the application in
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
-func (c *RealmsClient) setGoogleClientInfo(keyval ...string) {
+func (c *realmsGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
-// ListRealms lists realms in a given project and location.
-func (c *RealmsClient) ListRealms(ctx context.Context, req *gamingpb.ListRealmsRequest, opts ...gax.CallOption) *RealmIterator {
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *realmsGRPCClient) Close() error {
+	return c.connPool.Close()
+}
+
+// Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
+type realmsRESTClient struct {
+	// The http endpoint to connect to.
+	endpoint string
+
+	// The http client.
+	httpClient *http.Client
+
+	// LROClient is used internally to handle long-running operations.
+	// It is exposed so that its CallOptions can be modified if required.
+	// Users should not Close this client.
+	LROClient **lroauto.OperationsClient
+
+	// The x-goog-* metadata to be sent with each request.
+	xGoogMetadata metadata.MD
+
+	// Points back to the CallOptions field of the containing RealmsClient
+	CallOptions **RealmsCallOptions
+}
+
+// NewRealmsRESTClient creates a new realms service rest client.
+//
+// A realm is a grouping of game server clusters that are considered
+// interchangeable.
+func NewRealmsRESTClient(ctx context.Context, opts ...option.ClientOption) (*RealmsClient, error) {
+	clientOpts := append(defaultRealmsRESTClientOptions(), opts...)
+	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
+	if err != nil {
+		return nil, err
+	}
+
+	callOpts := defaultRealmsRESTCallOptions()
+	c := &realmsRESTClient{
+		endpoint:    endpoint,
+		httpClient:  httpClient,
+		CallOptions: &callOpts,
+	}
+	c.setGoogleClientInfo()
+
+	lroOpts := []option.ClientOption{
+		option.WithHTTPClient(httpClient),
+		option.WithEndpoint(endpoint),
+	}
+	opClient, err := lroauto.NewOperationsRESTClient(ctx, lroOpts...)
+	if err != nil {
+		return nil, err
+	}
+	c.LROClient = &opClient
+
+	return &RealmsClient{internalClient: c, CallOptions: callOpts}, nil
+}
+
+func defaultRealmsRESTClientOptions() []option.ClientOption {
+	return []option.ClientOption{
+		internaloption.WithDefaultEndpoint("https://gameservices.googleapis.com"),
+		internaloption.WithDefaultMTLSEndpoint("https://gameservices.mtls.googleapis.com"),
+		internaloption.WithDefaultAudience("https://gameservices.googleapis.com/"),
+		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+	}
+}
+
+// setGoogleClientInfo sets the name and version of the application in
+// the `x-goog-api-client` header passed on each request. Intended for
+// use by Google-written clients.
+func (c *realmsRESTClient) setGoogleClientInfo(keyval ...string) {
+	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
+	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+}
+
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *realmsRESTClient) Close() error {
+	// Replace httpClient with nil to force cleanup.
+	c.httpClient = nil
+	return nil
+}
+
+// Connection returns a connection to the API service.
+//
+// Deprecated: This method always returns nil.
+func (c *realmsRESTClient) Connection() *grpc.ClientConn {
+	return nil
+}
+func (c *realmsGRPCClient) ListRealms(ctx context.Context, req *gamingpb.ListRealmsRequest, opts ...gax.CallOption) *RealmIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ListRealms[0:len(c.CallOptions.ListRealms):len(c.CallOptions.ListRealms)], opts...)
+	opts = append((*c.CallOptions).ListRealms[0:len((*c.CallOptions).ListRealms):len((*c.CallOptions).ListRealms)], opts...)
 	it := &RealmIterator{}
 	req = proto.Clone(req).(*gamingpb.ListRealmsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*gamingpb.Realm, string, error) {
-		var resp *gamingpb.ListRealmsResponse
-		req.PageToken = pageToken
+		resp := &gamingpb.ListRealmsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -231,22 +480,19 @@ func (c *RealmsClient) ListRealms(ctx context.Context, req *gamingpb.ListRealmsR
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
-// GetRealm gets details of a single realm.
-func (c *RealmsClient) GetRealm(ctx context.Context, req *gamingpb.GetRealmRequest, opts ...gax.CallOption) (*gamingpb.Realm, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
+func (c *realmsGRPCClient) GetRealm(ctx context.Context, req *gamingpb.GetRealmRequest, opts ...gax.CallOption) (*gamingpb.Realm, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GetRealm[0:len(c.CallOptions.GetRealm):len(c.CallOptions.GetRealm)], opts...)
+	opts = append((*c.CallOptions).GetRealm[0:len((*c.CallOptions).GetRealm):len((*c.CallOptions).GetRealm)], opts...)
 	var resp *gamingpb.Realm
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -259,16 +505,11 @@ func (c *RealmsClient) GetRealm(ctx context.Context, req *gamingpb.GetRealmReque
 	return resp, nil
 }
 
-// CreateRealm creates a new realm in a given project and location.
-func (c *RealmsClient) CreateRealm(ctx context.Context, req *gamingpb.CreateRealmRequest, opts ...gax.CallOption) (*CreateRealmOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
+func (c *realmsGRPCClient) CreateRealm(ctx context.Context, req *gamingpb.CreateRealmRequest, opts ...gax.CallOption) (*CreateRealmOperation, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.CreateRealm[0:len(c.CallOptions.CreateRealm):len(c.CallOptions.CreateRealm)], opts...)
+	opts = append((*c.CallOptions).CreateRealm[0:len((*c.CallOptions).CreateRealm):len((*c.CallOptions).CreateRealm)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -279,20 +520,15 @@ func (c *RealmsClient) CreateRealm(ctx context.Context, req *gamingpb.CreateReal
 		return nil, err
 	}
 	return &CreateRealmOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// DeleteRealm deletes a single realm.
-func (c *RealmsClient) DeleteRealm(ctx context.Context, req *gamingpb.DeleteRealmRequest, opts ...gax.CallOption) (*DeleteRealmOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
+func (c *realmsGRPCClient) DeleteRealm(ctx context.Context, req *gamingpb.DeleteRealmRequest, opts ...gax.CallOption) (*DeleteRealmOperation, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.DeleteRealm[0:len(c.CallOptions.DeleteRealm):len(c.CallOptions.DeleteRealm)], opts...)
+	opts = append((*c.CallOptions).DeleteRealm[0:len((*c.CallOptions).DeleteRealm):len((*c.CallOptions).DeleteRealm)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -303,20 +539,15 @@ func (c *RealmsClient) DeleteRealm(ctx context.Context, req *gamingpb.DeleteReal
 		return nil, err
 	}
 	return &DeleteRealmOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// UpdateRealm patches a single realm.
-func (c *RealmsClient) UpdateRealm(ctx context.Context, req *gamingpb.UpdateRealmRequest, opts ...gax.CallOption) (*UpdateRealmOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
+func (c *realmsGRPCClient) UpdateRealm(ctx context.Context, req *gamingpb.UpdateRealmRequest, opts ...gax.CallOption) (*UpdateRealmOperation, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "realm.name", url.QueryEscape(req.GetRealm().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.UpdateRealm[0:len(c.CallOptions.UpdateRealm):len(c.CallOptions.UpdateRealm)], opts...)
+	opts = append((*c.CallOptions).UpdateRealm[0:len((*c.CallOptions).UpdateRealm):len((*c.CallOptions).UpdateRealm)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -327,20 +558,15 @@ func (c *RealmsClient) UpdateRealm(ctx context.Context, req *gamingpb.UpdateReal
 		return nil, err
 	}
 	return &UpdateRealmOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// PreviewRealmUpdate previews patches to a single realm.
-func (c *RealmsClient) PreviewRealmUpdate(ctx context.Context, req *gamingpb.PreviewRealmUpdateRequest, opts ...gax.CallOption) (*gamingpb.PreviewRealmUpdateResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
+func (c *realmsGRPCClient) PreviewRealmUpdate(ctx context.Context, req *gamingpb.PreviewRealmUpdateRequest, opts ...gax.CallOption) (*gamingpb.PreviewRealmUpdateResponse, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "realm.name", url.QueryEscape(req.GetRealm().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.PreviewRealmUpdate[0:len(c.CallOptions.PreviewRealmUpdate):len(c.CallOptions.PreviewRealmUpdate)], opts...)
+	opts = append((*c.CallOptions).PreviewRealmUpdate[0:len((*c.CallOptions).PreviewRealmUpdate):len((*c.CallOptions).PreviewRealmUpdate)], opts...)
 	var resp *gamingpb.PreviewRealmUpdateResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -353,16 +579,466 @@ func (c *RealmsClient) PreviewRealmUpdate(ctx context.Context, req *gamingpb.Pre
 	return resp, nil
 }
 
+// ListRealms lists realms in a given project and location.
+func (c *realmsRESTClient) ListRealms(ctx context.Context, req *gamingpb.ListRealmsRequest, opts ...gax.CallOption) *RealmIterator {
+	it := &RealmIterator{}
+	req = proto.Clone(req).(*gamingpb.ListRealmsRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*gamingpb.Realm, string, error) {
+		resp := &gamingpb.ListRealmsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1beta/%v/realms", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req.GetOrderBy() != "" {
+			params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))
+		}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			httpRsp, err := c.httpClient.Do(httpReq)
+			if err != nil {
+				return err
+			}
+			defer httpRsp.Body.Close()
+
+			if err = googleapi.CheckResponse(httpRsp); err != nil {
+				return err
+			}
+
+			buf, err := ioutil.ReadAll(httpRsp.Body)
+			if err != nil {
+				return err
+			}
+
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return maybeUnknownEnum(err)
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetRealms(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// GetRealm gets details of a single realm.
+func (c *realmsRESTClient) GetRealm(ctx context.Context, req *gamingpb.GetRealmRequest, opts ...gax.CallOption) (*gamingpb.Realm, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).GetRealm[0:len((*c.CallOptions).GetRealm):len((*c.CallOptions).GetRealm)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &gamingpb.Realm{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// CreateRealm creates a new realm in a given project and location.
+func (c *realmsRESTClient) CreateRealm(ctx context.Context, req *gamingpb.CreateRealmRequest, opts ...gax.CallOption) (*CreateRealmOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetRealm()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta/%v/realms", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	params.Add("realmId", fmt.Sprintf("%v", req.GetRealmId()))
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1beta/%s", resp.GetName())
+	return &CreateRealmOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// DeleteRealm deletes a single realm.
+func (c *realmsRESTClient) DeleteRealm(ctx context.Context, req *gamingpb.DeleteRealmRequest, opts ...gax.CallOption) (*DeleteRealmOperation, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1beta/%s", resp.GetName())
+	return &DeleteRealmOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// UpdateRealm patches a single realm.
+func (c *realmsRESTClient) UpdateRealm(ctx context.Context, req *gamingpb.UpdateRealmRequest, opts ...gax.CallOption) (*UpdateRealmOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetRealm()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta/%v", req.GetRealm().GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetUpdateMask() != nil {
+		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(updateMask))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "realm.name", url.QueryEscape(req.GetRealm().GetName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1beta/%s", resp.GetName())
+	return &UpdateRealmOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// PreviewRealmUpdate previews patches to a single realm.
+func (c *realmsRESTClient) PreviewRealmUpdate(ctx context.Context, req *gamingpb.PreviewRealmUpdateRequest, opts ...gax.CallOption) (*gamingpb.PreviewRealmUpdateResponse, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetRealm()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta/%v:previewUpdate", req.GetRealm().GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetPreviewTime() != nil {
+		previewTime, err := protojson.Marshal(req.GetPreviewTime())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("previewTime", string(previewTime))
+	}
+	if req.GetUpdateMask() != nil {
+		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(updateMask))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "realm.name", url.QueryEscape(req.GetRealm().GetName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).PreviewRealmUpdate[0:len((*c.CallOptions).PreviewRealmUpdate):len((*c.CallOptions).PreviewRealmUpdate)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &gamingpb.PreviewRealmUpdateResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
 // CreateRealmOperation manages a long-running operation from CreateRealm.
 type CreateRealmOperation struct {
-	lro *longrunning.Operation
+	lro      *longrunning.Operation
+	pollPath string
 }
 
 // CreateRealmOperation returns a new CreateRealmOperation from a given name.
 // The name must be that of a previously created CreateRealmOperation, possibly from a different process.
-func (c *RealmsClient) CreateRealmOperation(name string) *CreateRealmOperation {
+func (c *realmsGRPCClient) CreateRealmOperation(name string) *CreateRealmOperation {
 	return &CreateRealmOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// CreateRealmOperation returns a new CreateRealmOperation from a given name.
+// The name must be that of a previously created CreateRealmOperation, possibly from a different process.
+func (c *realmsRESTClient) CreateRealmOperation(name string) *CreateRealmOperation {
+	override := fmt.Sprintf("/v1beta/%s", name)
+	return &CreateRealmOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
 	}
 }
 
@@ -370,6 +1046,7 @@ func (c *RealmsClient) CreateRealmOperation(name string) *CreateRealmOperation {
 //
 // See documentation of Poll for error-handling information.
 func (op *CreateRealmOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*gamingpb.Realm, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
 	var resp gamingpb.Realm
 	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
 		return nil, err
@@ -387,6 +1064,7 @@ func (op *CreateRealmOperation) Wait(ctx context.Context, opts ...gax.CallOption
 // op.Done will return true, and the response of the operation is returned.
 // If Poll succeeds and the operation has not completed, the returned response and error are both nil.
 func (op *CreateRealmOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*gamingpb.Realm, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
 	var resp gamingpb.Realm
 	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
 		return nil, err
@@ -424,14 +1102,25 @@ func (op *CreateRealmOperation) Name() string {
 
 // DeleteRealmOperation manages a long-running operation from DeleteRealm.
 type DeleteRealmOperation struct {
-	lro *longrunning.Operation
+	lro      *longrunning.Operation
+	pollPath string
 }
 
 // DeleteRealmOperation returns a new DeleteRealmOperation from a given name.
 // The name must be that of a previously created DeleteRealmOperation, possibly from a different process.
-func (c *RealmsClient) DeleteRealmOperation(name string) *DeleteRealmOperation {
+func (c *realmsGRPCClient) DeleteRealmOperation(name string) *DeleteRealmOperation {
 	return &DeleteRealmOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// DeleteRealmOperation returns a new DeleteRealmOperation from a given name.
+// The name must be that of a previously created DeleteRealmOperation, possibly from a different process.
+func (c *realmsRESTClient) DeleteRealmOperation(name string) *DeleteRealmOperation {
+	override := fmt.Sprintf("/v1beta/%s", name)
+	return &DeleteRealmOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
 	}
 }
 
@@ -439,6 +1128,7 @@ func (c *RealmsClient) DeleteRealmOperation(name string) *DeleteRealmOperation {
 //
 // See documentation of Poll for error-handling information.
 func (op *DeleteRealmOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
 	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
 }
 
@@ -452,6 +1142,7 @@ func (op *DeleteRealmOperation) Wait(ctx context.Context, opts ...gax.CallOption
 // op.Done will return true, and the response of the operation is returned.
 // If Poll succeeds and the operation has not completed, the returned response and error are both nil.
 func (op *DeleteRealmOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
 	return op.lro.Poll(ctx, nil, opts...)
 }
 
@@ -482,14 +1173,25 @@ func (op *DeleteRealmOperation) Name() string {
 
 // UpdateRealmOperation manages a long-running operation from UpdateRealm.
 type UpdateRealmOperation struct {
-	lro *longrunning.Operation
+	lro      *longrunning.Operation
+	pollPath string
 }
 
 // UpdateRealmOperation returns a new UpdateRealmOperation from a given name.
 // The name must be that of a previously created UpdateRealmOperation, possibly from a different process.
-func (c *RealmsClient) UpdateRealmOperation(name string) *UpdateRealmOperation {
+func (c *realmsGRPCClient) UpdateRealmOperation(name string) *UpdateRealmOperation {
 	return &UpdateRealmOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// UpdateRealmOperation returns a new UpdateRealmOperation from a given name.
+// The name must be that of a previously created UpdateRealmOperation, possibly from a different process.
+func (c *realmsRESTClient) UpdateRealmOperation(name string) *UpdateRealmOperation {
+	override := fmt.Sprintf("/v1beta/%s", name)
+	return &UpdateRealmOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
 	}
 }
 
@@ -497,6 +1199,7 @@ func (c *RealmsClient) UpdateRealmOperation(name string) *UpdateRealmOperation {
 //
 // See documentation of Poll for error-handling information.
 func (op *UpdateRealmOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*gamingpb.Realm, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
 	var resp gamingpb.Realm
 	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
 		return nil, err
@@ -514,6 +1217,7 @@ func (op *UpdateRealmOperation) Wait(ctx context.Context, opts ...gax.CallOption
 // op.Done will return true, and the response of the operation is returned.
 // If Poll succeeds and the operation has not completed, the returned response and error are both nil.
 func (op *UpdateRealmOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*gamingpb.Realm, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
 	var resp gamingpb.Realm
 	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
 		return nil, err

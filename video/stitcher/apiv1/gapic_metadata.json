@@ -1,0 +1,118 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.video.stitcher.v1",
+  "libraryPackage": "cloud.google.com/go/video/stitcher/apiv1",
+  "services": {
+    "VideoStitcherService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "VideoStitcherClient",
+          "rpcs": {
+            "CreateCdnKey": {
+              "methods": [
+                "CreateCdnKey"
+              ]
+            },
+            "CreateLiveSession": {
+              "methods": [
+                "CreateLiveSession"
+              ]
+            },
+            "CreateSlate": {
+              "methods": [
+                "CreateSlate"
+              ]
+            },
+            "CreateVodSession": {
+              "methods": [
+                "CreateVodSession"
+              ]
+            },
+            "DeleteCdnKey": {
+              "methods": [
+                "DeleteCdnKey"
+              ]
+            },
+            "DeleteSlate": {
+              "methods": [
+                "DeleteSlate"
+              ]
+            },
+            "GetCdnKey": {
+              "methods": [
+                "GetCdnKey"
+              ]
+            },
+            "GetLiveAdTagDetail": {
+              "methods": [
+                "GetLiveAdTagDetail"
+              ]
+            },
+            "GetLiveSession": {
+              "methods": [
+                "GetLiveSession"
+              ]
+            },
+            "GetSlate": {
+              "methods": [
+                "GetSlate"
+              ]
+            },
+            "GetVodAdTagDetail": {
+              "methods": [
+                "GetVodAdTagDetail"
+              ]
+            },
+            "GetVodSession": {
+              "methods": [
+                "GetVodSession"
+              ]
+            },
+            "GetVodStitchDetail": {
+              "methods": [
+                "GetVodStitchDetail"
+              ]
+            },
+            "ListCdnKeys": {
+              "methods": [
+                "ListCdnKeys"
+              ]
+            },
+            "ListLiveAdTagDetails": {
+              "methods": [
+                "ListLiveAdTagDetails"
+              ]
+            },
+            "ListSlates": {
+              "methods": [
+                "ListSlates"
+              ]
+            },
+            "ListVodAdTagDetails": {
+              "methods": [
+                "ListVodAdTagDetails"
+              ]
+            },
+            "ListVodStitchDetails": {
+              "methods": [
+                "ListVodStitchDetails"
+              ]
+            },
+            "UpdateCdnKey": {
+              "methods": [
+                "UpdateCdnKey"
+              ]
+            },
+            "UpdateSlate": {
+              "methods": [
+                "UpdateSlate"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

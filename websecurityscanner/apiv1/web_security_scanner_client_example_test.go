@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,31 +20,60 @@ import (
 	"context"
 
 	websecurityscanner "cloud.google.com/go/websecurityscanner/apiv1"
+	websecurityscannerpb "cloud.google.com/go/websecurityscanner/apiv1/websecurityscannerpb"
 	"google.golang.org/api/iterator"
-	websecurityscannerpb "google.golang.org/genproto/googleapis/cloud/websecurityscanner/v1"
 )
 
 func ExampleNewClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := websecurityscanner.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
+func ExampleNewRESTClient() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := websecurityscanner.NewRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleClient_CreateScanConfig() {
-	// import websecurityscannerpb "google.golang.org/genproto/googleapis/cloud/websecurityscanner/v1"
-
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := websecurityscanner.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &websecurityscannerpb.CreateScanConfigRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/websecurityscanner/apiv1/websecurityscannerpb#CreateScanConfigRequest.
 	}
 	resp, err := c.CreateScanConfig(ctx, req)
 	if err != nil {
@@ -56,13 +85,20 @@ func ExampleClient_CreateScanConfig() {
 
 func ExampleClient_DeleteScanConfig() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := websecurityscanner.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &websecurityscannerpb.DeleteScanConfigRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/websecurityscanner/apiv1/websecurityscannerpb#DeleteScanConfigRequest.
 	}
 	err = c.DeleteScanConfig(ctx, req)
 	if err != nil {
@@ -71,16 +107,21 @@ func ExampleClient_DeleteScanConfig() {
 }
 
 func ExampleClient_GetScanConfig() {
-	// import websecurityscannerpb "google.golang.org/genproto/googleapis/cloud/websecurityscanner/v1"
-
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := websecurityscanner.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &websecurityscannerpb.GetScanConfigRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/websecurityscanner/apiv1/websecurityscannerpb#GetScanConfigRequest.
 	}
 	resp, err := c.GetScanConfig(ctx, req)
 	if err != nil {
@@ -91,17 +132,21 @@ func ExampleClient_GetScanConfig() {
 }
 
 func ExampleClient_ListScanConfigs() {
-	// import websecurityscannerpb "google.golang.org/genproto/googleapis/cloud/websecurityscanner/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := websecurityscanner.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &websecurityscannerpb.ListScanConfigsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/websecurityscanner/apiv1/websecurityscannerpb#ListScanConfigsRequest.
 	}
 	it := c.ListScanConfigs(ctx, req)
 	for {
@@ -118,16 +163,21 @@ func ExampleClient_ListScanConfigs() {
 }
 
 func ExampleClient_UpdateScanConfig() {
-	// import websecurityscannerpb "google.golang.org/genproto/googleapis/cloud/websecurityscanner/v1"
-
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := websecurityscanner.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &websecurityscannerpb.UpdateScanConfigRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/websecurityscanner/apiv1/websecurityscannerpb#UpdateScanConfigRequest.
 	}
 	resp, err := c.UpdateScanConfig(ctx, req)
 	if err != nil {
@@ -138,16 +188,21 @@ func ExampleClient_UpdateScanConfig() {
 }
 
 func ExampleClient_StartScanRun() {
-	// import websecurityscannerpb "google.golang.org/genproto/googleapis/cloud/websecurityscanner/v1"
-
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := websecurityscanner.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &websecurityscannerpb.StartScanRunRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/websecurityscanner/apiv1/websecurityscannerpb#StartScanRunRequest.
 	}
 	resp, err := c.StartScanRun(ctx, req)
 	if err != nil {
@@ -158,16 +213,21 @@ func ExampleClient_StartScanRun() {
 }
 
 func ExampleClient_GetScanRun() {
-	// import websecurityscannerpb "google.golang.org/genproto/googleapis/cloud/websecurityscanner/v1"
-
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := websecurityscanner.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &websecurityscannerpb.GetScanRunRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/websecurityscanner/apiv1/websecurityscannerpb#GetScanRunRequest.
 	}
 	resp, err := c.GetScanRun(ctx, req)
 	if err != nil {
@@ -178,17 +238,21 @@ func ExampleClient_GetScanRun() {
 }
 
 func ExampleClient_ListScanRuns() {
-	// import websecurityscannerpb "google.golang.org/genproto/googleapis/cloud/websecurityscanner/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := websecurityscanner.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &websecurityscannerpb.ListScanRunsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/websecurityscanner/apiv1/websecurityscannerpb#ListScanRunsRequest.
 	}
 	it := c.ListScanRuns(ctx, req)
 	for {
@@ -205,16 +269,21 @@ func ExampleClient_ListScanRuns() {
 }
 
 func ExampleClient_StopScanRun() {
-	// import websecurityscannerpb "google.golang.org/genproto/googleapis/cloud/websecurityscanner/v1"
-
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := websecurityscanner.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &websecurityscannerpb.StopScanRunRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/websecurityscanner/apiv1/websecurityscannerpb#StopScanRunRequest.
 	}
 	resp, err := c.StopScanRun(ctx, req)
 	if err != nil {
@@ -225,17 +294,21 @@ func ExampleClient_StopScanRun() {
 }
 
 func ExampleClient_ListCrawledUrls() {
-	// import websecurityscannerpb "google.golang.org/genproto/googleapis/cloud/websecurityscanner/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := websecurityscanner.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &websecurityscannerpb.ListCrawledUrlsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/websecurityscanner/apiv1/websecurityscannerpb#ListCrawledUrlsRequest.
 	}
 	it := c.ListCrawledUrls(ctx, req)
 	for {
@@ -252,16 +325,21 @@ func ExampleClient_ListCrawledUrls() {
 }
 
 func ExampleClient_GetFinding() {
-	// import websecurityscannerpb "google.golang.org/genproto/googleapis/cloud/websecurityscanner/v1"
-
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := websecurityscanner.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &websecurityscannerpb.GetFindingRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/websecurityscanner/apiv1/websecurityscannerpb#GetFindingRequest.
 	}
 	resp, err := c.GetFinding(ctx, req)
 	if err != nil {
@@ -272,17 +350,21 @@ func ExampleClient_GetFinding() {
 }
 
 func ExampleClient_ListFindings() {
-	// import websecurityscannerpb "google.golang.org/genproto/googleapis/cloud/websecurityscanner/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := websecurityscanner.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &websecurityscannerpb.ListFindingsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/websecurityscanner/apiv1/websecurityscannerpb#ListFindingsRequest.
 	}
 	it := c.ListFindings(ctx, req)
 	for {
@@ -299,16 +381,21 @@ func ExampleClient_ListFindings() {
 }
 
 func ExampleClient_ListFindingTypeStats() {
-	// import websecurityscannerpb "google.golang.org/genproto/googleapis/cloud/websecurityscanner/v1"
-
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := websecurityscanner.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &websecurityscannerpb.ListFindingTypeStatsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/websecurityscanner/apiv1/websecurityscannerpb#ListFindingTypeStatsRequest.
 	}
 	resp, err := c.ListFindingTypeStats(ctx, req)
 	if err != nil {

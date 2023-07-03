@@ -1,0 +1,62 @@
+// Copyright 2021 Google LLC
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     https://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+syntax = "proto3";
+package testdata;
+option go_package = "cloud.google.com/go/bigquery/storage/managedwriter/testdata";
+
+import "google/protobuf/wrappers.proto";
+
+// SimpleMessageProto3 represents a simple message that transmits a string and int64 value.
+message SimpleMessageProto3 {
+    // name is a simple scalar string.
+    string name = 1;
+    // value is a simple int64 value.
+    google.protobuf.Int64Value value = 2;
+}
+
+
+message GithubArchiveEntityProto3 {
+    google.protobuf.Int64Value id = 1;
+    google.protobuf.StringValue login = 2;
+    google.protobuf.StringValue gravatar_id = 3;
+    google.protobuf.StringValue avatar_url = 4;
+    google.protobuf.StringValue url = 5;
+}
+
+message GithubArchiveRepoProto3 {
+    google.protobuf.Int64Value id = 1;
+    google.protobuf.StringValue name = 2;
+    google.protobuf.StringValue url = 3;
+}
+
+// GithubArchiveMessageProto3 is the proto3 version of github archive row.
+message GithubArchiveMessageProto3 {
+    google.protobuf.StringValue type = 1;
+    google.protobuf.BoolValue public = 2;
+    google.protobuf.StringValue payload = 3;
+    GithubArchiveRepoProto3 repo = 4;
+    GithubArchiveEntityProto3 actor = 5;
+    GithubArchiveEntityProto3 org = 6;
+    google.protobuf.Int64Value created_at = 7;
+    google.protobuf.StringValue id = 8;
+    google.protobuf.StringValue other = 9;
+}
+
+message SimpleMessageProto3WithOptional {
+    // name is a simple scalar string.
+    string name = 1;
+    // value is an int64 value with optional presence.
+    optional int64 value = 2;
+}

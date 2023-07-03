@@ -25,8 +25,8 @@ import (
 	"github.com/golang/protobuf/proto"
 
 	"cloud.google.com/go/civil"
+	sppb "cloud.google.com/go/spanner/apiv1/spannerpb"
 	proto3 "github.com/golang/protobuf/ptypes/struct"
-	sppb "google.golang.org/genproto/googleapis/spanner/v1"
 	"google.golang.org/grpc/codes"
 )
 
@@ -241,7 +241,7 @@ const (
 // the following range returns all events for user "Bob" that occurred in the
 // year 2015:
 //
-// 	spanner.KeyRange{
+//	spanner.KeyRange{
 //		Start: spanner.Key{"Bob", "2015-01-01"},
 //		End:   spanner.Key{"Bob", "2015-12-31"},
 //		Kind:  ClosedClosed,

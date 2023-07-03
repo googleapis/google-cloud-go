@@ -17,6 +17,7 @@ package bigquery
 import (
 	"context"
 	"io"
+	"time"
 
 	"cloud.google.com/go/internal/trace"
 	bq "google.golang.org/api/bigquery/v2"
@@ -65,6 +66,41 @@ type LoadConfig struct {
 	// For ingestion from datastore backups, ProjectionFields governs which fields
 	// are projected from the backup.  The default behavior projects all fields.
 	ProjectionFields []string
+
+	// HivePartitioningOptions allows use of Hive partitioning based on the
+	// layout of objects in Cloud Storage.
+	HivePartitioningOptions *HivePartitioningOptions
+
+	// DecimalTargetTypes allows selection of how decimal values are converted when
+	// processed in bigquery, subject to the value type having sufficient precision/scale
+	// to support the values.  In the order of NUMERIC, BIGNUMERIC, and STRING, a type is
+	// selected if is present in the list and if supports the necessary precision and scale.
+	//
+	// StringTargetType supports all precision and scale values.
+	DecimalTargetTypes []DecimalTargetType
+
+	// Sets a best-effort deadline on a specific job.  If job execution exceeds this
+	// timeout, BigQuery may attempt to cancel this work automatically.
+	//
+	// This deadline cannot be adjusted or removed once the job is created.  Consider
+	// using Job.Cancel in situations where you need more dynamic behavior.
+	//
+	// Experimental: this option is experimental and may be modified or removed in future versions,
+	// regardless of any other documented package stability guarantees.
+	JobTimeout time.Duration
+
+	// When loading a table with external data, the user can provide a reference file with the table schema.
+	// This is enabled for the following formats: AVRO, PARQUET, ORC.
+	ReferenceFileSchemaURI string
+
+	// If true, creates a new session, where session id will
+	// be a server generated random id. If false, runs query with an
+	// existing session_id passed in ConnectionProperty, otherwise runs the
+	// load job in non-session mode.
+	CreateSession bool
+
+	// ConnectionProperties are optional key-values settings.
+	ConnectionProperties []*ConnectionProperty
 }
 
 func (l *LoadConfig) toBQ() (*bq.JobConfiguration, io.Reader) {
@@ -81,7 +117,17 @@ func (l *LoadConfig) toBQ() (*bq.JobConfiguration, io.Reader) {
 			SchemaUpdateOptions:                l.SchemaUpdateOptions,
 			UseAvroLogicalTypes:                l.UseAvroLogicalTypes,
 			ProjectionFields:                   l.ProjectionFields,
+			HivePartitioningOptions:            l.HivePartitioningOptions.toBQ(),
+			ReferenceFileSchemaUri:             l.ReferenceFileSchemaURI,
+			CreateSession:                      l.CreateSession,
 		},
+		JobTimeoutMs: l.JobTimeout.Milliseconds(),
+	}
+	for _, v := range l.DecimalTargetTypes {
+		config.Load.DecimalTargetTypes = append(config.Load.DecimalTargetTypes, string(v))
+	}
+	for _, v := range l.ConnectionProperties {
+		config.Load.ConnectionProperties = append(config.Load.ConnectionProperties, v.toBQ())
 	}
 	media := l.Src.populateLoadConfig(config.Load)
 	return config, media
@@ -100,6 +146,18 @@ func bqToLoadConfig(q *bq.JobConfiguration, c *Client) *LoadConfig {
 		SchemaUpdateOptions:         q.Load.SchemaUpdateOptions,
 		UseAvroLogicalTypes:         q.Load.UseAvroLogicalTypes,
 		ProjectionFields:            q.Load.ProjectionFields,
+		HivePartitioningOptions:     bqToHivePartitioningOptions(q.Load.HivePartitioningOptions),
+		ReferenceFileSchemaURI:      q.Load.ReferenceFileSchemaUri,
+		CreateSession:               q.Load.CreateSession,
+	}
+	if q.JobTimeoutMs > 0 {
+		lc.JobTimeout = time.Duration(q.JobTimeoutMs) * time.Millisecond
+	}
+	for _, v := range q.Load.DecimalTargetTypes {
+		lc.DecimalTargetTypes = append(lc.DecimalTargetTypes, DecimalTargetType(v))
+	}
+	for _, v := range q.Load.ConnectionProperties {
+		lc.ConnectionProperties = append(lc.ConnectionProperties, bqToConnectionProperty(v))
 	}
 	var fc *FileConfig
 	if len(q.Load.SourceUris) == 0 {
@@ -162,3 +220,17 @@ func (l *Loader) newJob() (*bq.Job, io.Reader) {
 		Configuration: config,
 	}, media
 }
+
+// DecimalTargetType is used to express preference ordering for converting values from external formats.
+type DecimalTargetType string
+
+var (
+	// NumericTargetType indicates the preferred type is NUMERIC when supported.
+	NumericTargetType DecimalTargetType = "NUMERIC"
+
+	// BigNumericTargetType indicates the preferred type is BIGNUMERIC when supported.
+	BigNumericTargetType DecimalTargetType = "BIGNUMERIC"
+
+	// StringTargetType indicates the preferred type is STRING when supported.
+	StringTargetType DecimalTargetType = "STRING"
+)

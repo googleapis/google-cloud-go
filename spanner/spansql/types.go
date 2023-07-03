@@ -33,11 +33,12 @@ import (
 // CreateTable represents a CREATE TABLE statement.
 // https://cloud.google.com/spanner/docs/data-definition-language#create_table
 type CreateTable struct {
-	Name        ID
-	Columns     []ColumnDef
-	Constraints []TableConstraint
-	PrimaryKey  []KeyPart
-	Interleave  *Interleave
+	Name              ID
+	Columns           []ColumnDef
+	Constraints       []TableConstraint
+	PrimaryKey        []KeyPart
+	Interleave        *Interleave
+	RowDeletionPolicy *RowDeletionPolicy
 
 	Position Position // position of the "CREATE" token
 }
@@ -90,6 +91,12 @@ type Interleave struct {
 	OnDelete OnDelete
 }
 
+// RowDeletionPolicy represents an row deletion policy clause of a CREATE, ALTER TABLE statement.
+type RowDeletionPolicy struct {
+	Column  ID
+	NumDays int64
+}
+
 // CreateIndex represents a CREATE INDEX statement.
 // https://cloud.google.com/spanner/docs/data-definition-language#create-index
 type CreateIndex struct {
@@ -110,6 +117,34 @@ func (ci *CreateIndex) String() string { return fmt.Sprintf("%#v", ci) }
 func (*CreateIndex) isDDLStmt()        {}
 func (ci *CreateIndex) Pos() Position  { return ci.Position }
 func (ci *CreateIndex) clearOffset()   { ci.Position.Offset = 0 }
+
+// CreateView represents a CREATE [OR REPLACE] VIEW statement.
+// https://cloud.google.com/spanner/docs/data-definition-language#view_statements
+type CreateView struct {
+	Name      ID
+	OrReplace bool
+	Query     Query
+
+	Position Position // position of the "CREATE" token
+}
+
+func (cv *CreateView) String() string { return fmt.Sprintf("%#v", cv) }
+func (*CreateView) isDDLStmt()        {}
+func (cv *CreateView) Pos() Position  { return cv.Position }
+func (cv *CreateView) clearOffset()   { cv.Position.Offset = 0 }
+
+// CreateRole represents a CREATE Role statement.
+// https://cloud.google.com/spanner/docs/reference/standard-sql/data-definition-language#create_role
+type CreateRole struct {
+	Name ID
+
+	Position Position // position of the "CREATE" token
+}
+
+func (cr *CreateRole) String() string { return fmt.Sprintf("%#v", cr) }
+func (*CreateRole) isDDLStmt()        {}
+func (cr *CreateRole) Pos() Position  { return cr.Position }
+func (cr *CreateRole) clearOffset()   { cr.Position.Offset = 0 }
 
 // DropTable represents a DROP TABLE statement.
 // https://cloud.google.com/spanner/docs/data-definition-language#drop_table
@@ -137,6 +172,75 @@ func (*DropIndex) isDDLStmt()        {}
 func (di *DropIndex) Pos() Position  { return di.Position }
 func (di *DropIndex) clearOffset()   { di.Position.Offset = 0 }
 
+// DropView represents a DROP VIEW statement.
+// https://cloud.google.com/spanner/docs/data-definition-language#drop-view
+type DropView struct {
+	Name ID
+
+	Position Position // position of the "DROP" token
+}
+
+func (dv *DropView) String() string { return fmt.Sprintf("%#v", dv) }
+func (*DropView) isDDLStmt()        {}
+func (dv *DropView) Pos() Position  { return dv.Position }
+func (dv *DropView) clearOffset()   { dv.Position.Offset = 0 }
+
+// DropRole represents a DROP ROLE statement.
+// https://cloud.google.com/spanner/docs/reference/standard-sql/data-definition-language#drop_role
+type DropRole struct {
+	Name ID
+
+	Position Position // position of the "DROP" token
+}
+
+func (dr *DropRole) String() string { return fmt.Sprintf("%#v", dr) }
+func (*DropRole) isDDLStmt()        {}
+func (dr *DropRole) Pos() Position  { return dr.Position }
+func (dr *DropRole) clearOffset()   { dr.Position.Offset = 0 }
+
+// GrantRole represents a GRANT statement.
+// https://cloud.google.com/spanner/docs/reference/standard-sql/data-definition-language#grant_statement
+type GrantRole struct {
+	ToRoleNames       []ID
+	GrantRoleNames    []ID
+	Privileges        []Privilege
+	TableNames        []ID
+	TvfNames          []ID
+	ViewNames         []ID
+	ChangeStreamNames []ID
+
+	Position Position // position of the "GRANT" token
+}
+
+func (gr *GrantRole) String() string { return fmt.Sprintf("%#v", gr) }
+func (*GrantRole) isDDLStmt()        {}
+func (gr *GrantRole) Pos() Position  { return gr.Position }
+func (gr *GrantRole) clearOffset()   { gr.Position.Offset = 0 }
+
+// RevokeRole represents a REVOKE statement.
+// https://cloud.google.com/spanner/docs/reference/standard-sql/data-definition-language#revoke_statement
+type RevokeRole struct {
+	FromRoleNames     []ID
+	RevokeRoleNames   []ID
+	Privileges        []Privilege
+	TableNames        []ID
+	TvfNames          []ID
+	ViewNames         []ID
+	ChangeStreamNames []ID
+	Position          Position // position of the "REVOKE" token
+}
+
+func (rr *RevokeRole) String() string { return fmt.Sprintf("%#v", rr) }
+func (*RevokeRole) isDDLStmt()        {}
+func (rr *RevokeRole) Pos() Position  { return rr.Position }
+func (rr *RevokeRole) clearOffset()   { rr.Position.Offset = 0 }
+
+// Privilege represents privilege to grant or revoke.
+type Privilege struct {
+	Type    PrivilegeType
+	Columns []ID
+}
+
 // AlterTable represents an ALTER TABLE statement.
 // https://cloud.google.com/spanner/docs/data-definition-language#alter_table
 type AlterTable struct {
@@ -162,28 +266,40 @@ func (at *AlterTable) clearOffset() {
 }
 
 // TableAlteration is satisfied by AddColumn, DropColumn, AddConstraint,
-// DropConstraint, SetOnDelete and AlterColumn.
+// DropConstraint, SetOnDelete and AlterColumn,
+// AddRowDeletionPolicy, ReplaceRowDeletionPolicy, DropRowDeletionPolicy.
 type TableAlteration interface {
 	isTableAlteration()
 	SQL() string
 }
 
-func (AddColumn) isTableAlteration()      {}
-func (DropColumn) isTableAlteration()     {}
-func (AddConstraint) isTableAlteration()  {}
-func (DropConstraint) isTableAlteration() {}
-func (SetOnDelete) isTableAlteration()    {}
-func (AlterColumn) isTableAlteration()    {}
+func (AddColumn) isTableAlteration()                {}
+func (DropColumn) isTableAlteration()               {}
+func (AddConstraint) isTableAlteration()            {}
+func (DropConstraint) isTableAlteration()           {}
+func (SetOnDelete) isTableAlteration()              {}
+func (AlterColumn) isTableAlteration()              {}
+func (AddRowDeletionPolicy) isTableAlteration()     {}
+func (ReplaceRowDeletionPolicy) isTableAlteration() {}
+func (DropRowDeletionPolicy) isTableAlteration()    {}
 
-type AddColumn struct{ Def ColumnDef }
-type DropColumn struct{ Name ID }
-type AddConstraint struct{ Constraint TableConstraint }
-type DropConstraint struct{ Name ID }
-type SetOnDelete struct{ Action OnDelete }
-type AlterColumn struct {
-	Name       ID
-	Alteration ColumnAlteration
-}
+type (
+	AddColumn      struct{ Def ColumnDef }
+	DropColumn     struct{ Name ID }
+	AddConstraint  struct{ Constraint TableConstraint }
+	DropConstraint struct{ Name ID }
+	SetOnDelete    struct{ Action OnDelete }
+	AlterColumn    struct {
+		Name       ID
+		Alteration ColumnAlteration
+	}
+)
+
+type (
+	AddRowDeletionPolicy     struct{ RowDeletionPolicy RowDeletionPolicy }
+	ReplaceRowDeletionPolicy struct{ RowDeletionPolicy RowDeletionPolicy }
+	DropRowDeletionPolicy    struct{}
+)
 
 // ColumnAlteration is satisfied by SetColumnType and SetColumnOptions.
 type ColumnAlteration interface {
@@ -193,13 +309,22 @@ type ColumnAlteration interface {
 
 func (SetColumnType) isColumnAlteration()    {}
 func (SetColumnOptions) isColumnAlteration() {}
+func (SetDefault) isColumnAlteration()       {}
+func (DropDefault) isColumnAlteration()      {}
 
 type SetColumnType struct {
 	Type    Type
 	NotNull bool
+	Default Expr
 }
 
 type SetColumnOptions struct{ Options ColumnOptions }
+
+type SetDefault struct {
+	Default Expr
+}
+
+type DropDefault struct{}
 
 type OnDelete int
 
@@ -207,6 +332,39 @@ const (
 	NoActionOnDelete OnDelete = iota
 	CascadeOnDelete
 )
+
+// AlterDatabase represents an ALTER DATABASE statement.
+// https://cloud.google.com/spanner/docs/data-definition-language#alter-database
+type AlterDatabase struct {
+	Name       ID
+	Alteration DatabaseAlteration
+
+	Position Position // position of the "ALTER" token
+}
+
+func (ad *AlterDatabase) String() string { return fmt.Sprintf("%#v", ad) }
+func (*AlterDatabase) isDDLStmt()        {}
+func (ad *AlterDatabase) Pos() Position  { return ad.Position }
+func (ad *AlterDatabase) clearOffset()   { ad.Position.Offset = 0 }
+
+type DatabaseAlteration interface {
+	isDatabaseAlteration()
+	SQL() string
+}
+
+type SetDatabaseOptions struct{ Options DatabaseOptions }
+
+func (SetDatabaseOptions) isDatabaseAlteration() {}
+
+// DatabaseOptions represents options on a database as part of a
+// ALTER DATABASE statement.
+type DatabaseOptions struct {
+	OptimizerVersion           *int
+	OptimizerStatisticsPackage *string
+	VersionRetentionPeriod     *string
+	EnableKeyVisualizer        *bool
+	DefaultLeader              *string
+}
 
 // Delete represents a DELETE statement.
 // https://cloud.google.com/spanner/docs/dml-syntax#delete-statement
@@ -220,7 +378,29 @@ type Delete struct {
 func (d *Delete) String() string { return fmt.Sprintf("%#v", d) }
 func (*Delete) isDMLStmt()       {}
 
-// TODO: Insert.
+// Insert represents an INSERT statement.
+// https://cloud.google.com/spanner/docs/dml-syntax#insert-statement
+type Insert struct {
+	Table   ID
+	Columns []ID
+	Input   ValuesOrSelect
+}
+
+// Values represents one or more lists of expressions passed to an `INSERT` statement.
+type Values [][]Expr
+
+func (v Values) isValuesOrSelect() {}
+func (v Values) String() string    { return fmt.Sprintf("%#v", v) }
+
+type ValuesOrSelect interface {
+	isValuesOrSelect()
+	SQL() string
+}
+
+func (Select) isValuesOrSelect() {}
+
+func (i *Insert) String() string { return fmt.Sprintf("%#v", i) }
+func (*Insert) isDMLStmt()       {}
 
 // Update represents an UPDATE statement.
 // https://cloud.google.com/spanner/docs/dml-syntax#update-statement
@@ -247,6 +427,7 @@ type ColumnDef struct {
 	Type    Type
 	NotNull bool
 
+	Default   Expr // set if this column has a default value
 	Generated Expr // set of this is a generated column
 
 	Options ColumnOptions
@@ -314,6 +495,16 @@ const (
 	Bytes
 	Date
 	Timestamp
+	JSON
+)
+
+type PrivilegeType int
+
+const (
+	PrivilegeTypeSelect PrivilegeType = iota
+	PrivilegeTypeInsert
+	PrivilegeTypeUpdate
+	PrivilegeTypeDelete
 )
 
 // KeyPart represents a column specification as part of a primary key or index definition.
@@ -363,6 +554,7 @@ type SelectFrom interface {
 type SelectFromTable struct {
 	Table ID
 	Alias ID // empty if not aliased
+	Hints map[string]string
 }
 
 func (SelectFromTable) isSelectFrom() {}
@@ -563,6 +755,41 @@ type Func struct {
 func (Func) isBoolExpr() {} // possibly bool
 func (Func) isExpr()     {}
 
+// TypedExpr represents a typed expression in the form `expr AS type_name`, e.g. `'17' AS INT64`.
+type TypedExpr struct {
+	Type Type
+	Expr Expr
+}
+
+func (TypedExpr) isBoolExpr() {} // possibly bool
+func (TypedExpr) isExpr()     {}
+
+type ExtractExpr struct {
+	Part string
+	Type Type
+	Expr Expr
+}
+
+func (ExtractExpr) isBoolExpr() {} // possibly bool
+func (ExtractExpr) isExpr()     {}
+
+type AtTimeZoneExpr struct {
+	Expr Expr
+	Type Type
+	Zone string
+}
+
+func (AtTimeZoneExpr) isBoolExpr() {} // possibly bool
+func (AtTimeZoneExpr) isExpr()     {}
+
+type IntervalExpr struct {
+	Expr     Expr
+	DatePart string
+}
+
+func (IntervalExpr) isBoolExpr() {} // possibly bool
+func (IntervalExpr) isExpr()     {}
+
 // Paren represents a parenthesised expression.
 type Paren struct {
 	Expr Expr
@@ -589,6 +816,52 @@ type Param string
 func (Param) isBoolExpr()       {} // possibly bool
 func (Param) isExpr()           {}
 func (Param) isLiteralOrParam() {}
+
+type Case struct {
+	Expr        Expr
+	WhenClauses []WhenClause
+	ElseResult  Expr
+}
+
+func (Case) isBoolExpr() {} // possibly bool
+func (Case) isExpr()     {}
+
+type WhenClause struct {
+	Cond   Expr
+	Result Expr
+}
+
+type Coalesce struct {
+	ExprList []Expr
+}
+
+func (Coalesce) isBoolExpr() {} // possibly bool
+func (Coalesce) isExpr()     {}
+
+type If struct {
+	Expr       Expr
+	TrueResult Expr
+	ElseResult Expr
+}
+
+func (If) isBoolExpr() {} // possibly bool
+func (If) isExpr()     {}
+
+type IfNull struct {
+	Expr       Expr
+	NullResult Expr
+}
+
+func (IfNull) isBoolExpr() {} // possibly bool
+func (IfNull) isExpr()     {}
+
+type NullIf struct {
+	Expr        Expr
+	ExprToMatch Expr
+}
+
+func (NullIf) isBoolExpr() {} // possibly bool
+func (NullIf) isExpr()     {}
 
 type BoolLiteral bool
 
@@ -645,12 +918,24 @@ type TimestampLiteral time.Time
 
 func (TimestampLiteral) isExpr() {}
 
+// JSONLiteral represents a JSON literal
+// https://cloud.google.com/spanner/docs/reference/standard-sql/lexical#json_literals
+type JSONLiteral []byte
+
+func (JSONLiteral) isExpr() {}
+
 type StarExpr int
 
 // Star represents a "*" in an expression.
 const Star = StarExpr(0)
 
 func (StarExpr) isExpr() {}
+
+type statements interface {
+	setFilename(string)
+	getComments() []*Comment
+	addComment(*Comment)
+}
 
 // DDL
 // https://cloud.google.com/spanner/docs/data-definition-language#ddl_syntax
@@ -671,6 +956,48 @@ func (d *DDL) clearOffset() {
 	for _, c := range d.Comments {
 		c.clearOffset()
 	}
+}
+
+func (d *DDL) setFilename(filename string) {
+	d.Filename = filename
+}
+
+func (d *DDL) addComment(comment *Comment) {
+	d.Comments = append(d.Comments, comment)
+}
+
+func (d *DDL) getComments() []*Comment {
+	return d.Comments
+}
+
+// DML
+// https://cloud.google.com/spanner/docs/reference/standard-sql/dml-syntax
+
+// DML represents a Data Manipulation Language (DML) file.
+type DML struct {
+	List []DMLStmt
+
+	Filename string // if known at parse time
+
+	Comments []*Comment // all comments, sorted by position
+}
+
+func (d *DML) clearOffset() {
+	for _, c := range d.Comments {
+		c.clearOffset()
+	}
+}
+
+func (d *DML) setFilename(filename string) {
+	d.Filename = filename
+}
+
+func (d *DML) addComment(comment *Comment) {
+	d.Comments = append(d.Comments, comment)
+}
+
+func (d *DML) getComments() []*Comment {
+	return d.Comments
 }
 
 // DDLStmt is satisfied by a type that can appear in a DDL.
@@ -727,38 +1054,61 @@ func (pos Position) String() string {
 
 // LeadingComment returns the comment that immediately precedes a node,
 // or nil if there's no such comment.
-func (ddl *DDL) LeadingComment(n Node) *Comment {
-	// Get the comment whose End position is on the previous line.
-	lineEnd := n.Pos().Line - 1
-	ci := sort.Search(len(ddl.Comments), func(i int) bool {
-		return ddl.Comments[i].End.Line >= lineEnd
-	})
-	if ci >= len(ddl.Comments) || ddl.Comments[ci].End.Line != lineEnd {
-		return nil
-	}
-	if !ddl.Comments[ci].Isolated {
-		// This is an inline comment for a previous node.
-		return nil
-	}
-	return ddl.Comments[ci]
+func (d *DDL) LeadingComment(n Node) *Comment {
+	return getLeadingComment(d, n)
 }
 
 // InlineComment returns the comment on the same line as a node,
 // or nil if there's no inline comment.
 // The returned comment is guaranteed to be a single line.
-func (ddl *DDL) InlineComment(n Node) *Comment {
+func (d *DDL) InlineComment(n Node) *Comment {
+	return getInlineComment(d, n)
+}
+
+// LeadingComment returns the comment that immediately precedes a node,
+// or nil if there's no such comment.
+func (d *DML) LeadingComment(n Node) *Comment {
+	return getLeadingComment(d, n)
+}
+
+// InlineComment returns the comment on the same line as a node,
+// or nil if there's no inline comment.
+// The returned comment is guaranteed to be a single line.
+func (d *DML) InlineComment(n Node) *Comment {
+	return getInlineComment(d, n)
+}
+
+func getLeadingComment(stmts statements, n Node) *Comment {
+	// Get the comment whose End position is on the previous line.
+	lineEnd := n.Pos().Line - 1
+	comments := stmts.getComments()
+	ci := sort.Search(len(comments), func(i int) bool {
+		return comments[i].End.Line >= lineEnd
+	})
+	if ci >= len(comments) || comments[ci].End.Line != lineEnd {
+		return nil
+	}
+	if !comments[ci].Isolated {
+		// This is an inline comment for a previous node.
+		return nil
+	}
+	return comments[ci]
+}
+
+func getInlineComment(stmts statements, n Node) *Comment {
 	// TODO: Do we care about comments like this?
 	// 	string name = 1; /* foo
 	// 	bar */
 
 	pos := n.Pos()
-	ci := sort.Search(len(ddl.Comments), func(i int) bool {
-		return ddl.Comments[i].Start.Line >= pos.Line
+	comments := stmts.getComments()
+	ci := sort.Search(len(comments), func(i int) bool {
+		return comments[i].Start.Line >= pos.Line
 	})
-	if ci >= len(ddl.Comments) {
+	if ci >= len(comments) {
 		return nil
 	}
-	c := ddl.Comments[ci]
+	c := comments[ci]
 	if c.Start.Line != pos.Line {
 		return nil
 	}
@@ -768,3 +1118,139 @@ func (ddl *DDL) InlineComment(n Node) *Comment {
 	}
 	return c
 }
+
+// CreateChangeStream represents a CREATE CHANGE STREAM statement.
+// https://cloud.google.com/spanner/docs/change-streams/manage
+type CreateChangeStream struct {
+	Name           ID
+	Watch          []WatchDef
+	WatchAllTables bool
+	Options        ChangeStreamOptions
+
+	Position Position
+}
+
+func (cs *CreateChangeStream) String() string { return fmt.Sprintf("%#v", cs) }
+func (*CreateChangeStream) isDDLStmt()        {}
+func (cs *CreateChangeStream) Pos() Position  { return cs.Position }
+func (cs *CreateChangeStream) clearOffset() {
+	for i := range cs.Watch {
+		// Mutate in place.
+		cs.Watch[i].clearOffset()
+	}
+	cs.Position.Offset = 0
+}
+
+// AlterChangeStream represents a ALTER CHANGE STREAM statement.
+type AlterChangeStream struct {
+	Name       ID
+	Alteration ChangeStreamAlteration
+
+	Position Position
+}
+
+func (acs *AlterChangeStream) String() string { return fmt.Sprintf("%#v", acs) }
+func (*AlterChangeStream) isDDLStmt()         {}
+func (acs *AlterChangeStream) Pos() Position  { return acs.Position }
+func (acs *AlterChangeStream) clearOffset() {
+	acs.Position.Offset = 0
+}
+
+type ChangeStreamAlteration interface {
+	isChangeStreamAlteration()
+	SQL() string
+}
+
+func (AlterWatch) isChangeStreamAlteration()               {}
+func (DropChangeStreamWatch) isChangeStreamAlteration()    {}
+func (AlterChangeStreamOptions) isChangeStreamAlteration() {}
+
+type (
+	AlterWatch struct {
+		WatchAllTables bool
+		Watch          []WatchDef
+	}
+	DropChangeStreamWatch    struct{}
+	AlterChangeStreamOptions struct{ Options ChangeStreamOptions }
+)
+
+// DropChangeStream represents a DROP CHANGE STREAM statement.
+type DropChangeStream struct {
+	Name ID
+
+	Position Position
+}
+
+func (dc *DropChangeStream) String() string { return fmt.Sprintf("%#v", dc) }
+func (*DropChangeStream) isDDLStmt()        {}
+func (dc *DropChangeStream) Pos() Position  { return dc.Position }
+func (dc *DropChangeStream) clearOffset()   { dc.Position.Offset = 0 }
+
+type WatchDef struct {
+	Table        ID
+	Columns      []ID
+	WatchAllCols bool
+
+	Position Position
+}
+
+func (wd WatchDef) Pos() Position { return wd.Position }
+func (wd *WatchDef) clearOffset() { wd.Position.Offset = 0 }
+
+type ChangeStreamOptions struct {
+	RetentionPeriod  *string
+	ValueCaptureType *string
+}
+
+// AlterStatistics represents an ALTER STATISTICS statement.
+// https://cloud.google.com/spanner/docs/data-definition-language#alter-statistics
+type AlterStatistics struct {
+	Name       ID
+	Alteration StatisticsAlteration
+
+	Position Position // position of the "ALTER" token
+}
+
+func (as *AlterStatistics) String() string { return fmt.Sprintf("%#v", as) }
+func (*AlterStatistics) isDDLStmt()        {}
+func (as *AlterStatistics) Pos() Position  { return as.Position }
+func (as *AlterStatistics) clearOffset()   { as.Position.Offset = 0 }
+
+type StatisticsAlteration interface {
+	isStatisticsAlteration()
+	SQL() string
+}
+
+type SetStatisticsOptions struct{ Options StatisticsOptions }
+
+func (SetStatisticsOptions) isStatisticsAlteration() {}
+
+// StatisticsOptions represents options on a statistics as part of a ALTER STATISTICS statement.
+type StatisticsOptions struct {
+	AllowGC *bool
+}
+
+type AlterIndex struct {
+	Name       ID
+	Alteration IndexAlteration
+
+	Position Position // position of the "ALTER" token
+}
+
+func (as *AlterIndex) String() string { return fmt.Sprintf("%#v", as) }
+func (*AlterIndex) isDDLStmt()        {}
+func (as *AlterIndex) Pos() Position  { return as.Position }
+func (as *AlterIndex) clearOffset()   { as.Position.Offset = 0 }
+
+type IndexAlteration interface {
+	isIndexAlteration()
+	SQL() string
+}
+
+func (AddStoredColumn) isIndexAlteration()  {}
+func (DropStoredColumn) isIndexAlteration() {}
+
+type (
+	AddStoredColumn  struct{ Name ID }
+	DropStoredColumn struct{ Name ID }
+)

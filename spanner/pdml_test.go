@@ -23,9 +23,10 @@ import (
 	"testing"
 	"time"
 
+	sppb "cloud.google.com/go/spanner/apiv1/spannerpb"
 	. "cloud.google.com/go/spanner/internal/testutil"
-	sppb "google.golang.org/genproto/googleapis/spanner/v1"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/encoding/gzip"
 	"google.golang.org/grpc/status"
 )
 
@@ -114,7 +115,7 @@ func TestPartitionedUpdate_WithDeadline(t *testing.T) {
 	logger := log.New(os.Stderr, "", log.LstdFlags)
 	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
 		SessionPoolConfig: DefaultSessionPoolConfig,
-		logger:            logger,
+		Logger:            logger,
 	})
 	defer teardown()
 
@@ -145,12 +146,12 @@ func TestPartitionedUpdate_QueryOptions(t *testing.T) {
 	for _, tt := range queryOptionsTestCases() {
 		t.Run(tt.name, func(t *testing.T) {
 			if tt.env.Options != nil {
-				os.Setenv("SPANNER_OPTIMIZER_VERSION", tt.env.Options.OptimizerVersion)
-				defer os.Setenv("SPANNER_OPTIMIZER_VERSION", "")
+				unset := setQueryOptionsEnvVars(tt.env.Options)
+				defer unset()
 			}
 
 			ctx := context.Background()
-			server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{QueryOptions: tt.client})
+			server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{QueryOptions: tt.client, Compression: gzip.Name})
 			defer teardown()
 
 			var err error
@@ -165,4 +166,16 @@ func TestPartitionedUpdate_QueryOptions(t *testing.T) {
 			checkReqsForQueryOptions(t, server.TestSpanner, tt.want)
 		})
 	}
+}
+
+func TestPartitionedUpdate_Tagging(t *testing.T) {
+	ctx := context.Background()
+	server, client, teardown := setupMockedTestServer(t)
+	defer teardown()
+
+	_, err := client.PartitionedUpdateWithOptions(ctx, NewStatement(UpdateBarSetFoo), QueryOptions{RequestTag: "pdml-tag"})
+	if err != nil {
+		t.Fatalf("expect no errors, but got %v", err)
+	}
+	checkRequestsForExpectedRequestOptions(t, server.TestSpanner, 1, sppb.RequestOptions{RequestTag: "pdml-tag"})
 }
