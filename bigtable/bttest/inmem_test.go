@@ -1053,6 +1053,84 @@ func TestReadRowsWithlabelTransformer(t *testing.T) {
 	}
 }
 
+func TestReadRowsReversed(t *testing.T) {
+	ctx := context.Background()
+	srv := &server{
+		tables: make(map[string]*table),
+	}
+	newTbl := btapb.Table{
+		ColumnFamilies: map[string]*btapb.ColumnFamily{
+			"cf": {GcRule: &btapb.GcRule{Rule: &btapb.GcRule_MaxNumVersions{MaxNumVersions: 1}}},
+		},
+	}
+	tbl, err := srv.CreateTable(ctx, &btapb.CreateTableRequest{Parent: "cluster", TableId: "t", Table: &newTbl})
+	if err != nil {
+		t.Fatalf("Creating table: %v", err)
+	}
+	entries := []struct {
+		row   string
+		value []byte
+	}{
+		{"row1", []byte("a")},
+		{"row2", []byte("b")},
+	}
+
+	for _, entry := range entries {
+		req := &btpb.MutateRowRequest{
+			TableName: tbl.Name,
+			RowKey:    []byte(entry.row),
+			Mutations: []*btpb.Mutation{{
+				Mutation: &btpb.Mutation_SetCell_{SetCell: &btpb.Mutation_SetCell{
+					FamilyName:      "cf",
+					ColumnQualifier: []byte("cq"),
+					TimestampMicros: 1000,
+					Value:           entry.value,
+				}},
+			}},
+		}
+		if _, err := srv.MutateRow(ctx, req); err != nil {
+			t.Fatalf("Failed to insert entry %v into server: %v", entry, err)
+		}
+	}
+
+	rrss := new(MockReadRowsServer)
+        rreq := &btpb.ReadRowsRequest{TableName: tbl.Name, Reversed: true}
+	if err := srv.ReadRows(rreq, rrss); err != nil {
+		t.Fatalf("Failed to read rows: %v", err)
+	}
+
+	var gotChunks []*btpb.ReadRowsResponse_CellChunk
+	for _, res := range rrss.responses {
+		gotChunks = append(gotChunks, res.Chunks...)
+	}
+
+	wantChunks := []*btpb.ReadRowsResponse_CellChunk{
+		{
+			RowKey:          []byte("row2"),
+			FamilyName:      &wrappers.StringValue{Value: "cf"},
+			Qualifier:       &wrappers.BytesValue{Value: []byte("cq")},
+			TimestampMicros: 1000,
+			Value:           []byte("b"),
+			RowStatus: &btpb.ReadRowsResponse_CellChunk_CommitRow{
+				CommitRow: true,
+			},
+		},
+		{
+			RowKey:          []byte("row1"),
+			FamilyName:      &wrappers.StringValue{Value: "cf"},
+			Qualifier:       &wrappers.BytesValue{Value: []byte("cq")},
+			TimestampMicros: 1000,
+			Value:           []byte("a"),
+			RowStatus: &btpb.ReadRowsResponse_CellChunk_CommitRow{
+				CommitRow: true,
+			},
+		},
+	}
+	if diff := cmp.Diff(gotChunks, wantChunks, cmp.Comparer(proto.Equal)); diff != "" {
+		t.Fatalf("Response chunks mismatch: got: + want -\n%s", diff)
+	}
+}
+
 func TestCheckAndMutateRowWithoutPredicate(t *testing.T) {
 	s := &server{
 		tables: make(map[string]*table),
