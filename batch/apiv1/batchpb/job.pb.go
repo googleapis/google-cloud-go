@@ -21,14 +21,13 @@
 package batchpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -95,6 +94,7 @@ func (LogsPolicy_Destination) EnumDescriptor() ([]byte, []int) {
 type JobStatus_State int32
 
 const (
+	// Job state unspecified.
 	JobStatus_STATE_UNSPECIFIED JobStatus_State = 0
 	// Job is admitted (validated and persisted) and waiting for resources.
 	JobStatus_QUEUED JobStatus_State = 1
@@ -1388,6 +1388,7 @@ type AllocationPolicy_Disk_Image struct {
 	// * "batch-debian": use Batch Debian images.
 	// * "batch-centos": use Batch CentOS images.
 	// * "batch-cos": use Batch Container-Optimized images.
+	// * "batch-hpc-centos": use Batch HPC CentOS images.
 	Image string `protobuf:"bytes,4,opt,name=image,proto3,oneof"`
 }
 
