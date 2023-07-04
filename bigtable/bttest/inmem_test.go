@@ -1094,7 +1094,7 @@ func TestReadRowsReversed(t *testing.T) {
 	}
 
 	rrss := new(MockReadRowsServer)
-        rreq := &btpb.ReadRowsRequest{TableName: tbl.Name, Reversed: true}
+	rreq := &btpb.ReadRowsRequest{TableName: tbl.Name, Reversed: true}
 	if err := srv.ReadRows(rreq, rrss); err != nil {
 		t.Fatalf("Failed to read rows: %v", err)
 	}
