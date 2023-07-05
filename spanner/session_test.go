@@ -469,16 +469,16 @@ func TestSessionLeak_WhenInactiveTransactions_RemoveSessionsFromPool(t *testing.
 		p.mu.Unlock()
 		t.Fatalf("Idle sessions count mismatch\nGot: %d\nWant: %d\n", g, w)
 	}
-	if p.numOpened != 0 {
-		t.Fatalf("Expect session pool size 0, got %d", p.numOpened)
+	if g, w := p.numOpened, uint64(0); g != w {
+		t.Fatalf("Sessions in pool count mismatch\nGot: %d\nWant: %d\n", g, w)
 	}
-	if p.numInUse != 0 {
-		t.Fatalf("Expect number of sessions in use to be 0, got %d", p.numInUse)
+	if g, w := p.numInUse, uint64(0); g != w {
+		t.Fatalf("Number of sessions currently in use mismatch\nGot: %d\nWant: %d\n", g, w)
 	}
 	p.InactiveTransactionRemovalOptions.mu.Lock()
 	defer p.InactiveTransactionRemovalOptions.mu.Unlock()
 	if g, w := p.numOfLeakedSessionsRemoved, uint64(1); g != w {
-		t.Fatalf("No of leaked sessions removed mismatch\nGot: %d\nWant: %d\n", g, w)
+		t.Fatalf("Number of leaked sessions removed mismatch\nGot: %d\nWant: %d\n", g, w)
 	}
 	iter.Stop()
 }
@@ -549,8 +549,8 @@ func TestMaintainer_LongRunningTransactionsCleanup_IfClose_VerifyInactiveSession
 	if g, w := sp.numOfLeakedSessionsRemoved, uint64(2); g != w {
 		t.Fatalf("No of leaked sessions removed mismatch\nGot: %d\nWant: %d\n", g, w)
 	}
-	if sp.numOpened != 1 {
-		t.Fatalf("Expect session pool size 1, got %d", sp.numOpened)
+	if g, w := sp.numOpened, uint64(1); g != w {
+		t.Fatalf("No of sessions opened mismatch\nGot: %d\nWant: %d\n", g, w)
 	}
 }
 
@@ -639,8 +639,8 @@ func TestMaintainer_LongRunningTransactionsCleanup_IfLog_VerifyInactiveSessionsO
 	if g, w := sp.numOfLeakedSessionsRemoved, uint64(0); g != w {
 		t.Fatalf("No of leaked sessions removed mismatch\nGot: %d\nWant: %d\n", g, w)
 	}
-	if sp.numOpened != 3 {
-		t.Fatalf("Expect session pool size 3, got %d", sp.numOpened)
+	if g, w := sp.numOpened, uint64(3); g != w {
+		t.Fatalf("No of sessions opened mismatch\nGot: %d\nWant: %d\n", g, w)
 	}
 }
 
@@ -703,8 +703,8 @@ func TestMaintainer_LongRunningTransactionsCleanup_UtilisationBelowThreshold_Ver
 	if g, w := sp.numOfLeakedSessionsRemoved, uint64(0); g != w {
 		t.Fatalf("No of leaked sessions removed mismatch\nGot: %d\nWant: %d\n", g, w)
 	}
-	if sp.numOpened != 2 {
-		t.Fatalf("Expect session pool size 2, got %d", sp.numOpened)
+	if g, w := sp.numOpened, uint64(2); g != w {
+		t.Fatalf("No of sessions opened mismatch\nGot: %d\nWant: %d\n", g, w)
 	}
 }
 
@@ -775,8 +775,8 @@ func TestMaintainer_LongRunningTransactions_WhenAllExpectedlyLongRunning_VerifyI
 	if g, w := sp.numOfLeakedSessionsRemoved, uint64(0); g != w {
 		t.Fatalf("No of leaked sessions removed mismatch\nGot: %d\nWant: %d\n", g, w)
 	}
-	if sp.numOpened != 3 {
-		t.Fatalf("Expect session pool size 3, got %d", sp.numOpened)
+	if g, w := sp.numOpened, uint64(3); g != w {
+		t.Fatalf("No of sessions opened mismatch\nGot: %d\nWant: %d\n", g, w)
 	}
 }
 
@@ -859,8 +859,8 @@ func TestMaintainer_LongRunningTransactions_WhenDurationBelowThreshold_VerifyIna
 	if g, w := sp.numOfLeakedSessionsRemoved, uint64(0); g != w {
 		t.Fatalf("No of leaked sessions removed mismatch\nGot: %d\nWant: %d\n", g, w)
 	}
-	if sp.numOpened != 3 {
-		t.Fatalf("Expect session pool size 3, got %d", sp.numOpened)
+	if g, w := sp.numOpened, uint64(3); g != w {
+		t.Fatalf("No of sessions opened mismatch\nGot: %d\nWant: %d\n", g, w)
 	}
 }
 

@@ -257,11 +257,11 @@ func TestClient_Single_WhenInactiveTransactionsAndSessionIsNotFoundOnBackend_Rem
 	if g, w := p.idleList.Len(), 1; g != w {
 		t.Fatalf("Sessions in pool count mismatch\nGot: %d\nWant: %d\n", g, w)
 	}
-	if p.numInUse != 0 {
-		t.Fatalf("Expect number of sessions in use to be 0, got %d", p.numInUse)
+	if g, w := p.numInUse, uint64(0); g != w {
+		t.Fatalf("Number of sessions currently in use mismatch\nGot: %d\nWant: %d\n", g, w)
 	}
-	if p.numOpened != 1 {
-		t.Fatalf("Expect session pool size 1, got %d", p.numOpened)
+	if g, w := p.numOpened, uint64(1); g != w {
+		t.Fatalf("Session pool size mismatch\nGot: %d\nWant: %d\n", g, w)
 	}
 
 	sh.mu.Lock()
@@ -3622,9 +3622,8 @@ func TestClient_WhenLongRunningPartitionedUpdateRequest_TakeNoAction(t *testing.
 	if err != nil {
 		t.Fatal(err)
 	}
-	want := int64(UpdateBarSetFooRowCount)
-	if rowCount != want {
-		t.Errorf("got %d, want %d", rowCount, want)
+	if g, w := rowCount, int64(UpdateBarSetFooRowCount); g != w {
+		t.Errorf("Row count mismatch\nGot: %v\nWant: %v", g, w)
 	}
 	p := client.idleSessions
 	p.InactiveTransactionRemovalOptions.mu.Lock()
