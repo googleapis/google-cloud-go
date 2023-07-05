@@ -1,4 +1,4 @@
-// Copyright 2020 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -21,12 +21,11 @@
 package datacatalogpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -71,8 +70,8 @@ type GcsFilesetSpec struct {
 	//
 	//  * `gs://bucket_name/[a-m]??.j*g`
 	FilePatterns []string `protobuf:"bytes,1,rep,name=file_patterns,json=filePatterns,proto3" json:"file_patterns,omitempty"`
-	// Output only. Sample files contained in this fileset, not all files contained in this
-	// fileset are represented here.
+	// Output only. Sample files contained in this fileset, not all files
+	// contained in this fileset are represented here.
 	SampleGcsFileSpecs []*GcsFileSpec `protobuf:"bytes,2,rep,name=sample_gcs_file_specs,json=sampleGcsFileSpecs,proto3" json:"sample_gcs_file_specs,omitempty"`
 }
 
