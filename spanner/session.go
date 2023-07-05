@@ -622,6 +622,10 @@ func newSessionPool(sc *sessionClient, config SessionPoolConfig) (*sessionPool, 
 	if config.usedSessionsRatioThreshold == 0 {
 		config.usedSessionsRatioThreshold = DefaultSessionPoolConfig.usedSessionsRatioThreshold
 	}
+	if config.CloseInactiveTransactions {
+		// give higher priority to closing inactive transactions
+		config.LogInactiveTransactions = false
+	}
 
 	pool := &sessionPool{
 		sc:                sc,
@@ -701,12 +705,22 @@ func (p *sessionPool) getLongRunningSessionsLocked() []*sessionHandle {
 			sh.mu.Lock()
 			diff := time.Now().Sub(sh.checkoutTime)
 			if !sh.isLongRunningTransaction && diff.Seconds() >= p.idleTimeThreshold.Seconds() {
-				if sh.stack != nil && !sh.isSessionLeakLogged {
-					logf(p.sc.logger, "long running session %s checked out of pool at %s due to possible session leak for goroutine: \n%s", sh.session.getID(), sh.checkoutTime.Format(time.RFC3339), sh.stack)
+				if p.LogInactiveTransactions && !sh.isSessionLeakLogged {
+					if sh.stack != nil {
+						logf(p.sc.logger, "session %s checked out of pool at %s is long running due to possible session leak for goroutine: \n%s", sh.session.getID(), sh.checkoutTime.Format(time.RFC3339), sh.stack)
+					} else {
+						logf(p.sc.logger, "session %s checked out of pool at %s is long running due to possible session leak for goroutine: \nStack trace not available", sh.session.getID(), sh.checkoutTime.Format(time.RFC3339))
+					}
 					sh.isSessionLeakLogged = true
 				}
-				if p.CloseInactiveTransactions {
+				if p.CloseInactiveTransactions && !sh.isSessionLeakLogged {
 					longRunningSessions = append(longRunningSessions, sh)
+					if sh.stack != nil {
+						logf(p.sc.logger, "session %s checked out of pool at %s is long running and will be removed due to possible session leak for goroutine: \n%s", sh.session.getID(), sh.checkoutTime.Format(time.RFC3339), sh.stack)
+					} else {
+						logf(p.sc.logger, "session %s checked out of pool at %s is long running and will be removed due to possible session leak for goroutine: \nStack trace not available", sh.session.getID(), sh.checkoutTime.Format(time.RFC3339))
+					}
+					sh.isSessionLeakLogged = true
 				}
 			}
 			sh.mu.Unlock()
