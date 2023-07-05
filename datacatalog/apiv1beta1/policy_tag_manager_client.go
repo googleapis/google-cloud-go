@@ -24,6 +24,7 @@ import (
 	"math"
 	"net/http"
 	"net/url"
+	"time"
 
 	datacatalogpb "cloud.google.com/go/datacatalog/apiv1beta1/datacatalogpb"
 	iampb "cloud.google.com/go/iam/apiv1/iampb"
@@ -73,37 +74,89 @@ func defaultPolicyTagManagerGRPCClientOptions() []option.ClientOption {
 
 func defaultPolicyTagManagerCallOptions() *PolicyTagManagerCallOptions {
 	return &PolicyTagManagerCallOptions{
-		CreateTaxonomy:     []gax.CallOption{},
-		DeleteTaxonomy:     []gax.CallOption{},
-		UpdateTaxonomy:     []gax.CallOption{},
-		ListTaxonomies:     []gax.CallOption{},
-		GetTaxonomy:        []gax.CallOption{},
-		CreatePolicyTag:    []gax.CallOption{},
-		DeletePolicyTag:    []gax.CallOption{},
-		UpdatePolicyTag:    []gax.CallOption{},
-		ListPolicyTags:     []gax.CallOption{},
-		GetPolicyTag:       []gax.CallOption{},
-		GetIamPolicy:       []gax.CallOption{},
-		SetIamPolicy:       []gax.CallOption{},
-		TestIamPermissions: []gax.CallOption{},
+		CreateTaxonomy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteTaxonomy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateTaxonomy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ListTaxonomies: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetTaxonomy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		CreatePolicyTag: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeletePolicyTag: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdatePolicyTag: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ListPolicyTags: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetPolicyTag: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetIamPolicy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		SetIamPolicy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		TestIamPermissions: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 	}
 }
 
 func defaultPolicyTagManagerRESTCallOptions() *PolicyTagManagerCallOptions {
 	return &PolicyTagManagerCallOptions{
-		CreateTaxonomy:     []gax.CallOption{},
-		DeleteTaxonomy:     []gax.CallOption{},
-		UpdateTaxonomy:     []gax.CallOption{},
-		ListTaxonomies:     []gax.CallOption{},
-		GetTaxonomy:        []gax.CallOption{},
-		CreatePolicyTag:    []gax.CallOption{},
-		DeletePolicyTag:    []gax.CallOption{},
-		UpdatePolicyTag:    []gax.CallOption{},
-		ListPolicyTags:     []gax.CallOption{},
-		GetPolicyTag:       []gax.CallOption{},
-		GetIamPolicy:       []gax.CallOption{},
-		SetIamPolicy:       []gax.CallOption{},
-		TestIamPermissions: []gax.CallOption{},
+		CreateTaxonomy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteTaxonomy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateTaxonomy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ListTaxonomies: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetTaxonomy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		CreatePolicyTag: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeletePolicyTag: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdatePolicyTag: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ListPolicyTags: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetPolicyTag: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetIamPolicy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		SetIamPolicy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		TestIamPermissions: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 	}
 }
 
@@ -832,6 +885,9 @@ func (c *policyTagManagerRESTClient) ListTaxonomies(ctx context.Context, req *da
 		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/taxonomies", req.GetParent())
 
 		params := url.Values{}
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
 		if req.GetPageSize() != 0 {
 			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
 		}

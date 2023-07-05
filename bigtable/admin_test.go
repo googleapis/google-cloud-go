@@ -19,6 +19,7 @@ import (
 	"errors"
 	"fmt"
 	"testing"
+	"time"
 
 	longrunning "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	"github.com/google/go-cmp/cmp"
@@ -101,6 +102,45 @@ func TestTableAdmin_CreateTableFromConf_DeletionProtection_Unprotected(t *testin
 	}
 }
 
+func TestTableAdmin_CreateTableFromConf_ChangeStream_Valid(t *testing.T) {
+	mock := &mockTableAdminClock{}
+	c := setupTableClient(t, mock)
+
+	changeStreamRetention, err := time.ParseDuration("24h")
+	if err != nil {
+		t.Fatalf("ChangeStreamRetention not valid: %v", err)
+	}
+	err = c.CreateTableFromConf(context.Background(), &TableConf{TableID: "My-table", ChangeStreamRetention: changeStreamRetention})
+	if err != nil {
+		t.Fatalf("CreateTableFromConf failed: %v", err)
+	}
+	createTableReq := mock.createTableReq
+	if !cmp.Equal(createTableReq.TableId, "My-table") {
+		t.Errorf("Unexpected table ID: %v, expected %v", createTableReq.TableId, "My-table")
+	}
+	if !cmp.Equal(createTableReq.Table.ChangeStreamConfig.RetentionPeriod.Seconds, int64(changeStreamRetention.Seconds())) {
+		t.Errorf("Unexpected table change stream retention: %v, expected %v", createTableReq.Table.ChangeStreamConfig.RetentionPeriod.Seconds, changeStreamRetention.Seconds())
+	}
+}
+
+func TestTableAdmin_CreateTableFromConf_ChangeStream_Disable(t *testing.T) {
+	mock := &mockTableAdminClock{}
+	c := setupTableClient(t, mock)
+
+	changeStreamRetention := time.Duration(0)
+	err := c.CreateTableFromConf(context.Background(), &TableConf{TableID: "My-table", ChangeStreamRetention: changeStreamRetention})
+	if err != nil {
+		t.Fatalf("CreateTableFromConf failed: %v", err)
+	}
+	createTableReq := mock.createTableReq
+	if !cmp.Equal(createTableReq.TableId, "My-table") {
+		t.Errorf("Unexpected table ID: %v, expected %v", createTableReq.TableId, "My-table")
+	}
+	if createTableReq.Table.ChangeStreamConfig != nil {
+		t.Errorf("Unexpected table change stream retention: %v should be empty", createTableReq.Table.ChangeStreamConfig)
+	}
+}
+
 func TestTableAdmin_UpdateTableWithDeletionProtection(t *testing.T) {
 	mock := &mockTableAdminClock{}
 	c := setupTableClient(t, mock)
@@ -117,6 +157,9 @@ func TestTableAdmin_UpdateTableWithDeletionProtection(t *testing.T) {
 	}
 	if !cmp.Equal(updateTableReq.Table.DeletionProtection, true) {
 		t.Errorf("UpdateTableRequest does not match, TableID: %v", updateTableReq.Table.Name)
+	}
+	if !cmp.Equal(len(updateTableReq.UpdateMask.Paths), 1) {
+		t.Errorf("UpdateTableRequest does not match, UpdateMask has length of %d, expected 1", len(updateTableReq.UpdateMask.Paths))
 	}
 	if !cmp.Equal(updateTableReq.UpdateMask.Paths[0], "deletion_protection") {
 		t.Errorf("UpdateTableRequest does not match, TableID: %v", updateTableReq.Table.Name)
@@ -148,16 +191,53 @@ func TestTableAdmin_UpdateTable_TableID_NotProvided(t *testing.T) {
 	}
 }
 
-func TestTableAdmin_UpdateTable_DeletionProtection_NotProvided(t *testing.T) {
+func TestTableAdmin_UpdateTableWithChangeStreamRetention(t *testing.T) {
 	mock := &mockTableAdminClock{}
 	c := setupTableClient(t, mock)
-	deletionProtection := None
+	changeStreamRetention, err := time.ParseDuration("24h")
+	if err != nil {
+		t.Fatalf("ChangeStreamRetention not valid: %v", err)
+	}
 
-	// Check if the update fails when deletion protection is not provided
-	err := c.UpdateTableWithDeletionProtection(context.Background(), "My-table", deletionProtection)
+	err = c.UpdateTableWithChangeStream(context.Background(), "My-table", changeStreamRetention)
+	if err != nil {
+		t.Fatalf("UpdateTableWithChangeStream failed: %v", err)
+	}
+	updateTableReq := mock.updateTableReq
+	if !cmp.Equal(updateTableReq.Table.Name, "projects/my-cool-project/instances/my-cool-instance/tables/My-table") {
+		t.Errorf("UpdateTableRequest does not match, TableID: %v", updateTableReq.Table.Name)
+	}
+	if !cmp.Equal(updateTableReq.Table.ChangeStreamConfig.RetentionPeriod.Seconds, int64(changeStreamRetention.Seconds())) {
+		t.Errorf("UpdateTableRequest does not match, ChangeStreamConfig: %v", updateTableReq.Table.ChangeStreamConfig)
+	}
+	if !cmp.Equal(len(updateTableReq.UpdateMask.Paths), 1) {
+		t.Errorf("UpdateTableRequest does not match, UpdateMask has length of %d, expected 1", len(updateTableReq.UpdateMask.Paths))
+	}
+	if !cmp.Equal(updateTableReq.UpdateMask.Paths[0], "change_stream_config.retention_period") {
+		t.Errorf("UpdateTableRequest does not match, UpdateMask: %v", updateTableReq.UpdateMask.Paths[0])
+	}
+}
 
-	if fmt.Sprint(err) != "deletion protection is required" {
-		t.Fatalf("UpdateTable failed: %v", err)
+func TestTableAdmin_UpdateTableDisableChangeStream(t *testing.T) {
+	mock := &mockTableAdminClock{}
+	c := setupTableClient(t, mock)
+
+	err := c.UpdateTableDisableChangeStream(context.Background(), "My-table")
+	if err != nil {
+		t.Fatalf("UpdateTableDisableChangeStream failed: %v", err)
+	}
+	updateTableReq := mock.updateTableReq
+	if !cmp.Equal(updateTableReq.Table.Name, "projects/my-cool-project/instances/my-cool-instance/tables/My-table") {
+		t.Errorf("UpdateTableRequest does not match, TableID: %v", updateTableReq.Table.Name)
+	}
+	if updateTableReq.Table.ChangeStreamConfig != nil {
+		t.Errorf("UpdateTableRequest does not match, ChangeStreamConfig: %v should be empty", updateTableReq.Table.ChangeStreamConfig)
+	}
+	if !cmp.Equal(len(updateTableReq.UpdateMask.Paths), 1) {
+		t.Errorf("UpdateTableRequest does not match, UpdateMask has length of %d, expected 1", len(updateTableReq.UpdateMask.Paths))
+	}
+	if !cmp.Equal(updateTableReq.UpdateMask.Paths[0], "change_stream_config") {
+		t.Errorf("UpdateTableRequest does not match, UpdateMask: %v", updateTableReq.UpdateMask.Paths[0])
 	}
 }
 
