@@ -492,7 +492,7 @@ func TestMaintainer_LongRunningTransactionsCleanup_IfClose_VerifyInactiveSession
 			healthCheckSampleInterval: 10 * time.Millisecond, // maintainer runs every 10ms
 			InactiveTransactionRemovalOptions: InactiveTransactionRemovalOptions{
 				CloseInactiveTransactions: true,
-				executionFrequency:        20 * time.Millisecond, // check long-running sessions every 20ms
+				executionFrequency:        15 * time.Millisecond, // check long-running sessions every 20ms
 			},
 		},
 	})

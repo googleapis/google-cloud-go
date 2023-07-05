@@ -55,7 +55,7 @@ type InactiveTransactionRemovalOptions struct {
 	usedSessionsRatioThreshold float64
 	// A transaction is considered to be idle if it has not been used for
 	// a duration greater than the below value.
-	idleTimeThresholdSecs uint64
+	idleTimeThreshold time.Duration
 	// frequency for closing inactive transactions
 	executionFrequency time.Duration
 	// variable that keeps track of the last execution time when inactive transactions
@@ -486,7 +486,7 @@ var DefaultSessionPoolConfig = SessionPoolConfig{
 	InactiveTransactionRemovalOptions: InactiveTransactionRemovalOptions{
 		LogInactiveTransactions:    true,
 		executionFrequency:         2 * time.Minute,
-		idleTimeThresholdSecs:      3600,
+		idleTimeThreshold:          60 * time.Minute,
 		usedSessionsRatioThreshold: 0.95,
 	},
 }
@@ -613,8 +613,8 @@ func newSessionPool(sc *sessionClient, config SessionPoolConfig) (*sessionPool, 
 	if config.CloseInactiveTransactions || config.LogInactiveTransactions {
 		config.TrackSessionHandles = true
 	}
-	if config.idleTimeThresholdSecs == 0 {
-		config.idleTimeThresholdSecs = DefaultSessionPoolConfig.idleTimeThresholdSecs
+	if config.idleTimeThreshold == 0 {
+		config.idleTimeThreshold = DefaultSessionPoolConfig.idleTimeThreshold
 	}
 	if config.executionFrequency == 0 {
 		config.executionFrequency = DefaultSessionPoolConfig.executionFrequency
@@ -700,7 +700,7 @@ func (p *sessionPool) getLongRunningSessionsLocked() []*sessionHandle {
 			sh := element.Value.(*sessionHandle)
 			sh.mu.Lock()
 			diff := time.Now().Sub(sh.checkoutTime)
-			if !sh.isLongRunningTransaction && diff.Seconds() >= float64(p.idleTimeThresholdSecs) {
+			if !sh.isLongRunningTransaction && diff.Seconds() >= p.idleTimeThreshold.Seconds() {
 				if sh.stack != nil && !sh.isSessionLeakLogged {
 					logf(p.sc.logger, "long running session %s checked out of pool at %s due to possible session leak for goroutine: \n%s", sh.session.getID(), sh.checkoutTime.Format(time.RFC3339), sh.stack)
 					sh.isSessionLeakLogged = true
