@@ -557,10 +557,10 @@ func checkAckDeadline(ads int32) error {
 
 const (
 	minMessageRetentionDuration = 10 * time.Minute
-	maxMessageRetentionDuration = 168 * time.Hour
+	maxMessageRetentionDuration = 31 * 24 * time.Hour // 31 days is the maximum supported duration (https://cloud.google.com/pubsub/docs/replay-overview#configuring_message_retention)
 )
 
-var defaultMessageRetentionDuration = durpb.New(maxMessageRetentionDuration)
+var defaultMessageRetentionDuration = durpb.New(168 * time.Hour) // default is 7 days
 
 func checkMRD(pmrd *durpb.Duration) error {
 	if pmrd == nil {
