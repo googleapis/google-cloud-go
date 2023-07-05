@@ -214,10 +214,10 @@ func TestClient_Single_WhenInactiveTransactionsAndSessionIsNotFoundOnBackend_Rem
 		SessionPoolConfig: SessionPoolConfig{
 			MinOpened:                 1,
 			MaxOpened:                 1,
-			healthCheckSampleInterval: 1 * time.Second, // maintainer runs every 1s
+			healthCheckSampleInterval: 10 * time.Millisecond, // maintainer runs every 10ms
 			InactiveTransactionRemovalOptions: InactiveTransactionRemovalOptions{
 				CloseInactiveTransactions: true,
-				executionFrequency:        1 * time.Second, // check long-running sessions every 1s
+				executionFrequency:        15 * time.Millisecond, // check long-running sessions every 15ms
 			},
 		},
 	})
@@ -236,7 +236,7 @@ func TestClient_Single_WhenInactiveTransactionsAndSessionIsNotFoundOnBackend_Rem
 	sh.checkoutTime = time.Now().Add(-time.Hour)
 	sh.mu.Unlock()
 	// Allow maintainer to clean up long-running sessions
-	time.Sleep(3 * time.Second)
+	time.Sleep(30 * time.Millisecond)
 	rowCount := int64(0)
 	for {
 		// Backend throws SessionNotFoundError. Session gets replaced with new session
@@ -255,7 +255,7 @@ func TestClient_Single_WhenInactiveTransactionsAndSessionIsNotFoundOnBackend_Rem
 	p.mu.Lock()
 	defer p.mu.Unlock()
 	if g, w := p.idleList.Len(), 1; g != w {
-		t.Fatalf("Sessions in pool count mismatch\nGot: %d\nWant: %d\n", g, w)
+		t.Fatalf("Idle Sessions in pool, count mismatch\nGot: %d\nWant: %d\n", g, w)
 	}
 	if g, w := p.numInUse, uint64(0); g != w {
 		t.Fatalf("Number of sessions currently in use mismatch\nGot: %d\nWant: %d\n", g, w)
@@ -944,10 +944,10 @@ func TestClient_ReadWriteTransaction_WhenLongRunningSessionCleaned_TransactionSh
 		SessionPoolConfig: SessionPoolConfig{
 			MinOpened:                 1,
 			MaxOpened:                 1,
-			healthCheckSampleInterval: 1 * time.Second, // maintainer runs every 1s
+			healthCheckSampleInterval: 10 * time.Millisecond, // maintainer runs every 1s
 			InactiveTransactionRemovalOptions: InactiveTransactionRemovalOptions{
 				CloseInactiveTransactions: true,
-				executionFrequency:        1 * time.Second, // check long-running sessions every 1s
+				executionFrequency:        15 * time.Millisecond, // check long-running sessions every 1s
 			},
 		},
 	})
@@ -973,7 +973,7 @@ func TestClient_ReadWriteTransaction_WhenLongRunningSessionCleaned_TransactionSh
 		}
 		tx.sh.mu.Unlock()
 		// wait for maintainer to clean up long-running sessions
-		time.Sleep(5 * time.Second)
+		time.Sleep(30 * time.Millisecond)
 
 		// The session associated with this transaction tx has been destroyed. So the below call should fail.
 		// Eventually this means the entire transaction should not succeed.
@@ -1030,10 +1030,10 @@ func TestClient_ReadWriteTransaction_WhenLongRunningExecuteBatchUpdate_TakeNoAct
 		SessionPoolConfig: SessionPoolConfig{
 			MinOpened:                 1,
 			MaxOpened:                 1,
-			healthCheckSampleInterval: 1 * time.Second, // maintainer runs every 1s
+			healthCheckSampleInterval: 10 * time.Millisecond, // maintainer runs every 10ms
 			InactiveTransactionRemovalOptions: InactiveTransactionRemovalOptions{
 				CloseInactiveTransactions: true,
-				executionFrequency:        1 * time.Second, // check long-running sessions every 1s
+				executionFrequency:        15 * time.Millisecond, // check long-running sessions every 15ms
 			},
 		},
 	})
@@ -1056,7 +1056,7 @@ func TestClient_ReadWriteTransaction_WhenLongRunningExecuteBatchUpdate_TakeNoAct
 			}
 			tx.sh.mu.Unlock()
 			// wait for maintainer to clean up long-running sessions
-			time.Sleep(5 * time.Second)
+			time.Sleep(30 * time.Millisecond)
 		}
 		rowCounts, err := tx.BatchUpdate(ctx, []Statement{NewStatement(UpdateBarSetFoo)})
 		if err != nil {
@@ -3602,18 +3602,18 @@ func TestClient_WhenLongRunningPartitionedUpdateRequest_TakeNoAction(t *testing.
 		SessionPoolConfig: SessionPoolConfig{
 			MinOpened:                 1,
 			MaxOpened:                 1,
-			healthCheckSampleInterval: 1 * time.Second, // maintainer runs every 1s
+			healthCheckSampleInterval: 10 * time.Millisecond, // maintainer runs every 10ms
 			InactiveTransactionRemovalOptions: InactiveTransactionRemovalOptions{
 				CloseInactiveTransactions: true,
-				executionFrequency:        1 * time.Second, // check long-running sessions every 1s
+				executionFrequency:        15 * time.Millisecond, // check long-running sessions every 15ms
 			},
 		},
 	})
 	defer teardown()
-	// delay the rpc by 5 sec. The background task runs to clean long-running sessions.
+	// delay the rpc by 30ms. The background task runs to clean long-running sessions.
 	server.TestSpanner.PutExecutionTime(MethodExecuteSql,
 		SimulatedExecutionTime{
-			MinimumExecutionTime: 5 * time.Second,
+			MinimumExecutionTime: 30 * time.Millisecond,
 		})
 
 	stmt := NewStatement(UpdateBarSetFoo)
