@@ -80,6 +80,8 @@ type benchmarkOptions struct {
 	numClients             int
 	workload               int
 	numObjectsPerDirectory int
+
+	gcsFuse bool
 }
 
 func (b *benchmarkOptions) validate() error {
@@ -170,6 +172,8 @@ func parseFlags() {
 
 	flag.IntVar(&opts.workload, "workload", 1, "which workload to run")
 	flag.IntVar(&opts.numObjectsPerDirectory, "directory_num_objects", 1000, "total number of objects in directory")
+
+	flag.BoolVar(&opts.gcsFuse, "gcs_fuse", false, "use GCSFuse configs on client creation")
 
 	flag.Parse()
 

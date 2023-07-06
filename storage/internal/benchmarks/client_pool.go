@@ -16,6 +16,7 @@ package main
 
 import (
 	"context"
+	"crypto/tls"
 	"log"
 	"net/http"
 	"os"
@@ -87,7 +88,7 @@ func initializeClientPools(ctx context.Context, opts *benchmarkOptions) func() {
 
 	nonBenchmarkingClients, closeNonBenchmarking = newClientPool(
 		func() (*storage.Client, error) {
-			return initializeHTTPClient(ctx, useDefault, useDefault, false)
+			return initializeHTTPClient(ctx, useDefault, useDefault, false, opts.gcsFuse)
 		},
 		1,
 	)
@@ -96,7 +97,7 @@ func initializeClientPools(ctx context.Context, opts *benchmarkOptions) func() {
 	if opts.api == mixedAPIs || opts.api == xmlAPI {
 		xmlClients, closeXML = newClientPool(
 			func() (*storage.Client, error) {
-				return initializeHTTPClient(ctx, opts.writeBufferSize, opts.readBufferSize, false)
+				return initializeHTTPClient(ctx, opts.writeBufferSize, opts.readBufferSize, false, opts.gcsFuse)
 			},
 			opts.numClients,
 		)
@@ -108,7 +109,7 @@ func initializeClientPools(ctx context.Context, opts *benchmarkOptions) func() {
 	if opts.api == mixedAPIs || opts.api == jsonAPI || opts.api == xmlAPI {
 		jsonClients, closeJSON = newClientPool(
 			func() (*storage.Client, error) {
-				return initializeHTTPClient(ctx, opts.writeBufferSize, opts.readBufferSize, true)
+				return initializeHTTPClient(ctx, opts.writeBufferSize, opts.readBufferSize, true, opts.gcsFuse)
 			},
 			opts.numClients,
 		)
@@ -156,20 +157,33 @@ func getClient(ctx context.Context, api benchmarkAPI) *storage.Client {
 // mutex on starting a client so that we can set an env variable for GRPC clients
 var clientMu sync.Mutex
 
-func initializeHTTPClient(ctx context.Context, writeBufferSize, readBufferSize int, json bool) (*storage.Client, error) {
+func initializeHTTPClient(ctx context.Context, writeBufferSize, readBufferSize int, json bool, gcsFuse bool) (*storage.Client, error) {
 	opts := []option.ClientOption{}
 
-	if writeBufferSize != useDefault || readBufferSize != useDefault {
+	if writeBufferSize != useDefault || readBufferSize != useDefault || gcsFuse {
 		// We need to modify the underlying HTTP client
-
 		base := http.DefaultTransport.(*http.Transport).Clone()
+
+		if gcsFuse {
+			base = &http.Transport{
+				MaxConnsPerHost:     100,
+				MaxIdleConnsPerHost: 100,
+				// This disables HTTP/2 in transport.
+				TLSNextProto: make(
+					map[string]func(string, *tls.Conn) http.RoundTripper,
+				),
+			}
+		}
+
 		base.MaxIdleConnsPerHost = 100 // this is set in Storage as well
 		base.WriteBufferSize = writeBufferSize
 		base.ReadBufferSize = readBufferSize
 
-		http2Trans, err := http2.ConfigureTransports(base)
-		if err == nil {
-			http2Trans.ReadIdleTimeout = time.Second * 31
+		if !gcsFuse {
+			http2Trans, err := http2.ConfigureTransports(base)
+			if err == nil {
+				http2Trans.ReadIdleTimeout = time.Second * 31
+			}
 		}
 
 		trans, err := htransport.NewTransport(ctx, base,
