@@ -1558,7 +1558,6 @@ func toProtoLifecycle(l Lifecycle) *storagepb.Bucket_Lifecycle {
 				// doc states "format: int32"), so the client types used int64,
 				// but the proto uses int32 so we have a potentially lossy
 				// conversion.
-				AgeDays:                 proto.Int32(int32(r.Condition.AgeInDays)),
 				DaysSinceCustomTime:     proto.Int32(int32(r.Condition.DaysSinceCustomTime)),
 				DaysSinceNoncurrentTime: proto.Int32(int32(r.Condition.DaysSinceNoncurrentTime)),
 				MatchesPrefix:           r.Condition.MatchesPrefix,
@@ -1568,7 +1567,11 @@ func toProtoLifecycle(l Lifecycle) *storagepb.Bucket_Lifecycle {
 			},
 		}
 
-		// TODO(#6205): This may not be needed for gRPC
+		// Only set AgeDays in the proto if it is non-zero, or if the user has set
+		// Condition.AllObjects.
+		if r.Condition.AgeInDays != 0 {
+			rr.Condition.AgeDays = proto.Int32(int32(r.Condition.AgeInDays))
+		}
 		if r.Condition.AllObjects {
 			rr.Condition.AgeDays = proto.Int32(0)
 		}
@@ -1667,8 +1670,8 @@ func toLifecycleFromProto(rl *storagepb.Bucket_Lifecycle) Lifecycle {
 			},
 		}
 
-		// TODO(#6205): This may not be needed for gRPC
-		if rr.GetCondition().GetAgeDays() == 0 {
+		// Only set Condition.AllObjects if AgeDays is zero, not if it is nil.
+		if rr.GetCondition().AgeDays != nil && rr.GetCondition().GetAgeDays() == 0 {
 			r.Condition.AllObjects = true
 		}
 

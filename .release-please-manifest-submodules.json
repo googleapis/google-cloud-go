@@ -2,6 +2,7 @@
     "accessapproval": "1.7.1",
     "accesscontextmanager": "1.8.1",
     "advisorynotifications": "0.3.1",
+    "ai": "0.0.0",
     "aiplatform": "1.45.0",
     "alloydb": "1.2.1",
     "analytics": "0.21.2",
