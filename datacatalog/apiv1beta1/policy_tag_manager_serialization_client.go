@@ -24,6 +24,7 @@ import (
 	"math"
 	"net/http"
 	"net/url"
+	"time"
 
 	datacatalogpb "cloud.google.com/go/datacatalog/apiv1beta1/datacatalogpb"
 	gax "github.com/googleapis/gax-go/v2"
@@ -59,15 +60,23 @@ func defaultPolicyTagManagerSerializationGRPCClientOptions() []option.ClientOpti
 
 func defaultPolicyTagManagerSerializationCallOptions() *PolicyTagManagerSerializationCallOptions {
 	return &PolicyTagManagerSerializationCallOptions{
-		ImportTaxonomies: []gax.CallOption{},
-		ExportTaxonomies: []gax.CallOption{},
+		ImportTaxonomies: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ExportTaxonomies: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 	}
 }
 
 func defaultPolicyTagManagerSerializationRESTCallOptions() *PolicyTagManagerSerializationCallOptions {
 	return &PolicyTagManagerSerializationCallOptions{
-		ImportTaxonomies: []gax.CallOption{},
-		ExportTaxonomies: []gax.CallOption{},
+		ImportTaxonomies: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ExportTaxonomies: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 	}
 }
 
