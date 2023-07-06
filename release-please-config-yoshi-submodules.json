@@ -12,6 +12,9 @@
         "advisorynotifications": {
             "component": "advisorynotifications"
         },
+        "ai": {
+            "component": "ai"
+        },
         "aiplatform": {
             "component": "aiplatform"
         },

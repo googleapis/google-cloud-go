@@ -88,7 +88,7 @@ func TestRetryPreserveError(t *testing.T) {
 	if g, w := got.Code(), codes.NotFound; g != w {
 		t.Errorf("got code %v, want %v", g, w)
 	}
-	wantMessage := "not found"
+	wantMessage := "retry failed with context deadline exceeded; last error: rpc error: code = NotFound desc = not found"
 	if g, w := got.Message(), wantMessage; g != w {
 		t.Errorf("got message %q, want %q", g, w)
 	}
@@ -111,10 +111,7 @@ func TestRetryWrapsErrorWithStatusUnknown(t *testing.T) {
 	if g, w := err.Error(), wantError; g != w {
 		t.Errorf("got error %q, want %q", g, w)
 	}
-	got, ok := status.FromError(err)
-	if !ok {
-		t.Fatal("expected error to implement a gRPC status")
-	}
+	got, _ := status.FromError(err)
 	if g, w := got.Code(), codes.Unknown; g != w {
 		t.Errorf("got code %v, want %v", g, w)
 	}

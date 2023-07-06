@@ -291,7 +291,7 @@ func multiTransportTest(ctx context.Context, t *testing.T,
 }
 
 func TestIntegration_BucketCreateDelete(t *testing.T) {
-	ctx := skipJSONReads(skipGRPC("with attrs: https://github.com/googleapis/google-cloud-go/issues/6205"), "no reads in test")
+	ctx := skipJSONReads(context.Background(), "no reads in test")
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
 		projectID := testutil.ProjID()
 
@@ -445,8 +445,8 @@ func TestIntegration_BucketCreateDelete(t *testing.T) {
 				if got, want := gotAttrs.Labels, test.wantAttrs.Labels; !testutil.Equal(got, want) {
 					t.Errorf("labels: got %v, want %v", got, want)
 				}
-				if got, want := gotAttrs.Lifecycle, test.wantAttrs.Lifecycle; !testutil.Equal(got, want) {
-					t.Errorf("lifecycle: \ngot\t%v\nwant\t%v", got, want)
+				if diff := cmp.Diff(gotAttrs.Lifecycle, test.wantAttrs.Lifecycle); diff != "" {
+					t.Errorf("lifecycle: diff got vs. want: %v", diff)
 				}
 				if gotAttrs.LocationType != test.wantAttrs.LocationType {
 					t.Errorf("location type: got %s, want %s", gotAttrs.LocationType, test.wantAttrs.LocationType)
@@ -4810,11 +4810,9 @@ func TestIntegration_SignedURL_WithCreds(t *testing.T) {
 			t.Fatalf("problem with the signed URL: %v", err)
 		}
 	}, option.WithCredentials(creds))
-
 }
 
 func TestIntegration_SignedURL_DefaultSignBytes(t *testing.T) {
-
 	ctx := context.Background()
 
 	// Create another client to test the sign byte function as well
