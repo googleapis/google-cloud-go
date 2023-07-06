@@ -4,7 +4,7 @@ docker:
 deep-remove-regex:
   - /accessapproval/apiv1/
   - /accesscontextmanager/apiv1/
-  - /ai/generativelanguage/v1beta2/
+  - /ai/generativelanguage/apiv1beta2/
   - /aiplatform/apiv1/
   - /aiplatform/apiv1beta1/
   - /advisorynotifications/apiv1/
@@ -118,7 +118,7 @@ deep-remove-regex:
   # START snippets
   - /internal/generated/snippets/accessapproval/apiv1/
   - /internal/generated/snippets/accesscontextmanager/apiv1/
-  - /internal/generated/snippets/ai/generativelanguage/v1beta2/
+  - /internal/generated/snippets/ai/generativelanguage/apiv1beta2/
   - /internal/generated/snippets/aiplatform/apiv1/
   - /internal/generated/snippets/aiplatform/apiv1beta1/
   - /internal/generated/snippets/advisorynotifications/apiv1/
