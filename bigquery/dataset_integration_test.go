@@ -289,7 +289,7 @@ func TestIntegration_DatasetStorageBillingModel(t *testing.T) {
 	if client == nil {
 		t.Skip("Integration tests skipped")
 	}
-	t.Skip("Enterprise feature skipped")
+	t.Skip("BigQuery flat-rate commitments enabled for project, feature skipped")
 
 	ctx := context.Background()
 	md, err := dataset.Metadata(ctx)
@@ -323,7 +323,7 @@ func TestIntegration_DatasetStorageUpdateBillingModel(t *testing.T) {
 	if client == nil {
 		t.Skip("Integration tests skipped")
 	}
-	t.Skip("Enterprise feature skipped")
+	t.Skip("BigQuery flat-rate commitments enabled for project, feature skipped")
 
 	ctx := context.Background()
 	ds := client.Dataset(datasetIDs.New())
