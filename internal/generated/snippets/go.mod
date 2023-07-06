@@ -137,6 +137,7 @@ require (
 )
 
 require (
+	cloud.google.com/go/ai v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/migrationcenter v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/rapidmigrationassessment v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/recaptchaenterprise v1.3.1
