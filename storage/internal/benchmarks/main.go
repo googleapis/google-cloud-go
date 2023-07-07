@@ -81,6 +81,8 @@ type benchmarkOptions struct {
 	numClients             int
 	workload               int
 	numObjectsPerDirectory int
+
+	useGCSFuseConfig bool
 }
 
 func (b *benchmarkOptions) validate() error {
@@ -151,6 +153,8 @@ func parseFlags() {
 	flag.Int64Var(&opts.rangeSize, "range_read_size", 0, "size of the range to read in bytes")
 	flag.Int64Var(&opts.minReadOffset, "minimum_read_offset", 0, "minimum read offset in bytes")
 	flag.Int64Var(&opts.maxReadOffset, "maximum_read_offset", 0, "maximum read offset in bytes")
+
+	flag.BoolVar(&opts.useGCSFuseConfig, "gcs_fuse", false, "use GCSFuse configs on HTTP client creation")
 
 	flag.IntVar(&opts.readBufferSize, "read_buffer_size", useDefault, "read buffer size in bytes")
 	flag.IntVar(&opts.writeBufferSize, "write_buffer_size", useDefault, "write buffer size in bytes")
