@@ -21,11 +21,8 @@
 package cxpb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	grpc "google.golang.org/grpc"
@@ -37,6 +34,8 @@ import (
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	structpb "google.golang.org/protobuf/types/known/structpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -4712,7 +4711,8 @@ type TestCasesClient interface {
 	// - `response`:
 	// [ExportTestCasesResponse][google.cloud.dialogflow.cx.v3beta1.ExportTestCasesResponse]
 	ExportTestCases(ctx context.Context, in *ExportTestCasesRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
-	// Fetches a list of results for a given test case.
+	// Fetches the list of run results for the given test case. A maximum of 100
+	// results are kept for each test case.
 	ListTestCaseResults(ctx context.Context, in *ListTestCaseResultsRequest, opts ...grpc.CallOption) (*ListTestCaseResultsResponse, error)
 	// Gets a test case result.
 	GetTestCaseResult(ctx context.Context, in *GetTestCaseResultRequest, opts ...grpc.CallOption) (*TestCaseResult, error)
@@ -4895,7 +4895,8 @@ type TestCasesServer interface {
 	// - `response`:
 	// [ExportTestCasesResponse][google.cloud.dialogflow.cx.v3beta1.ExportTestCasesResponse]
 	ExportTestCases(context.Context, *ExportTestCasesRequest) (*longrunningpb.Operation, error)
-	// Fetches a list of results for a given test case.
+	// Fetches the list of run results for the given test case. A maximum of 100
+	// results are kept for each test case.
 	ListTestCaseResults(context.Context, *ListTestCaseResultsRequest) (*ListTestCaseResultsResponse, error)
 	// Gets a test case result.
 	GetTestCaseResult(context.Context, *GetTestCaseResultRequest) (*TestCaseResult, error)
