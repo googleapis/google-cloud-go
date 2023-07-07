@@ -104,7 +104,7 @@ func initializeClientPools(ctx context.Context, opts *benchmarkOptions) func() {
 					writeBufferSize: opts.writeBufferSize,
 					readBufferSize:  opts.readBufferSize,
 					useJSON:         false,
-					setGCSFuseOpts:  opts.gcsFuse,
+					setGCSFuseOpts:  opts.useGCSFuseConfig,
 				})
 			},
 			opts.numClients,
@@ -121,7 +121,7 @@ func initializeClientPools(ctx context.Context, opts *benchmarkOptions) func() {
 					writeBufferSize: opts.writeBufferSize,
 					readBufferSize:  opts.readBufferSize,
 					useJSON:         true,
-					setGCSFuseOpts:  opts.gcsFuse,
+					setGCSFuseOpts:  opts.useGCSFuseConfig,
 				})
 			},
 			opts.numClients,
@@ -189,6 +189,10 @@ func initializeHTTPClient(ctx context.Context, config clientConfig) (*storage.Cl
 		// We need to modify the underlying HTTP client
 		base := http.DefaultTransport.(*http.Transport).Clone()
 
+		// Set MaxIdleConnsPerHost for parity with the Storage library, as it
+		// sets this as well
+		base.MaxIdleConnsPerHost = 100
+
 		if config.setGCSFuseOpts {
 			base = &http.Transport{
 				MaxConnsPerHost:     100,
@@ -198,18 +202,15 @@ func initializeHTTPClient(ctx context.Context, config clientConfig) (*storage.Cl
 					map[string]func(string, *tls.Conn) http.RoundTripper,
 				),
 			}
-		}
-
-		base.MaxIdleConnsPerHost = 100 // this is set in Storage as well
-		base.WriteBufferSize = config.writeBufferSize
-		base.ReadBufferSize = config.readBufferSize
-
-		if !config.setGCSFuseOpts {
+		} else {
 			http2Trans, err := http2.ConfigureTransports(base)
 			if err == nil {
 				http2Trans.ReadIdleTimeout = time.Second * 31
 			}
 		}
+
+		base.WriteBufferSize = config.writeBufferSize
+		base.ReadBufferSize = config.readBufferSize
 
 		trans, err := htransport.NewTransport(ctx, base,
 			option.WithScopes("https://www.googleapis.com/auth/devstorage.full_control"))
