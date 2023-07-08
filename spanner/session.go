@@ -730,6 +730,25 @@ func (p *sessionPool) getLongRunningSessionsLocked() []*sessionHandle {
 	return longRunningSessions
 }
 
+// removes or logs sessions that are unexpectedly long-running.
+func (p *sessionPool) removeLongRunningSessions() {
+	p.mu.Lock()
+	longRunningSessions := p.getLongRunningSessionsLocked()
+	p.mu.Unlock()
+
+	// destroy long-running sessions
+	if p.CloseInactiveTransactions {
+		for _, sh := range longRunningSessions {
+			// removes inner session out of the pool to reduce the probability of two processes trying
+			// to use the same session at the same time.
+			sh.destroy()
+			p.InactiveTransactionRemovalOptions.mu.Lock()
+			p.InactiveTransactionRemovalOptions.numOfLeakedSessionsRemoved++
+			p.InactiveTransactionRemovalOptions.mu.Unlock()
+		}
+	}
+}
+
 func (p *sessionPool) initPool(numSessions uint64) error {
 	p.mu.Lock()
 	defer p.mu.Unlock()
@@ -1454,7 +1473,6 @@ func (hc *healthChecker) maintainer() {
 		currSessionsOpened := hc.pool.numOpened
 		maxIdle := hc.pool.MaxIdle
 		minOpened := hc.pool.MinOpened
-		var longRunningSessions []*sessionHandle
 
 		// Reset the start time for recording the maximum number of sessions
 		// in the pool.
@@ -1464,26 +1482,14 @@ func (hc *healthChecker) maintainer() {
 			hc.pool.recordStat(context.Background(), MaxInUseSessionsCount, int64(hc.pool.maxNumInUse))
 			hc.pool.lastResetTime = now
 		}
-
-		// task that fetches sessions which are unexpectedly long-running
-		if now.After(hc.pool.InactiveTransactionRemovalOptions.lastExecutionTime.Add(hc.pool.executionFrequency)) {
-			if hc.pool.CloseInactiveTransactions || hc.pool.LogInactiveTransactions {
-				longRunningSessions = hc.pool.getLongRunningSessionsLocked()
-			}
-			hc.pool.InactiveTransactionRemovalOptions.lastExecutionTime = now
-		}
 		hc.pool.mu.Unlock()
 
-		// destroy long-running sessions
-		if hc.pool.CloseInactiveTransactions {
-			for _, sh := range longRunningSessions {
-				// removes inner session out of the pool to reduce the probability of two processes trying
-				// to use the same session at the same time.
-				sh.destroy()
-				hc.pool.InactiveTransactionRemovalOptions.mu.Lock()
-				hc.pool.InactiveTransactionRemovalOptions.numOfLeakedSessionsRemoved++
-				hc.pool.InactiveTransactionRemovalOptions.mu.Unlock()
+		// task to remove or log sessions which are unexpectedly long-running
+		if now.After(hc.pool.InactiveTransactionRemovalOptions.lastExecutionTime.Add(hc.pool.executionFrequency)) {
+			if hc.pool.CloseInactiveTransactions || hc.pool.LogInactiveTransactions {
+				hc.pool.removeLongRunningSessions()
 			}
+			hc.pool.InactiveTransactionRemovalOptions.lastExecutionTime = now
 		}
 
 		// Get the maximum number of sessions in use during the current

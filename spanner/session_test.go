@@ -413,12 +413,10 @@ func TestSessionLeak_WhenInactiveTransactions_RemoveSessionsFromPool(t *testing.
 	ctx := context.Background()
 	_, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
 		SessionPoolConfig: SessionPoolConfig{
-			MinOpened:                 0,
-			MaxOpened:                 1,
-			healthCheckSampleInterval: 10 * time.Millisecond, // maintainer runs every 10 ms
+			MinOpened: 0,
+			MaxOpened: 1,
 			InactiveTransactionRemovalOptions: InactiveTransactionRemovalOptions{
 				CloseInactiveTransactions: true,
-				executionFrequency:        15 * time.Millisecond,
 			},
 		},
 	})
@@ -459,8 +457,9 @@ func TestSessionLeak_WhenInactiveTransactions_RemoveSessionsFromPool(t *testing.
 	// Mock the session checkout time to be greater than 60 mins
 	single.sh.checkoutTime = time.Now().Add(-time.Hour)
 	single.sh.mu.Unlock()
-	// Sleep for 30ms so that background task cleans up the session
-	time.Sleep(30 * time.Millisecond)
+
+	// force run task to clean up unexpected long-running sessions
+	p.removeLongRunningSessions()
 
 	// The session should have been removed from pool.
 	p.mu.Lock()
@@ -541,6 +540,7 @@ func TestMaintainer_LongRunningTransactionsCleanup_IfClose_VerifyInactiveSession
 
 	// Sleep for maintainer to run long-running cleanup task
 	time.Sleep(30 * time.Millisecond)
+
 	sp.mu.Lock()
 	defer sp.mu.Unlock()
 	sp.InactiveTransactionRemovalOptions.mu.Lock()
@@ -553,17 +553,85 @@ func TestMaintainer_LongRunningTransactionsCleanup_IfClose_VerifyInactiveSession
 	}
 }
 
-func TestMaintainer_LongRunningTransactionsCleanup_IfLog_VerifyInactiveSessionsOpen(t *testing.T) {
+func TestLongRunningTransactionsCleanup_IfClose_VerifyInactiveSessionsClosed(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
 	_, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
 		SessionPoolConfig: SessionPoolConfig{
-			MinOpened:                 1,
-			MaxOpened:                 3,
-			healthCheckSampleInterval: 10 * time.Millisecond, // maintainer runs every 50ms
+			MinOpened: 1,
+			MaxOpened: 3,
+			InactiveTransactionRemovalOptions: InactiveTransactionRemovalOptions{
+				CloseInactiveTransactions: true,
+			},
+		},
+	})
+	defer teardown()
+	sp := client.idleSessions
+
+	// get session-1 from pool
+	s1, err := sp.take(ctx)
+	if err != nil {
+		t.Fatalf("cannot get the session: %v", err)
+	}
+	// get session-2 from pool
+	s2, err := sp.take(ctx)
+	if err != nil {
+		t.Fatalf("cannot get the session: %v", err)
+	}
+	// get session-3 from pool
+	s3, err := sp.take(ctx)
+	if err != nil {
+		t.Fatalf("cannot get the session: %v", err)
+	}
+	sp.mu.Lock()
+	if g, w := sp.numOpened, uint64(3); g != w {
+		sp.mu.Unlock()
+		t.Fatalf("No of sessions opened mismatch\nGot: %d\nWant: %d\n", g, w)
+	}
+	if g, w := sp.numInUse, uint64(3); g != w {
+		sp.mu.Unlock()
+		t.Fatalf("No of sessions in use mismatch\nGot: %d\nWant: %d\n", g, w)
+	}
+	sp.mu.Unlock()
+	s1.mu.Lock()
+	s1.isLongRunningTransaction = false
+	s1.checkoutTime = time.Now().Add(-time.Hour)
+	s1.mu.Unlock()
+
+	s2.mu.Lock()
+	s2.isLongRunningTransaction = false
+	s2.checkoutTime = time.Now().Add(-time.Hour)
+	s2.mu.Unlock()
+
+	s3.mu.Lock()
+	s3.isLongRunningTransaction = true
+	s3.checkoutTime = time.Now().Add(-time.Hour)
+	s3.mu.Unlock()
+
+	// force run task to clean up unexpected long-running sessions
+	sp.removeLongRunningSessions()
+
+	sp.mu.Lock()
+	defer sp.mu.Unlock()
+	sp.InactiveTransactionRemovalOptions.mu.Lock()
+	defer sp.InactiveTransactionRemovalOptions.mu.Unlock()
+	if g, w := sp.numOfLeakedSessionsRemoved, uint64(2); g != w {
+		t.Fatalf("No of leaked sessions removed mismatch\nGot: %d\nWant: %d\n", g, w)
+	}
+	if g, w := sp.numOpened, uint64(1); g != w {
+		t.Fatalf("Session pool size mismatch\nGot: %d\nWant: %d\n", g, w)
+	}
+}
+
+func TestLongRunningTransactionsCleanup_IfLog_VerifyInactiveSessionsOpen(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	_, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
+		SessionPoolConfig: SessionPoolConfig{
+			MinOpened: 1,
+			MaxOpened: 3,
 			InactiveTransactionRemovalOptions: InactiveTransactionRemovalOptions{
 				LogInactiveTransactions: true,
-				executionFrequency:      15 * time.Millisecond,
 			},
 		},
 	})
@@ -610,8 +678,8 @@ func TestMaintainer_LongRunningTransactionsCleanup_IfLog_VerifyInactiveSessionsO
 	s3.checkoutTime = time.Now().Add(-time.Hour)
 	s3.mu.Unlock()
 
-	// Sleep for maintainer to run long-running cleanup task
-	time.Sleep(30 * time.Millisecond)
+	// force run task to clean up unexpected long-running sessions
+	sp.removeLongRunningSessions()
 
 	s1.mu.Lock()
 	if !s1.isSessionLeakLogged {
@@ -643,18 +711,16 @@ func TestMaintainer_LongRunningTransactionsCleanup_IfLog_VerifyInactiveSessionsO
 	}
 }
 
-func TestMaintainer_LongRunningTransactionsCleanup_UtilisationBelowThreshold_VerifyInactiveSessionsOpen(t *testing.T) {
+func TestLongRunningTransactionsCleanup_UtilisationBelowThreshold_VerifyInactiveSessionsOpen(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
 	_, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
 		SessionPoolConfig: SessionPoolConfig{
-			MinOpened:                 1,
-			MaxOpened:                 3,
-			incStep:                   1,
-			healthCheckSampleInterval: 10 * time.Millisecond, // maintainer runs every 10 ms
+			MinOpened: 1,
+			MaxOpened: 3,
+			incStep:   1,
 			InactiveTransactionRemovalOptions: InactiveTransactionRemovalOptions{
 				CloseInactiveTransactions: true,
-				executionFrequency:        15 * time.Millisecond,
 			},
 		},
 	})
@@ -691,8 +757,8 @@ func TestMaintainer_LongRunningTransactionsCleanup_UtilisationBelowThreshold_Ver
 	s2.checkoutTime = time.Now().Add(-time.Hour)
 	s2.mu.Unlock()
 
-	// Sleep for maintainer to run long-running cleanup task
-	time.Sleep(30 * time.Millisecond)
+	// force run task to clean up unexpected long-running sessions
+	sp.removeLongRunningSessions()
 
 	sp.mu.Lock()
 	defer sp.mu.Unlock()
@@ -707,17 +773,15 @@ func TestMaintainer_LongRunningTransactionsCleanup_UtilisationBelowThreshold_Ver
 	}
 }
 
-func TestMaintainer_LongRunningTransactions_WhenAllExpectedlyLongRunning_VerifyInactiveSessionsOpen(t *testing.T) {
+func TestLongRunningTransactions_WhenAllExpectedlyLongRunning_VerifyInactiveSessionsOpen(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
 	_, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
 		SessionPoolConfig: SessionPoolConfig{
-			MinOpened:                 1,
-			MaxOpened:                 3,
-			healthCheckSampleInterval: 10 * time.Millisecond, // maintainer runs every 10 ms
+			MinOpened: 1,
+			MaxOpened: 3,
 			InactiveTransactionRemovalOptions: InactiveTransactionRemovalOptions{
 				LogInactiveTransactions: true,
-				executionFrequency:      15 * time.Millisecond,
 			},
 		},
 	})
@@ -764,8 +828,8 @@ func TestMaintainer_LongRunningTransactions_WhenAllExpectedlyLongRunning_VerifyI
 	s3.checkoutTime = time.Now().Add(-time.Hour)
 	s3.mu.Unlock()
 
-	// Sleep for maintainer to run long-running cleanup task
-	time.Sleep(30 * time.Millisecond)
+	// force run task to clean up unexpected long-running sessions
+	sp.removeLongRunningSessions()
 
 	sp.mu.Lock()
 	defer sp.mu.Unlock()
@@ -779,17 +843,15 @@ func TestMaintainer_LongRunningTransactions_WhenAllExpectedlyLongRunning_VerifyI
 	}
 }
 
-func TestMaintainer_LongRunningTransactions_WhenDurationBelowThreshold_VerifyInactiveSessionsOpen(t *testing.T) {
+func TestLongRunningTransactions_WhenDurationBelowThreshold_VerifyInactiveSessionsOpen(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
 	_, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
 		SessionPoolConfig: SessionPoolConfig{
-			MinOpened:                 1,
-			MaxOpened:                 3,
-			healthCheckSampleInterval: 10 * time.Millisecond, // maintainer runs every 10 ms
+			MinOpened: 1,
+			MaxOpened: 3,
 			InactiveTransactionRemovalOptions: InactiveTransactionRemovalOptions{
 				LogInactiveTransactions: true,
-				executionFrequency:      15 * time.Millisecond,
 			},
 		},
 	})
@@ -836,8 +898,8 @@ func TestMaintainer_LongRunningTransactions_WhenDurationBelowThreshold_VerifyIna
 	s3.checkoutTime = time.Now().Add(-50 * time.Minute)
 	s3.mu.Unlock()
 
-	// Sleep for maintainer to run long-running cleanup task
-	time.Sleep(30 * time.Millisecond)
+	// force run task to clean up unexpected long-running sessions
+	sp.removeLongRunningSessions()
 
 	s1.mu.Lock()
 	if s1.isSessionLeakLogged {

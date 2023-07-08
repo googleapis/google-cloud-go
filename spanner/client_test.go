@@ -212,12 +212,10 @@ func TestClient_Single_WhenInactiveTransactionsAndSessionIsNotFoundOnBackend_Rem
 	t.Parallel()
 	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
 		SessionPoolConfig: SessionPoolConfig{
-			MinOpened:                 1,
-			MaxOpened:                 1,
-			healthCheckSampleInterval: 10 * time.Millisecond, // maintainer runs every 10ms
+			MinOpened: 1,
+			MaxOpened: 1,
 			InactiveTransactionRemovalOptions: InactiveTransactionRemovalOptions{
 				CloseInactiveTransactions: true,
-				executionFrequency:        15 * time.Millisecond, // check long-running sessions every 15ms
 			},
 		},
 	})
@@ -235,8 +233,9 @@ func TestClient_Single_WhenInactiveTransactionsAndSessionIsNotFoundOnBackend_Rem
 	sh.mu.Lock()
 	sh.checkoutTime = time.Now().Add(-time.Hour)
 	sh.mu.Unlock()
-	// Allow maintainer to clean up long-running sessions
-	time.Sleep(30 * time.Millisecond)
+
+	// force run task to clean up unexpected long-running sessions
+	p.removeLongRunningSessions()
 	rowCount := int64(0)
 	for {
 		// Backend throws SessionNotFoundError. Session gets replaced with new session
@@ -942,17 +941,16 @@ func TestClient_ReadWriteTransaction_WhenLongRunningSessionCleaned_TransactionSh
 	t.Parallel()
 	_, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
 		SessionPoolConfig: SessionPoolConfig{
-			MinOpened:                 1,
-			MaxOpened:                 1,
-			healthCheckSampleInterval: 10 * time.Millisecond, // maintainer runs every 1s
+			MinOpened: 1,
+			MaxOpened: 1,
 			InactiveTransactionRemovalOptions: InactiveTransactionRemovalOptions{
 				CloseInactiveTransactions: true,
-				executionFrequency:        15 * time.Millisecond, // check long-running sessions every 1s
 			},
 		},
 	})
 	defer teardown()
 	ctx := context.Background()
+	p := client.idleSessions
 	msg := "session is already recycled / destroyed"
 	_, err := client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
 		rowCount, err := tx.Update(ctx, NewStatement(UpdateBarSetFoo))
@@ -972,8 +970,9 @@ func TestClient_ReadWriteTransaction_WhenLongRunningSessionCleaned_TransactionSh
 			return status.Errorf(codes.FailedPrecondition, "isLongRunningTransaction value mismatch\nGot: %v\nWant: %v", g, w)
 		}
 		tx.sh.mu.Unlock()
-		// wait for maintainer to clean up long-running sessions
-		time.Sleep(30 * time.Millisecond)
+
+		// force run task to clean up unexpected long-running sessions
+		p.removeLongRunningSessions()
 
 		// The session associated with this transaction tx has been destroyed. So the below call should fail.
 		// Eventually this means the entire transaction should not succeed.
@@ -1028,12 +1027,10 @@ func TestClient_ReadWriteTransaction_WhenLongRunningExecuteBatchUpdate_TakeNoAct
 	t.Parallel()
 	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
 		SessionPoolConfig: SessionPoolConfig{
-			MinOpened:                 1,
-			MaxOpened:                 1,
-			healthCheckSampleInterval: 10 * time.Millisecond, // maintainer runs every 10ms
+			MinOpened: 1,
+			MaxOpened: 1,
 			InactiveTransactionRemovalOptions: InactiveTransactionRemovalOptions{
 				CloseInactiveTransactions: true,
-				executionFrequency:        15 * time.Millisecond, // check long-running sessions every 15ms
 			},
 		},
 	})
@@ -1043,6 +1040,7 @@ func TestClient_ReadWriteTransaction_WhenLongRunningExecuteBatchUpdate_TakeNoAct
 		SimulatedExecutionTime{Errors: []error{newSessionNotFoundError("projects/p/instances/i/databases/d/sessions/s")}},
 	)
 	ctx := context.Background()
+	p := client.idleSessions
 	var attempts int
 	_, err := client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
 		attempts++
@@ -1055,8 +1053,9 @@ func TestClient_ReadWriteTransaction_WhenLongRunningExecuteBatchUpdate_TakeNoAct
 				return status.Errorf(codes.FailedPrecondition, "isLongRunningTransaction value mismatch\nGot: %v\nWant: %v", g, w)
 			}
 			tx.sh.mu.Unlock()
-			// wait for maintainer to clean up long-running sessions
-			time.Sleep(30 * time.Millisecond)
+
+			// force run task to clean up unexpected long-running sessions
+			p.removeLongRunningSessions()
 		}
 		rowCounts, err := tx.BatchUpdate(ctx, []Statement{NewStatement(UpdateBarSetFoo)})
 		if err != nil {
@@ -1076,7 +1075,6 @@ func TestClient_ReadWriteTransaction_WhenLongRunningExecuteBatchUpdate_TakeNoAct
 	if g, w := attempts, 2; g != w {
 		t.Fatalf("number of attempts mismatch:\nGot%d\nWant:%d", g, w)
 	}
-	p := client.idleSessions
 	p.InactiveTransactionRemovalOptions.mu.Lock()
 	defer p.InactiveTransactionRemovalOptions.mu.Unlock()
 	if g, w := p.numOfLeakedSessionsRemoved, uint64(0); g != w {
