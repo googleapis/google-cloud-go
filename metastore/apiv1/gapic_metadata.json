@@ -10,6 +10,11 @@
         "grpc": {
           "libraryClient": "DataprocMetastoreClient",
           "rpcs": {
+            "AlterMetadataResourceLocation": {
+              "methods": [
+                "AlterMetadataResourceLocation"
+              ]
+            },
             "CancelOperation": {
               "methods": [
                 "CancelOperation"
@@ -103,6 +108,16 @@
             "ListServices": {
               "methods": [
                 "ListServices"
+              ]
+            },
+            "MoveTableToDatabase": {
+              "methods": [
+                "MoveTableToDatabase"
+              ]
+            },
+            "QueryMetadata": {
+              "methods": [
+                "QueryMetadata"
               ]
             },
             "RestoreService": {
@@ -135,6 +150,11 @@
         "rest": {
           "libraryClient": "DataprocMetastoreClient",
           "rpcs": {
+            "AlterMetadataResourceLocation": {
+              "methods": [
+                "AlterMetadataResourceLocation"
+              ]
+            },
             "CancelOperation": {
               "methods": [
                 "CancelOperation"
@@ -228,6 +248,16 @@
             "ListServices": {
               "methods": [
                 "ListServices"
+              ]
+            },
+            "MoveTableToDatabase": {
+              "methods": [
+                "MoveTableToDatabase"
+              ]
+            },
+            "QueryMetadata": {
+              "methods": [
+                "QueryMetadata"
               ]
             },
             "RestoreService": {
