@@ -22,9 +22,6 @@ package cxpb
 
 import (
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -35,6 +32,8 @@ import (
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	structpb "google.golang.org/protobuf/types/known/structpb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -1347,8 +1346,8 @@ type Webhook_GenericWebService struct {
 	RequestBody string `protobuf:"bytes,8,opt,name=request_body,json=requestBody,proto3" json:"request_body,omitempty"`
 	// Optional. Maps the values extracted from specific fields of the flexible
 	// webhook response into session parameters.
-	//  - Key: session parameter name
-	//  - Value: field path in the webhook response
+	// - Key: session parameter name
+	// - Value: field path in the webhook response
 	ParameterMapping map[string]string `protobuf:"bytes,9,rep,name=parameter_mapping,json=parameterMapping,proto3" json:"parameter_mapping,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 }
 
