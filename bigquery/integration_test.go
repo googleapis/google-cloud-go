@@ -252,8 +252,13 @@ func initTestState(client *Client, t time.Time) func() {
 	// For replayability, seed the random source with t.
 	Seed(t.UnixNano())
 
-	prefix := datasetIDs.Prefix + string(datasetIDs.Sep)
-	deleteDatasets(ctx, prefix)
+	prefixes := []string{
+		"dataset_",                    // bigquery package tests
+		"managedwriter_test_dataset_", // managedwriter package tests
+	}
+	for _, prefix := range prefixes {
+		deleteDatasets(ctx, prefix)
+	}
 
 	dataset = client.Dataset(datasetIDs.New())
 	otherDataset = client.Dataset(datasetIDs.New())
