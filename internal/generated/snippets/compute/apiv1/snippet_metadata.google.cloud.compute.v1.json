@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/compute/apiv1",
-    "version": "1.20.1",
+    "version": "$VERSION",
     "language": "GO",
     "apis": [
       {
@@ -16620,7 +16620,7 @@
     {
       "regionTag": "compute_v1_generated_Projects_MoveInstance_sync",
       "title": "compute MoveInstance Sample",
-      "description": "MoveInstance moves an instance and its attached persistent disks from one zone to another. *Note*: Moving VMs or disks by using this method might cause unexpected behavior. For more information, see the [known issue](/compute/docs/troubleshooting/known-issues#moving_vms_or_disks_using_the_moveinstance_api_or_the_causes_unexpected_behavior).",
+      "description": "MoveInstance moves an instance and its attached persistent disks from one zone to another. *Note*: Moving VMs or disks by using this method might cause unexpected behavior. For more information, see the [known issue](/compute/docs/troubleshooting/known-issues#moving_vms_or_disks_using_the_moveinstance_api_or_the_causes_unexpected_behavior). [Deprecated] This method is deprecated. See [moving instance across zones](/compute/docs/instances/moving-instance-across-zones) instead.",
       "file": "ProjectsClient/MoveInstance/main.go",
       "language": "GO",
       "clientMethod": {

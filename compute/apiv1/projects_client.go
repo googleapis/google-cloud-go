@@ -229,7 +229,7 @@ func (c *ProjectsClient) MoveDisk(ctx context.Context, req *computepb.MoveDiskPr
 	return c.internalClient.MoveDisk(ctx, req, opts...)
 }
 
-// MoveInstance moves an instance and its attached persistent disks from one zone to another. Note: Moving VMs or disks by using this method might cause unexpected behavior. For more information, see the known issue (at /compute/docs/troubleshooting/known-issues#moving_vms_or_disks_using_the_moveinstance_api_or_the_causes_unexpected_behavior).
+// MoveInstance moves an instance and its attached persistent disks from one zone to another. Note: Moving VMs or disks by using this method might cause unexpected behavior. For more information, see the known issue (at /compute/docs/troubleshooting/known-issues#moving_vms_or_disks_using_the_moveinstance_api_or_the_causes_unexpected_behavior). [Deprecated] This method is deprecated. See moving instance across zones (at /compute/docs/instances/moving-instance-across-zones) instead.
 func (c *ProjectsClient) MoveInstance(ctx context.Context, req *computepb.MoveInstanceProjectRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.MoveInstance(ctx, req, opts...)
 }
@@ -994,7 +994,7 @@ func (c *projectsRESTClient) MoveDisk(ctx context.Context, req *computepb.MoveDi
 	return op, nil
 }
 
-// MoveInstance moves an instance and its attached persistent disks from one zone to another. Note: Moving VMs or disks by using this method might cause unexpected behavior. For more information, see the known issue (at /compute/docs/troubleshooting/known-issues#moving_vms_or_disks_using_the_moveinstance_api_or_the_causes_unexpected_behavior).
+// MoveInstance moves an instance and its attached persistent disks from one zone to another. Note: Moving VMs or disks by using this method might cause unexpected behavior. For more information, see the known issue (at /compute/docs/troubleshooting/known-issues#moving_vms_or_disks_using_the_moveinstance_api_or_the_causes_unexpected_behavior). [Deprecated] This method is deprecated. See moving instance across zones (at /compute/docs/instances/moving-instance-across-zones) instead.
 func (c *projectsRESTClient) MoveInstance(ctx context.Context, req *computepb.MoveInstanceProjectRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetInstanceMoveRequestResource()
