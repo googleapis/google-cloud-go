@@ -278,7 +278,7 @@ func initTestState(client *Client, t time.Time) func() {
 // delete a resource if it is older than a day
 // that will prevent collisions with parallel CI test runs.
 func isResourceStale(t time.Time) bool {
-	return time.Now().Sub(t).Hours() >= 24
+	return time.Since(t).Hours() >= 24
 }
 
 // delete old datasets
@@ -291,7 +291,7 @@ func deleteDatasets(ctx context.Context, prefix string) {
 			break
 		}
 		if err != nil {
-			fmt.Println("failed to list project datasets: ", err)
+			fmt.Printf("failed to list project datasets: %v\n", err)
 			break
 		}
 		if !strings.HasPrefix(ds.DatasetID, prefix) {
@@ -300,14 +300,14 @@ func deleteDatasets(ctx context.Context, prefix string) {
 
 		md, err := ds.Metadata(ctx)
 		if err != nil {
-			fmt.Printf("failed to get dataset `%s` metadata: %v", ds.DatasetID, err)
+			fmt.Printf("failed to get dataset `%s` metadata: %v\n", ds.DatasetID, err)
 			continue
 		}
 		if isResourceStale(md.CreationTime) {
 			fmt.Printf("found old dataset to delete: %s\n", ds.DatasetID)
 			err := ds.DeleteWithContents(ctx)
 			if err != nil {
-				fmt.Println("failed to delete old dataset: ", ds.DatasetID)
+				fmt.Printf("failed to delete old dataset `%s`\n", ds.DatasetID)
 			}
 		}
 	}
