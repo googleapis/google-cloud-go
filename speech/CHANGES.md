@@ -1,5 +1,12 @@
 # Changes
 
+## [1.18.0](https://github.com/googleapis/google-cloud-go/compare/speech/v1.17.1...speech/v1.18.0) (2023-07-10)
+
+
+### Features
+
+* **speech:** Add `model` and `language_codes` fields in `RecognitionConfig` message + enable default `_` recognizer ([#8204](https://github.com/googleapis/google-cloud-go/issues/8204)) ([f41d56f](https://github.com/googleapis/google-cloud-go/commit/f41d56f2f5b1fa3d47be48874fece70136382a45))
+
 ## [1.17.1](https://github.com/googleapis/google-cloud-go/compare/speech/v1.17.0...speech/v1.17.1) (2023-06-20)
 
 
