@@ -1,5 +1,12 @@
 # Changes
 
+## [1.13.0](https://github.com/googleapis/google-cloud-go/compare/kms/v1.12.1...kms/v1.13.0) (2023-07-10)
+
+
+### Features
+
+* **kms:** Add interoperable symmetric encryption system ([14b95d3](https://github.com/googleapis/google-cloud-go/commit/14b95d33753d0b391d0b49533e92b551e5dc3072))
+
 ## [1.12.1](https://github.com/googleapis/google-cloud-go/compare/kms/v1.12.0...kms/v1.12.1) (2023-06-20)
 
 

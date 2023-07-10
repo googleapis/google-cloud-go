@@ -1,5 +1,12 @@
 # Changes
 
+## [1.12.0](https://github.com/googleapis/google-cloud-go/compare/metastore/v1.11.1...metastore/v1.12.0) (2023-07-10)
+
+
+### Features
+
+* **metastore:** Added Admin Interface (v1) ([#8190](https://github.com/googleapis/google-cloud-go/issues/8190)) ([14b95d3](https://github.com/googleapis/google-cloud-go/commit/14b95d33753d0b391d0b49533e92b551e5dc3072))
+
 ## [1.11.1](https://github.com/googleapis/google-cloud-go/compare/metastore/v1.11.0...metastore/v1.11.1) (2023-06-20)
 
 

@@ -1,5 +1,12 @@
 # Changes
 
+## [1.15.0](https://github.com/googleapis/google-cloud-go/compare/datacatalog/v1.14.1...datacatalog/v1.15.0) (2023-07-10)
+
+
+### Features
+
+* **datacatalog:** Added rpc RenameTagTemplateFieldEnumValue ([#8205](https://github.com/googleapis/google-cloud-go/issues/8205)) ([a0eb675](https://github.com/googleapis/google-cloud-go/commit/a0eb67567e00362f62c1a8186c1c0dbfec8ffcda))
+
 ## [1.14.1](https://github.com/googleapis/google-cloud-go/compare/datacatalog/v1.14.0...datacatalog/v1.14.1) (2023-06-20)
 
 
