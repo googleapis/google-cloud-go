@@ -47,6 +47,7 @@ type GlobalAddressesCallOptions struct {
 	Get       []gax.CallOption
 	Insert    []gax.CallOption
 	List      []gax.CallOption
+	Move      []gax.CallOption
 	SetLabels []gax.CallOption
 }
 
@@ -82,6 +83,9 @@ func defaultGlobalAddressesRESTCallOptions() *GlobalAddressesCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
+		Move: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
 		SetLabels: []gax.CallOption{
 			gax.WithTimeout(600000 * time.Millisecond),
 		},
@@ -97,6 +101,7 @@ type internalGlobalAddressesClient interface {
 	Get(context.Context, *computepb.GetGlobalAddressRequest, ...gax.CallOption) (*computepb.Address, error)
 	Insert(context.Context, *computepb.InsertGlobalAddressRequest, ...gax.CallOption) (*Operation, error)
 	List(context.Context, *computepb.ListGlobalAddressesRequest, ...gax.CallOption) *AddressIterator
+	Move(context.Context, *computepb.MoveGlobalAddressRequest, ...gax.CallOption) (*Operation, error)
 	SetLabels(context.Context, *computepb.SetLabelsGlobalAddressRequest, ...gax.CallOption) (*Operation, error)
 }
 
@@ -153,6 +158,11 @@ func (c *GlobalAddressesClient) Insert(ctx context.Context, req *computepb.Inser
 // List retrieves a list of global addresses.
 func (c *GlobalAddressesClient) List(ctx context.Context, req *computepb.ListGlobalAddressesRequest, opts ...gax.CallOption) *AddressIterator {
 	return c.internalClient.List(ctx, req, opts...)
+}
+
+// Move moves the specified address resource from one project to another project.
+func (c *GlobalAddressesClient) Move(ctx context.Context, req *computepb.MoveGlobalAddressRequest, opts ...gax.CallOption) (*Operation, error) {
+	return c.internalClient.Move(ctx, req, opts...)
 }
 
 // SetLabels sets the labels on a GlobalAddress. To learn more about labels, read the Labeling Resources documentation.
@@ -533,6 +543,80 @@ func (c *globalAddressesRESTClient) List(ctx context.Context, req *computepb.Lis
 	it.pageInfo.Token = req.GetPageToken()
 
 	return it
+}
+
+// Move moves the specified address resource from one project to another project.
+func (c *globalAddressesRESTClient) Move(ctx context.Context, req *computepb.MoveGlobalAddressRequest, opts ...gax.CallOption) (*Operation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true}
+	body := req.GetGlobalAddressesMoveRequestResource()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/addresses/%v/move", req.GetProject(), req.GetAddress())
+
+	params := url.Values{}
+	if req != nil && req.RequestId != nil {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "address", url.QueryEscape(req.GetAddress())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).Move[0:len((*c.CallOptions).Move):len((*c.CallOptions).Move)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &computepb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	op := &Operation{
+		&globalOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+		},
+	}
+	return op, nil
 }
 
 // SetLabels sets the labels on a GlobalAddress. To learn more about labels, read the Labeling Resources documentation.
