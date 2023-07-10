@@ -205,6 +205,7 @@ func (r *directoryBenchmark) uploadDirectory(ctx context.Context, numWorkers int
 				object:              objectName,
 				useDefaultChunkSize: opts.minChunkSize == useDefault || opts.maxChunkSize == useDefault,
 				objectPath:          filePath,
+				timeout:             r.opts.timeoutPerOp,
 			})
 			return err
 		})
@@ -278,6 +279,7 @@ func (r *directoryBenchmark) downloadDirectory(ctx context.Context, numWorkers i
 				downloadToDirectory: r.downloadDirectoryPath,
 				rangeStart:          rangeStart,
 				rangeLength:         rangeLength,
+				timeout:             r.opts.timeoutPerOp,
 			})
 			return err
 		})
