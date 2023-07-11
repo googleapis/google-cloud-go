@@ -1069,26 +1069,6 @@
     "release_level": "preview",
     "library_type": "CORE"
   },
-  "cloud.google.com/go/gaming/apiv1": {
-    "api_shortname": "gameservices",
-    "distribution_name": "cloud.google.com/go/gaming/apiv1",
-    "description": "Game Services API",
-    "language": "go",
-    "client_library_type": "generated",
-    "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/gaming/latest/apiv1",
-    "release_level": "stable",
-    "library_type": "GAPIC_AUTO"
-  },
-  "cloud.google.com/go/gaming/apiv1beta": {
-    "api_shortname": "gameservices",
-    "distribution_name": "cloud.google.com/go/gaming/apiv1beta",
-    "description": "Game Services API",
-    "language": "go",
-    "client_library_type": "generated",
-    "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/gaming/latest/apiv1beta",
-    "release_level": "preview",
-    "library_type": "GAPIC_AUTO"
-  },
   "cloud.google.com/go/gkebackup/apiv1": {
     "api_shortname": "gkebackup",
     "distribution_name": "cloud.google.com/go/gkebackup/apiv1",
