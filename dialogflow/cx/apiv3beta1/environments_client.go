@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"math"
 	"net/http"
 	"net/url"
@@ -29,6 +29,7 @@ import (
 	cxpb "cloud.google.com/go/dialogflow/cx/apiv3beta1/cxpb"
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
@@ -37,7 +38,6 @@ import (
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -81,6 +81,7 @@ func defaultEnvironmentsGRPCClientOptions() []option.ClientOption {
 func defaultEnvironmentsCallOptions() *EnvironmentsCallOptions {
 	return &EnvironmentsCallOptions{
 		ListEnvironments: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -92,6 +93,7 @@ func defaultEnvironmentsCallOptions() *EnvironmentsCallOptions {
 			}),
 		},
 		GetEnvironment: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -103,6 +105,7 @@ func defaultEnvironmentsCallOptions() *EnvironmentsCallOptions {
 			}),
 		},
 		CreateEnvironment: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -114,6 +117,7 @@ func defaultEnvironmentsCallOptions() *EnvironmentsCallOptions {
 			}),
 		},
 		UpdateEnvironment: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -125,6 +129,7 @@ func defaultEnvironmentsCallOptions() *EnvironmentsCallOptions {
 			}),
 		},
 		DeleteEnvironment: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -136,6 +141,7 @@ func defaultEnvironmentsCallOptions() *EnvironmentsCallOptions {
 			}),
 		},
 		LookupEnvironmentHistory: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -147,6 +153,7 @@ func defaultEnvironmentsCallOptions() *EnvironmentsCallOptions {
 			}),
 		},
 		RunContinuousTest: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -158,6 +165,7 @@ func defaultEnvironmentsCallOptions() *EnvironmentsCallOptions {
 			}),
 		},
 		ListContinuousTestResults: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -169,6 +177,7 @@ func defaultEnvironmentsCallOptions() *EnvironmentsCallOptions {
 			}),
 		},
 		DeployFlow: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -190,6 +199,7 @@ func defaultEnvironmentsCallOptions() *EnvironmentsCallOptions {
 func defaultEnvironmentsRESTCallOptions() *EnvironmentsCallOptions {
 	return &EnvironmentsCallOptions{
 		ListEnvironments: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -200,6 +210,7 @@ func defaultEnvironmentsRESTCallOptions() *EnvironmentsCallOptions {
 			}),
 		},
 		GetEnvironment: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -210,6 +221,7 @@ func defaultEnvironmentsRESTCallOptions() *EnvironmentsCallOptions {
 			}),
 		},
 		CreateEnvironment: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -220,6 +232,7 @@ func defaultEnvironmentsRESTCallOptions() *EnvironmentsCallOptions {
 			}),
 		},
 		UpdateEnvironment: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -230,6 +243,7 @@ func defaultEnvironmentsRESTCallOptions() *EnvironmentsCallOptions {
 			}),
 		},
 		DeleteEnvironment: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -240,6 +254,7 @@ func defaultEnvironmentsRESTCallOptions() *EnvironmentsCallOptions {
 			}),
 		},
 		LookupEnvironmentHistory: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -250,6 +265,7 @@ func defaultEnvironmentsRESTCallOptions() *EnvironmentsCallOptions {
 			}),
 		},
 		RunContinuousTest: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -260,6 +276,7 @@ func defaultEnvironmentsRESTCallOptions() *EnvironmentsCallOptions {
 			}),
 		},
 		ListContinuousTestResults: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -270,6 +287,7 @@ func defaultEnvironmentsRESTCallOptions() *EnvironmentsCallOptions {
 			}),
 		},
 		DeployFlow: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -315,7 +333,8 @@ type internalEnvironmentsClient interface {
 // EnvironmentsClient is a client for interacting with Dialogflow API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
-// Service for managing Environments.
+// Service for managing
+// Environments.
 type EnvironmentsClient struct {
 	// The internal transport-dependent client.
 	internalClient internalEnvironmentsClient
@@ -352,17 +371,20 @@ func (c *EnvironmentsClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// ListEnvironments returns the list of all environments in the specified Agent.
+// ListEnvironments returns the list of all environments in the specified
+// Agent.
 func (c *EnvironmentsClient) ListEnvironments(ctx context.Context, req *cxpb.ListEnvironmentsRequest, opts ...gax.CallOption) *EnvironmentIterator {
 	return c.internalClient.ListEnvironments(ctx, req, opts...)
 }
 
-// GetEnvironment retrieves the specified Environment.
+// GetEnvironment retrieves the specified
+// Environment.
 func (c *EnvironmentsClient) GetEnvironment(ctx context.Context, req *cxpb.GetEnvironmentRequest, opts ...gax.CallOption) (*cxpb.Environment, error) {
 	return c.internalClient.GetEnvironment(ctx, req, opts...)
 }
 
-// CreateEnvironment creates an Environment in the specified Agent.
+// CreateEnvironment creates an Environment in
+// the specified Agent.
 //
 // This method is a long-running
 // operation (at https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
@@ -382,7 +404,8 @@ func (c *EnvironmentsClient) CreateEnvironmentOperation(name string) *CreateEnvi
 	return c.internalClient.CreateEnvironmentOperation(name)
 }
 
-// UpdateEnvironment updates the specified Environment.
+// UpdateEnvironment updates the specified
+// Environment.
 //
 // This method is a long-running
 // operation (at https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
@@ -402,25 +425,30 @@ func (c *EnvironmentsClient) UpdateEnvironmentOperation(name string) *UpdateEnvi
 	return c.internalClient.UpdateEnvironmentOperation(name)
 }
 
-// DeleteEnvironment deletes the specified Environment.
+// DeleteEnvironment deletes the specified
+// Environment.
 func (c *EnvironmentsClient) DeleteEnvironment(ctx context.Context, req *cxpb.DeleteEnvironmentRequest, opts ...gax.CallOption) error {
 	return c.internalClient.DeleteEnvironment(ctx, req, opts...)
 }
 
-// LookupEnvironmentHistory looks up the history of the specified Environment.
+// LookupEnvironmentHistory looks up the history of the specified
+// Environment.
 func (c *EnvironmentsClient) LookupEnvironmentHistory(ctx context.Context, req *cxpb.LookupEnvironmentHistoryRequest, opts ...gax.CallOption) *EnvironmentIterator {
 	return c.internalClient.LookupEnvironmentHistory(ctx, req, opts...)
 }
 
-// RunContinuousTest kicks off a continuous test under the specified Environment.
+// RunContinuousTest kicks off a continuous test under the specified
+// Environment.
 //
 // This method is a long-running
 // operation (at https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 // The returned Operation type has the following method-specific fields:
 //
-//	metadata: RunContinuousTestMetadata
+//	metadata:
+//	RunContinuousTestMetadata
 //
-//	response: RunContinuousTestResponse
+//	response:
+//	RunContinuousTestResponse
 func (c *EnvironmentsClient) RunContinuousTest(ctx context.Context, req *cxpb.RunContinuousTestRequest, opts ...gax.CallOption) (*RunContinuousTestOperation, error) {
 	return c.internalClient.RunContinuousTest(ctx, req, opts...)
 }
@@ -436,15 +464,18 @@ func (c *EnvironmentsClient) ListContinuousTestResults(ctx context.Context, req 
 	return c.internalClient.ListContinuousTestResults(ctx, req, opts...)
 }
 
-// DeployFlow deploys a flow to the specified Environment.
+// DeployFlow deploys a flow to the specified
+// Environment.
 //
 // This method is a long-running
 // operation (at https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 // The returned Operation type has the following method-specific fields:
 //
-//	metadata: DeployFlowMetadata
+//	metadata:
+//	DeployFlowMetadata
 //
-//	response: DeployFlowResponse
+//	response:
+//	DeployFlowResponse
 func (c *EnvironmentsClient) DeployFlow(ctx context.Context, req *cxpb.DeployFlowRequest, opts ...gax.CallOption) (*DeployFlowOperation, error) {
 	return c.internalClient.DeployFlow(ctx, req, opts...)
 }
@@ -487,9 +518,6 @@ type environmentsGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing EnvironmentsClient
 	CallOptions **EnvironmentsCallOptions
 
@@ -512,7 +540,8 @@ type environmentsGRPCClient struct {
 // NewEnvironmentsClient creates a new environments client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
-// Service for managing Environments.
+// Service for managing
+// Environments.
 func NewEnvironmentsClient(ctx context.Context, opts ...option.ClientOption) (*EnvironmentsClient, error) {
 	clientOpts := defaultEnvironmentsGRPCClientOptions()
 	if newEnvironmentsClientHook != nil {
@@ -523,11 +552,6 @@ func NewEnvironmentsClient(ctx context.Context, opts ...option.ClientOption) (*E
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -536,7 +560,6 @@ func NewEnvironmentsClient(ctx context.Context, opts ...option.ClientOption) (*E
 
 	c := &environmentsGRPCClient{
 		connPool:           connPool,
-		disableDeadlines:   disableDeadlines,
 		environmentsClient: cxpb.NewEnvironmentsClient(connPool),
 		CallOptions:        &client.CallOptions,
 		operationsClient:   longrunningpb.NewOperationsClient(connPool),
@@ -572,7 +595,7 @@ func (c *environmentsGRPCClient) Connection() *grpc.ClientConn {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *environmentsGRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -605,7 +628,8 @@ type environmentsRESTClient struct {
 
 // NewEnvironmentsRESTClient creates a new environments rest client.
 //
-// Service for managing Environments.
+// Service for managing
+// Environments.
 func NewEnvironmentsRESTClient(ctx context.Context, opts ...option.ClientOption) (*EnvironmentsClient, error) {
 	clientOpts := append(defaultEnvironmentsRESTClientOptions(), opts...)
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
@@ -647,7 +671,7 @@ func defaultEnvironmentsRESTClientOptions() []option.ClientOption {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *environmentsRESTClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -712,11 +736,6 @@ func (c *environmentsGRPCClient) ListEnvironments(ctx context.Context, req *cxpb
 }
 
 func (c *environmentsGRPCClient) GetEnvironment(ctx context.Context, req *cxpb.GetEnvironmentRequest, opts ...gax.CallOption) (*cxpb.Environment, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -734,11 +753,6 @@ func (c *environmentsGRPCClient) GetEnvironment(ctx context.Context, req *cxpb.G
 }
 
 func (c *environmentsGRPCClient) CreateEnvironment(ctx context.Context, req *cxpb.CreateEnvironmentRequest, opts ...gax.CallOption) (*CreateEnvironmentOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -758,11 +772,6 @@ func (c *environmentsGRPCClient) CreateEnvironment(ctx context.Context, req *cxp
 }
 
 func (c *environmentsGRPCClient) UpdateEnvironment(ctx context.Context, req *cxpb.UpdateEnvironmentRequest, opts ...gax.CallOption) (*UpdateEnvironmentOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "environment.name", url.QueryEscape(req.GetEnvironment().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -782,11 +791,6 @@ func (c *environmentsGRPCClient) UpdateEnvironment(ctx context.Context, req *cxp
 }
 
 func (c *environmentsGRPCClient) DeleteEnvironment(ctx context.Context, req *cxpb.DeleteEnvironmentRequest, opts ...gax.CallOption) error {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -845,11 +849,6 @@ func (c *environmentsGRPCClient) LookupEnvironmentHistory(ctx context.Context, r
 }
 
 func (c *environmentsGRPCClient) RunContinuousTest(ctx context.Context, req *cxpb.RunContinuousTestRequest, opts ...gax.CallOption) (*RunContinuousTestOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "environment", url.QueryEscape(req.GetEnvironment())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -914,11 +913,6 @@ func (c *environmentsGRPCClient) ListContinuousTestResults(ctx context.Context, 
 }
 
 func (c *environmentsGRPCClient) DeployFlow(ctx context.Context, req *cxpb.DeployFlowRequest, opts ...gax.CallOption) (*DeployFlowOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "environment", url.QueryEscape(req.GetEnvironment())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1074,7 +1068,8 @@ func (c *environmentsGRPCClient) ListOperations(ctx context.Context, req *longru
 	return it
 }
 
-// ListEnvironments returns the list of all environments in the specified Agent.
+// ListEnvironments returns the list of all environments in the specified
+// Agent.
 func (c *environmentsRESTClient) ListEnvironments(ctx context.Context, req *cxpb.ListEnvironmentsRequest, opts ...gax.CallOption) *EnvironmentIterator {
 	it := &EnvironmentIterator{}
 	req = proto.Clone(req).(*cxpb.ListEnvironmentsRequest)
@@ -1096,6 +1091,7 @@ func (c *environmentsRESTClient) ListEnvironments(ctx context.Context, req *cxpb
 		baseUrl.Path += fmt.Sprintf("/v3beta1/%v/environments", req.GetParent())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetPageSize() != 0 {
 			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
 		}
@@ -1127,13 +1123,13 @@ func (c *environmentsRESTClient) ListEnvironments(ctx context.Context, req *cxpb
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -1161,13 +1157,19 @@ func (c *environmentsRESTClient) ListEnvironments(ctx context.Context, req *cxpb
 	return it
 }
 
-// GetEnvironment retrieves the specified Environment.
+// GetEnvironment retrieves the specified
+// Environment.
 func (c *environmentsRESTClient) GetEnvironment(ctx context.Context, req *cxpb.GetEnvironmentRequest, opts ...gax.CallOption) (*cxpb.Environment, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
@@ -1197,13 +1199,13 @@ func (c *environmentsRESTClient) GetEnvironment(ctx context.Context, req *cxpb.G
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1214,7 +1216,8 @@ func (c *environmentsRESTClient) GetEnvironment(ctx context.Context, req *cxpb.G
 	return resp, nil
 }
 
-// CreateEnvironment creates an Environment in the specified Agent.
+// CreateEnvironment creates an Environment in
+// the specified Agent.
 //
 // This method is a long-running
 // operation (at https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
@@ -1237,6 +1240,11 @@ func (c *environmentsRESTClient) CreateEnvironment(ctx context.Context, req *cxp
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v/environments", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
@@ -1265,13 +1273,13 @@ func (c *environmentsRESTClient) CreateEnvironment(ctx context.Context, req *cxp
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1287,7 +1295,8 @@ func (c *environmentsRESTClient) CreateEnvironment(ctx context.Context, req *cxp
 	}, nil
 }
 
-// UpdateEnvironment updates the specified Environment.
+// UpdateEnvironment updates the specified
+// Environment.
 //
 // This method is a long-running
 // operation (at https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
@@ -1312,12 +1321,13 @@ func (c *environmentsRESTClient) UpdateEnvironment(ctx context.Context, req *cxp
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v", req.GetEnvironment().GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
 		updateMask, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask))
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1349,13 +1359,13 @@ func (c *environmentsRESTClient) UpdateEnvironment(ctx context.Context, req *cxp
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1371,13 +1381,19 @@ func (c *environmentsRESTClient) UpdateEnvironment(ctx context.Context, req *cxp
 	}, nil
 }
 
-// DeleteEnvironment deletes the specified Environment.
+// DeleteEnvironment deletes the specified
+// Environment.
 func (c *environmentsRESTClient) DeleteEnvironment(ctx context.Context, req *cxpb.DeleteEnvironmentRequest, opts ...gax.CallOption) error {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
 		return err
 	}
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
@@ -1406,7 +1422,8 @@ func (c *environmentsRESTClient) DeleteEnvironment(ctx context.Context, req *cxp
 	}, opts...)
 }
 
-// LookupEnvironmentHistory looks up the history of the specified Environment.
+// LookupEnvironmentHistory looks up the history of the specified
+// Environment.
 func (c *environmentsRESTClient) LookupEnvironmentHistory(ctx context.Context, req *cxpb.LookupEnvironmentHistoryRequest, opts ...gax.CallOption) *EnvironmentIterator {
 	it := &EnvironmentIterator{}
 	req = proto.Clone(req).(*cxpb.LookupEnvironmentHistoryRequest)
@@ -1428,6 +1445,7 @@ func (c *environmentsRESTClient) LookupEnvironmentHistory(ctx context.Context, r
 		baseUrl.Path += fmt.Sprintf("/v3beta1/%v:lookupEnvironmentHistory", req.GetName())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetPageSize() != 0 {
 			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
 		}
@@ -1459,13 +1477,13 @@ func (c *environmentsRESTClient) LookupEnvironmentHistory(ctx context.Context, r
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -1493,15 +1511,18 @@ func (c *environmentsRESTClient) LookupEnvironmentHistory(ctx context.Context, r
 	return it
 }
 
-// RunContinuousTest kicks off a continuous test under the specified Environment.
+// RunContinuousTest kicks off a continuous test under the specified
+// Environment.
 //
 // This method is a long-running
 // operation (at https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 // The returned Operation type has the following method-specific fields:
 //
-//	metadata: RunContinuousTestMetadata
+//	metadata:
+//	RunContinuousTestMetadata
 //
-//	response: RunContinuousTestResponse
+//	response:
+//	RunContinuousTestResponse
 func (c *environmentsRESTClient) RunContinuousTest(ctx context.Context, req *cxpb.RunContinuousTestRequest, opts ...gax.CallOption) (*RunContinuousTestOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -1514,6 +1535,11 @@ func (c *environmentsRESTClient) RunContinuousTest(ctx context.Context, req *cxp
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v:runContinuousTest", req.GetEnvironment())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "environment", url.QueryEscape(req.GetEnvironment())))
@@ -1542,13 +1568,13 @@ func (c *environmentsRESTClient) RunContinuousTest(ctx context.Context, req *cxp
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1586,6 +1612,7 @@ func (c *environmentsRESTClient) ListContinuousTestResults(ctx context.Context, 
 		baseUrl.Path += fmt.Sprintf("/v3beta1/%v/continuousTestResults", req.GetParent())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetPageSize() != 0 {
 			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
 		}
@@ -1617,13 +1644,13 @@ func (c *environmentsRESTClient) ListContinuousTestResults(ctx context.Context, 
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -1651,15 +1678,18 @@ func (c *environmentsRESTClient) ListContinuousTestResults(ctx context.Context, 
 	return it
 }
 
-// DeployFlow deploys a flow to the specified Environment.
+// DeployFlow deploys a flow to the specified
+// Environment.
 //
 // This method is a long-running
 // operation (at https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
 // The returned Operation type has the following method-specific fields:
 //
-//	metadata: DeployFlowMetadata
+//	metadata:
+//	DeployFlowMetadata
 //
-//	response: DeployFlowResponse
+//	response:
+//	DeployFlowResponse
 func (c *environmentsRESTClient) DeployFlow(ctx context.Context, req *cxpb.DeployFlowRequest, opts ...gax.CallOption) (*DeployFlowOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -1672,6 +1702,11 @@ func (c *environmentsRESTClient) DeployFlow(ctx context.Context, req *cxpb.Deplo
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v:deployFlow", req.GetEnvironment())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "environment", url.QueryEscape(req.GetEnvironment())))
@@ -1700,13 +1735,13 @@ func (c *environmentsRESTClient) DeployFlow(ctx context.Context, req *cxpb.Deplo
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1729,6 +1764,11 @@ func (c *environmentsRESTClient) GetLocation(ctx context.Context, req *locationp
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
@@ -1758,13 +1798,13 @@ func (c *environmentsRESTClient) GetLocation(ctx context.Context, req *locationp
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1797,6 +1837,7 @@ func (c *environmentsRESTClient) ListLocations(ctx context.Context, req *locatio
 		baseUrl.Path += fmt.Sprintf("/v3beta1/%v/locations", req.GetName())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -1831,13 +1872,13 @@ func (c *environmentsRESTClient) ListLocations(ctx context.Context, req *locatio
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -1872,6 +1913,11 @@ func (c *environmentsRESTClient) CancelOperation(ctx context.Context, req *longr
 		return err
 	}
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v:cancel", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
@@ -1908,6 +1954,11 @@ func (c *environmentsRESTClient) GetOperation(ctx context.Context, req *longrunn
 	}
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
@@ -1936,13 +1987,13 @@ func (c *environmentsRESTClient) GetOperation(ctx context.Context, req *longrunn
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1975,6 +2026,7 @@ func (c *environmentsRESTClient) ListOperations(ctx context.Context, req *longru
 		baseUrl.Path += fmt.Sprintf("/v3beta1/%v/operations", req.GetName())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -2009,13 +2061,13 @@ func (c *environmentsRESTClient) ListOperations(ctx context.Context, req *longru
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil

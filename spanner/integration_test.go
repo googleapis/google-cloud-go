@@ -448,7 +448,7 @@ loop:
 			t.Fatalf("timed out, got %d session(s), want %d", numOpened, want)
 		default:
 			sp.mu.Lock()
-			numOpened = sp.idleList.Len() + sp.idleWriteList.Len()
+			numOpened = sp.idleList.Len()
 			sp.mu.Unlock()
 			if uint64(numOpened) == want {
 				break loop
@@ -1462,8 +1462,14 @@ func TestIntegration_Reads(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
 	// Set up testing environment.
-	client, _, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, statements[testDialect][testTableDDLStatements])
+	_, dbPath, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, statements[testDialect][testTableDDLStatements])
 	defer cleanup()
+
+	client, err := createClient(ctx, dbPath, ClientConfig{SessionPoolConfig: DefaultSessionPoolConfig, Compression: "gzip"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer client.Close()
 
 	// Includes k0..k14. Strings sort lexically, eg "k1" < "k10" < "k2".
 	var ms []*Mutation
@@ -1648,7 +1654,9 @@ func TestIntegration_CreateDBRetry(t *testing.T) {
 		return err
 	}
 
-	dbAdmin, err := database.NewDatabaseAdminClient(ctx, option.WithGRPCDialOption(grpc.WithUnaryInterceptor(interceptor)))
+	// Pass spanner host as options for running builds against different environments
+	opts := []option.ClientOption{option.WithEndpoint(spannerHost), option.WithGRPCDialOption(grpc.WithUnaryInterceptor(interceptor))}
+	dbAdmin, err := database.NewDatabaseAdminClient(ctx, opts...)
 	if err != nil {
 		log.Fatalf("cannot create dbAdmin client: %v", err)
 	}
@@ -2269,7 +2277,7 @@ func TestIntegration_InvalidDatabase(t *testing.T) {
 	}
 	ctx := context.Background()
 	dbPath := fmt.Sprintf("projects/%v/instances/%v/databases/invalid", testProjectID, testInstanceID)
-	c, err := createClient(ctx, dbPath, SessionPoolConfig{})
+	c, err := createClient(ctx, dbPath, ClientConfig{SessionPoolConfig: SessionPoolConfig{}})
 	// Client creation should succeed even if the database is invalid.
 	if err != nil {
 		t.Fatal(err)
@@ -2485,6 +2493,619 @@ func TestIntegration_TransactionRunner(t *testing.T) {
 	}
 }
 
+func TestIntegration_QueryWithRoles(t *testing.T) {
+	t.Parallel()
+	// Database roles are not currently available in emulator
+	skipEmulatorTest(t)
+
+	// Set up testing environment.
+	var (
+		row                    *Row
+		client, clientWithRole *Client
+		iter                   *RowIterator
+		err                    error
+		id                     int64
+		firstName, lastName    string
+	)
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
+	defer cancel()
+	stmts := []string{
+		`CREATE ROLE singers_reader`,
+		`CREATE ROLE singers_unauthorized`,
+		`CREATE ROLE singers_reader_revoked`,
+		`CREATE ROLE dropped`,
+		`DROP ROLE dropped`,
+	}
+	if testDialect == adminpb.DatabaseDialect_POSTGRESQL {
+		stmts = append(stmts,
+			`CREATE TABLE Singers (
+					SingerId	BIGINT NOT NULL,
+					FirstName	VARCHAR(1024),
+					LastName	VARCHAR(1024),
+					SingerInfo	BYTEA,
+					PRIMARY KEY (SingerId)
+				)`,
+			`GRANT SELECT(SingerId, FirstName, LastName) ON Singers TO singers_reader`,
+			`GRANT SELECT(SingerId, FirstName) ON TABLE Singers TO singers_unauthorized`,
+			`GRANT SELECT(SingerId, FirstName, LastName) ON TABLE Singers TO singers_reader_revoked`,
+			`REVOKE SELECT(LastName) ON TABLE Singers FROM singers_reader_revoked`)
+	} else {
+		stmts = append(stmts,
+			`CREATE TABLE Singers (
+					SingerId	INT64 NOT NULL,
+					FirstName	STRING(1024),
+					LastName	STRING(1024),
+					SingerInfo	BYTES(MAX)
+				) PRIMARY KEY (SingerId)`,
+			`GRANT SELECT(SingerId, FirstName, LastName) ON TABLE Singers TO ROLE singers_reader`,
+			`GRANT SELECT(SingerId, FirstName) ON TABLE Singers TO ROLE singers_unauthorized`,
+			`GRANT SELECT(SingerId, FirstName, LastName) ON TABLE Singers TO ROLE singers_reader_revoked`,
+			`REVOKE SELECT(LastName) ON TABLE Singers FROM ROLE singers_reader_revoked`)
+	}
+	client, dbPath, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, stmts)
+	defer cleanup()
+
+	singerColumns := []string{"SingerId", "FirstName", "LastName"}
+	var ms = []*Mutation{
+		InsertOrUpdate("Singers", singerColumns, []interface{}{1, "Marc", "Richards"}),
+	}
+	if _, err := client.Apply(ctx, ms, ApplyAtLeastOnce()); err != nil {
+		t.Fatalf("Could not insert rows to table. Got error %v", err)
+	}
+	queryStmt := Statement{SQL: `SELECT SingerId, FirstName, LastName FROM Singers`}
+
+	// A request with sufficient privileges should return all rows
+	for _, dbRole := range []string{
+		"",
+		"singers_reader",
+	} {
+		if clientWithRole, err = createClientWithRole(ctx, dbPath, SessionPoolConfig{}, dbRole); err != nil {
+			t.Fatal(err)
+		}
+		defer clientWithRole.Close()
+		iter = clientWithRole.Single().Query(ctx, queryStmt)
+		defer iter.Stop()
+
+		row, err = iter.Next()
+		if err != nil {
+			t.Fatalf("Could not read row. Got error %v", err)
+		}
+		if err = row.Columns(&id, &firstName, &lastName); err != nil {
+			t.Fatalf("failed to parse row %v", err)
+		}
+		if id != 1 || firstName != "Marc" || lastName != "Richards" {
+			t.Fatalf("execution didn't return expected values")
+		}
+
+		_, err = iter.Next()
+		if err != iterator.Done {
+			t.Fatalf("got results from iterator, want none: %#v, err = %v\n", row, err)
+		}
+	}
+
+	// A request with insufficient privileges should return permission denied
+	for _, test := range []struct {
+		dbRole string
+		errMsg string
+	}{
+		{
+			"singers_unauthorized",
+			"Role singers_unauthorized does not have required privileges on table Singers.",
+		},
+		{
+			"singers_reader_revoked",
+			"Role singers_reader_revoked does not have required privileges on table Singers.",
+		},
+		{
+			"nonexistent",
+			"Role not found: nonexistent.",
+		},
+		{
+			"dropped",
+			"Role not found: dropped.",
+		},
+	} {
+		if clientWithRole, err = createClientWithRole(ctx, dbPath, SessionPoolConfig{}, test.dbRole); err != nil {
+			t.Fatal(err)
+		}
+		defer clientWithRole.Close()
+		iter = clientWithRole.Single().Query(ctx, queryStmt)
+		defer iter.Stop()
+
+		_, err = iter.Next()
+		if err == nil {
+			t.Fatal("expected err, got nil")
+		}
+		if msg, ok := matchError(err, codes.PermissionDenied, test.errMsg); !ok {
+			t.Fatal(msg)
+		}
+	}
+}
+
+func TestIntegration_ReadWithRoles(t *testing.T) {
+	t.Parallel()
+	// Database roles are not currently available in emulator
+	skipEmulatorTest(t)
+
+	// Set up testing environment.
+	var (
+		row                    *Row
+		client, clientWithRole *Client
+		iter                   *RowIterator
+		err                    error
+		id                     int64
+		firstName, lastName    string
+	)
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
+	defer cancel()
+	stmts := []string{
+		`CREATE ROLE singers_reader`,
+		`CREATE ROLE singers_unauthorized`,
+		`CREATE ROLE singers_reader_revoked`,
+		`CREATE ROLE dropped`,
+		`DROP ROLE dropped`,
+	}
+	if testDialect == adminpb.DatabaseDialect_POSTGRESQL {
+		stmts = append(stmts,
+			`CREATE TABLE Singers (
+					SingerId	BIGINT NOT NULL,
+					FirstName	VARCHAR(1024),
+					LastName	VARCHAR(1024),
+					SingerInfo	BYTEA,
+					PRIMARY KEY (SingerId)
+				)`,
+			`GRANT SELECT(SingerId, FirstName, LastName) ON Singers TO singers_reader`,
+			`GRANT SELECT(SingerId, FirstName) ON TABLE Singers TO singers_unauthorized`,
+			`GRANT SELECT(SingerId, FirstName, LastName) ON TABLE Singers TO singers_reader_revoked`,
+			`REVOKE SELECT(LastName) ON TABLE Singers FROM singers_reader_revoked`)
+	} else {
+		stmts = append(stmts,
+			`CREATE TABLE Singers (
+					SingerId	INT64 NOT NULL,
+					FirstName	STRING(1024),
+					LastName	STRING(1024),
+					SingerInfo	BYTES(MAX)
+				) PRIMARY KEY (SingerId)`,
+			`GRANT SELECT(SingerId, FirstName, LastName) ON TABLE Singers TO ROLE singers_reader`,
+			`GRANT SELECT(SingerId, FirstName) ON TABLE Singers TO ROLE singers_unauthorized`,
+			`GRANT SELECT(SingerId, FirstName, LastName) ON TABLE Singers TO ROLE singers_reader_revoked`,
+			`REVOKE SELECT(LastName) ON TABLE Singers FROM ROLE singers_reader_revoked`)
+	}
+	client, dbPath, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, stmts)
+	defer cleanup()
+
+	singerColumns := []string{"SingerId", "FirstName", "LastName"}
+	var ms = []*Mutation{
+		InsertOrUpdate("Singers", singerColumns, []interface{}{1, "Marc", "Richards"}),
+	}
+	if _, err := client.Apply(ctx, ms, ApplyAtLeastOnce()); err != nil {
+		t.Fatalf("Could not insert rows to table. Got error %v", err)
+	}
+
+	// A request with sufficient privileges should return all rows
+	for _, dbRole := range []string{
+		"",
+		"singers_reader",
+	} {
+		if clientWithRole, err = createClientWithRole(ctx, dbPath, SessionPoolConfig{}, dbRole); err != nil {
+			t.Fatal(err)
+		}
+		defer clientWithRole.Close()
+		iter = clientWithRole.Single().Read(ctx, "Singers", AllKeys(), singerColumns)
+		defer iter.Stop()
+
+		row, err = iter.Next()
+		if err != nil {
+			t.Fatalf("Could not read row. Got error %v", err)
+		}
+		if err = row.Columns(&id, &firstName, &lastName); err != nil {
+			t.Fatalf("failed to parse row %v", err)
+		}
+		if id != 1 || firstName != "Marc" || lastName != "Richards" {
+			t.Fatalf("execution didn't return expected values")
+		}
+
+		_, err = iter.Next()
+		if err != iterator.Done {
+			t.Fatalf("got results from iterator, want none: %#v, err = %v\n", row, err)
+		}
+	}
+
+	// A request with insufficient privileges should return permission denied
+	for _, test := range []struct {
+		dbRole string
+		errMsg string
+	}{
+		{
+			"singers_unauthorized",
+			"Role singers_unauthorized does not have required privileges on table Singers.",
+		},
+		{
+			"singers_reader_revoked",
+			"Role singers_reader_revoked does not have required privileges on table Singers.",
+		},
+		{
+			"nonexistent",
+			"Role not found: nonexistent.",
+		},
+		{
+			"dropped",
+			"Role not found: dropped.",
+		},
+	} {
+		if clientWithRole, err = createClientWithRole(ctx, dbPath, SessionPoolConfig{}, test.dbRole); err != nil {
+			t.Fatal(err)
+		}
+		defer clientWithRole.Close()
+		iter = clientWithRole.Single().Read(ctx, "Singers", AllKeys(), singerColumns)
+		defer iter.Stop()
+
+		_, err = iter.Next()
+		if err == nil {
+			t.Fatal("expected err, got nil")
+		}
+		if msg, ok := matchError(err, codes.PermissionDenied, test.errMsg); !ok {
+			t.Fatal(msg)
+		}
+	}
+}
+
+func TestIntegration_DMLWithRoles(t *testing.T) {
+	t.Parallel()
+	// Database roles are not currently available in emulator
+	skipEmulatorTest(t)
+
+	// Set up testing environment.
+	var (
+		client, clientWithRole *Client
+		err                    error
+	)
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
+	defer cancel()
+	stmts := []string{
+		`CREATE ROLE singers_updater`,
+		`CREATE ROLE singers_unauthorized`,
+		`CREATE ROLE singers_creator`,
+		`CREATE ROLE singers_deleter`,
+	}
+	if testDialect == adminpb.DatabaseDialect_POSTGRESQL {
+		stmts = append(stmts,
+			`CREATE TABLE Singers (
+					SingerId	BIGINT NOT NULL,
+					FirstName	VARCHAR(1024),
+					LastName	VARCHAR(1024),
+					SingerInfo	BYTEA,
+					PRIMARY KEY (SingerId)
+				)`,
+			`GRANT SELECT(SingerId), UPDATE(FirstName, LastName) ON Singers TO singers_updater`,
+			`GRANT SELECT(SingerId), UPDATE(FirstName) ON TABLE Singers TO singers_unauthorized`,
+			`GRANT INSERT(SingerId, FirstName, LastName) ON TABLE Singers TO singers_creator`,
+			`GRANT SELECT(SingerId), DELETE ON TABLE Singers TO singers_deleter`)
+	} else {
+		stmts = append(stmts,
+			`CREATE TABLE Singers (
+					SingerId	INT64 NOT NULL,
+					FirstName	STRING(1024),
+					LastName	STRING(1024),
+					SingerInfo	BYTES(MAX)
+				) PRIMARY KEY (SingerId)`,
+			`GRANT SELECT(SingerId), UPDATE(FirstName, LastName) ON TABLE Singers TO ROLE singers_updater`,
+			`GRANT SELECT(SingerId), UPDATE(FirstName) ON TABLE Singers TO ROLE singers_unauthorized`,
+			`GRANT INSERT(SingerId, FirstName, LastName) ON TABLE Singers TO ROLE singers_creator`,
+			`GRANT SELECT(SingerId), DELETE ON TABLE Singers TO ROLE singers_deleter`)
+	}
+	client, dbPath, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, stmts)
+	defer cleanup()
+
+	singerColumns := []string{"SingerId", "FirstName", "LastName"}
+	var ms = []*Mutation{
+		InsertOrUpdate("Singers", singerColumns, []interface{}{1, "Marc", "Richards"}),
+	}
+	if _, err := client.Apply(ctx, ms, ApplyAtLeastOnce()); err != nil {
+		t.Fatalf("Could not insert rows to table. Got error %v", err)
+	}
+	updateStmt := Statement{SQL: `UPDATE Singers SET FirstName = 'Mark', LastName = 'Richards' WHERE SingerId = 1`}
+
+	// A request with sufficient privileges should update the row
+	for _, dbRole := range []string{
+		"",
+		"singers_updater",
+	} {
+		if clientWithRole, err = createClientWithRole(ctx, dbPath, SessionPoolConfig{}, dbRole); err != nil {
+			t.Fatal(err)
+		}
+		defer clientWithRole.Close()
+		_, err = clientWithRole.ReadWriteTransaction(ctx, func(ctx context.Context, txn *ReadWriteTransaction) error {
+			_, err := txn.Update(ctx, updateStmt)
+			return err
+		})
+		if err != nil {
+			t.Fatalf("Could not update row. Got error %v", err)
+		}
+	}
+
+	// A request with insufficient privileges should return permission denied
+	for _, test := range []struct {
+		dbRole string
+		errMsg string
+	}{
+		{
+			"singers_unauthorized",
+			"Role singers_unauthorized does not have required privileges on table Singers.",
+		},
+		{
+			"nonexistent",
+			"Role not found: nonexistent.",
+		},
+	} {
+		if clientWithRole, err = createClientWithRole(ctx, dbPath, SessionPoolConfig{}, test.dbRole); err != nil {
+			t.Fatal(err)
+		}
+		defer clientWithRole.Close()
+		_, err = clientWithRole.ReadWriteTransaction(ctx, func(ctx context.Context, txn *ReadWriteTransaction) error {
+			_, err := txn.Update(ctx, updateStmt)
+			return err
+		})
+
+		if err == nil {
+			t.Fatal("expected err, got nil")
+		}
+		if msg, ok := matchError(err, codes.PermissionDenied, test.errMsg); !ok {
+			t.Fatal(msg)
+		}
+	}
+
+	// A request with sufficient privileges should insert the row
+	getInsertStmt := func(vals []interface{}) Statement {
+		sql := fmt.Sprintf(`INSERT INTO Singers (SingerId, FirstName, LastName) VALUES (%d, '%s', '%s')`, vals...)
+		return Statement{SQL: sql}
+	}
+	for _, test := range []struct {
+		dbRole string
+		vals   []interface{}
+	}{
+		{
+			"",
+			[]interface{}{2, "Catalina", "Smith"},
+		},
+		{
+			"singers_creator",
+			[]interface{}{3, "Alice", "Trentor"},
+		},
+	} {
+		if clientWithRole, err = createClientWithRole(ctx, dbPath, SessionPoolConfig{}, test.dbRole); err != nil {
+			t.Fatal(err)
+		}
+		defer clientWithRole.Close()
+		_, err = clientWithRole.ReadWriteTransaction(ctx, func(ctx context.Context, txn *ReadWriteTransaction) error {
+			_, err := txn.Update(ctx, getInsertStmt(test.vals))
+			return err
+		})
+		if err != nil {
+			t.Fatalf("Could not insert row. Got error %v", err)
+		}
+	}
+
+	// A request with sufficient privileges should delete the row
+	deleteStmt := Statement{SQL: `DELETE FROM Singers WHERE TRUE`}
+	for _, dbRole := range []string{
+		"",
+		"singers_deleter",
+	} {
+		if clientWithRole, err = createClientWithRole(ctx, dbPath, SessionPoolConfig{}, dbRole); err != nil {
+			t.Fatal(err)
+		}
+		defer clientWithRole.Close()
+		_, err = clientWithRole.ReadWriteTransaction(ctx, func(ctx context.Context, txn *ReadWriteTransaction) error {
+			_, err := txn.Update(ctx, deleteStmt)
+			return err
+		})
+		if err != nil {
+			t.Fatalf("Could not delete row. Got error %v", err)
+		}
+	}
+}
+
+func TestIntegration_MutationWithRoles(t *testing.T) {
+	t.Parallel()
+	// Database roles are not currently available in emulator
+	skipEmulatorTest(t)
+
+	// Set up testing environment.
+	var (
+		client, clientWithRole *Client
+		err                    error
+	)
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
+	defer cancel()
+	stmts := []string{
+		`CREATE ROLE singers_updater`,
+		`CREATE ROLE singers_unauthorized`,
+		`CREATE ROLE singers_creator`,
+		`CREATE ROLE singers_deleter`,
+	}
+	if testDialect == adminpb.DatabaseDialect_POSTGRESQL {
+		stmts = append(stmts,
+			`CREATE TABLE Singers (
+					SingerId	BIGINT NOT NULL,
+					FirstName	VARCHAR(1024),
+					LastName	VARCHAR(1024),
+					SingerInfo	BYTEA,
+					PRIMARY KEY (SingerId)
+				)`,
+			`GRANT SELECT(SingerId), UPDATE(SingerId, FirstName, LastName) ON Singers TO singers_updater`,
+			`GRANT SELECT(SingerId), UPDATE(SingerId, FirstName) ON TABLE Singers TO singers_unauthorized`,
+			`GRANT INSERT(SingerId, FirstName, LastName) ON TABLE Singers TO singers_creator`,
+			`GRANT SELECT(SingerId), DELETE ON TABLE Singers TO singers_deleter`)
+	} else {
+		stmts = append(stmts,
+			`CREATE TABLE Singers (
+					SingerId	INT64 NOT NULL,
+					FirstName	STRING(1024),
+					LastName	STRING(1024),
+					SingerInfo	BYTES(MAX)
+				) PRIMARY KEY (SingerId)`,
+			`GRANT SELECT(SingerId), UPDATE(SingerId, FirstName, LastName) ON TABLE Singers TO ROLE singers_updater`,
+			`GRANT SELECT(SingerId), UPDATE(SingerId, FirstName) ON TABLE Singers TO ROLE singers_unauthorized`,
+			`GRANT INSERT(SingerId, FirstName, LastName) ON TABLE Singers TO ROLE singers_creator`,
+			`GRANT SELECT(SingerId), DELETE ON TABLE Singers TO ROLE singers_deleter`)
+	}
+	client, dbPath, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, stmts)
+	defer cleanup()
+
+	singerColumns := []string{"SingerId", "FirstName", "LastName"}
+	var ms = []*Mutation{
+		InsertOrUpdate("Singers", singerColumns, []interface{}{1, "Marc", "Richards"}),
+	}
+	if _, err := client.Apply(ctx, ms, ApplyAtLeastOnce()); err != nil {
+		t.Fatalf("Could not insert rows to table. Got error %v", err)
+	}
+
+	// A request with sufficient privileges should update the row
+	for _, dbRole := range []string{
+		"",
+		"singers_updater",
+	} {
+		if clientWithRole, err = createClientWithRole(ctx, dbPath, SessionPoolConfig{}, dbRole); err != nil {
+			t.Fatal(err)
+		}
+		defer clientWithRole.Close()
+		_, err = clientWithRole.Apply(ctx, []*Mutation{
+			Update("Singers", singerColumns, []interface{}{1, "Mark", "Richards"}),
+		})
+		if err != nil {
+			t.Fatalf("Could not update row. Got error %v", err)
+		}
+	}
+
+	// A request with insufficient privileges should return permission denied
+	for _, test := range []struct {
+		dbRole string
+		errMsg string
+	}{
+		{
+			"singers_unauthorized",
+			"Role singers_unauthorized does not have required privileges on table Singers.",
+		},
+		{
+			"nonexistent",
+			"Role not found: nonexistent.",
+		},
+	} {
+		if clientWithRole, err = createClientWithRole(ctx, dbPath, SessionPoolConfig{}, test.dbRole); err != nil {
+			t.Fatal(err)
+		}
+		defer clientWithRole.Close()
+		_, err = clientWithRole.Apply(ctx, []*Mutation{
+			Update("Singers", singerColumns, []interface{}{1, "Mark", "Richards"}),
+		})
+
+		if err == nil {
+			t.Fatal("expected err, got nil")
+		}
+		if msg, ok := matchError(err, codes.PermissionDenied, test.errMsg); !ok {
+			t.Fatal(msg)
+		}
+	}
+
+	// A request with sufficient privileges should insert the row
+	for _, test := range []struct {
+		dbRole string
+		vals   []interface{}
+	}{
+		{
+			"",
+			[]interface{}{2, "Catalina", "Smith"},
+		},
+		{
+			"singers_creator",
+			[]interface{}{3, "Alice", "Trentor"},
+		},
+	} {
+		if clientWithRole, err = createClientWithRole(ctx, dbPath, SessionPoolConfig{}, test.dbRole); err != nil {
+			t.Fatal(err)
+		}
+		defer clientWithRole.Close()
+		_, err = clientWithRole.Apply(ctx, []*Mutation{
+			Insert("Singers", singerColumns, test.vals),
+		})
+		if err != nil {
+			t.Fatalf("Could not insert row. Got error %v", err)
+		}
+	}
+
+	// A request with sufficient privileges should delete the row
+	for _, dbRole := range []string{
+		"",
+		"singers_deleter",
+	} {
+		if clientWithRole, err = createClientWithRole(ctx, dbPath, SessionPoolConfig{}, dbRole); err != nil {
+			t.Fatal(err)
+		}
+		defer clientWithRole.Close()
+		_, err = clientWithRole.Apply(ctx, []*Mutation{
+			Delete("Singers", Key{1}),
+		})
+		if err != nil {
+			t.Fatalf("Could not delete row. Got error %v", err)
+		}
+	}
+}
+
+func TestIntegration_ListDatabaseRoles(t *testing.T) {
+	t.Parallel()
+	// Database roles are not currently available in emulator
+	skipEmulatorTest(t)
+
+	// Set up testing environment.
+	var (
+		err  error
+		iter *database.DatabaseRoleIterator
+	)
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
+	defer cancel()
+	stmts := []string{
+		`CREATE ROLE a`,
+		`CREATE ROLE z`,
+	}
+	_, dbPath, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, stmts)
+	defer cleanup()
+
+	iter = databaseAdmin.ListDatabaseRoles(ctx, &adminpb.ListDatabaseRolesRequest{
+		Parent: dbPath,
+	})
+	roles, err := readDatabaseRoles(iter)
+	if err != nil {
+		t.Fatalf("cannot list database roles in %v: %v", dbPath, err)
+	}
+	var got []string
+	rolePrefix := dbPath + "/databaseRoles/"
+	for _, role := range roles {
+		if !strings.HasPrefix(role.Name, rolePrefix) {
+			t.Fatalf("Role %v does not have prefix %v", role.Name, rolePrefix)
+		}
+		got = append(got, strings.TrimPrefix(role.Name, rolePrefix))
+	}
+	want := []string{"a", "public", "spanner_info_reader", "spanner_sys_reader", "z"}
+	if !testEqual(got, want) {
+		t.Fatalf("Database role mismatch\nGot: %v, Want: %v", got, want)
+	}
+}
+
+func readDatabaseRoles(iter *database.DatabaseRoleIterator) ([]*adminpb.DatabaseRole, error) {
+	var vals []*adminpb.DatabaseRole
+	for {
+		v, err := iter.Next()
+		if err == iterator.Done {
+			return vals, nil
+		}
+		if err != nil {
+			return nil, err
+		}
+		vals = append(vals, v)
+	}
+}
+
 // Test PartitionQuery of BatchReadOnlyTransaction, create partitions then
 // serialize and deserialize both transaction and partition to be used in
 // execution on another client, and compare results.
@@ -2504,7 +3125,7 @@ func TestIntegration_BatchQuery(t *testing.T) {
 	if err = populate(ctx, client); err != nil {
 		t.Fatal(err)
 	}
-	if client2, err = createClient(ctx, dbPath, SessionPoolConfig{}); err != nil {
+	if client2, err = createClient(ctx, dbPath, ClientConfig{SessionPoolConfig: SessionPoolConfig{}}); err != nil {
 		t.Fatal(err)
 	}
 	defer client2.Close()
@@ -2520,7 +3141,7 @@ func TestIntegration_BatchQuery(t *testing.T) {
 		t.Fatal(err)
 	}
 	defer txn.Cleanup(ctx)
-	if partitions, err = txn.PartitionQuery(ctx, stmt, PartitionOptions{0, 3}); err != nil {
+	if partitions, err = txn.PartitionQueryWithOptions(ctx, stmt, PartitionOptions{0, 3}, QueryOptions{DataBoostEnabled: false}); err != nil {
 		t.Fatal(err)
 	}
 
@@ -2588,7 +3209,7 @@ func TestIntegration_BatchRead(t *testing.T) {
 	if err = populate(ctx, client); err != nil {
 		t.Fatal(err)
 	}
-	if client2, err = createClient(ctx, dbPath, SessionPoolConfig{}); err != nil {
+	if client2, err = createClient(ctx, dbPath, ClientConfig{SessionPoolConfig: SessionPoolConfig{}}); err != nil {
 		t.Fatal(err)
 	}
 	defer client2.Close()
@@ -2603,7 +3224,7 @@ func TestIntegration_BatchRead(t *testing.T) {
 		t.Fatal(err)
 	}
 	defer txn.Cleanup(ctx)
-	if partitions, err = txn.PartitionRead(ctx, "test", AllKeys(), simpleDBTableColumns, PartitionOptions{0, 3}); err != nil {
+	if partitions, err = txn.PartitionReadWithOptions(ctx, "test", AllKeys(), simpleDBTableColumns, PartitionOptions{0, 3}, ReadOptions{DataBoostEnabled: false}); err != nil {
 		t.Fatal(err)
 	}
 
@@ -3820,7 +4441,7 @@ func prepareDBAndClient(ctx context.Context, t *testing.T, spc SessionPoolConfig
 			t.Fatalf("timeout creating testing table %v: %v", dbPath, err)
 		}
 	}
-	client, err := createClient(ctx, dbPath, spc)
+	client, err := createClient(ctx, dbPath, ClientConfig{SessionPoolConfig: spc})
 	if err != nil {
 		t.Fatalf("cannot create data client on DB %v: %v", dbPath, err)
 	}
@@ -3990,7 +4611,7 @@ func isNaN(x interface{}) bool {
 }
 
 // createClient creates Cloud Spanner data client.
-func createClient(ctx context.Context, dbPath string, spc SessionPoolConfig) (client *Client, err error) {
+func createClient(ctx context.Context, dbPath string, config ClientConfig) (client *Client, err error) {
 	opts := grpcHeaderChecker.CallOptions()
 	if spannerHost != "" {
 		opts = append(opts, option.WithEndpoint(spannerHost))
@@ -3998,7 +4619,22 @@ func createClient(ctx context.Context, dbPath string, spc SessionPoolConfig) (cl
 	if dpConfig.attemptDirectPath {
 		opts = append(opts, option.WithGRPCDialOption(grpc.WithDefaultCallOptions(grpc.Peer(peerInfo))))
 	}
-	client, err = NewClientWithConfig(ctx, dbPath, ClientConfig{SessionPoolConfig: spc}, opts...)
+	client, err = NewClientWithConfig(ctx, dbPath, config, opts...)
+	if err != nil {
+		return nil, fmt.Errorf("cannot create data client on DB %v: %v", dbPath, err)
+	}
+	return client, nil
+}
+
+func createClientWithRole(ctx context.Context, dbPath string, spc SessionPoolConfig, role string) (client *Client, err error) {
+	opts := grpcHeaderChecker.CallOptions()
+	if spannerHost != "" {
+		opts = append(opts, option.WithEndpoint(spannerHost))
+	}
+	if dpConfig.attemptDirectPath {
+		opts = append(opts, option.WithGRPCDialOption(grpc.WithDefaultCallOptions(grpc.Peer(peerInfo))))
+	}
+	client, err = NewClientWithConfig(ctx, dbPath, ClientConfig{SessionPoolConfig: spc, DatabaseRole: role}, opts...)
 	if err != nil {
 		return nil, fmt.Errorf("cannot create data client on DB %v: %v", dbPath, err)
 	}

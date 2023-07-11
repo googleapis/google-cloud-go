@@ -267,9 +267,7 @@ func TestReadWriteTransaction_ErrorReturned(t *testing.T) {
 	}
 	requests := drainRequestsFromServer(server.TestSpanner)
 	if err := compareRequests([]interface{}{
-		&sppb.BatchCreateSessionsRequest{},
-		&sppb.BeginTransactionRequest{},
-		&sppb.RollbackRequest{}}, requests); err != nil {
+		&sppb.BatchCreateSessionsRequest{}}, requests); err != nil {
 		// TODO: remove this once the session pool maintainer has been changed
 		// so that is doesn't delete sessions already during the first
 		// maintenance window.
@@ -278,9 +276,7 @@ func TestReadWriteTransaction_ErrorReturned(t *testing.T) {
 		// expected.
 		if err := compareRequests([]interface{}{
 			&sppb.BatchCreateSessionsRequest{},
-			&sppb.BeginTransactionRequest{},
-			&sppb.RollbackRequest{},
-			&sppb.DeleteSessionRequest{}}, requests); err != nil {
+			&sppb.RollbackRequest{}}, requests); err != nil {
 			t.Fatal(err)
 		}
 	}
@@ -311,7 +307,6 @@ func TestBatchDML_WithMultipleDML(t *testing.T) {
 
 	gotReqs, err := shouldHaveReceived(server.TestSpanner, []interface{}{
 		&sppb.BatchCreateSessionsRequest{},
-		&sppb.BeginTransactionRequest{},
 		&sppb.ExecuteSqlRequest{},
 		&sppb.ExecuteBatchDmlRequest{},
 		&sppb.ExecuteSqlRequest{},
@@ -322,16 +317,16 @@ func TestBatchDML_WithMultipleDML(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if got, want := gotReqs[2].(*sppb.ExecuteSqlRequest).Seqno, int64(1); got != want {
+	if got, want := gotReqs[1].(*sppb.ExecuteSqlRequest).Seqno, int64(1); got != want {
 		t.Errorf("got %d, want %d", got, want)
 	}
-	if got, want := gotReqs[3].(*sppb.ExecuteBatchDmlRequest).Seqno, int64(2); got != want {
+	if got, want := gotReqs[2].(*sppb.ExecuteBatchDmlRequest).Seqno, int64(2); got != want {
 		t.Errorf("got %d, want %d", got, want)
 	}
-	if got, want := gotReqs[4].(*sppb.ExecuteSqlRequest).Seqno, int64(3); got != want {
+	if got, want := gotReqs[3].(*sppb.ExecuteSqlRequest).Seqno, int64(3); got != want {
 		t.Errorf("got %d, want %d", got, want)
 	}
-	if got, want := gotReqs[5].(*sppb.ExecuteBatchDmlRequest).Seqno, int64(4); got != want {
+	if got, want := gotReqs[4].(*sppb.ExecuteBatchDmlRequest).Seqno, int64(4); got != want {
 		t.Errorf("got %d, want %d", got, want)
 	}
 }

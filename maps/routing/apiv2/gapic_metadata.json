@@ -21,6 +21,21 @@
               ]
             }
           }
+        },
+        "rest": {
+          "libraryClient": "RoutesClient",
+          "rpcs": {
+            "ComputeRouteMatrix": {
+              "methods": [
+                "ComputeRouteMatrix"
+              ]
+            },
+            "ComputeRoutes": {
+              "methods": [
+                "ComputeRoutes"
+              ]
+            }
+          }
         }
       }
     }

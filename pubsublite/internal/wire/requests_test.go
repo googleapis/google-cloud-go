@@ -95,12 +95,13 @@ func assignmentResp(partitions []int64) *pb.PartitionAssignment {
 
 // PublisherService
 
-func initPubReq(topic topicPartition) *pb.PublishRequest {
+func initPubReq(topic topicPartition, clientID publisherClientID) *pb.PublishRequest {
 	return &pb.PublishRequest{
 		RequestType: &pb.PublishRequest_InitialRequest{
 			InitialRequest: &pb.InitialPublishRequest{
 				Topic:     topic.Path,
 				Partition: int64(topic.Partition),
+				ClientId:  clientID,
 			},
 		},
 	}
@@ -114,19 +115,34 @@ func initPubResp() *pb.PublishResponse {
 	}
 }
 
-func msgPubReq(msgs ...*pb.PubSubMessage) *pb.PublishRequest {
+func msgPubReq(firstSeqNum publishSequenceNumber, msgs ...*pb.PubSubMessage) *pb.PublishRequest {
 	return &pb.PublishRequest{
 		RequestType: &pb.PublishRequest_MessagePublishRequest{
-			MessagePublishRequest: &pb.MessagePublishRequest{Messages: msgs},
+			MessagePublishRequest: &pb.MessagePublishRequest{
+				Messages:            msgs,
+				FirstSequenceNumber: int64(firstSeqNum),
+			},
 		},
 	}
 }
 
-func msgPubResp(cursor int64) *pb.PublishResponse {
+func cursorRange(offset int64, start, end int32) *pb.MessagePublishResponse_CursorRange {
+	return &pb.MessagePublishResponse_CursorRange{
+		StartCursor: &pb.Cursor{Offset: offset},
+		StartIndex:  start,
+		EndIndex:    end,
+	}
+}
+
+func pubResp(ranges ...*pb.MessagePublishResponse_CursorRange) *pb.MessagePublishResponse {
+	return &pb.MessagePublishResponse{CursorRanges: ranges}
+}
+
+func msgPubResp(ranges ...*pb.MessagePublishResponse_CursorRange) *pb.PublishResponse {
 	return &pb.PublishResponse{
 		ResponseType: &pb.PublishResponse_MessageResponse{
 			MessageResponse: &pb.MessagePublishResponse{
-				StartCursor: &pb.Cursor{Offset: cursor},
+				CursorRanges: ranges,
 			},
 		},
 	}

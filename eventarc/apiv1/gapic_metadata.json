@@ -146,6 +146,146 @@
               ]
             }
           }
+        },
+        "rest": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateChannel": {
+              "methods": [
+                "CreateChannel"
+              ]
+            },
+            "CreateChannelConnection": {
+              "methods": [
+                "CreateChannelConnection"
+              ]
+            },
+            "CreateTrigger": {
+              "methods": [
+                "CreateTrigger"
+              ]
+            },
+            "DeleteChannel": {
+              "methods": [
+                "DeleteChannel"
+              ]
+            },
+            "DeleteChannelConnection": {
+              "methods": [
+                "DeleteChannelConnection"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "DeleteTrigger": {
+              "methods": [
+                "DeleteTrigger"
+              ]
+            },
+            "GetChannel": {
+              "methods": [
+                "GetChannel"
+              ]
+            },
+            "GetChannelConnection": {
+              "methods": [
+                "GetChannelConnection"
+              ]
+            },
+            "GetGoogleChannelConfig": {
+              "methods": [
+                "GetGoogleChannelConfig"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetProvider": {
+              "methods": [
+                "GetProvider"
+              ]
+            },
+            "GetTrigger": {
+              "methods": [
+                "GetTrigger"
+              ]
+            },
+            "ListChannelConnections": {
+              "methods": [
+                "ListChannelConnections"
+              ]
+            },
+            "ListChannels": {
+              "methods": [
+                "ListChannels"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListProviders": {
+              "methods": [
+                "ListProviders"
+              ]
+            },
+            "ListTriggers": {
+              "methods": [
+                "ListTriggers"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
+            "UpdateChannel": {
+              "methods": [
+                "UpdateChannel"
+              ]
+            },
+            "UpdateGoogleChannelConfig": {
+              "methods": [
+                "UpdateGoogleChannelConfig"
+              ]
+            },
+            "UpdateTrigger": {
+              "methods": [
+                "UpdateTrigger"
+              ]
+            }
+          }
         }
       }
     }

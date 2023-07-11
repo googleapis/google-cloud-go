@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -24,16 +24,16 @@ import (
 	"time"
 
 	aiplatformpb "cloud.google.com/go/aiplatform/apiv1/aiplatformpb"
+	iampb "cloud.google.com/go/iam/apiv1/iampb"
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
-	iampb "google.golang.org/genproto/googleapis/iam/v1"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/proto"
@@ -203,13 +203,17 @@ func (c *PipelineClient) DeleteTrainingPipelineOperation(name string) *DeleteTra
 // CancelTrainingPipeline cancels a TrainingPipeline.
 // Starts asynchronous cancellation on the TrainingPipeline. The server
 // makes a best effort to cancel the pipeline, but success is not
-// guaranteed. Clients can use PipelineService.GetTrainingPipeline or
-// other methods to check whether the cancellation succeeded or whether the
+// guaranteed. Clients can use
+// PipelineService.GetTrainingPipeline
+// or other methods to check whether the cancellation succeeded or whether the
 // pipeline completed despite cancellation. On successful cancellation,
 // the TrainingPipeline is not deleted; instead it becomes a pipeline with
-// a TrainingPipeline.error value with a google.rpc.Status.code of 1,
-// corresponding to Code.CANCELLED, and TrainingPipeline.state is set to
-// CANCELLED.
+// a
+// TrainingPipeline.error
+// value with a google.rpc.Status.code of 1,
+// corresponding to Code.CANCELLED, and
+// TrainingPipeline.state
+// is set to CANCELLED.
 func (c *PipelineClient) CancelTrainingPipeline(ctx context.Context, req *aiplatformpb.CancelTrainingPipelineRequest, opts ...gax.CallOption) error {
 	return c.internalClient.CancelTrainingPipeline(ctx, req, opts...)
 }
@@ -243,12 +247,15 @@ func (c *PipelineClient) DeletePipelineJobOperation(name string) *DeletePipeline
 // CancelPipelineJob cancels a PipelineJob.
 // Starts asynchronous cancellation on the PipelineJob. The server
 // makes a best effort to cancel the pipeline, but success is not
-// guaranteed. Clients can use PipelineService.GetPipelineJob or
-// other methods to check whether the cancellation succeeded or whether the
+// guaranteed. Clients can use
+// PipelineService.GetPipelineJob
+// or other methods to check whether the cancellation succeeded or whether the
 // pipeline completed despite cancellation. On successful cancellation,
 // the PipelineJob is not deleted; instead it becomes a pipeline with
-// a PipelineJob.error value with a google.rpc.Status.code of 1,
-// corresponding to Code.CANCELLED, and PipelineJob.state is set to
+// a PipelineJob.error value
+// with a google.rpc.Status.code of 1, corresponding
+// to Code.CANCELLED, and
+// PipelineJob.state is set to
 // CANCELLED.
 func (c *PipelineClient) CancelPipelineJob(ctx context.Context, req *aiplatformpb.CancelPipelineJobRequest, opts ...gax.CallOption) error {
 	return c.internalClient.CancelPipelineJob(ctx, req, opts...)
@@ -322,9 +329,6 @@ type pipelineGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing PipelineClient
 	CallOptions **PipelineCallOptions
 
@@ -362,11 +366,6 @@ func NewPipelineClient(ctx context.Context, opts ...option.ClientOption) (*Pipel
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -375,7 +374,6 @@ func NewPipelineClient(ctx context.Context, opts ...option.ClientOption) (*Pipel
 
 	c := &pipelineGRPCClient{
 		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
 		pipelineClient:   aiplatformpb.NewPipelineServiceClient(connPool),
 		CallOptions:      &client.CallOptions,
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
@@ -412,7 +410,7 @@ func (c *pipelineGRPCClient) Connection() *grpc.ClientConn {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *pipelineGRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }

@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,13 +20,14 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"math"
 	"net/http"
 	"net/url"
 	"time"
 
 	cxpb "cloud.google.com/go/dialogflow/cx/apiv3beta1/cxpb"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
@@ -35,7 +36,6 @@ import (
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -74,6 +74,7 @@ func defaultTransitionRouteGroupsGRPCClientOptions() []option.ClientOption {
 func defaultTransitionRouteGroupsCallOptions() *TransitionRouteGroupsCallOptions {
 	return &TransitionRouteGroupsCallOptions{
 		ListTransitionRouteGroups: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -85,6 +86,7 @@ func defaultTransitionRouteGroupsCallOptions() *TransitionRouteGroupsCallOptions
 			}),
 		},
 		GetTransitionRouteGroup: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -96,6 +98,7 @@ func defaultTransitionRouteGroupsCallOptions() *TransitionRouteGroupsCallOptions
 			}),
 		},
 		CreateTransitionRouteGroup: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -107,6 +110,7 @@ func defaultTransitionRouteGroupsCallOptions() *TransitionRouteGroupsCallOptions
 			}),
 		},
 		UpdateTransitionRouteGroup: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -118,6 +122,7 @@ func defaultTransitionRouteGroupsCallOptions() *TransitionRouteGroupsCallOptions
 			}),
 		},
 		DeleteTransitionRouteGroup: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -139,6 +144,7 @@ func defaultTransitionRouteGroupsCallOptions() *TransitionRouteGroupsCallOptions
 func defaultTransitionRouteGroupsRESTCallOptions() *TransitionRouteGroupsCallOptions {
 	return &TransitionRouteGroupsCallOptions{
 		ListTransitionRouteGroups: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -149,6 +155,7 @@ func defaultTransitionRouteGroupsRESTCallOptions() *TransitionRouteGroupsCallOpt
 			}),
 		},
 		GetTransitionRouteGroup: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -159,6 +166,7 @@ func defaultTransitionRouteGroupsRESTCallOptions() *TransitionRouteGroupsCallOpt
 			}),
 		},
 		CreateTransitionRouteGroup: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -169,6 +177,7 @@ func defaultTransitionRouteGroupsRESTCallOptions() *TransitionRouteGroupsCallOpt
 			}),
 		},
 		UpdateTransitionRouteGroup: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -179,6 +188,7 @@ func defaultTransitionRouteGroupsRESTCallOptions() *TransitionRouteGroupsCallOpt
 			}),
 		},
 		DeleteTransitionRouteGroup: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -216,7 +226,8 @@ type internalTransitionRouteGroupsClient interface {
 // TransitionRouteGroupsClient is a client for interacting with Dialogflow API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
-// Service for managing TransitionRouteGroups.
+// Service for managing
+// TransitionRouteGroups.
 type TransitionRouteGroupsClient struct {
 	// The internal transport-dependent client.
 	internalClient internalTransitionRouteGroupsClient
@@ -253,12 +264,15 @@ func (c *TransitionRouteGroupsClient) ListTransitionRouteGroups(ctx context.Cont
 	return c.internalClient.ListTransitionRouteGroups(ctx, req, opts...)
 }
 
-// GetTransitionRouteGroup retrieves the specified TransitionRouteGroup.
+// GetTransitionRouteGroup retrieves the specified
+// TransitionRouteGroup.
 func (c *TransitionRouteGroupsClient) GetTransitionRouteGroup(ctx context.Context, req *cxpb.GetTransitionRouteGroupRequest, opts ...gax.CallOption) (*cxpb.TransitionRouteGroup, error) {
 	return c.internalClient.GetTransitionRouteGroup(ctx, req, opts...)
 }
 
-// CreateTransitionRouteGroup creates an TransitionRouteGroup in the specified flow.
+// CreateTransitionRouteGroup creates an
+// TransitionRouteGroup
+// in the specified flow.
 //
 // Note: You should always train a flow prior to sending it queries. See the
 // training
@@ -267,7 +281,8 @@ func (c *TransitionRouteGroupsClient) CreateTransitionRouteGroup(ctx context.Con
 	return c.internalClient.CreateTransitionRouteGroup(ctx, req, opts...)
 }
 
-// UpdateTransitionRouteGroup updates the specified TransitionRouteGroup.
+// UpdateTransitionRouteGroup updates the specified
+// TransitionRouteGroup.
 //
 // Note: You should always train a flow prior to sending it queries. See the
 // training
@@ -276,7 +291,8 @@ func (c *TransitionRouteGroupsClient) UpdateTransitionRouteGroup(ctx context.Con
 	return c.internalClient.UpdateTransitionRouteGroup(ctx, req, opts...)
 }
 
-// DeleteTransitionRouteGroup deletes the specified TransitionRouteGroup.
+// DeleteTransitionRouteGroup deletes the specified
+// TransitionRouteGroup.
 //
 // Note: You should always train a flow prior to sending it queries. See the
 // training
@@ -317,9 +333,6 @@ type transitionRouteGroupsGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing TransitionRouteGroupsClient
 	CallOptions **TransitionRouteGroupsCallOptions
 
@@ -337,7 +350,8 @@ type transitionRouteGroupsGRPCClient struct {
 // NewTransitionRouteGroupsClient creates a new transition route groups client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
-// Service for managing TransitionRouteGroups.
+// Service for managing
+// TransitionRouteGroups.
 func NewTransitionRouteGroupsClient(ctx context.Context, opts ...option.ClientOption) (*TransitionRouteGroupsClient, error) {
 	clientOpts := defaultTransitionRouteGroupsGRPCClientOptions()
 	if newTransitionRouteGroupsClientHook != nil {
@@ -348,11 +362,6 @@ func NewTransitionRouteGroupsClient(ctx context.Context, opts ...option.ClientOp
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -361,7 +370,6 @@ func NewTransitionRouteGroupsClient(ctx context.Context, opts ...option.ClientOp
 
 	c := &transitionRouteGroupsGRPCClient{
 		connPool:                    connPool,
-		disableDeadlines:            disableDeadlines,
 		transitionRouteGroupsClient: cxpb.NewTransitionRouteGroupsClient(connPool),
 		CallOptions:                 &client.CallOptions,
 		operationsClient:            longrunningpb.NewOperationsClient(connPool),
@@ -386,7 +394,7 @@ func (c *transitionRouteGroupsGRPCClient) Connection() *grpc.ClientConn {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *transitionRouteGroupsGRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -414,7 +422,8 @@ type transitionRouteGroupsRESTClient struct {
 
 // NewTransitionRouteGroupsRESTClient creates a new transition route groups rest client.
 //
-// Service for managing TransitionRouteGroups.
+// Service for managing
+// TransitionRouteGroups.
 func NewTransitionRouteGroupsRESTClient(ctx context.Context, opts ...option.ClientOption) (*TransitionRouteGroupsClient, error) {
 	clientOpts := append(defaultTransitionRouteGroupsRESTClientOptions(), opts...)
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
@@ -446,7 +455,7 @@ func defaultTransitionRouteGroupsRESTClientOptions() []option.ClientOption {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *transitionRouteGroupsRESTClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -511,11 +520,6 @@ func (c *transitionRouteGroupsGRPCClient) ListTransitionRouteGroups(ctx context.
 }
 
 func (c *transitionRouteGroupsGRPCClient) GetTransitionRouteGroup(ctx context.Context, req *cxpb.GetTransitionRouteGroupRequest, opts ...gax.CallOption) (*cxpb.TransitionRouteGroup, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -533,11 +537,6 @@ func (c *transitionRouteGroupsGRPCClient) GetTransitionRouteGroup(ctx context.Co
 }
 
 func (c *transitionRouteGroupsGRPCClient) CreateTransitionRouteGroup(ctx context.Context, req *cxpb.CreateTransitionRouteGroupRequest, opts ...gax.CallOption) (*cxpb.TransitionRouteGroup, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -555,11 +554,6 @@ func (c *transitionRouteGroupsGRPCClient) CreateTransitionRouteGroup(ctx context
 }
 
 func (c *transitionRouteGroupsGRPCClient) UpdateTransitionRouteGroup(ctx context.Context, req *cxpb.UpdateTransitionRouteGroupRequest, opts ...gax.CallOption) (*cxpb.TransitionRouteGroup, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "transition_route_group.name", url.QueryEscape(req.GetTransitionRouteGroup().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -577,11 +571,6 @@ func (c *transitionRouteGroupsGRPCClient) UpdateTransitionRouteGroup(ctx context
 }
 
 func (c *transitionRouteGroupsGRPCClient) DeleteTransitionRouteGroup(ctx context.Context, req *cxpb.DeleteTransitionRouteGroupRequest, opts ...gax.CallOption) error {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -753,6 +742,7 @@ func (c *transitionRouteGroupsRESTClient) ListTransitionRouteGroups(ctx context.
 		baseUrl.Path += fmt.Sprintf("/v3beta1/%v/transitionRouteGroups", req.GetParent())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetLanguageCode() != "" {
 			params.Add("languageCode", fmt.Sprintf("%v", req.GetLanguageCode()))
 		}
@@ -787,13 +777,13 @@ func (c *transitionRouteGroupsRESTClient) ListTransitionRouteGroups(ctx context.
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -821,7 +811,8 @@ func (c *transitionRouteGroupsRESTClient) ListTransitionRouteGroups(ctx context.
 	return it
 }
 
-// GetTransitionRouteGroup retrieves the specified TransitionRouteGroup.
+// GetTransitionRouteGroup retrieves the specified
+// TransitionRouteGroup.
 func (c *transitionRouteGroupsRESTClient) GetTransitionRouteGroup(ctx context.Context, req *cxpb.GetTransitionRouteGroupRequest, opts ...gax.CallOption) (*cxpb.TransitionRouteGroup, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -830,6 +821,7 @@ func (c *transitionRouteGroupsRESTClient) GetTransitionRouteGroup(ctx context.Co
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v", req.GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetLanguageCode() != "" {
 		params.Add("languageCode", fmt.Sprintf("%v", req.GetLanguageCode()))
 	}
@@ -864,13 +856,13 @@ func (c *transitionRouteGroupsRESTClient) GetTransitionRouteGroup(ctx context.Co
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -881,7 +873,9 @@ func (c *transitionRouteGroupsRESTClient) GetTransitionRouteGroup(ctx context.Co
 	return resp, nil
 }
 
-// CreateTransitionRouteGroup creates an TransitionRouteGroup in the specified flow.
+// CreateTransitionRouteGroup creates an
+// TransitionRouteGroup
+// in the specified flow.
 //
 // Note: You should always train a flow prior to sending it queries. See the
 // training
@@ -901,6 +895,7 @@ func (c *transitionRouteGroupsRESTClient) CreateTransitionRouteGroup(ctx context
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v/transitionRouteGroups", req.GetParent())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetLanguageCode() != "" {
 		params.Add("languageCode", fmt.Sprintf("%v", req.GetLanguageCode()))
 	}
@@ -935,13 +930,13 @@ func (c *transitionRouteGroupsRESTClient) CreateTransitionRouteGroup(ctx context
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -952,7 +947,8 @@ func (c *transitionRouteGroupsRESTClient) CreateTransitionRouteGroup(ctx context
 	return resp, nil
 }
 
-// UpdateTransitionRouteGroup updates the specified TransitionRouteGroup.
+// UpdateTransitionRouteGroup updates the specified
+// TransitionRouteGroup.
 //
 // Note: You should always train a flow prior to sending it queries. See the
 // training
@@ -972,6 +968,7 @@ func (c *transitionRouteGroupsRESTClient) UpdateTransitionRouteGroup(ctx context
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v", req.GetTransitionRouteGroup().GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetLanguageCode() != "" {
 		params.Add("languageCode", fmt.Sprintf("%v", req.GetLanguageCode()))
 	}
@@ -980,7 +977,7 @@ func (c *transitionRouteGroupsRESTClient) UpdateTransitionRouteGroup(ctx context
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask))
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1013,13 +1010,13 @@ func (c *transitionRouteGroupsRESTClient) UpdateTransitionRouteGroup(ctx context
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1030,7 +1027,8 @@ func (c *transitionRouteGroupsRESTClient) UpdateTransitionRouteGroup(ctx context
 	return resp, nil
 }
 
-// DeleteTransitionRouteGroup deletes the specified TransitionRouteGroup.
+// DeleteTransitionRouteGroup deletes the specified
+// TransitionRouteGroup.
 //
 // Note: You should always train a flow prior to sending it queries. See the
 // training
@@ -1043,6 +1041,7 @@ func (c *transitionRouteGroupsRESTClient) DeleteTransitionRouteGroup(ctx context
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v", req.GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetForce() {
 		params.Add("force", fmt.Sprintf("%v", req.GetForce()))
 	}
@@ -1084,6 +1083,11 @@ func (c *transitionRouteGroupsRESTClient) GetLocation(ctx context.Context, req *
 	}
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
@@ -1112,13 +1116,13 @@ func (c *transitionRouteGroupsRESTClient) GetLocation(ctx context.Context, req *
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1151,6 +1155,7 @@ func (c *transitionRouteGroupsRESTClient) ListLocations(ctx context.Context, req
 		baseUrl.Path += fmt.Sprintf("/v3beta1/%v/locations", req.GetName())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -1185,13 +1190,13 @@ func (c *transitionRouteGroupsRESTClient) ListLocations(ctx context.Context, req
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -1226,6 +1231,11 @@ func (c *transitionRouteGroupsRESTClient) CancelOperation(ctx context.Context, r
 		return err
 	}
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v:cancel", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
@@ -1262,6 +1272,11 @@ func (c *transitionRouteGroupsRESTClient) GetOperation(ctx context.Context, req 
 	}
 	baseUrl.Path += fmt.Sprintf("/v3beta1/%v", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
@@ -1290,13 +1305,13 @@ func (c *transitionRouteGroupsRESTClient) GetOperation(ctx context.Context, req 
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1329,6 +1344,7 @@ func (c *transitionRouteGroupsRESTClient) ListOperations(ctx context.Context, re
 		baseUrl.Path += fmt.Sprintf("/v3beta1/%v/operations", req.GetName())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -1363,13 +1379,13 @@ func (c *transitionRouteGroupsRESTClient) ListOperations(ctx context.Context, re
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil

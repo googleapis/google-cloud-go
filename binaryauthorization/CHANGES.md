@@ -1,6 +1,34 @@
 # Changes
 
 
+## [1.6.1](https://github.com/googleapis/google-cloud-go/compare/binaryauthorization/v1.6.0...binaryauthorization/v1.6.1) (2023-06-20)
+
+
+### Bug Fixes
+
+* **binaryauthorization:** REST query UpdateMask bug ([df52820](https://github.com/googleapis/google-cloud-go/commit/df52820b0e7721954809a8aa8700b93c5662dc9b))
+
+## [1.6.0](https://github.com/googleapis/google-cloud-go/compare/binaryauthorization/v1.5.1...binaryauthorization/v1.6.0) (2023-05-30)
+
+
+### Features
+
+* **binaryauthorization:** Update all direct dependencies ([b340d03](https://github.com/googleapis/google-cloud-go/commit/b340d030f2b52a4ce48846ce63984b28583abde6))
+
+## [1.5.1](https://github.com/googleapis/google-cloud-go/compare/binaryauthorization/v1.5.0...binaryauthorization/v1.5.1) (2023-05-08)
+
+
+### Bug Fixes
+
+* **binaryauthorization:** Update grpc to v1.55.0 ([1147ce0](https://github.com/googleapis/google-cloud-go/commit/1147ce02a990276ca4f8ab7a1ab65c14da4450ef))
+
+## [1.5.0](https://github.com/googleapis/google-cloud-go/compare/binaryauthorization/v1.4.0...binaryauthorization/v1.5.0) (2023-01-04)
+
+
+### Features
+
+* **binaryauthorization:** Add REST client ([06a54a1](https://github.com/googleapis/google-cloud-go/commit/06a54a16a5866cce966547c51e203b9e09a25bc0))
+
 ## [1.4.0](https://github.com/googleapis/google-cloud-go/compare/binaryauthorization/v1.3.0...binaryauthorization/v1.4.0) (2022-11-03)
 
 

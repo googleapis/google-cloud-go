@@ -9,8 +9,17 @@
         "accesscontextmanager": {
             "component": "accesscontextmanager"
         },
+        "advisorynotifications": {
+            "component": "advisorynotifications"
+        },
+        "ai": {
+            "component": "ai"
+        },
         "aiplatform": {
             "component": "aiplatform"
+        },
+        "alloydb": {
+            "component": "alloydb"
         },
         "analytics": {
             "component": "analytics"
@@ -81,6 +90,9 @@
         "compute/metadata": {
             "component": "compute/metadata"
         },
+        "confidentialcomputing": {
+            "component": "confidentialcomputing"
+        },
         "contactcenterinsights": {
             "component": "contactcenterinsights"
         },
@@ -123,6 +135,9 @@
         "dialogflow": {
             "component": "dialogflow"
         },
+        "discoveryengine": {
+            "component": "discoveryengine"
+        },
         "dlp": {
             "component": "dlp"
         },
@@ -146,9 +161,6 @@
         },
         "functions": {
             "component": "functions"
-        },
-        "gaming": {
-            "component": "gaming"
         },
         "gkebackup": {
             "component": "gkebackup"
@@ -207,6 +219,9 @@
         "metastore": {
             "component": "metastore"
         },
+        "migrationcenter": {
+            "component": "migrationcenter"
+        },
         "monitoring": {
             "component": "monitoring"
         },
@@ -246,7 +261,10 @@
         "privatecatalog": {
             "component": "privatecatalog"
         },
-        "recaptchaenterprise/v2": {
+        "rapidmigrationassessment": {
+            "component": "rapidmigrationassessment"
+        },
+        "recaptchaenterprise": {
             "component": "recaptchaenterprise"
         },
         "recommendationengine": {
@@ -300,8 +318,14 @@
         "speech": {
             "component": "speech"
         },
+        "storageinsights": {
+            "component": "storageinsights"
+        },
         "storagetransfer": {
             "component": "storagetransfer"
+        },
+        "support": {
+            "component": "support"
         },
         "talent": {
             "component": "talent"
@@ -324,7 +348,7 @@
         "videointelligence": {
             "component": "videointelligence"
         },
-        "vision/v2": {
+        "vision": {
             "component": "vision"
         },
         "vmmigration": {
@@ -344,7 +368,12 @@
         },
         "workflows": {
             "component": "workflows"
+        },
+        "workstations": {
+            "component": "workstations"
         }
     },
-    "plugins": ["sentence-case"]
+    "plugins": [
+        "sentence-case"
+    ]
 }

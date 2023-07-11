@@ -1,5 +1,47 @@
 # Changes
 
+## [0.14.1](https://github.com/googleapis/google-cloud-go/compare/gkehub/v0.14.0...gkehub/v0.14.1) (2023-06-20)
+
+
+### Bug Fixes
+
+* **gkehub:** REST query UpdateMask bug ([df52820](https://github.com/googleapis/google-cloud-go/commit/df52820b0e7721954809a8aa8700b93c5662dc9b))
+
+## [0.14.0](https://github.com/googleapis/google-cloud-go/compare/gkehub/v0.13.1...gkehub/v0.14.0) (2023-05-30)
+
+
+### Features
+
+* **gkehub:** Update all direct dependencies ([b340d03](https://github.com/googleapis/google-cloud-go/commit/b340d030f2b52a4ce48846ce63984b28583abde6))
+
+## [0.13.1](https://github.com/googleapis/google-cloud-go/compare/gkehub/v0.13.0...gkehub/v0.13.1) (2023-05-08)
+
+
+### Bug Fixes
+
+* **gkehub:** Update grpc to v1.55.0 ([1147ce0](https://github.com/googleapis/google-cloud-go/commit/1147ce02a990276ca4f8ab7a1ab65c14da4450ef))
+
+## [0.13.0](https://github.com/googleapis/google-cloud-go/compare/gkehub/v0.12.0...gkehub/v0.13.0) (2023-04-25)
+
+
+### Features
+
+* **gkehub:** Add `monitoring_config` field ([#7806](https://github.com/googleapis/google-cloud-go/issues/7806)) ([e1e8ba9](https://github.com/googleapis/google-cloud-go/commit/e1e8ba9f4d427c52c4a2bc949479055824124ba0))
+
+## [0.12.0](https://github.com/googleapis/google-cloud-go/compare/gkehub/v0.11.0...gkehub/v0.12.0) (2023-03-15)
+
+
+### Features
+
+* **gkehub:** Update iam and longrunning deps ([91a1f78](https://github.com/googleapis/google-cloud-go/commit/91a1f784a109da70f63b96414bba8a9b4254cddd))
+
+## [0.11.0](https://github.com/googleapis/google-cloud-go/compare/gkehub/v0.10.0...gkehub/v0.11.0) (2023-01-04)
+
+
+### Features
+
+* **gkehub:** Add REST client ([06a54a1](https://github.com/googleapis/google-cloud-go/commit/06a54a16a5866cce966547c51e203b9e09a25bc0))
+
 ## [0.10.0](https://github.com/googleapis/google-cloud-go/compare/gkehub/v0.9.0...gkehub/v0.10.0) (2022-09-21)
 
 

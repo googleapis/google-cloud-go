@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,12 +20,13 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"math"
 	"net/http"
 	"net/url"
 	"time"
 
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	retailpb "cloud.google.com/go/retail/apiv2alpha/retailpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
@@ -34,7 +35,6 @@ import (
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -76,6 +76,7 @@ func defaultControlCallOptions() *ControlCallOptions {
 		ListControls:  []gax.CallOption{},
 		GetOperation:  []gax.CallOption{},
 		ListOperations: []gax.CallOption{
+			gax.WithTimeout(300000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -99,6 +100,7 @@ func defaultControlRESTCallOptions() *ControlCallOptions {
 		ListControls:  []gax.CallOption{},
 		GetOperation:  []gax.CallOption{},
 		ListOperations: []gax.CallOption{
+			gax.WithTimeout(300000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -181,7 +183,7 @@ func (c *ControlClient) DeleteControl(ctx context.Context, req *retailpb.DeleteC
 //
 // Control cannot be set to a different
 // oneof field, if so an INVALID_ARGUMENT is returned. If the
-// Control to delete does not exist, a
+// Control to update does not exist, a
 // NOT_FOUND error is returned.
 func (c *ControlClient) UpdateControl(ctx context.Context, req *retailpb.UpdateControlRequest, opts ...gax.CallOption) (*retailpb.Control, error) {
 	return c.internalClient.UpdateControl(ctx, req, opts...)
@@ -192,7 +194,8 @@ func (c *ControlClient) GetControl(ctx context.Context, req *retailpb.GetControl
 	return c.internalClient.GetControl(ctx, req, opts...)
 }
 
-// ListControls lists all Controls linked to this catalog.
+// ListControls lists all Controls by their parent
+// Catalog.
 func (c *ControlClient) ListControls(ctx context.Context, req *retailpb.ListControlsRequest, opts ...gax.CallOption) *ControlIterator {
 	return c.internalClient.ListControls(ctx, req, opts...)
 }
@@ -213,9 +216,6 @@ func (c *ControlClient) ListOperations(ctx context.Context, req *longrunningpb.L
 type controlGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
-
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
 
 	// Points back to the CallOptions field of the containing ControlClient
 	CallOptions **ControlCallOptions
@@ -243,11 +243,6 @@ func NewControlClient(ctx context.Context, opts ...option.ClientOption) (*Contro
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -256,7 +251,6 @@ func NewControlClient(ctx context.Context, opts ...option.ClientOption) (*Contro
 
 	c := &controlGRPCClient{
 		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
 		controlClient:    retailpb.NewControlServiceClient(connPool),
 		CallOptions:      &client.CallOptions,
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
@@ -280,7 +274,7 @@ func (c *controlGRPCClient) Connection() *grpc.ClientConn {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *controlGRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -340,7 +334,7 @@ func defaultControlRESTClientOptions() []option.ClientOption {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *controlRESTClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -549,6 +543,7 @@ func (c *controlRESTClient) CreateControl(ctx context.Context, req *retailpb.Cre
 	baseUrl.Path += fmt.Sprintf("/v2alpha/%v/controls", req.GetParent())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	params.Add("controlId", fmt.Sprintf("%v", req.GetControlId()))
 
 	baseUrl.RawQuery = params.Encode()
@@ -581,13 +576,13 @@ func (c *controlRESTClient) CreateControl(ctx context.Context, req *retailpb.Cre
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -608,6 +603,11 @@ func (c *controlRESTClient) DeleteControl(ctx context.Context, req *retailpb.Del
 		return err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2alpha/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
@@ -640,7 +640,7 @@ func (c *controlRESTClient) DeleteControl(ctx context.Context, req *retailpb.Del
 //
 // Control cannot be set to a different
 // oneof field, if so an INVALID_ARGUMENT is returned. If the
-// Control to delete does not exist, a
+// Control to update does not exist, a
 // NOT_FOUND error is returned.
 func (c *controlRESTClient) UpdateControl(ctx context.Context, req *retailpb.UpdateControlRequest, opts ...gax.CallOption) (*retailpb.Control, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
@@ -657,12 +657,13 @@ func (c *controlRESTClient) UpdateControl(ctx context.Context, req *retailpb.Upd
 	baseUrl.Path += fmt.Sprintf("/v2alpha/%v", req.GetControl().GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
 		updateMask, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask))
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -695,13 +696,13 @@ func (c *controlRESTClient) UpdateControl(ctx context.Context, req *retailpb.Upd
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -719,6 +720,11 @@ func (c *controlRESTClient) GetControl(ctx context.Context, req *retailpb.GetCon
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v2alpha/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
@@ -748,13 +754,13 @@ func (c *controlRESTClient) GetControl(ctx context.Context, req *retailpb.GetCon
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -765,7 +771,8 @@ func (c *controlRESTClient) GetControl(ctx context.Context, req *retailpb.GetCon
 	return resp, nil
 }
 
-// ListControls lists all Controls linked to this catalog.
+// ListControls lists all Controls by their parent
+// Catalog.
 func (c *controlRESTClient) ListControls(ctx context.Context, req *retailpb.ListControlsRequest, opts ...gax.CallOption) *ControlIterator {
 	it := &ControlIterator{}
 	req = proto.Clone(req).(*retailpb.ListControlsRequest)
@@ -787,6 +794,7 @@ func (c *controlRESTClient) ListControls(ctx context.Context, req *retailpb.List
 		baseUrl.Path += fmt.Sprintf("/v2alpha/%v/controls", req.GetParent())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -821,13 +829,13 @@ func (c *controlRESTClient) ListControls(ctx context.Context, req *retailpb.List
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -863,6 +871,11 @@ func (c *controlRESTClient) GetOperation(ctx context.Context, req *longrunningpb
 	}
 	baseUrl.Path += fmt.Sprintf("/v2alpha/%v", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
@@ -891,13 +904,13 @@ func (c *controlRESTClient) GetOperation(ctx context.Context, req *longrunningpb
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -930,6 +943,7 @@ func (c *controlRESTClient) ListOperations(ctx context.Context, req *longrunning
 		baseUrl.Path += fmt.Sprintf("/v2alpha/%v/operations", req.GetName())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -964,13 +978,13 @@ func (c *controlRESTClient) ListOperations(ctx context.Context, req *longrunning
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil

@@ -26,6 +26,26 @@
               ]
             }
           }
+        },
+        "rest": {
+          "libraryClient": "IamPolicyClient",
+          "rpcs": {
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            }
+          }
         }
       }
     }

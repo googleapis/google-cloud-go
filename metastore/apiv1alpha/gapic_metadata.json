@@ -10,6 +10,16 @@
         "grpc": {
           "libraryClient": "DataprocMetastoreClient",
           "rpcs": {
+            "AlterMetadataResourceLocation": {
+              "methods": [
+                "AlterMetadataResourceLocation"
+              ]
+            },
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
             "CreateBackup": {
               "methods": [
                 "CreateBackup"
@@ -98,6 +108,21 @@
             "ListServices": {
               "methods": [
                 "ListServices"
+              ]
+            },
+            "MoveTableToDatabase": {
+              "methods": [
+                "MoveTableToDatabase"
+              ]
+            },
+            "QueryMetadata": {
+              "methods": [
+                "QueryMetadata"
+              ]
+            },
+            "RemoveIamPolicy": {
+              "methods": [
+                "RemoveIamPolicy"
               ]
             },
             "RestoreService": {
@@ -130,6 +155,16 @@
         "rest": {
           "libraryClient": "DataprocMetastoreClient",
           "rpcs": {
+            "AlterMetadataResourceLocation": {
+              "methods": [
+                "AlterMetadataResourceLocation"
+              ]
+            },
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
             "CreateBackup": {
               "methods": [
                 "CreateBackup"
@@ -218,6 +253,21 @@
             "ListServices": {
               "methods": [
                 "ListServices"
+              ]
+            },
+            "MoveTableToDatabase": {
+              "methods": [
+                "MoveTableToDatabase"
+              ]
+            },
+            "QueryMetadata": {
+              "methods": [
+                "QueryMetadata"
+              ]
+            },
+            "RemoveIamPolicy": {
+              "methods": [
+                "RemoveIamPolicy"
               ]
             },
             "RestoreService": {
@@ -254,6 +304,11 @@
         "grpc": {
           "libraryClient": "DataprocMetastoreFederationClient",
           "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
             "CreateFederation": {
               "methods": [
                 "CreateFederation"
@@ -324,6 +379,11 @@
         "rest": {
           "libraryClient": "DataprocMetastoreFederationClient",
           "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
             "CreateFederation": {
               "methods": [
                 "CreateFederation"

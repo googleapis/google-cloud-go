@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,10 +18,13 @@ package compute
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	computepb "cloud.google.com/go/compute/apiv1/computepb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/apierror"
+	"google.golang.org/api/googleapi"
 )
 
 // Operation represents a long-running operation for this API.
@@ -87,6 +90,14 @@ func (h *regionOperationsHandle) Poll(ctx context.Context, opts ...gax.CallOptio
 		return err
 	}
 	h.proto = resp
+	if resp.HttpErrorStatusCode != nil && (resp.GetHttpErrorStatusCode() < 200 || resp.GetHttpErrorStatusCode() > 299) {
+		aErr := &googleapi.Error{
+			Code:    int(resp.GetHttpErrorStatusCode()),
+			Message: fmt.Sprintf("%s: %v", resp.GetHttpErrorMessage(), resp.GetError()),
+		}
+		err, _ := apierror.FromError(aErr)
+		return err
+	}
 	return nil
 }
 
@@ -114,6 +125,14 @@ func (h *zoneOperationsHandle) Poll(ctx context.Context, opts ...gax.CallOption)
 		return err
 	}
 	h.proto = resp
+	if resp.HttpErrorStatusCode != nil && (resp.GetHttpErrorStatusCode() < 200 || resp.GetHttpErrorStatusCode() > 299) {
+		aErr := &googleapi.Error{
+			Code:    int(resp.GetHttpErrorStatusCode()),
+			Message: fmt.Sprintf("%s: %v", resp.GetHttpErrorMessage(), resp.GetError()),
+		}
+		err, _ := apierror.FromError(aErr)
+		return err
+	}
 	return nil
 }
 
@@ -139,6 +158,14 @@ func (h *globalOperationsHandle) Poll(ctx context.Context, opts ...gax.CallOptio
 		return err
 	}
 	h.proto = resp
+	if resp.HttpErrorStatusCode != nil && (resp.GetHttpErrorStatusCode() < 200 || resp.GetHttpErrorStatusCode() > 299) {
+		aErr := &googleapi.Error{
+			Code:    int(resp.GetHttpErrorStatusCode()),
+			Message: fmt.Sprintf("%s: %v", resp.GetHttpErrorMessage(), resp.GetError()),
+		}
+		err, _ := apierror.FromError(aErr)
+		return err
+	}
 	return nil
 }
 
@@ -162,6 +189,14 @@ func (h *globalOrganizationOperationsHandle) Poll(ctx context.Context, opts ...g
 		return err
 	}
 	h.proto = resp
+	if resp.HttpErrorStatusCode != nil && (resp.GetHttpErrorStatusCode() < 200 || resp.GetHttpErrorStatusCode() > 299) {
+		aErr := &googleapi.Error{
+			Code:    int(resp.GetHttpErrorStatusCode()),
+			Message: fmt.Sprintf("%s: %v", resp.GetHttpErrorMessage(), resp.GetError()),
+		}
+		err, _ := apierror.FromError(aErr)
+		return err
+	}
 	return nil
 }
 

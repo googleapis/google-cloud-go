@@ -401,6 +401,7 @@ func TestQuery(t *testing.T) {
 		diff := testutil.Diff(jc.(*QueryConfig), &wantConfig,
 			cmp.Comparer(tableEqual),
 			cmp.Comparer(externalDataEqual),
+			cmp.AllowUnexported(QueryConfig{}),
 		)
 		if diff != "" {
 			t.Errorf("#%d: (got=-, want=+:\n%s", i, diff)

@@ -1,5 +1,69 @@
 # Changelog
 
+
+## [1.3.1](https://github.com/googleapis/google-cloud-go/compare/batch/v1.3.0...batch/v1.3.1) (2023-07-10)
+
+
+### Documentation
+
+* **batch:** Add image shortcut example for Batch HPC CentOS Image ([14b95d3](https://github.com/googleapis/google-cloud-go/commit/14b95d33753d0b391d0b49533e92b551e5dc3072))
+
+## [1.3.0](https://github.com/googleapis/google-cloud-go/compare/batch/v1.2.0...batch/v1.3.0) (2023-06-20)
+
+
+### Features
+
+* **batch:** Add support for scheduling_policy ([3382ef8](https://github.com/googleapis/google-cloud-go/commit/3382ef81b6bcefe1c7bfc14aa5ff9bbf25850966))
+
+
+### Bug Fixes
+
+* **batch:** REST query UpdateMask bug ([df52820](https://github.com/googleapis/google-cloud-go/commit/df52820b0e7721954809a8aa8700b93c5662dc9b))
+
+## [1.2.0](https://github.com/googleapis/google-cloud-go/compare/batch/v1.1.0...batch/v1.2.0) (2023-05-30)
+
+
+### Features
+
+* **batch:** Update all direct dependencies ([b340d03](https://github.com/googleapis/google-cloud-go/commit/b340d030f2b52a4ce48846ce63984b28583abde6))
+
+## [1.1.0](https://github.com/googleapis/google-cloud-go/compare/batch/v1.0.1...batch/v1.1.0) (2023-05-16)
+
+
+### Features
+
+* **batch:** Add support for placement policies ([#7943](https://github.com/googleapis/google-cloud-go/issues/7943)) ([7c2f642](https://github.com/googleapis/google-cloud-go/commit/7c2f642ac308fcdfcb41985aae425785afa27823))
+
+## [1.0.1](https://github.com/googleapis/google-cloud-go/compare/batch/v1.0.0...batch/v1.0.1) (2023-05-08)
+
+
+### Bug Fixes
+
+* **batch:** Update grpc to v1.55.0 ([1147ce0](https://github.com/googleapis/google-cloud-go/commit/1147ce02a990276ca4f8ab7a1ab65c14da4450ef))
+
+## [1.0.0](https://github.com/googleapis/google-cloud-go/compare/batch/v0.7.0...batch/v1.0.0) (2023-04-04)
+
+
+### Features
+
+* **batch:** Promote to GA ([597ea0f](https://github.com/googleapis/google-cloud-go/commit/597ea0fe09bcea04e884dffe78add850edb2120d))
+* **batch:** Promote to GA ([#7645](https://github.com/googleapis/google-cloud-go/issues/7645)) ([307e5ad](https://github.com/googleapis/google-cloud-go/commit/307e5adfe93b9f0b66f2f4312f127bb74c102011))
+
+## [0.7.0](https://github.com/googleapis/google-cloud-go/compare/batch/v0.6.0...batch/v0.7.0) (2023-02-14)
+
+
+### Features
+
+* **batch:** Support custom scopes for service account in v1 ([4623db8](https://github.com/googleapis/google-cloud-go/commit/4623db86fb70305278f6740999ecaee674506052))
+
+## [0.6.0](https://github.com/googleapis/google-cloud-go/compare/batch/v0.5.0...batch/v0.6.0) (2023-01-04)
+
+
+### Features
+
+* **batch:** Add REST client ([06a54a1](https://github.com/googleapis/google-cloud-go/commit/06a54a16a5866cce966547c51e203b9e09a25bc0))
+* **batch:** Support secret and encrypted environment variables in v1 ([06a54a1](https://github.com/googleapis/google-cloud-go/commit/06a54a16a5866cce966547c51e203b9e09a25bc0))
+
 ## [0.5.0](https://github.com/googleapis/google-cloud-go/compare/batch/v0.4.1...batch/v0.5.0) (2022-12-01)
 
 

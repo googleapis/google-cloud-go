@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,13 +20,15 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"math"
 	"net/http"
 	"net/url"
 	"time"
 
 	aiplatformpb "cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb"
+	iampb "cloud.google.com/go/iam/apiv1/iampb"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
@@ -35,8 +37,6 @@ import (
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
-	iampb "google.golang.org/genproto/googleapis/iam/v1"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/encoding/protojson"
@@ -76,7 +76,9 @@ func defaultFeaturestoreOnlineServingGRPCClientOptions() []option.ClientOption {
 
 func defaultFeaturestoreOnlineServingCallOptions() *FeaturestoreOnlineServingCallOptions {
 	return &FeaturestoreOnlineServingCallOptions{
-		ReadFeatureValues:          []gax.CallOption{},
+		ReadFeatureValues: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
 		StreamingReadFeatureValues: []gax.CallOption{},
 		WriteFeatureValues:         []gax.CallOption{},
 		GetLocation:                []gax.CallOption{},
@@ -94,19 +96,23 @@ func defaultFeaturestoreOnlineServingCallOptions() *FeaturestoreOnlineServingCal
 
 func defaultFeaturestoreOnlineServingRESTCallOptions() *FeaturestoreOnlineServingCallOptions {
 	return &FeaturestoreOnlineServingCallOptions{
-		ReadFeatureValues:          []gax.CallOption{},
-		StreamingReadFeatureValues: []gax.CallOption{},
-		WriteFeatureValues:         []gax.CallOption{},
-		GetLocation:                []gax.CallOption{},
-		ListLocations:              []gax.CallOption{},
-		GetIamPolicy:               []gax.CallOption{},
-		SetIamPolicy:               []gax.CallOption{},
-		TestIamPermissions:         []gax.CallOption{},
-		CancelOperation:            []gax.CallOption{},
-		DeleteOperation:            []gax.CallOption{},
-		GetOperation:               []gax.CallOption{},
-		ListOperations:             []gax.CallOption{},
-		WaitOperation:              []gax.CallOption{},
+		ReadFeatureValues: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		StreamingReadFeatureValues: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		WriteFeatureValues: []gax.CallOption{},
+		GetLocation:        []gax.CallOption{},
+		ListLocations:      []gax.CallOption{},
+		GetIamPolicy:       []gax.CallOption{},
+		SetIamPolicy:       []gax.CallOption{},
+		TestIamPermissions: []gax.CallOption{},
+		CancelOperation:    []gax.CallOption{},
+		DeleteOperation:    []gax.CallOption{},
+		GetOperation:       []gax.CallOption{},
+		ListOperations:     []gax.CallOption{},
+		WaitOperation:      []gax.CallOption{},
 	}
 }
 
@@ -256,9 +262,6 @@ type featurestoreOnlineServingGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing FeaturestoreOnlineServingClient
 	CallOptions **FeaturestoreOnlineServingCallOptions
 
@@ -289,11 +292,6 @@ func NewFeaturestoreOnlineServingClient(ctx context.Context, opts ...option.Clie
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -302,7 +300,6 @@ func NewFeaturestoreOnlineServingClient(ctx context.Context, opts ...option.Clie
 
 	c := &featurestoreOnlineServingGRPCClient{
 		connPool:                        connPool,
-		disableDeadlines:                disableDeadlines,
 		featurestoreOnlineServingClient: aiplatformpb.NewFeaturestoreOnlineServingServiceClient(connPool),
 		CallOptions:                     &client.CallOptions,
 		operationsClient:                longrunningpb.NewOperationsClient(connPool),
@@ -328,7 +325,7 @@ func (c *featurestoreOnlineServingGRPCClient) Connection() *grpc.ClientConn {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *featurestoreOnlineServingGRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -388,7 +385,7 @@ func defaultFeaturestoreOnlineServingRESTClientOptions() []option.ClientOption {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *featurestoreOnlineServingRESTClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -408,11 +405,6 @@ func (c *featurestoreOnlineServingRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 func (c *featurestoreOnlineServingGRPCClient) ReadFeatureValues(ctx context.Context, req *aiplatformpb.ReadFeatureValuesRequest, opts ...gax.CallOption) (*aiplatformpb.ReadFeatureValuesResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "entity_type", url.QueryEscape(req.GetEntityType())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -433,6 +425,7 @@ func (c *featurestoreOnlineServingGRPCClient) StreamingReadFeatureValues(ctx con
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "entity_type", url.QueryEscape(req.GetEntityType())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).StreamingReadFeatureValues[0:len((*c.CallOptions).StreamingReadFeatureValues):len((*c.CallOptions).StreamingReadFeatureValues)], opts...)
 	var resp aiplatformpb.FeaturestoreOnlineServingService_StreamingReadFeatureValuesClient
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -724,13 +717,13 @@ func (c *featurestoreOnlineServingRESTClient) ReadFeatureValues(ctx context.Cont
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -888,13 +881,13 @@ func (c *featurestoreOnlineServingRESTClient) WriteFeatureValues(ctx context.Con
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -941,13 +934,13 @@ func (c *featurestoreOnlineServingRESTClient) GetLocation(ctx context.Context, r
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1014,13 +1007,13 @@ func (c *featurestoreOnlineServingRESTClient) ListLocations(ctx context.Context,
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -1091,13 +1084,13 @@ func (c *featurestoreOnlineServingRESTClient) GetIamPolicy(ctx context.Context, 
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1154,13 +1147,13 @@ func (c *featurestoreOnlineServingRESTClient) SetIamPolicy(ctx context.Context, 
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1219,13 +1212,13 @@ func (c *featurestoreOnlineServingRESTClient) TestIamPermissions(ctx context.Con
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1342,13 +1335,13 @@ func (c *featurestoreOnlineServingRESTClient) GetOperation(ctx context.Context, 
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1415,13 +1408,13 @@ func (c *featurestoreOnlineServingRESTClient) ListOperations(ctx context.Context
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -1463,7 +1456,7 @@ func (c *featurestoreOnlineServingRESTClient) WaitOperation(ctx context.Context,
 		if err != nil {
 			return nil, err
 		}
-		params.Add("timeout", string(timeout))
+		params.Add("timeout", string(timeout[1:len(timeout)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1496,13 +1489,13 @@ func (c *featurestoreOnlineServingRESTClient) WaitOperation(ctx context.Context,
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil

@@ -35,6 +35,11 @@
                 "GenerateConfigReport"
               ]
             },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
             "GetService": {
               "methods": [
                 "GetService"
@@ -48,6 +53,11 @@
             "GetServiceRollout": {
               "methods": [
                 "GetServiceRollout"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
               ]
             },
             "ListServiceConfigs": {
@@ -65,9 +75,109 @@
                 "ListServices"
               ]
             },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
             "SubmitConfigSource": {
               "methods": [
                 "SubmitConfigSource"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
+            "UndeleteService": {
+              "methods": [
+                "UndeleteService"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "ServiceManagerClient",
+          "rpcs": {
+            "CreateService": {
+              "methods": [
+                "CreateService"
+              ]
+            },
+            "CreateServiceConfig": {
+              "methods": [
+                "CreateServiceConfig"
+              ]
+            },
+            "CreateServiceRollout": {
+              "methods": [
+                "CreateServiceRollout"
+              ]
+            },
+            "DeleteService": {
+              "methods": [
+                "DeleteService"
+              ]
+            },
+            "GenerateConfigReport": {
+              "methods": [
+                "GenerateConfigReport"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetService": {
+              "methods": [
+                "GetService"
+              ]
+            },
+            "GetServiceConfig": {
+              "methods": [
+                "GetServiceConfig"
+              ]
+            },
+            "GetServiceRollout": {
+              "methods": [
+                "GetServiceRollout"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListServiceConfigs": {
+              "methods": [
+                "ListServiceConfigs"
+              ]
+            },
+            "ListServiceRollouts": {
+              "methods": [
+                "ListServiceRollouts"
+              ]
+            },
+            "ListServices": {
+              "methods": [
+                "ListServices"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "SubmitConfigSource": {
+              "methods": [
+                "SubmitConfigSource"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
               ]
             },
             "UndeleteService": {

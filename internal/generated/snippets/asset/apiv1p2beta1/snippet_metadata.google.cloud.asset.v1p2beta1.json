@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/asset/apiv1p2beta1",
-    "version": "1.10.1",
+    "version": "1.14.1",
     "language": "GO",
     "apis": [
       {
@@ -34,7 +34,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "assetpb.Feed",
+        "resultType": "*assetpb.Feed",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.asset.v1p2beta1.Client"
@@ -125,7 +125,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "assetpb.Feed",
+        "resultType": "*assetpb.Feed",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.asset.v1p2beta1.Client"
@@ -171,7 +171,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "assetpb.ListFeedsResponse",
+        "resultType": "*assetpb.ListFeedsResponse",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.asset.v1p2beta1.Client"
@@ -217,7 +217,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "assetpb.Feed",
+        "resultType": "*assetpb.Feed",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.asset.v1p2beta1.Client"

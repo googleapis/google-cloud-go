@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -25,13 +25,13 @@ import (
 
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	retailpb "cloud.google.com/go/retail/apiv2/retailpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -72,6 +72,7 @@ func defaultProductGRPCClientOptions() []option.ClientOption {
 func defaultProductCallOptions() *ProductCallOptions {
 	return &ProductCallOptions{
 		CreateProduct: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -84,6 +85,7 @@ func defaultProductCallOptions() *ProductCallOptions {
 			}),
 		},
 		GetProduct: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -96,6 +98,7 @@ func defaultProductCallOptions() *ProductCallOptions {
 			}),
 		},
 		ListProducts: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -108,6 +111,7 @@ func defaultProductCallOptions() *ProductCallOptions {
 			}),
 		},
 		UpdateProduct: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -120,6 +124,7 @@ func defaultProductCallOptions() *ProductCallOptions {
 			}),
 		},
 		DeleteProduct: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -132,6 +137,7 @@ func defaultProductCallOptions() *ProductCallOptions {
 			}),
 		},
 		ImportProducts: []gax.CallOption{
+			gax.WithTimeout(300000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -144,6 +150,7 @@ func defaultProductCallOptions() *ProductCallOptions {
 			}),
 		},
 		SetInventory: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -156,6 +163,7 @@ func defaultProductCallOptions() *ProductCallOptions {
 			}),
 		},
 		AddFulfillmentPlaces: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -168,6 +176,7 @@ func defaultProductCallOptions() *ProductCallOptions {
 			}),
 		},
 		RemoveFulfillmentPlaces: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -180,6 +189,7 @@ func defaultProductCallOptions() *ProductCallOptions {
 			}),
 		},
 		AddLocalInventories: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -192,6 +202,7 @@ func defaultProductCallOptions() *ProductCallOptions {
 			}),
 		},
 		RemoveLocalInventories: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -205,6 +216,7 @@ func defaultProductCallOptions() *ProductCallOptions {
 		},
 		GetOperation: []gax.CallOption{},
 		ListOperations: []gax.CallOption{
+			gax.WithTimeout(300000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -334,9 +346,9 @@ func (c *ProductClient) ImportProductsOperation(name string) *ImportProductsOper
 //
 // This process is asynchronous and does not require the
 // Product to exist before updating
-// fulfillment information. If the request is valid, the update will be
-// enqueued and processed downstream. As a consequence, when a response is
-// returned, updates are not immediately manifested in the
+// fulfillment information. If the request is valid, the update is enqueued
+// and processed downstream. As a consequence, when a response is returned,
+// updates are not immediately manifested in the
 // Product queried by
 // ProductService.GetProduct
 // or
@@ -346,10 +358,10 @@ func (c *ProductClient) ImportProductsOperation(name string) *ImportProductsOper
 // ProductService.CreateProduct
 // and
 // ProductService.UpdateProduct,
-// the specified inventory field value(s) will overwrite any existing value(s)
+// the specified inventory field value(s) overwrite any existing value(s)
 // while ignoring the last update time for this field. Furthermore, the last
-// update time for the specified inventory fields will be overwritten to the
-// time of the
+// update times for the specified inventory fields are overwritten by the
+// times of the
 // ProductService.CreateProduct
 // or
 // ProductService.UpdateProduct
@@ -357,11 +369,11 @@ func (c *ProductClient) ImportProductsOperation(name string) *ImportProductsOper
 //
 // If no inventory fields are set in
 // CreateProductRequest.product,
-// then any pre-existing inventory information for this product will be used.
+// then any pre-existing inventory information for this product is used.
 //
 // If no inventory fields are set in
 // SetInventoryRequest.set_mask,
-// then any existing inventory information will be preserved.
+// then any existing inventory information is preserved.
 //
 // Pre-existing inventory information can only be updated with
 // ProductService.SetInventory,
@@ -369,15 +381,14 @@ func (c *ProductClient) ImportProductsOperation(name string) *ImportProductsOper
 // and
 // ProductService.RemoveFulfillmentPlaces.
 //
-// The returned Operations will be obsolete after 1 day, and
-// GetOperation API will return NOT_FOUND afterwards.
+// The returned Operations is obsolete after
+// one day, and the GetOperation
+// API returns NOT_FOUND afterwards.
 //
-// If conflicting updates are issued, the Operations associated with the
-// stale updates will not be marked as done until being
-// obsolete.
-//
-// This feature is only available for users who have Retail Search enabled.
-// Please enable Retail Search on Cloud Console before using this feature.
+// If conflicting updates are issued, the
+// Operations associated with the stale
+// updates are not marked as done until
+// they are obsolete.
 func (c *ProductClient) SetInventory(ctx context.Context, req *retailpb.SetInventoryRequest, opts ...gax.CallOption) (*SetInventoryOperation, error) {
 	return c.internalClient.SetInventory(ctx, req, opts...)
 }
@@ -388,7 +399,15 @@ func (c *ProductClient) SetInventoryOperation(name string) *SetInventoryOperatio
 	return c.internalClient.SetInventoryOperation(name)
 }
 
-// AddFulfillmentPlaces incrementally adds place IDs to
+// AddFulfillmentPlaces it is recommended to use the
+// ProductService.AddLocalInventories
+// method instead of
+// ProductService.AddFulfillmentPlaces.
+// ProductService.AddLocalInventories
+// achieves the same results but provides more fine-grained control over
+// ingesting local inventory data.
+//
+// Incrementally adds place IDs to
 // Product.fulfillment_info.place_ids.
 //
 // This process is asynchronous and does not require the
@@ -401,15 +420,14 @@ func (c *ProductClient) SetInventoryOperation(name string) *SetInventoryOperatio
 // or
 // ProductService.ListProducts.
 //
-// The returned Operations will be obsolete after 1 day, and
-// GetOperation API will return NOT_FOUND afterwards.
+// The returned Operations will be obsolete
+// after 1 day, and GetOperation
+// API will return NOT_FOUND afterwards.
 //
-// If conflicting updates are issued, the Operations associated with the
-// stale updates will not be marked as done until being
-// obsolete.
-//
-// This feature is only available for users who have Retail Search enabled.
-// Please enable Retail Search on Cloud Console before using this feature.
+// If conflicting updates are issued, the
+// Operations associated with the stale
+// updates will not be marked as done
+// until being obsolete.
 func (c *ProductClient) AddFulfillmentPlaces(ctx context.Context, req *retailpb.AddFulfillmentPlacesRequest, opts ...gax.CallOption) (*AddFulfillmentPlacesOperation, error) {
 	return c.internalClient.AddFulfillmentPlaces(ctx, req, opts...)
 }
@@ -420,7 +438,15 @@ func (c *ProductClient) AddFulfillmentPlacesOperation(name string) *AddFulfillme
 	return c.internalClient.AddFulfillmentPlacesOperation(name)
 }
 
-// RemoveFulfillmentPlaces incrementally removes place IDs from a
+// RemoveFulfillmentPlaces it is recommended to use the
+// ProductService.RemoveLocalInventories
+// method instead of
+// ProductService.RemoveFulfillmentPlaces.
+// ProductService.RemoveLocalInventories
+// achieves the same results but provides more fine-grained control over
+// ingesting local inventory data.
+//
+// Incrementally removes place IDs from a
 // Product.fulfillment_info.place_ids.
 //
 // This process is asynchronous and does not require the
@@ -433,15 +459,14 @@ func (c *ProductClient) AddFulfillmentPlacesOperation(name string) *AddFulfillme
 // or
 // ProductService.ListProducts.
 //
-// The returned Operations will be obsolete after 1 day, and
-// GetOperation API will return NOT_FOUND afterwards.
+// The returned Operations will be obsolete
+// after 1 day, and GetOperation
+// API will return NOT_FOUND afterwards.
 //
-// If conflicting updates are issued, the Operations associated with the
-// stale updates will not be marked as done until being
-// obsolete.
-//
-// This feature is only available for users who have Retail Search enabled.
-// Please enable Retail Search on Cloud Console before using this feature.
+// If conflicting updates are issued, the
+// Operations associated with the stale
+// updates will not be marked as done
+// until being obsolete.
 func (c *ProductClient) RemoveFulfillmentPlaces(ctx context.Context, req *retailpb.RemoveFulfillmentPlacesRequest, opts ...gax.CallOption) (*RemoveFulfillmentPlacesOperation, error) {
 	return c.internalClient.RemoveFulfillmentPlaces(ctx, req, opts...)
 }
@@ -472,15 +497,14 @@ func (c *ProductClient) RemoveFulfillmentPlacesOperation(name string) *RemoveFul
 // ProductService.UpdateProduct
 // has no effect on local inventories.
 //
-// The returned Operations will be obsolete after 1 day, and
-// GetOperation API will return NOT_FOUND afterwards.
+// The returned Operations will be obsolete
+// after 1 day, and GetOperation
+// API will return NOT_FOUND afterwards.
 //
-// If conflicting updates are issued, the Operations associated with the
-// stale updates will not be marked as done until being
-// obsolete.
-//
-// This feature is only available for users who have Retail Search enabled.
-// Please enable Retail Search on Cloud Console before using this feature.
+// If conflicting updates are issued, the
+// Operations associated with the stale
+// updates will not be marked as done
+// until being obsolete.
 func (c *ProductClient) AddLocalInventories(ctx context.Context, req *retailpb.AddLocalInventoriesRequest, opts ...gax.CallOption) (*AddLocalInventoriesOperation, error) {
 	return c.internalClient.AddLocalInventories(ctx, req, opts...)
 }
@@ -509,15 +533,14 @@ func (c *ProductClient) AddLocalInventoriesOperation(name string) *AddLocalInven
 // ProductService.UpdateProduct
 // has no effect on local inventories.
 //
-// The returned Operations will be obsolete after 1 day, and
-// GetOperation API will return NOT_FOUND afterwards.
+// The returned Operations will be obsolete
+// after 1 day, and GetOperation
+// API will return NOT_FOUND afterwards.
 //
-// If conflicting updates are issued, the Operations associated with the
-// stale updates will not be marked as done until being
-// obsolete.
-//
-// This feature is only available for users who have Retail Search enabled.
-// Please enable Retail Search on Cloud Console before using this feature.
+// If conflicting updates are issued, the
+// Operations associated with the stale
+// updates will not be marked as done
+// until being obsolete.
 func (c *ProductClient) RemoveLocalInventories(ctx context.Context, req *retailpb.RemoveLocalInventoriesRequest, opts ...gax.CallOption) (*RemoveLocalInventoriesOperation, error) {
 	return c.internalClient.RemoveLocalInventories(ctx, req, opts...)
 }
@@ -544,9 +567,6 @@ func (c *ProductClient) ListOperations(ctx context.Context, req *longrunningpb.L
 type productGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
-
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
 
 	// Points back to the CallOptions field of the containing ProductClient
 	CallOptions **ProductCallOptions
@@ -580,11 +600,6 @@ func NewProductClient(ctx context.Context, opts ...option.ClientOption) (*Produc
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -593,7 +608,6 @@ func NewProductClient(ctx context.Context, opts ...option.ClientOption) (*Produc
 
 	c := &productGRPCClient{
 		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
 		productClient:    retailpb.NewProductServiceClient(connPool),
 		CallOptions:      &client.CallOptions,
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
@@ -628,7 +642,7 @@ func (c *productGRPCClient) Connection() *grpc.ClientConn {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *productGRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -640,11 +654,6 @@ func (c *productGRPCClient) Close() error {
 }
 
 func (c *productGRPCClient) CreateProduct(ctx context.Context, req *retailpb.CreateProductRequest, opts ...gax.CallOption) (*retailpb.Product, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -662,11 +671,6 @@ func (c *productGRPCClient) CreateProduct(ctx context.Context, req *retailpb.Cre
 }
 
 func (c *productGRPCClient) GetProduct(ctx context.Context, req *retailpb.GetProductRequest, opts ...gax.CallOption) (*retailpb.Product, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -729,11 +733,6 @@ func (c *productGRPCClient) ListProducts(ctx context.Context, req *retailpb.List
 }
 
 func (c *productGRPCClient) UpdateProduct(ctx context.Context, req *retailpb.UpdateProductRequest, opts ...gax.CallOption) (*retailpb.Product, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "product.name", url.QueryEscape(req.GetProduct().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -751,11 +750,6 @@ func (c *productGRPCClient) UpdateProduct(ctx context.Context, req *retailpb.Upd
 }
 
 func (c *productGRPCClient) DeleteProduct(ctx context.Context, req *retailpb.DeleteProductRequest, opts ...gax.CallOption) error {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -769,11 +763,6 @@ func (c *productGRPCClient) DeleteProduct(ctx context.Context, req *retailpb.Del
 }
 
 func (c *productGRPCClient) ImportProducts(ctx context.Context, req *retailpb.ImportProductsRequest, opts ...gax.CallOption) (*ImportProductsOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 300000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -793,11 +782,6 @@ func (c *productGRPCClient) ImportProducts(ctx context.Context, req *retailpb.Im
 }
 
 func (c *productGRPCClient) SetInventory(ctx context.Context, req *retailpb.SetInventoryRequest, opts ...gax.CallOption) (*SetInventoryOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "inventory.name", url.QueryEscape(req.GetInventory().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -817,11 +801,6 @@ func (c *productGRPCClient) SetInventory(ctx context.Context, req *retailpb.SetI
 }
 
 func (c *productGRPCClient) AddFulfillmentPlaces(ctx context.Context, req *retailpb.AddFulfillmentPlacesRequest, opts ...gax.CallOption) (*AddFulfillmentPlacesOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "product", url.QueryEscape(req.GetProduct())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -841,11 +820,6 @@ func (c *productGRPCClient) AddFulfillmentPlaces(ctx context.Context, req *retai
 }
 
 func (c *productGRPCClient) RemoveFulfillmentPlaces(ctx context.Context, req *retailpb.RemoveFulfillmentPlacesRequest, opts ...gax.CallOption) (*RemoveFulfillmentPlacesOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "product", url.QueryEscape(req.GetProduct())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -865,11 +839,6 @@ func (c *productGRPCClient) RemoveFulfillmentPlaces(ctx context.Context, req *re
 }
 
 func (c *productGRPCClient) AddLocalInventories(ctx context.Context, req *retailpb.AddLocalInventoriesRequest, opts ...gax.CallOption) (*AddLocalInventoriesOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "product", url.QueryEscape(req.GetProduct())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -889,11 +858,6 @@ func (c *productGRPCClient) AddLocalInventories(ctx context.Context, req *retail
 }
 
 func (c *productGRPCClient) RemoveLocalInventories(ctx context.Context, req *retailpb.RemoveLocalInventoriesRequest, opts ...gax.CallOption) (*RemoveLocalInventoriesOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "product", url.QueryEscape(req.GetProduct())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)

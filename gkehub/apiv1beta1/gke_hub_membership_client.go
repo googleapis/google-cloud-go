@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,15 +20,17 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"math"
 	"net/http"
 	"net/url"
 	"time"
 
 	gkehubpb "cloud.google.com/go/gkehub/apiv1beta1/gkehubpb"
+	iampb "cloud.google.com/go/iam/apiv1/iampb"
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
@@ -37,8 +39,6 @@ import (
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
-	iampb "google.golang.org/genproto/googleapis/iam/v1"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -84,6 +84,7 @@ func defaultGkeHubMembershipGRPCClientOptions() []option.ClientOption {
 func defaultGkeHubMembershipCallOptions() *GkeHubMembershipCallOptions {
 	return &GkeHubMembershipCallOptions{
 		ListMemberships: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -95,6 +96,7 @@ func defaultGkeHubMembershipCallOptions() *GkeHubMembershipCallOptions {
 			}),
 		},
 		GetMembership: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -106,6 +108,7 @@ func defaultGkeHubMembershipCallOptions() *GkeHubMembershipCallOptions {
 			}),
 		},
 		CreateMembership: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -117,6 +120,7 @@ func defaultGkeHubMembershipCallOptions() *GkeHubMembershipCallOptions {
 			}),
 		},
 		DeleteMembership: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -128,6 +132,7 @@ func defaultGkeHubMembershipCallOptions() *GkeHubMembershipCallOptions {
 			}),
 		},
 		UpdateMembership: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -139,6 +144,7 @@ func defaultGkeHubMembershipCallOptions() *GkeHubMembershipCallOptions {
 			}),
 		},
 		GenerateConnectManifest: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -150,6 +156,7 @@ func defaultGkeHubMembershipCallOptions() *GkeHubMembershipCallOptions {
 			}),
 		},
 		ValidateExclusivity: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -161,6 +168,7 @@ func defaultGkeHubMembershipCallOptions() *GkeHubMembershipCallOptions {
 			}),
 		},
 		GenerateExclusivityManifest: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -186,6 +194,7 @@ func defaultGkeHubMembershipCallOptions() *GkeHubMembershipCallOptions {
 func defaultGkeHubMembershipRESTCallOptions() *GkeHubMembershipCallOptions {
 	return &GkeHubMembershipCallOptions{
 		ListMemberships: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -196,6 +205,7 @@ func defaultGkeHubMembershipRESTCallOptions() *GkeHubMembershipCallOptions {
 			}),
 		},
 		GetMembership: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -206,6 +216,7 @@ func defaultGkeHubMembershipRESTCallOptions() *GkeHubMembershipCallOptions {
 			}),
 		},
 		CreateMembership: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -216,6 +227,7 @@ func defaultGkeHubMembershipRESTCallOptions() *GkeHubMembershipCallOptions {
 			}),
 		},
 		DeleteMembership: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -226,6 +238,7 @@ func defaultGkeHubMembershipRESTCallOptions() *GkeHubMembershipCallOptions {
 			}),
 		},
 		UpdateMembership: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -236,6 +249,7 @@ func defaultGkeHubMembershipRESTCallOptions() *GkeHubMembershipCallOptions {
 			}),
 		},
 		GenerateConnectManifest: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -246,6 +260,7 @@ func defaultGkeHubMembershipRESTCallOptions() *GkeHubMembershipCallOptions {
 			}),
 		},
 		ValidateExclusivity: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -256,6 +271,7 @@ func defaultGkeHubMembershipRESTCallOptions() *GkeHubMembershipCallOptions {
 			}),
 		},
 		GenerateExclusivityManifest: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -308,9 +324,11 @@ type internalGkeHubMembershipClient interface {
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // The GKE Hub MembershipService handles the registration of many Kubernetes
-// clusters to Google Cloud, represented with the Membership resource.
+// clusters to Google Cloud, represented with the
+// Membership resource.
 //
-// GKE Hub is currently only available in the global region.
+// GKE Hub is currently available in the global region and all regions in
+// https://cloud.google.com/compute/docs/regions-zones (at https://cloud.google.com/compute/docs/regions-zones).
 //
 // Membership management may be non-trivial: it is recommended to use one
 // of the Google-provided client libraries or tools where possible when working
@@ -495,9 +513,6 @@ type gkeHubMembershipGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing GkeHubMembershipClient
 	CallOptions **GkeHubMembershipCallOptions
 
@@ -523,9 +538,11 @@ type gkeHubMembershipGRPCClient struct {
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
 // The GKE Hub MembershipService handles the registration of many Kubernetes
-// clusters to Google Cloud, represented with the Membership resource.
+// clusters to Google Cloud, represented with the
+// Membership resource.
 //
-// GKE Hub is currently only available in the global region.
+// GKE Hub is currently available in the global region and all regions in
+// https://cloud.google.com/compute/docs/regions-zones (at https://cloud.google.com/compute/docs/regions-zones).
 //
 // Membership management may be non-trivial: it is recommended to use one
 // of the Google-provided client libraries or tools where possible when working
@@ -540,11 +557,6 @@ func NewGkeHubMembershipClient(ctx context.Context, opts ...option.ClientOption)
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -553,7 +565,6 @@ func NewGkeHubMembershipClient(ctx context.Context, opts ...option.ClientOption)
 
 	c := &gkeHubMembershipGRPCClient{
 		connPool:               connPool,
-		disableDeadlines:       disableDeadlines,
 		gkeHubMembershipClient: gkehubpb.NewGkeHubMembershipServiceClient(connPool),
 		CallOptions:            &client.CallOptions,
 		operationsClient:       longrunningpb.NewOperationsClient(connPool),
@@ -590,7 +601,7 @@ func (c *gkeHubMembershipGRPCClient) Connection() *grpc.ClientConn {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *gkeHubMembershipGRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -624,9 +635,11 @@ type gkeHubMembershipRESTClient struct {
 // NewGkeHubMembershipRESTClient creates a new gke hub membership service rest client.
 //
 // The GKE Hub MembershipService handles the registration of many Kubernetes
-// clusters to Google Cloud, represented with the Membership resource.
+// clusters to Google Cloud, represented with the
+// Membership resource.
 //
-// GKE Hub is currently only available in the global region.
+// GKE Hub is currently available in the global region and all regions in
+// https://cloud.google.com/compute/docs/regions-zones (at https://cloud.google.com/compute/docs/regions-zones).
 //
 // Membership management may be non-trivial: it is recommended to use one
 // of the Google-provided client libraries or tools where possible when working
@@ -672,7 +685,7 @@ func defaultGkeHubMembershipRESTClientOptions() []option.ClientOption {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *gkeHubMembershipRESTClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -737,11 +750,6 @@ func (c *gkeHubMembershipGRPCClient) ListMemberships(ctx context.Context, req *g
 }
 
 func (c *gkeHubMembershipGRPCClient) GetMembership(ctx context.Context, req *gkehubpb.GetMembershipRequest, opts ...gax.CallOption) (*gkehubpb.Membership, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -759,11 +767,6 @@ func (c *gkeHubMembershipGRPCClient) GetMembership(ctx context.Context, req *gke
 }
 
 func (c *gkeHubMembershipGRPCClient) CreateMembership(ctx context.Context, req *gkehubpb.CreateMembershipRequest, opts ...gax.CallOption) (*CreateMembershipOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -783,11 +786,6 @@ func (c *gkeHubMembershipGRPCClient) CreateMembership(ctx context.Context, req *
 }
 
 func (c *gkeHubMembershipGRPCClient) DeleteMembership(ctx context.Context, req *gkehubpb.DeleteMembershipRequest, opts ...gax.CallOption) (*DeleteMembershipOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -807,11 +805,6 @@ func (c *gkeHubMembershipGRPCClient) DeleteMembership(ctx context.Context, req *
 }
 
 func (c *gkeHubMembershipGRPCClient) UpdateMembership(ctx context.Context, req *gkehubpb.UpdateMembershipRequest, opts ...gax.CallOption) (*UpdateMembershipOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -831,11 +824,6 @@ func (c *gkeHubMembershipGRPCClient) UpdateMembership(ctx context.Context, req *
 }
 
 func (c *gkeHubMembershipGRPCClient) GenerateConnectManifest(ctx context.Context, req *gkehubpb.GenerateConnectManifestRequest, opts ...gax.CallOption) (*gkehubpb.GenerateConnectManifestResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -853,11 +841,6 @@ func (c *gkeHubMembershipGRPCClient) GenerateConnectManifest(ctx context.Context
 }
 
 func (c *gkeHubMembershipGRPCClient) ValidateExclusivity(ctx context.Context, req *gkehubpb.ValidateExclusivityRequest, opts ...gax.CallOption) (*gkehubpb.ValidateExclusivityResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -875,11 +858,6 @@ func (c *gkeHubMembershipGRPCClient) ValidateExclusivity(ctx context.Context, re
 }
 
 func (c *gkeHubMembershipGRPCClient) GenerateExclusivityManifest(ctx context.Context, req *gkehubpb.GenerateExclusivityManifestRequest, opts ...gax.CallOption) (*gkehubpb.GenerateExclusivityManifestResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1119,6 +1097,7 @@ func (c *gkeHubMembershipRESTClient) ListMemberships(ctx context.Context, req *g
 		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/memberships", req.GetParent())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -1156,13 +1135,13 @@ func (c *gkeHubMembershipRESTClient) ListMemberships(ctx context.Context, req *g
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -1198,6 +1177,11 @@ func (c *gkeHubMembershipRESTClient) GetMembership(ctx context.Context, req *gke
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
@@ -1226,13 +1210,13 @@ func (c *gkeHubMembershipRESTClient) GetMembership(ctx context.Context, req *gke
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1263,6 +1247,7 @@ func (c *gkeHubMembershipRESTClient) CreateMembership(ctx context.Context, req *
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/memberships", req.GetParent())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	params.Add("membershipId", fmt.Sprintf("%v", req.GetMembershipId()))
 	if req.GetRequestId() != "" {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
@@ -1297,13 +1282,13 @@ func (c *gkeHubMembershipRESTClient) CreateMembership(ctx context.Context, req *
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1332,6 +1317,10 @@ func (c *gkeHubMembershipRESTClient) DeleteMembership(ctx context.Context, req *
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetForce() {
+		params.Add("force", fmt.Sprintf("%v", req.GetForce()))
+	}
 	if req.GetRequestId() != "" {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -1365,13 +1354,13 @@ func (c *gkeHubMembershipRESTClient) DeleteMembership(ctx context.Context, req *
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1403,6 +1392,7 @@ func (c *gkeHubMembershipRESTClient) UpdateMembership(ctx context.Context, req *
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetRequestId() != "" {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -1411,7 +1401,7 @@ func (c *gkeHubMembershipRESTClient) UpdateMembership(ctx context.Context, req *
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask))
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1443,13 +1433,13 @@ func (c *gkeHubMembershipRESTClient) UpdateMembership(ctx context.Context, req *
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1477,6 +1467,7 @@ func (c *gkeHubMembershipRESTClient) GenerateConnectManifest(ctx context.Context
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:generateConnectManifest", req.GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetConnectAgent().GetName() != "" {
 		params.Add("connectAgent.name", fmt.Sprintf("%v", req.GetConnectAgent().GetName()))
 	}
@@ -1529,13 +1520,13 @@ func (c *gkeHubMembershipRESTClient) GenerateConnectManifest(ctx context.Context
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1556,6 +1547,7 @@ func (c *gkeHubMembershipRESTClient) ValidateExclusivity(ctx context.Context, re
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/memberships:validateExclusivity", req.GetParent())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetCrManifest() != "" {
 		params.Add("crManifest", fmt.Sprintf("%v", req.GetCrManifest()))
 	}
@@ -1591,13 +1583,13 @@ func (c *gkeHubMembershipRESTClient) ValidateExclusivity(ctx context.Context, re
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1628,6 +1620,7 @@ func (c *gkeHubMembershipRESTClient) GenerateExclusivityManifest(ctx context.Con
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:generateExclusivityManifest", req.GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetCrManifest() != "" {
 		params.Add("crManifest", fmt.Sprintf("%v", req.GetCrManifest()))
 	}
@@ -1665,13 +1658,13 @@ func (c *gkeHubMembershipRESTClient) GenerateExclusivityManifest(ctx context.Con
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1689,6 +1682,11 @@ func (c *gkeHubMembershipRESTClient) GetLocation(ctx context.Context, req *locat
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
@@ -1718,13 +1716,13 @@ func (c *gkeHubMembershipRESTClient) GetLocation(ctx context.Context, req *locat
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1757,6 +1755,7 @@ func (c *gkeHubMembershipRESTClient) ListLocations(ctx context.Context, req *loc
 		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/locations", req.GetName())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -1791,13 +1790,13 @@ func (c *gkeHubMembershipRESTClient) ListLocations(ctx context.Context, req *loc
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -1835,6 +1834,7 @@ func (c *gkeHubMembershipRESTClient) GetIamPolicy(ctx context.Context, req *iamp
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:getIamPolicy", req.GetResource())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetOptions().GetRequestedPolicyVersion() != 0 {
 		params.Add("options.requestedPolicyVersion", fmt.Sprintf("%v", req.GetOptions().GetRequestedPolicyVersion()))
 	}
@@ -1869,13 +1869,13 @@ func (c *gkeHubMembershipRESTClient) GetIamPolicy(ctx context.Context, req *iamp
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1903,6 +1903,11 @@ func (c *gkeHubMembershipRESTClient) SetIamPolicy(ctx context.Context, req *iamp
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:setIamPolicy", req.GetResource())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
@@ -1932,13 +1937,13 @@ func (c *gkeHubMembershipRESTClient) SetIamPolicy(ctx context.Context, req *iamp
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1969,6 +1974,11 @@ func (c *gkeHubMembershipRESTClient) TestIamPermissions(ctx context.Context, req
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:testIamPermissions", req.GetResource())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
 
@@ -1997,13 +2007,13 @@ func (c *gkeHubMembershipRESTClient) TestIamPermissions(ctx context.Context, req
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2027,6 +2037,11 @@ func (c *gkeHubMembershipRESTClient) CancelOperation(ctx context.Context, req *l
 		return err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:cancel", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
@@ -2063,6 +2078,11 @@ func (c *gkeHubMembershipRESTClient) DeleteOperation(ctx context.Context, req *l
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
@@ -2098,6 +2118,11 @@ func (c *gkeHubMembershipRESTClient) GetOperation(ctx context.Context, req *long
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
@@ -2126,13 +2151,13 @@ func (c *gkeHubMembershipRESTClient) GetOperation(ctx context.Context, req *long
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2165,6 +2190,7 @@ func (c *gkeHubMembershipRESTClient) ListOperations(ctx context.Context, req *lo
 		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/operations", req.GetName())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -2199,13 +2225,13 @@ func (c *gkeHubMembershipRESTClient) ListOperations(ctx context.Context, req *lo
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil

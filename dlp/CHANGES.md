@@ -1,5 +1,33 @@
 # Changes
 
+## [1.10.1](https://github.com/googleapis/google-cloud-go/compare/dlp/v1.10.0...dlp/v1.10.1) (2023-06-20)
+
+
+### Bug Fixes
+
+* **dlp:** REST query UpdateMask bug ([df52820](https://github.com/googleapis/google-cloud-go/commit/df52820b0e7721954809a8aa8700b93c5662dc9b))
+
+## [1.10.0](https://github.com/googleapis/google-cloud-go/compare/dlp/v1.9.1...dlp/v1.10.0) (2023-05-30)
+
+
+### Features
+
+* **dlp:** Update all direct dependencies ([b340d03](https://github.com/googleapis/google-cloud-go/commit/b340d030f2b52a4ce48846ce63984b28583abde6))
+
+## [1.9.1](https://github.com/googleapis/google-cloud-go/compare/dlp/v1.9.0...dlp/v1.9.1) (2023-05-08)
+
+
+### Bug Fixes
+
+* **dlp:** Update grpc to v1.55.0 ([1147ce0](https://github.com/googleapis/google-cloud-go/commit/1147ce02a990276ca4f8ab7a1ab65c14da4450ef))
+
+## [1.9.0](https://github.com/googleapis/google-cloud-go/compare/dlp/v1.8.0...dlp/v1.9.0) (2023-01-04)
+
+
+### Features
+
+* **dlp:** Add REST client ([06a54a1](https://github.com/googleapis/google-cloud-go/commit/06a54a16a5866cce966547c51e203b9e09a25bc0))
+
 ## [1.8.0](https://github.com/googleapis/google-cloud-go/compare/dlp/v1.7.0...dlp/v1.8.0) (2022-11-16)
 
 

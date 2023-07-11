@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -26,12 +26,12 @@ import (
 	gkemulticloudpb "cloud.google.com/go/gkemulticloud/apiv1/gkemulticloudpb"
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -54,6 +54,10 @@ type AwsClustersCallOptions struct {
 	ListAwsNodePools       []gax.CallOption
 	DeleteAwsNodePool      []gax.CallOption
 	GetAwsServerConfig     []gax.CallOption
+	CancelOperation        []gax.CallOption
+	DeleteOperation        []gax.CallOption
+	GetOperation           []gax.CallOption
+	ListOperations         []gax.CallOption
 }
 
 func defaultAwsClustersGRPCClientOptions() []option.ClientOption {
@@ -70,9 +74,14 @@ func defaultAwsClustersGRPCClientOptions() []option.ClientOption {
 
 func defaultAwsClustersCallOptions() *AwsClustersCallOptions {
 	return &AwsClustersCallOptions{
-		CreateAwsCluster: []gax.CallOption{},
-		UpdateAwsCluster: []gax.CallOption{},
+		CreateAwsCluster: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateAwsCluster: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		GetAwsCluster: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -84,6 +93,7 @@ func defaultAwsClustersCallOptions() *AwsClustersCallOptions {
 			}),
 		},
 		ListAwsClusters: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -94,8 +104,11 @@ func defaultAwsClustersCallOptions() *AwsClustersCallOptions {
 				})
 			}),
 		},
-		DeleteAwsCluster: []gax.CallOption{},
+		DeleteAwsCluster: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		GenerateAwsAccessToken: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -106,9 +119,14 @@ func defaultAwsClustersCallOptions() *AwsClustersCallOptions {
 				})
 			}),
 		},
-		CreateAwsNodePool: []gax.CallOption{},
-		UpdateAwsNodePool: []gax.CallOption{},
+		CreateAwsNodePool: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateAwsNodePool: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		GetAwsNodePool: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -120,6 +138,7 @@ func defaultAwsClustersCallOptions() *AwsClustersCallOptions {
 			}),
 		},
 		ListAwsNodePools: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -130,8 +149,11 @@ func defaultAwsClustersCallOptions() *AwsClustersCallOptions {
 				})
 			}),
 		},
-		DeleteAwsNodePool: []gax.CallOption{},
+		DeleteAwsNodePool: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		GetAwsServerConfig: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -142,6 +164,10 @@ func defaultAwsClustersCallOptions() *AwsClustersCallOptions {
 				})
 			}),
 		},
+		CancelOperation: []gax.CallOption{},
+		DeleteOperation: []gax.CallOption{},
+		GetOperation:    []gax.CallOption{},
+		ListOperations:  []gax.CallOption{},
 	}
 }
 
@@ -168,6 +194,10 @@ type internalAwsClustersClient interface {
 	DeleteAwsNodePool(context.Context, *gkemulticloudpb.DeleteAwsNodePoolRequest, ...gax.CallOption) (*DeleteAwsNodePoolOperation, error)
 	DeleteAwsNodePoolOperation(name string) *DeleteAwsNodePoolOperation
 	GetAwsServerConfig(context.Context, *gkemulticloudpb.GetAwsServerConfigRequest, ...gax.CallOption) (*gkemulticloudpb.AwsServerConfig, error)
+	CancelOperation(context.Context, *longrunningpb.CancelOperationRequest, ...gax.CallOption) error
+	DeleteOperation(context.Context, *longrunningpb.DeleteOperationRequest, ...gax.CallOption) error
+	GetOperation(context.Context, *longrunningpb.GetOperationRequest, ...gax.CallOption) (*longrunningpb.Operation, error)
+	ListOperations(context.Context, *longrunningpb.ListOperationsRequest, ...gax.CallOption) *OperationIterator
 }
 
 // AwsClustersClient is a client for interacting with Anthos Multi-Cloud API.
@@ -211,7 +241,8 @@ func (c *AwsClustersClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// CreateAwsCluster creates a new AwsCluster resource on a given GCP project and region.
+// CreateAwsCluster creates a new AwsCluster
+// resource on a given Google Cloud Platform project and region.
 //
 // If successful, the response contains a newly created
 // Operation resource that can be
@@ -237,21 +268,23 @@ func (c *AwsClustersClient) UpdateAwsClusterOperation(name string) *UpdateAwsClu
 	return c.internalClient.UpdateAwsClusterOperation(name)
 }
 
-// GetAwsCluster describes a specific AwsCluster resource.
+// GetAwsCluster describes a specific AwsCluster
+// resource.
 func (c *AwsClustersClient) GetAwsCluster(ctx context.Context, req *gkemulticloudpb.GetAwsClusterRequest, opts ...gax.CallOption) (*gkemulticloudpb.AwsCluster, error) {
 	return c.internalClient.GetAwsCluster(ctx, req, opts...)
 }
 
-// ListAwsClusters lists all AwsCluster resources on a given Google Cloud project and
-// region.
+// ListAwsClusters lists all AwsCluster resources
+// on a given Google Cloud project and region.
 func (c *AwsClustersClient) ListAwsClusters(ctx context.Context, req *gkemulticloudpb.ListAwsClustersRequest, opts ...gax.CallOption) *AwsClusterIterator {
 	return c.internalClient.ListAwsClusters(ctx, req, opts...)
 }
 
-// DeleteAwsCluster deletes a specific AwsCluster resource.
+// DeleteAwsCluster deletes a specific AwsCluster
+// resource.
 //
-// Fails if the cluster has one or more associated AwsNodePool
-// resources.
+// Fails if the cluster has one or more associated
+// AwsNodePool resources.
 //
 // If successful, the response contains a newly created
 // Operation resource that can be
@@ -272,7 +305,8 @@ func (c *AwsClustersClient) GenerateAwsAccessToken(ctx context.Context, req *gke
 	return c.internalClient.GenerateAwsAccessToken(ctx, req, opts...)
 }
 
-// CreateAwsNodePool creates a new AwsNodePool, attached to a given AwsCluster.
+// CreateAwsNodePool creates a new AwsNodePool,
+// attached to a given AwsCluster.
 //
 // If successful, the response contains a newly created
 // Operation resource that can be
@@ -298,17 +332,21 @@ func (c *AwsClustersClient) UpdateAwsNodePoolOperation(name string) *UpdateAwsNo
 	return c.internalClient.UpdateAwsNodePoolOperation(name)
 }
 
-// GetAwsNodePool describes a specific AwsNodePool resource.
+// GetAwsNodePool describes a specific
+// AwsNodePool resource.
 func (c *AwsClustersClient) GetAwsNodePool(ctx context.Context, req *gkemulticloudpb.GetAwsNodePoolRequest, opts ...gax.CallOption) (*gkemulticloudpb.AwsNodePool, error) {
 	return c.internalClient.GetAwsNodePool(ctx, req, opts...)
 }
 
-// ListAwsNodePools lists all AwsNodePool resources on a given AwsCluster.
+// ListAwsNodePools lists all AwsNodePool
+// resources on a given
+// AwsCluster.
 func (c *AwsClustersClient) ListAwsNodePools(ctx context.Context, req *gkemulticloudpb.ListAwsNodePoolsRequest, opts ...gax.CallOption) *AwsNodePoolIterator {
 	return c.internalClient.ListAwsNodePools(ctx, req, opts...)
 }
 
-// DeleteAwsNodePool deletes a specific AwsNodePool resource.
+// DeleteAwsNodePool deletes a specific AwsNodePool
+// resource.
 //
 // If successful, the response contains a newly created
 // Operation resource that can be
@@ -329,15 +367,32 @@ func (c *AwsClustersClient) GetAwsServerConfig(ctx context.Context, req *gkemult
 	return c.internalClient.GetAwsServerConfig(ctx, req, opts...)
 }
 
+// CancelOperation is a utility method from google.longrunning.Operations.
+func (c *AwsClustersClient) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
+	return c.internalClient.CancelOperation(ctx, req, opts...)
+}
+
+// DeleteOperation is a utility method from google.longrunning.Operations.
+func (c *AwsClustersClient) DeleteOperation(ctx context.Context, req *longrunningpb.DeleteOperationRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteOperation(ctx, req, opts...)
+}
+
+// GetOperation is a utility method from google.longrunning.Operations.
+func (c *AwsClustersClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+	return c.internalClient.GetOperation(ctx, req, opts...)
+}
+
+// ListOperations is a utility method from google.longrunning.Operations.
+func (c *AwsClustersClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
+	return c.internalClient.ListOperations(ctx, req, opts...)
+}
+
 // awsClustersGRPCClient is a client for interacting with Anthos Multi-Cloud API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type awsClustersGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
-
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
 
 	// Points back to the CallOptions field of the containing AwsClustersClient
 	CallOptions **AwsClustersCallOptions
@@ -349,6 +404,8 @@ type awsClustersGRPCClient struct {
 	// It is exposed so that its CallOptions can be modified if required.
 	// Users should not Close this client.
 	LROClient **lroauto.OperationsClient
+
+	operationsClient longrunningpb.OperationsClient
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
@@ -369,11 +426,6 @@ func NewAwsClustersClient(ctx context.Context, opts ...option.ClientOption) (*Aw
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -382,9 +434,9 @@ func NewAwsClustersClient(ctx context.Context, opts ...option.ClientOption) (*Aw
 
 	c := &awsClustersGRPCClient{
 		connPool:          connPool,
-		disableDeadlines:  disableDeadlines,
 		awsClustersClient: gkemulticloudpb.NewAwsClustersClient(connPool),
 		CallOptions:       &client.CallOptions,
+		operationsClient:  longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
 
@@ -416,7 +468,7 @@ func (c *awsClustersGRPCClient) Connection() *grpc.ClientConn {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *awsClustersGRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -428,11 +480,6 @@ func (c *awsClustersGRPCClient) Close() error {
 }
 
 func (c *awsClustersGRPCClient) CreateAwsCluster(ctx context.Context, req *gkemulticloudpb.CreateAwsClusterRequest, opts ...gax.CallOption) (*CreateAwsClusterOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -452,11 +499,6 @@ func (c *awsClustersGRPCClient) CreateAwsCluster(ctx context.Context, req *gkemu
 }
 
 func (c *awsClustersGRPCClient) UpdateAwsCluster(ctx context.Context, req *gkemulticloudpb.UpdateAwsClusterRequest, opts ...gax.CallOption) (*UpdateAwsClusterOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "aws_cluster.name", url.QueryEscape(req.GetAwsCluster().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -476,11 +518,6 @@ func (c *awsClustersGRPCClient) UpdateAwsCluster(ctx context.Context, req *gkemu
 }
 
 func (c *awsClustersGRPCClient) GetAwsCluster(ctx context.Context, req *gkemulticloudpb.GetAwsClusterRequest, opts ...gax.CallOption) (*gkemulticloudpb.AwsCluster, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -543,11 +580,6 @@ func (c *awsClustersGRPCClient) ListAwsClusters(ctx context.Context, req *gkemul
 }
 
 func (c *awsClustersGRPCClient) DeleteAwsCluster(ctx context.Context, req *gkemulticloudpb.DeleteAwsClusterRequest, opts ...gax.CallOption) (*DeleteAwsClusterOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -567,11 +599,6 @@ func (c *awsClustersGRPCClient) DeleteAwsCluster(ctx context.Context, req *gkemu
 }
 
 func (c *awsClustersGRPCClient) GenerateAwsAccessToken(ctx context.Context, req *gkemulticloudpb.GenerateAwsAccessTokenRequest, opts ...gax.CallOption) (*gkemulticloudpb.GenerateAwsAccessTokenResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "aws_cluster", url.QueryEscape(req.GetAwsCluster())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -589,11 +616,6 @@ func (c *awsClustersGRPCClient) GenerateAwsAccessToken(ctx context.Context, req 
 }
 
 func (c *awsClustersGRPCClient) CreateAwsNodePool(ctx context.Context, req *gkemulticloudpb.CreateAwsNodePoolRequest, opts ...gax.CallOption) (*CreateAwsNodePoolOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -613,11 +635,6 @@ func (c *awsClustersGRPCClient) CreateAwsNodePool(ctx context.Context, req *gkem
 }
 
 func (c *awsClustersGRPCClient) UpdateAwsNodePool(ctx context.Context, req *gkemulticloudpb.UpdateAwsNodePoolRequest, opts ...gax.CallOption) (*UpdateAwsNodePoolOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "aws_node_pool.name", url.QueryEscape(req.GetAwsNodePool().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -637,11 +654,6 @@ func (c *awsClustersGRPCClient) UpdateAwsNodePool(ctx context.Context, req *gkem
 }
 
 func (c *awsClustersGRPCClient) GetAwsNodePool(ctx context.Context, req *gkemulticloudpb.GetAwsNodePoolRequest, opts ...gax.CallOption) (*gkemulticloudpb.AwsNodePool, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -704,11 +716,6 @@ func (c *awsClustersGRPCClient) ListAwsNodePools(ctx context.Context, req *gkemu
 }
 
 func (c *awsClustersGRPCClient) DeleteAwsNodePool(ctx context.Context, req *gkemulticloudpb.DeleteAwsNodePoolRequest, opts ...gax.CallOption) (*DeleteAwsNodePoolOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -728,11 +735,6 @@ func (c *awsClustersGRPCClient) DeleteAwsNodePool(ctx context.Context, req *gkem
 }
 
 func (c *awsClustersGRPCClient) GetAwsServerConfig(ctx context.Context, req *gkemulticloudpb.GetAwsServerConfigRequest, opts ...gax.CallOption) (*gkemulticloudpb.AwsServerConfig, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -747,6 +749,94 @@ func (c *awsClustersGRPCClient) GetAwsServerConfig(ctx context.Context, req *gke
 		return nil, err
 	}
 	return resp, nil
+}
+
+func (c *awsClustersGRPCClient) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = c.operationsClient.CancelOperation(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	return err
+}
+
+func (c *awsClustersGRPCClient) DeleteOperation(ctx context.Context, req *longrunningpb.DeleteOperationRequest, opts ...gax.CallOption) error {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = c.operationsClient.DeleteOperation(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	return err
+}
+
+func (c *awsClustersGRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *awsClustersGRPCClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
+	it := &OperationIterator{}
+	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
+		resp := &longrunningpb.ListOperationsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetOperations(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
 }
 
 // CreateAwsClusterOperation manages a long-running operation from CreateAwsCluster.

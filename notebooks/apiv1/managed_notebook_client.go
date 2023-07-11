@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -23,8 +23,10 @@ import (
 	"net/url"
 	"time"
 
+	iampb "cloud.google.com/go/iam/apiv1/iampb"
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	notebookspb "cloud.google.com/go/notebooks/apiv1/notebookspb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
@@ -32,8 +34,6 @@ import (
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
-	iampb "google.golang.org/genproto/googleapis/iam/v1"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -82,15 +82,32 @@ func defaultManagedNotebookGRPCClientOptions() []option.ClientOption {
 
 func defaultManagedNotebookCallOptions() *ManagedNotebookCallOptions {
 	return &ManagedNotebookCallOptions{
-		ListRuntimes:  []gax.CallOption{},
-		GetRuntime:    []gax.CallOption{},
-		CreateRuntime: []gax.CallOption{},
-		UpdateRuntime: []gax.CallOption{},
-		DeleteRuntime: []gax.CallOption{},
-		StartRuntime:  []gax.CallOption{},
-		StopRuntime:   []gax.CallOption{},
-		SwitchRuntime: []gax.CallOption{},
+		ListRuntimes: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetRuntime: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		CreateRuntime: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateRuntime: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteRuntime: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		StartRuntime: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		StopRuntime: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		SwitchRuntime: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		ResetRuntime: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -102,6 +119,7 @@ func defaultManagedNotebookCallOptions() *ManagedNotebookCallOptions {
 			}),
 		},
 		UpgradeRuntime: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -112,8 +130,11 @@ func defaultManagedNotebookCallOptions() *ManagedNotebookCallOptions {
 				})
 			}),
 		},
-		ReportRuntimeEvent: []gax.CallOption{},
+		ReportRuntimeEvent: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		RefreshRuntimeTokenInternal: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -124,7 +145,9 @@ func defaultManagedNotebookCallOptions() *ManagedNotebookCallOptions {
 				})
 			}),
 		},
-		DiagnoseRuntime:    []gax.CallOption{},
+		DiagnoseRuntime: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		GetLocation:        []gax.CallOption{},
 		ListLocations:      []gax.CallOption{},
 		GetIamPolicy:       []gax.CallOption{},
@@ -134,6 +157,7 @@ func defaultManagedNotebookCallOptions() *ManagedNotebookCallOptions {
 		DeleteOperation:    []gax.CallOption{},
 		GetOperation:       []gax.CallOption{},
 		ListOperations: []gax.CallOption{
+			gax.WithTimeout(300000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -425,9 +449,6 @@ type managedNotebookGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing ManagedNotebookClient
 	CallOptions **ManagedNotebookCallOptions
 
@@ -463,11 +484,6 @@ func NewManagedNotebookClient(ctx context.Context, opts ...option.ClientOption) 
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -476,7 +492,6 @@ func NewManagedNotebookClient(ctx context.Context, opts ...option.ClientOption) 
 
 	c := &managedNotebookGRPCClient{
 		connPool:              connPool,
-		disableDeadlines:      disableDeadlines,
 		managedNotebookClient: notebookspb.NewManagedNotebookServiceClient(connPool),
 		CallOptions:           &client.CallOptions,
 		operationsClient:      longrunningpb.NewOperationsClient(connPool),
@@ -513,7 +528,7 @@ func (c *managedNotebookGRPCClient) Connection() *grpc.ClientConn {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *managedNotebookGRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -570,11 +585,6 @@ func (c *managedNotebookGRPCClient) ListRuntimes(ctx context.Context, req *noteb
 }
 
 func (c *managedNotebookGRPCClient) GetRuntime(ctx context.Context, req *notebookspb.GetRuntimeRequest, opts ...gax.CallOption) (*notebookspb.Runtime, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -592,11 +602,6 @@ func (c *managedNotebookGRPCClient) GetRuntime(ctx context.Context, req *noteboo
 }
 
 func (c *managedNotebookGRPCClient) CreateRuntime(ctx context.Context, req *notebookspb.CreateRuntimeRequest, opts ...gax.CallOption) (*CreateRuntimeOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -616,11 +621,6 @@ func (c *managedNotebookGRPCClient) CreateRuntime(ctx context.Context, req *note
 }
 
 func (c *managedNotebookGRPCClient) UpdateRuntime(ctx context.Context, req *notebookspb.UpdateRuntimeRequest, opts ...gax.CallOption) (*UpdateRuntimeOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "runtime.name", url.QueryEscape(req.GetRuntime().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -640,11 +640,6 @@ func (c *managedNotebookGRPCClient) UpdateRuntime(ctx context.Context, req *note
 }
 
 func (c *managedNotebookGRPCClient) DeleteRuntime(ctx context.Context, req *notebookspb.DeleteRuntimeRequest, opts ...gax.CallOption) (*DeleteRuntimeOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -664,11 +659,6 @@ func (c *managedNotebookGRPCClient) DeleteRuntime(ctx context.Context, req *note
 }
 
 func (c *managedNotebookGRPCClient) StartRuntime(ctx context.Context, req *notebookspb.StartRuntimeRequest, opts ...gax.CallOption) (*StartRuntimeOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -688,11 +678,6 @@ func (c *managedNotebookGRPCClient) StartRuntime(ctx context.Context, req *noteb
 }
 
 func (c *managedNotebookGRPCClient) StopRuntime(ctx context.Context, req *notebookspb.StopRuntimeRequest, opts ...gax.CallOption) (*StopRuntimeOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -712,11 +697,6 @@ func (c *managedNotebookGRPCClient) StopRuntime(ctx context.Context, req *notebo
 }
 
 func (c *managedNotebookGRPCClient) SwitchRuntime(ctx context.Context, req *notebookspb.SwitchRuntimeRequest, opts ...gax.CallOption) (*SwitchRuntimeOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -736,11 +716,6 @@ func (c *managedNotebookGRPCClient) SwitchRuntime(ctx context.Context, req *note
 }
 
 func (c *managedNotebookGRPCClient) ResetRuntime(ctx context.Context, req *notebookspb.ResetRuntimeRequest, opts ...gax.CallOption) (*ResetRuntimeOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -760,11 +735,6 @@ func (c *managedNotebookGRPCClient) ResetRuntime(ctx context.Context, req *noteb
 }
 
 func (c *managedNotebookGRPCClient) UpgradeRuntime(ctx context.Context, req *notebookspb.UpgradeRuntimeRequest, opts ...gax.CallOption) (*UpgradeRuntimeOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -784,11 +754,6 @@ func (c *managedNotebookGRPCClient) UpgradeRuntime(ctx context.Context, req *not
 }
 
 func (c *managedNotebookGRPCClient) ReportRuntimeEvent(ctx context.Context, req *notebookspb.ReportRuntimeEventRequest, opts ...gax.CallOption) (*ReportRuntimeEventOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -808,11 +773,6 @@ func (c *managedNotebookGRPCClient) ReportRuntimeEvent(ctx context.Context, req 
 }
 
 func (c *managedNotebookGRPCClient) RefreshRuntimeTokenInternal(ctx context.Context, req *notebookspb.RefreshRuntimeTokenInternalRequest, opts ...gax.CallOption) (*notebookspb.RefreshRuntimeTokenInternalResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -830,11 +790,6 @@ func (c *managedNotebookGRPCClient) RefreshRuntimeTokenInternal(ctx context.Cont
 }
 
 func (c *managedNotebookGRPCClient) DiagnoseRuntime(ctx context.Context, req *notebookspb.DiagnoseRuntimeRequest, opts ...gax.CallOption) (*DiagnoseRuntimeOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)

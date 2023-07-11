@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,18 +17,24 @@
 package migration
 
 import (
+	"bytes"
 	"context"
 	"fmt"
+	"io"
 	"math"
+	"net/http"
 	"net/url"
 
 	migrationpb "cloud.google.com/go/bigquery/migration/apiv2alpha/migrationpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"google.golang.org/api/googleapi"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
+	httptransport "google.golang.org/api/transport/http"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/protobuf/encoding/protojson"
 )
 
 var newSqlTranslationClientHook clientHook
@@ -51,6 +57,12 @@ func defaultSqlTranslationGRPCClientOptions() []option.ClientOption {
 }
 
 func defaultSqlTranslationCallOptions() *SqlTranslationCallOptions {
+	return &SqlTranslationCallOptions{
+		TranslateQuery: []gax.CallOption{},
+	}
+}
+
+func defaultSqlTranslationRESTCallOptions() *SqlTranslationCallOptions {
 	return &SqlTranslationCallOptions{
 		TranslateQuery: []gax.CallOption{},
 	}
@@ -111,9 +123,6 @@ type sqlTranslationGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing SqlTranslationClient
 	CallOptions **SqlTranslationCallOptions
 
@@ -138,11 +147,6 @@ func NewSqlTranslationClient(ctx context.Context, opts ...option.ClientOption) (
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -151,7 +155,6 @@ func NewSqlTranslationClient(ctx context.Context, opts ...option.ClientOption) (
 
 	c := &sqlTranslationGRPCClient{
 		connPool:             connPool,
-		disableDeadlines:     disableDeadlines,
 		sqlTranslationClient: migrationpb.NewSqlTranslationServiceClient(connPool),
 		CallOptions:          &client.CallOptions,
 	}
@@ -174,7 +177,7 @@ func (c *sqlTranslationGRPCClient) Connection() *grpc.ClientConn {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *sqlTranslationGRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -185,6 +188,74 @@ func (c *sqlTranslationGRPCClient) Close() error {
 	return c.connPool.Close()
 }
 
+// Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
+type sqlTranslationRESTClient struct {
+	// The http endpoint to connect to.
+	endpoint string
+
+	// The http client.
+	httpClient *http.Client
+
+	// The x-goog-* metadata to be sent with each request.
+	xGoogMetadata metadata.MD
+
+	// Points back to the CallOptions field of the containing SqlTranslationClient
+	CallOptions **SqlTranslationCallOptions
+}
+
+// NewSqlTranslationRESTClient creates a new sql translation service rest client.
+//
+// Provides other SQL dialects to GoogleSQL translation operations.
+func NewSqlTranslationRESTClient(ctx context.Context, opts ...option.ClientOption) (*SqlTranslationClient, error) {
+	clientOpts := append(defaultSqlTranslationRESTClientOptions(), opts...)
+	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
+	if err != nil {
+		return nil, err
+	}
+
+	callOpts := defaultSqlTranslationRESTCallOptions()
+	c := &sqlTranslationRESTClient{
+		endpoint:    endpoint,
+		httpClient:  httpClient,
+		CallOptions: &callOpts,
+	}
+	c.setGoogleClientInfo()
+
+	return &SqlTranslationClient{internalClient: c, CallOptions: callOpts}, nil
+}
+
+func defaultSqlTranslationRESTClientOptions() []option.ClientOption {
+	return []option.ClientOption{
+		internaloption.WithDefaultEndpoint("https://bigquerymigration.googleapis.com"),
+		internaloption.WithDefaultMTLSEndpoint("https://bigquerymigration.mtls.googleapis.com"),
+		internaloption.WithDefaultAudience("https://bigquerymigration.googleapis.com/"),
+		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+	}
+}
+
+// setGoogleClientInfo sets the name and version of the application in
+// the `x-goog-api-client` header passed on each request. Intended for
+// use by Google-written clients.
+func (c *sqlTranslationRESTClient) setGoogleClientInfo(keyval ...string) {
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
+	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+}
+
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *sqlTranslationRESTClient) Close() error {
+	// Replace httpClient with nil to force cleanup.
+	c.httpClient = nil
+	return nil
+}
+
+// Connection returns a connection to the API service.
+//
+// Deprecated: This method always returns nil.
+func (c *sqlTranslationRESTClient) Connection() *grpc.ClientConn {
+	return nil
+}
 func (c *sqlTranslationGRPCClient) TranslateQuery(ctx context.Context, req *migrationpb.TranslateQueryRequest, opts ...gax.CallOption) (*migrationpb.TranslateQueryResponse, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
@@ -198,6 +269,65 @@ func (c *sqlTranslationGRPCClient) TranslateQuery(ctx context.Context, req *migr
 	}, opts...)
 	if err != nil {
 		return nil, err
+	}
+	return resp, nil
+}
+
+// TranslateQuery translates input queries from source dialects to GoogleSQL.
+func (c *sqlTranslationRESTClient) TranslateQuery(ctx context.Context, req *migrationpb.TranslateQueryRequest, opts ...gax.CallOption) (*migrationpb.TranslateQueryResponse, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v2alpha/%v:translateQuery", req.GetParent())
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).TranslateQuery[0:len((*c.CallOptions).TranslateQuery):len((*c.CallOptions).TranslateQuery)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &migrationpb.TranslateQueryResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
 	}
 	return resp, nil
 }

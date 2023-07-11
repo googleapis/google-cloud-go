@@ -1,5 +1,33 @@
 # Changes
 
+## [0.8.1](https://github.com/googleapis/google-cloud-go/compare/recommendationengine/v0.8.0...recommendationengine/v0.8.1) (2023-06-20)
+
+
+### Bug Fixes
+
+* **recommendationengine:** REST query UpdateMask bug ([df52820](https://github.com/googleapis/google-cloud-go/commit/df52820b0e7721954809a8aa8700b93c5662dc9b))
+
+## [0.8.0](https://github.com/googleapis/google-cloud-go/compare/recommendationengine/v0.7.1...recommendationengine/v0.8.0) (2023-05-30)
+
+
+### Features
+
+* **recommendationengine:** Update all direct dependencies ([b340d03](https://github.com/googleapis/google-cloud-go/commit/b340d030f2b52a4ce48846ce63984b28583abde6))
+
+## [0.7.1](https://github.com/googleapis/google-cloud-go/compare/recommendationengine/v0.7.0...recommendationengine/v0.7.1) (2023-05-08)
+
+
+### Bug Fixes
+
+* **recommendationengine:** Update grpc to v1.55.0 ([1147ce0](https://github.com/googleapis/google-cloud-go/commit/1147ce02a990276ca4f8ab7a1ab65c14da4450ef))
+
+## [0.7.0](https://github.com/googleapis/google-cloud-go/compare/recommendationengine/v0.6.1...recommendationengine/v0.7.0) (2023-01-04)
+
+
+### Features
+
+* **recommendationengine:** Add REST client ([06a54a1](https://github.com/googleapis/google-cloud-go/commit/06a54a16a5866cce966547c51e203b9e09a25bc0))
+
 ## [0.6.1](https://github.com/googleapis/google-cloud-go/compare/recommendationengine/v0.6.0...recommendationengine/v0.6.1) (2022-12-01)
 
 

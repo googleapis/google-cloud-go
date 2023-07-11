@@ -146,6 +146,146 @@
               ]
             }
           }
+        },
+        "rest": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "CommitServicePerimeters": {
+              "methods": [
+                "CommitServicePerimeters"
+              ]
+            },
+            "CreateAccessLevel": {
+              "methods": [
+                "CreateAccessLevel"
+              ]
+            },
+            "CreateAccessPolicy": {
+              "methods": [
+                "CreateAccessPolicy"
+              ]
+            },
+            "CreateGcpUserAccessBinding": {
+              "methods": [
+                "CreateGcpUserAccessBinding"
+              ]
+            },
+            "CreateServicePerimeter": {
+              "methods": [
+                "CreateServicePerimeter"
+              ]
+            },
+            "DeleteAccessLevel": {
+              "methods": [
+                "DeleteAccessLevel"
+              ]
+            },
+            "DeleteAccessPolicy": {
+              "methods": [
+                "DeleteAccessPolicy"
+              ]
+            },
+            "DeleteGcpUserAccessBinding": {
+              "methods": [
+                "DeleteGcpUserAccessBinding"
+              ]
+            },
+            "DeleteServicePerimeter": {
+              "methods": [
+                "DeleteServicePerimeter"
+              ]
+            },
+            "GetAccessLevel": {
+              "methods": [
+                "GetAccessLevel"
+              ]
+            },
+            "GetAccessPolicy": {
+              "methods": [
+                "GetAccessPolicy"
+              ]
+            },
+            "GetGcpUserAccessBinding": {
+              "methods": [
+                "GetGcpUserAccessBinding"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetServicePerimeter": {
+              "methods": [
+                "GetServicePerimeter"
+              ]
+            },
+            "ListAccessLevels": {
+              "methods": [
+                "ListAccessLevels"
+              ]
+            },
+            "ListAccessPolicies": {
+              "methods": [
+                "ListAccessPolicies"
+              ]
+            },
+            "ListGcpUserAccessBindings": {
+              "methods": [
+                "ListGcpUserAccessBindings"
+              ]
+            },
+            "ListServicePerimeters": {
+              "methods": [
+                "ListServicePerimeters"
+              ]
+            },
+            "ReplaceAccessLevels": {
+              "methods": [
+                "ReplaceAccessLevels"
+              ]
+            },
+            "ReplaceServicePerimeters": {
+              "methods": [
+                "ReplaceServicePerimeters"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
+            "UpdateAccessLevel": {
+              "methods": [
+                "UpdateAccessLevel"
+              ]
+            },
+            "UpdateAccessPolicy": {
+              "methods": [
+                "UpdateAccessPolicy"
+              ]
+            },
+            "UpdateGcpUserAccessBinding": {
+              "methods": [
+                "UpdateGcpUserAccessBinding"
+              ]
+            },
+            "UpdateServicePerimeter": {
+              "methods": [
+                "UpdateServicePerimeter"
+              ]
+            }
+          }
         }
       }
     }

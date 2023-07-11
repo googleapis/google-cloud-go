@@ -349,6 +349,34 @@ func TestSchemaConversion(t *testing.T) {
 			},
 		},
 		{
+			// collation values
+			bqSchema: &bq.TableSchema{
+				Fields: []*bq.TableFieldSchema{
+					{
+						Name:      "name",
+						Type:      "STRING",
+						Collation: "und:ci",
+					},
+					{
+						Name:      "another_name",
+						Type:      "STRING",
+						Collation: "",
+					},
+				}},
+			schema: Schema{
+				{
+					Name:      "name",
+					Type:      StringFieldType,
+					Collation: "und:ci",
+				},
+				{
+					Name:      "another_name",
+					Type:      StringFieldType,
+					Collation: "",
+				},
+			},
+		},
+		{
 			// policy tags
 			bqSchema: &bq.TableSchema{
 				Fields: []*bq.TableFieldSchema{

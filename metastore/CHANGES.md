@@ -1,5 +1,48 @@
 # Changes
 
+## [1.12.0](https://github.com/googleapis/google-cloud-go/compare/metastore/v1.11.1...metastore/v1.12.0) (2023-07-10)
+
+
+### Features
+
+* **metastore:** Added Admin Interface (v1) ([#8190](https://github.com/googleapis/google-cloud-go/issues/8190)) ([14b95d3](https://github.com/googleapis/google-cloud-go/commit/14b95d33753d0b391d0b49533e92b551e5dc3072))
+
+## [1.11.1](https://github.com/googleapis/google-cloud-go/compare/metastore/v1.11.0...metastore/v1.11.1) (2023-06-20)
+
+
+### Bug Fixes
+
+* **metastore:** REST query UpdateMask bug ([df52820](https://github.com/googleapis/google-cloud-go/commit/df52820b0e7721954809a8aa8700b93c5662dc9b))
+
+## [1.11.0](https://github.com/googleapis/google-cloud-go/compare/metastore/v1.10.1...metastore/v1.11.0) (2023-05-30)
+
+
+### Features
+
+* **metastore:** Update all direct dependencies ([b340d03](https://github.com/googleapis/google-cloud-go/commit/b340d030f2b52a4ce48846ce63984b28583abde6))
+
+## [1.10.1](https://github.com/googleapis/google-cloud-go/compare/metastore/v1.10.0...metastore/v1.10.1) (2023-05-08)
+
+
+### Bug Fixes
+
+* **metastore:** Update grpc to v1.55.0 ([1147ce0](https://github.com/googleapis/google-cloud-go/commit/1147ce02a990276ca4f8ab7a1ab65c14da4450ef))
+
+## [1.10.0](https://github.com/googleapis/google-cloud-go/compare/metastore/v1.9.1...metastore/v1.10.0) (2023-01-04)
+
+
+### Features
+
+* **metastore:** Add REST client ([06a54a1](https://github.com/googleapis/google-cloud-go/commit/06a54a16a5866cce966547c51e203b9e09a25bc0))
+
+## [1.9.1](https://github.com/googleapis/google-cloud-go/compare/metastore/v1.9.0...metastore/v1.9.1) (2022-12-15)
+
+
+### Documentation
+
+* **metastore:** Fix formatting for subnetwork field pattern ([bf75547](https://github.com/googleapis/google-cloud-go/commit/bf75547278ef342c79b958e886925da553b0bcc2))
+* **metastore:** Fix formatting for subnetwork field pattern ([7357077](https://github.com/googleapis/google-cloud-go/commit/735707796d81d7f6f32fc3415800c512fe62297e))
+
 ## [1.9.0](https://github.com/googleapis/google-cloud-go/compare/metastore/v1.8.0...metastore/v1.9.0) (2022-12-01)
 
 

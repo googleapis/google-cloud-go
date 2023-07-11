@@ -28,6 +28,7 @@ import (
 	"cloud.google.com/go/bigquery/storage/managedwriter/testdata"
 	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/internal/uid"
+	"github.com/google/go-cmp/cmp"
 	"github.com/googleapis/gax-go/v2/apierror"
 	"go.opencensus.io/stats/view"
 	"google.golang.org/api/option"
@@ -36,6 +37,7 @@ import (
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/reflect/protodesc"
 	"google.golang.org/protobuf/reflect/protoreflect"
+	"google.golang.org/protobuf/testing/protocmp"
 	"google.golang.org/protobuf/types/descriptorpb"
 	"google.golang.org/protobuf/types/dynamicpb"
 	"google.golang.org/protobuf/types/known/wrapperspb"
@@ -44,7 +46,7 @@ import (
 var (
 	datasetIDs         = uid.NewSpace("managedwriter_test_dataset", &uid.Options{Sep: '_', Time: time.Now()})
 	tableIDs           = uid.NewSpace("table", &uid.Options{Sep: '_', Time: time.Now()})
-	defaultTestTimeout = 45 * time.Second
+	defaultTestTimeout = 90 * time.Second
 )
 
 // our test data has cardinality 5 for names, 3 for values
@@ -109,7 +111,99 @@ func setupDynamicDescriptors(t *testing.T, schema bigquery.Schema) (protoreflect
 	if !ok {
 		t.Fatalf("adapted descriptor is not a message descriptor")
 	}
-	return messageDescriptor, protodesc.ToDescriptorProto(messageDescriptor)
+	dp, err := adapt.NormalizeDescriptor(messageDescriptor)
+	if err != nil {
+		t.Fatalf("NormalizeDescriptor: %v", err)
+	}
+	return messageDescriptor, dp
+}
+
+func TestIntegration_ClientGetWriteStream(t *testing.T) {
+	ctx := context.Background()
+	mwClient, bqClient := getTestClients(ctx, t)
+	defer mwClient.Close()
+	defer bqClient.Close()
+
+	wantLocation := "us-east1"
+	dataset, cleanup, err := setupTestDataset(ctx, t, bqClient, wantLocation)
+	if err != nil {
+		t.Fatalf("failed to init test dataset: %v", err)
+	}
+	defer cleanup()
+
+	testTable := dataset.Table(tableIDs.New())
+	if err := testTable.Create(ctx, &bigquery.TableMetadata{Schema: testdata.SimpleMessageSchema}); err != nil {
+		t.Fatalf("failed to create test table %q: %v", testTable.FullyQualifiedName(), err)
+	}
+
+	apiSchema, _ := adapt.BQSchemaToStorageTableSchema(testdata.SimpleMessageSchema)
+	parent := TableParentFromParts(testTable.ProjectID, testTable.DatasetID, testTable.TableID)
+	explicitStream, err := mwClient.CreateWriteStream(ctx, &storagepb.CreateWriteStreamRequest{
+		Parent: parent,
+		WriteStream: &storagepb.WriteStream{
+			Type: storagepb.WriteStream_PENDING,
+		},
+	})
+	if err != nil {
+		t.Fatalf("CreateWriteStream: %v", err)
+	}
+
+	testCases := []struct {
+		description string
+		isDefault   bool
+		streamID    string
+		wantType    storagepb.WriteStream_Type
+	}{
+		{
+			description: "default",
+			isDefault:   true,
+			streamID:    fmt.Sprintf("%s/streams/_default", parent),
+			wantType:    storagepb.WriteStream_COMMITTED,
+		},
+		{
+			description: "explicit pending",
+			streamID:    explicitStream.Name,
+			wantType:    storagepb.WriteStream_PENDING,
+		},
+	}
+
+	for _, tc := range testCases {
+		for _, fullView := range []bool{false, true} {
+			info, err := mwClient.getWriteStream(ctx, tc.streamID, fullView)
+			if err != nil {
+				t.Errorf("%s (%T): getWriteStream failed: %v", tc.description, fullView, err)
+			}
+			if info.GetType() != tc.wantType {
+				t.Errorf("%s (%T): got type %d, want type %d", tc.description, fullView, info.GetType(), tc.wantType)
+			}
+			if info.GetLocation() != wantLocation {
+				t.Errorf("%s (%T) view: got location %s, want location %s", tc.description, fullView, info.GetLocation(), wantLocation)
+			}
+			if info.GetCommitTime() != nil {
+				t.Errorf("%s (%T)expected empty commit time, got %v", tc.description, fullView, info.GetCommitTime())
+			}
+
+			if !tc.isDefault {
+				if info.GetCreateTime() == nil {
+					t.Errorf("%s (%T): expected create time, was empty", tc.description, fullView)
+				}
+			} else {
+				if info.GetCreateTime() != nil {
+					t.Errorf("%s (%T): expected empty time, got %v", tc.description, fullView, info.GetCreateTime())
+				}
+			}
+
+			if !fullView {
+				if info.GetTableSchema() != nil {
+					t.Errorf("%s (%T) basic view: expected no schema, was populated", tc.description, fullView)
+				}
+			} else {
+				if diff := cmp.Diff(info.GetTableSchema(), apiSchema, protocmp.Transform()); diff != "" {
+					t.Errorf("%s (%T) schema mismatch: -got, +want:\n%s", tc.description, fullView, diff)
+				}
+			}
+		}
+	}
 }
 
 func TestIntegration_ManagedWriter(t *testing.T) {
@@ -117,7 +211,7 @@ func TestIntegration_ManagedWriter(t *testing.T) {
 	defer mwClient.Close()
 	defer bqClient.Close()
 
-	dataset, cleanup, err := setupTestDataset(context.Background(), t, bqClient, "us-east1")
+	dataset, cleanup, err := setupTestDataset(context.Background(), t, bqClient, "asia-east1")
 	if err != nil {
 		t.Fatalf("failed to init test dataset: %v", err)
 	}
@@ -151,9 +245,9 @@ func TestIntegration_ManagedWriter(t *testing.T) {
 			t.Parallel()
 			testPendingStream(ctx, t, mwClient, bqClient, dataset)
 		})
-		t.Run("SchemaEvolution", func(t *testing.T) {
+		t.Run("SimpleCDC", func(t *testing.T) {
 			t.Parallel()
-			testSchemaEvolution(ctx, t, mwClient, bqClient, dataset)
+			testSimpleCDC(ctx, t, mwClient, bqClient, dataset)
 		})
 		t.Run("Instrumentation", func(t *testing.T) {
 			// Don't run this in parallel, we only want to collect stats from this subtest.
@@ -165,7 +259,58 @@ func TestIntegration_ManagedWriter(t *testing.T) {
 		t.Run("TestLargeInsertWithRetry", func(t *testing.T) {
 			testLargeInsertWithRetry(ctx, t, mwClient, bqClient, dataset)
 		})
+
 	})
+}
+
+func TestIntegration_SchemaEvolution(t *testing.T) {
+
+	testcases := []struct {
+		desc       string
+		clientOpts []option.ClientOption
+		writerOpts []WriterOption
+	}{
+		{
+			desc: "Simplex_Committed",
+			writerOpts: []WriterOption{
+				WithType(CommittedStream),
+			},
+		},
+		{
+			desc: "Simplex_Default",
+			writerOpts: []WriterOption{
+				WithType(DefaultStream),
+			},
+		},
+		{
+			desc: "Multiplex_Default",
+			clientOpts: []option.ClientOption{
+				WithMultiplexing(),
+				WithMultiplexPoolLimit(2),
+			},
+			writerOpts: []WriterOption{
+				WithType(DefaultStream),
+			},
+		},
+	}
+
+	for _, tc := range testcases {
+		mwClient, bqClient := getTestClients(context.Background(), t, tc.clientOpts...)
+		defer mwClient.Close()
+		defer bqClient.Close()
+
+		dataset, cleanup, err := setupTestDataset(context.Background(), t, bqClient, "asia-east1")
+		if err != nil {
+			t.Fatalf("failed to init test dataset: %v", err)
+		}
+		defer cleanup()
+
+		ctx, cancel := context.WithTimeout(context.Background(), defaultTestTimeout)
+		defer cancel()
+		t.Run(tc.desc, func(t *testing.T) {
+			testSchemaEvolution(ctx, t, mwClient, bqClient, dataset, tc.writerOpts...)
+		})
+	}
 }
 
 func testDefaultStream(ctx context.Context, t *testing.T, mwClient *Client, bqClient *bigquery.Client, dataset *bigquery.Dataset) {
@@ -186,6 +331,9 @@ func testDefaultStream(ctx context.Context, t *testing.T, mwClient *Client, bqCl
 	)
 	if err != nil {
 		t.Fatalf("NewManagedStream: %v", err)
+	}
+	if ms.id == "" {
+		t.Errorf("managed stream is missing ID")
 	}
 	validateTableConstraints(ctx, t, bqClient, testTable, "before send",
 		withExactRowCount(0))
@@ -246,11 +394,11 @@ func testDefaultStream(ctx context.Context, t *testing.T, mwClient *Client, bqCl
 
 func testDefaultStreamDynamicJSON(ctx context.Context, t *testing.T, mwClient *Client, bqClient *bigquery.Client, dataset *bigquery.Dataset) {
 	testTable := dataset.Table(tableIDs.New())
-	if err := testTable.Create(ctx, &bigquery.TableMetadata{Schema: testdata.SimpleMessageSchema}); err != nil {
+	if err := testTable.Create(ctx, &bigquery.TableMetadata{Schema: testdata.GithubArchiveSchema}); err != nil {
 		t.Fatalf("failed to create test table %s: %v", testTable.FullyQualifiedName(), err)
 	}
 
-	md, descriptorProto := setupDynamicDescriptors(t, testdata.SimpleMessageSchema)
+	md, descriptorProto := setupDynamicDescriptors(t, testdata.GithubArchiveSchema)
 
 	ms, err := mwClient.NewManagedStream(ctx,
 		WithDestinationTable(TableParentFromParts(testTable.ProjectID, testTable.DatasetID, testTable.TableID)),
@@ -264,11 +412,11 @@ func testDefaultStreamDynamicJSON(ctx context.Context, t *testing.T, mwClient *C
 		withExactRowCount(0))
 
 	sampleJSONData := [][]byte{
-		[]byte(`{"name": "one", "value": 1}`),
-		[]byte(`{"name": "two", "value": 2}`),
-		[]byte(`{"name": "three", "value": 3}`),
-		[]byte(`{"name": "four", "value": 4}`),
-		[]byte(`{"name": "five", "value": 5}`),
+		[]byte(`{"type": "foo", "public": true, "repo": {"id": 99, "name": "repo_name_1", "url": "https://one.example.com"}}`),
+		[]byte(`{"type": "bar", "public": false, "repo": {"id": 101, "name": "repo_name_2", "url": "https://two.example.com"}}`),
+		[]byte(`{"type": "baz", "public": true, "repo": {"id": 456, "name": "repo_name_3", "url": "https://three.example.com"}}`),
+		[]byte(`{"type": "wow", "public": false, "repo": {"id": 123, "name": "repo_name_4", "url": "https://four.example.com"}}`),
+		[]byte(`{"type": "yay", "public": true, "repo": {"name": "repo_name_5", "url": "https://five.example.com"}}`),
 	}
 
 	var result *AppendResult
@@ -301,8 +449,8 @@ func testDefaultStreamDynamicJSON(ctx context.Context, t *testing.T, mwClient *C
 	}
 	validateTableConstraints(ctx, t, bqClient, testTable, "after send",
 		withExactRowCount(int64(len(sampleJSONData))),
-		withDistinctValues("name", int64(len(sampleJSONData))),
-		withDistinctValues("value", int64(len(sampleJSONData))))
+		withDistinctValues("type", int64(len(sampleJSONData))),
+		withDistinctValues("public", int64(2)))
 }
 
 func testBufferedStream(ctx context.Context, t *testing.T, mwClient *Client, bqClient *bigquery.Client, dataset *bigquery.Dataset) {
@@ -323,7 +471,7 @@ func testBufferedStream(ctx context.Context, t *testing.T, mwClient *Client, bqC
 		t.Fatalf("NewManagedStream: %v", err)
 	}
 
-	info, err := ms.c.getWriteStream(ctx, ms.streamSettings.streamID)
+	info, err := ms.c.getWriteStream(ctx, ms.streamSettings.streamID, false)
 	if err != nil {
 		t.Errorf("couldn't get stream info: %v", err)
 	}
@@ -337,17 +485,17 @@ func testBufferedStream(ctx context.Context, t *testing.T, mwClient *Client, bqC
 	for k, mesg := range testSimpleData {
 		b, err := proto.Marshal(mesg)
 		if err != nil {
-			t.Errorf("failed to marshal message %d: %v", k, err)
+			t.Fatalf("failed to marshal message %d: %v", k, err)
 		}
 		data := [][]byte{b}
 		results, err := ms.AppendRows(ctx, data)
 		if err != nil {
-			t.Errorf("single-row append %d failed: %v", k, err)
+			t.Fatalf("single-row append %d failed: %v", k, err)
 		}
 		// Wait for acknowledgement.
 		offset, err := results.GetResult(ctx)
 		if err != nil {
-			t.Errorf("got error from pending result %d: %v", k, err)
+			t.Fatalf("got error from pending result %d: %v", k, err)
 		}
 		validateTableConstraints(ctx, t, bqClient, testTable, fmt.Sprintf("before flush %d", k),
 			withExactRowCount(expectedRows),
@@ -409,6 +557,144 @@ func testCommittedStream(ctx context.Context, t *testing.T, mwClient *Client, bq
 	}
 	validateTableConstraints(ctx, t, bqClient, testTable, "after send",
 		withExactRowCount(int64(len(testSimpleData))))
+}
+
+// testSimpleCDC demonstrates basic Change Data Capture (CDC) functionality.   We add an initial set of
+// rows to a table, then use CDC to apply updates.
+func testSimpleCDC(ctx context.Context, t *testing.T, mwClient *Client, bqClient *bigquery.Client, dataset *bigquery.Dataset) {
+	testTable := dataset.Table(tableIDs.New())
+
+	if err := testTable.Create(ctx, &bigquery.TableMetadata{
+		Schema: testdata.ExampleEmployeeSchema,
+		Clustering: &bigquery.Clustering{
+			Fields: []string{"id"},
+		},
+	}); err != nil {
+		t.Fatalf("failed to create test table %s: %v", testTable.FullyQualifiedName(), err)
+	}
+
+	// Mark the primary key using an ALTER TABLE DDL.
+	tableIdentifier, _ := testTable.Identifier(bigquery.StandardSQLID)
+	sql := fmt.Sprintf("ALTER TABLE %s ADD PRIMARY KEY(id) NOT ENFORCED;", tableIdentifier)
+	if _, err := bqClient.Query(sql).Read(ctx); err != nil {
+		t.Fatalf("failed ALTER TABLE: %v", err)
+	}
+
+	m := &testdata.ExampleEmployeeCDC{}
+	descriptorProto, err := adapt.NormalizeDescriptor(m.ProtoReflect().Descriptor())
+	if err != nil {
+		t.Fatalf("NormalizeDescriptor: %v", err)
+	}
+
+	// Setup an initial writer for sending initial inserts.
+	writer, err := mwClient.NewManagedStream(ctx,
+		WithDestinationTable(TableParentFromParts(testTable.ProjectID, testTable.DatasetID, testTable.TableID)),
+		WithType(CommittedStream),
+		WithSchemaDescriptor(descriptorProto),
+	)
+	if err != nil {
+		t.Fatalf("NewManagedStream: %v", err)
+	}
+	defer writer.Close()
+	validateTableConstraints(ctx, t, bqClient, testTable, "before send",
+		withExactRowCount(0))
+
+	initialEmployees := []*testdata.ExampleEmployeeCDC{
+		{
+			Id:           proto.Int64(1),
+			Username:     proto.String("alice"),
+			GivenName:    proto.String("Alice CEO"),
+			Departments:  []string{"product", "support", "internal"},
+			Salary:       proto.Int64(1),
+			XCHANGE_TYPE: proto.String("INSERT"),
+		},
+		{
+			Id:           proto.Int64(2),
+			Username:     proto.String("bob"),
+			GivenName:    proto.String("Bob Bobberson"),
+			Departments:  []string{"research"},
+			Salary:       proto.Int64(100000),
+			XCHANGE_TYPE: proto.String("INSERT"),
+		},
+		{
+			Id:           proto.Int64(3),
+			Username:     proto.String("clarice"),
+			GivenName:    proto.String("Clarice Clearwater"),
+			Departments:  []string{"product"},
+			Salary:       proto.Int64(100001),
+			XCHANGE_TYPE: proto.String("INSERT"),
+		},
+	}
+
+	// First append inserts all the initial employees.
+	data := make([][]byte, len(initialEmployees))
+	for k, mesg := range initialEmployees {
+		b, err := proto.Marshal(mesg)
+		if err != nil {
+			t.Fatalf("failed to marshal record %d: %v", k, err)
+		}
+		data[k] = b
+	}
+	result, err := writer.AppendRows(ctx, data)
+	if err != nil {
+		t.Errorf("initial insert failed (%s): %v", writer.StreamName(), err)
+	}
+	if _, err := result.GetResult(ctx); err != nil {
+		t.Errorf("result error for initial insert (%s): %v", writer.StreamName(), err)
+	}
+	validateTableConstraints(ctx, t, bqClient, testTable, "initial inserts",
+		withExactRowCount(int64(len(initialEmployees))))
+
+	// Create a second writer for applying modifications.
+	updateWriter, err := mwClient.NewManagedStream(ctx,
+		WithDestinationTable(TableParentFromParts(testTable.ProjectID, testTable.DatasetID, testTable.TableID)),
+		WithType(DefaultStream),
+		WithSchemaDescriptor(descriptorProto),
+	)
+	if err != nil {
+		t.Fatalf("NewManagedStream: %v", err)
+	}
+	defer updateWriter.Close()
+
+	// Change bob via an UPSERT CDC
+	newBob := proto.Clone(initialEmployees[1]).(*testdata.ExampleEmployeeCDC)
+	newBob.Salary = proto.Int64(105000)
+	newBob.Departments = []string{"research", "product"}
+	newBob.XCHANGE_TYPE = proto.String("UPSERT")
+	b, err := proto.Marshal(newBob)
+	if err != nil {
+		t.Fatalf("failed to marshal new bob: %v", err)
+	}
+	result, err = updateWriter.AppendRows(ctx, [][]byte{b})
+	if err != nil {
+		t.Fatalf("bob modification failed (%s): %v", updateWriter.StreamName(), err)
+	}
+	if _, err := result.GetResult(ctx); err != nil {
+		t.Fatalf("result error for bob modification (%s): %v", updateWriter.StreamName(), err)
+	}
+	validateTableConstraints(ctx, t, bqClient, testTable, "after bob modification",
+		withExactRowCount(int64(len(initialEmployees))),
+		withDistinctValues("id", int64(len(initialEmployees))))
+
+	// remote clarice via DELETE CDC
+	removeClarice := &testdata.ExampleEmployeeCDC{
+		Id:           proto.Int64(3),
+		XCHANGE_TYPE: proto.String("DELETE"),
+	}
+	b, err = proto.Marshal(removeClarice)
+	if err != nil {
+		t.Fatalf("failed to marshal clarice removal: %v", err)
+	}
+	result, err = updateWriter.AppendRows(ctx, [][]byte{b})
+	if err != nil {
+		t.Fatalf("clarice removal failed (%s): %v", updateWriter.StreamName(), err)
+	}
+	if _, err := result.GetResult(ctx); err != nil {
+		t.Fatalf("result error for clarice removal (%s): %v", updateWriter.StreamName(), err)
+	}
+
+	validateTableConstraints(ctx, t, bqClient, testTable, "after clarice removal",
+		withExactRowCount(int64(len(initialEmployees))-1))
 }
 
 // testErrorBehaviors intentionally issues problematic requests to verify error behaviors.
@@ -778,6 +1064,16 @@ func testInstrumentation(ctx context.Context, t *testing.T, mwClient *Client, bq
 	// to report.
 	time.Sleep(time.Second)
 
+	// metric to key tag names
+	wantTags := map[string][]string{
+		"cloud.google.com/go/bigquery/storage/managedwriter/stream_open_count":       nil,
+		"cloud.google.com/go/bigquery/storage/managedwriter/stream_open_retry_count": nil,
+		"cloud.google.com/go/bigquery/storage/managedwriter/append_requests":         {"streamID"},
+		"cloud.google.com/go/bigquery/storage/managedwriter/append_request_bytes":    {"streamID"},
+		"cloud.google.com/go/bigquery/storage/managedwriter/append_request_errors":   {"streamID"},
+		"cloud.google.com/go/bigquery/storage/managedwriter/append_rows":             {"streamID"},
+	}
+
 	for _, tv := range testedViews {
 		// Attempt to further improve race failures by retrying metrics retrieval.
 		metricData, err := func() ([]*view.Row, error) {
@@ -801,8 +1097,25 @@ func testInstrumentation(ctx context.Context, t *testing.T, mwClient *Client, bq
 			t.Errorf("%q: expected 1 row of metrics, got %d", tv.Name, mlen)
 			continue
 		}
-		if len(metricData[0].Tags) != 1 {
-			t.Errorf("%q: only expected 1 tag, got %d", tv.Name, len(metricData[0].Tags))
+		if wantKeys, ok := wantTags[tv.Name]; ok {
+			if wantKeys == nil {
+				if n := len(tv.TagKeys); n != 0 {
+					t.Errorf("expected view %q to have no keys, but %d present", tv.Name, n)
+				}
+			} else {
+				for _, wk := range wantKeys {
+					var found bool
+					for _, gk := range tv.TagKeys {
+						if gk.Name() == wk {
+							found = true
+							break
+						}
+					}
+					if !found {
+						t.Errorf("expected view %q to have key %q, but wasn't present", tv.Name, wk)
+					}
+				}
+			}
 		}
 		entry := metricData[0].Data
 		sum, ok := entry.(*view.SumData)
@@ -827,7 +1140,7 @@ func testInstrumentation(ctx context.Context, t *testing.T, mwClient *Client, bq
 	}
 }
 
-func testSchemaEvolution(ctx context.Context, t *testing.T, mwClient *Client, bqClient *bigquery.Client, dataset *bigquery.Dataset) {
+func testSchemaEvolution(ctx context.Context, t *testing.T, mwClient *Client, bqClient *bigquery.Client, dataset *bigquery.Dataset, opts ...WriterOption) {
 	testTable := dataset.Table(tableIDs.New())
 	if err := testTable.Create(ctx, &bigquery.TableMetadata{Schema: testdata.SimpleMessageSchema}); err != nil {
 		t.Fatalf("failed to create test table %s: %v", testTable.FullyQualifiedName(), err)
@@ -837,11 +1150,9 @@ func testSchemaEvolution(ctx context.Context, t *testing.T, mwClient *Client, bq
 	descriptorProto := protodesc.ToDescriptorProto(m.ProtoReflect().Descriptor())
 
 	// setup a new stream.
-	ms, err := mwClient.NewManagedStream(ctx,
-		WithDestinationTable(TableParentFromParts(testTable.ProjectID, testTable.DatasetID, testTable.TableID)),
-		WithType(CommittedStream),
-		WithSchemaDescriptor(descriptorProto),
-	)
+	opts = append(opts, WithDestinationTable(TableParentFromParts(testTable.ProjectID, testTable.DatasetID, testTable.TableID)))
+	opts = append(opts, WithSchemaDescriptor(descriptorProto))
+	ms, err := mwClient.NewManagedStream(ctx, opts...)
 	if err != nil {
 		t.Fatalf("NewManagedStream: %v", err)
 	}
@@ -858,7 +1169,7 @@ func testSchemaEvolution(ctx context.Context, t *testing.T, mwClient *Client, bq
 		}
 		latestRow = b
 		data := [][]byte{b}
-		result, err = ms.AppendRows(ctx, data, WithOffset(curOffset))
+		result, err = ms.AppendRows(ctx, data)
 		if err != nil {
 			t.Errorf("single-row append %d failed: %v", k, err)
 		}
@@ -882,8 +1193,12 @@ func testSchemaEvolution(ctx context.Context, t *testing.T, mwClient *Client, bq
 	// Resend latest row until we get a new schema notification.
 	// It _should_ be possible to send duplicates, but this currently will not propagate the schema error.
 	// Internal issue: b/211899346
+	//
+	// The alternative here would be to block on GetWriteStream until we get a different write stream, but
+	// this subjects us to a possible race, as the backend that services GetWriteStream isn't necessarily the
+	// one in charge of the stream, and thus may report ready early.
 	for {
-		resp, err := ms.AppendRows(ctx, [][]byte{latestRow}, WithOffset(curOffset))
+		resp, err := ms.AppendRows(ctx, [][]byte{latestRow})
 		if err != nil {
 			t.Errorf("got error on dupe append: %v", err)
 			break
@@ -892,15 +1207,13 @@ func testSchemaEvolution(ctx context.Context, t *testing.T, mwClient *Client, bq
 		s, err := resp.UpdatedSchema(ctx)
 		if err != nil {
 			t.Errorf("getting schema error: %v", err)
-			break
 		}
 		if s != nil {
 			break
 		}
-
 	}
 
-	// ready descriptor, send an additional append
+	// ready evolved message and descriptor
 	m2 := &testdata.SimpleMessageEvolvedProto2{
 		Name:  proto.String("evolved"),
 		Value: proto.Int64(180),
@@ -911,29 +1224,41 @@ func testSchemaEvolution(ctx context.Context, t *testing.T, mwClient *Client, bq
 	if err != nil {
 		t.Errorf("failed to marshal evolved message: %v", err)
 	}
+	// Send an append with an evolved schema
+	res, err := ms.AppendRows(ctx, [][]byte{b}, UpdateSchemaDescriptor(descriptorProto))
+	if err != nil {
+		t.Errorf("failed evolved append: %v", err)
+	}
+	_, err = res.GetResult(ctx)
+	if err != nil {
+		t.Errorf("error on evolved append: %v", err)
+	}
+	curOffset = curOffset + 1
+
 	// Try to force connection errors from concurrent appends.
 	// We drop setting of offset to avoid commingling out-of-order append errors.
 	var wg sync.WaitGroup
 	for i := 0; i < 5; i++ {
+		id := i
 		wg.Add(1)
 		go func() {
-			res, err := ms.AppendRows(ctx, [][]byte{b}, UpdateSchemaDescriptor(descriptorProto))
+			res, err := ms.AppendRows(ctx, [][]byte{b})
 			if err != nil {
-				t.Errorf("failed evolved append: %v", err)
+				t.Errorf("failed concurrent append %d: %v", id, err)
 			}
 			_, err = res.GetResult(ctx)
 			if err != nil {
-				t.Errorf("error on evolved append: %v", err)
+				t.Errorf("error on concurrent append %d: %v", id, err)
 			}
 			wg.Done()
 		}()
 	}
 	wg.Wait()
 
-	validateTableConstraints(ctx, t, bqClient, testTable, "after send",
+	validateTableConstraints(ctx, t, bqClient, testTable, "after evolved records send",
 		withExactRowCount(int64(curOffset+5)),
 		withNullCount("name", 0),
-		withNonNullCount("other", 5),
+		withNonNullCount("other", 6),
 	)
 }
 
@@ -1065,4 +1390,151 @@ func testProtoNormalization(ctx context.Context, t *testing.T, mwClient *Client,
 	if err != nil {
 		t.Errorf("error in response: %v", err)
 	}
+}
+
+func TestIntegration_MultiplexWrites(t *testing.T) {
+	mwClient, bqClient := getTestClients(context.Background(), t,
+		WithMultiplexing(),
+		WithMultiplexPoolLimit(2),
+	)
+	defer mwClient.Close()
+	defer bqClient.Close()
+
+	dataset, cleanup, err := setupTestDataset(context.Background(), t, bqClient, "us-east1")
+	if err != nil {
+		t.Fatalf("failed to init test dataset: %v", err)
+	}
+	defer cleanup()
+
+	ctx, cancel := context.WithTimeout(context.Background(), defaultTestTimeout)
+	defer cancel()
+
+	wantWrites := 10
+
+	testTables := []struct {
+		tbl         *bigquery.Table
+		schema      bigquery.Schema
+		dp          *descriptorpb.DescriptorProto
+		sampleRow   []byte
+		constraints []constraintOption
+	}{
+		{
+			tbl:    dataset.Table(tableIDs.New()),
+			schema: testdata.SimpleMessageSchema,
+			dp: func() *descriptorpb.DescriptorProto {
+				m := &testdata.SimpleMessageProto2{}
+				dp, _ := adapt.NormalizeDescriptor(m.ProtoReflect().Descriptor())
+				return dp
+			}(),
+			sampleRow: func() []byte {
+				msg := &testdata.SimpleMessageProto2{
+					Name:  proto.String("sample_name"),
+					Value: proto.Int64(1001),
+				}
+				b, _ := proto.Marshal(msg)
+				return b
+			}(),
+			constraints: []constraintOption{
+				withExactRowCount(int64(wantWrites)),
+				withStringValueCount("name", "sample_name", int64(wantWrites)),
+			},
+		},
+		{
+			tbl:    dataset.Table(tableIDs.New()),
+			schema: testdata.ValidationBaseSchema,
+			dp: func() *descriptorpb.DescriptorProto {
+				m := &testdata.ValidationP2Optional{}
+				dp, _ := adapt.NormalizeDescriptor(m.ProtoReflect().Descriptor())
+				return dp
+			}(),
+			sampleRow: func() []byte {
+				msg := &testdata.ValidationP2Optional{
+					Int64Field:  proto.Int64(69),
+					StringField: proto.String("validation_string"),
+				}
+				b, _ := proto.Marshal(msg)
+				return b
+			}(),
+			constraints: []constraintOption{
+				withExactRowCount(int64(wantWrites)),
+				withStringValueCount("string_field", "validation_string", int64(wantWrites)),
+			},
+		},
+		{
+			tbl:    dataset.Table(tableIDs.New()),
+			schema: testdata.GithubArchiveSchema,
+			dp: func() *descriptorpb.DescriptorProto {
+				m := &testdata.GithubArchiveMessageProto2{}
+				dp, _ := adapt.NormalizeDescriptor(m.ProtoReflect().Descriptor())
+				return dp
+			}(),
+			sampleRow: func() []byte {
+				msg := &testdata.GithubArchiveMessageProto2{
+					Payload: proto.String("payload_string"),
+					Id:      proto.String("some_id"),
+				}
+				b, _ := proto.Marshal(msg)
+				return b
+			}(),
+			constraints: []constraintOption{
+				withExactRowCount(int64(wantWrites)),
+				withStringValueCount("payload", "payload_string", int64(wantWrites)),
+			},
+		},
+	}
+
+	// setup tables
+	for _, testTable := range testTables {
+		if err := testTable.tbl.Create(ctx, &bigquery.TableMetadata{Schema: testTable.schema}); err != nil {
+			t.Fatalf("failed to create test table %q: %v", testTable.tbl.FullyQualifiedName(), err)
+		}
+	}
+
+	var gotFirstPool *connectionPool
+	var results []*AppendResult
+	for i := 0; i < wantWrites; i++ {
+		for k, testTable := range testTables {
+			// create a writer and send a single append
+			ms, err := mwClient.NewManagedStream(ctx,
+				WithDestinationTable(TableParentFromParts(testTable.tbl.ProjectID, testTable.tbl.DatasetID, testTable.tbl.TableID)),
+				WithType(DefaultStream),
+				WithSchemaDescriptor(testTable.dp),
+			)
+			if err != nil {
+				t.Fatalf("NewManagedStream %d: %v", k, err)
+			}
+			if i == 0 && k == 0 {
+				if ms.pool == nil {
+					t.Errorf("expected a non-nil pool reference for first writer")
+				}
+				gotFirstPool = ms.pool
+			} else {
+				if ms.pool != gotFirstPool {
+					t.Errorf("expected same pool reference, got a different pool")
+				}
+			}
+			defer ms.Close() // we won't clean these up until the end of the test, rather than per use.
+			if err != nil {
+				t.Fatalf("failed to create ManagedStream for table %d on iteration %d: %v", k, i, err)
+			}
+			res, err := ms.AppendRows(ctx, [][]byte{testTable.sampleRow})
+			if err != nil {
+				t.Fatalf("failed to append to table %d on iteration %d: %v", k, i, err)
+			}
+			results = append(results, res)
+		}
+	}
+
+	// drain results
+	for k, res := range results {
+		if _, err := res.GetResult(ctx); err != nil {
+			t.Errorf("result %d yielded error: %v", k, err)
+		}
+	}
+
+	// validate the tables
+	for _, testTable := range testTables {
+		validateTableConstraints(ctx, t, bqClient, testTable.tbl, "", testTable.constraints...)
+	}
+
 }

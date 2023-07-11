@@ -26,6 +26,7 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"math/rand"
 	"path"
 	"sort"
 	"strings"
@@ -65,21 +66,6 @@ type publishResponse struct {
 	err  error
 }
 
-// For testing. Note that even though changes to the now variable are atomic, a call
-// to the stored function can race with a change to that function. This could be a
-// problem if tests are run in parallel, or even if concurrent parts of the same test
-// change the value of the variable.
-var now atomic.Value
-
-func init() {
-	now.Store(time.Now)
-	ResetMinAckDeadline()
-}
-
-func timeNow() time.Time {
-	return now.Load().(func() time.Time)()
-}
-
 // Server is a fake Pub/Sub server.
 type Server struct {
 	srv     *testutil.Server
@@ -90,8 +76,11 @@ type Server struct {
 // GServer is the underlying service implementor. It is not intended to be used
 // directly.
 type GServer struct {
-	pb.PublisherServer
-	pb.SubscriberServer
+	pb.UnimplementedPublisherServer
+	pb.UnimplementedSubscriberServer
+	pb.UnimplementedSchemaServiceServer
+
+	timeNowFunc atomic.Value
 
 	mu             sync.Mutex
 	topics         map[string]*topic
@@ -101,9 +90,10 @@ type GServer struct {
 	wg             sync.WaitGroup
 	nextID         int
 	streamTimeout  time.Duration
-	timeNowFunc    func() time.Time
 	reactorOptions ReactorOptions
-	schemas        map[string]*pb.Schema
+	// schemas is a map of schemaIDs to a slice of schema revisions.
+	// the last element in the slice is the most recent schema.
+	schemas map[string][]*pb.Schema
 
 	// PublishResponses is a channel of responses to use for Publish.
 	publishResponses chan *publishResponse
@@ -135,13 +125,13 @@ func NewServerWithPort(port int, opts ...ServerReactorOption) *Server {
 			topics:              map[string]*topic{},
 			subs:                map[string]*subscription{},
 			msgsByID:            map[string]*Message{},
-			timeNowFunc:         timeNow,
 			reactorOptions:      reactorOptions,
 			publishResponses:    make(chan *publishResponse, 100),
 			autoPublishResponse: true,
-			schemas:             map[string]*pb.Schema{},
+			schemas:             map[string][]*pb.Schema{},
 		},
 	}
+	s.GServer.timeNowFunc.Store(time.Now)
 	pb.RegisterPublisherServer(srv.Gsrv, &s.GServer)
 	pb.RegisterSubscriberServer(srv.Gsrv, &s.GServer)
 	pb.RegisterSchemaServiceServer(srv.Gsrv, &s.GServer)
@@ -152,7 +142,11 @@ func NewServerWithPort(port int, opts ...ServerReactorOption) *Server {
 // SetTimeNowFunc registers f as a function to
 // be used instead of time.Now for this server.
 func (s *Server) SetTimeNowFunc(f func() time.Time) {
-	s.GServer.timeNowFunc = f
+	s.GServer.timeNowFunc.Store(f)
+}
+
+func (s *GServer) now() time.Time {
+	return s.timeNowFunc.Load().(func() time.Time)()
 }
 
 // Publish behaves as if the Publish RPC was called with a message with the given
@@ -294,6 +288,9 @@ func (s *Server) ClearMessages() {
 	s.GServer.mu.Lock()
 	s.GServer.msgs = nil
 	s.GServer.msgsByID = make(map[string]*Message)
+	for _, sub := range s.GServer.subs {
+		sub.msgs = map[string]*message{}
+	}
 	s.GServer.mu.Unlock()
 }
 
@@ -364,6 +361,28 @@ func (s *GServer) UpdateTopic(_ context.Context, req *pb.UpdateTopicRequest) (*p
 				return nil, err
 			}
 			t.proto.MessageRetentionDuration = req.Topic.MessageRetentionDuration
+		case "schema_settings":
+			t.proto.SchemaSettings = req.Topic.SchemaSettings
+		case "schema_settings.schema":
+			if t.proto.SchemaSettings == nil {
+				t.proto.SchemaSettings = &pb.SchemaSettings{}
+			}
+			t.proto.SchemaSettings.Schema = req.Topic.SchemaSettings.Schema
+		case "schema_settings.encoding":
+			if t.proto.SchemaSettings == nil {
+				t.proto.SchemaSettings = &pb.SchemaSettings{}
+			}
+			t.proto.SchemaSettings.Encoding = req.Topic.SchemaSettings.Encoding
+		case "schema_settings.first_revision_id":
+			if t.proto.SchemaSettings == nil {
+				t.proto.SchemaSettings = &pb.SchemaSettings{}
+			}
+			t.proto.SchemaSettings.FirstRevisionId = req.Topic.SchemaSettings.FirstRevisionId
+		case "schema_settings.last_revision_id":
+			if t.proto.SchemaSettings == nil {
+				t.proto.SchemaSettings = &pb.SchemaSettings{}
+			}
+			t.proto.SchemaSettings.LastRevisionId = req.Topic.SchemaSettings.LastRevisionId
 		default:
 			return nil, status.Errorf(codes.InvalidArgument, "unknown field name %q", path)
 		}
@@ -480,10 +499,14 @@ func (s *GServer) CreateSubscription(_ context.Context, ps *pb.Subscription) (*p
 	if ps.PushConfig == nil {
 		ps.PushConfig = &pb.PushConfig{}
 	}
-	if ps.BigqueryConfig == nil {
-		ps.BigqueryConfig = &pb.BigQueryConfig{}
-	} else if ps.BigqueryConfig.Table != "" {
+	// Consider any table set to mean the config is active.
+	// We don't convert nil config to empty like with PushConfig above
+	// as this mimics the live service behavior.
+	if ps.GetBigqueryConfig() != nil && ps.GetBigqueryConfig().GetTable() != "" {
 		ps.BigqueryConfig.State = pb.BigQueryConfig_ACTIVE
+	}
+	if ps.CloudStorageConfig != nil && ps.CloudStorageConfig.Bucket != "" {
+		ps.CloudStorageConfig.State = pb.CloudStorageConfig_ACTIVE
 	}
 	ps.TopicMessageRetentionDuration = top.proto.MessageRetentionDuration
 	var deadLetterTopic *topic
@@ -495,7 +518,7 @@ func (s *GServer) CreateSubscription(_ context.Context, ps *pb.Subscription) (*p
 		deadLetterTopic = dlTopic
 	}
 
-	sub := newSubscription(top, &s.mu, s.timeNowFunc, deadLetterTopic, ps)
+	sub := newSubscription(top, &s.mu, s.now, deadLetterTopic, ps)
 	top.subs[ps.Name] = sub
 	s.subs[ps.Name] = sub
 	sub.start(&s.wg)
@@ -534,10 +557,10 @@ func checkAckDeadline(ads int32) error {
 
 const (
 	minMessageRetentionDuration = 10 * time.Minute
-	maxMessageRetentionDuration = 168 * time.Hour
+	maxMessageRetentionDuration = 31 * 24 * time.Hour // 31 days is the maximum supported duration (https://cloud.google.com/pubsub/docs/replay-overview#configuring_message_retention)
 )
 
-var defaultMessageRetentionDuration = durpb.New(maxMessageRetentionDuration)
+var defaultMessageRetentionDuration = durpb.New(168 * time.Hour) // default is 7 days
 
 func checkMRD(pmrd *durpb.Duration) error {
 	if pmrd == nil {
@@ -586,9 +609,23 @@ func (s *GServer) UpdateSubscription(_ context.Context, req *pb.UpdateSubscripti
 			sub.proto.PushConfig = req.Subscription.PushConfig
 
 		case "bigquery_config":
+			// If bq config is nil here, it will be cleared.
+			// Otherwise, we'll consider the subscription active if any table is set.
 			sub.proto.BigqueryConfig = req.GetSubscription().GetBigqueryConfig()
-			if sub.proto.GetBigqueryConfig().GetTable() != "" {
-				sub.proto.GetBigqueryConfig().State = pb.BigQueryConfig_ACTIVE
+			if sub.proto.GetBigqueryConfig() != nil {
+				if sub.proto.GetBigqueryConfig().GetTable() != "" {
+					sub.proto.BigqueryConfig.State = pb.BigQueryConfig_ACTIVE
+				} else {
+					return nil, status.Errorf(codes.InvalidArgument, "table must be provided")
+				}
+			}
+
+		case "cloud_storage_config":
+			sub.proto.CloudStorageConfig = req.GetSubscription().GetCloudStorageConfig()
+			// As long as the storage config is not nil, we assume it's valid
+			// without additional checks.
+			if sub.proto.GetCloudStorageConfig() != nil {
+				sub.proto.CloudStorageConfig.State = pb.CloudStorageConfig_ACTIVE
 			}
 
 		case "ack_deadline_seconds":
@@ -731,7 +768,7 @@ func (s *GServer) Publish(_ context.Context, req *pb.PublishRequest) (*pb.Publis
 		id := fmt.Sprintf("m%d", s.nextID)
 		s.nextID++
 		pm.MessageId = id
-		pubTime := s.timeNowFunc()
+		pubTime := s.now()
 		tsPubTime := timestamppb.New(pubTime)
 		pm.PublishTime = tsPubTime
 		m := &Message{
@@ -1020,10 +1057,10 @@ func (s *subscription) pull(max int) []*pb.ReceivedMessage {
 			s.publishToDeadLetter(m)
 			continue
 		}
+		(*m.deliveries)++
 		if s.proto.DeadLetterPolicy != nil {
 			m.proto.DeliveryAttempt = int32(*m.deliveries)
 		}
-		(*m.deliveries)++
 		m.ackDeadline = now.Add(s.ackTimeout)
 		msgs = append(msgs, m.proto)
 		if len(msgs) >= max {
@@ -1105,6 +1142,13 @@ func (s *subscription) deliver() {
 //
 // Must be called with the lock held.
 func (s *subscription) tryDeliverMessage(m *message, start int, now time.Time) (int, bool) {
+	// Optimistically increment DeliveryAttempt assuming we'll be able to deliver the message.  This is
+	// safe since the lock is held for the duration of this function, and the channel receiver does not
+	// modify the message.
+	if s.proto.DeadLetterPolicy != nil {
+		m.proto.DeliveryAttempt = int32(*m.deliveries) + 1
+	}
+
 	for i := 0; i < len(s.streams); i++ {
 		idx := (i + start) % len(s.streams)
 
@@ -1122,10 +1166,14 @@ func (s *subscription) tryDeliverMessage(m *message, start int, now time.Time) (
 		default:
 		}
 	}
+	// Restore the correct value of DeliveryAttempt if we were not able to deliver the message.
+	if s.proto.DeadLetterPolicy != nil {
+		m.proto.DeliveryAttempt = int32(*m.deliveries)
+	}
 	return 0, false
 }
 
-var retentionDuration = 10 * time.Minute
+const retentionDuration = 10 * time.Minute
 
 // Must be called with the lock held.
 func (s *subscription) maintainMessages(now time.Time) {
@@ -1137,7 +1185,6 @@ func (s *subscription) maintainMessages(now time.Time) {
 		pubTime := m.proto.Message.PublishTime.AsTime()
 		// Remove messages that have been undelivered for a long time.
 		if !m.outstanding() && now.Sub(pubTime) > retentionDuration {
-			s.publishToDeadLetter(m)
 			delete(s.msgs, id)
 		}
 	}
@@ -1380,6 +1427,16 @@ func WithErrorInjection(funcName string, code codes.Code, msg string) ServerReac
 	}
 }
 
+const letters = "abcdef1234567890"
+
+func genRevID() string {
+	id := make([]byte, 8)
+	for i := range id {
+		id[i] = letters[rand.Intn(len(letters))]
+	}
+	return string(id)
+}
+
 func (s *GServer) CreateSchema(_ context.Context, req *pb.CreateSchemaRequest) (*pb.Schema, error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -1390,17 +1447,18 @@ func (s *GServer) CreateSchema(_ context.Context, req *pb.CreateSchemaRequest) (
 
 	name := fmt.Sprintf("%s/schemas/%s", req.Parent, req.SchemaId)
 	sc := &pb.Schema{
-		Name:       name,
-		Type:       req.Schema.Type,
-		Definition: req.Schema.Definition,
+		Name:               name,
+		Type:               req.Schema.Type,
+		Definition:         req.Schema.Definition,
+		RevisionId:         genRevID(),
+		RevisionCreateTime: timestamppb.Now(),
 	}
-	s.schemas[name] = sc
+	s.schemas[name] = append(s.schemas[name], sc)
 
 	return sc, nil
 }
 
 func (s *GServer) GetSchema(_ context.Context, req *pb.GetSchemaRequest) (*pb.Schema, error) {
-
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
@@ -1408,11 +1466,33 @@ func (s *GServer) GetSchema(_ context.Context, req *pb.GetSchemaRequest) (*pb.Sc
 		return ret.(*pb.Schema), err
 	}
 
-	sc, ok := s.schemas[req.Name]
+	ss := strings.Split(req.Name, "@")
+	var schemaName, revisionID string
+	if len := len(ss); len == 1 {
+		schemaName = ss[0]
+	} else if len == 2 {
+		schemaName = ss[0]
+		revisionID = ss[1]
+	} else {
+		return nil, status.Errorf(codes.InvalidArgument, "schema(%q) name parse error", req.Name)
+	}
+
+	schemaRev, ok := s.schemas[schemaName]
 	if !ok {
 		return nil, status.Errorf(codes.NotFound, "schema(%q) not found", req.Name)
 	}
-	return sc, nil
+
+	if revisionID == "" {
+		return schemaRev[len(schemaRev)-1], nil
+	}
+
+	for _, sc := range schemaRev {
+		if sc.RevisionId == revisionID {
+			return sc, nil
+		}
+	}
+
+	return nil, status.Errorf(codes.NotFound, "schema %q not found", req.Name)
 }
 
 func (s *GServer) ListSchemas(_ context.Context, req *pb.ListSchemasRequest) (*pb.ListSchemasResponse, error) {
@@ -1424,11 +1504,97 @@ func (s *GServer) ListSchemas(_ context.Context, req *pb.ListSchemasRequest) (*p
 	}
 	ss := make([]*pb.Schema, 0)
 	for _, sc := range s.schemas {
-		ss = append(ss, sc)
+		ss = append(ss, sc[len(sc)-1])
 	}
 	return &pb.ListSchemasResponse{
 		Schemas: ss,
 	}, nil
+}
+
+func (s *GServer) ListSchemaRevisions(_ context.Context, req *pb.ListSchemaRevisionsRequest) (*pb.ListSchemaRevisionsResponse, error) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	if handled, ret, err := s.runReactor(req, "ListSchemaRevisions", &pb.ListSchemasResponse{}); handled || err != nil {
+		return ret.(*pb.ListSchemaRevisionsResponse), err
+	}
+	ss := make([]*pb.Schema, 0)
+	ss = append(ss, s.schemas[req.Name]...)
+	return &pb.ListSchemaRevisionsResponse{
+		Schemas: ss,
+	}, nil
+}
+
+func (s *GServer) CommitSchema(_ context.Context, req *pb.CommitSchemaRequest) (*pb.Schema, error) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	if handled, ret, err := s.runReactor(req, "CommitSchema", &pb.Schema{}); handled || err != nil {
+		return ret.(*pb.Schema), err
+	}
+
+	sc := &pb.Schema{
+		Name:       req.Name,
+		Type:       req.Schema.Type,
+		Definition: req.Schema.Definition,
+	}
+	sc.RevisionId = genRevID()
+	sc.RevisionCreateTime = timestamppb.Now()
+
+	s.schemas[req.Name] = append(s.schemas[req.Name], sc)
+
+	return sc, nil
+}
+
+// RollbackSchema rolls back the current schema to a previous revision by copying and creating a new revision.
+func (s *GServer) RollbackSchema(_ context.Context, req *pb.RollbackSchemaRequest) (*pb.Schema, error) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	if handled, ret, err := s.runReactor(req, "RollbackSchema", &pb.Schema{}); handled || err != nil {
+		return ret.(*pb.Schema), err
+	}
+
+	for _, sc := range s.schemas[req.Name] {
+		if sc.RevisionId == req.RevisionId {
+			newSchema := *sc
+			newSchema.RevisionId = genRevID()
+			newSchema.RevisionCreateTime = timestamppb.Now()
+			s.schemas[req.Name] = append(s.schemas[req.Name], &newSchema)
+			return &newSchema, nil
+		}
+	}
+	return nil, status.Errorf(codes.NotFound, "schema %q@%q not found", req.Name, req.RevisionId)
+}
+
+func (s *GServer) DeleteSchemaRevision(_ context.Context, req *pb.DeleteSchemaRevisionRequest) (*pb.Schema, error) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	if handled, ret, err := s.runReactor(req, "DeleteSchemaRevision", &pb.Schema{}); handled || err != nil {
+		return ret.(*pb.Schema), err
+	}
+
+	schemaPath := strings.Split(req.Name, "@")
+	if len(schemaPath) != 2 {
+		return nil, status.Errorf(codes.InvalidArgument, "could not parse revision ID from schema name: %q", req.Name)
+	}
+	schemaName := schemaPath[0]
+	revID := schemaPath[1]
+	schemaRevisions, ok := s.schemas[schemaName]
+	if ok {
+		if len(schemaRevisions) == 1 {
+			return nil, status.Errorf(codes.InvalidArgument, "cannot delete last revision for schema %q", req.Name)
+		}
+		for i, sc := range schemaRevisions {
+			if sc.RevisionId == revID {
+				s.schemas[schemaName] = append(schemaRevisions[:i], schemaRevisions[i+1:]...)
+				return schemaRevisions[len(schemaRevisions)-1], nil
+			}
+		}
+	}
+
+	return nil, status.Errorf(codes.NotFound, "schema %q not found", req.Name)
 }
 
 func (s *GServer) DeleteSchema(_ context.Context, req *pb.DeleteSchemaRequest) (*emptypb.Empty, error) {
@@ -1479,7 +1645,8 @@ func (s *GServer) ValidateMessage(_ context.Context, req *pb.ValidateMessageRequ
 		if !ok {
 			return nil, status.Errorf(codes.NotFound, "schema(%q) not found", valReq.Name)
 		}
-		if sc.Definition == "" {
+		schema := sc[len(sc)-1]
+		if schema.Definition == "" {
 			return nil, status.Error(codes.InvalidArgument, "schema definition cannot be empty")
 		}
 	}

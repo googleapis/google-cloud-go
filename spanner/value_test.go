@@ -22,6 +22,7 @@ import (
 	"math"
 	"math/big"
 	"reflect"
+	"strconv"
 	"testing"
 	"time"
 
@@ -30,6 +31,7 @@ import (
 	sppb "cloud.google.com/go/spanner/apiv1/spannerpb"
 	"github.com/golang/protobuf/proto"
 	proto3 "github.com/golang/protobuf/ptypes/struct"
+	structpb "github.com/golang/protobuf/ptypes/struct"
 	"github.com/google/go-cmp/cmp"
 )
 
@@ -192,6 +194,30 @@ func (c *customStructToNull) DecodeSpanner(val interface{}) (err error) {
 		return nil
 	}
 	return fmt.Errorf("val mismatch: expected nil, got %v", val)
+}
+
+// e.g. a clock face time HH:MM
+type customArray [4]uint8
+
+// Convert to customArray from structpb.ListValue<structpb.StringValue>
+func (c *customArray) DecodeSpanner(val interface{}) error {
+	listVal, ok := val.(*structpb.ListValue)
+	if !ok {
+		return fmt.Errorf("failed to decode customArray: unexpected type of %v", val)
+	}
+	asSlice := listVal.AsSlice()
+	if len(asSlice) != 4 {
+		return fmt.Errorf("failed to decode customArray: expected array of length 4")
+	}
+	for i, vI := range asSlice {
+		vStr, ok := vI.(string)
+		if !ok {
+			return fmt.Errorf("failed to decode customArray: got non string value: %v", vI)
+		}
+		vInt, _ := strconv.Atoi(vStr)
+		c[i] = uint8(vInt)
+	}
+	return nil
 }
 
 // Test encoding Values.
@@ -1801,6 +1827,8 @@ func TestDecodeValue(t *testing.T) {
 		{desc: "decode NULL array of bool to CustomStructToNull", proto: nullProto(), protoType: listType(boolType()), want: customStructToNull{}},
 		{desc: "decode NULL array of float to CustomStructToNull", proto: nullProto(), protoType: listType(floatType()), want: customStructToNull{}},
 		{desc: "decode NULL array of string to CustomStructToNull", proto: nullProto(), protoType: listType(stringType()), want: customStructToNull{}},
+		// CUSTOM ARRAY
+		{desc: "decode ARRAY<INT64> to CustomArray", proto: listProto(intProto(0), intProto(6), intProto(3), intProto(5)), protoType: listType(intType()), want: customArray([4]uint8{0, 6, 3, 5})},
 	} {
 		gotp := reflect.New(reflect.TypeOf(test.want))
 		v := gotp.Interface()

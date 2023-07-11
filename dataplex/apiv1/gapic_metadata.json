@@ -84,6 +84,85 @@
         }
       }
     },
+    "DataScanService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "DataScanClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateDataScan": {
+              "methods": [
+                "CreateDataScan"
+              ]
+            },
+            "DeleteDataScan": {
+              "methods": [
+                "DeleteDataScan"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetDataScan": {
+              "methods": [
+                "GetDataScan"
+              ]
+            },
+            "GetDataScanJob": {
+              "methods": [
+                "GetDataScanJob"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListDataScanJobs": {
+              "methods": [
+                "ListDataScanJobs"
+              ]
+            },
+            "ListDataScans": {
+              "methods": [
+                "ListDataScans"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "RunDataScan": {
+              "methods": [
+                "RunDataScan"
+              ]
+            },
+            "UpdateDataScan": {
+              "methods": [
+                "UpdateDataScan"
+              ]
+            }
+          }
+        }
+      }
+    },
     "DataplexService": {
       "clients": {
         "grpc": {
@@ -252,6 +331,11 @@
             "ListZones": {
               "methods": [
                 "ListZones"
+              ]
+            },
+            "RunTask": {
+              "methods": [
+                "RunTask"
               ]
             },
             "UpdateAsset": {

@@ -56,6 +56,56 @@
               ]
             }
           }
+        },
+        "rest": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "CreateKey": {
+              "methods": [
+                "CreateKey"
+              ]
+            },
+            "DeleteKey": {
+              "methods": [
+                "DeleteKey"
+              ]
+            },
+            "GetKey": {
+              "methods": [
+                "GetKey"
+              ]
+            },
+            "GetKeyString": {
+              "methods": [
+                "GetKeyString"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListKeys": {
+              "methods": [
+                "ListKeys"
+              ]
+            },
+            "LookupKey": {
+              "methods": [
+                "LookupKey"
+              ]
+            },
+            "UndeleteKey": {
+              "methods": [
+                "UndeleteKey"
+              ]
+            },
+            "UpdateKey": {
+              "methods": [
+                "UpdateKey"
+              ]
+            }
+          }
         }
       }
     }

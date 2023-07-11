@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,6 +16,11 @@
 
 // Package compute is an auto-generated package for the
 // Google Compute Engine API.
+//
+// # General documentation
+//
+// For information about setting deadlines, reusing contexts, and more
+// please visit https://pkg.go.dev/cloud.google.com/go.
 //
 // # Example usage
 //
@@ -70,6 +75,11 @@
 //		_ = resp
 //	}
 //
+// # Inspecting errors
+//
+// To see examples of how to inspect errors returned by this package please reference
+// [Inspecting errors](https://pkg.go.dev/cloud.google.com/go#hdr-Inspecting_errors).
+//
 // # Use of Context
 //
 // The ctx passed to NewAcceleratorTypesClient is used for authentication requests and
@@ -77,20 +87,11 @@
 // Individual methods on the client use the ctx given to them.
 //
 // To close the open connection, use the Close() method.
-//
-// For information about setting deadlines, reusing contexts, and more
-// please visit https://pkg.go.dev/cloud.google.com/go.
 package compute // import "cloud.google.com/go/compute/apiv1"
 
 import (
 	"context"
-	"fmt"
 	"net/http"
-	"os"
-	"runtime"
-	"strconv"
-	"strings"
-	"unicode"
 
 	"google.golang.org/api/option"
 	"google.golang.org/grpc/metadata"
@@ -121,16 +122,6 @@ func insertMetadata(ctx context.Context, mds ...metadata.MD) context.Context {
 	return metadata.NewOutgoingContext(ctx, out)
 }
 
-func checkDisableDeadlines() (bool, error) {
-	raw, ok := os.LookupEnv("GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE")
-	if !ok {
-		return false, nil
-	}
-
-	b, err := strconv.ParseBool(raw)
-	return b, err
-}
-
 // DefaultAuthScopes reports the default set of authentication scopes to use with this package.
 func DefaultAuthScopes() []string {
 	return []string{
@@ -138,52 +129,6 @@ func DefaultAuthScopes() []string {
 		"https://www.googleapis.com/auth/compute",
 		"https://www.googleapis.com/auth/compute.readonly",
 	}
-}
-
-// versionGo returns the Go runtime version. The returned string
-// has no whitespace, suitable for reporting in header.
-func versionGo() string {
-	const develPrefix = "devel +"
-
-	s := runtime.Version()
-	if strings.HasPrefix(s, develPrefix) {
-		s = s[len(develPrefix):]
-		if p := strings.IndexFunc(s, unicode.IsSpace); p >= 0 {
-			s = s[:p]
-		}
-		return s
-	}
-
-	notSemverRune := func(r rune) bool {
-		return !strings.ContainsRune("0123456789.", r)
-	}
-
-	if strings.HasPrefix(s, "go1") {
-		s = s[2:]
-		var prerelease string
-		if p := strings.IndexFunc(s, notSemverRune); p >= 0 {
-			s, prerelease = s[:p], s[p:]
-		}
-		if strings.HasSuffix(s, ".") {
-			s += "0"
-		} else if strings.Count(s, ".") < 2 {
-			s += ".0"
-		}
-		if prerelease != "" {
-			s += "-" + prerelease
-		}
-		return s
-	}
-	return "UNKNOWN"
-}
-
-// maybeUnknownEnum wraps the given proto-JSON parsing error if it is the result
-// of receiving an unknown enum value.
-func maybeUnknownEnum(err error) error {
-	if strings.Contains(err.Error(), "invalid value for enum type") {
-		err = fmt.Errorf("received an unknown enum value; a later version of the library may support it: %w", err)
-	}
-	return err
 }
 
 // buildHeaders extracts metadata from the outgoing context, joins it with any other

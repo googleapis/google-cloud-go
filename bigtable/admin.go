@@ -40,8 +40,9 @@ import (
 	gtransport "google.golang.org/api/transport/grpc"
 	btapb "google.golang.org/genproto/googleapis/bigtable/admin/v2"
 	"google.golang.org/genproto/googleapis/rpc/status"
-	"google.golang.org/genproto/protobuf/field_mask"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/protobuf/types/known/durationpb"
+	field_mask "google.golang.org/protobuf/types/known/fieldmaskpb"
 )
 
 const adminAddr = "bigtableadmin.googleapis.com:443"
@@ -211,6 +212,11 @@ func (ac *AdminClient) Tables(ctx context.Context) ([]string, error) {
 	return names, nil
 }
 
+// ChangeStreamRetention indicates how long bigtable should retain change data.
+// Minimum is 1 day. Maximum is 7. nil to not change the retention period. 0 to
+// disable change stream retention.
+type ChangeStreamRetention optional.Duration
+
 // DeletionProtection indicates whether the table is protected against data loss
 // i.e. when set to protected, deleting the table, the column families in the table,
 // and the instance containing the table would be prohibited.
@@ -233,13 +239,14 @@ type TableConf struct {
 	Families map[string]GCPolicy
 	// DeletionProtection can be none, protected or unprotected
 	// set to protected to make the table protected against data loss
-	DeletionProtection DeletionProtection
+	DeletionProtection    DeletionProtection
+	ChangeStreamRetention ChangeStreamRetention
 }
 
 // CreateTable creates a new table in the instance.
 // This method may return before the table's creation is complete.
 func (ac *AdminClient) CreateTable(ctx context.Context, table string) error {
-	return ac.CreateTableFromConf(ctx, &TableConf{TableID: table, DeletionProtection: None})
+	return ac.CreateTableFromConf(ctx, &TableConf{TableID: table, ChangeStreamRetention: nil, DeletionProtection: None})
 }
 
 // CreatePresplitTable creates a new table in the instance.
@@ -248,7 +255,7 @@ func (ac *AdminClient) CreateTable(ctx context.Context, table string) error {
 // spanning the key ranges: [, s1), [s1, s2), [s2, ).
 // This method may return before the table's creation is complete.
 func (ac *AdminClient) CreatePresplitTable(ctx context.Context, table string, splitKeys []string) error {
-	return ac.CreateTableFromConf(ctx, &TableConf{TableID: table, SplitKeys: splitKeys, DeletionProtection: None})
+	return ac.CreateTableFromConf(ctx, &TableConf{TableID: table, SplitKeys: splitKeys, ChangeStreamRetention: nil, DeletionProtection: None})
 }
 
 // CreateTableFromConf creates a new table in the instance from the given configuration.
@@ -268,6 +275,10 @@ func (ac *AdminClient) CreateTableFromConf(ctx context.Context, conf *TableConf)
 		tbl.DeletionProtection = true
 	} else if conf.DeletionProtection == Unprotected {
 		tbl.DeletionProtection = false
+	}
+	if conf.ChangeStreamRetention != nil && conf.ChangeStreamRetention.(time.Duration) != 0 {
+		tbl.ChangeStreamConfig = &btapb.ChangeStreamConfig{}
+		tbl.ChangeStreamConfig.RetentionPeriod = durationpb.New(conf.ChangeStreamRetention.(time.Duration))
 	}
 	if conf.Families != nil {
 		tbl.ColumnFamilies = make(map[string]*btapb.ColumnFamily)
@@ -307,12 +318,23 @@ type UpdateTableConf struct {
 	tableID string
 	// deletionProtection can be unset, true or false
 	// set to true to make the table protected against data loss
-	deletionProtection DeletionProtection
+	deletionProtection    DeletionProtection
+	changeStreamRetention ChangeStreamRetention
+}
+
+// UpdateTableDisableChangeStream updates a table to disable change stream for table ID.
+func (ac *AdminClient) UpdateTableDisableChangeStream(ctx context.Context, tableID string) error {
+	return ac.updateTableWithConf(ctx, &UpdateTableConf{tableID, None, time.Duration(0)})
+}
+
+// UpdateTableWithChangeStream updates a table to with the given table ID and change stream config.
+func (ac *AdminClient) UpdateTableWithChangeStream(ctx context.Context, tableID string, changeStreamRetention ChangeStreamRetention) error {
+	return ac.updateTableWithConf(ctx, &UpdateTableConf{tableID, None, changeStreamRetention})
 }
 
 // UpdateTableWithDeletionProtection updates a table with the given table ID and deletion protection parameter.
 func (ac *AdminClient) UpdateTableWithDeletionProtection(ctx context.Context, tableID string, deletionProtection DeletionProtection) error {
-	return ac.updateTableWithConf(ctx, &UpdateTableConf{tableID, deletionProtection})
+	return ac.updateTableWithConf(ctx, &UpdateTableConf{tableID, deletionProtection, nil})
 }
 
 // updateTableWithConf updates a table in the instance from the given configuration.
@@ -323,30 +345,34 @@ func (ac *AdminClient) updateTableWithConf(ctx context.Context, conf *UpdateTabl
 		return errors.New("TableID is required")
 	}
 
-	if conf.deletionProtection == None {
-		return errors.New("deletion protection is required")
-	}
-
 	ctx = mergeOutgoingMetadata(ctx, ac.md)
 
 	updateMask := &field_mask.FieldMask{
-		Paths: []string{
-			"deletion_protection",
-		},
-	}
-
-	deletionProtection := true
-	if conf.deletionProtection == Unprotected {
-		deletionProtection = false
+		Paths: []string{},
 	}
 	prefix := ac.instancePrefix()
 	req := &btapb.UpdateTableRequest{
 		Table: &btapb.Table{
-			Name:               prefix + "/tables/" + conf.tableID,
-			DeletionProtection: deletionProtection,
+			Name: prefix + "/tables/" + conf.tableID,
 		},
 		UpdateMask: updateMask,
 	}
+
+	if conf.deletionProtection != None {
+		updateMask.Paths = append(updateMask.Paths, "deletion_protection")
+		req.Table.DeletionProtection = conf.deletionProtection != Unprotected
+	}
+
+	if conf.changeStreamRetention != nil {
+		if conf.changeStreamRetention.(time.Duration) == time.Duration(0) {
+			updateMask.Paths = append(updateMask.Paths, "change_stream_config")
+		} else {
+			updateMask.Paths = append(updateMask.Paths, "change_stream_config.retention_period")
+			req.Table.ChangeStreamConfig = &btapb.ChangeStreamConfig{}
+			req.Table.ChangeStreamConfig.RetentionPeriod = durationpb.New(conf.changeStreamRetention.(time.Duration))
+		}
+	}
+
 	lro, err := ac.tClient.UpdateTable(ctx, req)
 	if err != nil {
 		return fmt.Errorf("error from update: %w", err)
@@ -394,7 +420,8 @@ type TableInfo struct {
 	// DeletionProtection indicates whether the table is protected against data loss
 	// DeletionProtection could be None depending on the table view
 	// for example when using NAME_ONLY, the response does not contain DeletionProtection and the value should be None
-	DeletionProtection DeletionProtection
+	DeletionProtection    DeletionProtection
+	ChangeStreamRetention ChangeStreamRetention
 }
 
 // FamilyInfo represents information about a column family.
@@ -450,6 +477,10 @@ func (ac *AdminClient) TableInfo(ctx context.Context, table string) (*TableInfo,
 	} else {
 		ti.DeletionProtection = Unprotected
 	}
+	if res.ChangeStreamConfig != nil && res.ChangeStreamConfig.RetentionPeriod != nil {
+		ti.ChangeStreamRetention = res.ChangeStreamConfig.RetentionPeriod.AsDuration()
+	}
+
 	return ti, nil
 }
 

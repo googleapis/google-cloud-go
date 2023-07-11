@@ -1,6 +1,62 @@
 # Changes
 
 
+## [1.11.0](https://github.com/googleapis/google-cloud-go/compare/deploy/v1.10.1...deploy/v1.11.0) (2023-06-27)
+
+
+### Features
+
+* **deploy:** Add deploy parameters for cloud deploy ([94ea341](https://github.com/googleapis/google-cloud-go/commit/94ea3410e233db6040a7cb0a931948f1e3bb4c9a))
+
+## [1.10.1](https://github.com/googleapis/google-cloud-go/compare/deploy/v1.10.0...deploy/v1.10.1) (2023-06-20)
+
+
+### Bug Fixes
+
+* **deploy:** REST query UpdateMask bug ([df52820](https://github.com/googleapis/google-cloud-go/commit/df52820b0e7721954809a8aa8700b93c5662dc9b))
+
+## [1.10.0](https://github.com/googleapis/google-cloud-go/compare/deploy/v1.9.0...deploy/v1.10.0) (2023-06-07)
+
+
+### Features
+
+* **deploy:** Add support for disabling Pod overprovisioning in the progressive deployment strategy configuration for a Kubernetes Target ([#8052](https://github.com/googleapis/google-cloud-go/issues/8052)) ([f2c3dd3](https://github.com/googleapis/google-cloud-go/commit/f2c3dd38fce43f15f4d3a4da5d621de79e174475))
+
+## [1.9.0](https://github.com/googleapis/google-cloud-go/compare/deploy/v1.8.1...deploy/v1.9.0) (2023-05-30)
+
+
+### Features
+
+* **deploy:** Update all direct dependencies ([b340d03](https://github.com/googleapis/google-cloud-go/commit/b340d030f2b52a4ce48846ce63984b28583abde6))
+
+## [1.8.1](https://github.com/googleapis/google-cloud-go/compare/deploy/v1.8.0...deploy/v1.8.1) (2023-05-08)
+
+
+### Bug Fixes
+
+* **deploy:** Update grpc to v1.55.0 ([1147ce0](https://github.com/googleapis/google-cloud-go/commit/1147ce02a990276ca4f8ab7a1ab65c14da4450ef))
+
+## [1.8.0](https://github.com/googleapis/google-cloud-go/compare/deploy/v1.7.0...deploy/v1.8.0) (2023-03-22)
+
+
+### Features
+
+* **deploy:** Added supported for Cloud Deploy Progressive Deployment Strategy ([c967961](https://github.com/googleapis/google-cloud-go/commit/c967961ed95750e173af0193ec8d0974471f43ff))
+
+## [1.7.0](https://github.com/googleapis/google-cloud-go/compare/deploy/v1.6.0...deploy/v1.7.0) (2023-03-15)
+
+
+### Features
+
+* **deploy:** Update iam and longrunning deps ([91a1f78](https://github.com/googleapis/google-cloud-go/commit/91a1f784a109da70f63b96414bba8a9b4254cddd))
+
+## [1.6.0](https://github.com/googleapis/google-cloud-go/compare/deploy/v1.5.0...deploy/v1.6.0) (2023-01-04)
+
+
+### Features
+
+* **deploy:** Add REST client ([06a54a1](https://github.com/googleapis/google-cloud-go/commit/06a54a16a5866cce966547c51e203b9e09a25bc0))
+
 ## [1.5.0](https://github.com/googleapis/google-cloud-go/compare/deploy/v1.4.0...deploy/v1.5.0) (2022-11-03)
 
 

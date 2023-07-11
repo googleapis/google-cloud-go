@@ -16,7 +16,7 @@ package proxy
 
 import (
 	"bytes"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/url"
 	"testing"
@@ -46,7 +46,7 @@ func TestConvertRequest(t *testing.T) {
 	in := &http.Request{
 		Method: "GET",
 		URL:    url,
-		Body:   ioutil.NopCloser(bytes.NewReader(body)),
+		Body:   io.NopCloser(bytes.NewReader(body)),
 		Header: http.Header{
 			"Content-Type":                      {"text/plain"},
 			"Authorization":                     {"oauth2-token"},
