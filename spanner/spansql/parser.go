@@ -1208,7 +1208,7 @@ func (p *parser) parseCreateIndex() (*CreateIndex, *parseError) {
 	debugf("parseCreateIndex: %v", p)
 
 	/*
-		CREATE [UNIQUE] [NULL_FILTERED] INDEX index_name
+		CREATE [UNIQUE] [NULL_FILTERED] INDEX [IF NOT EXISTS] index_name
 			ON table_name ( key_part [, ...] ) [ storing_clause ] [ , interleave_clause ]
 
 		index_name:
@@ -1221,7 +1221,7 @@ func (p *parser) parseCreateIndex() (*CreateIndex, *parseError) {
 			INTERLEAVE IN table_name
 	*/
 
-	var unique, nullFiltered bool
+	var unique, nullFiltered, ifNotExists bool
 
 	if err := p.expect("CREATE"); err != nil {
 		return nil, err
@@ -1235,6 +1235,9 @@ func (p *parser) parseCreateIndex() (*CreateIndex, *parseError) {
 	}
 	if err := p.expect("INDEX"); err != nil {
 		return nil, err
+	}
+	if p.eat("IF", "NOT", "EXISTS") {
+		ifNotExists = true
 	}
 	iname, err := p.parseTableOrIndexOrColumnName()
 	if err != nil {
@@ -1253,6 +1256,7 @@ func (p *parser) parseCreateIndex() (*CreateIndex, *parseError) {
 
 		Unique:       unique,
 		NullFiltered: nullFiltered,
+		IfNotExists:  ifNotExists,
 
 		Position: pos,
 	}

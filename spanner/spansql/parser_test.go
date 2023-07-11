@@ -1503,6 +1503,23 @@ func TestParseDDL(t *testing.T) {
 				},
 			},
 		},
+		{
+			`CREATE INDEX IF NOT EXISTS iname ON tname (cname)`,
+			&DDL{
+				Filename: "filename",
+				List: []DDLStmt{
+					&CreateIndex{
+						Name:        "iname",
+						IfNotExists: true,
+						Table:       "tname",
+						Columns: []KeyPart{
+							{Column: "cname"},
+						},
+						Position: line(1),
+					},
+				},
+			},
+		},
 	}
 	for _, test := range tests {
 		got, err := ParseDDL("filename", test.in)

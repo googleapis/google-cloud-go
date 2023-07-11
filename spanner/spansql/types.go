@@ -107,6 +107,7 @@ type CreateIndex struct {
 
 	Unique       bool
 	NullFiltered bool
+	IfNotExists  bool
 
 	Storing    []ID
 	Interleave ID

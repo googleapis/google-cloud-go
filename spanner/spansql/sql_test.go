@@ -675,6 +675,19 @@ func TestSQL(t *testing.T) {
 			reparseDDL,
 		},
 		{
+			&CreateIndex{
+				Name:  "Ia",
+				Table: "Ta",
+				Columns: []KeyPart{
+					{Column: "Ca"},
+				},
+				IfNotExists: true,
+				Position:    line(1),
+			},
+			"CREATE INDEX IF NOT EXISTS Ia ON Ta(Ca)",
+			reparseDDL,
+		},
+		{
 			&Insert{
 				Table:   "Singers",
 				Columns: []ID{ID("SingerId"), ID("FirstName"), ID("LastName")},

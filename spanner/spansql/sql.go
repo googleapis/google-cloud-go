@@ -74,7 +74,11 @@ func (ci CreateIndex) SQL() string {
 	if ci.NullFiltered {
 		str += " NULL_FILTERED"
 	}
-	str += " INDEX " + ci.Name.SQL() + " ON " + ci.Table.SQL() + "("
+	str += " INDEX "
+	if ci.IfNotExists {
+		str += "IF NOT EXISTS "
+	}
+	str += ci.Name.SQL() + " ON " + ci.Table.SQL() + "("
 	for i, c := range ci.Columns {
 		if i > 0 {
 			str += ", "
