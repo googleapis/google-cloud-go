@@ -497,17 +497,23 @@ func TestIntegration_CancelReceive(t *testing.T) {
 	client := integrationTestClient(ctx, t)
 	defer client.Close()
 
-	topic, err := client.CreateTopic(ctx, topicIDs.New())
-	if err != nil {
-		t.Fatal(err)
-	}
+	var topic *Topic
+	var err error
+	testutil.Retry(t, 5, 1*time.Second, func(r *testutil.R) {
+		topic, err = client.CreateTopic(ctx, topicIDs.New())
+		if err != nil {
+			r.Errorf("failed to create topic: %v", err)
+		}
+	})
 	defer topic.Delete(ctx)
 	defer topic.Stop()
 
 	var sub *Subscription
-	if sub, err = client.CreateSubscription(ctx, subIDs.New(), SubscriptionConfig{Topic: topic}); err != nil {
-		t.Fatal(err)
-	}
+	testutil.Retry(t, 5, 1*time.Second, func(r *testutil.R) {
+		if sub, err = client.CreateSubscription(ctx, subIDs.New(), SubscriptionConfig{Topic: topic}); err != nil {
+			r.Errorf("failed to create subscription: %v", err)
+		}
+	})
 	defer sub.Delete(ctx)
 
 	sub.ReceiveSettings.MaxOutstandingMessages = -1
