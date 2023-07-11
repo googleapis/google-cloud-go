@@ -1,5 +1,21 @@
 # Changes
 
+## [1.19.0](https://github.com/googleapis/google-cloud-go/compare/bigtable/v1.18.1...bigtable/v1.19.0) (2023-07-06)
+
+
+### Features
+
+* **bigtable:** Add change stream config to create and update table ([#8180](https://github.com/googleapis/google-cloud-go/issues/8180)) ([32897ce](https://github.com/googleapis/google-cloud-go/commit/32897cec9be7413fa09b403199980e782ae52107))
+* **bigtable:** Update all direct dependencies ([b340d03](https://github.com/googleapis/google-cloud-go/commit/b340d030f2b52a4ce48846ce63984b28583abde6))
+* **bigtable:** Update iam and longrunning deps ([91a1f78](https://github.com/googleapis/google-cloud-go/commit/91a1f784a109da70f63b96414bba8a9b4254cddd))
+
+
+### Bug Fixes
+
+* **bigtable:** REST query UpdateMask bug ([df52820](https://github.com/googleapis/google-cloud-go/commit/df52820b0e7721954809a8aa8700b93c5662dc9b))
+* **bigtable:** Update grpc to v1.55.0 ([1147ce0](https://github.com/googleapis/google-cloud-go/commit/1147ce02a990276ca4f8ab7a1ab65c14da4450ef))
+* **bigtable:** Use fieldmask directly instead of field_mask genproto alias ([#8032](https://github.com/googleapis/google-cloud-go/issues/8032)) ([cae6cd6](https://github.com/googleapis/google-cloud-go/commit/cae6cd6d0e09e98157879fb03fb23f718f4d2bb3))
+
 ## [1.18.1](https://github.com/googleapis/google-cloud-go/compare/bigtable/v1.18.0...bigtable/v1.18.1) (2022-12-02)
 
 

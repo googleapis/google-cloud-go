@@ -1,5 +1,12 @@
 # Changes
 
+## [1.23.0](https://github.com/googleapis/google-cloud-go/compare/container/v1.22.1...container/v1.23.0) (2023-07-10)
+
+
+### Features
+
+* **container:** Add `KUBE_DNS` option to `DNSConfig.cluster_dns` ([#8183](https://github.com/googleapis/google-cloud-go/issues/8183)) ([a3ec3cf](https://github.com/googleapis/google-cloud-go/commit/a3ec3cf858c7d9154338ac4cd8a9a068dc7a7f4d))
+
 ## [1.22.1](https://github.com/googleapis/google-cloud-go/compare/container/v1.22.0...container/v1.22.1) (2023-06-20)
 
 
