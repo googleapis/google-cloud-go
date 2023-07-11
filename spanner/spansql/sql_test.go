@@ -688,6 +688,18 @@ func TestSQL(t *testing.T) {
 			reparseDDL,
 		},
 		{
+			&AlterTable{
+				Name: "tname",
+				Alteration: AddColumn{
+					IfNotExists: true,
+					Def:         ColumnDef{Name: "cname", Type: Type{Base: String, Len: 64}, Position: line(1)},
+				},
+				Position: line(1),
+			},
+			"ALTER TABLE tname ADD COLUMN IF NOT EXISTS cname STRING(64)",
+			reparseDDL,
+		},
+		{
 			&Insert{
 				Table:   "Singers",
 				Columns: []ID{ID("SingerId"), ID("FirstName"), ID("LastName")},

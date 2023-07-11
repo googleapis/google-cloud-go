@@ -266,7 +266,12 @@ func (at AlterTable) SQL() string {
 }
 
 func (ac AddColumn) SQL() string {
-	return "ADD COLUMN " + ac.Def.SQL()
+	str := "ADD COLUMN "
+	if ac.IfNotExists {
+		str += "IF NOT EXISTS "
+	}
+	str += ac.Def.SQL()
+	return str
 }
 
 func (dc DropColumn) SQL() string {

@@ -286,7 +286,10 @@ func (ReplaceRowDeletionPolicy) isTableAlteration() {}
 func (DropRowDeletionPolicy) isTableAlteration()    {}
 
 type (
-	AddColumn      struct{ Def ColumnDef }
+	AddColumn struct {
+		IfNotExists bool
+		Def         ColumnDef
+	}
 	DropColumn     struct{ Name ID }
 	AddConstraint  struct{ Constraint TableConstraint }
 	DropConstraint struct{ Name ID }

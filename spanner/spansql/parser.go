@@ -1535,7 +1535,7 @@ func (p *parser) parseAlterTable() (*AlterTable, *parseError) {
 			ALTER TABLE table_name { table_alteration | table_column_alteration }
 
 		table_alteration:
-			{ ADD [ COLUMN ] column_def
+			{ ADD [ COLUMN ] [ IF NOT EXISTS ] column_def
 			| DROP [ COLUMN ] column_name
 			| ADD table_constraint
 			| DROP CONSTRAINT constraint_name
@@ -1588,11 +1588,15 @@ func (p *parser) parseAlterTable() (*AlterTable, *parseError) {
 		if err := p.expect("COLUMN"); err != nil {
 			return nil, err
 		}
+		var ifNotExists bool
+		if p.eat("IF", "NOT", "EXISTS") {
+			ifNotExists = true
+		}
 		cd, err := p.parseColumnDef()
 		if err != nil {
 			return nil, err
 		}
-		a.Alteration = AddColumn{Def: cd}
+		a.Alteration = AddColumn{Def: cd, IfNotExists: ifNotExists}
 		return a, nil
 	case tok.caseEqual("DROP"):
 		if p.eat("CONSTRAINT") {

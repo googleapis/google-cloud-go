@@ -1520,6 +1520,22 @@ func TestParseDDL(t *testing.T) {
 				},
 			},
 		},
+		{
+			`ALTER TABLE tname ADD COLUMN IF NOT EXISTS cname STRING(64)`,
+			&DDL{
+				Filename: "filename",
+				List: []DDLStmt{
+					&AlterTable{
+						Name: "tname",
+						Alteration: AddColumn{
+							IfNotExists: true,
+							Def:         ColumnDef{Name: "cname", Type: Type{Base: String, Len: 64}, Position: line(1)},
+						},
+						Position: line(1),
+					},
+				},
+			},
+		},
 	}
 	for _, test := range tests {
 		got, err := ParseDDL("filename", test.in)
