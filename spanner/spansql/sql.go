@@ -146,11 +146,21 @@ func (w WatchDef) SQL() string {
 }
 
 func (dt DropTable) SQL() string {
-	return "DROP TABLE " + dt.Name.SQL()
+	str := "DROP TABLE "
+	if dt.IfExists {
+		str += "IF EXISTS "
+	}
+	str += dt.Name.SQL()
+	return str
 }
 
 func (di DropIndex) SQL() string {
-	return "DROP INDEX " + di.Name.SQL()
+	str := "DROP INDEX "
+	if di.IfExists {
+		str += "IF EXISTS "
+	}
+	str += di.Name.SQL()
+	return str
 }
 
 func (dv DropView) SQL() string {

@@ -151,7 +151,8 @@ func (cr *CreateRole) clearOffset()   { cr.Position.Offset = 0 }
 // DropTable represents a DROP TABLE statement.
 // https://cloud.google.com/spanner/docs/data-definition-language#drop_table
 type DropTable struct {
-	Name ID
+	Name     ID
+	IfExists bool
 
 	Position Position // position of the "DROP" token
 }
@@ -164,7 +165,8 @@ func (dt *DropTable) clearOffset()   { dt.Position.Offset = 0 }
 // DropIndex represents a DROP INDEX statement.
 // https://cloud.google.com/spanner/docs/data-definition-language#drop-index
 type DropIndex struct {
-	Name ID
+	Name     ID
+	IfExists bool
 
 	Position Position // position of the "DROP" token
 }

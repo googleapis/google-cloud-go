@@ -1536,6 +1536,25 @@ func TestParseDDL(t *testing.T) {
 				},
 			},
 		},
+		{
+			`DROP TABLE IF EXISTS tname;
+			DROP INDEX IF EXISTS iname;`,
+			&DDL{
+				Filename: "filename",
+				List: []DDLStmt{
+					&DropTable{
+						Name:     "tname",
+						IfExists: true,
+						Position: line(1),
+					},
+					&DropIndex{
+						Name:     "iname",
+						IfExists: true,
+						Position: line(2),
+					},
+				},
+			},
+		},
 	}
 	for _, test := range tests {
 		got, err := ParseDDL("filename", test.in)

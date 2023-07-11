@@ -1005,8 +1005,8 @@ func (p *parser) parseDDLStmt() (DDLStmt, *parseError) {
 	} else if p.eat("DROP") {
 		pos := p.Pos()
 		// These statements are simple.
-		// DROP TABLE table_name
-		// DROP INDEX index_name
+		// DROP TABLE [ IF EXISTS ] table_name
+		// DROP INDEX [ IF EXISTS ] index_name
 		// DROP VIEW view_name
 		// DROP ROLE role_name
 		// DROP CHANGE STREAM change_stream_name
@@ -1018,17 +1018,25 @@ func (p *parser) parseDDLStmt() (DDLStmt, *parseError) {
 		default:
 			return nil, p.errorf("got %q, want TABLE, VIEW, INDEX or CHANGE", tok.value)
 		case tok.caseEqual("TABLE"):
+			var ifExists bool
+			if p.eat("IF", "EXISTS") {
+				ifExists = true
+			}
 			name, err := p.parseTableOrIndexOrColumnName()
 			if err != nil {
 				return nil, err
 			}
-			return &DropTable{Name: name, Position: pos}, nil
+			return &DropTable{Name: name, IfExists: ifExists, Position: pos}, nil
 		case tok.caseEqual("INDEX"):
+			var ifExists bool
+			if p.eat("IF", "EXISTS") {
+				ifExists = true
+			}
 			name, err := p.parseTableOrIndexOrColumnName()
 			if err != nil {
 				return nil, err
 			}
-			return &DropIndex{Name: name, Position: pos}, nil
+			return &DropIndex{Name: name, IfExists: ifExists, Position: pos}, nil
 		case tok.caseEqual("VIEW"):
 			name, err := p.parseTableOrIndexOrColumnName()
 			if err != nil {

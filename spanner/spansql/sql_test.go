@@ -700,6 +700,24 @@ func TestSQL(t *testing.T) {
 			reparseDDL,
 		},
 		{
+			&DropTable{
+				Name:     "tname",
+				IfExists: true,
+				Position: line(1),
+			},
+			"DROP TABLE IF EXISTS tname",
+			reparseDDL,
+		},
+		{
+			&DropIndex{
+				Name:     "iname",
+				IfExists: true,
+				Position: line(1),
+			},
+			"DROP INDEX IF EXISTS iname",
+			reparseDDL,
+		},
+		{
 			&Insert{
 				Table:   "Singers",
 				Columns: []ID{ID("SingerId"), ID("FirstName"), ID("LastName")},
