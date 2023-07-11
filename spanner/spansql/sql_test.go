@@ -656,6 +656,25 @@ func TestSQL(t *testing.T) {
 			reparseDDL,
 		},
 		{
+			&CreateTable{
+				Name:        "tname",
+				IfNotExists: true,
+				Columns: []ColumnDef{
+					{Name: "id", Type: Type{Base: Int64}, Position: line(2)},
+					{Name: "name", Type: Type{Base: String, Len: 64}, Position: line(3)},
+				},
+				PrimaryKey: []KeyPart{
+					{Column: "id"},
+				},
+				Position: line(1),
+			},
+			`CREATE TABLE IF NOT EXISTS tname (
+  id INT64,
+  name STRING(64),
+) PRIMARY KEY(id)`,
+			reparseDDL,
+		},
+		{
 			&Insert{
 				Table:   "Singers",
 				Columns: []ID{ID("SingerId"), ID("FirstName"), ID("LastName")},

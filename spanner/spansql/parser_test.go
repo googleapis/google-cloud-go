@@ -1483,6 +1483,26 @@ func TestParseDDL(t *testing.T) {
 				},
 			},
 		},
+		{
+			`CREATE TABLE IF NOT EXISTS tname (id INT64, name STRING(64)) PRIMARY KEY (id)`,
+			&DDL{
+				Filename: "filename",
+				List: []DDLStmt{
+					&CreateTable{
+						Name:        "tname",
+						IfNotExists: true,
+						Columns: []ColumnDef{
+							{Name: "id", Type: Type{Base: Int64}, Position: line(1)},
+							{Name: "name", Type: Type{Base: String, Len: 64}, Position: line(1)},
+						},
+						PrimaryKey: []KeyPart{
+							{Column: "id"},
+						},
+						Position: line(1),
+					},
+				},
+			},
+		},
 	}
 	for _, test := range tests {
 		got, err := ParseDDL("filename", test.in)

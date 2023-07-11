@@ -38,7 +38,11 @@ func buildSQL(x interface{ addSQL(*strings.Builder) }) string {
 }
 
 func (ct CreateTable) SQL() string {
-	str := "CREATE TABLE " + ct.Name.SQL() + " (\n"
+	str := "CREATE TABLE "
+	if ct.IfNotExists {
+		str += "IF NOT EXISTS "
+	}
+	str += ct.Name.SQL() + " (\n"
 	for _, c := range ct.Columns {
 		str += "  " + c.SQL() + ",\n"
 	}

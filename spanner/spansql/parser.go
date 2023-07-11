@@ -1081,7 +1081,7 @@ func (p *parser) parseCreateTable() (*CreateTable, *parseError) {
 	debugf("parseCreateTable: %v", p)
 
 	/*
-		CREATE TABLE table_name(
+		CREATE TABLE [ IF NOT EXISTS ] table_name(
 			[column_def, ...] [ table_constraint, ...] )
 			primary_key [, cluster]
 
@@ -1091,6 +1091,7 @@ func (p *parser) parseCreateTable() (*CreateTable, *parseError) {
 		cluster:
 			INTERLEAVE IN PARENT table_name [ ON DELETE { CASCADE | NO ACTION } ]
 	*/
+	var ifNotExists bool
 
 	if err := p.expect("CREATE"); err != nil {
 		return nil, err
@@ -1099,12 +1100,15 @@ func (p *parser) parseCreateTable() (*CreateTable, *parseError) {
 	if err := p.expect("TABLE"); err != nil {
 		return nil, err
 	}
+	if p.eat("IF", "NOT", "EXISTS") {
+		ifNotExists = true
+	}
 	tname, err := p.parseTableOrIndexOrColumnName()
 	if err != nil {
 		return nil, err
 	}
 
-	ct := &CreateTable{Name: tname, Position: pos}
+	ct := &CreateTable{Name: tname, Position: pos, IfNotExists: ifNotExists}
 	err = p.parseCommaList("(", ")", func(p *parser) *parseError {
 		if p.sniffTableConstraint() {
 			tc, err := p.parseTableConstraint()

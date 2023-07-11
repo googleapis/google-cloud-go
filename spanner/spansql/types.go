@@ -34,6 +34,7 @@ import (
 // https://cloud.google.com/spanner/docs/data-definition-language#create_table
 type CreateTable struct {
 	Name              ID
+	IfNotExists       bool
 	Columns           []ColumnDef
 	Constraints       []TableConstraint
 	PrimaryKey        []KeyPart
