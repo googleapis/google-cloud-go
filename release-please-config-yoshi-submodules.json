@@ -162,9 +162,6 @@
         "functions": {
             "component": "functions"
         },
-        "gaming": {
-            "component": "gaming"
-        },
         "gkebackup": {
             "component": "gkebackup"
         },

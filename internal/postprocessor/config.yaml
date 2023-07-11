@@ -56,7 +56,6 @@ modules:
   - filestore
   - firestore
   - functions
-  - gaming
   - gkebackup
   - gkeconnect
   - gkehub
@@ -511,12 +510,6 @@ service-configs:
   - input-directory: google/cloud/functions/v2beta
     service-config: cloudfunctions_v2beta.yaml
     import-path: cloud.google.com/go/functions/apiv2beta
-  - input-directory: google/cloud/gaming/v1
-    service-config: gameservices_v1.yaml
-    import-path: cloud.google.com/go/gaming/apiv1
-  - input-directory: google/cloud/gaming/v1beta
-    service-config: gameservices_v1beta.yaml
-    import-path: cloud.google.com/go/gaming/apiv1beta
   - input-directory: google/cloud/gkebackup/v1
     service-config: gkebackup_v1.yaml
     import-path: cloud.google.com/go/gkebackup/apiv1

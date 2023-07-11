@@ -60,7 +60,6 @@ use (
 	./filestore
 	./firestore
 	./functions
-	./gaming
 	./gkebackup
 	./gkeconnect
 	./gkehub
