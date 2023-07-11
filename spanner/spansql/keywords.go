@@ -203,7 +203,7 @@ var allFuncs = []string{
 	"SQRT",
 	"TAN",
 	"TANH",
-	"TRUNC",
+	//"TRUNC",
 
 	// Hash functions.
 	"FARM_FINGERPRINT",
