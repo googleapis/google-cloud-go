@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"math"
 	"net/http"
 	"net/url"
@@ -68,27 +68,59 @@ func defaultIdentityAwareProxyOAuthGRPCClientOptions() []option.ClientOption {
 
 func defaultIdentityAwareProxyOAuthCallOptions() *IdentityAwareProxyOAuthCallOptions {
 	return &IdentityAwareProxyOAuthCallOptions{
-		ListBrands:                          []gax.CallOption{},
-		CreateBrand:                         []gax.CallOption{},
-		GetBrand:                            []gax.CallOption{},
-		CreateIdentityAwareProxyClient:      []gax.CallOption{},
-		ListIdentityAwareProxyClients:       []gax.CallOption{},
-		GetIdentityAwareProxyClient:         []gax.CallOption{},
-		ResetIdentityAwareProxyClientSecret: []gax.CallOption{},
-		DeleteIdentityAwareProxyClient:      []gax.CallOption{},
+		ListBrands: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		CreateBrand: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetBrand: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		CreateIdentityAwareProxyClient: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ListIdentityAwareProxyClients: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetIdentityAwareProxyClient: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ResetIdentityAwareProxyClientSecret: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteIdentityAwareProxyClient: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 	}
 }
 
 func defaultIdentityAwareProxyOAuthRESTCallOptions() *IdentityAwareProxyOAuthCallOptions {
 	return &IdentityAwareProxyOAuthCallOptions{
-		ListBrands:                          []gax.CallOption{},
-		CreateBrand:                         []gax.CallOption{},
-		GetBrand:                            []gax.CallOption{},
-		CreateIdentityAwareProxyClient:      []gax.CallOption{},
-		ListIdentityAwareProxyClients:       []gax.CallOption{},
-		GetIdentityAwareProxyClient:         []gax.CallOption{},
-		ResetIdentityAwareProxyClientSecret: []gax.CallOption{},
-		DeleteIdentityAwareProxyClient:      []gax.CallOption{},
+		ListBrands: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		CreateBrand: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetBrand: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		CreateIdentityAwareProxyClient: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ListIdentityAwareProxyClients: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetIdentityAwareProxyClient: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ResetIdentityAwareProxyClientSecret: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteIdentityAwareProxyClient: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 	}
 }
 
@@ -204,9 +236,6 @@ type identityAwareProxyOAuthGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing IdentityAwareProxyOAuthClient
 	CallOptions **IdentityAwareProxyOAuthCallOptions
 
@@ -233,11 +262,6 @@ func NewIdentityAwareProxyOAuthClient(ctx context.Context, opts ...option.Client
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -246,7 +270,6 @@ func NewIdentityAwareProxyOAuthClient(ctx context.Context, opts ...option.Client
 
 	c := &identityAwareProxyOAuthGRPCClient{
 		connPool:                      connPool,
-		disableDeadlines:              disableDeadlines,
 		identityAwareProxyOAuthClient: iappb.NewIdentityAwareProxyOAuthServiceClient(connPool),
 		CallOptions:                   &client.CallOptions,
 	}
@@ -269,7 +292,7 @@ func (c *identityAwareProxyOAuthGRPCClient) Connection() *grpc.ClientConn {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *identityAwareProxyOAuthGRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -331,7 +354,7 @@ func defaultIdentityAwareProxyOAuthRESTClientOptions() []option.ClientOption {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *identityAwareProxyOAuthRESTClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -351,11 +374,6 @@ func (c *identityAwareProxyOAuthRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 func (c *identityAwareProxyOAuthGRPCClient) ListBrands(ctx context.Context, req *iappb.ListBrandsRequest, opts ...gax.CallOption) (*iappb.ListBrandsResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -373,11 +391,6 @@ func (c *identityAwareProxyOAuthGRPCClient) ListBrands(ctx context.Context, req 
 }
 
 func (c *identityAwareProxyOAuthGRPCClient) CreateBrand(ctx context.Context, req *iappb.CreateBrandRequest, opts ...gax.CallOption) (*iappb.Brand, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -395,11 +408,6 @@ func (c *identityAwareProxyOAuthGRPCClient) CreateBrand(ctx context.Context, req
 }
 
 func (c *identityAwareProxyOAuthGRPCClient) GetBrand(ctx context.Context, req *iappb.GetBrandRequest, opts ...gax.CallOption) (*iappb.Brand, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -417,11 +425,6 @@ func (c *identityAwareProxyOAuthGRPCClient) GetBrand(ctx context.Context, req *i
 }
 
 func (c *identityAwareProxyOAuthGRPCClient) CreateIdentityAwareProxyClient(ctx context.Context, req *iappb.CreateIdentityAwareProxyClientRequest, opts ...gax.CallOption) (*iappb.IdentityAwareProxyClient, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -484,11 +487,6 @@ func (c *identityAwareProxyOAuthGRPCClient) ListIdentityAwareProxyClients(ctx co
 }
 
 func (c *identityAwareProxyOAuthGRPCClient) GetIdentityAwareProxyClient(ctx context.Context, req *iappb.GetIdentityAwareProxyClientRequest, opts ...gax.CallOption) (*iappb.IdentityAwareProxyClient, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -506,11 +504,6 @@ func (c *identityAwareProxyOAuthGRPCClient) GetIdentityAwareProxyClient(ctx cont
 }
 
 func (c *identityAwareProxyOAuthGRPCClient) ResetIdentityAwareProxyClientSecret(ctx context.Context, req *iappb.ResetIdentityAwareProxyClientSecretRequest, opts ...gax.CallOption) (*iappb.IdentityAwareProxyClient, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -528,11 +521,6 @@ func (c *identityAwareProxyOAuthGRPCClient) ResetIdentityAwareProxyClientSecret(
 }
 
 func (c *identityAwareProxyOAuthGRPCClient) DeleteIdentityAwareProxyClient(ctx context.Context, req *iappb.DeleteIdentityAwareProxyClientRequest, opts ...gax.CallOption) error {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -586,13 +574,13 @@ func (c *identityAwareProxyOAuthRESTClient) ListBrands(ctx context.Context, req 
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -658,13 +646,13 @@ func (c *identityAwareProxyOAuthRESTClient) CreateBrand(ctx context.Context, req
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -716,13 +704,13 @@ func (c *identityAwareProxyOAuthRESTClient) GetBrand(ctx context.Context, req *i
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -783,13 +771,13 @@ func (c *identityAwareProxyOAuthRESTClient) CreateIdentityAwareProxyClient(ctx c
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -854,13 +842,13 @@ func (c *identityAwareProxyOAuthRESTClient) ListIdentityAwareProxyClients(ctx co
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -930,13 +918,13 @@ func (c *identityAwareProxyOAuthRESTClient) GetIdentityAwareProxyClient(ctx cont
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -995,13 +983,13 @@ func (c *identityAwareProxyOAuthRESTClient) ResetIdentityAwareProxyClientSecret(
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil

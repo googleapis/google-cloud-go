@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/security/privateca/apiv1",
-    "version": "1.11.0",
+    "version": "1.15.1",
     "language": "GO",
     "apis": [
       {
@@ -14,7 +14,7 @@
     {
       "regionTag": "privateca_v1_generated_CertificateAuthorityService_ActivateCertificateAuthority_sync",
       "title": "privateca ActivateCertificateAuthority Sample",
-      "description": "ActivateCertificateAuthority activate a CertificateAuthority that is in state\nAWAITING_USER_ACTIVATION\nand is of type SUBORDINATE. After\nthe parent Certificate Authority signs a certificate signing request from\nFetchCertificateAuthorityCsr, this method can complete the activation\nprocess.",
+      "description": "ActivateCertificateAuthority activate a\n[CertificateAuthority][google.cloud.security.privateca.v1.CertificateAuthority]\nthat is in state\n[AWAITING_USER_ACTIVATION][google.cloud.security.privateca.v1.CertificateAuthority.State.AWAITING_USER_ACTIVATION]\nand is of type\n[SUBORDINATE][google.cloud.security.privateca.v1.CertificateAuthority.Type.SUBORDINATE].\nAfter the parent Certificate Authority signs a certificate signing request\nfrom\n[FetchCertificateAuthorityCsr][google.cloud.security.privateca.v1.CertificateAuthorityService.FetchCertificateAuthorityCsr],\nthis method can complete the activation process.",
       "file": "CertificateAuthorityClient/ActivateCertificateAuthority/main.go",
       "language": "GO",
       "clientMethod": {
@@ -58,9 +58,54 @@
       ]
     },
     {
+      "regionTag": "privateca_v1_generated_CertificateAuthorityService_CancelOperation_sync",
+      "title": "privateca CancelOperation Sample",
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "CertificateAuthorityClient/CancelOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CancelOperation",
+        "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityClient.CancelOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.CancelOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "CertificateAuthorityClient",
+          "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityClient"
+        },
+        "method": {
+          "shortName": "CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "privateca_v1_generated_CertificateAuthorityService_CreateCaPool_sync",
       "title": "privateca CreateCaPool Sample",
-      "description": "CreateCaPool create a CaPool.",
+      "description": "CreateCaPool create a [CaPool][google.cloud.security.privateca.v1.CaPool].",
       "file": "CertificateAuthorityClient/CreateCaPool/main.go",
       "language": "GO",
       "clientMethod": {
@@ -106,7 +151,7 @@
     {
       "regionTag": "privateca_v1_generated_CertificateAuthorityService_CreateCertificate_sync",
       "title": "privateca CreateCertificate Sample",
-      "description": "CreateCertificate create a new Certificate in a given Project, Location from a particular\nCaPool.",
+      "description": "CreateCertificate create a new [Certificate][google.cloud.security.privateca.v1.Certificate]\nin a given Project, Location from a particular\n[CaPool][google.cloud.security.privateca.v1.CaPool].",
       "file": "CertificateAuthorityClient/CreateCertificate/main.go",
       "language": "GO",
       "clientMethod": {
@@ -126,7 +171,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "privatecapb.Certificate",
+        "resultType": "*privatecapb.Certificate",
         "client": {
           "shortName": "CertificateAuthorityClient",
           "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityClient"
@@ -152,7 +197,7 @@
     {
       "regionTag": "privateca_v1_generated_CertificateAuthorityService_CreateCertificateAuthority_sync",
       "title": "privateca CreateCertificateAuthority Sample",
-      "description": "CreateCertificateAuthority create a new CertificateAuthority in a given Project and Location.",
+      "description": "CreateCertificateAuthority create a new\n[CertificateAuthority][google.cloud.security.privateca.v1.CertificateAuthority]\nin a given Project and Location.",
       "file": "CertificateAuthorityClient/CreateCertificateAuthority/main.go",
       "language": "GO",
       "clientMethod": {
@@ -198,7 +243,7 @@
     {
       "regionTag": "privateca_v1_generated_CertificateAuthorityService_CreateCertificateTemplate_sync",
       "title": "privateca CreateCertificateTemplate Sample",
-      "description": "CreateCertificateTemplate create a new CertificateTemplate in a given Project and Location.",
+      "description": "CreateCertificateTemplate create a new\n[CertificateTemplate][google.cloud.security.privateca.v1.CertificateTemplate]\nin a given Project and Location.",
       "file": "CertificateAuthorityClient/CreateCertificateTemplate/main.go",
       "language": "GO",
       "clientMethod": {
@@ -244,7 +289,7 @@
     {
       "regionTag": "privateca_v1_generated_CertificateAuthorityService_DeleteCaPool_sync",
       "title": "privateca DeleteCaPool Sample",
-      "description": "DeleteCaPool delete a CaPool.",
+      "description": "DeleteCaPool delete a [CaPool][google.cloud.security.privateca.v1.CaPool].",
       "file": "CertificateAuthorityClient/DeleteCaPool/main.go",
       "language": "GO",
       "clientMethod": {
@@ -290,7 +335,7 @@
     {
       "regionTag": "privateca_v1_generated_CertificateAuthorityService_DeleteCertificateAuthority_sync",
       "title": "privateca DeleteCertificateAuthority Sample",
-      "description": "DeleteCertificateAuthority delete a CertificateAuthority.",
+      "description": "DeleteCertificateAuthority delete a\n[CertificateAuthority][google.cloud.security.privateca.v1.CertificateAuthority].",
       "file": "CertificateAuthorityClient/DeleteCertificateAuthority/main.go",
       "language": "GO",
       "clientMethod": {
@@ -336,7 +381,7 @@
     {
       "regionTag": "privateca_v1_generated_CertificateAuthorityService_DeleteCertificateTemplate_sync",
       "title": "privateca DeleteCertificateTemplate Sample",
-      "description": "DeleteCertificateTemplate deleteCertificateTemplate deletes a CertificateTemplate.",
+      "description": "DeleteCertificateTemplate deleteCertificateTemplate deletes a\n[CertificateTemplate][google.cloud.security.privateca.v1.CertificateTemplate].",
       "file": "CertificateAuthorityClient/DeleteCertificateTemplate/main.go",
       "language": "GO",
       "clientMethod": {
@@ -380,9 +425,54 @@
       ]
     },
     {
+      "regionTag": "privateca_v1_generated_CertificateAuthorityService_DeleteOperation_sync",
+      "title": "privateca DeleteOperation Sample",
+      "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
+      "file": "CertificateAuthorityClient/DeleteOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteOperation",
+        "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityClient.DeleteOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.DeleteOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "CertificateAuthorityClient",
+          "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityClient"
+        },
+        "method": {
+          "shortName": "DeleteOperation",
+          "fullName": "google.longrunning.Operations.DeleteOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "privateca_v1_generated_CertificateAuthorityService_DisableCertificateAuthority_sync",
       "title": "privateca DisableCertificateAuthority Sample",
-      "description": "DisableCertificateAuthority disable a CertificateAuthority.",
+      "description": "DisableCertificateAuthority disable a\n[CertificateAuthority][google.cloud.security.privateca.v1.CertificateAuthority].",
       "file": "CertificateAuthorityClient/DisableCertificateAuthority/main.go",
       "language": "GO",
       "clientMethod": {
@@ -428,7 +518,7 @@
     {
       "regionTag": "privateca_v1_generated_CertificateAuthorityService_EnableCertificateAuthority_sync",
       "title": "privateca EnableCertificateAuthority Sample",
-      "description": "EnableCertificateAuthority enable a CertificateAuthority.",
+      "description": "EnableCertificateAuthority enable a\n[CertificateAuthority][google.cloud.security.privateca.v1.CertificateAuthority].",
       "file": "CertificateAuthorityClient/EnableCertificateAuthority/main.go",
       "language": "GO",
       "clientMethod": {
@@ -474,7 +564,7 @@
     {
       "regionTag": "privateca_v1_generated_CertificateAuthorityService_FetchCaCerts_sync",
       "title": "privateca FetchCaCerts Sample",
-      "description": "FetchCaCerts fetchCaCerts returns the current trust anchor for the CaPool. This will\ninclude CA certificate chains for all ACTIVE CertificateAuthority\nresources in the CaPool.",
+      "description": "FetchCaCerts fetchCaCerts returns the current trust anchor for the\n[CaPool][google.cloud.security.privateca.v1.CaPool]. This will include CA\ncertificate chains for all ACTIVE\n[CertificateAuthority][google.cloud.security.privateca.v1.CertificateAuthority]\nresources in the [CaPool][google.cloud.security.privateca.v1.CaPool].",
       "file": "CertificateAuthorityClient/FetchCaCerts/main.go",
       "language": "GO",
       "clientMethod": {
@@ -494,7 +584,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "privatecapb.FetchCaCertsResponse",
+        "resultType": "*privatecapb.FetchCaCertsResponse",
         "client": {
           "shortName": "CertificateAuthorityClient",
           "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityClient"
@@ -520,7 +610,7 @@
     {
       "regionTag": "privateca_v1_generated_CertificateAuthorityService_FetchCertificateAuthorityCsr_sync",
       "title": "privateca FetchCertificateAuthorityCsr Sample",
-      "description": "FetchCertificateAuthorityCsr fetch a certificate signing request (CSR) from a CertificateAuthority\nthat is in state\nAWAITING_USER_ACTIVATION\nand is of type SUBORDINATE. The\nCSR must then be signed by the desired parent Certificate Authority, which\ncould be another CertificateAuthority resource, or could be an on-prem\ncertificate authority. See also ActivateCertificateAuthority.",
+      "description": "FetchCertificateAuthorityCsr fetch a certificate signing request (CSR) from a\n[CertificateAuthority][google.cloud.security.privateca.v1.CertificateAuthority]\nthat is in state\n[AWAITING_USER_ACTIVATION][google.cloud.security.privateca.v1.CertificateAuthority.State.AWAITING_USER_ACTIVATION]\nand is of type\n[SUBORDINATE][google.cloud.security.privateca.v1.CertificateAuthority.Type.SUBORDINATE].\nThe CSR must then be signed by the desired parent Certificate Authority,\nwhich could be another\n[CertificateAuthority][google.cloud.security.privateca.v1.CertificateAuthority]\nresource, or could be an on-prem certificate authority. See also\n[ActivateCertificateAuthority][google.cloud.security.privateca.v1.CertificateAuthorityService.ActivateCertificateAuthority].",
       "file": "CertificateAuthorityClient/FetchCertificateAuthorityCsr/main.go",
       "language": "GO",
       "clientMethod": {
@@ -540,7 +630,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "privatecapb.FetchCertificateAuthorityCsrResponse",
+        "resultType": "*privatecapb.FetchCertificateAuthorityCsrResponse",
         "client": {
           "shortName": "CertificateAuthorityClient",
           "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityClient"
@@ -566,7 +656,7 @@
     {
       "regionTag": "privateca_v1_generated_CertificateAuthorityService_GetCaPool_sync",
       "title": "privateca GetCaPool Sample",
-      "description": "GetCaPool returns a CaPool.",
+      "description": "GetCaPool returns a [CaPool][google.cloud.security.privateca.v1.CaPool].",
       "file": "CertificateAuthorityClient/GetCaPool/main.go",
       "language": "GO",
       "clientMethod": {
@@ -586,7 +676,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "privatecapb.CaPool",
+        "resultType": "*privatecapb.CaPool",
         "client": {
           "shortName": "CertificateAuthorityClient",
           "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityClient"
@@ -612,7 +702,7 @@
     {
       "regionTag": "privateca_v1_generated_CertificateAuthorityService_GetCertificate_sync",
       "title": "privateca GetCertificate Sample",
-      "description": "GetCertificate returns a Certificate.",
+      "description": "GetCertificate returns a [Certificate][google.cloud.security.privateca.v1.Certificate].",
       "file": "CertificateAuthorityClient/GetCertificate/main.go",
       "language": "GO",
       "clientMethod": {
@@ -632,7 +722,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "privatecapb.Certificate",
+        "resultType": "*privatecapb.Certificate",
         "client": {
           "shortName": "CertificateAuthorityClient",
           "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityClient"
@@ -658,7 +748,7 @@
     {
       "regionTag": "privateca_v1_generated_CertificateAuthorityService_GetCertificateAuthority_sync",
       "title": "privateca GetCertificateAuthority Sample",
-      "description": "GetCertificateAuthority returns a CertificateAuthority.",
+      "description": "GetCertificateAuthority returns a\n[CertificateAuthority][google.cloud.security.privateca.v1.CertificateAuthority].",
       "file": "CertificateAuthorityClient/GetCertificateAuthority/main.go",
       "language": "GO",
       "clientMethod": {
@@ -678,7 +768,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "privatecapb.CertificateAuthority",
+        "resultType": "*privatecapb.CertificateAuthority",
         "client": {
           "shortName": "CertificateAuthorityClient",
           "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityClient"
@@ -704,7 +794,7 @@
     {
       "regionTag": "privateca_v1_generated_CertificateAuthorityService_GetCertificateRevocationList_sync",
       "title": "privateca GetCertificateRevocationList Sample",
-      "description": "GetCertificateRevocationList returns a CertificateRevocationList.",
+      "description": "GetCertificateRevocationList returns a\n[CertificateRevocationList][google.cloud.security.privateca.v1.CertificateRevocationList].",
       "file": "CertificateAuthorityClient/GetCertificateRevocationList/main.go",
       "language": "GO",
       "clientMethod": {
@@ -724,7 +814,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "privatecapb.CertificateRevocationList",
+        "resultType": "*privatecapb.CertificateRevocationList",
         "client": {
           "shortName": "CertificateAuthorityClient",
           "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityClient"
@@ -750,7 +840,7 @@
     {
       "regionTag": "privateca_v1_generated_CertificateAuthorityService_GetCertificateTemplate_sync",
       "title": "privateca GetCertificateTemplate Sample",
-      "description": "GetCertificateTemplate returns a CertificateTemplate.",
+      "description": "GetCertificateTemplate returns a\n[CertificateTemplate][google.cloud.security.privateca.v1.CertificateTemplate].",
       "file": "CertificateAuthorityClient/GetCertificateTemplate/main.go",
       "language": "GO",
       "clientMethod": {
@@ -770,7 +860,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "privatecapb.CertificateTemplate",
+        "resultType": "*privatecapb.CertificateTemplate",
         "client": {
           "shortName": "CertificateAuthorityClient",
           "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityClient"
@@ -816,17 +906,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "iampb.Policy",
+        "resultType": "*iampb.Policy",
         "client": {
           "shortName": "CertificateAuthorityClient",
           "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityClient"
         },
         "method": {
           "shortName": "GetIamPolicy",
-          "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityService.GetIamPolicy",
+          "fullName": "google.iam.v1.IAMPolicy.GetIamPolicy",
           "service": {
-            "shortName": "CertificateAuthorityService",
-            "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityService"
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
           }
         }
       },
@@ -834,7 +924,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -862,17 +952,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "locationpb.Location",
+        "resultType": "*locationpb.Location",
         "client": {
           "shortName": "CertificateAuthorityClient",
           "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityClient"
         },
         "method": {
           "shortName": "GetLocation",
-          "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityService.GetLocation",
+          "fullName": "google.cloud.location.Locations.GetLocation",
           "service": {
-            "shortName": "CertificateAuthorityService",
-            "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityService"
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
           }
         }
       },
@@ -880,7 +970,53 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "privateca_v1_generated_CertificateAuthorityService_GetOperation_sync",
+      "title": "privateca GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "CertificateAuthorityClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "CertificateAuthorityClient",
+          "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -888,7 +1024,7 @@
     {
       "regionTag": "privateca_v1_generated_CertificateAuthorityService_ListCaPools_sync",
       "title": "privateca ListCaPools Sample",
-      "description": "ListCaPools lists CaPools.",
+      "description": "ListCaPools lists [CaPools][google.cloud.security.privateca.v1.CaPool].",
       "file": "CertificateAuthorityClient/ListCaPools/main.go",
       "language": "GO",
       "clientMethod": {
@@ -934,7 +1070,7 @@
     {
       "regionTag": "privateca_v1_generated_CertificateAuthorityService_ListCertificateAuthorities_sync",
       "title": "privateca ListCertificateAuthorities Sample",
-      "description": "ListCertificateAuthorities lists CertificateAuthorities.",
+      "description": "ListCertificateAuthorities lists\n[CertificateAuthorities][google.cloud.security.privateca.v1.CertificateAuthority].",
       "file": "CertificateAuthorityClient/ListCertificateAuthorities/main.go",
       "language": "GO",
       "clientMethod": {
@@ -980,7 +1116,7 @@
     {
       "regionTag": "privateca_v1_generated_CertificateAuthorityService_ListCertificateRevocationLists_sync",
       "title": "privateca ListCertificateRevocationLists Sample",
-      "description": "ListCertificateRevocationLists lists CertificateRevocationLists.",
+      "description": "ListCertificateRevocationLists lists\n[CertificateRevocationLists][google.cloud.security.privateca.v1.CertificateRevocationList].",
       "file": "CertificateAuthorityClient/ListCertificateRevocationLists/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1026,7 +1162,7 @@
     {
       "regionTag": "privateca_v1_generated_CertificateAuthorityService_ListCertificateTemplates_sync",
       "title": "privateca ListCertificateTemplates Sample",
-      "description": "ListCertificateTemplates lists CertificateTemplates.",
+      "description": "ListCertificateTemplates lists\n[CertificateTemplates][google.cloud.security.privateca.v1.CertificateTemplate].",
       "file": "CertificateAuthorityClient/ListCertificateTemplates/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1072,7 +1208,7 @@
     {
       "regionTag": "privateca_v1_generated_CertificateAuthorityService_ListCertificates_sync",
       "title": "privateca ListCertificates Sample",
-      "description": "ListCertificates lists Certificates.",
+      "description": "ListCertificates lists [Certificates][google.cloud.security.privateca.v1.Certificate].",
       "file": "CertificateAuthorityClient/ListCertificates/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1145,10 +1281,10 @@
         },
         "method": {
           "shortName": "ListLocations",
-          "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityService.ListLocations",
+          "fullName": "google.cloud.location.Locations.ListLocations",
           "service": {
-            "shortName": "CertificateAuthorityService",
-            "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityService"
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
           }
         }
       },
@@ -1156,7 +1292,53 @@
       "segments": [
         {
           "start": 18,
-          "end": 61,
+          "end": 60,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "privateca_v1_generated_CertificateAuthorityService_ListOperations_sync",
+      "title": "privateca ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "CertificateAuthorityClient/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityClient.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "CertificateAuthorityClient",
+          "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityClient"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -1164,7 +1346,7 @@
     {
       "regionTag": "privateca_v1_generated_CertificateAuthorityService_RevokeCertificate_sync",
       "title": "privateca RevokeCertificate Sample",
-      "description": "RevokeCertificate revoke a Certificate.",
+      "description": "RevokeCertificate revoke a [Certificate][google.cloud.security.privateca.v1.Certificate].",
       "file": "CertificateAuthorityClient/RevokeCertificate/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1184,7 +1366,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "privatecapb.Certificate",
+        "resultType": "*privatecapb.Certificate",
         "client": {
           "shortName": "CertificateAuthorityClient",
           "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityClient"
@@ -1210,7 +1392,7 @@
     {
       "regionTag": "privateca_v1_generated_CertificateAuthorityService_SetIamPolicy_sync",
       "title": "privateca SetIamPolicy Sample",
-      "description": "SetIamPolicy sets the access control policy on the specified resource. Replaces\nany existing policy.\n\nCan return NOT_FOUND, INVALID_ARGUMENT, and PERMISSION_DENIED\nerrors.",
+      "description": "SetIamPolicy sets the access control policy on the specified resource. Replaces\nany existing policy.\n\nCan return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED`\nerrors.",
       "file": "CertificateAuthorityClient/SetIamPolicy/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1230,17 +1412,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "iampb.Policy",
+        "resultType": "*iampb.Policy",
         "client": {
           "shortName": "CertificateAuthorityClient",
           "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityClient"
         },
         "method": {
           "shortName": "SetIamPolicy",
-          "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityService.SetIamPolicy",
+          "fullName": "google.iam.v1.IAMPolicy.SetIamPolicy",
           "service": {
-            "shortName": "CertificateAuthorityService",
-            "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityService"
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
           }
         }
       },
@@ -1248,7 +1430,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -1256,7 +1438,7 @@
     {
       "regionTag": "privateca_v1_generated_CertificateAuthorityService_TestIamPermissions_sync",
       "title": "privateca TestIamPermissions Sample",
-      "description": "TestIamPermissions returns permissions that a caller has on the specified resource. If the\nresource does not exist, this will return an empty set of\npermissions, not a NOT_FOUND error.\n\nNote: This operation is designed to be used for building\npermission-aware UIs and command-line tools, not for authorization\nchecking. This operation may “fail open” without warning.",
+      "description": "TestIamPermissions returns permissions that a caller has on the specified resource. If the\nresource does not exist, this will return an empty set of\npermissions, not a `NOT_FOUND` error.\n\nNote: This operation is designed to be used for building\npermission-aware UIs and command-line tools, not for authorization\nchecking. This operation may \"fail open\" without warning.",
       "file": "CertificateAuthorityClient/TestIamPermissions/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1276,17 +1458,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "iampb.TestIamPermissionsResponse",
+        "resultType": "*iampb.TestIamPermissionsResponse",
         "client": {
           "shortName": "CertificateAuthorityClient",
           "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityClient"
         },
         "method": {
           "shortName": "TestIamPermissions",
-          "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityService.TestIamPermissions",
+          "fullName": "google.iam.v1.IAMPolicy.TestIamPermissions",
           "service": {
-            "shortName": "CertificateAuthorityService",
-            "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityService"
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
           }
         }
       },
@@ -1294,7 +1476,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -1302,7 +1484,7 @@
     {
       "regionTag": "privateca_v1_generated_CertificateAuthorityService_UndeleteCertificateAuthority_sync",
       "title": "privateca UndeleteCertificateAuthority Sample",
-      "description": "UndeleteCertificateAuthority undelete a CertificateAuthority that has been deleted.",
+      "description": "UndeleteCertificateAuthority undelete a\n[CertificateAuthority][google.cloud.security.privateca.v1.CertificateAuthority]\nthat has been deleted.",
       "file": "CertificateAuthorityClient/UndeleteCertificateAuthority/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1348,7 +1530,7 @@
     {
       "regionTag": "privateca_v1_generated_CertificateAuthorityService_UpdateCaPool_sync",
       "title": "privateca UpdateCaPool Sample",
-      "description": "UpdateCaPool update a CaPool.",
+      "description": "UpdateCaPool update a [CaPool][google.cloud.security.privateca.v1.CaPool].",
       "file": "CertificateAuthorityClient/UpdateCaPool/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1394,7 +1576,7 @@
     {
       "regionTag": "privateca_v1_generated_CertificateAuthorityService_UpdateCertificate_sync",
       "title": "privateca UpdateCertificate Sample",
-      "description": "UpdateCertificate update a Certificate. Currently, the only field you can update is the\nlabels field.",
+      "description": "UpdateCertificate update a [Certificate][google.cloud.security.privateca.v1.Certificate].\nCurrently, the only field you can update is the\n[labels][google.cloud.security.privateca.v1.Certificate.labels] field.",
       "file": "CertificateAuthorityClient/UpdateCertificate/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1414,7 +1596,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "privatecapb.Certificate",
+        "resultType": "*privatecapb.Certificate",
         "client": {
           "shortName": "CertificateAuthorityClient",
           "fullName": "google.cloud.security.privateca.v1.CertificateAuthorityClient"
@@ -1440,7 +1622,7 @@
     {
       "regionTag": "privateca_v1_generated_CertificateAuthorityService_UpdateCertificateAuthority_sync",
       "title": "privateca UpdateCertificateAuthority Sample",
-      "description": "UpdateCertificateAuthority update a CertificateAuthority.",
+      "description": "UpdateCertificateAuthority update a\n[CertificateAuthority][google.cloud.security.privateca.v1.CertificateAuthority].",
       "file": "CertificateAuthorityClient/UpdateCertificateAuthority/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1486,7 +1668,7 @@
     {
       "regionTag": "privateca_v1_generated_CertificateAuthorityService_UpdateCertificateRevocationList_sync",
       "title": "privateca UpdateCertificateRevocationList Sample",
-      "description": "UpdateCertificateRevocationList update a CertificateRevocationList.",
+      "description": "UpdateCertificateRevocationList update a\n[CertificateRevocationList][google.cloud.security.privateca.v1.CertificateRevocationList].",
       "file": "CertificateAuthorityClient/UpdateCertificateRevocationList/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1532,7 +1714,7 @@
     {
       "regionTag": "privateca_v1_generated_CertificateAuthorityService_UpdateCertificateTemplate_sync",
       "title": "privateca UpdateCertificateTemplate Sample",
-      "description": "UpdateCertificateTemplate update a CertificateTemplate.",
+      "description": "UpdateCertificateTemplate update a\n[CertificateTemplate][google.cloud.security.privateca.v1.CertificateTemplate].",
       "file": "CertificateAuthorityClient/UpdateCertificateTemplate/main.go",
       "language": "GO",
       "clientMethod": {

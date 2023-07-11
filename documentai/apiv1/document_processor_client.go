@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"math"
 	"net/http"
 	"net/url"
@@ -29,6 +29,7 @@ import (
 	documentaipb "cloud.google.com/go/documentai/apiv1/documentaipb"
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
@@ -37,7 +38,6 @@ import (
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -53,8 +53,10 @@ type DocumentProcessorCallOptions struct {
 	BatchProcessDocuments      []gax.CallOption
 	FetchProcessorTypes        []gax.CallOption
 	ListProcessorTypes         []gax.CallOption
+	GetProcessorType           []gax.CallOption
 	ListProcessors             []gax.CallOption
 	GetProcessor               []gax.CallOption
+	TrainProcessorVersion      []gax.CallOption
 	GetProcessorVersion        []gax.CallOption
 	ListProcessorVersions      []gax.CallOption
 	DeleteProcessorVersion     []gax.CallOption
@@ -66,6 +68,9 @@ type DocumentProcessorCallOptions struct {
 	DisableProcessor           []gax.CallOption
 	SetDefaultProcessorVersion []gax.CallOption
 	ReviewDocument             []gax.CallOption
+	EvaluateProcessorVersion   []gax.CallOption
+	GetEvaluation              []gax.CallOption
+	ListEvaluations            []gax.CallOption
 	GetLocation                []gax.CallOption
 	ListLocations              []gax.CallOption
 	CancelOperation            []gax.CallOption
@@ -88,6 +93,7 @@ func defaultDocumentProcessorGRPCClientOptions() []option.ClientOption {
 func defaultDocumentProcessorCallOptions() *DocumentProcessorCallOptions {
 	return &DocumentProcessorCallOptions{
 		ProcessDocument: []gax.CallOption{
+			gax.WithTimeout(300000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -100,6 +106,7 @@ func defaultDocumentProcessorCallOptions() *DocumentProcessorCallOptions {
 			}),
 		},
 		BatchProcessDocuments: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -113,8 +120,10 @@ func defaultDocumentProcessorCallOptions() *DocumentProcessorCallOptions {
 		},
 		FetchProcessorTypes:        []gax.CallOption{},
 		ListProcessorTypes:         []gax.CallOption{},
+		GetProcessorType:           []gax.CallOption{},
 		ListProcessors:             []gax.CallOption{},
 		GetProcessor:               []gax.CallOption{},
+		TrainProcessorVersion:      []gax.CallOption{},
 		GetProcessorVersion:        []gax.CallOption{},
 		ListProcessorVersions:      []gax.CallOption{},
 		DeleteProcessorVersion:     []gax.CallOption{},
@@ -126,6 +135,7 @@ func defaultDocumentProcessorCallOptions() *DocumentProcessorCallOptions {
 		DisableProcessor:           []gax.CallOption{},
 		SetDefaultProcessorVersion: []gax.CallOption{},
 		ReviewDocument: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -137,17 +147,21 @@ func defaultDocumentProcessorCallOptions() *DocumentProcessorCallOptions {
 				})
 			}),
 		},
-		GetLocation:     []gax.CallOption{},
-		ListLocations:   []gax.CallOption{},
-		CancelOperation: []gax.CallOption{},
-		GetOperation:    []gax.CallOption{},
-		ListOperations:  []gax.CallOption{},
+		EvaluateProcessorVersion: []gax.CallOption{},
+		GetEvaluation:            []gax.CallOption{},
+		ListEvaluations:          []gax.CallOption{},
+		GetLocation:              []gax.CallOption{},
+		ListLocations:            []gax.CallOption{},
+		CancelOperation:          []gax.CallOption{},
+		GetOperation:             []gax.CallOption{},
+		ListOperations:           []gax.CallOption{},
 	}
 }
 
 func defaultDocumentProcessorRESTCallOptions() *DocumentProcessorCallOptions {
 	return &DocumentProcessorCallOptions{
 		ProcessDocument: []gax.CallOption{
+			gax.WithTimeout(300000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -159,6 +173,7 @@ func defaultDocumentProcessorRESTCallOptions() *DocumentProcessorCallOptions {
 			}),
 		},
 		BatchProcessDocuments: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -171,8 +186,10 @@ func defaultDocumentProcessorRESTCallOptions() *DocumentProcessorCallOptions {
 		},
 		FetchProcessorTypes:        []gax.CallOption{},
 		ListProcessorTypes:         []gax.CallOption{},
+		GetProcessorType:           []gax.CallOption{},
 		ListProcessors:             []gax.CallOption{},
 		GetProcessor:               []gax.CallOption{},
+		TrainProcessorVersion:      []gax.CallOption{},
 		GetProcessorVersion:        []gax.CallOption{},
 		ListProcessorVersions:      []gax.CallOption{},
 		DeleteProcessorVersion:     []gax.CallOption{},
@@ -184,6 +201,7 @@ func defaultDocumentProcessorRESTCallOptions() *DocumentProcessorCallOptions {
 		DisableProcessor:           []gax.CallOption{},
 		SetDefaultProcessorVersion: []gax.CallOption{},
 		ReviewDocument: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -194,11 +212,14 @@ func defaultDocumentProcessorRESTCallOptions() *DocumentProcessorCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
-		GetLocation:     []gax.CallOption{},
-		ListLocations:   []gax.CallOption{},
-		CancelOperation: []gax.CallOption{},
-		GetOperation:    []gax.CallOption{},
-		ListOperations:  []gax.CallOption{},
+		EvaluateProcessorVersion: []gax.CallOption{},
+		GetEvaluation:            []gax.CallOption{},
+		ListEvaluations:          []gax.CallOption{},
+		GetLocation:              []gax.CallOption{},
+		ListLocations:            []gax.CallOption{},
+		CancelOperation:          []gax.CallOption{},
+		GetOperation:             []gax.CallOption{},
+		ListOperations:           []gax.CallOption{},
 	}
 }
 
@@ -212,8 +233,11 @@ type internalDocumentProcessorClient interface {
 	BatchProcessDocumentsOperation(name string) *BatchProcessDocumentsOperation
 	FetchProcessorTypes(context.Context, *documentaipb.FetchProcessorTypesRequest, ...gax.CallOption) (*documentaipb.FetchProcessorTypesResponse, error)
 	ListProcessorTypes(context.Context, *documentaipb.ListProcessorTypesRequest, ...gax.CallOption) *ProcessorTypeIterator
+	GetProcessorType(context.Context, *documentaipb.GetProcessorTypeRequest, ...gax.CallOption) (*documentaipb.ProcessorType, error)
 	ListProcessors(context.Context, *documentaipb.ListProcessorsRequest, ...gax.CallOption) *ProcessorIterator
 	GetProcessor(context.Context, *documentaipb.GetProcessorRequest, ...gax.CallOption) (*documentaipb.Processor, error)
+	TrainProcessorVersion(context.Context, *documentaipb.TrainProcessorVersionRequest, ...gax.CallOption) (*TrainProcessorVersionOperation, error)
+	TrainProcessorVersionOperation(name string) *TrainProcessorVersionOperation
 	GetProcessorVersion(context.Context, *documentaipb.GetProcessorVersionRequest, ...gax.CallOption) (*documentaipb.ProcessorVersion, error)
 	ListProcessorVersions(context.Context, *documentaipb.ListProcessorVersionsRequest, ...gax.CallOption) *ProcessorVersionIterator
 	DeleteProcessorVersion(context.Context, *documentaipb.DeleteProcessorVersionRequest, ...gax.CallOption) (*DeleteProcessorVersionOperation, error)
@@ -233,6 +257,10 @@ type internalDocumentProcessorClient interface {
 	SetDefaultProcessorVersionOperation(name string) *SetDefaultProcessorVersionOperation
 	ReviewDocument(context.Context, *documentaipb.ReviewDocumentRequest, ...gax.CallOption) (*ReviewDocumentOperation, error)
 	ReviewDocumentOperation(name string) *ReviewDocumentOperation
+	EvaluateProcessorVersion(context.Context, *documentaipb.EvaluateProcessorVersionRequest, ...gax.CallOption) (*EvaluateProcessorVersionOperation, error)
+	EvaluateProcessorVersionOperation(name string) *EvaluateProcessorVersionOperation
+	GetEvaluation(context.Context, *documentaipb.GetEvaluationRequest, ...gax.CallOption) (*documentaipb.Evaluation, error)
+	ListEvaluations(context.Context, *documentaipb.ListEvaluationsRequest, ...gax.CallOption) *EvaluationIterator
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
 	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
 	CancelOperation(context.Context, *longrunningpb.CancelOperationRequest, ...gax.CallOption) error
@@ -243,7 +271,7 @@ type internalDocumentProcessorClient interface {
 // DocumentProcessorClient is a client for interacting with Cloud Document AI API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
-// Service to call Cloud DocumentAI to process documents according to the
+// Service to call Document AI to process documents according to the
 // processor’s definition. Processors are built using state-of-the-art Google
 // AI such as natural language, computer vision, and translation to extract
 // structured information from unstructured or semi-structured documents.
@@ -300,8 +328,9 @@ func (c *DocumentProcessorClient) BatchProcessDocumentsOperation(name string) *B
 	return c.internalClient.BatchProcessDocumentsOperation(name)
 }
 
-// FetchProcessorTypes fetches processor types. Note that we do not use ListProcessorTypes here
-// because it is not paginated.
+// FetchProcessorTypes fetches processor types. Note that we don’t use
+// ListProcessorTypes
+// here, because it isn’t paginated.
 func (c *DocumentProcessorClient) FetchProcessorTypes(ctx context.Context, req *documentaipb.FetchProcessorTypesRequest, opts ...gax.CallOption) (*documentaipb.FetchProcessorTypesResponse, error) {
 	return c.internalClient.FetchProcessorTypes(ctx, req, opts...)
 }
@@ -309,6 +338,11 @@ func (c *DocumentProcessorClient) FetchProcessorTypes(ctx context.Context, req *
 // ListProcessorTypes lists the processor types that exist.
 func (c *DocumentProcessorClient) ListProcessorTypes(ctx context.Context, req *documentaipb.ListProcessorTypesRequest, opts ...gax.CallOption) *ProcessorTypeIterator {
 	return c.internalClient.ListProcessorTypes(ctx, req, opts...)
+}
+
+// GetProcessorType gets a processor type detail.
+func (c *DocumentProcessorClient) GetProcessorType(ctx context.Context, req *documentaipb.GetProcessorTypeRequest, opts ...gax.CallOption) (*documentaipb.ProcessorType, error) {
+	return c.internalClient.GetProcessorType(ctx, req, opts...)
 }
 
 // ListProcessors lists all processors which belong to this project.
@@ -319,6 +353,19 @@ func (c *DocumentProcessorClient) ListProcessors(ctx context.Context, req *docum
 // GetProcessor gets a processor detail.
 func (c *DocumentProcessorClient) GetProcessor(ctx context.Context, req *documentaipb.GetProcessorRequest, opts ...gax.CallOption) (*documentaipb.Processor, error) {
 	return c.internalClient.GetProcessor(ctx, req, opts...)
+}
+
+// TrainProcessorVersion trains a new processor version.
+// Operation metadata is returned as
+// TrainProcessorVersionMetadata.
+func (c *DocumentProcessorClient) TrainProcessorVersion(ctx context.Context, req *documentaipb.TrainProcessorVersionRequest, opts ...gax.CallOption) (*TrainProcessorVersionOperation, error) {
+	return c.internalClient.TrainProcessorVersion(ctx, req, opts...)
+}
+
+// TrainProcessorVersionOperation returns a new TrainProcessorVersionOperation from a given name.
+// The name must be that of a previously created TrainProcessorVersionOperation, possibly from a different process.
+func (c *DocumentProcessorClient) TrainProcessorVersionOperation(name string) *TrainProcessorVersionOperation {
+	return c.internalClient.TrainProcessorVersionOperation(name)
 }
 
 // GetProcessorVersion gets a processor version detail.
@@ -365,8 +412,9 @@ func (c *DocumentProcessorClient) UndeployProcessorVersionOperation(name string)
 	return c.internalClient.UndeployProcessorVersionOperation(name)
 }
 
-// CreateProcessor creates a processor from the type processor that the user chose.
-// The processor will be at “ENABLED” state by default after its creation.
+// CreateProcessor creates a processor from the
+// ProcessorType provided. The
+// processor will be at ENABLED state by default after its creation.
 func (c *DocumentProcessorClient) CreateProcessor(ctx context.Context, req *documentaipb.CreateProcessorRequest, opts ...gax.CallOption) (*documentaipb.Processor, error) {
 	return c.internalClient.CreateProcessor(ctx, req, opts...)
 }
@@ -432,6 +480,28 @@ func (c *DocumentProcessorClient) ReviewDocumentOperation(name string) *ReviewDo
 	return c.internalClient.ReviewDocumentOperation(name)
 }
 
+// EvaluateProcessorVersion evaluates a ProcessorVersion against annotated documents, producing an
+// Evaluation.
+func (c *DocumentProcessorClient) EvaluateProcessorVersion(ctx context.Context, req *documentaipb.EvaluateProcessorVersionRequest, opts ...gax.CallOption) (*EvaluateProcessorVersionOperation, error) {
+	return c.internalClient.EvaluateProcessorVersion(ctx, req, opts...)
+}
+
+// EvaluateProcessorVersionOperation returns a new EvaluateProcessorVersionOperation from a given name.
+// The name must be that of a previously created EvaluateProcessorVersionOperation, possibly from a different process.
+func (c *DocumentProcessorClient) EvaluateProcessorVersionOperation(name string) *EvaluateProcessorVersionOperation {
+	return c.internalClient.EvaluateProcessorVersionOperation(name)
+}
+
+// GetEvaluation retrieves a specific evaluation.
+func (c *DocumentProcessorClient) GetEvaluation(ctx context.Context, req *documentaipb.GetEvaluationRequest, opts ...gax.CallOption) (*documentaipb.Evaluation, error) {
+	return c.internalClient.GetEvaluation(ctx, req, opts...)
+}
+
+// ListEvaluations retrieves a set of evaluations for a given processor version.
+func (c *DocumentProcessorClient) ListEvaluations(ctx context.Context, req *documentaipb.ListEvaluationsRequest, opts ...gax.CallOption) *EvaluationIterator {
+	return c.internalClient.ListEvaluations(ctx, req, opts...)
+}
+
 // GetLocation gets information about a location.
 func (c *DocumentProcessorClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	return c.internalClient.GetLocation(ctx, req, opts...)
@@ -464,9 +534,6 @@ type documentProcessorGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing DocumentProcessorClient
 	CallOptions **DocumentProcessorCallOptions
 
@@ -489,7 +556,7 @@ type documentProcessorGRPCClient struct {
 // NewDocumentProcessorClient creates a new document processor service client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
-// Service to call Cloud DocumentAI to process documents according to the
+// Service to call Document AI to process documents according to the
 // processor’s definition. Processors are built using state-of-the-art Google
 // AI such as natural language, computer vision, and translation to extract
 // structured information from unstructured or semi-structured documents.
@@ -503,11 +570,6 @@ func NewDocumentProcessorClient(ctx context.Context, opts ...option.ClientOption
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -516,7 +578,6 @@ func NewDocumentProcessorClient(ctx context.Context, opts ...option.ClientOption
 
 	c := &documentProcessorGRPCClient{
 		connPool:                connPool,
-		disableDeadlines:        disableDeadlines,
 		documentProcessorClient: documentaipb.NewDocumentProcessorServiceClient(connPool),
 		CallOptions:             &client.CallOptions,
 		operationsClient:        longrunningpb.NewOperationsClient(connPool),
@@ -552,7 +613,7 @@ func (c *documentProcessorGRPCClient) Connection() *grpc.ClientConn {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *documentProcessorGRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -585,7 +646,7 @@ type documentProcessorRESTClient struct {
 
 // NewDocumentProcessorRESTClient creates a new document processor service rest client.
 //
-// Service to call Cloud DocumentAI to process documents according to the
+// Service to call Document AI to process documents according to the
 // processor’s definition. Processors are built using state-of-the-art Google
 // AI such as natural language, computer vision, and translation to extract
 // structured information from unstructured or semi-structured documents.
@@ -630,7 +691,7 @@ func defaultDocumentProcessorRESTClientOptions() []option.ClientOption {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *documentProcessorRESTClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -650,11 +711,6 @@ func (c *documentProcessorRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 func (c *documentProcessorGRPCClient) ProcessDocument(ctx context.Context, req *documentaipb.ProcessRequest, opts ...gax.CallOption) (*documentaipb.ProcessResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 120000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -672,11 +728,6 @@ func (c *documentProcessorGRPCClient) ProcessDocument(ctx context.Context, req *
 }
 
 func (c *documentProcessorGRPCClient) BatchProcessDocuments(ctx context.Context, req *documentaipb.BatchProcessRequest, opts ...gax.CallOption) (*BatchProcessDocumentsOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 120000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -757,6 +808,23 @@ func (c *documentProcessorGRPCClient) ListProcessorTypes(ctx context.Context, re
 	return it
 }
 
+func (c *documentProcessorGRPCClient) GetProcessorType(ctx context.Context, req *documentaipb.GetProcessorTypeRequest, opts ...gax.CallOption) (*documentaipb.ProcessorType, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).GetProcessorType[0:len((*c.CallOptions).GetProcessorType):len((*c.CallOptions).GetProcessorType)], opts...)
+	var resp *documentaipb.ProcessorType
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.documentProcessorClient.GetProcessorType(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
 func (c *documentProcessorGRPCClient) ListProcessors(ctx context.Context, req *documentaipb.ListProcessorsRequest, opts ...gax.CallOption) *ProcessorIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
@@ -817,6 +885,25 @@ func (c *documentProcessorGRPCClient) GetProcessor(ctx context.Context, req *doc
 		return nil, err
 	}
 	return resp, nil
+}
+
+func (c *documentProcessorGRPCClient) TrainProcessorVersion(ctx context.Context, req *documentaipb.TrainProcessorVersionRequest, opts ...gax.CallOption) (*TrainProcessorVersionOperation, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).TrainProcessorVersion[0:len((*c.CallOptions).TrainProcessorVersion):len((*c.CallOptions).TrainProcessorVersion)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.documentProcessorClient.TrainProcessorVersion(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &TrainProcessorVersionOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
 }
 
 func (c *documentProcessorGRPCClient) GetProcessorVersion(ctx context.Context, req *documentaipb.GetProcessorVersionRequest, opts ...gax.CallOption) (*documentaipb.ProcessorVersion, error) {
@@ -1032,11 +1119,6 @@ func (c *documentProcessorGRPCClient) SetDefaultProcessorVersion(ctx context.Con
 }
 
 func (c *documentProcessorGRPCClient) ReviewDocument(ctx context.Context, req *documentaipb.ReviewDocumentRequest, opts ...gax.CallOption) (*ReviewDocumentOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 120000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "human_review_config", url.QueryEscape(req.GetHumanReviewConfig())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1053,6 +1135,87 @@ func (c *documentProcessorGRPCClient) ReviewDocument(ctx context.Context, req *d
 	return &ReviewDocumentOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
+}
+
+func (c *documentProcessorGRPCClient) EvaluateProcessorVersion(ctx context.Context, req *documentaipb.EvaluateProcessorVersionRequest, opts ...gax.CallOption) (*EvaluateProcessorVersionOperation, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "processor_version", url.QueryEscape(req.GetProcessorVersion())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).EvaluateProcessorVersion[0:len((*c.CallOptions).EvaluateProcessorVersion):len((*c.CallOptions).EvaluateProcessorVersion)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.documentProcessorClient.EvaluateProcessorVersion(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &EvaluateProcessorVersionOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *documentProcessorGRPCClient) GetEvaluation(ctx context.Context, req *documentaipb.GetEvaluationRequest, opts ...gax.CallOption) (*documentaipb.Evaluation, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).GetEvaluation[0:len((*c.CallOptions).GetEvaluation):len((*c.CallOptions).GetEvaluation)], opts...)
+	var resp *documentaipb.Evaluation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.documentProcessorClient.GetEvaluation(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *documentProcessorGRPCClient) ListEvaluations(ctx context.Context, req *documentaipb.ListEvaluationsRequest, opts ...gax.CallOption) *EvaluationIterator {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).ListEvaluations[0:len((*c.CallOptions).ListEvaluations):len((*c.CallOptions).ListEvaluations)], opts...)
+	it := &EvaluationIterator{}
+	req = proto.Clone(req).(*documentaipb.ListEvaluationsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*documentaipb.Evaluation, string, error) {
+		resp := &documentaipb.ListEvaluationsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.documentProcessorClient.ListEvaluations(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetEvaluations(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
 }
 
 func (c *documentProcessorGRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
@@ -1239,13 +1402,13 @@ func (c *documentProcessorRESTClient) ProcessDocument(ctx context.Context, req *
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1303,13 +1466,13 @@ func (c *documentProcessorRESTClient) BatchProcessDocuments(ctx context.Context,
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1325,8 +1488,9 @@ func (c *documentProcessorRESTClient) BatchProcessDocuments(ctx context.Context,
 	}, nil
 }
 
-// FetchProcessorTypes fetches processor types. Note that we do not use ListProcessorTypes here
-// because it is not paginated.
+// FetchProcessorTypes fetches processor types. Note that we don’t use
+// ListProcessorTypes
+// here, because it isn’t paginated.
 func (c *documentProcessorRESTClient) FetchProcessorTypes(ctx context.Context, req *documentaipb.FetchProcessorTypesRequest, opts ...gax.CallOption) (*documentaipb.FetchProcessorTypesResponse, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -1367,13 +1531,13 @@ func (c *documentProcessorRESTClient) FetchProcessorTypes(ctx context.Context, r
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1438,13 +1602,13 @@ func (c *documentProcessorRESTClient) ListProcessorTypes(ctx context.Context, re
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -1470,6 +1634,64 @@ func (c *documentProcessorRESTClient) ListProcessorTypes(ctx context.Context, re
 	it.pageInfo.Token = req.GetPageToken()
 
 	return it
+}
+
+// GetProcessorType gets a processor type detail.
+func (c *documentProcessorRESTClient) GetProcessorType(ctx context.Context, req *documentaipb.GetProcessorTypeRequest, opts ...gax.CallOption) (*documentaipb.ProcessorType, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).GetProcessorType[0:len((*c.CallOptions).GetProcessorType):len((*c.CallOptions).GetProcessorType)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &documentaipb.ProcessorType{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
 }
 
 // ListProcessors lists all processors which belong to this project.
@@ -1526,13 +1748,13 @@ func (c *documentProcessorRESTClient) ListProcessors(ctx context.Context, req *d
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -1601,13 +1823,13 @@ func (c *documentProcessorRESTClient) GetProcessor(ctx context.Context, req *doc
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1616,6 +1838,76 @@ func (c *documentProcessorRESTClient) GetProcessor(ctx context.Context, req *doc
 		return nil, e
 	}
 	return resp, nil
+}
+
+// TrainProcessorVersion trains a new processor version.
+// Operation metadata is returned as
+// TrainProcessorVersionMetadata.
+func (c *documentProcessorRESTClient) TrainProcessorVersion(ctx context.Context, req *documentaipb.TrainProcessorVersionRequest, opts ...gax.CallOption) (*TrainProcessorVersionOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v/processorVersions:train", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &TrainProcessorVersionOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
 }
 
 // GetProcessorVersion gets a processor version detail.
@@ -1659,13 +1951,13 @@ func (c *documentProcessorRESTClient) GetProcessorVersion(ctx context.Context, r
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1730,13 +2022,13 @@ func (c *documentProcessorRESTClient) ListProcessorVersions(ctx context.Context,
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -1805,13 +2097,13 @@ func (c *documentProcessorRESTClient) DeleteProcessorVersion(ctx context.Context
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1873,13 +2165,13 @@ func (c *documentProcessorRESTClient) DeployProcessorVersion(ctx context.Context
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1941,13 +2233,13 @@ func (c *documentProcessorRESTClient) UndeployProcessorVersion(ctx context.Conte
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1963,8 +2255,9 @@ func (c *documentProcessorRESTClient) UndeployProcessorVersion(ctx context.Conte
 	}, nil
 }
 
-// CreateProcessor creates a processor from the type processor that the user chose.
-// The processor will be at “ENABLED” state by default after its creation.
+// CreateProcessor creates a processor from the
+// ProcessorType provided. The
+// processor will be at ENABLED state by default after its creation.
 func (c *documentProcessorRESTClient) CreateProcessor(ctx context.Context, req *documentaipb.CreateProcessorRequest, opts ...gax.CallOption) (*documentaipb.Processor, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetProcessor()
@@ -2012,13 +2305,13 @@ func (c *documentProcessorRESTClient) CreateProcessor(ctx context.Context, req *
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2070,13 +2363,13 @@ func (c *documentProcessorRESTClient) DeleteProcessor(ctx context.Context, req *
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2138,13 +2431,13 @@ func (c *documentProcessorRESTClient) EnableProcessor(ctx context.Context, req *
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2206,13 +2499,13 @@ func (c *documentProcessorRESTClient) DisableProcessor(ctx context.Context, req 
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2278,13 +2571,13 @@ func (c *documentProcessorRESTClient) SetDefaultProcessorVersion(ctx context.Con
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2347,13 +2640,13 @@ func (c *documentProcessorRESTClient) ReviewDocument(ctx context.Context, req *d
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2367,6 +2660,221 @@ func (c *documentProcessorRESTClient) ReviewDocument(ctx context.Context, req *d
 		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
+}
+
+// EvaluateProcessorVersion evaluates a ProcessorVersion against annotated documents, producing an
+// Evaluation.
+func (c *documentProcessorRESTClient) EvaluateProcessorVersion(ctx context.Context, req *documentaipb.EvaluateProcessorVersionRequest, opts ...gax.CallOption) (*EvaluateProcessorVersionOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:evaluateProcessorVersion", req.GetProcessorVersion())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "processor_version", url.QueryEscape(req.GetProcessorVersion())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &EvaluateProcessorVersionOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// GetEvaluation retrieves a specific evaluation.
+func (c *documentProcessorRESTClient) GetEvaluation(ctx context.Context, req *documentaipb.GetEvaluationRequest, opts ...gax.CallOption) (*documentaipb.Evaluation, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).GetEvaluation[0:len((*c.CallOptions).GetEvaluation):len((*c.CallOptions).GetEvaluation)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &documentaipb.Evaluation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// ListEvaluations retrieves a set of evaluations for a given processor version.
+func (c *documentProcessorRESTClient) ListEvaluations(ctx context.Context, req *documentaipb.ListEvaluationsRequest, opts ...gax.CallOption) *EvaluationIterator {
+	it := &EvaluationIterator{}
+	req = proto.Clone(req).(*documentaipb.ListEvaluationsRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*documentaipb.Evaluation, string, error) {
+		resp := &documentaipb.ListEvaluationsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v/evaluations", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			httpRsp, err := c.httpClient.Do(httpReq)
+			if err != nil {
+				return err
+			}
+			defer httpRsp.Body.Close()
+
+			if err = googleapi.CheckResponse(httpRsp); err != nil {
+				return err
+			}
+
+			buf, err := io.ReadAll(httpRsp.Body)
+			if err != nil {
+				return err
+			}
+
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetEvaluations(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
 }
 
 // GetLocation gets information about a location.
@@ -2410,13 +2918,13 @@ func (c *documentProcessorRESTClient) GetLocation(ctx context.Context, req *loca
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2484,13 +2992,13 @@ func (c *documentProcessorRESTClient) ListLocations(ctx context.Context, req *lo
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -2599,13 +3107,13 @@ func (c *documentProcessorRESTClient) GetOperation(ctx context.Context, req *lon
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2673,13 +3181,13 @@ func (c *documentProcessorRESTClient) ListOperations(ctx context.Context, req *l
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -3177,6 +3685,88 @@ func (op *EnableProcessorOperation) Name() string {
 	return op.lro.Name()
 }
 
+// EvaluateProcessorVersionOperation manages a long-running operation from EvaluateProcessorVersion.
+type EvaluateProcessorVersionOperation struct {
+	lro      *longrunning.Operation
+	pollPath string
+}
+
+// EvaluateProcessorVersionOperation returns a new EvaluateProcessorVersionOperation from a given name.
+// The name must be that of a previously created EvaluateProcessorVersionOperation, possibly from a different process.
+func (c *documentProcessorGRPCClient) EvaluateProcessorVersionOperation(name string) *EvaluateProcessorVersionOperation {
+	return &EvaluateProcessorVersionOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// EvaluateProcessorVersionOperation returns a new EvaluateProcessorVersionOperation from a given name.
+// The name must be that of a previously created EvaluateProcessorVersionOperation, possibly from a different process.
+func (c *documentProcessorRESTClient) EvaluateProcessorVersionOperation(name string) *EvaluateProcessorVersionOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &EvaluateProcessorVersionOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *EvaluateProcessorVersionOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*documentaipb.EvaluateProcessorVersionResponse, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp documentaipb.EvaluateProcessorVersionResponse
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *EvaluateProcessorVersionOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*documentaipb.EvaluateProcessorVersionResponse, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp documentaipb.EvaluateProcessorVersionResponse
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *EvaluateProcessorVersionOperation) Metadata() (*documentaipb.EvaluateProcessorVersionMetadata, error) {
+	var meta documentaipb.EvaluateProcessorVersionMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *EvaluateProcessorVersionOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *EvaluateProcessorVersionOperation) Name() string {
+	return op.lro.Name()
+}
+
 // ReviewDocumentOperation manages a long-running operation from ReviewDocument.
 type ReviewDocumentOperation struct {
 	lro      *longrunning.Operation
@@ -3341,6 +3931,88 @@ func (op *SetDefaultProcessorVersionOperation) Name() string {
 	return op.lro.Name()
 }
 
+// TrainProcessorVersionOperation manages a long-running operation from TrainProcessorVersion.
+type TrainProcessorVersionOperation struct {
+	lro      *longrunning.Operation
+	pollPath string
+}
+
+// TrainProcessorVersionOperation returns a new TrainProcessorVersionOperation from a given name.
+// The name must be that of a previously created TrainProcessorVersionOperation, possibly from a different process.
+func (c *documentProcessorGRPCClient) TrainProcessorVersionOperation(name string) *TrainProcessorVersionOperation {
+	return &TrainProcessorVersionOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// TrainProcessorVersionOperation returns a new TrainProcessorVersionOperation from a given name.
+// The name must be that of a previously created TrainProcessorVersionOperation, possibly from a different process.
+func (c *documentProcessorRESTClient) TrainProcessorVersionOperation(name string) *TrainProcessorVersionOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &TrainProcessorVersionOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *TrainProcessorVersionOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*documentaipb.TrainProcessorVersionResponse, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp documentaipb.TrainProcessorVersionResponse
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *TrainProcessorVersionOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*documentaipb.TrainProcessorVersionResponse, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp documentaipb.TrainProcessorVersionResponse
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *TrainProcessorVersionOperation) Metadata() (*documentaipb.TrainProcessorVersionMetadata, error) {
+	var meta documentaipb.TrainProcessorVersionMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *TrainProcessorVersionOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *TrainProcessorVersionOperation) Name() string {
+	return op.lro.Name()
+}
+
 // UndeployProcessorVersionOperation manages a long-running operation from UndeployProcessorVersion.
 type UndeployProcessorVersionOperation struct {
 	lro      *longrunning.Operation
@@ -3421,6 +4093,53 @@ func (op *UndeployProcessorVersionOperation) Done() bool {
 // The name is assigned by the server and is unique within the service from which the operation is created.
 func (op *UndeployProcessorVersionOperation) Name() string {
 	return op.lro.Name()
+}
+
+// EvaluationIterator manages a stream of *documentaipb.Evaluation.
+type EvaluationIterator struct {
+	items    []*documentaipb.Evaluation
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*documentaipb.Evaluation, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *EvaluationIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *EvaluationIterator) Next() (*documentaipb.Evaluation, error) {
+	var item *documentaipb.Evaluation
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *EvaluationIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *EvaluationIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
 }
 
 // LocationIterator manages a stream of *locationpb.Location.

@@ -45,12 +45,12 @@ import (
 	"sync"
 	"time"
 
+	longrunning "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	emptypb "github.com/golang/protobuf/ptypes/empty"
 	"github.com/golang/protobuf/ptypes/wrappers"
 	"github.com/google/btree"
 	btapb "google.golang.org/genproto/googleapis/bigtable/admin/v2"
 	btpb "google.golang.org/genproto/googleapis/bigtable/v2"
-	"google.golang.org/genproto/googleapis/longrunning"
 	statpb "google.golang.org/genproto/googleapis/rpc/status"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -499,7 +499,11 @@ func (s *server) ReadRows(req *btpb.ReadRowsRequest, stream btpb.Bigtable_ReadRo
 			rows = append(rows, r)
 		}
 	}
-	sort.Sort(byRowKey(rows))
+	if req.Reversed {
+		sort.Sort(sort.Reverse(byRowKey(rows)))
+	} else {
+		sort.Sort(byRowKey(rows))
+	}
 
 	limit := int(req.RowsLimit)
 	if limit == 0 {

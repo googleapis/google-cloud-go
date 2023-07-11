@@ -21,7 +21,6 @@ package generator
 import (
 	"context"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 
@@ -30,26 +29,20 @@ import (
 
 // Config contains inputs needed to generate sources.
 type Config struct {
-	GoogleapisDir     string
-	GenprotoDir       string
-	GapicDir          string
-	ProtoDir          string
-	GapicToGenerate   string
-	OnlyGenerateGapic bool
-	LocalMode         bool
-	RegenOnly         bool
-	ForceAll          bool
-	GenModule         bool
-	GenAlias          bool
+	GoogleapisDir string
+	GenprotoDir   string
+	ProtoDir      string
+	LocalMode     bool
+	RegenOnly     bool
+	ForceAll      bool
+	GenAlias      bool
 }
 
 // Generate generates genproto and gapics.
 func Generate(ctx context.Context, conf *Config) ([]*git.ChangeInfo, error) {
-	if !conf.OnlyGenerateGapic {
-		protoGenerator := NewGenprotoGenerator(conf)
-		if err := protoGenerator.Regen(ctx); err != nil {
-			return nil, fmt.Errorf("error generating genproto (may need to check logs for more errors): %v", err)
-		}
+	protoGenerator := NewGenprotoGenerator(conf)
+	if err := protoGenerator.Regen(ctx); err != nil {
+		return nil, fmt.Errorf("error generating genproto (may need to check logs for more errors): %w", err)
 	}
 
 	var changes []*git.ChangeInfo
@@ -63,24 +56,12 @@ func Generate(ctx context.Context, conf *Config) ([]*git.ChangeInfo, error) {
 			return nil, err
 		}
 	}
-	var modifiedPkgs []string
-	for _, v := range changes {
-		if v.Package != "" {
-			modifiedPkgs = append(modifiedPkgs, v.PackageDir)
-		}
-	}
-
-	gapicGenerator := NewGapicGenerator(conf, modifiedPkgs)
-	if err := gapicGenerator.Regen(ctx); err != nil {
-		return nil, fmt.Errorf("error generating gapics (may need to check logs for more errors): %v", err)
-	}
-
 	return changes, nil
 }
 
 func gatherChanges(googleapisDir, genprotoDir string) ([]*git.ChangeInfo, error) {
 	// Get the last processed googleapis hash.
-	lastHash, err := ioutil.ReadFile(filepath.Join(genprotoDir, "regen.txt"))
+	lastHash, err := os.ReadFile(filepath.Join(genprotoDir, "regen.txt"))
 	if err != nil {
 		return nil, err
 	}
@@ -88,11 +69,7 @@ func gatherChanges(googleapisDir, genprotoDir string) ([]*git.ChangeInfo, error)
 	if err != nil {
 		return nil, err
 	}
-	gapicPkgs := make(map[string]string)
-	for _, v := range MicrogenGapicConfigs {
-		gapicPkgs[v.InputDirectoryPath] = v.ImportPath
-	}
-	changes, err := git.ParseChangeInfo(googleapisDir, commits, gapicPkgs)
+	changes, err := git.ParseChangeInfo(googleapisDir, commits)
 	if err != nil {
 		return nil, err
 	}

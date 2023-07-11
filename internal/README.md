@@ -17,10 +17,13 @@ tools would then talk to pkg.go.dev or some other service to get the overall
 list of packages and use the `.repo-metadata.json` files to get the additional
 metadata required. For now, `.repo-metadata-full.json` includes everything.
 
-## cloudbuild.yaml
+### Updating OwlBot SHA
 
-To kick off a build locally run from the repo root:
+You may want to manually update the which version of the post-processor will be
+used -- to do this you need to update the SHA in the OwlBot lock file.
 
-```bash
-gcloud builds submit --project=cloud-devrel-kokoro-resources --config=internal/cloudbuild.yaml
-```
+See the [postprocessor/README](postprocessor/README.md) for detailed
+instructions.
+
+*Note*: OwlBot will eventually open a pull request to update this value if it
+discovers a new version of the container.

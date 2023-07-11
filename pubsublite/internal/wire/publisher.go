@@ -21,6 +21,7 @@ import (
 	"reflect"
 	"time"
 
+	"github.com/google/uuid"
 	"google.golang.org/api/option"
 	"google.golang.org/grpc"
 
@@ -71,10 +72,11 @@ type singlePartitionPublisherFactory struct {
 	pubClient   *vkit.PublisherClient
 	settings    PublishSettings
 	topicPath   string
+	clientID    publisherClientID
 	unloadDelay time.Duration
 }
 
-func (f *singlePartitionPublisherFactory) New(partition int) *singlePartitionPublisher {
+func (f *singlePartitionPublisherFactory) New(partition int, initialSeqNum publishSequenceNumber) *singlePartitionPublisher {
 	pp := &singlePartitionPublisher{
 		pubClient: f.pubClient,
 		topic:     topicPartition{Path: f.topicPath, Partition: partition},
@@ -83,12 +85,13 @@ func (f *singlePartitionPublisherFactory) New(partition int) *singlePartitionPub
 				InitialRequest: &pb.InitialPublishRequest{
 					Topic:     f.topicPath,
 					Partition: int64(partition),
+					ClientId:  f.clientID,
 				},
 			},
 		},
 		metadata: newPubsubMetadata(),
 	}
-	pp.batcher = newPublishMessageBatcher(&f.settings, partition, pp.onNewBatch)
+	pp.batcher = newPublishMessageBatcher(&f.settings, f.clientID, initialSeqNum, partition, pp.onNewBatch)
 	pp.stream = newRetryableStream(f.ctx, pp, f.settings.Timeout, streamIdleTimeout(f.settings.Timeout), reflect.TypeOf(pb.PublishResponse{}))
 	pp.metadata.AddTopicRoutingMetadata(pp.topic)
 	pp.metadata.AddClientInfo(f.settings.Framework)
@@ -145,6 +148,12 @@ func (pp *singlePartitionPublisher) Publish(msg *pb.PubSubMessage, onResult Publ
 		// Invoke callback without lock held.
 		onResult(nil, err)
 	}
+}
+
+func (pp *singlePartitionPublisher) NextSequenceNumber() publishSequenceNumber {
+	pp.mu.Lock()
+	defer pp.mu.Unlock()
+	return pp.batcher.NextSequenceNumber()
 }
 
 func (pp *singlePartitionPublisher) newStream(ctx context.Context) (grpc.ClientStream, error) {
@@ -209,8 +218,7 @@ func (pp *singlePartitionPublisher) onResponse(response interface{}) {
 		if pubResponse.GetMessageResponse() == nil {
 			return nil, errInvalidMsgPubResponse
 		}
-		firstOffset := pubResponse.GetMessageResponse().GetStartCursor().GetOffset()
-		return pp.batcher.OnPublishResponse(firstOffset)
+		return pp.batcher.OnPublishResponse(pubResponse.GetMessageResponse())
 	}
 
 	pp.mu.Lock()
@@ -293,6 +301,7 @@ type lazyPartitionPublisher struct {
 	// Fields below must be guarded with mu.
 	publisher           *singlePartitionPublisher
 	outstandingMessages int
+	initialSequence     publishSequenceNumber
 
 	abstractService
 }
@@ -333,7 +342,7 @@ func (lp *lazyPartitionPublisher) Publish(msg *pb.PubSubMessage, onResult Publis
 			return nil, ErrServiceStopped
 		}
 		if lp.publisher == nil {
-			lp.publisher = lp.pubFactory.New(lp.partition)
+			lp.publisher = lp.pubFactory.New(lp.partition, lp.initialSequence)
 			lp.publisher.AddStatusChangeReceiver(lp.Handle(), lp.onStatusChange)
 			lp.publisher.Start()
 		}
@@ -379,6 +388,8 @@ func (lp *lazyPartitionPublisher) onIdle() {
 	if lp.outstandingMessages == 0 && lp.publisher != nil {
 		lp.publisher.RemoveStatusChangeReceiver(lp.Handle())
 		lp.publisher.Stop()
+		// Resume from the next sequence number when the publisher is recreated.
+		lp.initialSequence = lp.publisher.NextSequenceNumber()
 		lp.publisher = nil
 	}
 }
@@ -487,6 +498,15 @@ func NewPublisher(ctx context.Context, settings PublishSettings, region, topicPa
 	if err := validatePublishSettings(settings); err != nil {
 		return nil, err
 	}
+	var clientID publisherClientID
+	if settings.EnableIdempotence {
+		var randomID uuid.UUID
+		var err error
+		if randomID, err = uuid.NewRandom(); err != nil {
+			return nil, err
+		}
+		clientID = publisherClientID(randomID[:])
+	}
 
 	var allClients apiClients
 	pubClient, err := newPublisherClient(ctx, region, opts...)
@@ -508,6 +528,7 @@ func NewPublisher(ctx context.Context, settings PublishSettings, region, topicPa
 		pubClient:   pubClient,
 		settings:    settings,
 		topicPath:   topicPath,
+		clientID:    clientID,
 		unloadDelay: time.Minute * 5,
 	}
 	return newRoutingPublisher(allClients, adminClient, msgRouterFactory, pubFactory), nil

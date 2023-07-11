@@ -15,6 +15,11 @@
                 "AbandonRelease"
               ]
             },
+            "AdvanceRollout": {
+              "methods": [
+                "AdvanceRollout"
+              ]
+            },
             "ApproveRollout": {
               "methods": [
                 "ApproveRollout"
@@ -23,6 +28,11 @@
             "CancelOperation": {
               "methods": [
                 "CancelOperation"
+              ]
+            },
+            "CancelRollout": {
+              "methods": [
+                "CancelRollout"
               ]
             },
             "CreateDeliveryPipeline": {
@@ -105,6 +115,11 @@
                 "GetTarget"
               ]
             },
+            "IgnoreJob": {
+              "methods": [
+                "IgnoreJob"
+              ]
+            },
             "ListDeliveryPipelines": {
               "methods": [
                 "ListDeliveryPipelines"
@@ -148,6 +163,11 @@
             "SetIamPolicy": {
               "methods": [
                 "SetIamPolicy"
+              ]
+            },
+            "TerminateJobRun": {
+              "methods": [
+                "TerminateJobRun"
               ]
             },
             "TestIamPermissions": {
@@ -175,6 +195,11 @@
                 "AbandonRelease"
               ]
             },
+            "AdvanceRollout": {
+              "methods": [
+                "AdvanceRollout"
+              ]
+            },
             "ApproveRollout": {
               "methods": [
                 "ApproveRollout"
@@ -183,6 +208,11 @@
             "CancelOperation": {
               "methods": [
                 "CancelOperation"
+              ]
+            },
+            "CancelRollout": {
+              "methods": [
+                "CancelRollout"
               ]
             },
             "CreateDeliveryPipeline": {
@@ -265,6 +295,11 @@
                 "GetTarget"
               ]
             },
+            "IgnoreJob": {
+              "methods": [
+                "IgnoreJob"
+              ]
+            },
             "ListDeliveryPipelines": {
               "methods": [
                 "ListDeliveryPipelines"
@@ -308,6 +343,11 @@
             "SetIamPolicy": {
               "methods": [
                 "SetIamPolicy"
+              ]
+            },
+            "TerminateJobRun": {
+              "methods": [
+                "TerminateJobRun"
               ]
             },
             "TestIamPermissions": {

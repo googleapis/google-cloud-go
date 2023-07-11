@@ -1,5 +1,79 @@
 # Changes
 
+## [1.12.1](https://github.com/googleapis/google-cloud-go/compare/servicecontrol/v1.12.0...servicecontrol/v1.12.1) (2023-06-20)
+
+
+### Bug Fixes
+
+* **servicecontrol:** REST query UpdateMask bug ([df52820](https://github.com/googleapis/google-cloud-go/commit/df52820b0e7721954809a8aa8700b93c5662dc9b))
+
+## [1.12.0](https://github.com/googleapis/google-cloud-go/compare/servicecontrol/v1.11.2...servicecontrol/v1.12.0) (2023-05-30)
+
+
+### Features
+
+* **servicecontrol:** Update all direct dependencies ([b340d03](https://github.com/googleapis/google-cloud-go/commit/b340d030f2b52a4ce48846ce63984b28583abde6))
+
+## [1.11.2](https://github.com/googleapis/google-cloud-go/compare/servicecontrol/v1.11.1...servicecontrol/v1.11.2) (2023-05-08)
+
+
+### Bug Fixes
+
+* **servicecontrol:** Update grpc to v1.55.0 ([1147ce0](https://github.com/googleapis/google-cloud-go/commit/1147ce02a990276ca4f8ab7a1ab65c14da4450ef))
+
+## [1.11.1](https://github.com/googleapis/google-cloud-go/compare/servicecontrol/v1.11.0...servicecontrol/v1.11.1) (2023-03-22)
+
+
+### Bug Fixes
+
+* **servicecontrol:** Add service_yaml_parameters to `java_gapic_library` targets ([00fff3a](https://github.com/googleapis/google-cloud-go/commit/00fff3a58bed31274ab39af575876dab91d708c9))
+
+## [1.11.0](https://github.com/googleapis/google-cloud-go/compare/servicecontrol/v1.10.0...servicecontrol/v1.11.0) (2023-03-01)
+
+
+### Features
+
+* **servicecontrol:** Add appropriate mixin clients ([aeb6fec](https://github.com/googleapis/google-cloud-go/commit/aeb6fecc7fd3f088ff461a0c068ceb9a7ae7b2a3))
+
+
+### Bug Fixes
+
+* **servicecontrol:** Add service_yaml_parameters to py_gapic_library BUILD.bazel targets ([aeb6fec](https://github.com/googleapis/google-cloud-go/commit/aeb6fecc7fd3f088ff461a0c068ceb9a7ae7b2a3))
+
+## [1.10.0](https://github.com/googleapis/google-cloud-go/compare/servicecontrol/v1.9.0...servicecontrol/v1.10.0) (2023-02-14)
+
+
+### Features
+
+* **servicecontrol:** Enable "rest" transport in Python for services supporting numeric enums ([2fef56f](https://github.com/googleapis/google-cloud-go/commit/2fef56f75a63dc4ff6e0eea56c7b26d4831c8e27))
+
+## [1.9.0](https://github.com/googleapis/google-cloud-go/compare/servicecontrol-v1.8.0...servicecontrol/v1.9.0) (2023-01-26)
+
+
+### Features
+
+* **servicecontrol:** Add REST client ([06a54a1](https://github.com/googleapis/google-cloud-go/commit/06a54a16a5866cce966547c51e203b9e09a25bc0))
+* **servicecontrol:** Enable REST transport in C# ([447afdd](https://github.com/googleapis/google-cloud-go/commit/447afddf34d59c599cabe5415b4f9265b228bb9a))
+* **servicecontrol:** Rewrite signatures in terms of new location ([3c4b2b3](https://github.com/googleapis/google-cloud-go/commit/3c4b2b34565795537aac1661e6af2442437e34ad))
+* **servicecontrol:** Start generating stubs dir ([de2d180](https://github.com/googleapis/google-cloud-go/commit/de2d18066dc613b72f6f8db93ca60146dabcfdcc))
+
+## [1.8.0](https://github.com/googleapis/google-cloud-go/compare/servicecontrol-v1.7.0...servicecontrol/v1.8.0) (2023-01-26)
+
+
+### Features
+
+* **servicecontrol:** Add REST client ([06a54a1](https://github.com/googleapis/google-cloud-go/commit/06a54a16a5866cce966547c51e203b9e09a25bc0))
+* **servicecontrol:** Enable REST transport in C# ([447afdd](https://github.com/googleapis/google-cloud-go/commit/447afddf34d59c599cabe5415b4f9265b228bb9a))
+* **servicecontrol:** Rewrite signatures in terms of new location ([3c4b2b3](https://github.com/googleapis/google-cloud-go/commit/3c4b2b34565795537aac1661e6af2442437e34ad))
+* **servicecontrol:** Start generating stubs dir ([de2d180](https://github.com/googleapis/google-cloud-go/commit/de2d18066dc613b72f6f8db93ca60146dabcfdcc))
+
+## [1.7.0](https://github.com/googleapis/google-cloud-go/compare/servicecontrol/v1.6.0...servicecontrol/v1.7.0) (2023-01-26)
+
+
+### Features
+
+* **servicecontrol:** Enable REST transport in C# ([447afdd](https://github.com/googleapis/google-cloud-go/commit/447afddf34d59c599cabe5415b4f9265b228bb9a))
+
 ## [1.6.0](https://github.com/googleapis/google-cloud-go/compare/servicecontrol/v1.5.0...servicecontrol/v1.6.0) (2023-01-04)
 
 

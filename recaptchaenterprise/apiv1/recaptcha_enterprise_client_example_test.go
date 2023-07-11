@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,13 +19,18 @@ package recaptchaenterprise_test
 import (
 	"context"
 
-	recaptchaenterprise "cloud.google.com/go/recaptchaenterprise/apiv1"
+	recaptchaenterprise "cloud.google.com/go/recaptchaenterprise/v2/apiv1"
+	recaptchaenterprisepb "cloud.google.com/go/recaptchaenterprise/v2/apiv1/recaptchaenterprisepb"
 	"google.golang.org/api/iterator"
-	recaptchaenterprisepb "google.golang.org/genproto/googleapis/cloud/recaptchaenterprise/v1"
 )
 
 func ExampleNewClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := recaptchaenterprise.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -38,6 +43,11 @@ func ExampleNewClient() {
 
 func ExampleClient_CreateAssessment() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := recaptchaenterprise.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -46,7 +56,7 @@ func ExampleClient_CreateAssessment() {
 
 	req := &recaptchaenterprisepb.CreateAssessmentRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/recaptchaenterprise/v1#CreateAssessmentRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/recaptchaenterprise/v2/apiv1/recaptchaenterprisepb#CreateAssessmentRequest.
 	}
 	resp, err := c.CreateAssessment(ctx, req)
 	if err != nil {
@@ -58,6 +68,11 @@ func ExampleClient_CreateAssessment() {
 
 func ExampleClient_AnnotateAssessment() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := recaptchaenterprise.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -66,7 +81,7 @@ func ExampleClient_AnnotateAssessment() {
 
 	req := &recaptchaenterprisepb.AnnotateAssessmentRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/recaptchaenterprise/v1#AnnotateAssessmentRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/recaptchaenterprise/v2/apiv1/recaptchaenterprisepb#AnnotateAssessmentRequest.
 	}
 	resp, err := c.AnnotateAssessment(ctx, req)
 	if err != nil {
@@ -78,6 +93,11 @@ func ExampleClient_AnnotateAssessment() {
 
 func ExampleClient_CreateKey() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := recaptchaenterprise.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -86,7 +106,7 @@ func ExampleClient_CreateKey() {
 
 	req := &recaptchaenterprisepb.CreateKeyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/recaptchaenterprise/v1#CreateKeyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/recaptchaenterprise/v2/apiv1/recaptchaenterprisepb#CreateKeyRequest.
 	}
 	resp, err := c.CreateKey(ctx, req)
 	if err != nil {
@@ -98,6 +118,11 @@ func ExampleClient_CreateKey() {
 
 func ExampleClient_ListKeys() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := recaptchaenterprise.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -106,7 +131,7 @@ func ExampleClient_ListKeys() {
 
 	req := &recaptchaenterprisepb.ListKeysRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/recaptchaenterprise/v1#ListKeysRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/recaptchaenterprise/v2/apiv1/recaptchaenterprisepb#ListKeysRequest.
 	}
 	it := c.ListKeys(ctx, req)
 	for {
@@ -122,8 +147,38 @@ func ExampleClient_ListKeys() {
 	}
 }
 
+func ExampleClient_RetrieveLegacySecretKey() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := recaptchaenterprise.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &recaptchaenterprisepb.RetrieveLegacySecretKeyRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/recaptchaenterprise/v2/apiv1/recaptchaenterprisepb#RetrieveLegacySecretKeyRequest.
+	}
+	resp, err := c.RetrieveLegacySecretKey(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleClient_GetKey() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := recaptchaenterprise.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -132,7 +187,7 @@ func ExampleClient_GetKey() {
 
 	req := &recaptchaenterprisepb.GetKeyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/recaptchaenterprise/v1#GetKeyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/recaptchaenterprise/v2/apiv1/recaptchaenterprisepb#GetKeyRequest.
 	}
 	resp, err := c.GetKey(ctx, req)
 	if err != nil {
@@ -144,6 +199,11 @@ func ExampleClient_GetKey() {
 
 func ExampleClient_UpdateKey() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := recaptchaenterprise.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -152,7 +212,7 @@ func ExampleClient_UpdateKey() {
 
 	req := &recaptchaenterprisepb.UpdateKeyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/recaptchaenterprise/v1#UpdateKeyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/recaptchaenterprise/v2/apiv1/recaptchaenterprisepb#UpdateKeyRequest.
 	}
 	resp, err := c.UpdateKey(ctx, req)
 	if err != nil {
@@ -164,6 +224,11 @@ func ExampleClient_UpdateKey() {
 
 func ExampleClient_DeleteKey() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := recaptchaenterprise.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -172,7 +237,7 @@ func ExampleClient_DeleteKey() {
 
 	req := &recaptchaenterprisepb.DeleteKeyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/recaptchaenterprise/v1#DeleteKeyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/recaptchaenterprise/v2/apiv1/recaptchaenterprisepb#DeleteKeyRequest.
 	}
 	err = c.DeleteKey(ctx, req)
 	if err != nil {
@@ -182,6 +247,11 @@ func ExampleClient_DeleteKey() {
 
 func ExampleClient_MigrateKey() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := recaptchaenterprise.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -190,7 +260,7 @@ func ExampleClient_MigrateKey() {
 
 	req := &recaptchaenterprisepb.MigrateKeyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/recaptchaenterprise/v1#MigrateKeyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/recaptchaenterprise/v2/apiv1/recaptchaenterprisepb#MigrateKeyRequest.
 	}
 	resp, err := c.MigrateKey(ctx, req)
 	if err != nil {
@@ -202,6 +272,11 @@ func ExampleClient_MigrateKey() {
 
 func ExampleClient_GetMetrics() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := recaptchaenterprise.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -210,7 +285,7 @@ func ExampleClient_GetMetrics() {
 
 	req := &recaptchaenterprisepb.GetMetricsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/recaptchaenterprise/v1#GetMetricsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/recaptchaenterprise/v2/apiv1/recaptchaenterprisepb#GetMetricsRequest.
 	}
 	resp, err := c.GetMetrics(ctx, req)
 	if err != nil {
@@ -222,6 +297,11 @@ func ExampleClient_GetMetrics() {
 
 func ExampleClient_ListRelatedAccountGroups() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := recaptchaenterprise.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -230,7 +310,7 @@ func ExampleClient_ListRelatedAccountGroups() {
 
 	req := &recaptchaenterprisepb.ListRelatedAccountGroupsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/recaptchaenterprise/v1#ListRelatedAccountGroupsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/recaptchaenterprise/v2/apiv1/recaptchaenterprisepb#ListRelatedAccountGroupsRequest.
 	}
 	it := c.ListRelatedAccountGroups(ctx, req)
 	for {
@@ -248,6 +328,11 @@ func ExampleClient_ListRelatedAccountGroups() {
 
 func ExampleClient_ListRelatedAccountGroupMemberships() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := recaptchaenterprise.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -256,7 +341,7 @@ func ExampleClient_ListRelatedAccountGroupMemberships() {
 
 	req := &recaptchaenterprisepb.ListRelatedAccountGroupMembershipsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/recaptchaenterprise/v1#ListRelatedAccountGroupMembershipsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/recaptchaenterprise/v2/apiv1/recaptchaenterprisepb#ListRelatedAccountGroupMembershipsRequest.
 	}
 	it := c.ListRelatedAccountGroupMemberships(ctx, req)
 	for {
@@ -274,6 +359,11 @@ func ExampleClient_ListRelatedAccountGroupMemberships() {
 
 func ExampleClient_SearchRelatedAccountGroupMemberships() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := recaptchaenterprise.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -282,7 +372,7 @@ func ExampleClient_SearchRelatedAccountGroupMemberships() {
 
 	req := &recaptchaenterprisepb.SearchRelatedAccountGroupMembershipsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/recaptchaenterprise/v1#SearchRelatedAccountGroupMembershipsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/recaptchaenterprise/v2/apiv1/recaptchaenterprisepb#SearchRelatedAccountGroupMembershipsRequest.
 	}
 	it := c.SearchRelatedAccountGroupMemberships(ctx, req)
 	for {

@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/trace/apiv2",
-    "version": "1.5.0",
+    "version": "1.10.1",
     "language": "GO",
     "apis": [
       {
@@ -14,7 +14,7 @@
     {
       "regionTag": "cloudtrace_v2_generated_TraceService_BatchWriteSpans_sync",
       "title": "cloudtrace BatchWriteSpans Sample",
-      "description": "BatchWriteSpans sends new spans to new or existing traces. You cannot update\nexisting spans.",
+      "description": "BatchWriteSpans batch writes new spans to new or existing traces. You cannot update\nexisting spans.",
       "file": "Client/BatchWriteSpans/main.go",
       "language": "GO",
       "clientMethod": {
@@ -79,7 +79,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "tracepb.Span",
+        "resultType": "*tracepb.Span",
         "client": {
           "shortName": "Client",
           "fullName": "google.devtools.cloudtrace.v2.Client"

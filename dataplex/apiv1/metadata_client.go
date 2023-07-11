@@ -24,13 +24,13 @@ import (
 	"time"
 
 	dataplexpb "cloud.google.com/go/dataplex/apiv1/dataplexpb"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -72,10 +72,17 @@ func defaultMetadataGRPCClientOptions() []option.ClientOption {
 
 func defaultMetadataCallOptions() *MetadataCallOptions {
 	return &MetadataCallOptions{
-		CreateEntity: []gax.CallOption{},
-		UpdateEntity: []gax.CallOption{},
-		DeleteEntity: []gax.CallOption{},
+		CreateEntity: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateEntity: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteEntity: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		GetEntity: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -87,6 +94,7 @@ func defaultMetadataCallOptions() *MetadataCallOptions {
 			}),
 		},
 		ListEntities: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -97,9 +105,14 @@ func defaultMetadataCallOptions() *MetadataCallOptions {
 				})
 			}),
 		},
-		CreatePartition: []gax.CallOption{},
-		DeletePartition: []gax.CallOption{},
+		CreatePartition: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeletePartition: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		GetPartition: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -111,6 +124,7 @@ func defaultMetadataCallOptions() *MetadataCallOptions {
 			}),
 		},
 		ListPartitions: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -270,9 +284,6 @@ type metadataGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing MetadataClient
 	CallOptions **MetadataCallOptions
 
@@ -302,11 +313,6 @@ func NewMetadataClient(ctx context.Context, opts ...option.ClientOption) (*Metad
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -315,7 +321,6 @@ func NewMetadataClient(ctx context.Context, opts ...option.ClientOption) (*Metad
 
 	c := &metadataGRPCClient{
 		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
 		metadataClient:   dataplexpb.NewMetadataServiceClient(connPool),
 		CallOptions:      &client.CallOptions,
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
@@ -340,7 +345,7 @@ func (c *metadataGRPCClient) Connection() *grpc.ClientConn {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *metadataGRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -352,11 +357,6 @@ func (c *metadataGRPCClient) Close() error {
 }
 
 func (c *metadataGRPCClient) CreateEntity(ctx context.Context, req *dataplexpb.CreateEntityRequest, opts ...gax.CallOption) (*dataplexpb.Entity, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -374,11 +374,6 @@ func (c *metadataGRPCClient) CreateEntity(ctx context.Context, req *dataplexpb.C
 }
 
 func (c *metadataGRPCClient) UpdateEntity(ctx context.Context, req *dataplexpb.UpdateEntityRequest, opts ...gax.CallOption) (*dataplexpb.Entity, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "entity.name", url.QueryEscape(req.GetEntity().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -396,11 +391,6 @@ func (c *metadataGRPCClient) UpdateEntity(ctx context.Context, req *dataplexpb.U
 }
 
 func (c *metadataGRPCClient) DeleteEntity(ctx context.Context, req *dataplexpb.DeleteEntityRequest, opts ...gax.CallOption) error {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -414,11 +404,6 @@ func (c *metadataGRPCClient) DeleteEntity(ctx context.Context, req *dataplexpb.D
 }
 
 func (c *metadataGRPCClient) GetEntity(ctx context.Context, req *dataplexpb.GetEntityRequest, opts ...gax.CallOption) (*dataplexpb.Entity, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -481,11 +466,6 @@ func (c *metadataGRPCClient) ListEntities(ctx context.Context, req *dataplexpb.L
 }
 
 func (c *metadataGRPCClient) CreatePartition(ctx context.Context, req *dataplexpb.CreatePartitionRequest, opts ...gax.CallOption) (*dataplexpb.Partition, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -503,11 +483,6 @@ func (c *metadataGRPCClient) CreatePartition(ctx context.Context, req *dataplexp
 }
 
 func (c *metadataGRPCClient) DeletePartition(ctx context.Context, req *dataplexpb.DeletePartitionRequest, opts ...gax.CallOption) error {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -521,11 +496,6 @@ func (c *metadataGRPCClient) DeletePartition(ctx context.Context, req *dataplexp
 }
 
 func (c *metadataGRPCClient) GetPartition(ctx context.Context, req *dataplexpb.GetPartitionRequest, opts ...gax.CallOption) (*dataplexpb.Partition, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)

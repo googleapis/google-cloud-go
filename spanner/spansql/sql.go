@@ -96,33 +96,44 @@ func (cv CreateView) SQL() string {
 	return str
 }
 
+func (cr CreateRole) SQL() string {
+	return "CREATE ROLE " + cr.Name.SQL()
+}
+
 func (cs CreateChangeStream) SQL() string {
 	str := "CREATE CHANGE STREAM "
-	str += cs.Name.SQL() + " FOR "
+	str += cs.Name.SQL()
 	if cs.WatchAllTables {
-		str += "ALL"
+		str += " FOR ALL"
 	} else {
 		for i, table := range cs.Watch {
-			if i > 0 {
+			if i == 0 {
+				str += " FOR "
+			} else {
 				str += ", "
 			}
-			str += table.Table.SQL()
-			if !table.WatchAllCols {
-				str += "("
-				for i, c := range table.Columns {
-					if i > 0 {
-						str += ", "
-					}
-					str += c.SQL()
-				}
-				str += ")"
-			}
+			str += table.SQL()
 		}
 	}
 	if cs.Options != (ChangeStreamOptions{}) {
 		str += " " + cs.Options.SQL()
 	}
 
+	return str
+}
+
+func (w WatchDef) SQL() string {
+	str := w.Table.SQL()
+	if !w.WatchAllCols {
+		str += "("
+		for i, c := range w.Columns {
+			if i > 0 {
+				str += ", "
+			}
+			str += c.SQL()
+		}
+		str += ")"
+	}
 	return str
 }
 
@@ -138,16 +149,90 @@ func (dv DropView) SQL() string {
 	return "DROP VIEW " + dv.Name.SQL()
 }
 
+func (dr DropRole) SQL() string {
+	return "DROP ROLE " + dr.Name.SQL()
+}
+
+func (gr GrantRole) SQL() string {
+	sql := "GRANT "
+	if gr.Privileges != nil {
+		for i, priv := range gr.Privileges {
+			if i > 0 {
+				sql += ", "
+			}
+			sql += priv.Type.SQL()
+			if priv.Columns != nil {
+				sql += "(" + idList(priv.Columns, ", ") + ")"
+			}
+		}
+		sql += " ON TABLE " + idList(gr.TableNames, ", ")
+	} else if len(gr.TvfNames) > 0 {
+		sql += "EXECUTE ON TABLE FUNCTION " + idList(gr.TvfNames, ", ")
+	} else if len(gr.ViewNames) > 0 {
+		sql += "SELECT ON VIEW " + idList(gr.ViewNames, ", ")
+	} else if len(gr.ChangeStreamNames) > 0 {
+		sql += "SELECT ON CHANGE STREAM " + idList(gr.ChangeStreamNames, ", ")
+	} else {
+		sql += "ROLE " + idList(gr.GrantRoleNames, ", ")
+	}
+	sql += " TO ROLE " + idList(gr.ToRoleNames, ", ")
+	return sql
+}
+
+func (rr RevokeRole) SQL() string {
+	sql := "REVOKE "
+	if rr.Privileges != nil {
+		for i, priv := range rr.Privileges {
+			if i > 0 {
+				sql += ", "
+			}
+			sql += priv.Type.SQL()
+			if priv.Columns != nil {
+				sql += "(" + idList(priv.Columns, ", ") + ")"
+			}
+		}
+		sql += " ON TABLE " + idList(rr.TableNames, ", ")
+	} else if len(rr.TvfNames) > 0 {
+		sql += "EXECUTE ON TABLE FUNCTION " + idList(rr.TvfNames, ", ")
+	} else if len(rr.ViewNames) > 0 {
+		sql += "SELECT ON VIEW " + idList(rr.ViewNames, ", ")
+	} else if len(rr.ChangeStreamNames) > 0 {
+		sql += "SELECT ON CHANGE STREAM " + idList(rr.ChangeStreamNames, ", ")
+	} else {
+		sql += "ROLE " + idList(rr.RevokeRoleNames, ", ")
+	}
+	sql += " FROM ROLE " + idList(rr.FromRoleNames, ", ")
+	return sql
+}
+
 func (dc DropChangeStream) SQL() string {
 	return "DROP CHANGE STREAM " + dc.Name.SQL()
 }
 
 func (acs AlterChangeStream) SQL() string {
-	return "ALTER CHANGE STREAM " + acs.Name.SQL() + " SET " + acs.Alteration.SQL()
+	return "ALTER CHANGE STREAM " + acs.Name.SQL() + " " + acs.Alteration.SQL()
+}
+
+func (scsw AlterWatch) SQL() string {
+	str := "SET FOR "
+	if scsw.WatchAllTables {
+		return str + "ALL"
+	}
+	for i, table := range scsw.Watch {
+		if i > 0 {
+			str += ", "
+		}
+		str += table.SQL()
+	}
+	return str
 }
 
 func (ao AlterChangeStreamOptions) SQL() string {
-	return ao.Options.SQL()
+	return "SET " + ao.Options.SQL()
+}
+
+func (dcsw DropChangeStreamWatch) SQL() string {
+	return "DROP FOR ALL"
 }
 
 func (cso ChangeStreamOptions) SQL() string {
@@ -274,6 +359,17 @@ func (do DatabaseOptions) SQL() string {
 			str += fmt.Sprintf("optimizer_version=%v", *do.OptimizerVersion)
 		}
 	}
+	if do.OptimizerStatisticsPackage != nil {
+		if hasOpt {
+			str += ", "
+		}
+		hasOpt = true
+		if *do.OptimizerStatisticsPackage == "" {
+			str += "optimizer_statistics_package=null"
+		} else {
+			str += fmt.Sprintf("optimizer_statistics_package='%s'", *do.OptimizerStatisticsPackage)
+		}
+	}
 	if do.VersionRetentionPeriod != nil {
 		if hasOpt {
 			str += ", "
@@ -309,6 +405,35 @@ func (do DatabaseOptions) SQL() string {
 	}
 	str += ")"
 	return str
+}
+
+func (as AlterStatistics) SQL() string {
+	return "ALTER STATISTICS " + as.Name.SQL() + " " + as.Alteration.SQL()
+}
+
+func (sso SetStatisticsOptions) SQL() string {
+	return "SET " + sso.Options.SQL()
+}
+
+func (sa StatisticsOptions) SQL() string {
+	str := "OPTIONS ("
+	if sa.AllowGC != nil {
+		str += fmt.Sprintf("allow_gc=%v", *sa.AllowGC)
+	}
+	str += ")"
+	return str
+}
+
+func (ai AlterIndex) SQL() string {
+	return "ALTER INDEX " + ai.Name.SQL() + " " + ai.Alteration.SQL()
+}
+
+func (asc AddStoredColumn) SQL() string {
+	return "ADD STORED COLUMN " + asc.Name.SQL()
+}
+
+func (dsc DropStoredColumn) SQL() string {
+	return "DROP STORED COLUMN " + dsc.Name.SQL()
 }
 
 func (d *Delete) SQL() string {
@@ -446,6 +571,19 @@ func (tb TypeBase) SQL() string {
 	panic("unknown TypeBase")
 }
 
+func (pt PrivilegeType) SQL() string {
+	switch pt {
+	case PrivilegeTypeSelect:
+		return "SELECT"
+	case PrivilegeTypeInsert:
+		return "INSERT"
+	case PrivilegeTypeUpdate:
+		return "UPDATE"
+	case PrivilegeTypeDelete:
+		return "DELETE"
+	}
+	panic("unknown PrivilegeType")
+}
 func (kp KeyPart) SQL() string {
 	str := kp.Column.SQL()
 	if kp.Desc {

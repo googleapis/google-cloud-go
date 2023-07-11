@@ -20,13 +20,14 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"math"
 	"net/http"
 	"net/url"
 	"time"
 
 	datapoliciespb "cloud.google.com/go/bigquery/datapolicies/apiv1beta1/datapoliciespb"
+	iampb "cloud.google.com/go/iam/apiv1/iampb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
@@ -34,7 +35,6 @@ import (
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
-	iampb "google.golang.org/genproto/googleapis/iam/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -71,6 +71,7 @@ func defaultDataPolicyGRPCClientOptions() []option.ClientOption {
 func defaultDataPolicyCallOptions() *DataPolicyCallOptions {
 	return &DataPolicyCallOptions{
 		CreateDataPolicy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -82,6 +83,7 @@ func defaultDataPolicyCallOptions() *DataPolicyCallOptions {
 			}),
 		},
 		UpdateDataPolicy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -93,6 +95,7 @@ func defaultDataPolicyCallOptions() *DataPolicyCallOptions {
 			}),
 		},
 		DeleteDataPolicy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -104,6 +107,7 @@ func defaultDataPolicyCallOptions() *DataPolicyCallOptions {
 			}),
 		},
 		GetDataPolicy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -115,6 +119,7 @@ func defaultDataPolicyCallOptions() *DataPolicyCallOptions {
 			}),
 		},
 		ListDataPolicies: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -126,6 +131,7 @@ func defaultDataPolicyCallOptions() *DataPolicyCallOptions {
 			}),
 		},
 		GetIamPolicy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -137,6 +143,7 @@ func defaultDataPolicyCallOptions() *DataPolicyCallOptions {
 			}),
 		},
 		SetIamPolicy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -148,6 +155,7 @@ func defaultDataPolicyCallOptions() *DataPolicyCallOptions {
 			}),
 		},
 		TestIamPermissions: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -164,6 +172,7 @@ func defaultDataPolicyCallOptions() *DataPolicyCallOptions {
 func defaultDataPolicyRESTCallOptions() *DataPolicyCallOptions {
 	return &DataPolicyCallOptions{
 		CreateDataPolicy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -174,6 +183,7 @@ func defaultDataPolicyRESTCallOptions() *DataPolicyCallOptions {
 			}),
 		},
 		UpdateDataPolicy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -184,6 +194,7 @@ func defaultDataPolicyRESTCallOptions() *DataPolicyCallOptions {
 			}),
 		},
 		DeleteDataPolicy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -194,6 +205,7 @@ func defaultDataPolicyRESTCallOptions() *DataPolicyCallOptions {
 			}),
 		},
 		GetDataPolicy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -204,6 +216,7 @@ func defaultDataPolicyRESTCallOptions() *DataPolicyCallOptions {
 			}),
 		},
 		ListDataPolicies: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -214,6 +227,7 @@ func defaultDataPolicyRESTCallOptions() *DataPolicyCallOptions {
 			}),
 		},
 		GetIamPolicy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -224,6 +238,7 @@ func defaultDataPolicyRESTCallOptions() *DataPolicyCallOptions {
 			}),
 		},
 		SetIamPolicy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -234,6 +249,7 @@ func defaultDataPolicyRESTCallOptions() *DataPolicyCallOptions {
 			}),
 		},
 		TestIamPermissions: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -345,9 +361,6 @@ type dataPolicyGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing DataPolicyClient
 	CallOptions **DataPolicyCallOptions
 
@@ -372,11 +385,6 @@ func NewDataPolicyClient(ctx context.Context, opts ...option.ClientOption) (*Dat
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -385,7 +393,6 @@ func NewDataPolicyClient(ctx context.Context, opts ...option.ClientOption) (*Dat
 
 	c := &dataPolicyGRPCClient{
 		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
 		dataPolicyClient: datapoliciespb.NewDataPolicyServiceClient(connPool),
 		CallOptions:      &client.CallOptions,
 	}
@@ -408,7 +415,7 @@ func (c *dataPolicyGRPCClient) Connection() *grpc.ClientConn {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *dataPolicyGRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -468,7 +475,7 @@ func defaultDataPolicyRESTClientOptions() []option.ClientOption {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *dataPolicyRESTClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -488,11 +495,6 @@ func (c *dataPolicyRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 func (c *dataPolicyGRPCClient) CreateDataPolicy(ctx context.Context, req *datapoliciespb.CreateDataPolicyRequest, opts ...gax.CallOption) (*datapoliciespb.DataPolicy, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -510,11 +512,6 @@ func (c *dataPolicyGRPCClient) CreateDataPolicy(ctx context.Context, req *datapo
 }
 
 func (c *dataPolicyGRPCClient) UpdateDataPolicy(ctx context.Context, req *datapoliciespb.UpdateDataPolicyRequest, opts ...gax.CallOption) (*datapoliciespb.DataPolicy, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "data_policy.name", url.QueryEscape(req.GetDataPolicy().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -532,11 +529,6 @@ func (c *dataPolicyGRPCClient) UpdateDataPolicy(ctx context.Context, req *datapo
 }
 
 func (c *dataPolicyGRPCClient) DeleteDataPolicy(ctx context.Context, req *datapoliciespb.DeleteDataPolicyRequest, opts ...gax.CallOption) error {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -550,11 +542,6 @@ func (c *dataPolicyGRPCClient) DeleteDataPolicy(ctx context.Context, req *datapo
 }
 
 func (c *dataPolicyGRPCClient) GetDataPolicy(ctx context.Context, req *datapoliciespb.GetDataPolicyRequest, opts ...gax.CallOption) (*datapoliciespb.DataPolicy, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -617,11 +604,6 @@ func (c *dataPolicyGRPCClient) ListDataPolicies(ctx context.Context, req *datapo
 }
 
 func (c *dataPolicyGRPCClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -639,11 +621,6 @@ func (c *dataPolicyGRPCClient) GetIamPolicy(ctx context.Context, req *iampb.GetI
 }
 
 func (c *dataPolicyGRPCClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -661,11 +638,6 @@ func (c *dataPolicyGRPCClient) SetIamPolicy(ctx context.Context, req *iampb.SetI
 }
 
 func (c *dataPolicyGRPCClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermissionsRequest, opts ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -726,13 +698,13 @@ func (c *dataPolicyRESTClient) CreateDataPolicy(ctx context.Context, req *datapo
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -765,7 +737,7 @@ func (c *dataPolicyRESTClient) UpdateDataPolicy(ctx context.Context, req *datapo
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask))
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -798,13 +770,13 @@ func (c *dataPolicyRESTClient) UpdateDataPolicy(ctx context.Context, req *datapo
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -886,13 +858,13 @@ func (c *dataPolicyRESTClient) GetDataPolicy(ctx context.Context, req *datapolic
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -956,13 +928,13 @@ func (c *dataPolicyRESTClient) ListDataPolicies(ctx context.Context, req *datapo
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -1032,13 +1004,13 @@ func (c *dataPolicyRESTClient) GetIamPolicy(ctx context.Context, req *iampb.GetI
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1091,13 +1063,13 @@ func (c *dataPolicyRESTClient) SetIamPolicy(ctx context.Context, req *iampb.SetI
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1150,13 +1122,13 @@ func (c *dataPolicyRESTClient) TestIamPermissions(ctx context.Context, req *iamp
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil

@@ -20,13 +20,14 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"math"
 	"net/http"
 	"net/url"
 	"time"
 
 	firestorepb "cloud.google.com/go/firestore/apiv1/firestorepb"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
@@ -34,7 +35,6 @@ import (
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -83,6 +83,7 @@ func defaultGRPCClientOptions() []option.ClientOption {
 func defaultCallOptions() *CallOptions {
 	return &CallOptions{
 		GetDocument: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.ResourceExhausted,
@@ -97,6 +98,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		ListDocuments: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.ResourceExhausted,
@@ -111,6 +113,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		UpdateDocument: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.ResourceExhausted,
@@ -123,6 +126,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		DeleteDocument: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.ResourceExhausted,
@@ -151,6 +155,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		BeginTransaction: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.ResourceExhausted,
@@ -165,6 +170,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		Commit: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.ResourceExhausted,
@@ -177,6 +183,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		Rollback: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.ResourceExhausted,
@@ -219,6 +226,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		PartitionQuery: []gax.CallOption{
+			gax.WithTimeout(300000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.ResourceExhausted,
@@ -248,6 +256,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		ListCollectionIds: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.ResourceExhausted,
@@ -262,6 +271,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		BatchWrite: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.ResourceExhausted,
@@ -275,6 +285,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		CreateDocument: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.ResourceExhausted,
@@ -296,6 +307,7 @@ func defaultCallOptions() *CallOptions {
 func defaultRESTCallOptions() *CallOptions {
 	return &CallOptions{
 		GetDocument: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -309,6 +321,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		ListDocuments: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -322,6 +335,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		UpdateDocument: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -333,6 +347,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		DeleteDocument: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -346,6 +361,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		BatchGetDocuments: []gax.CallOption{
+			gax.WithTimeout(300000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -359,6 +375,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		BeginTransaction: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -372,6 +389,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		Commit: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -383,6 +401,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		Rollback: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -396,6 +415,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		RunQuery: []gax.CallOption{
+			gax.WithTimeout(300000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -409,6 +429,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		RunAggregationQuery: []gax.CallOption{
+			gax.WithTimeout(300000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -422,6 +443,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		PartitionQuery: []gax.CallOption{
+			gax.WithTimeout(300000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -434,8 +456,11 @@ func defaultRESTCallOptions() *CallOptions {
 					http.StatusGatewayTimeout)
 			}),
 		},
-		Write: []gax.CallOption{},
+		Write: []gax.CallOption{
+			gax.WithTimeout(86400000 * time.Millisecond),
+		},
 		Listen: []gax.CallOption{
+			gax.WithTimeout(86400000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -449,6 +474,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		ListCollectionIds: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -462,6 +488,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		BatchWrite: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -474,6 +501,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		CreateDocument: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -527,8 +555,8 @@ type internalClient interface {
 // document database that simplifies storing, syncing, and querying data for
 // your mobile, web, and IoT apps at global scale. Its client libraries provide
 // live synchronization and offline support, while its security features and
-// integrations with Firebase and Google Cloud Platform (GCP) accelerate
-// building truly serverless apps.
+// integrations with Firebase and Google Cloud Platform accelerate building
+// truly serverless apps.
 type Client struct {
 	// The internal transport-dependent client.
 	internalClient internalClient
@@ -610,8 +638,9 @@ func (c *Client) RunQuery(ctx context.Context, req *firestorepb.RunQueryRequest,
 
 // RunAggregationQuery runs an aggregation query.
 //
-// Rather than producing Document results like Firestore.RunQuery,
-// this API allows running an aggregation to produce a series of
+// Rather than producing Document results like
+// Firestore.RunQuery, this API
+// allows running an aggregation to produce a series of
 // AggregationResult server-side.
 //
 // High-Level Example:
@@ -626,14 +655,16 @@ func (c *Client) PartitionQuery(ctx context.Context, req *firestorepb.PartitionQ
 	return c.internalClient.PartitionQuery(ctx, req, opts...)
 }
 
-// Write streams batches of document updates and deletes, in order.
+// Write streams batches of document updates and deletes, in order. This method is
+// only available via gRPC or WebChannel (not REST).
 //
 // This method is not supported for the REST transport.
 func (c *Client) Write(ctx context.Context, opts ...gax.CallOption) (firestorepb.Firestore_WriteClient, error) {
 	return c.internalClient.Write(ctx, opts...)
 }
 
-// Listen listens to changes.
+// Listen listens to changes. This method is only available via gRPC or WebChannel
+// (not REST).
 //
 // This method is not supported for the REST transport.
 func (c *Client) Listen(ctx context.Context, opts ...gax.CallOption) (firestorepb.Firestore_ListenClient, error) {
@@ -650,7 +681,8 @@ func (c *Client) ListCollectionIds(ctx context.Context, req *firestorepb.ListCol
 // The BatchWrite method does not apply the write operations atomically
 // and can apply them out of order. Method does not allow more than one write
 // per document. Each write succeeds or fails independently. See the
-// BatchWriteResponse for the success status of each write.
+// BatchWriteResponse for the
+// success status of each write.
 //
 // If you require an atomically applied set of writes, use
 // Commit instead.
@@ -690,9 +722,6 @@ type gRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing Client
 	CallOptions **CallOptions
 
@@ -714,8 +743,8 @@ type gRPCClient struct {
 // document database that simplifies storing, syncing, and querying data for
 // your mobile, web, and IoT apps at global scale. Its client libraries provide
 // live synchronization and offline support, while its security features and
-// integrations with Firebase and Google Cloud Platform (GCP) accelerate
-// building truly serverless apps.
+// integrations with Firebase and Google Cloud Platform accelerate building
+// truly serverless apps.
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := defaultGRPCClientOptions()
 	if newClientHook != nil {
@@ -726,11 +755,6 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -739,7 +763,6 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 
 	c := &gRPCClient{
 		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
 		client:           firestorepb.NewFirestoreClient(connPool),
 		CallOptions:      &client.CallOptions,
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
@@ -763,7 +786,7 @@ func (c *gRPCClient) Connection() *grpc.ClientConn {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -797,8 +820,8 @@ type restClient struct {
 // document database that simplifies storing, syncing, and querying data for
 // your mobile, web, and IoT apps at global scale. Its client libraries provide
 // live synchronization and offline support, while its security features and
-// integrations with Firebase and Google Cloud Platform (GCP) accelerate
-// building truly serverless apps.
+// integrations with Firebase and Google Cloud Platform accelerate building
+// truly serverless apps.
 func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := append(defaultRESTClientOptions(), opts...)
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
@@ -830,7 +853,7 @@ func defaultRESTClientOptions() []option.ClientOption {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *restClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -850,11 +873,6 @@ func (c *restClient) Connection() *grpc.ClientConn {
 	return nil
 }
 func (c *gRPCClient) GetDocument(ctx context.Context, req *firestorepb.GetDocumentRequest, opts ...gax.CallOption) (*firestorepb.Document, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -917,11 +935,6 @@ func (c *gRPCClient) ListDocuments(ctx context.Context, req *firestorepb.ListDoc
 }
 
 func (c *gRPCClient) UpdateDocument(ctx context.Context, req *firestorepb.UpdateDocumentRequest, opts ...gax.CallOption) (*firestorepb.Document, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "document.name", url.QueryEscape(req.GetDocument().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -939,11 +952,6 @@ func (c *gRPCClient) UpdateDocument(ctx context.Context, req *firestorepb.Update
 }
 
 func (c *gRPCClient) DeleteDocument(ctx context.Context, req *firestorepb.DeleteDocumentRequest, opts ...gax.CallOption) error {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -974,11 +982,6 @@ func (c *gRPCClient) BatchGetDocuments(ctx context.Context, req *firestorepb.Bat
 }
 
 func (c *gRPCClient) BeginTransaction(ctx context.Context, req *firestorepb.BeginTransactionRequest, opts ...gax.CallOption) (*firestorepb.BeginTransactionResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "database", url.QueryEscape(req.GetDatabase())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -996,11 +999,6 @@ func (c *gRPCClient) BeginTransaction(ctx context.Context, req *firestorepb.Begi
 }
 
 func (c *gRPCClient) Commit(ctx context.Context, req *firestorepb.CommitRequest, opts ...gax.CallOption) (*firestorepb.CommitResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "database", url.QueryEscape(req.GetDatabase())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1018,11 +1016,6 @@ func (c *gRPCClient) Commit(ctx context.Context, req *firestorepb.CommitRequest,
 }
 
 func (c *gRPCClient) Rollback(ctx context.Context, req *firestorepb.RollbackRequest, opts ...gax.CallOption) error {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "database", url.QueryEscape(req.GetDatabase())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1190,11 +1183,6 @@ func (c *gRPCClient) ListCollectionIds(ctx context.Context, req *firestorepb.Lis
 }
 
 func (c *gRPCClient) BatchWrite(ctx context.Context, req *firestorepb.BatchWriteRequest, opts ...gax.CallOption) (*firestorepb.BatchWriteResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "database", url.QueryEscape(req.GetDatabase())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1212,11 +1200,6 @@ func (c *gRPCClient) BatchWrite(ctx context.Context, req *firestorepb.BatchWrite
 }
 
 func (c *gRPCClient) CreateDocument(ctx context.Context, req *firestorepb.CreateDocumentRequest, opts ...gax.CallOption) (*firestorepb.Document, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "parent", url.QueryEscape(req.GetParent()), "collection_id", url.QueryEscape(req.GetCollectionId())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1341,7 +1324,7 @@ func (c *restClient) GetDocument(ctx context.Context, req *firestorepb.GetDocume
 		if err != nil {
 			return nil, err
 		}
-		params.Add("readTime", string(readTime))
+		params.Add("readTime", string(readTime[1:len(readTime)-1]))
 	}
 	if req.GetTransaction() != nil {
 		params.Add("transaction", fmt.Sprintf("%v", req.GetTransaction()))
@@ -1377,13 +1360,13 @@ func (c *restClient) GetDocument(ctx context.Context, req *firestorepb.GetDocume
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1436,7 +1419,7 @@ func (c *restClient) ListDocuments(ctx context.Context, req *firestorepb.ListDoc
 			if err != nil {
 				return nil, "", err
 			}
-			params.Add("readTime", string(readTime))
+			params.Add("readTime", string(readTime[1:len(readTime)-1]))
 		}
 		if req.GetShowMissing() {
 			params.Add("showMissing", fmt.Sprintf("%v", req.GetShowMissing()))
@@ -1469,13 +1452,13 @@ func (c *restClient) ListDocuments(ctx context.Context, req *firestorepb.ListDoc
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -1528,7 +1511,7 @@ func (c *restClient) UpdateDocument(ctx context.Context, req *firestorepb.Update
 		if err != nil {
 			return nil, err
 		}
-		params.Add("currentDocument.updateTime", string(updateTime))
+		params.Add("currentDocument.updateTime", string(updateTime[1:len(updateTime)-1]))
 	}
 	if items := req.GetMask().GetFieldPaths(); len(items) > 0 {
 		for _, item := range items {
@@ -1571,13 +1554,13 @@ func (c *restClient) UpdateDocument(ctx context.Context, req *firestorepb.Update
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1606,7 +1589,7 @@ func (c *restClient) DeleteDocument(ctx context.Context, req *firestorepb.Delete
 		if err != nil {
 			return err
 		}
-		params.Add("currentDocument.updateTime", string(updateTime))
+		params.Add("currentDocument.updateTime", string(updateTime[1:len(updateTime)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1792,13 +1775,13 @@ func (c *restClient) BeginTransaction(ctx context.Context, req *firestorepb.Begi
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1856,13 +1839,13 @@ func (c *restClient) Commit(ctx context.Context, req *firestorepb.CommitRequest,
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2025,8 +2008,9 @@ func (c *runQueryRESTClient) RecvMsg(m interface{}) error {
 
 // RunAggregationQuery runs an aggregation query.
 //
-// Rather than producing Document results like Firestore.RunQuery,
-// this API allows running an aggregation to produce a series of
+// Rather than producing Document results like
+// Firestore.RunQuery, this API
+// allows running an aggregation to produce a series of
 // AggregationResult server-side.
 //
 // High-Level Example:
@@ -2189,13 +2173,13 @@ func (c *restClient) PartitionQuery(ctx context.Context, req *firestorepb.Partit
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -2223,14 +2207,16 @@ func (c *restClient) PartitionQuery(ctx context.Context, req *firestorepb.Partit
 	return it
 }
 
-// Write streams batches of document updates and deletes, in order.
+// Write streams batches of document updates and deletes, in order. This method is
+// only available via gRPC or WebChannel (not REST).
 //
 // This method is not supported for the REST transport.
 func (c *restClient) Write(ctx context.Context, opts ...gax.CallOption) (firestorepb.Firestore_WriteClient, error) {
 	return nil, fmt.Errorf("Write not yet supported for REST clients")
 }
 
-// Listen listens to changes.
+// Listen listens to changes. This method is only available via gRPC or WebChannel
+// (not REST).
 //
 // This method is not supported for the REST transport.
 func (c *restClient) Listen(ctx context.Context, opts ...gax.CallOption) (firestorepb.Firestore_ListenClient, error) {
@@ -2291,13 +2277,13 @@ func (c *restClient) ListCollectionIds(ctx context.Context, req *firestorepb.Lis
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -2330,7 +2316,8 @@ func (c *restClient) ListCollectionIds(ctx context.Context, req *firestorepb.Lis
 // The BatchWrite method does not apply the write operations atomically
 // and can apply them out of order. Method does not allow more than one write
 // per document. Each write succeeds or fails independently. See the
-// BatchWriteResponse for the success status of each write.
+// BatchWriteResponse for the
+// success status of each write.
 //
 // If you require an atomically applied set of writes, use
 // Commit instead.
@@ -2380,13 +2367,13 @@ func (c *restClient) BatchWrite(ctx context.Context, req *firestorepb.BatchWrite
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2453,13 +2440,13 @@ func (c *restClient) CreateDocument(ctx context.Context, req *firestorepb.Create
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2597,13 +2584,13 @@ func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2671,13 +2658,13 @@ func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.List
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil

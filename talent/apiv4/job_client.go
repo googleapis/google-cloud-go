@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"math"
 	"net/http"
 	"net/url"
@@ -28,6 +28,7 @@ import (
 
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	talentpb "cloud.google.com/go/talent/apiv4/talentpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
@@ -36,7 +37,6 @@ import (
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -75,9 +75,14 @@ func defaultJobGRPCClientOptions() []option.ClientOption {
 
 func defaultJobCallOptions() *JobCallOptions {
 	return &JobCallOptions{
-		CreateJob:       []gax.CallOption{},
-		BatchCreateJobs: []gax.CallOption{},
+		CreateJob: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+		},
+		BatchCreateJobs: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+		},
 		GetJob: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -89,9 +94,14 @@ func defaultJobCallOptions() *JobCallOptions {
 				})
 			}),
 		},
-		UpdateJob:       []gax.CallOption{},
-		BatchUpdateJobs: []gax.CallOption{},
+		UpdateJob: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+		},
+		BatchUpdateJobs: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+		},
 		DeleteJob: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -103,8 +113,11 @@ func defaultJobCallOptions() *JobCallOptions {
 				})
 			}),
 		},
-		BatchDeleteJobs: []gax.CallOption{},
+		BatchDeleteJobs: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+		},
 		ListJobs: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -116,7 +129,9 @@ func defaultJobCallOptions() *JobCallOptions {
 				})
 			}),
 		},
-		SearchJobs:         []gax.CallOption{},
+		SearchJobs: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+		},
 		SearchJobsForAlert: []gax.CallOption{},
 		GetOperation:       []gax.CallOption{},
 	}
@@ -124,9 +139,14 @@ func defaultJobCallOptions() *JobCallOptions {
 
 func defaultJobRESTCallOptions() *JobCallOptions {
 	return &JobCallOptions{
-		CreateJob:       []gax.CallOption{},
-		BatchCreateJobs: []gax.CallOption{},
+		CreateJob: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+		},
+		BatchCreateJobs: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+		},
 		GetJob: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -137,9 +157,14 @@ func defaultJobRESTCallOptions() *JobCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
-		UpdateJob:       []gax.CallOption{},
-		BatchUpdateJobs: []gax.CallOption{},
+		UpdateJob: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+		},
+		BatchUpdateJobs: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+		},
 		DeleteJob: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -150,8 +175,11 @@ func defaultJobRESTCallOptions() *JobCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
-		BatchDeleteJobs: []gax.CallOption{},
+		BatchDeleteJobs: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+		},
 		ListJobs: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -162,7 +190,9 @@ func defaultJobRESTCallOptions() *JobCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
-		SearchJobs:         []gax.CallOption{},
+		SearchJobs: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+		},
 		SearchJobsForAlert: []gax.CallOption{},
 		GetOperation:       []gax.CallOption{},
 	}
@@ -297,25 +327,29 @@ func (c *JobClient) ListJobs(ctx context.Context, req *talentpb.ListJobsRequest,
 	return c.internalClient.ListJobs(ctx, req, opts...)
 }
 
-// SearchJobs searches for jobs using the provided SearchJobsRequest.
+// SearchJobs searches for jobs using the provided
+// SearchJobsRequest.
 //
-// This call constrains the visibility of jobs
-// present in the database, and only returns jobs that the caller has
-// permission to search against.
+// This call constrains the
+// visibility of jobs present in the
+// database, and only returns jobs that the caller has permission to search
+// against.
 func (c *JobClient) SearchJobs(ctx context.Context, req *talentpb.SearchJobsRequest, opts ...gax.CallOption) (*talentpb.SearchJobsResponse, error) {
 	return c.internalClient.SearchJobs(ctx, req, opts...)
 }
 
-// SearchJobsForAlert searches for jobs using the provided SearchJobsRequest.
+// SearchJobsForAlert searches for jobs using the provided
+// SearchJobsRequest.
 //
 // This API call is intended for the use case of targeting passive job
 // seekers (for example, job seekers who have signed up to receive email
 // alerts about potential job opportunities), it has different algorithmic
 // adjustments that are designed to specifically target passive job seekers.
 //
-// This call constrains the visibility of jobs
-// present in the database, and only returns jobs the caller has
-// permission to search against.
+// This call constrains the
+// visibility of jobs present in the
+// database, and only returns jobs the caller has permission to search
+// against.
 func (c *JobClient) SearchJobsForAlert(ctx context.Context, req *talentpb.SearchJobsRequest, opts ...gax.CallOption) (*talentpb.SearchJobsResponse, error) {
 	return c.internalClient.SearchJobsForAlert(ctx, req, opts...)
 }
@@ -331,9 +365,6 @@ func (c *JobClient) GetOperation(ctx context.Context, req *longrunningpb.GetOper
 type jobGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
-
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
 
 	// Points back to the CallOptions field of the containing JobClient
 	CallOptions **JobCallOptions
@@ -366,11 +397,6 @@ func NewJobClient(ctx context.Context, opts ...option.ClientOption) (*JobClient,
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -379,7 +405,6 @@ func NewJobClient(ctx context.Context, opts ...option.ClientOption) (*JobClient,
 
 	c := &jobGRPCClient{
 		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
 		jobClient:        talentpb.NewJobServiceClient(connPool),
 		CallOptions:      &client.CallOptions,
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
@@ -414,7 +439,7 @@ func (c *jobGRPCClient) Connection() *grpc.ClientConn {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *jobGRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -489,7 +514,7 @@ func defaultJobRESTClientOptions() []option.ClientOption {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *jobRESTClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -509,11 +534,6 @@ func (c *jobRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 func (c *jobGRPCClient) CreateJob(ctx context.Context, req *talentpb.CreateJobRequest, opts ...gax.CallOption) (*talentpb.Job, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -531,11 +551,6 @@ func (c *jobGRPCClient) CreateJob(ctx context.Context, req *talentpb.CreateJobRe
 }
 
 func (c *jobGRPCClient) BatchCreateJobs(ctx context.Context, req *talentpb.BatchCreateJobsRequest, opts ...gax.CallOption) (*BatchCreateJobsOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -555,11 +570,6 @@ func (c *jobGRPCClient) BatchCreateJobs(ctx context.Context, req *talentpb.Batch
 }
 
 func (c *jobGRPCClient) GetJob(ctx context.Context, req *talentpb.GetJobRequest, opts ...gax.CallOption) (*talentpb.Job, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -577,11 +587,6 @@ func (c *jobGRPCClient) GetJob(ctx context.Context, req *talentpb.GetJobRequest,
 }
 
 func (c *jobGRPCClient) UpdateJob(ctx context.Context, req *talentpb.UpdateJobRequest, opts ...gax.CallOption) (*talentpb.Job, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "job.name", url.QueryEscape(req.GetJob().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -599,11 +604,6 @@ func (c *jobGRPCClient) UpdateJob(ctx context.Context, req *talentpb.UpdateJobRe
 }
 
 func (c *jobGRPCClient) BatchUpdateJobs(ctx context.Context, req *talentpb.BatchUpdateJobsRequest, opts ...gax.CallOption) (*BatchUpdateJobsOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -623,11 +623,6 @@ func (c *jobGRPCClient) BatchUpdateJobs(ctx context.Context, req *talentpb.Batch
 }
 
 func (c *jobGRPCClient) DeleteJob(ctx context.Context, req *talentpb.DeleteJobRequest, opts ...gax.CallOption) error {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -641,11 +636,6 @@ func (c *jobGRPCClient) DeleteJob(ctx context.Context, req *talentpb.DeleteJobRe
 }
 
 func (c *jobGRPCClient) BatchDeleteJobs(ctx context.Context, req *talentpb.BatchDeleteJobsRequest, opts ...gax.CallOption) (*BatchDeleteJobsOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -710,11 +700,6 @@ func (c *jobGRPCClient) ListJobs(ctx context.Context, req *talentpb.ListJobsRequ
 }
 
 func (c *jobGRPCClient) SearchJobs(ctx context.Context, req *talentpb.SearchJobsRequest, opts ...gax.CallOption) (*talentpb.SearchJobsResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -732,11 +717,6 @@ func (c *jobGRPCClient) SearchJobs(ctx context.Context, req *talentpb.SearchJobs
 }
 
 func (c *jobGRPCClient) SearchJobsForAlert(ctx context.Context, req *talentpb.SearchJobsRequest, opts ...gax.CallOption) (*talentpb.SearchJobsResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -821,13 +801,13 @@ func (c *jobRESTClient) CreateJob(ctx context.Context, req *talentpb.CreateJobRe
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -884,13 +864,13 @@ func (c *jobRESTClient) BatchCreateJobs(ctx context.Context, req *talentpb.Batch
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -948,13 +928,13 @@ func (c *jobRESTClient) GetJob(ctx context.Context, req *talentpb.GetJobRequest,
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -990,7 +970,7 @@ func (c *jobRESTClient) UpdateJob(ctx context.Context, req *talentpb.UpdateJobRe
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask))
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1023,13 +1003,13 @@ func (c *jobRESTClient) UpdateJob(ctx context.Context, req *talentpb.UpdateJobRe
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1086,13 +1066,13 @@ func (c *jobRESTClient) BatchUpdateJobs(ctx context.Context, req *talentpb.Batch
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1197,13 +1177,13 @@ func (c *jobRESTClient) BatchDeleteJobs(ctx context.Context, req *talentpb.Batch
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1277,13 +1257,13 @@ func (c *jobRESTClient) ListJobs(ctx context.Context, req *talentpb.ListJobsRequ
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -1311,11 +1291,13 @@ func (c *jobRESTClient) ListJobs(ctx context.Context, req *talentpb.ListJobsRequ
 	return it
 }
 
-// SearchJobs searches for jobs using the provided SearchJobsRequest.
+// SearchJobs searches for jobs using the provided
+// SearchJobsRequest.
 //
-// This call constrains the visibility of jobs
-// present in the database, and only returns jobs that the caller has
-// permission to search against.
+// This call constrains the
+// visibility of jobs present in the
+// database, and only returns jobs that the caller has permission to search
+// against.
 func (c *jobRESTClient) SearchJobs(ctx context.Context, req *talentpb.SearchJobsRequest, opts ...gax.CallOption) (*talentpb.SearchJobsResponse, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -1362,13 +1344,13 @@ func (c *jobRESTClient) SearchJobs(ctx context.Context, req *talentpb.SearchJobs
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1379,16 +1361,18 @@ func (c *jobRESTClient) SearchJobs(ctx context.Context, req *talentpb.SearchJobs
 	return resp, nil
 }
 
-// SearchJobsForAlert searches for jobs using the provided SearchJobsRequest.
+// SearchJobsForAlert searches for jobs using the provided
+// SearchJobsRequest.
 //
 // This API call is intended for the use case of targeting passive job
 // seekers (for example, job seekers who have signed up to receive email
 // alerts about potential job opportunities), it has different algorithmic
 // adjustments that are designed to specifically target passive job seekers.
 //
-// This call constrains the visibility of jobs
-// present in the database, and only returns jobs the caller has
-// permission to search against.
+// This call constrains the
+// visibility of jobs present in the
+// database, and only returns jobs the caller has permission to search
+// against.
 func (c *jobRESTClient) SearchJobsForAlert(ctx context.Context, req *talentpb.SearchJobsRequest, opts ...gax.CallOption) (*talentpb.SearchJobsResponse, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -1435,13 +1419,13 @@ func (c *jobRESTClient) SearchJobsForAlert(ctx context.Context, req *talentpb.Se
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1493,13 +1477,13 @@ func (c *jobRESTClient) GetOperation(ctx context.Context, req *longrunningpb.Get
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil

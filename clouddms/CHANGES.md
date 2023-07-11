@@ -1,5 +1,27 @@
 # Changes
 
+## [1.6.1](https://github.com/googleapis/google-cloud-go/compare/clouddms/v1.6.0...clouddms/v1.6.1) (2023-06-20)
+
+
+### Bug Fixes
+
+* **clouddms:** REST query UpdateMask bug ([df52820](https://github.com/googleapis/google-cloud-go/commit/df52820b0e7721954809a8aa8700b93c5662dc9b))
+
+## [1.6.0](https://github.com/googleapis/google-cloud-go/compare/clouddms/v1.5.1...clouddms/v1.6.0) (2023-05-30)
+
+
+### Features
+
+* **clouddms:** Add Oracle to PostgreSQL migration APIs ([2b3e7d9](https://github.com/googleapis/google-cloud-go/commit/2b3e7d9af7d2f500e736e3db77487127cb44ca23))
+* **clouddms:** Update all direct dependencies ([b340d03](https://github.com/googleapis/google-cloud-go/commit/b340d030f2b52a4ce48846ce63984b28583abde6))
+
+## [1.5.1](https://github.com/googleapis/google-cloud-go/compare/clouddms/v1.5.0...clouddms/v1.5.1) (2023-05-08)
+
+
+### Bug Fixes
+
+* **clouddms:** Update grpc to v1.55.0 ([1147ce0](https://github.com/googleapis/google-cloud-go/commit/1147ce02a990276ca4f8ab7a1ab65c14da4450ef))
+
 ## [1.5.0](https://github.com/googleapis/google-cloud-go/compare/clouddms/v1.4.0...clouddms/v1.5.0) (2023-01-04)
 
 

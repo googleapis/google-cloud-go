@@ -58,6 +58,16 @@ type DatasetMetadata struct {
 	// More information: https://cloud.google.com/bigquery/docs/reference/standard-sql/collation-concepts
 	DefaultCollation string
 
+	// MaxTimeTravel represents the number of hours for the max time travel for all tables
+	// in the dataset.  Durations are rounded towards zero for the nearest hourly value.
+	MaxTimeTravel time.Duration
+
+	// Storage billing model to be used for all tables in the dataset.
+	// Can be set to PHYSICAL. Default is LOGICAL.
+	// Once you create a dataset with storage billing model set to physical bytes, you can't change it back to using logical bytes again.
+	// More details: https://cloud.google.com/bigquery/docs/datasets-intro#dataset_storage_billing_models
+	StorageBillingModel string
+
 	// These fields are read-only.
 	CreationTime     time.Time
 	LastModifiedTime time.Time // When the dataset or any of its tables were modified.
@@ -83,6 +93,14 @@ type DatasetTag struct {
 	// "production".
 	TagValue string
 }
+
+const (
+	// LogicalStorageBillingModel indicates billing for logical bytes.
+	LogicalStorageBillingModel = ""
+
+	// PhysicalStorageBillingModel indicates billing for physical bytes.
+	PhysicalStorageBillingModel = "PHYSICAL"
+)
 
 func bqToDatasetTag(in *bq.DatasetTags) *DatasetTag {
 	if in == nil {
@@ -116,6 +134,16 @@ type DatasetMetadataToUpdate struct {
 	// Defines the default collation specification of future tables
 	// created in the dataset.
 	DefaultCollation optional.String
+
+	// MaxTimeTravel represents the number of hours for the max time travel for all tables
+	// in the dataset.  Durations are rounded towards zero for the nearest hourly value.
+	MaxTimeTravel optional.Duration
+
+	// Storage billing model to be used for all tables in the dataset.
+	// Can be set to PHYSICAL. Default is LOGICAL.
+	// Once you change a dataset's storage billing model to use physical bytes, you can't change it back to using logical bytes again.
+	// More details: https://cloud.google.com/bigquery/docs/datasets-intro#dataset_storage_billing_models
+	StorageBillingModel optional.String
 
 	// The entire access list. It is not possible to replace individual entries.
 	Access []*AccessEntry
@@ -187,7 +215,9 @@ func (dm *DatasetMetadata) toBQ() (*bq.Dataset, error) {
 	ds.Location = dm.Location
 	ds.DefaultTableExpirationMs = int64(dm.DefaultTableExpiration / time.Millisecond)
 	ds.DefaultPartitionExpirationMs = int64(dm.DefaultPartitionExpiration / time.Millisecond)
-	ds.DefaultCollation = string(dm.DefaultCollation)
+	ds.DefaultCollation = dm.DefaultCollation
+	ds.MaxTimeTravelHours = int64(dm.MaxTimeTravel / time.Hour)
+	ds.StorageBillingModel = string(dm.StorageBillingModel)
 	ds.Labels = dm.Labels
 	var err error
 	ds.Access, err = accessListToBQ(dm.Access)
@@ -274,6 +304,8 @@ func bqToDatasetMetadata(d *bq.Dataset, c *Client) (*DatasetMetadata, error) {
 		DefaultTableExpiration:     time.Duration(d.DefaultTableExpirationMs) * time.Millisecond,
 		DefaultPartitionExpiration: time.Duration(d.DefaultPartitionExpirationMs) * time.Millisecond,
 		DefaultCollation:           d.DefaultCollation,
+		MaxTimeTravel:              time.Duration(d.MaxTimeTravelHours) * time.Hour,
+		StorageBillingModel:        d.StorageBillingModel,
 		DefaultEncryptionConfig:    bqToEncryptionConfig(d.DefaultEncryptionConfiguration),
 		Description:                d.Description,
 		Name:                       d.FriendlyName,
@@ -362,6 +394,19 @@ func (dm *DatasetMetadataToUpdate) toBQ() (*bq.Dataset, error) {
 	if dm.DefaultCollation != nil {
 		ds.DefaultCollation = optional.ToString(dm.DefaultCollation)
 		forceSend("DefaultCollation")
+	}
+	if dm.MaxTimeTravel != nil {
+		dur := optional.ToDuration(dm.MaxTimeTravel)
+		if dur == 0 {
+			// Send a null to delete the field.
+			ds.NullFields = append(ds.NullFields, "MaxTimeTravelHours")
+		} else {
+			ds.MaxTimeTravelHours = int64(dur / time.Hour)
+		}
+	}
+	if dm.StorageBillingModel != nil {
+		ds.StorageBillingModel = optional.ToString(dm.StorageBillingModel)
+		forceSend("StorageBillingModel")
 	}
 	if dm.DefaultEncryptionConfig != nil {
 		ds.DefaultEncryptionConfiguration = dm.DefaultEncryptionConfig.toBQ()

@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/resourcesettings/apiv1",
-    "version": "1.5.0",
+    "version": "1.6.1",
     "language": "GO",
     "apis": [
       {
@@ -14,7 +14,7 @@
     {
       "regionTag": "resourcesettings_v1_generated_ResourceSettingsService_GetSetting_sync",
       "title": "resourcesettings GetSetting Sample",
-      "description": "GetSetting gets a setting.\n\nReturns a google.rpc.Status with google.rpc.Code.NOT_FOUND if the\nsetting does not exist.",
+      "description": "GetSetting gets a setting.\n\nReturns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the\nsetting does not exist.",
       "file": "Client/GetSetting/main.go",
       "language": "GO",
       "clientMethod": {
@@ -34,7 +34,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "resourcesettingspb.Setting",
+        "resultType": "*resourcesettingspb.Setting",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.resourcesettings.v1.Client"
@@ -60,7 +60,7 @@
     {
       "regionTag": "resourcesettings_v1_generated_ResourceSettingsService_ListSettings_sync",
       "title": "resourcesettings ListSettings Sample",
-      "description": "ListSettings lists all the settings that are available on the Cloud resource parent.",
+      "description": "ListSettings lists all the settings that are available on the Cloud resource `parent`.",
       "file": "Client/ListSettings/main.go",
       "language": "GO",
       "clientMethod": {
@@ -106,7 +106,7 @@
     {
       "regionTag": "resourcesettings_v1_generated_ResourceSettingsService_UpdateSetting_sync",
       "title": "resourcesettings UpdateSetting Sample",
-      "description": "UpdateSetting updates a setting.\n\nReturns a google.rpc.Status with google.rpc.Code.NOT_FOUND if the\nsetting does not exist.\nReturns a google.rpc.Status with google.rpc.Code.FAILED_PRECONDITION if\nthe setting is flagged as read only.\nReturns a google.rpc.Status with google.rpc.Code.ABORTED if the etag\nsupplied in the request does not match the persisted etag of the setting\nvalue.\n\nOn success, the response will contain only name, local_value and\netag.  The metadata and effective_value cannot be updated through\nthis API.\n\nNote: the supplied setting will perform a full overwrite of the\nlocal_value field.",
+      "description": "UpdateSetting updates a setting.\n\nReturns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the\nsetting does not exist.\nReturns a `google.rpc.Status` with `google.rpc.Code.FAILED_PRECONDITION` if\nthe setting is flagged as read only.\nReturns a `google.rpc.Status` with `google.rpc.Code.ABORTED` if the etag\nsupplied in the request does not match the persisted etag of the setting\nvalue.\n\nOn success, the response will contain only `name`, `local_value` and\n`etag`.  The `metadata` and `effective_value` cannot be updated through\nthis API.\n\nNote: the supplied setting will perform a full overwrite of the\n`local_value` field.",
       "file": "Client/UpdateSetting/main.go",
       "language": "GO",
       "clientMethod": {
@@ -126,7 +126,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "resourcesettingspb.Setting",
+        "resultType": "*resourcesettingspb.Setting",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.resourcesettings.v1.Client"

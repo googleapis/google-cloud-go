@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"math"
 	"net/http"
 	"net/url"
@@ -68,8 +68,11 @@ func defaultGRPCClientOptions() []option.ClientOption {
 
 func defaultCallOptions() *CallOptions {
 	return &CallOptions{
-		CreateMigrationWorkflow: []gax.CallOption{},
+		CreateMigrationWorkflow: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		GetMigrationWorkflow: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -81,6 +84,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		ListMigrationWorkflows: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -91,8 +95,11 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
-		DeleteMigrationWorkflow: []gax.CallOption{},
+		DeleteMigrationWorkflow: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		StartMigrationWorkflow: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -104,6 +111,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		GetMigrationSubtask: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -115,6 +123,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		ListMigrationSubtasks: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -130,8 +139,11 @@ func defaultCallOptions() *CallOptions {
 
 func defaultRESTCallOptions() *CallOptions {
 	return &CallOptions{
-		CreateMigrationWorkflow: []gax.CallOption{},
+		CreateMigrationWorkflow: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		GetMigrationWorkflow: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -142,6 +154,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		ListMigrationWorkflows: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -151,8 +164,11 @@ func defaultRESTCallOptions() *CallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
-		DeleteMigrationWorkflow: []gax.CallOption{},
+		DeleteMigrationWorkflow: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		StartMigrationWorkflow: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -163,6 +179,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		GetMigrationSubtask: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -173,6 +190,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		ListMigrationSubtasks: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -279,9 +297,6 @@ type gRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing Client
 	CallOptions **CallOptions
 
@@ -306,11 +321,6 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -318,10 +328,9 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 	client := Client{CallOptions: defaultCallOptions()}
 
 	c := &gRPCClient{
-		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
-		client:           migrationpb.NewMigrationServiceClient(connPool),
-		CallOptions:      &client.CallOptions,
+		connPool:    connPool,
+		client:      migrationpb.NewMigrationServiceClient(connPool),
+		CallOptions: &client.CallOptions,
 	}
 	c.setGoogleClientInfo()
 
@@ -342,7 +351,7 @@ func (c *gRPCClient) Connection() *grpc.ClientConn {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -402,7 +411,7 @@ func defaultRESTClientOptions() []option.ClientOption {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *restClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -422,11 +431,6 @@ func (c *restClient) Connection() *grpc.ClientConn {
 	return nil
 }
 func (c *gRPCClient) CreateMigrationWorkflow(ctx context.Context, req *migrationpb.CreateMigrationWorkflowRequest, opts ...gax.CallOption) (*migrationpb.MigrationWorkflow, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -444,11 +448,6 @@ func (c *gRPCClient) CreateMigrationWorkflow(ctx context.Context, req *migration
 }
 
 func (c *gRPCClient) GetMigrationWorkflow(ctx context.Context, req *migrationpb.GetMigrationWorkflowRequest, opts ...gax.CallOption) (*migrationpb.MigrationWorkflow, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 120000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -511,11 +510,6 @@ func (c *gRPCClient) ListMigrationWorkflows(ctx context.Context, req *migrationp
 }
 
 func (c *gRPCClient) DeleteMigrationWorkflow(ctx context.Context, req *migrationpb.DeleteMigrationWorkflowRequest, opts ...gax.CallOption) error {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -529,11 +523,6 @@ func (c *gRPCClient) DeleteMigrationWorkflow(ctx context.Context, req *migration
 }
 
 func (c *gRPCClient) StartMigrationWorkflow(ctx context.Context, req *migrationpb.StartMigrationWorkflowRequest, opts ...gax.CallOption) error {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 120000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -547,11 +536,6 @@ func (c *gRPCClient) StartMigrationWorkflow(ctx context.Context, req *migrationp
 }
 
 func (c *gRPCClient) GetMigrationSubtask(ctx context.Context, req *migrationpb.GetMigrationSubtaskRequest, opts ...gax.CallOption) (*migrationpb.MigrationSubtask, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 120000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -656,13 +640,13 @@ func (c *restClient) CreateMigrationWorkflow(ctx context.Context, req *migration
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -687,7 +671,7 @@ func (c *restClient) GetMigrationWorkflow(ctx context.Context, req *migrationpb.
 		if err != nil {
 			return nil, err
 		}
-		params.Add("readMask", string(readMask))
+		params.Add("readMask", string(readMask[1:len(readMask)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -720,13 +704,13 @@ func (c *restClient) GetMigrationWorkflow(ctx context.Context, req *migrationpb.
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -770,7 +754,7 @@ func (c *restClient) ListMigrationWorkflows(ctx context.Context, req *migrationp
 			if err != nil {
 				return nil, "", err
 			}
-			params.Add("readMask", string(readMask))
+			params.Add("readMask", string(readMask[1:len(readMask)-1]))
 		}
 
 		baseUrl.RawQuery = params.Encode()
@@ -797,13 +781,13 @@ func (c *restClient) ListMigrationWorkflows(ctx context.Context, req *migrationp
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -924,7 +908,7 @@ func (c *restClient) GetMigrationSubtask(ctx context.Context, req *migrationpb.G
 		if err != nil {
 			return nil, err
 		}
-		params.Add("readMask", string(readMask))
+		params.Add("readMask", string(readMask[1:len(readMask)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -957,13 +941,13 @@ func (c *restClient) GetMigrationSubtask(ctx context.Context, req *migrationpb.G
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1010,7 +994,7 @@ func (c *restClient) ListMigrationSubtasks(ctx context.Context, req *migrationpb
 			if err != nil {
 				return nil, "", err
 			}
-			params.Add("readMask", string(readMask))
+			params.Add("readMask", string(readMask[1:len(readMask)-1]))
 		}
 
 		baseUrl.RawQuery = params.Encode()
@@ -1037,13 +1021,13 @@ func (c *restClient) ListMigrationSubtasks(ctx context.Context, req *migrationpb
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil

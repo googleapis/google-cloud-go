@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/vpcaccess/apiv1",
-    "version": "1.6.0",
+    "version": "1.7.1",
     "language": "GO",
     "apis": [
       {
@@ -126,7 +126,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "vpcaccesspb.Connector",
+        "resultType": "*vpcaccesspb.Connector",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.vpcaccess.v1.Client"
@@ -172,17 +172,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "longrunningpb.Operation",
+        "resultType": "*longrunningpb.Operation",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.vpcaccess.v1.Client"
         },
         "method": {
           "shortName": "GetOperation",
-          "fullName": "google.cloud.vpcaccess.v1.VpcAccessService.GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
           "service": {
-            "shortName": "VpcAccessService",
-            "fullName": "google.cloud.vpcaccess.v1.VpcAccessService"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -190,7 +190,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -271,10 +271,10 @@
         },
         "method": {
           "shortName": "ListLocations",
-          "fullName": "google.cloud.vpcaccess.v1.VpcAccessService.ListLocations",
+          "fullName": "google.cloud.location.Locations.ListLocations",
           "service": {
-            "shortName": "VpcAccessService",
-            "fullName": "google.cloud.vpcaccess.v1.VpcAccessService"
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
           }
         }
       },
@@ -282,7 +282,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 61,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -317,10 +317,10 @@
         },
         "method": {
           "shortName": "ListOperations",
-          "fullName": "google.cloud.vpcaccess.v1.VpcAccessService.ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
           "service": {
-            "shortName": "VpcAccessService",
-            "fullName": "google.cloud.vpcaccess.v1.VpcAccessService"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -328,7 +328,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 61,
+          "end": 60,
           "type": "FULL"
         }
       ]

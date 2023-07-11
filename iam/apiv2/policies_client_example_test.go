@@ -20,9 +20,9 @@ import (
 	"context"
 
 	iam "cloud.google.com/go/iam/apiv2"
+	iampb "cloud.google.com/go/iam/apiv2/iampb"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	"google.golang.org/api/iterator"
-	iampb "google.golang.org/genproto/googleapis/iam/v2"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 )
 
 func ExampleNewPoliciesClient() {
@@ -74,7 +74,7 @@ func ExamplePoliciesClient_ListPolicies() {
 
 	req := &iampb.ListPoliciesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/iam/v2#ListPoliciesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/iam/apiv2/iampb#ListPoliciesRequest.
 	}
 	it := c.ListPolicies(ctx, req)
 	for {
@@ -105,7 +105,7 @@ func ExamplePoliciesClient_GetPolicy() {
 
 	req := &iampb.GetPolicyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/iam/v2#GetPolicyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/iam/apiv2/iampb#GetPolicyRequest.
 	}
 	resp, err := c.GetPolicy(ctx, req)
 	if err != nil {
@@ -130,7 +130,7 @@ func ExamplePoliciesClient_CreatePolicy() {
 
 	req := &iampb.CreatePolicyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/iam/v2#CreatePolicyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/iam/apiv2/iampb#CreatePolicyRequest.
 	}
 	op, err := c.CreatePolicy(ctx, req)
 	if err != nil {
@@ -160,7 +160,7 @@ func ExamplePoliciesClient_UpdatePolicy() {
 
 	req := &iampb.UpdatePolicyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/iam/v2#UpdatePolicyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/iam/apiv2/iampb#UpdatePolicyRequest.
 	}
 	op, err := c.UpdatePolicy(ctx, req)
 	if err != nil {
@@ -190,7 +190,7 @@ func ExamplePoliciesClient_DeletePolicy() {
 
 	req := &iampb.DeletePolicyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/iam/v2#DeletePolicyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/iam/apiv2/iampb#DeletePolicyRequest.
 	}
 	op, err := c.DeletePolicy(ctx, req)
 	if err != nil {
@@ -220,7 +220,7 @@ func ExamplePoliciesClient_GetOperation() {
 
 	req := &longrunningpb.GetOperationRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/longrunning#GetOperationRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/longrunning/autogen/longrunningpb#GetOperationRequest.
 	}
 	resp, err := c.GetOperation(ctx, req)
 	if err != nil {

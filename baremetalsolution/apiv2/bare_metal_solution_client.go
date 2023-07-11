@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"math"
 	"net/http"
 	"net/url"
@@ -29,6 +29,7 @@ import (
 	baremetalsolutionpb "cloud.google.com/go/baremetalsolution/apiv2/baremetalsolutionpb"
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
@@ -37,7 +38,6 @@ import (
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/encoding/protojson"
@@ -86,55 +86,135 @@ func defaultGRPCClientOptions() []option.ClientOption {
 
 func defaultCallOptions() *CallOptions {
 	return &CallOptions{
-		ListInstances:    []gax.CallOption{},
-		GetInstance:      []gax.CallOption{},
-		UpdateInstance:   []gax.CallOption{},
-		ResetInstance:    []gax.CallOption{},
-		StartInstance:    []gax.CallOption{},
-		StopInstance:     []gax.CallOption{},
-		DetachLun:        []gax.CallOption{},
-		ListVolumes:      []gax.CallOption{},
-		GetVolume:        []gax.CallOption{},
-		UpdateVolume:     []gax.CallOption{},
-		ResizeVolume:     []gax.CallOption{},
-		ListNetworks:     []gax.CallOption{},
-		ListNetworkUsage: []gax.CallOption{},
-		GetNetwork:       []gax.CallOption{},
-		UpdateNetwork:    []gax.CallOption{},
-		GetLun:           []gax.CallOption{},
-		ListLuns:         []gax.CallOption{},
-		GetNfsShare:      []gax.CallOption{},
-		ListNfsShares:    []gax.CallOption{},
-		UpdateNfsShare:   []gax.CallOption{},
-		GetLocation:      []gax.CallOption{},
-		ListLocations:    []gax.CallOption{},
+		ListInstances: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetInstance: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateInstance: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ResetInstance: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		StartInstance: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		StopInstance: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DetachLun: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ListVolumes: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetVolume: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateVolume: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ResizeVolume: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ListNetworks: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ListNetworkUsage: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetNetwork: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateNetwork: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetLun: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ListLuns: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetNfsShare: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ListNfsShares: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateNfsShare: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetLocation:   []gax.CallOption{},
+		ListLocations: []gax.CallOption{},
 	}
 }
 
 func defaultRESTCallOptions() *CallOptions {
 	return &CallOptions{
-		ListInstances:    []gax.CallOption{},
-		GetInstance:      []gax.CallOption{},
-		UpdateInstance:   []gax.CallOption{},
-		ResetInstance:    []gax.CallOption{},
-		StartInstance:    []gax.CallOption{},
-		StopInstance:     []gax.CallOption{},
-		DetachLun:        []gax.CallOption{},
-		ListVolumes:      []gax.CallOption{},
-		GetVolume:        []gax.CallOption{},
-		UpdateVolume:     []gax.CallOption{},
-		ResizeVolume:     []gax.CallOption{},
-		ListNetworks:     []gax.CallOption{},
-		ListNetworkUsage: []gax.CallOption{},
-		GetNetwork:       []gax.CallOption{},
-		UpdateNetwork:    []gax.CallOption{},
-		GetLun:           []gax.CallOption{},
-		ListLuns:         []gax.CallOption{},
-		GetNfsShare:      []gax.CallOption{},
-		ListNfsShares:    []gax.CallOption{},
-		UpdateNfsShare:   []gax.CallOption{},
-		GetLocation:      []gax.CallOption{},
-		ListLocations:    []gax.CallOption{},
+		ListInstances: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetInstance: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateInstance: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ResetInstance: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		StartInstance: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		StopInstance: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DetachLun: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ListVolumes: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetVolume: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateVolume: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ResizeVolume: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ListNetworks: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ListNetworkUsage: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetNetwork: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateNetwork: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetLun: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ListLuns: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetNfsShare: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ListNfsShares: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateNfsShare: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetLocation:   []gax.CallOption{},
+		ListLocations: []gax.CallOption{},
 	}
 }
 
@@ -396,9 +476,6 @@ type gRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing Client
 	CallOptions **CallOptions
 
@@ -437,11 +514,6 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -449,11 +521,10 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 	client := Client{CallOptions: defaultCallOptions()}
 
 	c := &gRPCClient{
-		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
-		client:           baremetalsolutionpb.NewBareMetalSolutionClient(connPool),
-		CallOptions:      &client.CallOptions,
-		locationsClient:  locationpb.NewLocationsClient(connPool),
+		connPool:        connPool,
+		client:          baremetalsolutionpb.NewBareMetalSolutionClient(connPool),
+		CallOptions:     &client.CallOptions,
+		locationsClient: locationpb.NewLocationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
 
@@ -485,7 +556,7 @@ func (c *gRPCClient) Connection() *grpc.ClientConn {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -567,7 +638,7 @@ func defaultRESTClientOptions() []option.ClientOption {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *restClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -632,11 +703,6 @@ func (c *gRPCClient) ListInstances(ctx context.Context, req *baremetalsolutionpb
 }
 
 func (c *gRPCClient) GetInstance(ctx context.Context, req *baremetalsolutionpb.GetInstanceRequest, opts ...gax.CallOption) (*baremetalsolutionpb.Instance, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -654,11 +720,6 @@ func (c *gRPCClient) GetInstance(ctx context.Context, req *baremetalsolutionpb.G
 }
 
 func (c *gRPCClient) UpdateInstance(ctx context.Context, req *baremetalsolutionpb.UpdateInstanceRequest, opts ...gax.CallOption) (*UpdateInstanceOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "instance.name", url.QueryEscape(req.GetInstance().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -678,11 +739,6 @@ func (c *gRPCClient) UpdateInstance(ctx context.Context, req *baremetalsolutionp
 }
 
 func (c *gRPCClient) ResetInstance(ctx context.Context, req *baremetalsolutionpb.ResetInstanceRequest, opts ...gax.CallOption) (*ResetInstanceOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -702,11 +758,6 @@ func (c *gRPCClient) ResetInstance(ctx context.Context, req *baremetalsolutionpb
 }
 
 func (c *gRPCClient) StartInstance(ctx context.Context, req *baremetalsolutionpb.StartInstanceRequest, opts ...gax.CallOption) (*StartInstanceOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -726,11 +777,6 @@ func (c *gRPCClient) StartInstance(ctx context.Context, req *baremetalsolutionpb
 }
 
 func (c *gRPCClient) StopInstance(ctx context.Context, req *baremetalsolutionpb.StopInstanceRequest, opts ...gax.CallOption) (*StopInstanceOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -750,11 +796,6 @@ func (c *gRPCClient) StopInstance(ctx context.Context, req *baremetalsolutionpb.
 }
 
 func (c *gRPCClient) DetachLun(ctx context.Context, req *baremetalsolutionpb.DetachLunRequest, opts ...gax.CallOption) (*DetachLunOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "instance", url.QueryEscape(req.GetInstance())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -819,11 +860,6 @@ func (c *gRPCClient) ListVolumes(ctx context.Context, req *baremetalsolutionpb.L
 }
 
 func (c *gRPCClient) GetVolume(ctx context.Context, req *baremetalsolutionpb.GetVolumeRequest, opts ...gax.CallOption) (*baremetalsolutionpb.Volume, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -841,11 +877,6 @@ func (c *gRPCClient) GetVolume(ctx context.Context, req *baremetalsolutionpb.Get
 }
 
 func (c *gRPCClient) UpdateVolume(ctx context.Context, req *baremetalsolutionpb.UpdateVolumeRequest, opts ...gax.CallOption) (*UpdateVolumeOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "volume.name", url.QueryEscape(req.GetVolume().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -865,11 +896,6 @@ func (c *gRPCClient) UpdateVolume(ctx context.Context, req *baremetalsolutionpb.
 }
 
 func (c *gRPCClient) ResizeVolume(ctx context.Context, req *baremetalsolutionpb.ResizeVolumeRequest, opts ...gax.CallOption) (*ResizeVolumeOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "volume", url.QueryEscape(req.GetVolume())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -934,11 +960,6 @@ func (c *gRPCClient) ListNetworks(ctx context.Context, req *baremetalsolutionpb.
 }
 
 func (c *gRPCClient) ListNetworkUsage(ctx context.Context, req *baremetalsolutionpb.ListNetworkUsageRequest, opts ...gax.CallOption) (*baremetalsolutionpb.ListNetworkUsageResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "location", url.QueryEscape(req.GetLocation())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -956,11 +977,6 @@ func (c *gRPCClient) ListNetworkUsage(ctx context.Context, req *baremetalsolutio
 }
 
 func (c *gRPCClient) GetNetwork(ctx context.Context, req *baremetalsolutionpb.GetNetworkRequest, opts ...gax.CallOption) (*baremetalsolutionpb.Network, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -978,11 +994,6 @@ func (c *gRPCClient) GetNetwork(ctx context.Context, req *baremetalsolutionpb.Ge
 }
 
 func (c *gRPCClient) UpdateNetwork(ctx context.Context, req *baremetalsolutionpb.UpdateNetworkRequest, opts ...gax.CallOption) (*UpdateNetworkOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "network.name", url.QueryEscape(req.GetNetwork().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1002,11 +1013,6 @@ func (c *gRPCClient) UpdateNetwork(ctx context.Context, req *baremetalsolutionpb
 }
 
 func (c *gRPCClient) GetLun(ctx context.Context, req *baremetalsolutionpb.GetLunRequest, opts ...gax.CallOption) (*baremetalsolutionpb.Lun, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1069,11 +1075,6 @@ func (c *gRPCClient) ListLuns(ctx context.Context, req *baremetalsolutionpb.List
 }
 
 func (c *gRPCClient) GetNfsShare(ctx context.Context, req *baremetalsolutionpb.GetNfsShareRequest, opts ...gax.CallOption) (*baremetalsolutionpb.NfsShare, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1136,11 +1137,6 @@ func (c *gRPCClient) ListNfsShares(ctx context.Context, req *baremetalsolutionpb
 }
 
 func (c *gRPCClient) UpdateNfsShare(ctx context.Context, req *baremetalsolutionpb.UpdateNfsShareRequest, opts ...gax.CallOption) (*UpdateNfsShareOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "nfs_share.name", url.QueryEscape(req.GetNfsShare().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1278,13 +1274,13 @@ func (c *restClient) ListInstances(ctx context.Context, req *baremetalsolutionpb
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -1353,13 +1349,13 @@ func (c *restClient) GetInstance(ctx context.Context, req *baremetalsolutionpb.G
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1392,7 +1388,7 @@ func (c *restClient) UpdateInstance(ctx context.Context, req *baremetalsolutionp
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask))
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1424,13 +1420,13 @@ func (c *restClient) UpdateInstance(ctx context.Context, req *baremetalsolutionp
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1493,13 +1489,13 @@ func (c *restClient) ResetInstance(ctx context.Context, req *baremetalsolutionpb
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1561,13 +1557,13 @@ func (c *restClient) StartInstance(ctx context.Context, req *baremetalsolutionpb
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1629,13 +1625,13 @@ func (c *restClient) StopInstance(ctx context.Context, req *baremetalsolutionpb.
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1697,13 +1693,13 @@ func (c *restClient) DetachLun(ctx context.Context, req *baremetalsolutionpb.Det
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1776,13 +1772,13 @@ func (c *restClient) ListVolumes(ctx context.Context, req *baremetalsolutionpb.L
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -1851,13 +1847,13 @@ func (c *restClient) GetVolume(ctx context.Context, req *baremetalsolutionpb.Get
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1890,7 +1886,7 @@ func (c *restClient) UpdateVolume(ctx context.Context, req *baremetalsolutionpb.
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask))
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1922,13 +1918,13 @@ func (c *restClient) UpdateVolume(ctx context.Context, req *baremetalsolutionpb.
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1990,13 +1986,13 @@ func (c *restClient) ResizeVolume(ctx context.Context, req *baremetalsolutionpb.
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2069,13 +2065,13 @@ func (c *restClient) ListNetworks(ctx context.Context, req *baremetalsolutionpb.
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -2145,13 +2141,13 @@ func (c *restClient) ListNetworkUsage(ctx context.Context, req *baremetalsolutio
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2203,13 +2199,13 @@ func (c *restClient) GetNetwork(ctx context.Context, req *baremetalsolutionpb.Ge
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2242,7 +2238,7 @@ func (c *restClient) UpdateNetwork(ctx context.Context, req *baremetalsolutionpb
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask))
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -2274,13 +2270,13 @@ func (c *restClient) UpdateNetwork(ctx context.Context, req *baremetalsolutionpb
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2337,13 +2333,13 @@ func (c *restClient) GetLun(ctx context.Context, req *baremetalsolutionpb.GetLun
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2408,13 +2404,13 @@ func (c *restClient) ListLuns(ctx context.Context, req *baremetalsolutionpb.List
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -2483,13 +2479,13 @@ func (c *restClient) GetNfsShare(ctx context.Context, req *baremetalsolutionpb.G
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2557,13 +2553,13 @@ func (c *restClient) ListNfsShares(ctx context.Context, req *baremetalsolutionpb
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -2613,7 +2609,7 @@ func (c *restClient) UpdateNfsShare(ctx context.Context, req *baremetalsolutionp
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask))
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -2645,13 +2641,13 @@ func (c *restClient) UpdateNfsShare(ctx context.Context, req *baremetalsolutionp
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2708,13 +2704,13 @@ func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2782,13 +2778,13 @@ func (c *restClient) ListLocations(ctx context.Context, req *locationpb.ListLoca
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil

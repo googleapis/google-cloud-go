@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/speech/apiv2",
-    "version": "1.12.0",
+    "version": "1.18.0",
     "language": "GO",
     "apis": [
       {
@@ -86,10 +86,10 @@
         },
         "method": {
           "shortName": "CancelOperation",
-          "fullName": "google.cloud.speech.v2.Speech.CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
           "service": {
-            "shortName": "Speech",
-            "fullName": "google.cloud.speech.v2.Speech"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -97,7 +97,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -105,7 +105,7 @@
     {
       "regionTag": "speech_v2_generated_Speech_CreateCustomClass_sync",
       "title": "speech CreateCustomClass Sample",
-      "description": "CreateCustomClass creates a CustomClass.",
+      "description": "CreateCustomClass creates a [CustomClass][google.cloud.speech.v2.CustomClass].",
       "file": "Client/CreateCustomClass/main.go",
       "language": "GO",
       "clientMethod": {
@@ -151,7 +151,7 @@
     {
       "regionTag": "speech_v2_generated_Speech_CreatePhraseSet_sync",
       "title": "speech CreatePhraseSet Sample",
-      "description": "CreatePhraseSet creates a PhraseSet.",
+      "description": "CreatePhraseSet creates a [PhraseSet][google.cloud.speech.v2.PhraseSet].",
       "file": "Client/CreatePhraseSet/main.go",
       "language": "GO",
       "clientMethod": {
@@ -197,7 +197,7 @@
     {
       "regionTag": "speech_v2_generated_Speech_CreateRecognizer_sync",
       "title": "speech CreateRecognizer Sample",
-      "description": "CreateRecognizer creates a Recognizer.",
+      "description": "CreateRecognizer creates a [Recognizer][google.cloud.speech.v2.Recognizer].",
       "file": "Client/CreateRecognizer/main.go",
       "language": "GO",
       "clientMethod": {
@@ -243,7 +243,7 @@
     {
       "regionTag": "speech_v2_generated_Speech_DeleteCustomClass_sync",
       "title": "speech DeleteCustomClass Sample",
-      "description": "DeleteCustomClass deletes the CustomClass.",
+      "description": "DeleteCustomClass deletes the [CustomClass][google.cloud.speech.v2.CustomClass].",
       "file": "Client/DeleteCustomClass/main.go",
       "language": "GO",
       "clientMethod": {
@@ -315,10 +315,10 @@
         },
         "method": {
           "shortName": "DeleteOperation",
-          "fullName": "google.cloud.speech.v2.Speech.DeleteOperation",
+          "fullName": "google.longrunning.Operations.DeleteOperation",
           "service": {
-            "shortName": "Speech",
-            "fullName": "google.cloud.speech.v2.Speech"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -326,7 +326,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -334,7 +334,7 @@
     {
       "regionTag": "speech_v2_generated_Speech_DeletePhraseSet_sync",
       "title": "speech DeletePhraseSet Sample",
-      "description": "DeletePhraseSet deletes the PhraseSet.",
+      "description": "DeletePhraseSet deletes the [PhraseSet][google.cloud.speech.v2.PhraseSet].",
       "file": "Client/DeletePhraseSet/main.go",
       "language": "GO",
       "clientMethod": {
@@ -380,7 +380,7 @@
     {
       "regionTag": "speech_v2_generated_Speech_DeleteRecognizer_sync",
       "title": "speech DeleteRecognizer Sample",
-      "description": "DeleteRecognizer deletes the Recognizer.",
+      "description": "DeleteRecognizer deletes the [Recognizer][google.cloud.speech.v2.Recognizer].",
       "file": "Client/DeleteRecognizer/main.go",
       "language": "GO",
       "clientMethod": {
@@ -426,7 +426,7 @@
     {
       "regionTag": "speech_v2_generated_Speech_GetConfig_sync",
       "title": "speech GetConfig Sample",
-      "description": "GetConfig returns the requested Config.",
+      "description": "GetConfig returns the requested [Config][google.cloud.speech.v2.Config].",
       "file": "Client/GetConfig/main.go",
       "language": "GO",
       "clientMethod": {
@@ -446,7 +446,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "speechpb.Config",
+        "resultType": "*speechpb.Config",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.speech.v2.Client"
@@ -472,7 +472,7 @@
     {
       "regionTag": "speech_v2_generated_Speech_GetCustomClass_sync",
       "title": "speech GetCustomClass Sample",
-      "description": "GetCustomClass returns the requested\nCustomClass.",
+      "description": "GetCustomClass returns the requested\n[CustomClass][google.cloud.speech.v2.CustomClass].",
       "file": "Client/GetCustomClass/main.go",
       "language": "GO",
       "clientMethod": {
@@ -492,7 +492,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "speechpb.CustomClass",
+        "resultType": "*speechpb.CustomClass",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.speech.v2.Client"
@@ -503,6 +503,52 @@
           "service": {
             "shortName": "Speech",
             "fullName": "google.cloud.speech.v2.Speech"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "speech_v2_generated_Speech_GetLocation_sync",
+      "title": "speech GetLocation Sample",
+      "description": "GetLocation gets information about a location.",
+      "file": "Client/GetLocation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetLocation",
+        "fullName": "google.cloud.speech.v2.Client.GetLocation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.GetLocationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*locationpb.Location",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.speech.v2.Client"
+        },
+        "method": {
+          "shortName": "GetLocation",
+          "fullName": "google.cloud.location.Locations.GetLocation",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
           }
         }
       },
@@ -538,17 +584,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "longrunningpb.Operation",
+        "resultType": "*longrunningpb.Operation",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.speech.v2.Client"
         },
         "method": {
           "shortName": "GetOperation",
-          "fullName": "google.cloud.speech.v2.Speech.GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
           "service": {
-            "shortName": "Speech",
-            "fullName": "google.cloud.speech.v2.Speech"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -556,7 +602,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -564,7 +610,7 @@
     {
       "regionTag": "speech_v2_generated_Speech_GetPhraseSet_sync",
       "title": "speech GetPhraseSet Sample",
-      "description": "GetPhraseSet returns the requested\nPhraseSet.",
+      "description": "GetPhraseSet returns the requested\n[PhraseSet][google.cloud.speech.v2.PhraseSet].",
       "file": "Client/GetPhraseSet/main.go",
       "language": "GO",
       "clientMethod": {
@@ -584,7 +630,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "speechpb.PhraseSet",
+        "resultType": "*speechpb.PhraseSet",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.speech.v2.Client"
@@ -610,7 +656,7 @@
     {
       "regionTag": "speech_v2_generated_Speech_GetRecognizer_sync",
       "title": "speech GetRecognizer Sample",
-      "description": "GetRecognizer returns the requested\nRecognizer. Fails with\nNOT_FOUND if the requested recognizer doesn’t\nexist.",
+      "description": "GetRecognizer returns the requested\n[Recognizer][google.cloud.speech.v2.Recognizer]. Fails with\n[NOT_FOUND][google.rpc.Code.NOT_FOUND] if the requested Recognizer doesn't\nexist.",
       "file": "Client/GetRecognizer/main.go",
       "language": "GO",
       "clientMethod": {
@@ -630,7 +676,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "speechpb.Recognizer",
+        "resultType": "*speechpb.Recognizer",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.speech.v2.Client"
@@ -700,6 +746,52 @@
       ]
     },
     {
+      "regionTag": "speech_v2_generated_Speech_ListLocations_sync",
+      "title": "speech ListLocations Sample",
+      "description": "ListLocations lists information about the supported locations for this service.",
+      "file": "Client/ListLocations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListLocations",
+        "fullName": "google.cloud.speech.v2.Client.ListLocations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.ListLocationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "LocationIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.speech.v2.Client"
+        },
+        "method": {
+          "shortName": "ListLocations",
+          "fullName": "google.cloud.location.Locations.ListLocations",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 60,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "speech_v2_generated_Speech_ListOperations_sync",
       "title": "speech ListOperations Sample",
       "description": "ListOperations is a utility method from google.longrunning.Operations.",
@@ -729,10 +821,10 @@
         },
         "method": {
           "shortName": "ListOperations",
-          "fullName": "google.cloud.speech.v2.Speech.ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
           "service": {
-            "shortName": "Speech",
-            "fullName": "google.cloud.speech.v2.Speech"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -740,7 +832,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 61,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -860,7 +952,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "speechpb.RecognizeResponse",
+        "resultType": "*speechpb.RecognizeResponse",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.speech.v2.Client"
@@ -886,7 +978,7 @@
     {
       "regionTag": "speech_v2_generated_Speech_StreamingRecognize_sync",
       "title": "speech StreamingRecognize Sample",
-      "description": "StreamingRecognize performs bidirectional streaming speech recognition: receive results while\nsending audio. This method is only available via the gRPC API (not REST).\n\nThis method is not supported for the REST transport.",
+      "description": "StreamingRecognize performs bidirectional streaming speech recognition: receive results while\nsending audio. This method is only available via the gRPC API (not REST).\n\n\nThis method is not supported for the REST transport.",
       "file": "Client/StreamingRecognize/main.go",
       "language": "GO",
       "clientMethod": {
@@ -902,6 +994,7 @@
             "name": "opts"
           }
         ],
+        "resultType": "speechpb.Speech_StreamingRecognizeClient",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.speech.v2.Client"
@@ -927,7 +1020,7 @@
     {
       "regionTag": "speech_v2_generated_Speech_UndeleteCustomClass_sync",
       "title": "speech UndeleteCustomClass Sample",
-      "description": "UndeleteCustomClass undeletes the CustomClass.",
+      "description": "UndeleteCustomClass undeletes the [CustomClass][google.cloud.speech.v2.CustomClass].",
       "file": "Client/UndeleteCustomClass/main.go",
       "language": "GO",
       "clientMethod": {
@@ -973,7 +1066,7 @@
     {
       "regionTag": "speech_v2_generated_Speech_UndeletePhraseSet_sync",
       "title": "speech UndeletePhraseSet Sample",
-      "description": "UndeletePhraseSet undeletes the PhraseSet.",
+      "description": "UndeletePhraseSet undeletes the [PhraseSet][google.cloud.speech.v2.PhraseSet].",
       "file": "Client/UndeletePhraseSet/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1019,7 +1112,7 @@
     {
       "regionTag": "speech_v2_generated_Speech_UndeleteRecognizer_sync",
       "title": "speech UndeleteRecognizer Sample",
-      "description": "UndeleteRecognizer undeletes the Recognizer.",
+      "description": "UndeleteRecognizer undeletes the [Recognizer][google.cloud.speech.v2.Recognizer].",
       "file": "Client/UndeleteRecognizer/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1065,7 +1158,7 @@
     {
       "regionTag": "speech_v2_generated_Speech_UpdateConfig_sync",
       "title": "speech UpdateConfig Sample",
-      "description": "UpdateConfig updates the Config.",
+      "description": "UpdateConfig updates the [Config][google.cloud.speech.v2.Config].",
       "file": "Client/UpdateConfig/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1085,7 +1178,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "speechpb.Config",
+        "resultType": "*speechpb.Config",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.speech.v2.Client"
@@ -1111,7 +1204,7 @@
     {
       "regionTag": "speech_v2_generated_Speech_UpdateCustomClass_sync",
       "title": "speech UpdateCustomClass Sample",
-      "description": "UpdateCustomClass updates the CustomClass.",
+      "description": "UpdateCustomClass updates the [CustomClass][google.cloud.speech.v2.CustomClass].",
       "file": "Client/UpdateCustomClass/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1157,7 +1250,7 @@
     {
       "regionTag": "speech_v2_generated_Speech_UpdatePhraseSet_sync",
       "title": "speech UpdatePhraseSet Sample",
-      "description": "UpdatePhraseSet updates the PhraseSet.",
+      "description": "UpdatePhraseSet updates the [PhraseSet][google.cloud.speech.v2.PhraseSet].",
       "file": "Client/UpdatePhraseSet/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1203,7 +1296,7 @@
     {
       "regionTag": "speech_v2_generated_Speech_UpdateRecognizer_sync",
       "title": "speech UpdateRecognizer Sample",
-      "description": "UpdateRecognizer updates the Recognizer.",
+      "description": "UpdateRecognizer updates the [Recognizer][google.cloud.speech.v2.Recognizer].",
       "file": "Client/UpdateRecognizer/main.go",
       "language": "GO",
       "clientMethod": {

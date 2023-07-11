@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/recommendationengine/apiv1beta1",
-    "version": "0.7.0",
+    "version": "0.8.1",
     "language": "GO",
     "apis": [
       {
@@ -34,7 +34,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "recommendationenginepb.CatalogItem",
+        "resultType": "*recommendationenginepb.CatalogItem",
         "client": {
           "shortName": "CatalogClient",
           "fullName": "google.cloud.recommendationengine.v1beta1.CatalogClient"
@@ -125,7 +125,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "recommendationenginepb.CatalogItem",
+        "resultType": "*recommendationenginepb.CatalogItem",
         "client": {
           "shortName": "CatalogClient",
           "fullName": "google.cloud.recommendationengine.v1beta1.CatalogClient"
@@ -263,7 +263,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "recommendationenginepb.CatalogItem",
+        "resultType": "*recommendationenginepb.CatalogItem",
         "client": {
           "shortName": "CatalogClient",
           "fullName": "google.cloud.recommendationengine.v1beta1.CatalogClient"
@@ -309,7 +309,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "recommendationenginepb.PredictionApiKeyRegistration",
+        "resultType": "*recommendationenginepb.PredictionApiKeyRegistration",
         "client": {
           "shortName": "PredictionApiKeyRegistryClient",
           "fullName": "google.cloud.recommendationengine.v1beta1.PredictionApiKeyRegistryClient"
@@ -426,7 +426,7 @@
     {
       "regionTag": "recommendationengine_v1beta1_generated_PredictionService_Predict_sync",
       "title": "recommendationengine Predict Sample",
-      "description": "Predict makes a recommendation prediction. If using API Key based authentication,\nthe API Key must be registered using the\nPredictionApiKeyRegistry\nservice. Learn more (at /recommendations-ai/docs/setting-up#register-key).",
+      "description": "Predict makes a recommendation prediction. If using API Key based authentication,\nthe API Key must be registered using the\n[PredictionApiKeyRegistry][google.cloud.recommendationengine.v1beta1.PredictionApiKeyRegistry]\nservice. [Learn more](/recommendations-ai/docs/setting-up#register-key).",
       "file": "PredictionClient/Predict/main.go",
       "language": "GO",
       "clientMethod": {
@@ -492,7 +492,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "httpbodypb.HttpBody",
+        "resultType": "*httpbodypb.HttpBody",
         "client": {
           "shortName": "UserEventClient",
           "fullName": "google.cloud.recommendationengine.v1beta1.UserEventClient"
@@ -676,7 +676,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "recommendationenginepb.UserEvent",
+        "resultType": "*recommendationenginepb.UserEvent",
         "client": {
           "shortName": "UserEventClient",
           "fullName": "google.cloud.recommendationengine.v1beta1.UserEventClient"

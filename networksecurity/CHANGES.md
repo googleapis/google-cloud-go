@@ -1,5 +1,33 @@
 # Changes
 
+## [0.9.1](https://github.com/googleapis/google-cloud-go/compare/networksecurity/v0.9.0...networksecurity/v0.9.1) (2023-06-20)
+
+
+### Bug Fixes
+
+* **networksecurity:** REST query UpdateMask bug ([df52820](https://github.com/googleapis/google-cloud-go/commit/df52820b0e7721954809a8aa8700b93c5662dc9b))
+
+## [0.9.0](https://github.com/googleapis/google-cloud-go/compare/networksecurity/v0.8.1...networksecurity/v0.9.0) (2023-05-30)
+
+
+### Features
+
+* **networksecurity:** Update all direct dependencies ([b340d03](https://github.com/googleapis/google-cloud-go/commit/b340d030f2b52a4ce48846ce63984b28583abde6))
+
+## [0.8.1](https://github.com/googleapis/google-cloud-go/compare/networksecurity/v0.8.0...networksecurity/v0.8.1) (2023-05-08)
+
+
+### Bug Fixes
+
+* **networksecurity:** Update grpc to v1.55.0 ([1147ce0](https://github.com/googleapis/google-cloud-go/commit/1147ce02a990276ca4f8ab7a1ab65c14da4450ef))
+
+## [0.8.0](https://github.com/googleapis/google-cloud-go/compare/networksecurity/v0.7.0...networksecurity/v0.8.0) (2023-03-15)
+
+
+### Features
+
+* **networksecurity:** Update iam and longrunning deps ([91a1f78](https://github.com/googleapis/google-cloud-go/commit/91a1f784a109da70f63b96414bba8a9b4254cddd))
+
 ## [0.7.0](https://github.com/googleapis/google-cloud-go/compare/networksecurity/v0.6.0...networksecurity/v0.7.0) (2023-01-04)
 
 

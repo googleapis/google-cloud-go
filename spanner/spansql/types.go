@@ -133,6 +133,19 @@ func (*CreateView) isDDLStmt()        {}
 func (cv *CreateView) Pos() Position  { return cv.Position }
 func (cv *CreateView) clearOffset()   { cv.Position.Offset = 0 }
 
+// CreateRole represents a CREATE Role statement.
+// https://cloud.google.com/spanner/docs/reference/standard-sql/data-definition-language#create_role
+type CreateRole struct {
+	Name ID
+
+	Position Position // position of the "CREATE" token
+}
+
+func (cr *CreateRole) String() string { return fmt.Sprintf("%#v", cr) }
+func (*CreateRole) isDDLStmt()        {}
+func (cr *CreateRole) Pos() Position  { return cr.Position }
+func (cr *CreateRole) clearOffset()   { cr.Position.Offset = 0 }
+
 // DropTable represents a DROP TABLE statement.
 // https://cloud.google.com/spanner/docs/data-definition-language#drop_table
 type DropTable struct {
@@ -171,6 +184,62 @@ func (dv *DropView) String() string { return fmt.Sprintf("%#v", dv) }
 func (*DropView) isDDLStmt()        {}
 func (dv *DropView) Pos() Position  { return dv.Position }
 func (dv *DropView) clearOffset()   { dv.Position.Offset = 0 }
+
+// DropRole represents a DROP ROLE statement.
+// https://cloud.google.com/spanner/docs/reference/standard-sql/data-definition-language#drop_role
+type DropRole struct {
+	Name ID
+
+	Position Position // position of the "DROP" token
+}
+
+func (dr *DropRole) String() string { return fmt.Sprintf("%#v", dr) }
+func (*DropRole) isDDLStmt()        {}
+func (dr *DropRole) Pos() Position  { return dr.Position }
+func (dr *DropRole) clearOffset()   { dr.Position.Offset = 0 }
+
+// GrantRole represents a GRANT statement.
+// https://cloud.google.com/spanner/docs/reference/standard-sql/data-definition-language#grant_statement
+type GrantRole struct {
+	ToRoleNames       []ID
+	GrantRoleNames    []ID
+	Privileges        []Privilege
+	TableNames        []ID
+	TvfNames          []ID
+	ViewNames         []ID
+	ChangeStreamNames []ID
+
+	Position Position // position of the "GRANT" token
+}
+
+func (gr *GrantRole) String() string { return fmt.Sprintf("%#v", gr) }
+func (*GrantRole) isDDLStmt()        {}
+func (gr *GrantRole) Pos() Position  { return gr.Position }
+func (gr *GrantRole) clearOffset()   { gr.Position.Offset = 0 }
+
+// RevokeRole represents a REVOKE statement.
+// https://cloud.google.com/spanner/docs/reference/standard-sql/data-definition-language#revoke_statement
+type RevokeRole struct {
+	FromRoleNames     []ID
+	RevokeRoleNames   []ID
+	Privileges        []Privilege
+	TableNames        []ID
+	TvfNames          []ID
+	ViewNames         []ID
+	ChangeStreamNames []ID
+	Position          Position // position of the "REVOKE" token
+}
+
+func (rr *RevokeRole) String() string { return fmt.Sprintf("%#v", rr) }
+func (*RevokeRole) isDDLStmt()        {}
+func (rr *RevokeRole) Pos() Position  { return rr.Position }
+func (rr *RevokeRole) clearOffset()   { rr.Position.Offset = 0 }
+
+// Privilege represents privilege to grant or revoke.
+type Privilege struct {
+	Type    PrivilegeType
+	Columns []ID
+}
 
 // AlterTable represents an ALTER TABLE statement.
 // https://cloud.google.com/spanner/docs/data-definition-language#alter_table
@@ -290,10 +359,11 @@ func (SetDatabaseOptions) isDatabaseAlteration() {}
 // DatabaseOptions represents options on a database as part of a
 // ALTER DATABASE statement.
 type DatabaseOptions struct {
-	OptimizerVersion       *int
-	VersionRetentionPeriod *string
-	EnableKeyVisualizer    *bool
-	DefaultLeader          *string
+	OptimizerVersion           *int
+	OptimizerStatisticsPackage *string
+	VersionRetentionPeriod     *string
+	EnableKeyVisualizer        *bool
+	DefaultLeader              *string
 }
 
 // Delete represents a DELETE statement.
@@ -426,6 +496,15 @@ const (
 	Date
 	Timestamp
 	JSON
+)
+
+type PrivilegeType int
+
+const (
+	PrivilegeTypeSelect PrivilegeType = iota
+	PrivilegeTypeInsert
+	PrivilegeTypeUpdate
+	PrivilegeTypeDelete
 )
 
 // KeyPart represents a column specification as part of a primary key or index definition.
@@ -1083,10 +1162,15 @@ type ChangeStreamAlteration interface {
 }
 
 func (AlterWatch) isChangeStreamAlteration()               {}
+func (DropChangeStreamWatch) isChangeStreamAlteration()    {}
 func (AlterChangeStreamOptions) isChangeStreamAlteration() {}
 
 type (
-	AlterWatch               struct{ Watch []WatchDef }
+	AlterWatch struct {
+		WatchAllTables bool
+		Watch          []WatchDef
+	}
+	DropChangeStreamWatch    struct{}
 	AlterChangeStreamOptions struct{ Options ChangeStreamOptions }
 )
 
@@ -1117,3 +1201,56 @@ type ChangeStreamOptions struct {
 	RetentionPeriod  *string
 	ValueCaptureType *string
 }
+
+// AlterStatistics represents an ALTER STATISTICS statement.
+// https://cloud.google.com/spanner/docs/data-definition-language#alter-statistics
+type AlterStatistics struct {
+	Name       ID
+	Alteration StatisticsAlteration
+
+	Position Position // position of the "ALTER" token
+}
+
+func (as *AlterStatistics) String() string { return fmt.Sprintf("%#v", as) }
+func (*AlterStatistics) isDDLStmt()        {}
+func (as *AlterStatistics) Pos() Position  { return as.Position }
+func (as *AlterStatistics) clearOffset()   { as.Position.Offset = 0 }
+
+type StatisticsAlteration interface {
+	isStatisticsAlteration()
+	SQL() string
+}
+
+type SetStatisticsOptions struct{ Options StatisticsOptions }
+
+func (SetStatisticsOptions) isStatisticsAlteration() {}
+
+// StatisticsOptions represents options on a statistics as part of a ALTER STATISTICS statement.
+type StatisticsOptions struct {
+	AllowGC *bool
+}
+
+type AlterIndex struct {
+	Name       ID
+	Alteration IndexAlteration
+
+	Position Position // position of the "ALTER" token
+}
+
+func (as *AlterIndex) String() string { return fmt.Sprintf("%#v", as) }
+func (*AlterIndex) isDDLStmt()        {}
+func (as *AlterIndex) Pos() Position  { return as.Position }
+func (as *AlterIndex) clearOffset()   { as.Position.Offset = 0 }
+
+type IndexAlteration interface {
+	isIndexAlteration()
+	SQL() string
+}
+
+func (AddStoredColumn) isIndexAlteration()  {}
+func (DropStoredColumn) isIndexAlteration() {}
+
+type (
+	AddStoredColumn  struct{ Name ID }
+	DropStoredColumn struct{ Name ID }
+)

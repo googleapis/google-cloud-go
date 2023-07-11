@@ -20,15 +20,17 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"math"
 	"net/http"
 	"net/url"
 	"time"
 
 	deploypb "cloud.google.com/go/deploy/apiv1/deploypb"
+	iampb "cloud.google.com/go/iam/apiv1/iampb"
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
@@ -37,8 +39,6 @@ import (
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
-	iampb "google.golang.org/genproto/googleapis/iam/v1"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -65,12 +65,16 @@ type CloudDeployCallOptions struct {
 	CreateRelease          []gax.CallOption
 	AbandonRelease         []gax.CallOption
 	ApproveRollout         []gax.CallOption
+	AdvanceRollout         []gax.CallOption
+	CancelRollout          []gax.CallOption
 	ListRollouts           []gax.CallOption
 	GetRollout             []gax.CallOption
 	CreateRollout          []gax.CallOption
+	IgnoreJob              []gax.CallOption
 	RetryJob               []gax.CallOption
 	ListJobRuns            []gax.CallOption
 	GetJobRun              []gax.CallOption
+	TerminateJobRun        []gax.CallOption
 	GetConfig              []gax.CallOption
 	GetLocation            []gax.CallOption
 	ListLocations          []gax.CallOption
@@ -98,6 +102,7 @@ func defaultCloudDeployGRPCClientOptions() []option.ClientOption {
 func defaultCloudDeployCallOptions() *CloudDeployCallOptions {
 	return &CloudDeployCallOptions{
 		ListDeliveryPipelines: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -109,6 +114,7 @@ func defaultCloudDeployCallOptions() *CloudDeployCallOptions {
 			}),
 		},
 		GetDeliveryPipeline: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -119,10 +125,17 @@ func defaultCloudDeployCallOptions() *CloudDeployCallOptions {
 				})
 			}),
 		},
-		CreateDeliveryPipeline: []gax.CallOption{},
-		UpdateDeliveryPipeline: []gax.CallOption{},
-		DeleteDeliveryPipeline: []gax.CallOption{},
+		CreateDeliveryPipeline: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateDeliveryPipeline: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteDeliveryPipeline: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		ListTargets: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -134,6 +147,7 @@ func defaultCloudDeployCallOptions() *CloudDeployCallOptions {
 			}),
 		},
 		GetTarget: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -144,10 +158,17 @@ func defaultCloudDeployCallOptions() *CloudDeployCallOptions {
 				})
 			}),
 		},
-		CreateTarget: []gax.CallOption{},
-		UpdateTarget: []gax.CallOption{},
-		DeleteTarget: []gax.CallOption{},
+		CreateTarget: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateTarget: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteTarget: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		ListReleases: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -159,6 +180,7 @@ func defaultCloudDeployCallOptions() *CloudDeployCallOptions {
 			}),
 		},
 		GetRelease: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -169,10 +191,23 @@ func defaultCloudDeployCallOptions() *CloudDeployCallOptions {
 				})
 			}),
 		},
-		CreateRelease:  []gax.CallOption{},
-		AbandonRelease: []gax.CallOption{},
-		ApproveRollout: []gax.CallOption{},
+		CreateRelease: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		AbandonRelease: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ApproveRollout: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		AdvanceRollout: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		CancelRollout: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		ListRollouts: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -184,6 +219,7 @@ func defaultCloudDeployCallOptions() *CloudDeployCallOptions {
 			}),
 		},
 		GetRollout: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -194,9 +230,17 @@ func defaultCloudDeployCallOptions() *CloudDeployCallOptions {
 				})
 			}),
 		},
-		CreateRollout: []gax.CallOption{},
-		RetryJob:      []gax.CallOption{},
+		CreateRollout: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		IgnoreJob: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		RetryJob: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		ListJobRuns: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -208,6 +252,7 @@ func defaultCloudDeployCallOptions() *CloudDeployCallOptions {
 			}),
 		},
 		GetJobRun: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -218,7 +263,11 @@ func defaultCloudDeployCallOptions() *CloudDeployCallOptions {
 				})
 			}),
 		},
+		TerminateJobRun: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		GetConfig: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -244,6 +293,7 @@ func defaultCloudDeployCallOptions() *CloudDeployCallOptions {
 func defaultCloudDeployRESTCallOptions() *CloudDeployCallOptions {
 	return &CloudDeployCallOptions{
 		ListDeliveryPipelines: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -254,6 +304,7 @@ func defaultCloudDeployRESTCallOptions() *CloudDeployCallOptions {
 			}),
 		},
 		GetDeliveryPipeline: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -263,10 +314,17 @@ func defaultCloudDeployRESTCallOptions() *CloudDeployCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
-		CreateDeliveryPipeline: []gax.CallOption{},
-		UpdateDeliveryPipeline: []gax.CallOption{},
-		DeleteDeliveryPipeline: []gax.CallOption{},
+		CreateDeliveryPipeline: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateDeliveryPipeline: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteDeliveryPipeline: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		ListTargets: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -277,6 +335,7 @@ func defaultCloudDeployRESTCallOptions() *CloudDeployCallOptions {
 			}),
 		},
 		GetTarget: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -286,10 +345,17 @@ func defaultCloudDeployRESTCallOptions() *CloudDeployCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
-		CreateTarget: []gax.CallOption{},
-		UpdateTarget: []gax.CallOption{},
-		DeleteTarget: []gax.CallOption{},
+		CreateTarget: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateTarget: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteTarget: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		ListReleases: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -300,6 +366,7 @@ func defaultCloudDeployRESTCallOptions() *CloudDeployCallOptions {
 			}),
 		},
 		GetRelease: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -309,10 +376,23 @@ func defaultCloudDeployRESTCallOptions() *CloudDeployCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
-		CreateRelease:  []gax.CallOption{},
-		AbandonRelease: []gax.CallOption{},
-		ApproveRollout: []gax.CallOption{},
+		CreateRelease: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		AbandonRelease: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ApproveRollout: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		AdvanceRollout: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		CancelRollout: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		ListRollouts: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -323,6 +403,7 @@ func defaultCloudDeployRESTCallOptions() *CloudDeployCallOptions {
 			}),
 		},
 		GetRollout: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -332,9 +413,17 @@ func defaultCloudDeployRESTCallOptions() *CloudDeployCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
-		CreateRollout: []gax.CallOption{},
-		RetryJob:      []gax.CallOption{},
+		CreateRollout: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		IgnoreJob: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		RetryJob: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		ListJobRuns: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -345,6 +434,7 @@ func defaultCloudDeployRESTCallOptions() *CloudDeployCallOptions {
 			}),
 		},
 		GetJobRun: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -354,7 +444,11 @@ func defaultCloudDeployRESTCallOptions() *CloudDeployCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
+		TerminateJobRun: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		GetConfig: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -403,13 +497,17 @@ type internalCloudDeployClient interface {
 	CreateReleaseOperation(name string) *CreateReleaseOperation
 	AbandonRelease(context.Context, *deploypb.AbandonReleaseRequest, ...gax.CallOption) (*deploypb.AbandonReleaseResponse, error)
 	ApproveRollout(context.Context, *deploypb.ApproveRolloutRequest, ...gax.CallOption) (*deploypb.ApproveRolloutResponse, error)
+	AdvanceRollout(context.Context, *deploypb.AdvanceRolloutRequest, ...gax.CallOption) (*deploypb.AdvanceRolloutResponse, error)
+	CancelRollout(context.Context, *deploypb.CancelRolloutRequest, ...gax.CallOption) (*deploypb.CancelRolloutResponse, error)
 	ListRollouts(context.Context, *deploypb.ListRolloutsRequest, ...gax.CallOption) *RolloutIterator
 	GetRollout(context.Context, *deploypb.GetRolloutRequest, ...gax.CallOption) (*deploypb.Rollout, error)
 	CreateRollout(context.Context, *deploypb.CreateRolloutRequest, ...gax.CallOption) (*CreateRolloutOperation, error)
 	CreateRolloutOperation(name string) *CreateRolloutOperation
+	IgnoreJob(context.Context, *deploypb.IgnoreJobRequest, ...gax.CallOption) (*deploypb.IgnoreJobResponse, error)
 	RetryJob(context.Context, *deploypb.RetryJobRequest, ...gax.CallOption) (*deploypb.RetryJobResponse, error)
 	ListJobRuns(context.Context, *deploypb.ListJobRunsRequest, ...gax.CallOption) *JobRunIterator
 	GetJobRun(context.Context, *deploypb.GetJobRunRequest, ...gax.CallOption) (*deploypb.JobRun, error)
+	TerminateJobRun(context.Context, *deploypb.TerminateJobRunRequest, ...gax.CallOption) (*deploypb.TerminateJobRunResponse, error)
 	GetConfig(context.Context, *deploypb.GetConfigRequest, ...gax.CallOption) (*deploypb.Config, error)
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
 	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
@@ -580,6 +678,16 @@ func (c *CloudDeployClient) ApproveRollout(ctx context.Context, req *deploypb.Ap
 	return c.internalClient.ApproveRollout(ctx, req, opts...)
 }
 
+// AdvanceRollout advances a Rollout in a given project and location.
+func (c *CloudDeployClient) AdvanceRollout(ctx context.Context, req *deploypb.AdvanceRolloutRequest, opts ...gax.CallOption) (*deploypb.AdvanceRolloutResponse, error) {
+	return c.internalClient.AdvanceRollout(ctx, req, opts...)
+}
+
+// CancelRollout cancels a Rollout in a given project and location.
+func (c *CloudDeployClient) CancelRollout(ctx context.Context, req *deploypb.CancelRolloutRequest, opts ...gax.CallOption) (*deploypb.CancelRolloutResponse, error) {
+	return c.internalClient.CancelRollout(ctx, req, opts...)
+}
+
 // ListRollouts lists Rollouts in a given project and location.
 func (c *CloudDeployClient) ListRollouts(ctx context.Context, req *deploypb.ListRolloutsRequest, opts ...gax.CallOption) *RolloutIterator {
 	return c.internalClient.ListRollouts(ctx, req, opts...)
@@ -601,6 +709,11 @@ func (c *CloudDeployClient) CreateRolloutOperation(name string) *CreateRolloutOp
 	return c.internalClient.CreateRolloutOperation(name)
 }
 
+// IgnoreJob ignores the specified Job in a Rollout.
+func (c *CloudDeployClient) IgnoreJob(ctx context.Context, req *deploypb.IgnoreJobRequest, opts ...gax.CallOption) (*deploypb.IgnoreJobResponse, error) {
+	return c.internalClient.IgnoreJob(ctx, req, opts...)
+}
+
 // RetryJob retries the specified Job in a Rollout.
 func (c *CloudDeployClient) RetryJob(ctx context.Context, req *deploypb.RetryJobRequest, opts ...gax.CallOption) (*deploypb.RetryJobResponse, error) {
 	return c.internalClient.RetryJob(ctx, req, opts...)
@@ -614,6 +727,11 @@ func (c *CloudDeployClient) ListJobRuns(ctx context.Context, req *deploypb.ListJ
 // GetJobRun gets details of a single JobRun.
 func (c *CloudDeployClient) GetJobRun(ctx context.Context, req *deploypb.GetJobRunRequest, opts ...gax.CallOption) (*deploypb.JobRun, error) {
 	return c.internalClient.GetJobRun(ctx, req, opts...)
+}
+
+// TerminateJobRun terminates a Job Run in a given project and location.
+func (c *CloudDeployClient) TerminateJobRun(ctx context.Context, req *deploypb.TerminateJobRunRequest, opts ...gax.CallOption) (*deploypb.TerminateJobRunResponse, error) {
+	return c.internalClient.TerminateJobRun(ctx, req, opts...)
 }
 
 // GetConfig gets the configuration for a location.
@@ -684,9 +802,6 @@ type cloudDeployGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing CloudDeployClient
 	CallOptions **CloudDeployCallOptions
 
@@ -723,11 +838,6 @@ func NewCloudDeployClient(ctx context.Context, opts ...option.ClientOption) (*Cl
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -736,7 +846,6 @@ func NewCloudDeployClient(ctx context.Context, opts ...option.ClientOption) (*Cl
 
 	c := &cloudDeployGRPCClient{
 		connPool:          connPool,
-		disableDeadlines:  disableDeadlines,
 		cloudDeployClient: deploypb.NewCloudDeployClient(connPool),
 		CallOptions:       &client.CallOptions,
 		operationsClient:  longrunningpb.NewOperationsClient(connPool),
@@ -773,7 +882,7 @@ func (c *cloudDeployGRPCClient) Connection() *grpc.ClientConn {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *cloudDeployGRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -849,7 +958,7 @@ func defaultCloudDeployRESTClientOptions() []option.ClientOption {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *cloudDeployRESTClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -914,11 +1023,6 @@ func (c *cloudDeployGRPCClient) ListDeliveryPipelines(ctx context.Context, req *
 }
 
 func (c *cloudDeployGRPCClient) GetDeliveryPipeline(ctx context.Context, req *deploypb.GetDeliveryPipelineRequest, opts ...gax.CallOption) (*deploypb.DeliveryPipeline, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -936,11 +1040,6 @@ func (c *cloudDeployGRPCClient) GetDeliveryPipeline(ctx context.Context, req *de
 }
 
 func (c *cloudDeployGRPCClient) CreateDeliveryPipeline(ctx context.Context, req *deploypb.CreateDeliveryPipelineRequest, opts ...gax.CallOption) (*CreateDeliveryPipelineOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -960,11 +1059,6 @@ func (c *cloudDeployGRPCClient) CreateDeliveryPipeline(ctx context.Context, req 
 }
 
 func (c *cloudDeployGRPCClient) UpdateDeliveryPipeline(ctx context.Context, req *deploypb.UpdateDeliveryPipelineRequest, opts ...gax.CallOption) (*UpdateDeliveryPipelineOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "delivery_pipeline.name", url.QueryEscape(req.GetDeliveryPipeline().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -984,11 +1078,6 @@ func (c *cloudDeployGRPCClient) UpdateDeliveryPipeline(ctx context.Context, req 
 }
 
 func (c *cloudDeployGRPCClient) DeleteDeliveryPipeline(ctx context.Context, req *deploypb.DeleteDeliveryPipelineRequest, opts ...gax.CallOption) (*DeleteDeliveryPipelineOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1053,11 +1142,6 @@ func (c *cloudDeployGRPCClient) ListTargets(ctx context.Context, req *deploypb.L
 }
 
 func (c *cloudDeployGRPCClient) GetTarget(ctx context.Context, req *deploypb.GetTargetRequest, opts ...gax.CallOption) (*deploypb.Target, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1075,11 +1159,6 @@ func (c *cloudDeployGRPCClient) GetTarget(ctx context.Context, req *deploypb.Get
 }
 
 func (c *cloudDeployGRPCClient) CreateTarget(ctx context.Context, req *deploypb.CreateTargetRequest, opts ...gax.CallOption) (*CreateTargetOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1099,11 +1178,6 @@ func (c *cloudDeployGRPCClient) CreateTarget(ctx context.Context, req *deploypb.
 }
 
 func (c *cloudDeployGRPCClient) UpdateTarget(ctx context.Context, req *deploypb.UpdateTargetRequest, opts ...gax.CallOption) (*UpdateTargetOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "target.name", url.QueryEscape(req.GetTarget().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1123,11 +1197,6 @@ func (c *cloudDeployGRPCClient) UpdateTarget(ctx context.Context, req *deploypb.
 }
 
 func (c *cloudDeployGRPCClient) DeleteTarget(ctx context.Context, req *deploypb.DeleteTargetRequest, opts ...gax.CallOption) (*DeleteTargetOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1192,11 +1261,6 @@ func (c *cloudDeployGRPCClient) ListReleases(ctx context.Context, req *deploypb.
 }
 
 func (c *cloudDeployGRPCClient) GetRelease(ctx context.Context, req *deploypb.GetReleaseRequest, opts ...gax.CallOption) (*deploypb.Release, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1214,11 +1278,6 @@ func (c *cloudDeployGRPCClient) GetRelease(ctx context.Context, req *deploypb.Ge
 }
 
 func (c *cloudDeployGRPCClient) CreateRelease(ctx context.Context, req *deploypb.CreateReleaseRequest, opts ...gax.CallOption) (*CreateReleaseOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1238,11 +1297,6 @@ func (c *cloudDeployGRPCClient) CreateRelease(ctx context.Context, req *deploypb
 }
 
 func (c *cloudDeployGRPCClient) AbandonRelease(ctx context.Context, req *deploypb.AbandonReleaseRequest, opts ...gax.CallOption) (*deploypb.AbandonReleaseResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1260,11 +1314,6 @@ func (c *cloudDeployGRPCClient) AbandonRelease(ctx context.Context, req *deployp
 }
 
 func (c *cloudDeployGRPCClient) ApproveRollout(ctx context.Context, req *deploypb.ApproveRolloutRequest, opts ...gax.CallOption) (*deploypb.ApproveRolloutResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1273,6 +1322,40 @@ func (c *cloudDeployGRPCClient) ApproveRollout(ctx context.Context, req *deployp
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.cloudDeployClient.ApproveRollout(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *cloudDeployGRPCClient) AdvanceRollout(ctx context.Context, req *deploypb.AdvanceRolloutRequest, opts ...gax.CallOption) (*deploypb.AdvanceRolloutResponse, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).AdvanceRollout[0:len((*c.CallOptions).AdvanceRollout):len((*c.CallOptions).AdvanceRollout)], opts...)
+	var resp *deploypb.AdvanceRolloutResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.cloudDeployClient.AdvanceRollout(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *cloudDeployGRPCClient) CancelRollout(ctx context.Context, req *deploypb.CancelRolloutRequest, opts ...gax.CallOption) (*deploypb.CancelRolloutResponse, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).CancelRollout[0:len((*c.CallOptions).CancelRollout):len((*c.CallOptions).CancelRollout)], opts...)
+	var resp *deploypb.CancelRolloutResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.cloudDeployClient.CancelRollout(ctx, req, settings.GRPC...)
 		return err
 	}, opts...)
 	if err != nil {
@@ -1327,11 +1410,6 @@ func (c *cloudDeployGRPCClient) ListRollouts(ctx context.Context, req *deploypb.
 }
 
 func (c *cloudDeployGRPCClient) GetRollout(ctx context.Context, req *deploypb.GetRolloutRequest, opts ...gax.CallOption) (*deploypb.Rollout, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1349,11 +1427,6 @@ func (c *cloudDeployGRPCClient) GetRollout(ctx context.Context, req *deploypb.Ge
 }
 
 func (c *cloudDeployGRPCClient) CreateRollout(ctx context.Context, req *deploypb.CreateRolloutRequest, opts ...gax.CallOption) (*CreateRolloutOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1372,12 +1445,24 @@ func (c *cloudDeployGRPCClient) CreateRollout(ctx context.Context, req *deploypb
 	}, nil
 }
 
-func (c *cloudDeployGRPCClient) RetryJob(ctx context.Context, req *deploypb.RetryJobRequest, opts ...gax.CallOption) (*deploypb.RetryJobResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
+func (c *cloudDeployGRPCClient) IgnoreJob(ctx context.Context, req *deploypb.IgnoreJobRequest, opts ...gax.CallOption) (*deploypb.IgnoreJobResponse, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "rollout", url.QueryEscape(req.GetRollout())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).IgnoreJob[0:len((*c.CallOptions).IgnoreJob):len((*c.CallOptions).IgnoreJob)], opts...)
+	var resp *deploypb.IgnoreJobResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.cloudDeployClient.IgnoreJob(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
 	}
+	return resp, nil
+}
+
+func (c *cloudDeployGRPCClient) RetryJob(ctx context.Context, req *deploypb.RetryJobRequest, opts ...gax.CallOption) (*deploypb.RetryJobResponse, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "rollout", url.QueryEscape(req.GetRollout())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1440,11 +1525,6 @@ func (c *cloudDeployGRPCClient) ListJobRuns(ctx context.Context, req *deploypb.L
 }
 
 func (c *cloudDeployGRPCClient) GetJobRun(ctx context.Context, req *deploypb.GetJobRunRequest, opts ...gax.CallOption) (*deploypb.JobRun, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1461,12 +1541,24 @@ func (c *cloudDeployGRPCClient) GetJobRun(ctx context.Context, req *deploypb.Get
 	return resp, nil
 }
 
-func (c *cloudDeployGRPCClient) GetConfig(ctx context.Context, req *deploypb.GetConfigRequest, opts ...gax.CallOption) (*deploypb.Config, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
+func (c *cloudDeployGRPCClient) TerminateJobRun(ctx context.Context, req *deploypb.TerminateJobRunRequest, opts ...gax.CallOption) (*deploypb.TerminateJobRunResponse, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).TerminateJobRun[0:len((*c.CallOptions).TerminateJobRun):len((*c.CallOptions).TerminateJobRun)], opts...)
+	var resp *deploypb.TerminateJobRunResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.cloudDeployClient.TerminateJobRun(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
 	}
+	return resp, nil
+}
+
+func (c *cloudDeployGRPCClient) GetConfig(ctx context.Context, req *deploypb.GetConfigRequest, opts ...gax.CallOption) (*deploypb.Config, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1744,13 +1836,13 @@ func (c *cloudDeployRESTClient) ListDeliveryPipelines(ctx context.Context, req *
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -1819,13 +1911,13 @@ func (c *cloudDeployRESTClient) GetDeliveryPipeline(ctx context.Context, req *de
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1890,13 +1982,13 @@ func (c *cloudDeployRESTClient) CreateDeliveryPipeline(ctx context.Context, req 
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1940,7 +2032,7 @@ func (c *cloudDeployRESTClient) UpdateDeliveryPipeline(ctx context.Context, req 
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask))
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
 	}
 	if req.GetValidateOnly() {
 		params.Add("validateOnly", fmt.Sprintf("%v", req.GetValidateOnly()))
@@ -1975,13 +2067,13 @@ func (c *cloudDeployRESTClient) UpdateDeliveryPipeline(ctx context.Context, req 
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2052,13 +2144,13 @@ func (c *cloudDeployRESTClient) DeleteDeliveryPipeline(ctx context.Context, req 
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2134,13 +2226,13 @@ func (c *cloudDeployRESTClient) ListTargets(ctx context.Context, req *deploypb.L
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -2209,13 +2301,13 @@ func (c *cloudDeployRESTClient) GetTarget(ctx context.Context, req *deploypb.Get
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2280,13 +2372,13 @@ func (c *cloudDeployRESTClient) CreateTarget(ctx context.Context, req *deploypb.
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2330,7 +2422,7 @@ func (c *cloudDeployRESTClient) UpdateTarget(ctx context.Context, req *deploypb.
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask))
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
 	}
 	if req.GetValidateOnly() {
 		params.Add("validateOnly", fmt.Sprintf("%v", req.GetValidateOnly()))
@@ -2365,13 +2457,13 @@ func (c *cloudDeployRESTClient) UpdateTarget(ctx context.Context, req *deploypb.
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2439,13 +2531,13 @@ func (c *cloudDeployRESTClient) DeleteTarget(ctx context.Context, req *deploypb.
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2521,13 +2613,13 @@ func (c *cloudDeployRESTClient) ListReleases(ctx context.Context, req *deploypb.
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -2596,13 +2688,13 @@ func (c *cloudDeployRESTClient) GetRelease(ctx context.Context, req *deploypb.Ge
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2667,13 +2759,13 @@ func (c *cloudDeployRESTClient) CreateRelease(ctx context.Context, req *deploypb
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2736,13 +2828,13 @@ func (c *cloudDeployRESTClient) AbandonRelease(ctx context.Context, req *deployp
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2800,13 +2892,141 @@ func (c *cloudDeployRESTClient) ApproveRollout(ctx context.Context, req *deployp
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// AdvanceRollout advances a Rollout in a given project and location.
+func (c *cloudDeployRESTClient) AdvanceRollout(ctx context.Context, req *deploypb.AdvanceRolloutRequest, opts ...gax.CallOption) (*deploypb.AdvanceRolloutResponse, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:advance", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).AdvanceRollout[0:len((*c.CallOptions).AdvanceRollout):len((*c.CallOptions).AdvanceRollout)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &deploypb.AdvanceRolloutResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// CancelRollout cancels a Rollout in a given project and location.
+func (c *cloudDeployRESTClient) CancelRollout(ctx context.Context, req *deploypb.CancelRolloutRequest, opts ...gax.CallOption) (*deploypb.CancelRolloutResponse, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:cancel", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).CancelRollout[0:len((*c.CallOptions).CancelRollout):len((*c.CallOptions).CancelRollout)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &deploypb.CancelRolloutResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
 		}
 
 		return nil
@@ -2877,13 +3097,13 @@ func (c *cloudDeployRESTClient) ListRollouts(ctx context.Context, req *deploypb.
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -2952,13 +3172,13 @@ func (c *cloudDeployRESTClient) GetRollout(ctx context.Context, req *deploypb.Ge
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2990,6 +3210,9 @@ func (c *cloudDeployRESTClient) CreateRollout(ctx context.Context, req *deploypb
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
 	params.Add("rolloutId", fmt.Sprintf("%v", req.GetRolloutId()))
+	if req.GetStartingPhaseId() != "" {
+		params.Add("startingPhaseId", fmt.Sprintf("%v", req.GetStartingPhaseId()))
+	}
 	if req.GetValidateOnly() {
 		params.Add("validateOnly", fmt.Sprintf("%v", req.GetValidateOnly()))
 	}
@@ -3023,13 +3246,13 @@ func (c *cloudDeployRESTClient) CreateRollout(ctx context.Context, req *deploypb
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -3043,6 +3266,70 @@ func (c *cloudDeployRESTClient) CreateRollout(ctx context.Context, req *deploypb
 		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
+}
+
+// IgnoreJob ignores the specified Job in a Rollout.
+func (c *cloudDeployRESTClient) IgnoreJob(ctx context.Context, req *deploypb.IgnoreJobRequest, opts ...gax.CallOption) (*deploypb.IgnoreJobResponse, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:ignoreJob", req.GetRollout())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "rollout", url.QueryEscape(req.GetRollout())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).IgnoreJob[0:len((*c.CallOptions).IgnoreJob):len((*c.CallOptions).IgnoreJob)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &deploypb.IgnoreJobResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
 }
 
 // RetryJob retries the specified Job in a Rollout.
@@ -3092,13 +3379,13 @@ func (c *cloudDeployRESTClient) RetryJob(ctx context.Context, req *deploypb.Retr
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -3169,13 +3456,13 @@ func (c *cloudDeployRESTClient) ListJobRuns(ctx context.Context, req *deploypb.L
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -3244,13 +3531,77 @@ func (c *cloudDeployRESTClient) GetJobRun(ctx context.Context, req *deploypb.Get
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// TerminateJobRun terminates a Job Run in a given project and location.
+func (c *cloudDeployRESTClient) TerminateJobRun(ctx context.Context, req *deploypb.TerminateJobRunRequest, opts ...gax.CallOption) (*deploypb.TerminateJobRunResponse, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:terminate", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).TerminateJobRun[0:len((*c.CallOptions).TerminateJobRun):len((*c.CallOptions).TerminateJobRun)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &deploypb.TerminateJobRunResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
 		}
 
 		return nil
@@ -3302,13 +3653,13 @@ func (c *cloudDeployRESTClient) GetConfig(ctx context.Context, req *deploypb.Get
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -3360,13 +3711,13 @@ func (c *cloudDeployRESTClient) GetLocation(ctx context.Context, req *locationpb
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -3434,13 +3785,13 @@ func (c *cloudDeployRESTClient) ListLocations(ctx context.Context, req *location
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -3513,13 +3864,13 @@ func (c *cloudDeployRESTClient) GetIamPolicy(ctx context.Context, req *iampb.Get
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -3581,13 +3932,13 @@ func (c *cloudDeployRESTClient) SetIamPolicy(ctx context.Context, req *iampb.Set
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -3651,13 +4002,13 @@ func (c *cloudDeployRESTClient) TestIamPermissions(ctx context.Context, req *iam
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -3795,13 +4146,13 @@ func (c *cloudDeployRESTClient) GetOperation(ctx context.Context, req *longrunni
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -3869,13 +4220,13 @@ func (c *cloudDeployRESTClient) ListOperations(ctx context.Context, req *longrun
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil

@@ -17,9 +17,9 @@ package bigquery
 import (
 	"testing"
 
+	"cloud.google.com/go/iam/apiv1/iampb"
 	"cloud.google.com/go/internal/testutil"
 	bq "google.golang.org/api/bigquery/v2"
-	iampb "google.golang.org/genproto/googleapis/iam/v1"
 )
 
 func TestPolicyConversions(t *testing.T) {

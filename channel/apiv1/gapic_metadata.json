@@ -229,6 +229,11 @@
                 "ListCustomers"
               ]
             },
+            "ListEntitlementChanges": {
+              "methods": [
+                "ListEntitlementChanges"
+              ]
+            },
             "ListEntitlements": {
               "methods": [
                 "ListEntitlements"
@@ -257,6 +262,16 @@
             "ListPurchasableSkus": {
               "methods": [
                 "ListPurchasableSkus"
+              ]
+            },
+            "ListSkuGroupBillableSkus": {
+              "methods": [
+                "ListSkuGroupBillableSkus"
+              ]
+            },
+            "ListSkuGroups": {
+              "methods": [
+                "ListSkuGroups"
               ]
             },
             "ListSkus": {
@@ -479,6 +494,11 @@
                 "ListCustomers"
               ]
             },
+            "ListEntitlementChanges": {
+              "methods": [
+                "ListEntitlementChanges"
+              ]
+            },
             "ListEntitlements": {
               "methods": [
                 "ListEntitlements"
@@ -507,6 +527,16 @@
             "ListPurchasableSkus": {
               "methods": [
                 "ListPurchasableSkus"
+              ]
+            },
+            "ListSkuGroupBillableSkus": {
+              "methods": [
+                "ListSkuGroupBillableSkus"
+              ]
+            },
+            "ListSkuGroups": {
+              "methods": [
+                "ListSkuGroups"
               ]
             },
             "ListSkus": {

@@ -23,16 +23,16 @@ import (
 	"net/url"
 	"time"
 
+	apigeeregistrypb "cloud.google.com/go/apigeeregistry/apiv1/apigeeregistrypb"
+	iampb "cloud.google.com/go/iam/apiv1/iampb"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	httpbodypb "google.golang.org/genproto/googleapis/api/httpbody"
-	apigeeregistrypb "google.golang.org/genproto/googleapis/cloud/apigeeregistry/v1"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
-	iampb "google.golang.org/genproto/googleapis/iam/v1"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -104,6 +104,7 @@ func defaultRegistryGRPCClientOptions() []option.ClientOption {
 func defaultRegistryCallOptions() *RegistryCallOptions {
 	return &RegistryCallOptions{
 		ListApis: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Aborted,
@@ -118,6 +119,7 @@ func defaultRegistryCallOptions() *RegistryCallOptions {
 			}),
 		},
 		GetApi: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Aborted,
@@ -132,6 +134,7 @@ func defaultRegistryCallOptions() *RegistryCallOptions {
 			}),
 		},
 		CreateApi: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Aborted,
@@ -146,6 +149,7 @@ func defaultRegistryCallOptions() *RegistryCallOptions {
 			}),
 		},
 		UpdateApi: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Aborted,
@@ -160,6 +164,7 @@ func defaultRegistryCallOptions() *RegistryCallOptions {
 			}),
 		},
 		DeleteApi: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Aborted,
@@ -174,6 +179,7 @@ func defaultRegistryCallOptions() *RegistryCallOptions {
 			}),
 		},
 		ListApiVersions: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Aborted,
@@ -188,6 +194,7 @@ func defaultRegistryCallOptions() *RegistryCallOptions {
 			}),
 		},
 		GetApiVersion: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Aborted,
@@ -202,6 +209,7 @@ func defaultRegistryCallOptions() *RegistryCallOptions {
 			}),
 		},
 		CreateApiVersion: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Aborted,
@@ -216,6 +224,7 @@ func defaultRegistryCallOptions() *RegistryCallOptions {
 			}),
 		},
 		UpdateApiVersion: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Aborted,
@@ -230,6 +239,7 @@ func defaultRegistryCallOptions() *RegistryCallOptions {
 			}),
 		},
 		DeleteApiVersion: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Aborted,
@@ -244,6 +254,7 @@ func defaultRegistryCallOptions() *RegistryCallOptions {
 			}),
 		},
 		ListApiSpecs: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Aborted,
@@ -258,6 +269,7 @@ func defaultRegistryCallOptions() *RegistryCallOptions {
 			}),
 		},
 		GetApiSpec: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Aborted,
@@ -272,6 +284,7 @@ func defaultRegistryCallOptions() *RegistryCallOptions {
 			}),
 		},
 		GetApiSpecContents: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Aborted,
@@ -286,6 +299,7 @@ func defaultRegistryCallOptions() *RegistryCallOptions {
 			}),
 		},
 		CreateApiSpec: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Aborted,
@@ -300,6 +314,7 @@ func defaultRegistryCallOptions() *RegistryCallOptions {
 			}),
 		},
 		UpdateApiSpec: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Aborted,
@@ -314,6 +329,7 @@ func defaultRegistryCallOptions() *RegistryCallOptions {
 			}),
 		},
 		DeleteApiSpec: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Aborted,
@@ -328,6 +344,7 @@ func defaultRegistryCallOptions() *RegistryCallOptions {
 			}),
 		},
 		TagApiSpecRevision: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Aborted,
@@ -342,6 +359,7 @@ func defaultRegistryCallOptions() *RegistryCallOptions {
 			}),
 		},
 		ListApiSpecRevisions: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Aborted,
@@ -355,8 +373,11 @@ func defaultRegistryCallOptions() *RegistryCallOptions {
 				})
 			}),
 		},
-		RollbackApiSpec: []gax.CallOption{},
+		RollbackApiSpec: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		DeleteApiSpecRevision: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Aborted,
@@ -371,6 +392,7 @@ func defaultRegistryCallOptions() *RegistryCallOptions {
 			}),
 		},
 		ListApiDeployments: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Aborted,
@@ -385,6 +407,7 @@ func defaultRegistryCallOptions() *RegistryCallOptions {
 			}),
 		},
 		GetApiDeployment: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Aborted,
@@ -399,6 +422,7 @@ func defaultRegistryCallOptions() *RegistryCallOptions {
 			}),
 		},
 		CreateApiDeployment: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Aborted,
@@ -413,6 +437,7 @@ func defaultRegistryCallOptions() *RegistryCallOptions {
 			}),
 		},
 		UpdateApiDeployment: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Aborted,
@@ -427,6 +452,7 @@ func defaultRegistryCallOptions() *RegistryCallOptions {
 			}),
 		},
 		DeleteApiDeployment: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Aborted,
@@ -441,6 +467,7 @@ func defaultRegistryCallOptions() *RegistryCallOptions {
 			}),
 		},
 		TagApiDeploymentRevision: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Aborted,
@@ -455,6 +482,7 @@ func defaultRegistryCallOptions() *RegistryCallOptions {
 			}),
 		},
 		ListApiDeploymentRevisions: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Aborted,
@@ -468,8 +496,11 @@ func defaultRegistryCallOptions() *RegistryCallOptions {
 				})
 			}),
 		},
-		RollbackApiDeployment: []gax.CallOption{},
+		RollbackApiDeployment: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		DeleteApiDeploymentRevision: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Aborted,
@@ -484,6 +515,7 @@ func defaultRegistryCallOptions() *RegistryCallOptions {
 			}),
 		},
 		ListArtifacts: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Aborted,
@@ -498,6 +530,7 @@ func defaultRegistryCallOptions() *RegistryCallOptions {
 			}),
 		},
 		GetArtifact: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Aborted,
@@ -512,6 +545,7 @@ func defaultRegistryCallOptions() *RegistryCallOptions {
 			}),
 		},
 		GetArtifactContents: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Aborted,
@@ -526,6 +560,7 @@ func defaultRegistryCallOptions() *RegistryCallOptions {
 			}),
 		},
 		CreateArtifact: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Aborted,
@@ -540,6 +575,7 @@ func defaultRegistryCallOptions() *RegistryCallOptions {
 			}),
 		},
 		ReplaceArtifact: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Aborted,
@@ -554,6 +590,7 @@ func defaultRegistryCallOptions() *RegistryCallOptions {
 			}),
 		},
 		DeleteArtifact: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Aborted,
@@ -918,9 +955,6 @@ type registryGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing RegistryClient
 	CallOptions **RegistryCallOptions
 
@@ -951,11 +985,6 @@ func NewRegistryClient(ctx context.Context, opts ...option.ClientOption) (*Regis
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -964,7 +993,6 @@ func NewRegistryClient(ctx context.Context, opts ...option.ClientOption) (*Regis
 
 	c := &registryGRPCClient{
 		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
 		registryClient:   apigeeregistrypb.NewRegistryClient(connPool),
 		CallOptions:      &client.CallOptions,
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
@@ -990,7 +1018,7 @@ func (c *registryGRPCClient) Connection() *grpc.ClientConn {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *registryGRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -1047,11 +1075,6 @@ func (c *registryGRPCClient) ListApis(ctx context.Context, req *apigeeregistrypb
 }
 
 func (c *registryGRPCClient) GetApi(ctx context.Context, req *apigeeregistrypb.GetApiRequest, opts ...gax.CallOption) (*apigeeregistrypb.Api, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1069,11 +1092,6 @@ func (c *registryGRPCClient) GetApi(ctx context.Context, req *apigeeregistrypb.G
 }
 
 func (c *registryGRPCClient) CreateApi(ctx context.Context, req *apigeeregistrypb.CreateApiRequest, opts ...gax.CallOption) (*apigeeregistrypb.Api, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1091,11 +1109,6 @@ func (c *registryGRPCClient) CreateApi(ctx context.Context, req *apigeeregistryp
 }
 
 func (c *registryGRPCClient) UpdateApi(ctx context.Context, req *apigeeregistrypb.UpdateApiRequest, opts ...gax.CallOption) (*apigeeregistrypb.Api, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "api.name", url.QueryEscape(req.GetApi().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1113,11 +1126,6 @@ func (c *registryGRPCClient) UpdateApi(ctx context.Context, req *apigeeregistryp
 }
 
 func (c *registryGRPCClient) DeleteApi(ctx context.Context, req *apigeeregistrypb.DeleteApiRequest, opts ...gax.CallOption) error {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1176,11 +1184,6 @@ func (c *registryGRPCClient) ListApiVersions(ctx context.Context, req *apigeereg
 }
 
 func (c *registryGRPCClient) GetApiVersion(ctx context.Context, req *apigeeregistrypb.GetApiVersionRequest, opts ...gax.CallOption) (*apigeeregistrypb.ApiVersion, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1198,11 +1201,6 @@ func (c *registryGRPCClient) GetApiVersion(ctx context.Context, req *apigeeregis
 }
 
 func (c *registryGRPCClient) CreateApiVersion(ctx context.Context, req *apigeeregistrypb.CreateApiVersionRequest, opts ...gax.CallOption) (*apigeeregistrypb.ApiVersion, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1220,11 +1218,6 @@ func (c *registryGRPCClient) CreateApiVersion(ctx context.Context, req *apigeere
 }
 
 func (c *registryGRPCClient) UpdateApiVersion(ctx context.Context, req *apigeeregistrypb.UpdateApiVersionRequest, opts ...gax.CallOption) (*apigeeregistrypb.ApiVersion, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "api_version.name", url.QueryEscape(req.GetApiVersion().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1242,11 +1235,6 @@ func (c *registryGRPCClient) UpdateApiVersion(ctx context.Context, req *apigeere
 }
 
 func (c *registryGRPCClient) DeleteApiVersion(ctx context.Context, req *apigeeregistrypb.DeleteApiVersionRequest, opts ...gax.CallOption) error {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1305,11 +1293,6 @@ func (c *registryGRPCClient) ListApiSpecs(ctx context.Context, req *apigeeregist
 }
 
 func (c *registryGRPCClient) GetApiSpec(ctx context.Context, req *apigeeregistrypb.GetApiSpecRequest, opts ...gax.CallOption) (*apigeeregistrypb.ApiSpec, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1327,11 +1310,6 @@ func (c *registryGRPCClient) GetApiSpec(ctx context.Context, req *apigeeregistry
 }
 
 func (c *registryGRPCClient) GetApiSpecContents(ctx context.Context, req *apigeeregistrypb.GetApiSpecContentsRequest, opts ...gax.CallOption) (*httpbodypb.HttpBody, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1349,11 +1327,6 @@ func (c *registryGRPCClient) GetApiSpecContents(ctx context.Context, req *apigee
 }
 
 func (c *registryGRPCClient) CreateApiSpec(ctx context.Context, req *apigeeregistrypb.CreateApiSpecRequest, opts ...gax.CallOption) (*apigeeregistrypb.ApiSpec, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1371,11 +1344,6 @@ func (c *registryGRPCClient) CreateApiSpec(ctx context.Context, req *apigeeregis
 }
 
 func (c *registryGRPCClient) UpdateApiSpec(ctx context.Context, req *apigeeregistrypb.UpdateApiSpecRequest, opts ...gax.CallOption) (*apigeeregistrypb.ApiSpec, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "api_spec.name", url.QueryEscape(req.GetApiSpec().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1393,11 +1361,6 @@ func (c *registryGRPCClient) UpdateApiSpec(ctx context.Context, req *apigeeregis
 }
 
 func (c *registryGRPCClient) DeleteApiSpec(ctx context.Context, req *apigeeregistrypb.DeleteApiSpecRequest, opts ...gax.CallOption) error {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1411,11 +1374,6 @@ func (c *registryGRPCClient) DeleteApiSpec(ctx context.Context, req *apigeeregis
 }
 
 func (c *registryGRPCClient) TagApiSpecRevision(ctx context.Context, req *apigeeregistrypb.TagApiSpecRevisionRequest, opts ...gax.CallOption) (*apigeeregistrypb.ApiSpec, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1478,11 +1436,6 @@ func (c *registryGRPCClient) ListApiSpecRevisions(ctx context.Context, req *apig
 }
 
 func (c *registryGRPCClient) RollbackApiSpec(ctx context.Context, req *apigeeregistrypb.RollbackApiSpecRequest, opts ...gax.CallOption) (*apigeeregistrypb.ApiSpec, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1500,11 +1453,6 @@ func (c *registryGRPCClient) RollbackApiSpec(ctx context.Context, req *apigeereg
 }
 
 func (c *registryGRPCClient) DeleteApiSpecRevision(ctx context.Context, req *apigeeregistrypb.DeleteApiSpecRevisionRequest, opts ...gax.CallOption) (*apigeeregistrypb.ApiSpec, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1567,11 +1515,6 @@ func (c *registryGRPCClient) ListApiDeployments(ctx context.Context, req *apigee
 }
 
 func (c *registryGRPCClient) GetApiDeployment(ctx context.Context, req *apigeeregistrypb.GetApiDeploymentRequest, opts ...gax.CallOption) (*apigeeregistrypb.ApiDeployment, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1589,11 +1532,6 @@ func (c *registryGRPCClient) GetApiDeployment(ctx context.Context, req *apigeere
 }
 
 func (c *registryGRPCClient) CreateApiDeployment(ctx context.Context, req *apigeeregistrypb.CreateApiDeploymentRequest, opts ...gax.CallOption) (*apigeeregistrypb.ApiDeployment, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1611,11 +1549,6 @@ func (c *registryGRPCClient) CreateApiDeployment(ctx context.Context, req *apige
 }
 
 func (c *registryGRPCClient) UpdateApiDeployment(ctx context.Context, req *apigeeregistrypb.UpdateApiDeploymentRequest, opts ...gax.CallOption) (*apigeeregistrypb.ApiDeployment, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "api_deployment.name", url.QueryEscape(req.GetApiDeployment().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1633,11 +1566,6 @@ func (c *registryGRPCClient) UpdateApiDeployment(ctx context.Context, req *apige
 }
 
 func (c *registryGRPCClient) DeleteApiDeployment(ctx context.Context, req *apigeeregistrypb.DeleteApiDeploymentRequest, opts ...gax.CallOption) error {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1651,11 +1579,6 @@ func (c *registryGRPCClient) DeleteApiDeployment(ctx context.Context, req *apige
 }
 
 func (c *registryGRPCClient) TagApiDeploymentRevision(ctx context.Context, req *apigeeregistrypb.TagApiDeploymentRevisionRequest, opts ...gax.CallOption) (*apigeeregistrypb.ApiDeployment, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1718,11 +1641,6 @@ func (c *registryGRPCClient) ListApiDeploymentRevisions(ctx context.Context, req
 }
 
 func (c *registryGRPCClient) RollbackApiDeployment(ctx context.Context, req *apigeeregistrypb.RollbackApiDeploymentRequest, opts ...gax.CallOption) (*apigeeregistrypb.ApiDeployment, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1740,11 +1658,6 @@ func (c *registryGRPCClient) RollbackApiDeployment(ctx context.Context, req *api
 }
 
 func (c *registryGRPCClient) DeleteApiDeploymentRevision(ctx context.Context, req *apigeeregistrypb.DeleteApiDeploymentRevisionRequest, opts ...gax.CallOption) (*apigeeregistrypb.ApiDeployment, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1807,11 +1720,6 @@ func (c *registryGRPCClient) ListArtifacts(ctx context.Context, req *apigeeregis
 }
 
 func (c *registryGRPCClient) GetArtifact(ctx context.Context, req *apigeeregistrypb.GetArtifactRequest, opts ...gax.CallOption) (*apigeeregistrypb.Artifact, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1829,11 +1737,6 @@ func (c *registryGRPCClient) GetArtifact(ctx context.Context, req *apigeeregistr
 }
 
 func (c *registryGRPCClient) GetArtifactContents(ctx context.Context, req *apigeeregistrypb.GetArtifactContentsRequest, opts ...gax.CallOption) (*httpbodypb.HttpBody, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1851,11 +1754,6 @@ func (c *registryGRPCClient) GetArtifactContents(ctx context.Context, req *apige
 }
 
 func (c *registryGRPCClient) CreateArtifact(ctx context.Context, req *apigeeregistrypb.CreateArtifactRequest, opts ...gax.CallOption) (*apigeeregistrypb.Artifact, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1873,11 +1771,6 @@ func (c *registryGRPCClient) CreateArtifact(ctx context.Context, req *apigeeregi
 }
 
 func (c *registryGRPCClient) ReplaceArtifact(ctx context.Context, req *apigeeregistrypb.ReplaceArtifactRequest, opts ...gax.CallOption) (*apigeeregistrypb.Artifact, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "artifact.name", url.QueryEscape(req.GetArtifact().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1895,11 +1788,6 @@ func (c *registryGRPCClient) ReplaceArtifact(ctx context.Context, req *apigeereg
 }
 
 func (c *registryGRPCClient) DeleteArtifact(ctx context.Context, req *apigeeregistrypb.DeleteArtifactRequest, opts ...gax.CallOption) error {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)

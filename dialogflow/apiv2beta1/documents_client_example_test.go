@@ -20,10 +20,10 @@ import (
 	"context"
 
 	dialogflow "cloud.google.com/go/dialogflow/apiv2beta1"
+	dialogflowpb "cloud.google.com/go/dialogflow/apiv2beta1/dialogflowpb"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	"google.golang.org/api/iterator"
-	dialogflowpb "google.golang.org/genproto/googleapis/cloud/dialogflow/v2beta1"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 )
 
 func ExampleNewDocumentsClient() {
@@ -75,7 +75,7 @@ func ExampleDocumentsClient_ListDocuments() {
 
 	req := &dialogflowpb.ListDocumentsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2beta1#ListDocumentsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/apiv2beta1/dialogflowpb#ListDocumentsRequest.
 	}
 	it := c.ListDocuments(ctx, req)
 	for {
@@ -106,7 +106,7 @@ func ExampleDocumentsClient_GetDocument() {
 
 	req := &dialogflowpb.GetDocumentRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2beta1#GetDocumentRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/apiv2beta1/dialogflowpb#GetDocumentRequest.
 	}
 	resp, err := c.GetDocument(ctx, req)
 	if err != nil {
@@ -131,7 +131,7 @@ func ExampleDocumentsClient_CreateDocument() {
 
 	req := &dialogflowpb.CreateDocumentRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2beta1#CreateDocumentRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/apiv2beta1/dialogflowpb#CreateDocumentRequest.
 	}
 	op, err := c.CreateDocument(ctx, req)
 	if err != nil {
@@ -161,7 +161,7 @@ func ExampleDocumentsClient_ImportDocuments() {
 
 	req := &dialogflowpb.ImportDocumentsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2beta1#ImportDocumentsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/apiv2beta1/dialogflowpb#ImportDocumentsRequest.
 	}
 	op, err := c.ImportDocuments(ctx, req)
 	if err != nil {
@@ -191,7 +191,7 @@ func ExampleDocumentsClient_DeleteDocument() {
 
 	req := &dialogflowpb.DeleteDocumentRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2beta1#DeleteDocumentRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/apiv2beta1/dialogflowpb#DeleteDocumentRequest.
 	}
 	op, err := c.DeleteDocument(ctx, req)
 	if err != nil {
@@ -219,7 +219,7 @@ func ExampleDocumentsClient_UpdateDocument() {
 
 	req := &dialogflowpb.UpdateDocumentRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2beta1#UpdateDocumentRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/apiv2beta1/dialogflowpb#UpdateDocumentRequest.
 	}
 	op, err := c.UpdateDocument(ctx, req)
 	if err != nil {
@@ -249,7 +249,7 @@ func ExampleDocumentsClient_ReloadDocument() {
 
 	req := &dialogflowpb.ReloadDocumentRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2beta1#ReloadDocumentRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/apiv2beta1/dialogflowpb#ReloadDocumentRequest.
 	}
 	op, err := c.ReloadDocument(ctx, req)
 	if err != nil {
@@ -335,7 +335,7 @@ func ExampleDocumentsClient_CancelOperation() {
 
 	req := &longrunningpb.CancelOperationRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/longrunning#CancelOperationRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/longrunning/autogen/longrunningpb#CancelOperationRequest.
 	}
 	err = c.CancelOperation(ctx, req)
 	if err != nil {
@@ -358,7 +358,7 @@ func ExampleDocumentsClient_GetOperation() {
 
 	req := &longrunningpb.GetOperationRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/longrunning#GetOperationRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/longrunning/autogen/longrunningpb#GetOperationRequest.
 	}
 	resp, err := c.GetOperation(ctx, req)
 	if err != nil {
@@ -383,7 +383,7 @@ func ExampleDocumentsClient_ListOperations() {
 
 	req := &longrunningpb.ListOperationsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/longrunning#ListOperationsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/longrunning/autogen/longrunningpb#ListOperationsRequest.
 	}
 	it := c.ListOperations(ctx, req)
 	for {

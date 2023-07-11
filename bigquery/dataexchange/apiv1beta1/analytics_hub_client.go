@@ -20,13 +20,14 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"math"
 	"net/http"
 	"net/url"
 	"time"
 
 	dataexchangepb "cloud.google.com/go/bigquery/dataexchange/apiv1beta1/dataexchangepb"
+	iampb "cloud.google.com/go/iam/apiv1/iampb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
@@ -35,7 +36,6 @@ import (
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
-	iampb "google.golang.org/genproto/googleapis/iam/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -81,6 +81,7 @@ func defaultAnalyticsHubGRPCClientOptions() []option.ClientOption {
 func defaultAnalyticsHubCallOptions() *AnalyticsHubCallOptions {
 	return &AnalyticsHubCallOptions{
 		ListDataExchanges: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -93,6 +94,7 @@ func defaultAnalyticsHubCallOptions() *AnalyticsHubCallOptions {
 			}),
 		},
 		ListOrgDataExchanges: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -105,6 +107,7 @@ func defaultAnalyticsHubCallOptions() *AnalyticsHubCallOptions {
 			}),
 		},
 		GetDataExchange: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -117,6 +120,7 @@ func defaultAnalyticsHubCallOptions() *AnalyticsHubCallOptions {
 			}),
 		},
 		CreateDataExchange: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -129,6 +133,7 @@ func defaultAnalyticsHubCallOptions() *AnalyticsHubCallOptions {
 			}),
 		},
 		UpdateDataExchange: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -141,6 +146,7 @@ func defaultAnalyticsHubCallOptions() *AnalyticsHubCallOptions {
 			}),
 		},
 		DeleteDataExchange: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -153,6 +159,7 @@ func defaultAnalyticsHubCallOptions() *AnalyticsHubCallOptions {
 			}),
 		},
 		ListListings: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -165,6 +172,7 @@ func defaultAnalyticsHubCallOptions() *AnalyticsHubCallOptions {
 			}),
 		},
 		GetListing: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -177,6 +185,7 @@ func defaultAnalyticsHubCallOptions() *AnalyticsHubCallOptions {
 			}),
 		},
 		CreateListing: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -189,6 +198,7 @@ func defaultAnalyticsHubCallOptions() *AnalyticsHubCallOptions {
 			}),
 		},
 		UpdateListing: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -201,6 +211,7 @@ func defaultAnalyticsHubCallOptions() *AnalyticsHubCallOptions {
 			}),
 		},
 		DeleteListing: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -213,6 +224,7 @@ func defaultAnalyticsHubCallOptions() *AnalyticsHubCallOptions {
 			}),
 		},
 		SubscribeListing: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -225,6 +237,7 @@ func defaultAnalyticsHubCallOptions() *AnalyticsHubCallOptions {
 			}),
 		},
 		GetIamPolicy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -237,6 +250,7 @@ func defaultAnalyticsHubCallOptions() *AnalyticsHubCallOptions {
 			}),
 		},
 		SetIamPolicy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -249,6 +263,7 @@ func defaultAnalyticsHubCallOptions() *AnalyticsHubCallOptions {
 			}),
 		},
 		TestIamPermissions: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -268,6 +283,7 @@ func defaultAnalyticsHubCallOptions() *AnalyticsHubCallOptions {
 func defaultAnalyticsHubRESTCallOptions() *AnalyticsHubCallOptions {
 	return &AnalyticsHubCallOptions{
 		ListDataExchanges: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -279,6 +295,7 @@ func defaultAnalyticsHubRESTCallOptions() *AnalyticsHubCallOptions {
 			}),
 		},
 		ListOrgDataExchanges: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -290,6 +307,7 @@ func defaultAnalyticsHubRESTCallOptions() *AnalyticsHubCallOptions {
 			}),
 		},
 		GetDataExchange: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -301,6 +319,7 @@ func defaultAnalyticsHubRESTCallOptions() *AnalyticsHubCallOptions {
 			}),
 		},
 		CreateDataExchange: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -312,6 +331,7 @@ func defaultAnalyticsHubRESTCallOptions() *AnalyticsHubCallOptions {
 			}),
 		},
 		UpdateDataExchange: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -323,6 +343,7 @@ func defaultAnalyticsHubRESTCallOptions() *AnalyticsHubCallOptions {
 			}),
 		},
 		DeleteDataExchange: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -334,6 +355,7 @@ func defaultAnalyticsHubRESTCallOptions() *AnalyticsHubCallOptions {
 			}),
 		},
 		ListListings: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -345,6 +367,7 @@ func defaultAnalyticsHubRESTCallOptions() *AnalyticsHubCallOptions {
 			}),
 		},
 		GetListing: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -356,6 +379,7 @@ func defaultAnalyticsHubRESTCallOptions() *AnalyticsHubCallOptions {
 			}),
 		},
 		CreateListing: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -367,6 +391,7 @@ func defaultAnalyticsHubRESTCallOptions() *AnalyticsHubCallOptions {
 			}),
 		},
 		UpdateListing: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -378,6 +403,7 @@ func defaultAnalyticsHubRESTCallOptions() *AnalyticsHubCallOptions {
 			}),
 		},
 		DeleteListing: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -389,6 +415,7 @@ func defaultAnalyticsHubRESTCallOptions() *AnalyticsHubCallOptions {
 			}),
 		},
 		SubscribeListing: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -400,6 +427,7 @@ func defaultAnalyticsHubRESTCallOptions() *AnalyticsHubCallOptions {
 			}),
 		},
 		GetIamPolicy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -411,6 +439,7 @@ func defaultAnalyticsHubRESTCallOptions() *AnalyticsHubCallOptions {
 			}),
 		},
 		SetIamPolicy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -422,6 +451,7 @@ func defaultAnalyticsHubRESTCallOptions() *AnalyticsHubCallOptions {
 			}),
 		},
 		TestIamPermissions: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -599,9 +629,6 @@ type analyticsHubGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing AnalyticsHubClient
 	CallOptions **AnalyticsHubCallOptions
 
@@ -633,11 +660,6 @@ func NewAnalyticsHubClient(ctx context.Context, opts ...option.ClientOption) (*A
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -646,7 +668,6 @@ func NewAnalyticsHubClient(ctx context.Context, opts ...option.ClientOption) (*A
 
 	c := &analyticsHubGRPCClient{
 		connPool:           connPool,
-		disableDeadlines:   disableDeadlines,
 		analyticsHubClient: dataexchangepb.NewAnalyticsHubServiceClient(connPool),
 		CallOptions:        &client.CallOptions,
 		locationsClient:    locationpb.NewLocationsClient(connPool),
@@ -670,7 +691,7 @@ func (c *analyticsHubGRPCClient) Connection() *grpc.ClientConn {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *analyticsHubGRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -735,7 +756,7 @@ func defaultAnalyticsHubRESTClientOptions() []option.ClientOption {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *analyticsHubRESTClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -845,11 +866,6 @@ func (c *analyticsHubGRPCClient) ListOrgDataExchanges(ctx context.Context, req *
 }
 
 func (c *analyticsHubGRPCClient) GetDataExchange(ctx context.Context, req *dataexchangepb.GetDataExchangeRequest, opts ...gax.CallOption) (*dataexchangepb.DataExchange, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -867,11 +883,6 @@ func (c *analyticsHubGRPCClient) GetDataExchange(ctx context.Context, req *datae
 }
 
 func (c *analyticsHubGRPCClient) CreateDataExchange(ctx context.Context, req *dataexchangepb.CreateDataExchangeRequest, opts ...gax.CallOption) (*dataexchangepb.DataExchange, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -889,11 +900,6 @@ func (c *analyticsHubGRPCClient) CreateDataExchange(ctx context.Context, req *da
 }
 
 func (c *analyticsHubGRPCClient) UpdateDataExchange(ctx context.Context, req *dataexchangepb.UpdateDataExchangeRequest, opts ...gax.CallOption) (*dataexchangepb.DataExchange, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "data_exchange.name", url.QueryEscape(req.GetDataExchange().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -911,11 +917,6 @@ func (c *analyticsHubGRPCClient) UpdateDataExchange(ctx context.Context, req *da
 }
 
 func (c *analyticsHubGRPCClient) DeleteDataExchange(ctx context.Context, req *dataexchangepb.DeleteDataExchangeRequest, opts ...gax.CallOption) error {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -974,11 +975,6 @@ func (c *analyticsHubGRPCClient) ListListings(ctx context.Context, req *dataexch
 }
 
 func (c *analyticsHubGRPCClient) GetListing(ctx context.Context, req *dataexchangepb.GetListingRequest, opts ...gax.CallOption) (*dataexchangepb.Listing, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -996,11 +992,6 @@ func (c *analyticsHubGRPCClient) GetListing(ctx context.Context, req *dataexchan
 }
 
 func (c *analyticsHubGRPCClient) CreateListing(ctx context.Context, req *dataexchangepb.CreateListingRequest, opts ...gax.CallOption) (*dataexchangepb.Listing, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1018,11 +1009,6 @@ func (c *analyticsHubGRPCClient) CreateListing(ctx context.Context, req *dataexc
 }
 
 func (c *analyticsHubGRPCClient) UpdateListing(ctx context.Context, req *dataexchangepb.UpdateListingRequest, opts ...gax.CallOption) (*dataexchangepb.Listing, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "listing.name", url.QueryEscape(req.GetListing().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1040,11 +1026,6 @@ func (c *analyticsHubGRPCClient) UpdateListing(ctx context.Context, req *dataexc
 }
 
 func (c *analyticsHubGRPCClient) DeleteListing(ctx context.Context, req *dataexchangepb.DeleteListingRequest, opts ...gax.CallOption) error {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1058,11 +1039,6 @@ func (c *analyticsHubGRPCClient) DeleteListing(ctx context.Context, req *dataexc
 }
 
 func (c *analyticsHubGRPCClient) SubscribeListing(ctx context.Context, req *dataexchangepb.SubscribeListingRequest, opts ...gax.CallOption) (*dataexchangepb.SubscribeListingResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1080,11 +1056,6 @@ func (c *analyticsHubGRPCClient) SubscribeListing(ctx context.Context, req *data
 }
 
 func (c *analyticsHubGRPCClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1102,11 +1073,6 @@ func (c *analyticsHubGRPCClient) GetIamPolicy(ctx context.Context, req *iampb.Ge
 }
 
 func (c *analyticsHubGRPCClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1124,11 +1090,6 @@ func (c *analyticsHubGRPCClient) SetIamPolicy(ctx context.Context, req *iampb.Se
 }
 
 func (c *analyticsHubGRPCClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermissionsRequest, opts ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1260,13 +1221,13 @@ func (c *analyticsHubRESTClient) ListDataExchanges(ctx context.Context, req *dat
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -1348,13 +1309,13 @@ func (c *analyticsHubRESTClient) ListOrgDataExchanges(ctx context.Context, req *
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -1418,13 +1379,13 @@ func (c *analyticsHubRESTClient) GetDataExchange(ctx context.Context, req *datae
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1483,13 +1444,13 @@ func (c *analyticsHubRESTClient) CreateDataExchange(ctx context.Context, req *da
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1521,7 +1482,7 @@ func (c *analyticsHubRESTClient) UpdateDataExchange(ctx context.Context, req *da
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask))
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1554,13 +1515,13 @@ func (c *analyticsHubRESTClient) UpdateDataExchange(ctx context.Context, req *da
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1659,13 +1620,13 @@ func (c *analyticsHubRESTClient) ListListings(ctx context.Context, req *dataexch
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -1729,13 +1690,13 @@ func (c *analyticsHubRESTClient) GetListing(ctx context.Context, req *dataexchan
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1794,13 +1755,13 @@ func (c *analyticsHubRESTClient) CreateListing(ctx context.Context, req *dataexc
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1832,7 +1793,7 @@ func (c *analyticsHubRESTClient) UpdateListing(ctx context.Context, req *dataexc
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask))
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1865,13 +1826,13 @@ func (c *analyticsHubRESTClient) UpdateListing(ctx context.Context, req *dataexc
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1964,13 +1925,13 @@ func (c *analyticsHubRESTClient) SubscribeListing(ctx context.Context, req *data
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2023,13 +1984,13 @@ func (c *analyticsHubRESTClient) GetIamPolicy(ctx context.Context, req *iampb.Ge
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2082,13 +2043,13 @@ func (c *analyticsHubRESTClient) SetIamPolicy(ctx context.Context, req *iampb.Se
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2141,13 +2102,13 @@ func (c *analyticsHubRESTClient) TestIamPermissions(ctx context.Context, req *ia
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2194,13 +2155,13 @@ func (c *analyticsHubRESTClient) GetLocation(ctx context.Context, req *locationp
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2267,13 +2228,13 @@ func (c *analyticsHubRESTClient) ListLocations(ctx context.Context, req *locatio
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil

@@ -20,11 +20,11 @@ import (
 	"context"
 
 	apigeeregistry "cloud.google.com/go/apigeeregistry/apiv1"
+	apigeeregistrypb "cloud.google.com/go/apigeeregistry/apiv1/apigeeregistrypb"
+	iampb "cloud.google.com/go/iam/apiv1/iampb"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	"google.golang.org/api/iterator"
-	apigeeregistrypb "google.golang.org/genproto/googleapis/cloud/apigeeregistry/v1"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
-	iampb "google.golang.org/genproto/googleapis/iam/v1"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 )
 
 func ExampleNewRegistryClient() {
@@ -59,7 +59,7 @@ func ExampleRegistryClient_ListApis() {
 
 	req := &apigeeregistrypb.ListApisRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/apigeeregistry/v1#ListApisRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/apigeeregistry/apiv1/apigeeregistrypb#ListApisRequest.
 	}
 	it := c.ListApis(ctx, req)
 	for {
@@ -90,7 +90,7 @@ func ExampleRegistryClient_GetApi() {
 
 	req := &apigeeregistrypb.GetApiRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/apigeeregistry/v1#GetApiRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/apigeeregistry/apiv1/apigeeregistrypb#GetApiRequest.
 	}
 	resp, err := c.GetApi(ctx, req)
 	if err != nil {
@@ -115,7 +115,7 @@ func ExampleRegistryClient_CreateApi() {
 
 	req := &apigeeregistrypb.CreateApiRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/apigeeregistry/v1#CreateApiRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/apigeeregistry/apiv1/apigeeregistrypb#CreateApiRequest.
 	}
 	resp, err := c.CreateApi(ctx, req)
 	if err != nil {
@@ -140,7 +140,7 @@ func ExampleRegistryClient_UpdateApi() {
 
 	req := &apigeeregistrypb.UpdateApiRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/apigeeregistry/v1#UpdateApiRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/apigeeregistry/apiv1/apigeeregistrypb#UpdateApiRequest.
 	}
 	resp, err := c.UpdateApi(ctx, req)
 	if err != nil {
@@ -165,7 +165,7 @@ func ExampleRegistryClient_DeleteApi() {
 
 	req := &apigeeregistrypb.DeleteApiRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/apigeeregistry/v1#DeleteApiRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/apigeeregistry/apiv1/apigeeregistrypb#DeleteApiRequest.
 	}
 	err = c.DeleteApi(ctx, req)
 	if err != nil {
@@ -188,7 +188,7 @@ func ExampleRegistryClient_ListApiVersions() {
 
 	req := &apigeeregistrypb.ListApiVersionsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/apigeeregistry/v1#ListApiVersionsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/apigeeregistry/apiv1/apigeeregistrypb#ListApiVersionsRequest.
 	}
 	it := c.ListApiVersions(ctx, req)
 	for {
@@ -219,7 +219,7 @@ func ExampleRegistryClient_GetApiVersion() {
 
 	req := &apigeeregistrypb.GetApiVersionRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/apigeeregistry/v1#GetApiVersionRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/apigeeregistry/apiv1/apigeeregistrypb#GetApiVersionRequest.
 	}
 	resp, err := c.GetApiVersion(ctx, req)
 	if err != nil {
@@ -244,7 +244,7 @@ func ExampleRegistryClient_CreateApiVersion() {
 
 	req := &apigeeregistrypb.CreateApiVersionRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/apigeeregistry/v1#CreateApiVersionRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/apigeeregistry/apiv1/apigeeregistrypb#CreateApiVersionRequest.
 	}
 	resp, err := c.CreateApiVersion(ctx, req)
 	if err != nil {
@@ -269,7 +269,7 @@ func ExampleRegistryClient_UpdateApiVersion() {
 
 	req := &apigeeregistrypb.UpdateApiVersionRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/apigeeregistry/v1#UpdateApiVersionRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/apigeeregistry/apiv1/apigeeregistrypb#UpdateApiVersionRequest.
 	}
 	resp, err := c.UpdateApiVersion(ctx, req)
 	if err != nil {
@@ -294,7 +294,7 @@ func ExampleRegistryClient_DeleteApiVersion() {
 
 	req := &apigeeregistrypb.DeleteApiVersionRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/apigeeregistry/v1#DeleteApiVersionRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/apigeeregistry/apiv1/apigeeregistrypb#DeleteApiVersionRequest.
 	}
 	err = c.DeleteApiVersion(ctx, req)
 	if err != nil {
@@ -317,7 +317,7 @@ func ExampleRegistryClient_ListApiSpecs() {
 
 	req := &apigeeregistrypb.ListApiSpecsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/apigeeregistry/v1#ListApiSpecsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/apigeeregistry/apiv1/apigeeregistrypb#ListApiSpecsRequest.
 	}
 	it := c.ListApiSpecs(ctx, req)
 	for {
@@ -348,7 +348,7 @@ func ExampleRegistryClient_GetApiSpec() {
 
 	req := &apigeeregistrypb.GetApiSpecRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/apigeeregistry/v1#GetApiSpecRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/apigeeregistry/apiv1/apigeeregistrypb#GetApiSpecRequest.
 	}
 	resp, err := c.GetApiSpec(ctx, req)
 	if err != nil {
@@ -373,7 +373,7 @@ func ExampleRegistryClient_GetApiSpecContents() {
 
 	req := &apigeeregistrypb.GetApiSpecContentsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/apigeeregistry/v1#GetApiSpecContentsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/apigeeregistry/apiv1/apigeeregistrypb#GetApiSpecContentsRequest.
 	}
 	resp, err := c.GetApiSpecContents(ctx, req)
 	if err != nil {
@@ -398,7 +398,7 @@ func ExampleRegistryClient_CreateApiSpec() {
 
 	req := &apigeeregistrypb.CreateApiSpecRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/apigeeregistry/v1#CreateApiSpecRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/apigeeregistry/apiv1/apigeeregistrypb#CreateApiSpecRequest.
 	}
 	resp, err := c.CreateApiSpec(ctx, req)
 	if err != nil {
@@ -423,7 +423,7 @@ func ExampleRegistryClient_UpdateApiSpec() {
 
 	req := &apigeeregistrypb.UpdateApiSpecRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/apigeeregistry/v1#UpdateApiSpecRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/apigeeregistry/apiv1/apigeeregistrypb#UpdateApiSpecRequest.
 	}
 	resp, err := c.UpdateApiSpec(ctx, req)
 	if err != nil {
@@ -448,7 +448,7 @@ func ExampleRegistryClient_DeleteApiSpec() {
 
 	req := &apigeeregistrypb.DeleteApiSpecRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/apigeeregistry/v1#DeleteApiSpecRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/apigeeregistry/apiv1/apigeeregistrypb#DeleteApiSpecRequest.
 	}
 	err = c.DeleteApiSpec(ctx, req)
 	if err != nil {
@@ -471,7 +471,7 @@ func ExampleRegistryClient_TagApiSpecRevision() {
 
 	req := &apigeeregistrypb.TagApiSpecRevisionRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/apigeeregistry/v1#TagApiSpecRevisionRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/apigeeregistry/apiv1/apigeeregistrypb#TagApiSpecRevisionRequest.
 	}
 	resp, err := c.TagApiSpecRevision(ctx, req)
 	if err != nil {
@@ -496,7 +496,7 @@ func ExampleRegistryClient_ListApiSpecRevisions() {
 
 	req := &apigeeregistrypb.ListApiSpecRevisionsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/apigeeregistry/v1#ListApiSpecRevisionsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/apigeeregistry/apiv1/apigeeregistrypb#ListApiSpecRevisionsRequest.
 	}
 	it := c.ListApiSpecRevisions(ctx, req)
 	for {
@@ -527,7 +527,7 @@ func ExampleRegistryClient_RollbackApiSpec() {
 
 	req := &apigeeregistrypb.RollbackApiSpecRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/apigeeregistry/v1#RollbackApiSpecRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/apigeeregistry/apiv1/apigeeregistrypb#RollbackApiSpecRequest.
 	}
 	resp, err := c.RollbackApiSpec(ctx, req)
 	if err != nil {
@@ -552,7 +552,7 @@ func ExampleRegistryClient_DeleteApiSpecRevision() {
 
 	req := &apigeeregistrypb.DeleteApiSpecRevisionRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/apigeeregistry/v1#DeleteApiSpecRevisionRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/apigeeregistry/apiv1/apigeeregistrypb#DeleteApiSpecRevisionRequest.
 	}
 	resp, err := c.DeleteApiSpecRevision(ctx, req)
 	if err != nil {
@@ -577,7 +577,7 @@ func ExampleRegistryClient_ListApiDeployments() {
 
 	req := &apigeeregistrypb.ListApiDeploymentsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/apigeeregistry/v1#ListApiDeploymentsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/apigeeregistry/apiv1/apigeeregistrypb#ListApiDeploymentsRequest.
 	}
 	it := c.ListApiDeployments(ctx, req)
 	for {
@@ -608,7 +608,7 @@ func ExampleRegistryClient_GetApiDeployment() {
 
 	req := &apigeeregistrypb.GetApiDeploymentRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/apigeeregistry/v1#GetApiDeploymentRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/apigeeregistry/apiv1/apigeeregistrypb#GetApiDeploymentRequest.
 	}
 	resp, err := c.GetApiDeployment(ctx, req)
 	if err != nil {
@@ -633,7 +633,7 @@ func ExampleRegistryClient_CreateApiDeployment() {
 
 	req := &apigeeregistrypb.CreateApiDeploymentRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/apigeeregistry/v1#CreateApiDeploymentRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/apigeeregistry/apiv1/apigeeregistrypb#CreateApiDeploymentRequest.
 	}
 	resp, err := c.CreateApiDeployment(ctx, req)
 	if err != nil {
@@ -658,7 +658,7 @@ func ExampleRegistryClient_UpdateApiDeployment() {
 
 	req := &apigeeregistrypb.UpdateApiDeploymentRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/apigeeregistry/v1#UpdateApiDeploymentRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/apigeeregistry/apiv1/apigeeregistrypb#UpdateApiDeploymentRequest.
 	}
 	resp, err := c.UpdateApiDeployment(ctx, req)
 	if err != nil {
@@ -683,7 +683,7 @@ func ExampleRegistryClient_DeleteApiDeployment() {
 
 	req := &apigeeregistrypb.DeleteApiDeploymentRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/apigeeregistry/v1#DeleteApiDeploymentRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/apigeeregistry/apiv1/apigeeregistrypb#DeleteApiDeploymentRequest.
 	}
 	err = c.DeleteApiDeployment(ctx, req)
 	if err != nil {
@@ -706,7 +706,7 @@ func ExampleRegistryClient_TagApiDeploymentRevision() {
 
 	req := &apigeeregistrypb.TagApiDeploymentRevisionRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/apigeeregistry/v1#TagApiDeploymentRevisionRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/apigeeregistry/apiv1/apigeeregistrypb#TagApiDeploymentRevisionRequest.
 	}
 	resp, err := c.TagApiDeploymentRevision(ctx, req)
 	if err != nil {
@@ -731,7 +731,7 @@ func ExampleRegistryClient_ListApiDeploymentRevisions() {
 
 	req := &apigeeregistrypb.ListApiDeploymentRevisionsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/apigeeregistry/v1#ListApiDeploymentRevisionsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/apigeeregistry/apiv1/apigeeregistrypb#ListApiDeploymentRevisionsRequest.
 	}
 	it := c.ListApiDeploymentRevisions(ctx, req)
 	for {
@@ -762,7 +762,7 @@ func ExampleRegistryClient_RollbackApiDeployment() {
 
 	req := &apigeeregistrypb.RollbackApiDeploymentRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/apigeeregistry/v1#RollbackApiDeploymentRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/apigeeregistry/apiv1/apigeeregistrypb#RollbackApiDeploymentRequest.
 	}
 	resp, err := c.RollbackApiDeployment(ctx, req)
 	if err != nil {
@@ -787,7 +787,7 @@ func ExampleRegistryClient_DeleteApiDeploymentRevision() {
 
 	req := &apigeeregistrypb.DeleteApiDeploymentRevisionRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/apigeeregistry/v1#DeleteApiDeploymentRevisionRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/apigeeregistry/apiv1/apigeeregistrypb#DeleteApiDeploymentRevisionRequest.
 	}
 	resp, err := c.DeleteApiDeploymentRevision(ctx, req)
 	if err != nil {
@@ -812,7 +812,7 @@ func ExampleRegistryClient_ListArtifacts() {
 
 	req := &apigeeregistrypb.ListArtifactsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/apigeeregistry/v1#ListArtifactsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/apigeeregistry/apiv1/apigeeregistrypb#ListArtifactsRequest.
 	}
 	it := c.ListArtifacts(ctx, req)
 	for {
@@ -843,7 +843,7 @@ func ExampleRegistryClient_GetArtifact() {
 
 	req := &apigeeregistrypb.GetArtifactRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/apigeeregistry/v1#GetArtifactRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/apigeeregistry/apiv1/apigeeregistrypb#GetArtifactRequest.
 	}
 	resp, err := c.GetArtifact(ctx, req)
 	if err != nil {
@@ -868,7 +868,7 @@ func ExampleRegistryClient_GetArtifactContents() {
 
 	req := &apigeeregistrypb.GetArtifactContentsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/apigeeregistry/v1#GetArtifactContentsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/apigeeregistry/apiv1/apigeeregistrypb#GetArtifactContentsRequest.
 	}
 	resp, err := c.GetArtifactContents(ctx, req)
 	if err != nil {
@@ -893,7 +893,7 @@ func ExampleRegistryClient_CreateArtifact() {
 
 	req := &apigeeregistrypb.CreateArtifactRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/apigeeregistry/v1#CreateArtifactRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/apigeeregistry/apiv1/apigeeregistrypb#CreateArtifactRequest.
 	}
 	resp, err := c.CreateArtifact(ctx, req)
 	if err != nil {
@@ -918,7 +918,7 @@ func ExampleRegistryClient_ReplaceArtifact() {
 
 	req := &apigeeregistrypb.ReplaceArtifactRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/apigeeregistry/v1#ReplaceArtifactRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/apigeeregistry/apiv1/apigeeregistrypb#ReplaceArtifactRequest.
 	}
 	resp, err := c.ReplaceArtifact(ctx, req)
 	if err != nil {
@@ -943,7 +943,7 @@ func ExampleRegistryClient_DeleteArtifact() {
 
 	req := &apigeeregistrypb.DeleteArtifactRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/apigeeregistry/v1#DeleteArtifactRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/apigeeregistry/apiv1/apigeeregistrypb#DeleteArtifactRequest.
 	}
 	err = c.DeleteArtifact(ctx, req)
 	if err != nil {
@@ -1022,7 +1022,7 @@ func ExampleRegistryClient_GetIamPolicy() {
 
 	req := &iampb.GetIamPolicyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/iam/v1#GetIamPolicyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/iam/apiv1/iampb#GetIamPolicyRequest.
 	}
 	resp, err := c.GetIamPolicy(ctx, req)
 	if err != nil {
@@ -1047,7 +1047,7 @@ func ExampleRegistryClient_SetIamPolicy() {
 
 	req := &iampb.SetIamPolicyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/iam/v1#SetIamPolicyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/iam/apiv1/iampb#SetIamPolicyRequest.
 	}
 	resp, err := c.SetIamPolicy(ctx, req)
 	if err != nil {
@@ -1072,7 +1072,7 @@ func ExampleRegistryClient_TestIamPermissions() {
 
 	req := &iampb.TestIamPermissionsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/iam/v1#TestIamPermissionsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/iam/apiv1/iampb#TestIamPermissionsRequest.
 	}
 	resp, err := c.TestIamPermissions(ctx, req)
 	if err != nil {
@@ -1097,7 +1097,7 @@ func ExampleRegistryClient_CancelOperation() {
 
 	req := &longrunningpb.CancelOperationRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/longrunning#CancelOperationRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/longrunning/autogen/longrunningpb#CancelOperationRequest.
 	}
 	err = c.CancelOperation(ctx, req)
 	if err != nil {
@@ -1120,7 +1120,7 @@ func ExampleRegistryClient_DeleteOperation() {
 
 	req := &longrunningpb.DeleteOperationRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/longrunning#DeleteOperationRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/longrunning/autogen/longrunningpb#DeleteOperationRequest.
 	}
 	err = c.DeleteOperation(ctx, req)
 	if err != nil {
@@ -1143,7 +1143,7 @@ func ExampleRegistryClient_GetOperation() {
 
 	req := &longrunningpb.GetOperationRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/longrunning#GetOperationRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/longrunning/autogen/longrunningpb#GetOperationRequest.
 	}
 	resp, err := c.GetOperation(ctx, req)
 	if err != nil {
@@ -1168,7 +1168,7 @@ func ExampleRegistryClient_ListOperations() {
 
 	req := &longrunningpb.ListOperationsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/longrunning#ListOperationsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/longrunning/autogen/longrunningpb#ListOperationsRequest.
 	}
 	it := c.ListOperations(ctx, req)
 	for {
