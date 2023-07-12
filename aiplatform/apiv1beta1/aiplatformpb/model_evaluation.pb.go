@@ -21,14 +21,13 @@
 package aiplatformpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	structpb "google.golang.org/protobuf/types/known/structpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -257,7 +256,7 @@ type ModelEvaluation_BiasConfig struct {
 	// list of slices, with limitation of two slices. The first slice of data
 	// will be the slice_a. The second slice in the list (slice_b) will be
 	// compared against the first slice. If only a single slice is provided,
-	// then slice_a will be compared against “not slice_a”.
+	// then slice_a will be compared against "not slice_a".
 	// Below are examples with feature "education" with value "low", "medium",
 	// "high" in the dataset:
 	//
