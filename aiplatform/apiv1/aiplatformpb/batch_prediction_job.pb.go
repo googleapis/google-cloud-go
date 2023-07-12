@@ -21,15 +21,14 @@
 package aiplatformpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	structpb "google.golang.org/protobuf/types/known/structpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -66,6 +65,11 @@ type BatchPredictionJob struct {
 	//              or
 	//            `projects/{project}/locations/{location}/models/{model}@golden`
 	// if no version is specified, the default version will be deployed.
+	//
+	// The model resource could also be a publisher model.
+	//  Example: `publishers/{publisher}/models/{model}`
+	//              or
+	//           `projects/{project}/locations/{location}/publishers/{publisher}/models/{model}`
 	Model string `protobuf:"bytes,3,opt,name=model,proto3" json:"model,omitempty"`
 	// Output only. The version ID of the Model that produces the predictions via
 	// this job.
