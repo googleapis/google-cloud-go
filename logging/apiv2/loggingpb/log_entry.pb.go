@@ -475,7 +475,7 @@ type LogEntrySourceLocation struct {
 	File string `protobuf:"bytes,1,opt,name=file,proto3" json:"file,omitempty"`
 	// Optional. Line within the source file. 1-based; 0 indicates no line number
 	// available.
-	Line int64 `protobuf:"varint,2,opt,name=line,proto3" json:"line,omitempty"`
+	Line int64 `protobuf:"varint,2,opt,name=line,proto3" json:"line,omitempty,string"`
 	// Optional. Human-readable name of the function or method being invoked, with
 	// optional context such as the class or package name. This information may be
 	// used in contexts such as the logs viewer, where a file and line number are
