@@ -489,7 +489,23 @@ type Entry struct {
 
 	// Optional. Source code location information associated with the log entry,
 	// if any.
-	SourceLocation *logpb.LogEntrySourceLocation
+		SourceLocation *LogEntrySourceLocation
+}
+
+type LogEntrySourceLocation struct {
+	// Optional. Source file name. Depending on the runtime environment, this
+	// might be a simple name or a fully-qualified name.
+	File string `json:"file,omitempty"`
+	// Optional. Line within the source file. 1-based; 0 indicates no line number
+	// available.
+	Line int64 `json:"line,omitempty,string"`
+	// Optional. Human-readable name of the function or method being invoked, with
+	// optional context such as the class or package name. This information may be
+	// used in contexts such as the logs viewer, where a file and line number are
+	// less meaningful. The format can vary by language. For example:
+	// `qual.if.ied.Class.method` (Java), `dir/package.func` (Go), `function`
+	// (Python).
+	Function string `json:"function,omitempty"`
 }
 
 // HTTPRequest contains an http.Request as well as additional
