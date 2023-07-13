@@ -149,8 +149,6 @@ func start(modeFlag, filename string) (*exec.Cmd, *http.Transport, string, error
 		modeFlag,
 		filename,
 		"-debug-headers",
-		"-ignore-header", "X-Goog-Api-Client",
-		"-ignore-header", "X-Goog-Gcs-Idempotency-Token",
 	)
 	if err := cmd.Start(); err != nil {
 		return nil, nil, "", err

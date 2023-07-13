@@ -302,10 +302,10 @@ type ReadSession struct {
 	// all streams are completely consumed. This estimate is based on
 	// metadata from the table which might be incomplete or stale.
 	EstimatedTotalBytesScanned int64 `protobuf:"varint,12,opt,name=estimated_total_bytes_scanned,json=estimatedTotalBytesScanned,proto3" json:"estimated_total_bytes_scanned,omitempty"`
-	// Output only. A pre-projected estimate of the total physical size (in bytes)
-	// of files this session will scan when all streams are completely consumed.
-	// This estimate does not depend on the selected columns and can be based on
-	// metadata from the table which might be incomplete or stale. Only set for
+	// Output only. A pre-projected estimate of the total physical size of files
+	// (in bytes) that this session will scan when all streams are consumed. This
+	// estimate is independent of the selected columns and can be based on
+	// incomplete or stale metadata from the table.  This field is only set for
 	// BigLake tables.
 	EstimatedTotalPhysicalFileSize int64 `protobuf:"varint,15,opt,name=estimated_total_physical_file_size,json=estimatedTotalPhysicalFileSize,proto3" json:"estimated_total_physical_file_size,omitempty"`
 	// Output only. An estimate on the number of rows present in this session's

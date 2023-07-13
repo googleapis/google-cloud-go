@@ -1,5 +1,12 @@
 # Changes
 
+## [1.12.1](https://github.com/googleapis/google-cloud-go/compare/datastore/v1.12.0...datastore/v1.12.1) (2023-07-07)
+
+
+### Bug Fixes
+
+* **datastore:** Return error from RunAggregationQuery ([#8222](https://github.com/googleapis/google-cloud-go/issues/8222)) ([a9b67cf](https://github.com/googleapis/google-cloud-go/commit/a9b67cfc95b567d29358501ec7c5883b1f90bd3e))
+
 ## [1.12.0](https://github.com/googleapis/google-cloud-go/compare/datastore/v1.11.0...datastore/v1.12.0) (2023-06-27)
 
 

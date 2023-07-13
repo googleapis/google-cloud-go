@@ -499,7 +499,11 @@ func (s *server) ReadRows(req *btpb.ReadRowsRequest, stream btpb.Bigtable_ReadRo
 			rows = append(rows, r)
 		}
 	}
-	sort.Sort(byRowKey(rows))
+	if req.Reversed {
+		sort.Sort(sort.Reverse(byRowKey(rows)))
+	} else {
+		sort.Sort(byRowKey(rows))
+	}
 
 	limit := int(req.RowsLimit)
 	if limit == 0 {
