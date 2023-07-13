@@ -27,14 +27,14 @@ import (
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 )
 
-func ExampleNewDatasetClient() {
+func ExampleNewPersistentResourceClient() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
 	// - It may require correct/in-range values for request initialization.
 	// - It may require specifying regional endpoints when creating the service client as shown in:
 	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := aiplatform.NewDatasetClient(ctx)
+	c, err := aiplatform.NewPersistentResourceClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -44,14 +44,14 @@ func ExampleNewDatasetClient() {
 	_ = c
 }
 
-func ExampleNewDatasetRESTClient() {
+func ExampleNewPersistentResourceRESTClient() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
 	// - It may require correct/in-range values for request initialization.
 	// - It may require specifying regional endpoints when creating the service client as shown in:
 	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := aiplatform.NewDatasetRESTClient(ctx)
+	c, err := aiplatform.NewPersistentResourceRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -61,24 +61,24 @@ func ExampleNewDatasetRESTClient() {
 	_ = c
 }
 
-func ExampleDatasetClient_CreateDataset() {
+func ExamplePersistentResourceClient_CreatePersistentResource() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
 	// - It may require correct/in-range values for request initialization.
 	// - It may require specifying regional endpoints when creating the service client as shown in:
 	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := aiplatform.NewDatasetClient(ctx)
+	c, err := aiplatform.NewPersistentResourceClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
 	defer c.Close()
 
-	req := &aiplatformpb.CreateDatasetRequest{
+	req := &aiplatformpb.CreatePersistentResourceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#CreateDatasetRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#CreatePersistentResourceRequest.
 	}
-	op, err := c.CreateDataset(ctx, req)
+	op, err := c.CreatePersistentResource(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -91,24 +91,24 @@ func ExampleDatasetClient_CreateDataset() {
 	_ = resp
 }
 
-func ExampleDatasetClient_GetDataset() {
+func ExamplePersistentResourceClient_GetPersistentResource() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
 	// - It may require correct/in-range values for request initialization.
 	// - It may require specifying regional endpoints when creating the service client as shown in:
 	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := aiplatform.NewDatasetClient(ctx)
+	c, err := aiplatform.NewPersistentResourceClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
 	defer c.Close()
 
-	req := &aiplatformpb.GetDatasetRequest{
+	req := &aiplatformpb.GetPersistentResourceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#GetDatasetRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#GetPersistentResourceRequest.
 	}
-	resp, err := c.GetDataset(ctx, req)
+	resp, err := c.GetPersistentResource(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -116,49 +116,24 @@ func ExampleDatasetClient_GetDataset() {
 	_ = resp
 }
 
-func ExampleDatasetClient_UpdateDataset() {
+func ExamplePersistentResourceClient_ListPersistentResources() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
 	// - It may require correct/in-range values for request initialization.
 	// - It may require specifying regional endpoints when creating the service client as shown in:
 	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := aiplatform.NewDatasetClient(ctx)
+	c, err := aiplatform.NewPersistentResourceClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
 	defer c.Close()
 
-	req := &aiplatformpb.UpdateDatasetRequest{
+	req := &aiplatformpb.ListPersistentResourcesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#UpdateDatasetRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#ListPersistentResourcesRequest.
 	}
-	resp, err := c.UpdateDataset(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleDatasetClient_ListDatasets() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := aiplatform.NewDatasetClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &aiplatformpb.ListDatasetsRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#ListDatasetsRequest.
-	}
-	it := c.ListDatasets(ctx, req)
+	it := c.ListPersistentResources(ctx, req)
 	for {
 		resp, err := it.Next()
 		if err == iterator.Done {
@@ -172,24 +147,24 @@ func ExampleDatasetClient_ListDatasets() {
 	}
 }
 
-func ExampleDatasetClient_DeleteDataset() {
+func ExamplePersistentResourceClient_DeletePersistentResource() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
 	// - It may require correct/in-range values for request initialization.
 	// - It may require specifying regional endpoints when creating the service client as shown in:
 	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := aiplatform.NewDatasetClient(ctx)
+	c, err := aiplatform.NewPersistentResourceClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
 	defer c.Close()
 
-	req := &aiplatformpb.DeleteDatasetRequest{
+	req := &aiplatformpb.DeletePersistentResourceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#DeleteDatasetRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#DeletePersistentResourceRequest.
 	}
-	op, err := c.DeleteDataset(ctx, req)
+	op, err := c.DeletePersistentResource(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -200,251 +175,14 @@ func ExampleDatasetClient_DeleteDataset() {
 	}
 }
 
-func ExampleDatasetClient_ImportData() {
+func ExamplePersistentResourceClient_GetLocation() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
 	// - It may require correct/in-range values for request initialization.
 	// - It may require specifying regional endpoints when creating the service client as shown in:
 	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := aiplatform.NewDatasetClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &aiplatformpb.ImportDataRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#ImportDataRequest.
-	}
-	op, err := c.ImportData(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-
-	resp, err := op.Wait(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleDatasetClient_ExportData() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := aiplatform.NewDatasetClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &aiplatformpb.ExportDataRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#ExportDataRequest.
-	}
-	op, err := c.ExportData(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-
-	resp, err := op.Wait(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleDatasetClient_ListDataItems() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := aiplatform.NewDatasetClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &aiplatformpb.ListDataItemsRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#ListDataItemsRequest.
-	}
-	it := c.ListDataItems(ctx, req)
-	for {
-		resp, err := it.Next()
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			// TODO: Handle error.
-		}
-		// TODO: Use resp.
-		_ = resp
-	}
-}
-
-func ExampleDatasetClient_SearchDataItems() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := aiplatform.NewDatasetClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &aiplatformpb.SearchDataItemsRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#SearchDataItemsRequest.
-	}
-	it := c.SearchDataItems(ctx, req)
-	for {
-		resp, err := it.Next()
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			// TODO: Handle error.
-		}
-		// TODO: Use resp.
-		_ = resp
-	}
-}
-
-func ExampleDatasetClient_ListSavedQueries() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := aiplatform.NewDatasetClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &aiplatformpb.ListSavedQueriesRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#ListSavedQueriesRequest.
-	}
-	it := c.ListSavedQueries(ctx, req)
-	for {
-		resp, err := it.Next()
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			// TODO: Handle error.
-		}
-		// TODO: Use resp.
-		_ = resp
-	}
-}
-
-func ExampleDatasetClient_DeleteSavedQuery() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := aiplatform.NewDatasetClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &aiplatformpb.DeleteSavedQueryRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#DeleteSavedQueryRequest.
-	}
-	op, err := c.DeleteSavedQuery(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-
-	err = op.Wait(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-}
-
-func ExampleDatasetClient_GetAnnotationSpec() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := aiplatform.NewDatasetClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &aiplatformpb.GetAnnotationSpecRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#GetAnnotationSpecRequest.
-	}
-	resp, err := c.GetAnnotationSpec(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleDatasetClient_ListAnnotations() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := aiplatform.NewDatasetClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &aiplatformpb.ListAnnotationsRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#ListAnnotationsRequest.
-	}
-	it := c.ListAnnotations(ctx, req)
-	for {
-		resp, err := it.Next()
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			// TODO: Handle error.
-		}
-		// TODO: Use resp.
-		_ = resp
-	}
-}
-
-func ExampleDatasetClient_GetLocation() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := aiplatform.NewDatasetClient(ctx)
+	c, err := aiplatform.NewPersistentResourceClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -462,14 +200,14 @@ func ExampleDatasetClient_GetLocation() {
 	_ = resp
 }
 
-func ExampleDatasetClient_ListLocations() {
+func ExamplePersistentResourceClient_ListLocations() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
 	// - It may require correct/in-range values for request initialization.
 	// - It may require specifying regional endpoints when creating the service client as shown in:
 	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := aiplatform.NewDatasetClient(ctx)
+	c, err := aiplatform.NewPersistentResourceClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -493,14 +231,14 @@ func ExampleDatasetClient_ListLocations() {
 	}
 }
 
-func ExampleDatasetClient_GetIamPolicy() {
+func ExamplePersistentResourceClient_GetIamPolicy() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
 	// - It may require correct/in-range values for request initialization.
 	// - It may require specifying regional endpoints when creating the service client as shown in:
 	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := aiplatform.NewDatasetClient(ctx)
+	c, err := aiplatform.NewPersistentResourceClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -518,14 +256,14 @@ func ExampleDatasetClient_GetIamPolicy() {
 	_ = resp
 }
 
-func ExampleDatasetClient_SetIamPolicy() {
+func ExamplePersistentResourceClient_SetIamPolicy() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
 	// - It may require correct/in-range values for request initialization.
 	// - It may require specifying regional endpoints when creating the service client as shown in:
 	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := aiplatform.NewDatasetClient(ctx)
+	c, err := aiplatform.NewPersistentResourceClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -543,14 +281,14 @@ func ExampleDatasetClient_SetIamPolicy() {
 	_ = resp
 }
 
-func ExampleDatasetClient_TestIamPermissions() {
+func ExamplePersistentResourceClient_TestIamPermissions() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
 	// - It may require correct/in-range values for request initialization.
 	// - It may require specifying regional endpoints when creating the service client as shown in:
 	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := aiplatform.NewDatasetClient(ctx)
+	c, err := aiplatform.NewPersistentResourceClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -568,14 +306,14 @@ func ExampleDatasetClient_TestIamPermissions() {
 	_ = resp
 }
 
-func ExampleDatasetClient_CancelOperation() {
+func ExamplePersistentResourceClient_CancelOperation() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
 	// - It may require correct/in-range values for request initialization.
 	// - It may require specifying regional endpoints when creating the service client as shown in:
 	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := aiplatform.NewDatasetClient(ctx)
+	c, err := aiplatform.NewPersistentResourceClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -591,14 +329,14 @@ func ExampleDatasetClient_CancelOperation() {
 	}
 }
 
-func ExampleDatasetClient_DeleteOperation() {
+func ExamplePersistentResourceClient_DeleteOperation() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
 	// - It may require correct/in-range values for request initialization.
 	// - It may require specifying regional endpoints when creating the service client as shown in:
 	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := aiplatform.NewDatasetClient(ctx)
+	c, err := aiplatform.NewPersistentResourceClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -614,14 +352,14 @@ func ExampleDatasetClient_DeleteOperation() {
 	}
 }
 
-func ExampleDatasetClient_GetOperation() {
+func ExamplePersistentResourceClient_GetOperation() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
 	// - It may require correct/in-range values for request initialization.
 	// - It may require specifying regional endpoints when creating the service client as shown in:
 	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := aiplatform.NewDatasetClient(ctx)
+	c, err := aiplatform.NewPersistentResourceClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -639,14 +377,14 @@ func ExampleDatasetClient_GetOperation() {
 	_ = resp
 }
 
-func ExampleDatasetClient_ListOperations() {
+func ExamplePersistentResourceClient_ListOperations() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
 	// - It may require correct/in-range values for request initialization.
 	// - It may require specifying regional endpoints when creating the service client as shown in:
 	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := aiplatform.NewDatasetClient(ctx)
+	c, err := aiplatform.NewPersistentResourceClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -670,14 +408,14 @@ func ExampleDatasetClient_ListOperations() {
 	}
 }
 
-func ExampleDatasetClient_WaitOperation() {
+func ExamplePersistentResourceClient_WaitOperation() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
 	// - It may require correct/in-range values for request initialization.
 	// - It may require specifying regional endpoints when creating the service client as shown in:
 	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := aiplatform.NewDatasetClient(ctx)
+	c, err := aiplatform.NewPersistentResourceClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
