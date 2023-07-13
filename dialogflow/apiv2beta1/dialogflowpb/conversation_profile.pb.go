@@ -1391,7 +1391,8 @@ type HumanAgentAssistantConfig_SuggestionFeatureConfig struct {
 	// Automatically iterates all participants and tries to compile
 	// suggestions.
 	//
-	// Supported features: ARTICLE_SUGGESTION, FAQ, DIALOGFLOW_ASSIST.
+	// Supported features: ARTICLE_SUGGESTION, FAQ, DIALOGFLOW_ASSIST,
+	// ENTITY_EXTRACTION.
 	EnableEventBasedSuggestion bool `protobuf:"varint,3,opt,name=enable_event_based_suggestion,json=enableEventBasedSuggestion,proto3" json:"enable_event_based_suggestion,omitempty"`
 	// Settings of suggestion trigger.
 	//
@@ -1688,7 +1689,8 @@ type HumanAgentAssistantConfig_SuggestionQueryConfig_DocumentQuerySource_ struct
 }
 
 type HumanAgentAssistantConfig_SuggestionQueryConfig_DialogflowQuerySource_ struct {
-	// Query from Dialogflow agent. It is used by DIALOGFLOW_ASSIST.
+	// Query from Dialogflow agent. It is used by DIALOGFLOW_ASSIST,
+	// ENTITY_EXTRACTION.
 	DialogflowQuerySource *HumanAgentAssistantConfig_SuggestionQueryConfig_DialogflowQuerySource `protobuf:"bytes,3,opt,name=dialogflow_query_source,json=dialogflowQuerySource,proto3,oneof"`
 }
 
@@ -2012,7 +2014,7 @@ func (x *HumanAgentAssistantConfig_SuggestionQueryConfig_DocumentQuerySource) Ge
 
 // Dialogflow source setting.
 //
-// Supported feature: DIALOGFLOW_ASSIST.
+// Supported feature: DIALOGFLOW_ASSIST, ENTITY_EXTRACTION.
 type HumanAgentAssistantConfig_SuggestionQueryConfig_DialogflowQuerySource struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache

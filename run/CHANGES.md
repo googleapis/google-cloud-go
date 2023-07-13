@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [1.2.0](https://github.com/googleapis/google-cloud-go/compare/run/v1.1.1...run/v1.2.0) (2023-07-10)
+
+
+### Features
+
+* **run:** Adds support for custom audiences ([#8227](https://github.com/googleapis/google-cloud-go/issues/8227)) ([7732b8c](https://github.com/googleapis/google-cloud-go/commit/7732b8c2c19aef0fad4a7bae6d4bd7354018cfc4))
+
 ## [1.1.1](https://github.com/googleapis/google-cloud-go/compare/run/v1.1.0...run/v1.1.1) (2023-06-20)
 
 

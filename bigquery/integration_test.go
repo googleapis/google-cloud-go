@@ -252,6 +252,14 @@ func initTestState(client *Client, t time.Time) func() {
 	// For replayability, seed the random source with t.
 	Seed(t.UnixNano())
 
+	prefixes := []string{
+		"dataset_",                    // bigquery package tests
+		"managedwriter_test_dataset_", // managedwriter package tests
+	}
+	for _, prefix := range prefixes {
+		deleteDatasets(ctx, prefix)
+	}
+
 	dataset = client.Dataset(datasetIDs.New())
 	otherDataset = client.Dataset(datasetIDs.New())
 
@@ -268,6 +276,44 @@ func initTestState(client *Client, t time.Time) func() {
 		}
 		if err := otherDataset.DeleteWithContents(ctx); err != nil {
 			log.Printf("could not delete %s", dataset.DatasetID)
+		}
+	}
+}
+
+// delete a resource if it is older than a day
+// that will prevent collisions with parallel CI test runs.
+func isResourceStale(t time.Time) bool {
+	return time.Since(t).Hours() >= 24
+}
+
+// delete old datasets
+func deleteDatasets(ctx context.Context, prefix string) {
+	it := client.Datasets(ctx)
+
+	for {
+		ds, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			fmt.Printf("failed to list project datasets: %v\n", err)
+			break
+		}
+		if !strings.HasPrefix(ds.DatasetID, prefix) {
+			continue
+		}
+
+		md, err := ds.Metadata(ctx)
+		if err != nil {
+			fmt.Printf("failed to get dataset `%s` metadata: %v\n", ds.DatasetID, err)
+			continue
+		}
+		if isResourceStale(md.CreationTime) {
+			fmt.Printf("found old dataset to delete: %s\n", ds.DatasetID)
+			err := ds.DeleteWithContents(ctx)
+			if err != nil {
+				fmt.Printf("failed to delete old dataset `%s`\n", ds.DatasetID)
+			}
 		}
 	}
 }

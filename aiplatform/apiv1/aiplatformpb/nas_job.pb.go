@@ -388,7 +388,7 @@ func (x *NasJob) GetEnableRestrictedImageTraining() bool {
 	return false
 }
 
-// Represents a NasTrial details along with it's parameters. If there is a
+// Represents a NasTrial details along with its parameters. If there is a
 // corresponding train NasTrial, the train NasTrial is also returned.
 type NasTrialDetail struct {
 	state         protoimpl.MessageState
