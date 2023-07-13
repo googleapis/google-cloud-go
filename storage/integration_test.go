@@ -272,7 +272,9 @@ func multiTransportTest(ctx context.Context, t *testing.T,
 	opts ...option.ClientOption) {
 	for transport, client := range initTransportClients(ctx, t, opts...) {
 		t.Run(transport, func(t *testing.T) {
-			defer client.Close()
+			t.Cleanup(func() {
+				client.Close()
+			})
 
 			if reason := ctx.Value(skipTransportTestKey(transport)); reason != nil {
 				t.Skip("transport", fmt.Sprintf("%q", transport), "explicitly skipped:", reason)
@@ -1577,6 +1579,8 @@ func TestIntegration_ObjectCompose(t *testing.T) {
 func TestIntegration_Copy(t *testing.T) {
 	ctx := skipJSONReads(context.Background(), "no reads in test")
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, bucket string, prefix string, client *Client) {
+		h := testHelper{t}
+
 		bucketFrom := client.Bucket(bucket)
 		bucketInSameRegion := client.Bucket(prefix + uidSpace.New())
 		bucketInDifferentRegion := client.Bucket(prefix + uidSpace.New())
@@ -1585,13 +1589,17 @@ func TestIntegration_Copy(t *testing.T) {
 		if err := bucketInSameRegion.Create(ctx, testutil.ProjID(), nil); err != nil {
 			t.Fatalf("bucket.Create: %v", err)
 		}
-		defer bucketInSameRegion.Delete(ctx)
+		t.Cleanup(func() {
+			h.mustDeleteBucket(bucketInSameRegion)
+		})
 
 		// Create new bucket
 		if err := bucketInDifferentRegion.Create(ctx, testutil.ProjID(), &BucketAttrs{Location: "NORTHAMERICA-NORTHEAST2"}); err != nil {
 			t.Fatalf("bucket.Create: %v", err)
 		}
-		defer bucketInDifferentRegion.Delete(ctx)
+		t.Cleanup(func() {
+			h.mustDeleteBucket(bucketInDifferentRegion)
+		})
 
 		// We use a larger object size to be able to trigger multiple rewrite calls
 		minObjectSize := 2500000 // 2.5 Mb
@@ -1610,12 +1618,9 @@ func TestIntegration_Copy(t *testing.T) {
 		if err := w.Close(); err != nil {
 			t.Fatalf("w.Close: %v", err)
 		}
-
-		defer func() {
-			if err := obj.Delete(ctx); err != nil {
-				t.Errorf("obj.Delete: %v", err)
-			}
-		}()
+		t.Cleanup(func() {
+			h.mustDeleteObject(obj)
+		})
 
 		attrs, err := obj.Attrs(ctx)
 		if err != nil {
@@ -1687,11 +1692,9 @@ func TestIntegration_Copy(t *testing.T) {
 				if err != nil {
 					t.Fatalf("Copier.Run failed with %v", err)
 				}
-				defer func() {
-					if err := copyObj.Delete(ctx); err != nil {
-						t.Errorf("copyObj.Delete: %v", err)
-					}
-				}()
+				t.Cleanup(func() {
+					h.mustDeleteObject(copyObj)
+				})
 
 				// Check copied object is in the correct bucket with the correct name
 				if attrs.Bucket != test.toBucket.name || attrs.Name != test.toObj {
@@ -5196,7 +5199,14 @@ func (h testHelper) mustObjectAttrs(o *ObjectHandle) *ObjectAttrs {
 }
 
 func (h testHelper) mustDeleteObject(o *ObjectHandle) {
-	if err := o.Delete(context.Background()); err != nil {
+	if err := o.Retryer(WithPolicy(RetryAlways)).Delete(context.Background()); err != nil {
+		var apiErr *apierror.APIError
+		if ok := errors.As(err, &apiErr); ok {
+			// Object may already be deleted with retry; if so skip.
+			if apiErr.HTTPCode() == 404 || apiErr.GRPCStatus().Code() == codes.NotFound {
+				return
+			}
+		}
 		h.t.Fatalf("%s: delete object %s from bucket %s: %v", loc(), o.ObjectName(), o.BucketName(), err)
 	}
 }
