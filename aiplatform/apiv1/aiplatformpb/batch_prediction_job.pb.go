@@ -66,6 +66,11 @@ type BatchPredictionJob struct {
 	//              or
 	//            `projects/{project}/locations/{location}/models/{model}@golden`
 	// if no version is specified, the default version will be deployed.
+	//
+	// The model resource could also be a publisher model.
+	//  Example: `publishers/{publisher}/models/{model}`
+	//              or
+	//           `projects/{project}/locations/{location}/publishers/{publisher}/models/{model}`
 	Model string `protobuf:"bytes,3,opt,name=model,proto3" json:"model,omitempty"`
 	// Output only. The version ID of the Model that produces the predictions via
 	// this job.

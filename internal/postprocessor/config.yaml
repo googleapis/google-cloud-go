@@ -1,6 +1,7 @@
 modules:
   - accessapproval
   - accesscontextmanager
+  - ai
   - aiplatform
   - advisorynotifications
   - alloydb
@@ -55,7 +56,6 @@ modules:
   - filestore
   - firestore
   - functions
-  - gaming
   - gkebackup
   - gkeconnect
   - gkehub
@@ -257,6 +257,9 @@ manual-clients:
     library-type: GAPIC_MANUAL
 
 service-configs:
+  - input-directory: google/ai/generativelanguage/v1beta2
+    service-config: generativelanguage_v1beta2.yaml
+    import-path: cloud.google.com/go/ai/generativelanguage/apiv1beta2
   - input-directory: google/analytics/admin/v1alpha
     service-config: analyticsadmin_v1alpha.yaml
     import-path: cloud.google.com/go/analytics/admin/apiv1alpha
@@ -507,12 +510,6 @@ service-configs:
   - input-directory: google/cloud/functions/v2beta
     service-config: cloudfunctions_v2beta.yaml
     import-path: cloud.google.com/go/functions/apiv2beta
-  - input-directory: google/cloud/gaming/v1
-    service-config: gameservices_v1.yaml
-    import-path: cloud.google.com/go/gaming/apiv1
-  - input-directory: google/cloud/gaming/v1beta
-    service-config: gameservices_v1beta.yaml
-    import-path: cloud.google.com/go/gaming/apiv1beta
   - input-directory: google/cloud/gkebackup/v1
     service-config: gkebackup_v1.yaml
     import-path: cloud.google.com/go/gkebackup/apiv1
