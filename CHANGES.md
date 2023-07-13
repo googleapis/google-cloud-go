@@ -1,5 +1,12 @@
 # Changes
 
+## [0.110.6](https://github.com/googleapis/google-cloud-go/compare/v0.110.5...v0.110.6) (2023-07-13)
+
+
+### Bug Fixes
+
+* **httpreplay:** Ignore GCS header by default ([#8260](https://github.com/googleapis/google-cloud-go/issues/8260)) ([b961a1a](https://github.com/googleapis/google-cloud-go/commit/b961a1abe7aeafe420c88eed38035fed0bbf7bbe)), refs [#8233](https://github.com/googleapis/google-cloud-go/issues/8233)
+
 ## [0.110.5](https://github.com/googleapis/google-cloud-go/compare/v0.110.4...v0.110.5) (2023-07-07)
 
 
