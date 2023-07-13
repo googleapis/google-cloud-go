@@ -26,7 +26,7 @@
     "language": "go",
     "client_library_type": "generated",
     "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/advisorynotifications/latest/apiv1",
-    "release_level": "preview",
+    "release_level": "stable",
     "library_type": "GAPIC_AUTO"
   },
   "cloud.google.com/go/ai/generativelanguage/apiv1beta2": {
