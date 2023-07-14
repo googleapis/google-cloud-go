@@ -562,7 +562,8 @@ func (c *TestCasesClient) ExportTestCasesOperation(name string) *ExportTestCases
 	return c.internalClient.ExportTestCasesOperation(name)
 }
 
-// ListTestCaseResults fetches a list of results for a given test case.
+// ListTestCaseResults fetches the list of run results for the given test case. A maximum of 100
+// results are kept for each test case.
 func (c *TestCasesClient) ListTestCaseResults(ctx context.Context, req *cxpb.ListTestCaseResultsRequest, opts ...gax.CallOption) *TestCaseResultIterator {
 	return c.internalClient.ListTestCaseResults(ctx, req, opts...)
 }
@@ -1883,7 +1884,8 @@ func (c *testCasesRESTClient) ExportTestCases(ctx context.Context, req *cxpb.Exp
 	}, nil
 }
 
-// ListTestCaseResults fetches a list of results for a given test case.
+// ListTestCaseResults fetches the list of run results for the given test case. A maximum of 100
+// results are kept for each test case.
 func (c *testCasesRESTClient) ListTestCaseResults(ctx context.Context, req *cxpb.ListTestCaseResultsRequest, opts ...gax.CallOption) *TestCaseResultIterator {
 	it := &TestCaseResultIterator{}
 	req = proto.Clone(req).(*cxpb.ListTestCaseResultsRequest)

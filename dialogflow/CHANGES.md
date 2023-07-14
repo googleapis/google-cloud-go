@@ -1,5 +1,26 @@
 # Changes
 
+## [1.39.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.38.0...dialogflow/v1.39.0) (2023-07-10)
+
+
+### Features
+
+* **dialogflow/cx:** Added GitIntegrationSettings to the Agent ([bac978a](https://github.com/googleapis/google-cloud-go/commit/bac978ace43bb58db7c0b1475e41c8fdf8c49a29))
+
+
+### Documentation
+
+* **dialogflow:** Added google.api.field_behavior for some fields in audio_config ([bac978a](https://github.com/googleapis/google-cloud-go/commit/bac978ace43bb58db7c0b1475e41c8fdf8c49a29))
+* **dialogflow:** Added google.api.field_behavior for some fields in audio_config ([#8230](https://github.com/googleapis/google-cloud-go/issues/8230)) ([bac978a](https://github.com/googleapis/google-cloud-go/commit/bac978ace43bb58db7c0b1475e41c8fdf8c49a29))
+
+## [1.38.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.37.0...dialogflow/v1.38.0) (2023-06-27)
+
+
+### Features
+
+* **dialogflow:** Added dialogflow_assist_answer ([94ea341](https://github.com/googleapis/google-cloud-go/commit/94ea3410e233db6040a7cb0a931948f1e3bb4c9a))
+* **dialogflow:** Added dialogflow_assist_answer ([94ea341](https://github.com/googleapis/google-cloud-go/commit/94ea3410e233db6040a7cb0a931948f1e3bb4c9a))
+
 ## [1.37.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.36.0...dialogflow/v1.37.0) (2023-06-20)
 
 

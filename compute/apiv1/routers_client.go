@@ -578,6 +578,9 @@ func (c *routersRESTClient) GetNatMappingInfo(ctx context.Context, req *computep
 		if req != nil && req.MaxResults != nil {
 			params.Add("maxResults", fmt.Sprintf("%v", req.GetMaxResults()))
 		}
+		if req != nil && req.NatName != nil {
+			params.Add("natName", fmt.Sprintf("%v", req.GetNatName()))
+		}
 		if req != nil && req.OrderBy != nil {
 			params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))
 		}

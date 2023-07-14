@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/aiplatform/apiv1",
-    "version": "1.44.0",
+    "version": "1.45.0",
     "language": "GO",
     "apis": [
       {
@@ -189,6 +189,52 @@
         {
           "start": 18,
           "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_DatasetService_DeleteSavedQuery_sync",
+      "title": "aiplatform DeleteSavedQuery Sample",
+      "description": "DeleteSavedQuery deletes a SavedQuery.",
+      "file": "DatasetClient/DeleteSavedQuery/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteSavedQuery",
+        "fullName": "google.cloud.aiplatform.v1.DatasetClient.DeleteSavedQuery",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.DeleteSavedQueryRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteSavedQueryOperation",
+        "client": {
+          "shortName": "DatasetClient",
+          "fullName": "google.cloud.aiplatform.v1.DatasetClient"
+        },
+        "method": {
+          "shortName": "DeleteSavedQuery",
+          "fullName": "google.cloud.aiplatform.v1.DatasetService.DeleteSavedQuery",
+          "service": {
+            "shortName": "DatasetService",
+            "fullName": "google.cloud.aiplatform.v1.DatasetService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
           "type": "FULL"
         }
       ]

@@ -4,6 +4,7 @@ docker:
 deep-remove-regex:
   - /accessapproval/apiv1/
   - /accesscontextmanager/apiv1/
+  - /ai/generativelanguage/apiv1beta2/
   - /aiplatform/apiv1/
   - /aiplatform/apiv1beta1/
   - /advisorynotifications/apiv1/
@@ -102,8 +103,6 @@ deep-remove-regex:
   - /functions/apiv1/
   - /functions/apiv2/
   - /functions/apiv2beta/
-  - /gaming/apiv1/
-  - /gaming/apiv1beta/
   - /gkebackup/apiv1/
   - /gkeconnect/gateway/apiv1beta1/
   - /gkehub/apiv1beta1/
@@ -117,6 +116,7 @@ deep-remove-regex:
   # START snippets
   - /internal/generated/snippets/accessapproval/apiv1/
   - /internal/generated/snippets/accesscontextmanager/apiv1/
+  - /internal/generated/snippets/ai/generativelanguage/apiv1beta2/
   - /internal/generated/snippets/aiplatform/apiv1/
   - /internal/generated/snippets/aiplatform/apiv1beta1/
   - /internal/generated/snippets/advisorynotifications/apiv1/
@@ -215,8 +215,6 @@ deep-remove-regex:
   - /internal/generated/snippets/functions/apiv1/
   - /internal/generated/snippets/functions/apiv2/
   - /internal/generated/snippets/functions/apiv2beta/
-  - /internal/generated/snippets/gaming/apiv1/
-  - /internal/generated/snippets/gaming/apiv1beta/
   - /internal/generated/snippets/gkebackup/apiv1/
   - /internal/generated/snippets/gkeconnect/gateway/apiv1beta1/
   - /internal/generated/snippets/gkehub/apiv1beta1/
@@ -498,6 +496,8 @@ deep-copy-regex:
     dest: /
   - source: /google/identity/accesscontextmanager/v1/cloud.google.com/go
     dest: /
+  - source: /google/ai/generativelanguage/v1beta2/cloud.google.com/go
+    dest: /
   - source: /google/cloud/aiplatform/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/aiplatform/v1beta1/cloud.google.com/go
@@ -696,10 +696,6 @@ deep-copy-regex:
     dest: /
   - source: /google/cloud/functions/v2beta/cloud.google.com/go
     dest: /
-  - source: /google/cloud/gaming/v1/cloud.google.com/go
-    dest: /
-  - source: /google/cloud/gaming/v1beta/cloud.google.com/go
-    dest: /
   - source: /google/cloud/gkebackup/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/gkeconnect/gateway/v1beta1/cloud.google.com/go
@@ -783,7 +779,7 @@ deep-copy-regex:
   - source: /google/cloud/orchestration/airflow/service/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/orgpolicy/v1/cloud.google.com/go
-    dest: /    
+    dest: /
   - source: /google/cloud/orgpolicy/v2/cloud.google.com/go
     dest: /
   - source: /google/cloud/osconfig/agentendpoint/v1/cloud.google.com/go

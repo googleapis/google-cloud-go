@@ -4681,7 +4681,8 @@ type TestCasesClient interface {
 	// - `response`:
 	// [ExportTestCasesResponse][google.cloud.dialogflow.cx.v3.ExportTestCasesResponse]
 	ExportTestCases(ctx context.Context, in *ExportTestCasesRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
-	// Fetches a list of results for a given test case.
+	// Fetches the list of run results for the given test case. A maximum of 100
+	// results are kept for each test case.
 	ListTestCaseResults(ctx context.Context, in *ListTestCaseResultsRequest, opts ...grpc.CallOption) (*ListTestCaseResultsResponse, error)
 	// Gets a test case result.
 	GetTestCaseResult(ctx context.Context, in *GetTestCaseResultRequest, opts ...grpc.CallOption) (*TestCaseResult, error)
@@ -4864,7 +4865,8 @@ type TestCasesServer interface {
 	// - `response`:
 	// [ExportTestCasesResponse][google.cloud.dialogflow.cx.v3.ExportTestCasesResponse]
 	ExportTestCases(context.Context, *ExportTestCasesRequest) (*longrunningpb.Operation, error)
-	// Fetches a list of results for a given test case.
+	// Fetches the list of run results for the given test case. A maximum of 100
+	// results are kept for each test case.
 	ListTestCaseResults(context.Context, *ListTestCaseResultsRequest) (*ListTestCaseResultsResponse, error)
 	// Gets a test case result.
 	GetTestCaseResult(context.Context, *GetTestCaseResultRequest) (*TestCaseResult, error)

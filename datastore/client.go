@@ -81,7 +81,7 @@ func (dc *datastoreClient) RunAggregationQuery(ctx context.Context, in *pb.RunAg
 		res, err = dc.c.RunAggregationQuery(ctx, in, opts...)
 		return err
 	})
-	return res, nil
+	return res, err
 }
 
 func (dc *datastoreClient) BeginTransaction(ctx context.Context, in *pb.BeginTransactionRequest, opts ...grpc.CallOption) (res *pb.BeginTransactionResponse, err error) {

@@ -1,5 +1,12 @@
 # Changes
 
+## [1.10.0](https://github.com/googleapis/google-cloud-go/compare/storagetransfer/v1.9.1...storagetransfer/v1.10.0) (2023-06-27)
+
+
+### Features
+
+* **storagetransfer:** Add event driven transfer configuration ([1da334c](https://github.com/googleapis/google-cloud-go/commit/1da334c0cbeed9cfb8df0551714721284d164d60))
+
 ## [1.9.1](https://github.com/googleapis/google-cloud-go/compare/storagetransfer/v1.9.0...storagetransfer/v1.9.1) (2023-06-20)
 
 
