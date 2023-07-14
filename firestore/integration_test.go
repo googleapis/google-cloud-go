@@ -217,6 +217,9 @@ func deleteCollection(ctx context.Context, coll *CollectionRef) error {
 }
 
 func deleteDocuments(docRefs []*DocumentRef) {
+	if testing.Short() {
+		return
+	}
 	ctx := context.Background()
 	bulkwriter := iClient.BulkWriter(ctx)
 	for _, docRef := range docRefs {
