@@ -79,8 +79,9 @@ var (
 		"Via",
 		"X-Forwarded-*",
 		// Google-specific
-		"X-Cloud-Trace-Context", // OpenCensus traces have a random ID
-		"X-Goog-Api-Client",     // can differ for, e.g., different Go versions
+		"X-Cloud-Trace-Context",        // OpenCensus traces have a random ID
+		"X-Goog-Api-Client",            // can differ for, e.g., different Go versions
+		"X-Goog-Gcs-Idempotency-Token", // Used by Cloud Storage
 	}
 
 	defaultRemoveBothHeaders = []string{
