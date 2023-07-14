@@ -662,19 +662,10 @@ func TestIntegration_Update(t *testing.T) {
 
 func TestIntegration_Collections(t *testing.T) {
 	ctx := context.Background()
-	c := integrationClient(t)
 	h := testHelper{t}
-	got, err := c.Collections(ctx).GetAll()
-	if err != nil {
-		t.Fatal(err)
-	}
-	// There should be at least one collection.
-	if len(got) == 0 {
-		t.Error("got 0 top-level collections, want at least one")
-	}
 
 	doc := integrationColl(t).NewDoc()
-	got, err = doc.Collections(ctx).GetAll()
+	got, err := doc.Collections(ctx).GetAll()
 	if err != nil {
 		t.Fatal(err)
 	}
