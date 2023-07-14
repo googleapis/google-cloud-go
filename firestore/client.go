@@ -108,7 +108,7 @@ func NewClient(ctx context.Context, projectID string, opts ...option.ClientOptio
 // specified database.
 func NewClientWithDatabase(ctx context.Context, projectID string, databaseID string, opts ...option.ClientOption) (*Client, error) {
 	if databaseID == "" {
-		return nil, errors.New("firestore: databaseName was empty")
+		return nil, errors.New("firestore: databaseID cannot be empty")
 	}
 
 	client, err := NewClient(ctx, projectID, opts...)
@@ -146,6 +146,13 @@ func withResourceHeader(ctx context.Context, resource string) context.Context {
 	md, _ := metadata.FromOutgoingContext(ctx)
 	md = md.Copy()
 	md[resourcePrefixHeader] = []string{resource}
+	return metadata.NewOutgoingContext(ctx, md)
+}
+
+func withRequestParamsHeader(ctx context.Context, requestParams string) context.Context {
+	md, _ := metadata.FromOutgoingContext(ctx)
+	md = md.Copy()
+	md[vkit.ReqParamsHeader] = []string{requestParams}
 	return metadata.NewOutgoingContext(ctx, md)
 }
 
@@ -250,7 +257,9 @@ func (c *Client) getAll(ctx context.Context, docRefs []*DocumentRef, tid []byte,
 		req.ConsistencySelector = &pb.BatchGetDocumentsRequest_Transaction{Transaction: tid}
 	}
 
-	streamClient, err := c.c.BatchGetDocuments(withResourceHeader(ctx, req.Database), req)
+	batchGetDocsCtx := withResourceHeader(ctx, req.Database)
+	batchGetDocsCtx = withRequestParamsHeader(batchGetDocsCtx, vkit.ReqParamsHeaderVal(c.path()))
+	streamClient, err := c.c.BatchGetDocuments(batchGetDocsCtx, req)
 	if err != nil {
 		return nil, err
 	}

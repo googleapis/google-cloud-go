@@ -27,7 +27,6 @@ import (
 	"runtime"
 	"sort"
 	"strings"
-	"sync"
 	"testing"
 	"time"
 
@@ -47,15 +46,30 @@ import (
 )
 
 func TestMain(m *testing.M) {
-	initIntegrationTest()
-	status := m.Run()
-	cleanupIntegrationTest()
-	os.Exit(status)
+	databasesStr, ok := os.LookupEnv(envDatabases)
+	if !ok {
+		databasesStr = "(default)"
+	}
+	databaseIDs := strings.Split(databasesStr, ",")
+	testParams = make(map[string]interface{})
+
+	for _, databaseID := range databaseIDs {
+		testParams["databaseID"] = databaseID
+		initIntegrationTest()
+		status := m.Run()
+		if status != 0 {
+			os.Exit(status)
+		}
+		cleanupIntegrationTest()
+	}
+
+	os.Exit(0)
 }
 
 const (
 	envProjID     = "GCLOUD_TESTS_GOLANG_FIRESTORE_PROJECT_ID"
 	envPrivateKey = "GCLOUD_TESTS_GOLANG_FIRESTORE_KEY"
+	envDatabases  = "GCLOUD_TESTS_GOLANG_FIRESTORE_DATABASES"
 )
 
 var (
@@ -65,9 +79,12 @@ var (
 	collectionIDs = uid.NewSpace("go-integration-test", nil)
 	wantDBPath    string
 	indexNames    []string
+	testParams    map[string]interface{}
 )
 
 func initIntegrationTest() {
+	databaseID := testParams["databaseID"].(string)
+	log.Printf("Setting up tests to run on databaseID: %q\n", databaseID)
 	flag.Parse() // needed for testing.Short()
 	if testing.Short() {
 		return
@@ -85,7 +102,7 @@ func initIntegrationTest() {
 		log.Fatal("The project key must be set. See CONTRIBUTING.md for details")
 	}
 	projectPath := "projects/" + testProjectID
-	wantDBPath = projectPath + "/databases/(default)"
+	wantDBPath = projectPath + "/databases/" + databaseID
 
 	ti := &testutil.HeadersEnforcer{
 		Checkers: []*testutil.HeaderChecker{
@@ -106,7 +123,7 @@ func initIntegrationTest() {
 		},
 	}
 	copts := append(ti.CallOptions(), option.WithTokenSource(ts))
-	c, err := NewClient(ctx, testProjectID, copts...)
+	c, err := NewClientWithDatabase(ctx, testProjectID, databaseID, copts...)
 	if err != nil {
 		log.Fatalf("NewClient: %v", err)
 	}
@@ -132,13 +149,11 @@ func initIntegrationTest() {
 // Without indexes, FailedPrecondition rpc error is seen with
 // desc 'The query requires multiple indexes'.
 func createIndexes(ctx context.Context, dbPath string) {
-	var createIndexWg sync.WaitGroup
 
 	indexFields := [][]string{{"updatedAt", "weight", "height"}, {"weight", "height"}}
 	indexNames = make([]string, len(indexFields))
 	indexParent := fmt.Sprintf("%s/collectionGroups/%s", dbPath, iColl.ID)
 
-	createIndexWg.Add(len(indexFields))
 	for i, fields := range indexFields {
 		var adminPbIndexFields []*adminpb.Index_IndexField
 		for _, field := range fields {
@@ -156,21 +171,17 @@ func createIndexes(ctx context.Context, dbPath string) {
 				Fields:     adminPbIndexFields,
 			},
 		}
-		go func(req *adminpb.CreateIndexRequest, i int) {
-			op, createErr := iAdminClient.CreateIndex(ctx, req)
-			if createErr != nil {
-				log.Fatalf("CreateIndex: %v", createErr)
-			}
+		op, createErr := iAdminClient.CreateIndex(ctx, req)
+		if createErr != nil {
+			log.Fatalf("CreateIndex: %v", createErr)
+		}
 
-			createdIndex, waitErr := op.Wait(ctx)
-			if waitErr != nil {
-				log.Fatalf("Wait: %v", waitErr)
-			}
-			indexNames[i] = createdIndex.Name
-			createIndexWg.Done()
-		}(req, i)
+		createdIndex, waitErr := op.Wait(ctx)
+		if waitErr != nil {
+			log.Fatalf("Wait: %v", waitErr)
+		}
+		indexNames[i] = createdIndex.Name
 	}
-	createIndexWg.Wait()
 }
 
 // deleteIndexes deletes composite indexes created in createIndexes function
@@ -203,16 +214,44 @@ func deleteCollection(ctx context.Context, coll *CollectionRef) error {
 			log.Printf("Failed to get next document: %+v\n", err)
 			return err
 		}
-
-		_, err = bulkwriter.Delete(doc.Ref)
+		err = deleteDocument(ctx, doc.Ref, bulkwriter)
 		if err != nil {
-			log.Printf("Failed to delete document: %+v, err: %+v\n", doc.Ref, err)
+			log.Printf("Failed to delete document: %+v\n", err)
+			return err
 		}
 	}
 
 	bulkwriter.End()
 	bulkwriter.Flush()
 
+	return nil
+}
+
+func deleteDocument(ctx context.Context, docRef *DocumentRef, bulkwriter *BulkWriter) error {
+	// Delete subcollections before deleting document
+	subCollIter := docRef.Collections(ctx)
+	for {
+		subColl, err := subCollIter.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			log.Printf("Error getting next subcollection of %s: %+v", docRef.ID, err)
+			return err
+		}
+		err = deleteCollection(ctx, subColl)
+		if err != nil {
+			log.Printf("Error deleting subcollection %v: %+v\n", subColl.ID, err)
+			return err
+		}
+	}
+
+	// Delete document
+	_, err := bulkwriter.Delete(docRef)
+	if err != nil {
+		log.Printf("Failed to delete document: %+v, err: %+v\n", docRef, err)
+		return err
+	}
 	return nil
 }
 
@@ -1981,21 +2020,38 @@ func TestIntegration_ColGroupRefPartitionsLarge(t *testing.T) {
 	}
 }
 
-func TestIntegration_NewDatabase(t *testing.T) {
-	t.Skip("firestore: integration: skipping new database test until deletion is possible.")
-
-	ctx := context.Background()
-	dbName := uid.NewSpace("integration-database", &uid.Options{}).New()
-	c, err := NewClientWithDatabase(ctx, iClient.projectID, dbName)
-
-	if err != nil {
-		t.Errorf("Can't create new database in project %s", iClient.projectID)
+func TestIntegration_NewClientWithDatabase(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Integration tests skipped in short mode")
 	}
-
-	if !strings.Contains(c.databaseID, dbName) {
-		t.Errorf("new database not created:\nwanted database name %s\ngot database name %s", dbName, c.databaseID)
+	for _, tc := range []struct {
+		desc    string
+		dbName  string
+		wantErr bool
+		opt     []option.ClientOption
+	}{
+		{
+			desc:    "Success",
+			dbName:  testParams["databaseID"].(string),
+			wantErr: false,
+		},
+		{
+			desc:    "Error from NewClient bubbled to NewClientWithDatabase",
+			dbName:  testParams["databaseID"].(string),
+			wantErr: true,
+			opt:     []option.ClientOption{option.WithCredentialsFile("non existent filepath")},
+		},
+	} {
+		ctx := context.Background()
+		c, err := NewClientWithDatabase(ctx, iClient.projectID, tc.dbName, tc.opt...)
+		if err != nil && !tc.wantErr {
+			t.Errorf("NewClientWithDatabase: %s got %v want nil", tc.desc, err)
+		} else if err == nil && tc.wantErr {
+			t.Errorf("NewClientWithDatabase: %s got %v wanted error", tc.desc, err)
+		} else if err == nil && c.databaseID != tc.dbName {
+			t.Errorf("NewClientWithDatabase: %s got %v want %v", tc.desc, c.databaseID, tc.dbName)
+		}
 	}
-	t.Log("finished the test")
 }
 
 // TestIntegration_BulkWriter_Set tests setting values and serverTimeStamp in single write.

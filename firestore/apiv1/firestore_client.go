@@ -24,6 +24,7 @@ import (
 	"math"
 	"net/http"
 	"net/url"
+	"strings"
 	"time"
 
 	firestorepb "cloud.google.com/go/firestore/apiv1/firestorepb"
@@ -734,6 +735,17 @@ type gRPCClient struct {
 	xGoogMetadata metadata.MD
 }
 
+// requestParamsHeader is routing header required to access named databases
+const ReqParamsHeader = "x-goog-request-params"
+
+// dbPath is of the form projects/{project_id}/databases/{database_id}
+func ReqParamsHeaderVal(dbPath string) string {
+	splitPath := strings.Split(dbPath, "/")
+	projectID := splitPath[1]
+	databaseID := splitPath[3]
+	return fmt.Sprintf("project_id=%s&database_id=%s", projectID, databaseID)
+}
+
 // NewClient creates a new firestore client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
@@ -890,7 +902,7 @@ func (c *gRPCClient) GetDocument(ctx context.Context, req *firestorepb.GetDocume
 }
 
 func (c *gRPCClient) ListDocuments(ctx context.Context, req *firestorepb.ListDocumentsRequest, opts ...gax.CallOption) *DocumentIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "parent", url.QueryEscape(req.GetParent()), "collection_id", url.QueryEscape(req.GetCollectionId())))
+	md := metadata.Pairs(ReqParamsHeader, ReqParamsHeaderVal(req.GetParent()))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListDocuments[0:len((*c.CallOptions).ListDocuments):len((*c.CallOptions).ListDocuments)], opts...)
@@ -965,7 +977,7 @@ func (c *gRPCClient) DeleteDocument(ctx context.Context, req *firestorepb.Delete
 }
 
 func (c *gRPCClient) BatchGetDocuments(ctx context.Context, req *firestorepb.BatchGetDocumentsRequest, opts ...gax.CallOption) (firestorepb.Firestore_BatchGetDocumentsClient, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "database", url.QueryEscape(req.GetDatabase())))
+	md := metadata.Pairs(ReqParamsHeader, ReqParamsHeaderVal(req.GetDatabase()))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).BatchGetDocuments[0:len((*c.CallOptions).BatchGetDocuments):len((*c.CallOptions).BatchGetDocuments)], opts...)
@@ -982,7 +994,7 @@ func (c *gRPCClient) BatchGetDocuments(ctx context.Context, req *firestorepb.Bat
 }
 
 func (c *gRPCClient) BeginTransaction(ctx context.Context, req *firestorepb.BeginTransactionRequest, opts ...gax.CallOption) (*firestorepb.BeginTransactionResponse, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "database", url.QueryEscape(req.GetDatabase())))
+	md := metadata.Pairs(ReqParamsHeader, ReqParamsHeaderVal(req.GetDatabase()))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).BeginTransaction[0:len((*c.CallOptions).BeginTransaction):len((*c.CallOptions).BeginTransaction)], opts...)
@@ -999,8 +1011,7 @@ func (c *gRPCClient) BeginTransaction(ctx context.Context, req *firestorepb.Begi
 }
 
 func (c *gRPCClient) Commit(ctx context.Context, req *firestorepb.CommitRequest, opts ...gax.CallOption) (*firestorepb.CommitResponse, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "database", url.QueryEscape(req.GetDatabase())))
-
+	md := metadata.Pairs(ReqParamsHeader, ReqParamsHeaderVal(req.GetDatabase()))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).Commit[0:len((*c.CallOptions).Commit):len((*c.CallOptions).Commit)], opts...)
 	var resp *firestorepb.CommitResponse
@@ -1016,7 +1027,7 @@ func (c *gRPCClient) Commit(ctx context.Context, req *firestorepb.CommitRequest,
 }
 
 func (c *gRPCClient) Rollback(ctx context.Context, req *firestorepb.RollbackRequest, opts ...gax.CallOption) error {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "database", url.QueryEscape(req.GetDatabase())))
+	md := metadata.Pairs(ReqParamsHeader, ReqParamsHeaderVal(req.GetDatabase()))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).Rollback[0:len((*c.CallOptions).Rollback):len((*c.CallOptions).Rollback)], opts...)
@@ -1029,7 +1040,7 @@ func (c *gRPCClient) Rollback(ctx context.Context, req *firestorepb.RollbackRequ
 }
 
 func (c *gRPCClient) RunQuery(ctx context.Context, req *firestorepb.RunQueryRequest, opts ...gax.CallOption) (firestorepb.Firestore_RunQueryClient, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	md := metadata.Pairs(ReqParamsHeader, ReqParamsHeaderVal(req.GetParent()))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).RunQuery[0:len((*c.CallOptions).RunQuery):len((*c.CallOptions).RunQuery)], opts...)
@@ -1046,7 +1057,7 @@ func (c *gRPCClient) RunQuery(ctx context.Context, req *firestorepb.RunQueryRequ
 }
 
 func (c *gRPCClient) RunAggregationQuery(ctx context.Context, req *firestorepb.RunAggregationQueryRequest, opts ...gax.CallOption) (firestorepb.Firestore_RunAggregationQueryClient, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	md := metadata.Pairs(ReqParamsHeader, ReqParamsHeaderVal(req.GetParent()))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).RunAggregationQuery[0:len((*c.CallOptions).RunAggregationQuery):len((*c.CallOptions).RunAggregationQuery)], opts...)
@@ -1063,7 +1074,7 @@ func (c *gRPCClient) RunAggregationQuery(ctx context.Context, req *firestorepb.R
 }
 
 func (c *gRPCClient) PartitionQuery(ctx context.Context, req *firestorepb.PartitionQueryRequest, opts ...gax.CallOption) *CursorIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	md := metadata.Pairs(ReqParamsHeader, ReqParamsHeaderVal(req.GetParent()))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).PartitionQuery[0:len((*c.CallOptions).PartitionQuery):len((*c.CallOptions).PartitionQuery)], opts...)
@@ -1138,7 +1149,7 @@ func (c *gRPCClient) Listen(ctx context.Context, opts ...gax.CallOption) (firest
 }
 
 func (c *gRPCClient) ListCollectionIds(ctx context.Context, req *firestorepb.ListCollectionIdsRequest, opts ...gax.CallOption) *StringIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	md := metadata.Pairs(ReqParamsHeader, ReqParamsHeaderVal(req.GetParent()))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListCollectionIds[0:len((*c.CallOptions).ListCollectionIds):len((*c.CallOptions).ListCollectionIds)], opts...)
@@ -1183,7 +1194,7 @@ func (c *gRPCClient) ListCollectionIds(ctx context.Context, req *firestorepb.Lis
 }
 
 func (c *gRPCClient) BatchWrite(ctx context.Context, req *firestorepb.BatchWriteRequest, opts ...gax.CallOption) (*firestorepb.BatchWriteResponse, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "database", url.QueryEscape(req.GetDatabase())))
+	md := metadata.Pairs(ReqParamsHeader, ReqParamsHeaderVal(req.GetDatabase()))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).BatchWrite[0:len((*c.CallOptions).BatchWrite):len((*c.CallOptions).BatchWrite)], opts...)
