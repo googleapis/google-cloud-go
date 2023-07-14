@@ -17,9 +17,7 @@
 // Package advisorynotifications is an auto-generated package for the
 // Advisory Notifications API.
 //
-// An API for accessing Advisory Notifications in Google Cloud
-//
-//	NOTE: This package is in beta. It is not stable, and may be subject to changes.
+// # An API for accessing Advisory Notifications in Google Cloud
 //
 // # General documentation
 //
