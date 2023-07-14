@@ -220,7 +220,6 @@ func deleteDocuments(docRefs []*DocumentRef) {
 	ctx := context.Background()
 	bulkwriter := iClient.BulkWriter(ctx)
 	for _, docRef := range docRefs {
-		log.Printf("Deleting document: %s", docRef.ID)
 		if err := deleteDocument(ctx, docRef, bulkwriter); err != nil {
 			log.Printf("Failed to delete document: %s with error %+v", docRef.ID, err)
 		}
