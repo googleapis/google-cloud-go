@@ -184,11 +184,13 @@ https://github.com/googleapis/google-cloud-go/issues/928 for more information.
 
 # Debugging
 
-To see gRPC logs, set the environment variable GRPC_GO_LOG_SEVERITY_LEVEL. See
-https://pkg.go.dev/google.golang.org/grpc/grpclog for more information.
+For tips on how to write tests against code that calls into our libraries check
+out our [Debugging Guide].
 
-For HTTP logging, set the GODEBUG environment variable to "http2debug=1" or
-"http2debug=2".
+# Testing
+
+For tips on how to write tests against code that calls into our libraries check
+out our [Testing Guide].
 
 # Inspecting errors
 
@@ -248,5 +250,7 @@ situations, including:
 [testing against fake servers]: https://github.com/googleapis/google-cloud-go/blob/main/testing.md#testing-grpc-services-using-fakes
 [Vertex AI - Locations]: https://cloud.google.com/vertex-ai/docs/general/locations
 [Google Application Default Credentials]: https://cloud.google.com/docs/authentication/external/set-up-adc
+[Debugging Guide]: https://github.com/googleapis/google-cloud-go/blob/main/debug.md
+[Testing Guide]: https://github.com/googleapis/google-cloud-go/blob/main/testing.md
 */
 package cloud // import "cloud.google.com/go"
