@@ -83,6 +83,7 @@ type benchmarkOptions struct {
 	numObjectsPerDirectory int
 
 	useGCSFuseConfig bool
+	endpoint         string
 }
 
 func (b *benchmarkOptions) validate() error {
@@ -155,6 +156,7 @@ func parseFlags() {
 	flag.Int64Var(&opts.maxReadOffset, "maximum_read_offset", 0, "maximum read offset in bytes")
 
 	flag.BoolVar(&opts.useGCSFuseConfig, "gcs_fuse", false, "use GCSFuse configs on HTTP client creation")
+	flag.StringVar(&opts.endpoint, "endpoint", "", "endpoint to set on Storage Client")
 
 	flag.IntVar(&opts.readBufferSize, "read_buffer_size", useDefault, "read buffer size in bytes")
 	flag.IntVar(&opts.writeBufferSize, "write_buffer_size", useDefault, "write buffer size in bytes")

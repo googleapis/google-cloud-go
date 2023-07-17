@@ -2058,6 +2058,9 @@ func TestIntegration_TopicUpdateSchema(t *testing.T) {
 }
 
 func TestIntegration_DetectProjectID(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Integration tests skipped in short mode")
+	}
 	ctx := context.Background()
 	testCreds := testutil.Credentials(ctx)
 	if testCreds == nil {
