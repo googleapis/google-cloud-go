@@ -21,10 +21,7 @@ import (
 
 	pb "cloud.google.com/go/firestore/apiv1/firestorepb"
 	tspb "github.com/golang/protobuf/ptypes/timestamp"
-	"google.golang.org/api/option"
-	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
@@ -61,30 +58,14 @@ func TestNewClientWithDatabase(t *testing.T) {
 			wantErr:    false,
 		},
 	} {
-
-		srv, cleanup, err := newMockServer()
-		if err != nil {
-			t.Fatalf("NewClientWithDatabase: Failed to create mock server %v", err)
-		}
-
-		conn, err := grpc.Dial(srv.Addr, grpc.WithTransportCredentials(insecure.NewCredentials()), grpc.WithBlock())
-		if err != nil {
-			t.Fatalf("NewClientWithDatabase: Failed to create connection %v", err)
-		}
-
-		client, err := NewClientWithDatabase(context.Background(), tc.projectID, tc.databaseID, option.WithGRPCConn(conn))
-		defer func(err error) {
-			if err == nil {
-				client.Close()
-				conn.Close()
-				cleanup()
-			}
-		}(err)
+		client, err := NewClientWithDatabase(context.Background(), tc.projectID, tc.databaseID)
 
 		if err != nil && !tc.wantErr {
 			t.Errorf("NewClientWithDatabase: %s got %v want nil", tc.desc, err)
 		} else if err == nil && tc.wantErr {
 			t.Errorf("NewClientWithDatabase: %s got %v wanted error", tc.desc, err)
+		} else if err == nil && tc.databaseID != client.databaseID {
+			t.Errorf("NewClientWithDatabase: %s got %v want %v", tc.desc, client.databaseID, tc.databaseID)
 		}
 
 	}
