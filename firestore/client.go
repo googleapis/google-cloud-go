@@ -52,6 +52,9 @@ const resourcePrefixHeader = "google-cloud-resource-prefix"
 // does not have the project ID encoded.
 const DetectProjectID = "*detect-project-id*"
 
+// DefaultDatabaseID is name of the default database
+const DefaultDatabaseID = "(default)"
+
 // A Client provides access to the Firestore service.
 type Client struct {
 	c            *vkit.Client
@@ -98,7 +101,7 @@ func NewClient(ctx context.Context, projectID string, opts ...option.ClientOptio
 	c := &Client{
 		c:            vc,
 		projectID:    projectID,
-		databaseID:   "(default)", // Default value is `(default)`
+		databaseID:   DefaultDatabaseID,
 		readSettings: &readSettings{},
 	}
 	return c, nil
@@ -143,14 +146,20 @@ func (c *Client) path() string {
 }
 
 func withResourceHeader(ctx context.Context, resource string) context.Context {
-	md, _ := metadata.FromOutgoingContext(ctx)
+	md, ok := metadata.FromOutgoingContext(ctx)
+	if !ok {
+		md = metadata.New(nil)
+	}
 	md = md.Copy()
 	md[resourcePrefixHeader] = []string{resource}
 	return metadata.NewOutgoingContext(ctx, md)
 }
 
 func withRequestParamsHeader(ctx context.Context, requestParams string) context.Context {
-	md, _ := metadata.FromOutgoingContext(ctx)
+	md, ok := metadata.FromOutgoingContext(ctx)
+	if !ok {
+		md = metadata.New(nil)
+	}
 	md = md.Copy()
 	md[vkit.ReqParamsHeader] = []string{requestParams}
 	return metadata.NewOutgoingContext(ctx, md)

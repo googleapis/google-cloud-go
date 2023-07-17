@@ -48,7 +48,7 @@ import (
 func TestMain(m *testing.M) {
 	databasesStr, ok := os.LookupEnv(envDatabases)
 	if !ok {
-		databasesStr = "(default)"
+		databasesStr = DefaultDatabaseID
 	}
 	databaseIDs := strings.Split(databasesStr, ",")
 	testParams = make(map[string]interface{})
@@ -214,44 +214,16 @@ func deleteCollection(ctx context.Context, coll *CollectionRef) error {
 			log.Printf("Failed to get next document: %+v\n", err)
 			return err
 		}
-		err = deleteDocument(ctx, doc.Ref, bulkwriter)
+
+		_, err = bulkwriter.Delete(doc.Ref)
 		if err != nil {
-			log.Printf("Failed to delete document: %+v\n", err)
-			return err
+			log.Printf("Failed to delete document: %+v, err: %+v\n", doc.Ref, err)
 		}
 	}
 
 	bulkwriter.End()
 	bulkwriter.Flush()
 
-	return nil
-}
-
-func deleteDocument(ctx context.Context, docRef *DocumentRef, bulkwriter *BulkWriter) error {
-	// Delete subcollections before deleting document
-	subCollIter := docRef.Collections(ctx)
-	for {
-		subColl, err := subCollIter.Next()
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			log.Printf("Error getting next subcollection of %s: %+v", docRef.ID, err)
-			return err
-		}
-		err = deleteCollection(ctx, subColl)
-		if err != nil {
-			log.Printf("Error deleting subcollection %v: %+v\n", subColl.ID, err)
-			return err
-		}
-	}
-
-	// Delete document
-	_, err := bulkwriter.Delete(docRef)
-	if err != nil {
-		log.Printf("Failed to delete document: %+v, err: %+v\n", docRef, err)
-		return err
-	}
 	return nil
 }
 
