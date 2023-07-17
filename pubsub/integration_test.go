@@ -335,7 +335,7 @@ func testPublishAndReceive(t *testing.T, client *Client, maxMsgs int, synchronou
 			timeout := 3 * time.Minute
 			timeoutCtx, cancel := context.WithTimeout(ctx, timeout)
 			defer cancel()
-			gotMsgs, err := pullN(timeoutCtx, sub, len(want), func(ctx context.Context, m *Message) {
+			gotMsgs, err := pullN(timeoutCtx, sub, len(want), 0, func(ctx context.Context, m *Message) {
 				m.Ack()
 			})
 			if err != nil {
