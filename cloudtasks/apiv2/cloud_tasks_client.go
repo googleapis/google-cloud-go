@@ -35,6 +35,7 @@ import (
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
+	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -62,6 +63,8 @@ type CallOptions struct {
 	CreateTask         []gax.CallOption
 	DeleteTask         []gax.CallOption
 	RunTask            []gax.CallOption
+	GetLocation        []gax.CallOption
+	ListLocations      []gax.CallOption
 }
 
 func defaultGRPCClientOptions() []option.ClientOption {
@@ -79,7 +82,7 @@ func defaultGRPCClientOptions() []option.ClientOption {
 func defaultCallOptions() *CallOptions {
 	return &CallOptions{
 		ListQueues: []gax.CallOption{
-			gax.WithTimeout(10000 * time.Millisecond),
+			gax.WithTimeout(20000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -92,7 +95,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		GetQueue: []gax.CallOption{
-			gax.WithTimeout(10000 * time.Millisecond),
+			gax.WithTimeout(20000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -105,13 +108,13 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		CreateQueue: []gax.CallOption{
-			gax.WithTimeout(10000 * time.Millisecond),
+			gax.WithTimeout(20000 * time.Millisecond),
 		},
 		UpdateQueue: []gax.CallOption{
-			gax.WithTimeout(10000 * time.Millisecond),
+			gax.WithTimeout(20000 * time.Millisecond),
 		},
 		DeleteQueue: []gax.CallOption{
-			gax.WithTimeout(10000 * time.Millisecond),
+			gax.WithTimeout(20000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -124,16 +127,16 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		PurgeQueue: []gax.CallOption{
-			gax.WithTimeout(10000 * time.Millisecond),
+			gax.WithTimeout(20000 * time.Millisecond),
 		},
 		PauseQueue: []gax.CallOption{
-			gax.WithTimeout(10000 * time.Millisecond),
+			gax.WithTimeout(20000 * time.Millisecond),
 		},
 		ResumeQueue: []gax.CallOption{
-			gax.WithTimeout(10000 * time.Millisecond),
+			gax.WithTimeout(20000 * time.Millisecond),
 		},
 		GetIamPolicy: []gax.CallOption{
-			gax.WithTimeout(10000 * time.Millisecond),
+			gax.WithTimeout(20000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -146,10 +149,10 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		SetIamPolicy: []gax.CallOption{
-			gax.WithTimeout(10000 * time.Millisecond),
+			gax.WithTimeout(20000 * time.Millisecond),
 		},
 		TestIamPermissions: []gax.CallOption{
-			gax.WithTimeout(10000 * time.Millisecond),
+			gax.WithTimeout(20000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -162,7 +165,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		ListTasks: []gax.CallOption{
-			gax.WithTimeout(10000 * time.Millisecond),
+			gax.WithTimeout(20000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -175,7 +178,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		GetTask: []gax.CallOption{
-			gax.WithTimeout(10000 * time.Millisecond),
+			gax.WithTimeout(20000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -188,10 +191,10 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		CreateTask: []gax.CallOption{
-			gax.WithTimeout(10000 * time.Millisecond),
+			gax.WithTimeout(20000 * time.Millisecond),
 		},
 		DeleteTask: []gax.CallOption{
-			gax.WithTimeout(10000 * time.Millisecond),
+			gax.WithTimeout(20000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -204,15 +207,17 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		RunTask: []gax.CallOption{
-			gax.WithTimeout(10000 * time.Millisecond),
+			gax.WithTimeout(20000 * time.Millisecond),
 		},
+		GetLocation:   []gax.CallOption{},
+		ListLocations: []gax.CallOption{},
 	}
 }
 
 func defaultRESTCallOptions() *CallOptions {
 	return &CallOptions{
 		ListQueues: []gax.CallOption{
-			gax.WithTimeout(10000 * time.Millisecond),
+			gax.WithTimeout(20000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -224,7 +229,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		GetQueue: []gax.CallOption{
-			gax.WithTimeout(10000 * time.Millisecond),
+			gax.WithTimeout(20000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -236,13 +241,13 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		CreateQueue: []gax.CallOption{
-			gax.WithTimeout(10000 * time.Millisecond),
+			gax.WithTimeout(20000 * time.Millisecond),
 		},
 		UpdateQueue: []gax.CallOption{
-			gax.WithTimeout(10000 * time.Millisecond),
+			gax.WithTimeout(20000 * time.Millisecond),
 		},
 		DeleteQueue: []gax.CallOption{
-			gax.WithTimeout(10000 * time.Millisecond),
+			gax.WithTimeout(20000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -254,16 +259,16 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		PurgeQueue: []gax.CallOption{
-			gax.WithTimeout(10000 * time.Millisecond),
+			gax.WithTimeout(20000 * time.Millisecond),
 		},
 		PauseQueue: []gax.CallOption{
-			gax.WithTimeout(10000 * time.Millisecond),
+			gax.WithTimeout(20000 * time.Millisecond),
 		},
 		ResumeQueue: []gax.CallOption{
-			gax.WithTimeout(10000 * time.Millisecond),
+			gax.WithTimeout(20000 * time.Millisecond),
 		},
 		GetIamPolicy: []gax.CallOption{
-			gax.WithTimeout(10000 * time.Millisecond),
+			gax.WithTimeout(20000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -275,10 +280,10 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		SetIamPolicy: []gax.CallOption{
-			gax.WithTimeout(10000 * time.Millisecond),
+			gax.WithTimeout(20000 * time.Millisecond),
 		},
 		TestIamPermissions: []gax.CallOption{
-			gax.WithTimeout(10000 * time.Millisecond),
+			gax.WithTimeout(20000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -290,7 +295,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		ListTasks: []gax.CallOption{
-			gax.WithTimeout(10000 * time.Millisecond),
+			gax.WithTimeout(20000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -302,7 +307,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		GetTask: []gax.CallOption{
-			gax.WithTimeout(10000 * time.Millisecond),
+			gax.WithTimeout(20000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -314,10 +319,10 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		CreateTask: []gax.CallOption{
-			gax.WithTimeout(10000 * time.Millisecond),
+			gax.WithTimeout(20000 * time.Millisecond),
 		},
 		DeleteTask: []gax.CallOption{
-			gax.WithTimeout(10000 * time.Millisecond),
+			gax.WithTimeout(20000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -329,8 +334,10 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		RunTask: []gax.CallOption{
-			gax.WithTimeout(10000 * time.Millisecond),
+			gax.WithTimeout(20000 * time.Millisecond),
 		},
+		GetLocation:   []gax.CallOption{},
+		ListLocations: []gax.CallOption{},
 	}
 }
 
@@ -355,6 +362,8 @@ type internalClient interface {
 	CreateTask(context.Context, *cloudtaskspb.CreateTaskRequest, ...gax.CallOption) (*cloudtaskspb.Task, error)
 	DeleteTask(context.Context, *cloudtaskspb.DeleteTaskRequest, ...gax.CallOption) error
 	RunTask(context.Context, *cloudtaskspb.RunTaskRequest, ...gax.CallOption) (*cloudtaskspb.Task, error)
+	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
+	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
 }
 
 // Client is a client for interacting with Cloud Tasks API.
@@ -408,8 +417,8 @@ func (c *Client) GetQueue(ctx context.Context, req *cloudtaskspb.GetQueueRequest
 // CreateQueue creates a queue.
 //
 // Queues created with this method allow tasks to live for a maximum of 31
-// days. After a task is 31 days old, the task will be deleted regardless of whether
-// it was dispatched or not.
+// days. After a task is 31 days old, the task will be deleted regardless of
+// whether it was dispatched or not.
 //
 // WARNING: Using this method may have unintended side effects if you are
 // using an App Engine queue.yaml or queue.xml file to manage your queues.
@@ -427,8 +436,8 @@ func (c *Client) CreateQueue(ctx context.Context, req *cloudtaskspb.CreateQueueR
 // the queue if it does exist.
 //
 // Queues created with this method allow tasks to live for a maximum of 31
-// days. After a task is 31 days old, the task will be deleted regardless of whether
-// it was dispatched or not.
+// days. After a task is 31 days old, the task will be deleted regardless of
+// whether it was dispatched or not.
 //
 // WARNING: Using this method may have unintended side effects if you are
 // using an App Engine queue.yaml or queue.xml file to manage your queues.
@@ -471,9 +480,10 @@ func (c *Client) PurgeQueue(ctx context.Context, req *cloudtaskspb.PurgeQueueReq
 //
 // If a queue is paused then the system will stop dispatching tasks
 // until the queue is resumed via
-// ResumeQueue. Tasks can still be added
-// when the queue is paused. A queue is paused if its
-// state is PAUSED.
+// ResumeQueue. Tasks can
+// still be added when the queue is paused. A queue is paused if its
+// state is
+// PAUSED.
 func (c *Client) PauseQueue(ctx context.Context, req *cloudtaskspb.PauseQueueRequest, opts ...gax.CallOption) (*cloudtaskspb.Queue, error) {
 	return c.internalClient.PauseQueue(ctx, req, opts...)
 }
@@ -482,9 +492,10 @@ func (c *Client) PauseQueue(ctx context.Context, req *cloudtaskspb.PauseQueueReq
 //
 // This method resumes a queue after it has been
 // PAUSED or
-// DISABLED. The state of a queue is stored
-// in the queue’s state; after calling this method it
-// will be set to RUNNING.
+// DISABLED. The state of a
+// queue is stored in the queue’s state;
+// after calling this method it will be set to
+// RUNNING.
 //
 // WARNING: Resuming many high-QPS queues at the same time can
 // lead to target overloading. If you are resuming high-QPS
@@ -503,13 +514,13 @@ func (c *Client) ResumeQueue(ctx context.Context, req *cloudtaskspb.ResumeQueueR
 // Google IAM (at https://cloud.google.com/iam) permission on the specified
 // resource parent:
 //
-//	cloudtasks.queues.getIamPolicy
+//   cloudtasks.queues.getIamPolicy
 func (c *Client) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
 	return c.internalClient.GetIamPolicy(ctx, req, opts...)
 }
 
-// SetIamPolicy sets the access control policy for a Queue. Replaces any existing
-// policy.
+// SetIamPolicy sets the access control policy for a Queue.
+// Replaces any existing policy.
 //
 // Note: The Cloud Console does not check queue-level IAM permissions yet.
 // Project-level permissions are required to use the Cloud Console.
@@ -518,14 +529,15 @@ func (c *Client) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyReques
 // Google IAM (at https://cloud.google.com/iam) permission on the specified
 // resource parent:
 //
-//	cloudtasks.queues.setIamPolicy
+//   cloudtasks.queues.setIamPolicy
 func (c *Client) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
 	return c.internalClient.SetIamPolicy(ctx, req, opts...)
 }
 
-// TestIamPermissions returns permissions that a caller has on a Queue.
-// If the resource does not exist, this will return an empty set of
-// permissions, not a NOT_FOUND error.
+// TestIamPermissions returns permissions that a caller has on a
+// Queue. If the resource does not exist, this
+// will return an empty set of permissions, not a
+// NOT_FOUND error.
 //
 // Note: This operation is designed to be used for building permission-aware
 // UIs and command-line tools, not for authorization checking. This operation
@@ -536,10 +548,10 @@ func (c *Client) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermi
 
 // ListTasks lists the tasks in a queue.
 //
-// By default, only the BASIC view is retrieved
-// due to performance considerations;
-// response_view controls the
-// subset of information which is returned.
+// By default, only the BASIC view is
+// retrieved due to performance considerations;
+// response_view
+// controls the subset of information which is returned.
 //
 // The tasks may be returned in any order. The ordering may change at any
 // time.
@@ -556,7 +568,7 @@ func (c *Client) GetTask(ctx context.Context, req *cloudtaskspb.GetTaskRequest, 
 //
 // Tasks cannot be updated after creation; there is no UpdateTask command.
 //
-//	The maximum task size is 100KB.
+//   The maximum task size is 100KB.
 func (c *Client) CreateTask(ctx context.Context, req *cloudtaskspb.CreateTaskRequest, opts ...gax.CallOption) (*cloudtaskspb.Task, error) {
 	return c.internalClient.CreateTask(ctx, req, opts...)
 }
@@ -573,13 +585,14 @@ func (c *Client) DeleteTask(ctx context.Context, req *cloudtaskspb.DeleteTaskReq
 // RunTask forces a task to run now.
 //
 // When this method is called, Cloud Tasks will dispatch the task, even if
-// the task is already running, the queue has reached its RateLimits or
-// is PAUSED.
+// the task is already running, the queue has reached its
+// RateLimits or is
+// PAUSED.
 //
 // This command is meant to be used for manual debugging. For
-// example, RunTask can be used to retry a failed
-// task after a fix has been made or to manually force a task to be
-// dispatched now.
+// example, RunTask can be used to
+// retry a failed task after a fix has been made or to manually force a task
+// to be dispatched now.
 //
 // The dispatched task is returned. That is, the task that is returned
 // contains the status after the task is dispatched but
@@ -587,15 +600,26 @@ func (c *Client) DeleteTask(ctx context.Context, req *cloudtaskspb.DeleteTaskReq
 //
 // If Cloud Tasks receives a successful response from the task’s
 // target, then the task will be deleted; otherwise the task’s
-// schedule_time will be reset to the time that
-// RunTask was called plus the retry delay specified
-// in the queue’s RetryConfig.
+// schedule_time will be reset to
+// the time that RunTask was
+// called plus the retry delay specified in the queue’s
+// RetryConfig.
 //
 // RunTask returns
 // NOT_FOUND when it is called on a
 // task that has already succeeded or permanently failed.
 func (c *Client) RunTask(ctx context.Context, req *cloudtaskspb.RunTaskRequest, opts ...gax.CallOption) (*cloudtaskspb.Task, error) {
 	return c.internalClient.RunTask(ctx, req, opts...)
+}
+
+// GetLocation gets information about a location.
+func (c *Client) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
+	return c.internalClient.GetLocation(ctx, req, opts...)
+}
+
+// ListLocations lists information about the supported locations for this service.
+func (c *Client) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
+	return c.internalClient.ListLocations(ctx, req, opts...)
 }
 
 // gRPCClient is a client for interacting with Cloud Tasks API over gRPC transport.
@@ -610,6 +634,8 @@ type gRPCClient struct {
 
 	// The gRPC API client.
 	client cloudtaskspb.CloudTasksClient
+
+	locationsClient locationpb.LocationsClient
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
@@ -637,9 +663,10 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 	client := Client{CallOptions: defaultCallOptions()}
 
 	c := &gRPCClient{
-		connPool:    connPool,
-		client:      cloudtaskspb.NewCloudTasksClient(connPool),
-		CallOptions: &client.CallOptions,
+		connPool:        connPool,
+		client:          cloudtaskspb.NewCloudTasksClient(connPool),
+		CallOptions:     &client.CallOptions,
+		locationsClient: locationpb.NewLocationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
 
@@ -1060,6 +1087,68 @@ func (c *gRPCClient) RunTask(ctx context.Context, req *cloudtaskspb.RunTaskReque
 	return resp, nil
 }
 
+func (c *gRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).GetLocation[0:len((*c.CallOptions).GetLocation):len((*c.CallOptions).GetLocation)], opts...)
+	var resp *locationpb.Location
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.locationsClient.GetLocation(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
+	it := &LocationIterator{}
+	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
+		resp := &locationpb.ListLocationsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.locationsClient.ListLocations(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetLocations(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
 // ListQueues lists queues.
 //
 // Queues are returned in lexicographical order.
@@ -1214,8 +1303,8 @@ func (c *restClient) GetQueue(ctx context.Context, req *cloudtaskspb.GetQueueReq
 // CreateQueue creates a queue.
 //
 // Queues created with this method allow tasks to live for a maximum of 31
-// days. After a task is 31 days old, the task will be deleted regardless of whether
-// it was dispatched or not.
+// days. After a task is 31 days old, the task will be deleted regardless of
+// whether it was dispatched or not.
 //
 // WARNING: Using this method may have unintended side effects if you are
 // using an App Engine queue.yaml or queue.xml file to manage your queues.
@@ -1293,8 +1382,8 @@ func (c *restClient) CreateQueue(ctx context.Context, req *cloudtaskspb.CreateQu
 // the queue if it does exist.
 //
 // Queues created with this method allow tasks to live for a maximum of 31
-// days. After a task is 31 days old, the task will be deleted regardless of whether
-// it was dispatched or not.
+// days. After a task is 31 days old, the task will be deleted regardless of
+// whether it was dispatched or not.
 //
 // WARNING: Using this method may have unintended side effects if you are
 // using an App Engine queue.yaml or queue.xml file to manage your queues.
@@ -1498,9 +1587,10 @@ func (c *restClient) PurgeQueue(ctx context.Context, req *cloudtaskspb.PurgeQueu
 //
 // If a queue is paused then the system will stop dispatching tasks
 // until the queue is resumed via
-// ResumeQueue. Tasks can still be added
-// when the queue is paused. A queue is paused if its
-// state is PAUSED.
+// ResumeQueue. Tasks can
+// still be added when the queue is paused. A queue is paused if its
+// state is
+// PAUSED.
 func (c *restClient) PauseQueue(ctx context.Context, req *cloudtaskspb.PauseQueueRequest, opts ...gax.CallOption) (*cloudtaskspb.Queue, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -1568,9 +1658,10 @@ func (c *restClient) PauseQueue(ctx context.Context, req *cloudtaskspb.PauseQueu
 //
 // This method resumes a queue after it has been
 // PAUSED or
-// DISABLED. The state of a queue is stored
-// in the queue’s state; after calling this method it
-// will be set to RUNNING.
+// DISABLED. The state of a
+// queue is stored in the queue’s state;
+// after calling this method it will be set to
+// RUNNING.
 //
 // WARNING: Resuming many high-QPS queues at the same time can
 // lead to target overloading. If you are resuming high-QPS
@@ -1648,7 +1739,7 @@ func (c *restClient) ResumeQueue(ctx context.Context, req *cloudtaskspb.ResumeQu
 // Google IAM (at https://cloud.google.com/iam) permission on the specified
 // resource parent:
 //
-//	cloudtasks.queues.getIamPolicy
+//   cloudtasks.queues.getIamPolicy
 func (c *restClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -1712,8 +1803,8 @@ func (c *restClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRe
 	return resp, nil
 }
 
-// SetIamPolicy sets the access control policy for a Queue. Replaces any existing
-// policy.
+// SetIamPolicy sets the access control policy for a Queue.
+// Replaces any existing policy.
 //
 // Note: The Cloud Console does not check queue-level IAM permissions yet.
 // Project-level permissions are required to use the Cloud Console.
@@ -1722,7 +1813,7 @@ func (c *restClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRe
 // Google IAM (at https://cloud.google.com/iam) permission on the specified
 // resource parent:
 //
-//	cloudtasks.queues.setIamPolicy
+//   cloudtasks.queues.setIamPolicy
 func (c *restClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -1786,9 +1877,10 @@ func (c *restClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRe
 	return resp, nil
 }
 
-// TestIamPermissions returns permissions that a caller has on a Queue.
-// If the resource does not exist, this will return an empty set of
-// permissions, not a NOT_FOUND error.
+// TestIamPermissions returns permissions that a caller has on a
+// Queue. If the resource does not exist, this
+// will return an empty set of permissions, not a
+// NOT_FOUND error.
 //
 // Note: This operation is designed to be used for building permission-aware
 // UIs and command-line tools, not for authorization checking. This operation
@@ -1858,10 +1950,10 @@ func (c *restClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamP
 
 // ListTasks lists the tasks in a queue.
 //
-// By default, only the BASIC view is retrieved
-// due to performance considerations;
-// response_view controls the
-// subset of information which is returned.
+// By default, only the BASIC view is
+// retrieved due to performance considerations;
+// response_view
+// controls the subset of information which is returned.
 //
 // The tasks may be returned in any order. The ordering may change at any
 // time.
@@ -2020,7 +2112,7 @@ func (c *restClient) GetTask(ctx context.Context, req *cloudtaskspb.GetTaskReque
 //
 // Tasks cannot be updated after creation; there is no UpdateTask command.
 //
-//	The maximum task size is 100KB.
+//   The maximum task size is 100KB.
 func (c *restClient) CreateTask(ctx context.Context, req *cloudtaskspb.CreateTaskRequest, opts ...gax.CallOption) (*cloudtaskspb.Task, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -2131,13 +2223,14 @@ func (c *restClient) DeleteTask(ctx context.Context, req *cloudtaskspb.DeleteTas
 // RunTask forces a task to run now.
 //
 // When this method is called, Cloud Tasks will dispatch the task, even if
-// the task is already running, the queue has reached its RateLimits or
-// is PAUSED.
+// the task is already running, the queue has reached its
+// RateLimits or is
+// PAUSED.
 //
 // This command is meant to be used for manual debugging. For
-// example, RunTask can be used to retry a failed
-// task after a fix has been made or to manually force a task to be
-// dispatched now.
+// example, RunTask can be used to
+// retry a failed task after a fix has been made or to manually force a task
+// to be dispatched now.
 //
 // The dispatched task is returned. That is, the task that is returned
 // contains the status after the task is dispatched but
@@ -2145,9 +2238,10 @@ func (c *restClient) DeleteTask(ctx context.Context, req *cloudtaskspb.DeleteTas
 //
 // If Cloud Tasks receives a successful response from the task’s
 // target, then the task will be deleted; otherwise the task’s
-// schedule_time will be reset to the time that
-// RunTask was called plus the retry delay specified
-// in the queue’s RetryConfig.
+// schedule_time will be reset to
+// the time that RunTask was
+// called plus the retry delay specified in the queue’s
+// RetryConfig.
 //
 // RunTask returns
 // NOT_FOUND when it is called on a
@@ -2213,6 +2307,202 @@ func (c *restClient) RunTask(ctx context.Context, req *cloudtaskspb.RunTaskReque
 		return nil, e
 	}
 	return resp, nil
+}
+
+// GetLocation gets information about a location.
+func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).GetLocation[0:len((*c.CallOptions).GetLocation):len((*c.CallOptions).GetLocation)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &locationpb.Location{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// ListLocations lists information about the supported locations for this service.
+func (c *restClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
+	it := &LocationIterator{}
+	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
+		resp := &locationpb.ListLocationsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v2/%v/locations", req.GetName())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			httpRsp, err := c.httpClient.Do(httpReq)
+			if err != nil {
+				return err
+			}
+			defer httpRsp.Body.Close()
+
+			if err = googleapi.CheckResponse(httpRsp); err != nil {
+				return err
+			}
+
+			buf, err := io.ReadAll(httpRsp.Body)
+			if err != nil {
+				return err
+			}
+
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetLocations(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// LocationIterator manages a stream of *locationpb.Location.
+type LocationIterator struct {
+	items    []*locationpb.Location
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*locationpb.Location, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *LocationIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *LocationIterator) Next() (*locationpb.Location, error) {
+	var item *locationpb.Location
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *LocationIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *LocationIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
 }
 
 // QueueIterator manages a stream of *cloudtaskspb.Queue.
