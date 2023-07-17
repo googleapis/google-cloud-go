@@ -167,7 +167,7 @@ func TestConnectionPool_OpenCallOptionPropagation(t *testing.T) {
 				t.Fatalf("no options were propagated")
 			}
 			return nil, fmt.Errorf("no real client")
-		}),
+		}, ""),
 		callOptions: []gax.CallOption{
 			gax.WithGRPCOptions(grpc.MaxCallRecvMsgSize(99)),
 		},

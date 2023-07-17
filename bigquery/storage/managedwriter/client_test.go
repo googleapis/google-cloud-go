@@ -55,10 +55,13 @@ func TestTableParentFromStreamName(t *testing.T) {
 }
 
 func TestCreatePool_Location(t *testing.T) {
+	t.Skip("skipping until new write_location is allowed")
 	c := &Client{
-		cfg: &writerClientConfig{},
+		cfg:       &writerClientConfig{},
+		ctx:       context.Background(),
+		projectID: "myproj",
 	}
-	pool, err := c.createPool(context.Background(), "foo", nil)
+	pool, err := c.createPool("foo", nil)
 	if err != nil {
 		t.Fatalf("createPool: %v", err)
 	}
@@ -72,7 +75,7 @@ func TestCreatePool_Location(t *testing.T) {
 	}
 	found := false
 	for _, v := range vals {
-		if v == "write_location=foo" {
+		if v == "write_location=projects/myproj/locations/foo" {
 			found = true
 			break
 		}
@@ -151,8 +154,9 @@ func TestCreatePool(t *testing.T) {
 	for _, tc := range testCases {
 		c := &Client{
 			cfg: tc.cfg,
+			ctx: context.Background(),
 		}
-		pool, err := c.createPool(context.Background(), "", nil)
+		pool, err := c.createPool("", nil)
 		if err != nil {
 			t.Errorf("case %q: createPool errored unexpectedly: %v", tc.desc, err)
 			continue
