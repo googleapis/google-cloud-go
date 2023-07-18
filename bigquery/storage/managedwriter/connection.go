@@ -442,12 +442,16 @@ func (co *connection) getStream(arc *storagepb.BigQueryWrite_AppendRowsClient, f
 	if arc != co.arc && !forceReconnect {
 		return co.arc, co.pending, nil
 	}
-	// We need to (re)open a connection.  Cleanup previous connection and channel if they are present.
+	// We need to (re)open a connection.  Cleanup previous connection, channel, and context if they are present.
 	if co.arc != nil && (*co.arc) != (storagepb.BigQueryWrite_AppendRowsClient)(nil) {
 		(*co.arc).CloseSend()
 	}
 	if co.pending != nil {
 		close(co.pending)
+	}
+	if co.cancel != nil {
+		co.cancel()
+		co.ctx, co.cancel = context.WithCancel(co.pool.ctx)
 	}
 
 	co.arc = new(storagepb.BigQueryWrite_AppendRowsClient)
