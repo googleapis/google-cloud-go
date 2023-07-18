@@ -41,14 +41,14 @@ func TestNewClientWithDatabase(t *testing.T) {
 
 	tests := []struct {
 		desc                 string
-		databaseId           string
+		databaseID           string
 		wantErr              bool
 		detectProjectIDFn    func(ctx context.Context, opts ...option.ClientOption) (string, error)
 		gtransportDialPoolFn func(ctx context.Context, opts ...option.ClientOption) (grpc.ConnPool, error)
 	}{
 		{
 			desc:       "Error from detect project ID should not fail NewClientWithDatabase",
-			databaseId: "db1",
+			databaseID: "db1",
 			wantErr:    false,
 			detectProjectIDFn: func(ctx context.Context, opts ...option.ClientOption) (string, error) {
 				return "", errors.New("mock error from detect project ID")
@@ -57,7 +57,7 @@ func TestNewClientWithDatabase(t *testing.T) {
 		},
 		{
 			desc:              "Error from DialPool",
-			databaseId:        "db1",
+			databaseID:        "db1",
 			wantErr:           true,
 			detectProjectIDFn: origDetectProjectIDFn,
 			gtransportDialPoolFn: func(ctx context.Context, opts ...option.ClientOption) (grpc.ConnPool, error) {
@@ -70,13 +70,13 @@ func TestNewClientWithDatabase(t *testing.T) {
 		detectProjectIDFn = tc.detectProjectIDFn
 		gtransportDialPoolFn = tc.gtransportDialPoolFn
 
-		client, gotErr := NewClientWithDatabase(context.Background(), "my-project", tc.databaseId)
+		client, gotErr := NewClientWithDatabase(context.Background(), "my-project", tc.databaseID)
 		if gotErr != nil && !tc.wantErr {
 			t.Errorf("%s: got error %v, but none was expected", tc.desc, gotErr)
 		} else if gotErr == nil && tc.wantErr {
 			t.Errorf("%s: wanted error, but none returned", tc.desc)
-		} else if gotErr == nil && client.databaseID != tc.databaseId {
-			t.Errorf("%s: got %s, want %s", tc.desc, client.databaseID, tc.databaseId)
+		} else if gotErr == nil && client.databaseID != tc.databaseID {
+			t.Errorf("%s: got %s, want %s", tc.desc, client.databaseID, tc.databaseID)
 		}
 	}
 }
