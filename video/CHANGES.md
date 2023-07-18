@@ -1,5 +1,12 @@
 # Changes
 
+## [1.18.0](https://github.com/googleapis/google-cloud-go/compare/video/v1.17.1...video/v1.18.0) (2023-07-18)
+
+
+### Features
+
+* **video/transcoder:** Added support for segment template manifest generation with DASH ([#8242](https://github.com/googleapis/google-cloud-go/issues/8242)) ([adb982e](https://github.com/googleapis/google-cloud-go/commit/adb982ed500c5011e477c00baefad504b0a00210))
+
 ## [1.17.1](https://github.com/googleapis/google-cloud-go/compare/video/v1.17.0...video/v1.17.1) (2023-06-20)
 
 
