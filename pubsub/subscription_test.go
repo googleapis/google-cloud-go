@@ -683,7 +683,7 @@ func TestExactlyOnceDelivery_AckRetryDeadlineExceeded(t *testing.T) {
 	s.ReceiveSettings = ReceiveSettings{
 		NumGoroutines: 1,
 		// This needs to be greater than total deadline otherwise the message will be redelivered.
-		MinExtensionPeriod: 30 * time.Second,
+		MinExtensionPeriod: 2 * time.Minute,
 	}
 	// Override the default timeout here so this test doesn't take 10 minutes.
 	exactlyOnceDeliveryRetryDeadline = 20 * time.Second
@@ -774,27 +774,9 @@ func TestExactlyOnceDelivery_ReceiptModackError(t *testing.T) {
 	if _, err := r.Get(ctx); err != nil {
 		t.Fatalf("failed to publish message: %v", err)
 	}
-	s.ReceiveSettings = ReceiveSettings{
-		NumGoroutines: 1,
-		// This needs to be greater than total deadline otherwise the message will be redelivered.
-		MinExtensionPeriod: 30 * time.Second,
-		MaxExtensionPeriod: 30 * time.Second,
-	}
-	// Override the default timeout here so this test doesn't take 10 minutes.
-	exactlyOnceDeliveryRetryDeadline = 10 * time.Second
-	var once sync.Once
-	err = s.Receive(ctx, func(ctx context.Context, msg *Message) {
-		once.Do(func() {
-			ar := msg.NackWithResult()
-			s, err := ar.Get(ctx)
-			if s != AcknowledgeStatusOther {
-				t.Errorf("AckResult AckStatus got %v, want %v", s, AcknowledgeStatusOther)
-			}
-			wantErr := context.DeadlineExceeded
-			if !errors.Is(err, wantErr) {
-				t.Errorf("AckResult error\ngot  %v\nwant %s", err, wantErr)
-			}
-			cancel()
-		})
+	ctx, cancel := context.WithTimeout(ctx, 20*time.Second)
+	defer cancel()
+	s.Receive(ctx, func(ctx context.Context, msg *Message) {
+		t.Fatal("expected message to not have been delivered when exactly once enabled")
 	})
 }
