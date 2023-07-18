@@ -160,7 +160,7 @@ func (cp *connectionPool) openWithRetry(co *connection) (storagepb.BigQueryWrite
 			depth = d
 		}
 		ch := make(chan *pendingWrite, depth)
-		go connRecvProcessor(co, arc, ch)
+		go connRecvProcessor(co.ctx, co, arc, ch)
 		return arc, ch, nil
 	}
 }
@@ -469,10 +469,10 @@ type streamClientFunc func(context.Context, ...gax.CallOption) (storagepb.BigQue
 // connRecvProcessor is used to propagate append responses back up with the originating write requests.  It
 // It runs as a goroutine.  A connection object allows for reconnection, and each reconnection establishes a new
 // processing gorouting and backing channel.
-func connRecvProcessor(co *connection, arc storagepb.BigQueryWrite_AppendRowsClient, ch <-chan *pendingWrite) {
+func connRecvProcessor(ctx context.Context, co *connection, arc storagepb.BigQueryWrite_AppendRowsClient, ch <-chan *pendingWrite) {
 	for {
 		select {
-		case <-co.ctx.Done():
+		case <-ctx.Done():
 			// Context is done, so we're not going to get further updates.  Mark all work left in the channel
 			// with the context error.  We don't attempt to re-enqueue in this case.
 			for {
@@ -483,7 +483,7 @@ func connRecvProcessor(co *connection, arc storagepb.BigQueryWrite_AppendRowsCli
 				// It's unlikely this connection will recover here, but for correctness keep the flow controller
 				// state correct by releasing.
 				co.release(pw)
-				pw.markDone(nil, co.ctx.Err())
+				pw.markDone(nil, ctx.Err())
 			}
 		case nextWrite, ok := <-ch:
 			if !ok {
@@ -498,12 +498,12 @@ func connRecvProcessor(co *connection, arc storagepb.BigQueryWrite_AppendRowsCli
 				continue
 			}
 			// Record that we did in fact get a response from the backend.
-			recordStat(co.ctx, AppendResponses, 1)
+			recordStat(ctx, AppendResponses, 1)
 
 			if status := resp.GetError(); status != nil {
 				// The response from the backend embedded a status error.  We record that the error
 				// occurred, and tag it based on the response code of the status.
-				if tagCtx, tagErr := tag.New(co.ctx, tag.Insert(keyError, codes.Code(status.GetCode()).String())); tagErr == nil {
+				if tagCtx, tagErr := tag.New(ctx, tag.Insert(keyError, codes.Code(status.GetCode()).String())); tagErr == nil {
 					recordStat(tagCtx, AppendResponseErrors, 1)
 				}
 				respErr := grpcstatus.ErrorProto(status)
