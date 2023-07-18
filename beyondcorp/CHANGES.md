@@ -1,5 +1,6 @@
 # Changelog
 
+
 ## [0.6.1](https://github.com/googleapis/google-cloud-go/compare/beyondcorp/v0.6.0...beyondcorp/v0.6.1) (2023-06-20)
 
 

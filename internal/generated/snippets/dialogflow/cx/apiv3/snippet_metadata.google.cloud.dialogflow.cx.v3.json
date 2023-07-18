@@ -6473,7 +6473,7 @@
     {
       "regionTag": "dialogflow_v3_generated_TestCases_ListTestCaseResults_sync",
       "title": "dialogflow ListTestCaseResults Sample",
-      "description": "ListTestCaseResults fetches a list of results for a given test case.",
+      "description": "ListTestCaseResults fetches the list of run results for the given test case. A maximum of 100\nresults are kept for each test case.",
       "file": "TestCasesClient/ListTestCaseResults/main.go",
       "language": "GO",
       "clientMethod": {
