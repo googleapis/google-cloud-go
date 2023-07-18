@@ -438,6 +438,11 @@ func (c *keyTrackingRESTClient) SearchProtectedResources(ctx context.Context, re
 		if req.GetPageToken() != "" {
 			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
 		}
+		if items := req.GetResourceTypes(); len(items) > 0 {
+			for _, item := range items {
+				params.Add("resourceTypes", fmt.Sprintf("%v", item))
+			}
+		}
 
 		baseUrl.RawQuery = params.Encode()
 
