@@ -304,6 +304,11 @@
         "grpc": {
           "libraryClient": "DocumentClient",
           "rpcs": {
+            "BatchDeleteDocuments": {
+              "methods": [
+                "BatchDeleteDocuments"
+              ]
+            },
             "CancelOperation": {
               "methods": [
                 "CancelOperation"
@@ -314,6 +319,11 @@
                 "GetDatasetSchema"
               ]
             },
+            "GetDocument": {
+              "methods": [
+                "GetDocument"
+              ]
+            },
             "GetLocation": {
               "methods": [
                 "GetLocation"
@@ -322,6 +332,11 @@
             "GetOperation": {
               "methods": [
                 "GetOperation"
+              ]
+            },
+            "ImportDocuments": {
+              "methods": [
+                "ImportDocuments"
               ]
             },
             "ListLocations": {
@@ -349,6 +364,11 @@
         "rest": {
           "libraryClient": "DocumentClient",
           "rpcs": {
+            "BatchDeleteDocuments": {
+              "methods": [
+                "BatchDeleteDocuments"
+              ]
+            },
             "CancelOperation": {
               "methods": [
                 "CancelOperation"
@@ -359,6 +379,11 @@
                 "GetDatasetSchema"
               ]
             },
+            "GetDocument": {
+              "methods": [
+                "GetDocument"
+              ]
+            },
             "GetLocation": {
               "methods": [
                 "GetLocation"
@@ -367,6 +392,11 @@
             "GetOperation": {
               "methods": [
                 "GetOperation"
+              ]
+            },
+            "ImportDocuments": {
+              "methods": [
+                "ImportDocuments"
               ]
             },
             "ListLocations": {
