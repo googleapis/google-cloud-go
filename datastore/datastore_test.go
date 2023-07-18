@@ -24,38 +24,59 @@ import (
 
 	"cloud.google.com/go/internal/testutil"
 	"github.com/google/go-cmp/cmp"
+	"google.golang.org/api/option"
+	"google.golang.org/api/transport/grpc"
 	pb "google.golang.org/genproto/googleapis/datastore/v1"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 func TestNewClientWithDatabase(t *testing.T) {
+	origDetectProjectIDFn := detectProjectIDFn
+	origGtransportDialPoolFn := gtransportDialPoolFn
+	defer func() {
+		detectProjectIDFn = origDetectProjectIDFn
+		gtransportDialPoolFn = origGtransportDialPoolFn
+	}()
+
 	tests := []struct {
-		desc       string
-		databaseId string
-		wantErr    string
+		desc                 string
+		databaseId           string
+		wantErr              bool
+		detectProjectIDFn    func(ctx context.Context, opts ...option.ClientOption) (string, error)
+		gtransportDialPoolFn func(ctx context.Context, opts ...option.ClientOption) (grpc.ConnPool, error)
 	}{
 		{
-			desc:       "Emmpty databaseID",
-			databaseId: "",
-			wantErr:    "firestore: databaseID is empty",
+			desc:       "Error from detect project ID should not fail NewClientWithDatabase",
+			databaseId: "db1",
+			wantErr:    false,
+			detectProjectIDFn: func(ctx context.Context, opts ...option.ClientOption) (string, error) {
+				return "", errors.New("mock error from detect project ID")
+			},
+			gtransportDialPoolFn: origGtransportDialPoolFn,
+		},
+		{
+			desc:              "Error from DialPool",
+			databaseId:        "db1",
+			wantErr:           true,
+			detectProjectIDFn: origDetectProjectIDFn,
+			gtransportDialPoolFn: func(ctx context.Context, opts ...option.ClientOption) (grpc.ConnPool, error) {
+				return nil, errors.New("mock error from DialPool")
+			},
 		},
 	}
 
-	for _, test := range tests {
-		_, gotErr := NewClientWithDatabase(context.Background(), "my-project", "")
-		if gotErr != nil && test.wantErr == "" {
-			t.Errorf("%s: got error %v, but none was expected", test.desc, gotErr)
-			continue
-		}
-		if gotErr == nil && test.wantErr != "" {
-			t.Errorf("%s: wanted error, but none returned", test.desc)
-			continue
-		}
+	for _, tc := range tests {
+		detectProjectIDFn = tc.detectProjectIDFn
+		gtransportDialPoolFn = tc.gtransportDialPoolFn
 
-		if gotErr.Error() != test.wantErr {
-			t.Errorf("%s: error mismatch: got %q want something containing %q", test.desc, gotErr, test.wantErr)
-			continue
+		client, gotErr := NewClientWithDatabase(context.Background(), "my-project", tc.databaseId)
+		if gotErr != nil && !tc.wantErr {
+			t.Errorf("%s: got error %v, but none was expected", tc.desc, gotErr)
+		} else if gotErr == nil && tc.wantErr {
+			t.Errorf("%s: wanted error, but none returned", tc.desc)
+		} else if gotErr == nil && client.databaseID != tc.databaseId {
+			t.Errorf("%s: got %s, want %s", tc.desc, client.databaseID, tc.databaseId)
 		}
 	}
 }
