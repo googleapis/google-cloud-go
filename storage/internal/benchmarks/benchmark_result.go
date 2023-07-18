@@ -218,6 +218,11 @@ func (br *benchmarkResult) cloudMonitoring() []byte {
 		sb.WriteString(",")
 	}
 
+	if len(opts.endpoint) > 0 {
+		sb.WriteString(makeStringQuoted("endpoint", opts.endpoint))
+		sb.WriteString(",")
+	}
+
 	sb.WriteString(makeStringQuoted("code_version", codeVersion))
 	sb.WriteString(",")
 	sb.WriteString(makeStringQuoted("go_version", goVersion))

@@ -105,6 +105,7 @@ func initializeClientPools(ctx context.Context, opts *benchmarkOptions) func() {
 					readBufferSize:  opts.readBufferSize,
 					useJSON:         false,
 					setGCSFuseOpts:  opts.useGCSFuseConfig,
+					endpoint:        opts.endpoint,
 				})
 			},
 			opts.numClients,
@@ -122,6 +123,7 @@ func initializeClientPools(ctx context.Context, opts *benchmarkOptions) func() {
 					readBufferSize:  opts.readBufferSize,
 					useJSON:         true,
 					setGCSFuseOpts:  opts.useGCSFuseConfig,
+					endpoint:        opts.endpoint,
 				})
 			},
 			opts.numClients,
@@ -136,6 +138,7 @@ func initializeClientPools(ctx context.Context, opts *benchmarkOptions) func() {
 					writeBufferSize:    opts.writeBufferSize,
 					readBufferSize:     opts.readBufferSize,
 					connectionPoolSize: opts.connPoolSize,
+					endpoint:           opts.endpoint,
 				})
 			},
 			opts.numClients,
@@ -177,6 +180,7 @@ var clientMu sync.Mutex
 // Client config
 type clientConfig struct {
 	writeBufferSize, readBufferSize int
+	endpoint                        string
 	useJSON                         bool // only applicable to HTTP Clients
 	setGCSFuseOpts                  bool // only applicable to HTTP Clients
 	connectionPoolSize              int  // only applicable to GRPC Clients
@@ -184,6 +188,10 @@ type clientConfig struct {
 
 func initializeHTTPClient(ctx context.Context, config clientConfig) (*storage.Client, error) {
 	opts := []option.ClientOption{}
+
+	if len(config.endpoint) > 0 {
+		opts = append(opts, option.WithEndpoint(config.endpoint))
+	}
 
 	if config.writeBufferSize != useDefault || config.readBufferSize != useDefault || config.setGCSFuseOpts {
 		// We need to modify the underlying HTTP client
@@ -235,6 +243,10 @@ func initializeHTTPClient(ctx context.Context, config clientConfig) (*storage.Cl
 
 func initializeGRPCClient(ctx context.Context, config clientConfig) (*storage.Client, error) {
 	opts := []option.ClientOption{option.WithGRPCConnectionPool(config.connectionPoolSize)}
+
+	if len(config.endpoint) > 0 {
+		opts = append(opts, option.WithEndpoint(config.endpoint))
+	}
 
 	if config.writeBufferSize != useDefault {
 		opts = append(opts, option.WithGRPCDialOption(grpc.WithWriteBufferSize(config.writeBufferSize)))
