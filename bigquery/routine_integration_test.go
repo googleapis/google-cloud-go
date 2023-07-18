@@ -19,7 +19,9 @@ import (
 	"fmt"
 	"testing"
 
+	"cloud.google.com/go/internal"
 	"cloud.google.com/go/internal/testutil"
+	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/genproto/googleapis/cloud/bigquery/connection/v1"
 )
@@ -121,7 +123,14 @@ func TestIntegration_RoutineRemoteUDF(t *testing.T) {
 			TypeKind: "STRING",
 		},
 	}
-	if err := routine.Create(ctx, meta); err != nil {
+
+	err = internal.Retry(ctx, gax.Backoff{}, func() (stop bool, err error) {
+		if err := routine.Create(ctx, meta); err != nil {
+			return false, err
+		}
+		return true, nil
+	})
+	if err != nil {
 		t.Fatalf("routine.Create: %v", err)
 	}
 

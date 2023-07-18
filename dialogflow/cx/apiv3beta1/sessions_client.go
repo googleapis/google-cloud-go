@@ -20,13 +20,14 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"math"
 	"net/http"
 	"net/url"
 	"time"
 
 	cxpb "cloud.google.com/go/dialogflow/cx/apiv3beta1/cxpb"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
@@ -35,7 +36,6 @@ import (
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -73,6 +73,7 @@ func defaultSessionsGRPCClientOptions() []option.ClientOption {
 func defaultSessionsCallOptions() *SessionsCallOptions {
 	return &SessionsCallOptions{
 		DetectIntent: []gax.CallOption{
+			gax.WithTimeout(220000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -85,6 +86,7 @@ func defaultSessionsCallOptions() *SessionsCallOptions {
 		},
 		StreamingDetectIntent: []gax.CallOption{},
 		MatchIntent: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -96,6 +98,7 @@ func defaultSessionsCallOptions() *SessionsCallOptions {
 			}),
 		},
 		FulfillIntent: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -117,6 +120,7 @@ func defaultSessionsCallOptions() *SessionsCallOptions {
 func defaultSessionsRESTCallOptions() *SessionsCallOptions {
 	return &SessionsCallOptions{
 		DetectIntent: []gax.CallOption{
+			gax.WithTimeout(220000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -126,8 +130,11 @@ func defaultSessionsRESTCallOptions() *SessionsCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
-		StreamingDetectIntent: []gax.CallOption{},
+		StreamingDetectIntent: []gax.CallOption{
+			gax.WithTimeout(220000 * time.Millisecond),
+		},
 		MatchIntent: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -138,6 +145,7 @@ func defaultSessionsRESTCallOptions() *SessionsCallOptions {
 			}),
 		},
 		FulfillIntent: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -283,9 +291,6 @@ type sessionsGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing SessionsClient
 	CallOptions **SessionsCallOptions
 
@@ -317,11 +322,6 @@ func NewSessionsClient(ctx context.Context, opts ...option.ClientOption) (*Sessi
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -330,7 +330,6 @@ func NewSessionsClient(ctx context.Context, opts ...option.ClientOption) (*Sessi
 
 	c := &sessionsGRPCClient{
 		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
 		sessionsClient:   cxpb.NewSessionsClient(connPool),
 		CallOptions:      &client.CallOptions,
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
@@ -355,7 +354,7 @@ func (c *sessionsGRPCClient) Connection() *grpc.ClientConn {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *sessionsGRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -418,7 +417,7 @@ func defaultSessionsRESTClientOptions() []option.ClientOption {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *sessionsRESTClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -438,11 +437,6 @@ func (c *sessionsRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 func (c *sessionsGRPCClient) DetectIntent(ctx context.Context, req *cxpb.DetectIntentRequest, opts ...gax.CallOption) (*cxpb.DetectIntentResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 220000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "session", url.QueryEscape(req.GetSession())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -475,11 +469,6 @@ func (c *sessionsGRPCClient) StreamingDetectIntent(ctx context.Context, opts ...
 }
 
 func (c *sessionsGRPCClient) MatchIntent(ctx context.Context, req *cxpb.MatchIntentRequest, opts ...gax.CallOption) (*cxpb.MatchIntentResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "session", url.QueryEscape(req.GetSession())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -497,11 +486,6 @@ func (c *sessionsGRPCClient) MatchIntent(ctx context.Context, req *cxpb.MatchInt
 }
 
 func (c *sessionsGRPCClient) FulfillIntent(ctx context.Context, req *cxpb.FulfillIntentRequest, opts ...gax.CallOption) (*cxpb.FulfillIntentResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "match_intent_request.session", url.QueryEscape(req.GetMatchIntentRequest().GetSession())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -709,13 +693,13 @@ func (c *sessionsRESTClient) DetectIntent(ctx context.Context, req *cxpb.DetectI
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -787,13 +771,13 @@ func (c *sessionsRESTClient) MatchIntent(ctx context.Context, req *cxpb.MatchInt
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -857,13 +841,13 @@ func (c *sessionsRESTClient) FulfillIntent(ctx context.Context, req *cxpb.Fulfil
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -915,13 +899,13 @@ func (c *sessionsRESTClient) GetLocation(ctx context.Context, req *locationpb.Ge
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -989,13 +973,13 @@ func (c *sessionsRESTClient) ListLocations(ctx context.Context, req *locationpb.
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -1104,13 +1088,13 @@ func (c *sessionsRESTClient) GetOperation(ctx context.Context, req *longrunningp
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1178,13 +1162,13 @@ func (c *sessionsRESTClient) ListOperations(ctx context.Context, req *longrunnin
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil

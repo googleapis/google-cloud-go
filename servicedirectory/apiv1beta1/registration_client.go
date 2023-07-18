@@ -20,12 +20,13 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"math"
 	"net/http"
 	"net/url"
 	"time"
 
+	iampb "cloud.google.com/go/iam/apiv1/iampb"
 	servicedirectorypb "cloud.google.com/go/servicedirectory/apiv1beta1/servicedirectorypb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
@@ -34,7 +35,6 @@ import (
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
-	iampb "google.golang.org/genproto/googleapis/iam/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -81,6 +81,7 @@ func defaultRegistrationGRPCClientOptions() []option.ClientOption {
 func defaultRegistrationCallOptions() *RegistrationCallOptions {
 	return &RegistrationCallOptions{
 		CreateNamespace: []gax.CallOption{
+			gax.WithTimeout(15000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -93,6 +94,7 @@ func defaultRegistrationCallOptions() *RegistrationCallOptions {
 			}),
 		},
 		ListNamespaces: []gax.CallOption{
+			gax.WithTimeout(15000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -105,6 +107,7 @@ func defaultRegistrationCallOptions() *RegistrationCallOptions {
 			}),
 		},
 		GetNamespace: []gax.CallOption{
+			gax.WithTimeout(15000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -117,6 +120,7 @@ func defaultRegistrationCallOptions() *RegistrationCallOptions {
 			}),
 		},
 		UpdateNamespace: []gax.CallOption{
+			gax.WithTimeout(15000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -129,6 +133,7 @@ func defaultRegistrationCallOptions() *RegistrationCallOptions {
 			}),
 		},
 		DeleteNamespace: []gax.CallOption{
+			gax.WithTimeout(15000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -141,6 +146,7 @@ func defaultRegistrationCallOptions() *RegistrationCallOptions {
 			}),
 		},
 		CreateService: []gax.CallOption{
+			gax.WithTimeout(15000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -153,6 +159,7 @@ func defaultRegistrationCallOptions() *RegistrationCallOptions {
 			}),
 		},
 		ListServices: []gax.CallOption{
+			gax.WithTimeout(15000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -165,6 +172,7 @@ func defaultRegistrationCallOptions() *RegistrationCallOptions {
 			}),
 		},
 		GetService: []gax.CallOption{
+			gax.WithTimeout(15000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -177,6 +185,7 @@ func defaultRegistrationCallOptions() *RegistrationCallOptions {
 			}),
 		},
 		UpdateService: []gax.CallOption{
+			gax.WithTimeout(15000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -189,6 +198,7 @@ func defaultRegistrationCallOptions() *RegistrationCallOptions {
 			}),
 		},
 		DeleteService: []gax.CallOption{
+			gax.WithTimeout(15000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -201,6 +211,7 @@ func defaultRegistrationCallOptions() *RegistrationCallOptions {
 			}),
 		},
 		CreateEndpoint: []gax.CallOption{
+			gax.WithTimeout(15000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -213,6 +224,7 @@ func defaultRegistrationCallOptions() *RegistrationCallOptions {
 			}),
 		},
 		ListEndpoints: []gax.CallOption{
+			gax.WithTimeout(15000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -225,6 +237,7 @@ func defaultRegistrationCallOptions() *RegistrationCallOptions {
 			}),
 		},
 		GetEndpoint: []gax.CallOption{
+			gax.WithTimeout(15000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -237,6 +250,7 @@ func defaultRegistrationCallOptions() *RegistrationCallOptions {
 			}),
 		},
 		UpdateEndpoint: []gax.CallOption{
+			gax.WithTimeout(15000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -249,6 +263,7 @@ func defaultRegistrationCallOptions() *RegistrationCallOptions {
 			}),
 		},
 		DeleteEndpoint: []gax.CallOption{
+			gax.WithTimeout(15000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -261,6 +276,7 @@ func defaultRegistrationCallOptions() *RegistrationCallOptions {
 			}),
 		},
 		GetIamPolicy: []gax.CallOption{
+			gax.WithTimeout(15000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -273,6 +289,7 @@ func defaultRegistrationCallOptions() *RegistrationCallOptions {
 			}),
 		},
 		SetIamPolicy: []gax.CallOption{
+			gax.WithTimeout(15000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -285,6 +302,7 @@ func defaultRegistrationCallOptions() *RegistrationCallOptions {
 			}),
 		},
 		TestIamPermissions: []gax.CallOption{
+			gax.WithTimeout(15000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -302,6 +320,7 @@ func defaultRegistrationCallOptions() *RegistrationCallOptions {
 func defaultRegistrationRESTCallOptions() *RegistrationCallOptions {
 	return &RegistrationCallOptions{
 		CreateNamespace: []gax.CallOption{
+			gax.WithTimeout(15000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -313,6 +332,7 @@ func defaultRegistrationRESTCallOptions() *RegistrationCallOptions {
 			}),
 		},
 		ListNamespaces: []gax.CallOption{
+			gax.WithTimeout(15000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -324,6 +344,7 @@ func defaultRegistrationRESTCallOptions() *RegistrationCallOptions {
 			}),
 		},
 		GetNamespace: []gax.CallOption{
+			gax.WithTimeout(15000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -335,6 +356,7 @@ func defaultRegistrationRESTCallOptions() *RegistrationCallOptions {
 			}),
 		},
 		UpdateNamespace: []gax.CallOption{
+			gax.WithTimeout(15000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -346,6 +368,7 @@ func defaultRegistrationRESTCallOptions() *RegistrationCallOptions {
 			}),
 		},
 		DeleteNamespace: []gax.CallOption{
+			gax.WithTimeout(15000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -357,6 +380,7 @@ func defaultRegistrationRESTCallOptions() *RegistrationCallOptions {
 			}),
 		},
 		CreateService: []gax.CallOption{
+			gax.WithTimeout(15000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -368,6 +392,7 @@ func defaultRegistrationRESTCallOptions() *RegistrationCallOptions {
 			}),
 		},
 		ListServices: []gax.CallOption{
+			gax.WithTimeout(15000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -379,6 +404,7 @@ func defaultRegistrationRESTCallOptions() *RegistrationCallOptions {
 			}),
 		},
 		GetService: []gax.CallOption{
+			gax.WithTimeout(15000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -390,6 +416,7 @@ func defaultRegistrationRESTCallOptions() *RegistrationCallOptions {
 			}),
 		},
 		UpdateService: []gax.CallOption{
+			gax.WithTimeout(15000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -401,6 +428,7 @@ func defaultRegistrationRESTCallOptions() *RegistrationCallOptions {
 			}),
 		},
 		DeleteService: []gax.CallOption{
+			gax.WithTimeout(15000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -412,6 +440,7 @@ func defaultRegistrationRESTCallOptions() *RegistrationCallOptions {
 			}),
 		},
 		CreateEndpoint: []gax.CallOption{
+			gax.WithTimeout(15000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -423,6 +452,7 @@ func defaultRegistrationRESTCallOptions() *RegistrationCallOptions {
 			}),
 		},
 		ListEndpoints: []gax.CallOption{
+			gax.WithTimeout(15000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -434,6 +464,7 @@ func defaultRegistrationRESTCallOptions() *RegistrationCallOptions {
 			}),
 		},
 		GetEndpoint: []gax.CallOption{
+			gax.WithTimeout(15000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -445,6 +476,7 @@ func defaultRegistrationRESTCallOptions() *RegistrationCallOptions {
 			}),
 		},
 		UpdateEndpoint: []gax.CallOption{
+			gax.WithTimeout(15000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -456,6 +488,7 @@ func defaultRegistrationRESTCallOptions() *RegistrationCallOptions {
 			}),
 		},
 		DeleteEndpoint: []gax.CallOption{
+			gax.WithTimeout(15000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -467,6 +500,7 @@ func defaultRegistrationRESTCallOptions() *RegistrationCallOptions {
 			}),
 		},
 		GetIamPolicy: []gax.CallOption{
+			gax.WithTimeout(15000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -478,6 +512,7 @@ func defaultRegistrationRESTCallOptions() *RegistrationCallOptions {
 			}),
 		},
 		SetIamPolicy: []gax.CallOption{
+			gax.WithTimeout(15000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -489,6 +524,7 @@ func defaultRegistrationRESTCallOptions() *RegistrationCallOptions {
 			}),
 		},
 		TestIamPermissions: []gax.CallOption{
+			gax.WithTimeout(15000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -675,9 +711,6 @@ type registrationGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing RegistrationClient
 	CallOptions **RegistrationCallOptions
 
@@ -716,11 +749,6 @@ func NewRegistrationClient(ctx context.Context, opts ...option.ClientOption) (*R
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -729,7 +757,6 @@ func NewRegistrationClient(ctx context.Context, opts ...option.ClientOption) (*R
 
 	c := &registrationGRPCClient{
 		connPool:           connPool,
-		disableDeadlines:   disableDeadlines,
 		registrationClient: servicedirectorypb.NewRegistrationServiceClient(connPool),
 		CallOptions:        &client.CallOptions,
 	}
@@ -752,7 +779,7 @@ func (c *registrationGRPCClient) Connection() *grpc.ClientConn {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *registrationGRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -826,7 +853,7 @@ func defaultRegistrationRESTClientOptions() []option.ClientOption {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *registrationRESTClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -846,11 +873,6 @@ func (c *registrationRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 func (c *registrationGRPCClient) CreateNamespace(ctx context.Context, req *servicedirectorypb.CreateNamespaceRequest, opts ...gax.CallOption) (*servicedirectorypb.Namespace, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 15000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -913,11 +935,6 @@ func (c *registrationGRPCClient) ListNamespaces(ctx context.Context, req *servic
 }
 
 func (c *registrationGRPCClient) GetNamespace(ctx context.Context, req *servicedirectorypb.GetNamespaceRequest, opts ...gax.CallOption) (*servicedirectorypb.Namespace, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 15000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -935,11 +952,6 @@ func (c *registrationGRPCClient) GetNamespace(ctx context.Context, req *serviced
 }
 
 func (c *registrationGRPCClient) UpdateNamespace(ctx context.Context, req *servicedirectorypb.UpdateNamespaceRequest, opts ...gax.CallOption) (*servicedirectorypb.Namespace, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 15000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "namespace.name", url.QueryEscape(req.GetNamespace().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -957,11 +969,6 @@ func (c *registrationGRPCClient) UpdateNamespace(ctx context.Context, req *servi
 }
 
 func (c *registrationGRPCClient) DeleteNamespace(ctx context.Context, req *servicedirectorypb.DeleteNamespaceRequest, opts ...gax.CallOption) error {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 15000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -975,11 +982,6 @@ func (c *registrationGRPCClient) DeleteNamespace(ctx context.Context, req *servi
 }
 
 func (c *registrationGRPCClient) CreateService(ctx context.Context, req *servicedirectorypb.CreateServiceRequest, opts ...gax.CallOption) (*servicedirectorypb.Service, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 15000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1042,11 +1044,6 @@ func (c *registrationGRPCClient) ListServices(ctx context.Context, req *serviced
 }
 
 func (c *registrationGRPCClient) GetService(ctx context.Context, req *servicedirectorypb.GetServiceRequest, opts ...gax.CallOption) (*servicedirectorypb.Service, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 15000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1064,11 +1061,6 @@ func (c *registrationGRPCClient) GetService(ctx context.Context, req *servicedir
 }
 
 func (c *registrationGRPCClient) UpdateService(ctx context.Context, req *servicedirectorypb.UpdateServiceRequest, opts ...gax.CallOption) (*servicedirectorypb.Service, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 15000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "service.name", url.QueryEscape(req.GetService().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1086,11 +1078,6 @@ func (c *registrationGRPCClient) UpdateService(ctx context.Context, req *service
 }
 
 func (c *registrationGRPCClient) DeleteService(ctx context.Context, req *servicedirectorypb.DeleteServiceRequest, opts ...gax.CallOption) error {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 15000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1104,11 +1091,6 @@ func (c *registrationGRPCClient) DeleteService(ctx context.Context, req *service
 }
 
 func (c *registrationGRPCClient) CreateEndpoint(ctx context.Context, req *servicedirectorypb.CreateEndpointRequest, opts ...gax.CallOption) (*servicedirectorypb.Endpoint, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 15000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1171,11 +1153,6 @@ func (c *registrationGRPCClient) ListEndpoints(ctx context.Context, req *service
 }
 
 func (c *registrationGRPCClient) GetEndpoint(ctx context.Context, req *servicedirectorypb.GetEndpointRequest, opts ...gax.CallOption) (*servicedirectorypb.Endpoint, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 15000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1193,11 +1170,6 @@ func (c *registrationGRPCClient) GetEndpoint(ctx context.Context, req *servicedi
 }
 
 func (c *registrationGRPCClient) UpdateEndpoint(ctx context.Context, req *servicedirectorypb.UpdateEndpointRequest, opts ...gax.CallOption) (*servicedirectorypb.Endpoint, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 15000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "endpoint.name", url.QueryEscape(req.GetEndpoint().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1215,11 +1187,6 @@ func (c *registrationGRPCClient) UpdateEndpoint(ctx context.Context, req *servic
 }
 
 func (c *registrationGRPCClient) DeleteEndpoint(ctx context.Context, req *servicedirectorypb.DeleteEndpointRequest, opts ...gax.CallOption) error {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 15000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1233,11 +1200,6 @@ func (c *registrationGRPCClient) DeleteEndpoint(ctx context.Context, req *servic
 }
 
 func (c *registrationGRPCClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 15000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1255,11 +1217,6 @@ func (c *registrationGRPCClient) GetIamPolicy(ctx context.Context, req *iampb.Ge
 }
 
 func (c *registrationGRPCClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 15000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1277,11 +1234,6 @@ func (c *registrationGRPCClient) SetIamPolicy(ctx context.Context, req *iampb.Se
 }
 
 func (c *registrationGRPCClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermissionsRequest, opts ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 15000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1347,13 +1299,13 @@ func (c *registrationRESTClient) CreateNamespace(ctx context.Context, req *servi
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1424,13 +1376,13 @@ func (c *registrationRESTClient) ListNamespaces(ctx context.Context, req *servic
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -1499,13 +1451,13 @@ func (c *registrationRESTClient) GetNamespace(ctx context.Context, req *serviced
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1538,7 +1490,7 @@ func (c *registrationRESTClient) UpdateNamespace(ctx context.Context, req *servi
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask))
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1571,13 +1523,13 @@ func (c *registrationRESTClient) UpdateNamespace(ctx context.Context, req *servi
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1678,13 +1630,13 @@ func (c *registrationRESTClient) CreateService(ctx context.Context, req *service
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1755,13 +1707,13 @@ func (c *registrationRESTClient) ListServices(ctx context.Context, req *serviced
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -1830,13 +1782,13 @@ func (c *registrationRESTClient) GetService(ctx context.Context, req *servicedir
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1869,7 +1821,7 @@ func (c *registrationRESTClient) UpdateService(ctx context.Context, req *service
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask))
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1902,13 +1854,13 @@ func (c *registrationRESTClient) UpdateService(ctx context.Context, req *service
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2009,13 +1961,13 @@ func (c *registrationRESTClient) CreateEndpoint(ctx context.Context, req *servic
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2086,13 +2038,13 @@ func (c *registrationRESTClient) ListEndpoints(ctx context.Context, req *service
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -2161,13 +2113,13 @@ func (c *registrationRESTClient) GetEndpoint(ctx context.Context, req *servicedi
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2200,7 +2152,7 @@ func (c *registrationRESTClient) UpdateEndpoint(ctx context.Context, req *servic
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask))
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -2233,13 +2185,13 @@ func (c *registrationRESTClient) UpdateEndpoint(ctx context.Context, req *servic
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2337,13 +2289,13 @@ func (c *registrationRESTClient) GetIamPolicy(ctx context.Context, req *iampb.Ge
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2401,13 +2353,13 @@ func (c *registrationRESTClient) SetIamPolicy(ctx context.Context, req *iampb.Se
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2465,13 +2417,13 @@ func (c *registrationRESTClient) TestIamPermissions(ctx context.Context, req *ia
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil

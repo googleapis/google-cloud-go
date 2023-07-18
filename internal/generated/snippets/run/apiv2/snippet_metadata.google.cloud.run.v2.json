@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/run/apiv2",
-    "version": "0.5.0",
+    "version": "1.2.0",
     "language": "GO",
     "apis": [
       {
@@ -86,10 +86,10 @@
         },
         "method": {
           "shortName": "DeleteOperation",
-          "fullName": "google.cloud.run.v2.Executions.DeleteOperation",
+          "fullName": "google.longrunning.Operations.DeleteOperation",
           "service": {
-            "shortName": "Executions",
-            "fullName": "google.cloud.run.v2.Executions"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -97,7 +97,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -125,7 +125,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "runpb.Execution",
+        "resultType": "*runpb.Execution",
         "client": {
           "shortName": "ExecutionsClient",
           "fullName": "google.cloud.run.v2.ExecutionsClient"
@@ -171,17 +171,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "longrunningpb.Operation",
+        "resultType": "*longrunningpb.Operation",
         "client": {
           "shortName": "ExecutionsClient",
           "fullName": "google.cloud.run.v2.ExecutionsClient"
         },
         "method": {
           "shortName": "GetOperation",
-          "fullName": "google.cloud.run.v2.Executions.GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
           "service": {
-            "shortName": "Executions",
-            "fullName": "google.cloud.run.v2.Executions"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -189,7 +189,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -270,10 +270,10 @@
         },
         "method": {
           "shortName": "ListOperations",
-          "fullName": "google.cloud.run.v2.Executions.ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
           "service": {
-            "shortName": "Executions",
-            "fullName": "google.cloud.run.v2.Executions"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -281,7 +281,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 61,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -309,17 +309,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "longrunningpb.Operation",
+        "resultType": "*longrunningpb.Operation",
         "client": {
           "shortName": "ExecutionsClient",
           "fullName": "google.cloud.run.v2.ExecutionsClient"
         },
         "method": {
           "shortName": "WaitOperation",
-          "fullName": "google.cloud.run.v2.Executions.WaitOperation",
+          "fullName": "google.longrunning.Operations.WaitOperation",
           "service": {
-            "shortName": "Executions",
-            "fullName": "google.cloud.run.v2.Executions"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -327,7 +327,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -453,10 +453,10 @@
         },
         "method": {
           "shortName": "DeleteOperation",
-          "fullName": "google.cloud.run.v2.Jobs.DeleteOperation",
+          "fullName": "google.longrunning.Operations.DeleteOperation",
           "service": {
-            "shortName": "Jobs",
-            "fullName": "google.cloud.run.v2.Jobs"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -464,7 +464,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -492,7 +492,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "iampb.Policy",
+        "resultType": "*iampb.Policy",
         "client": {
           "shortName": "JobsClient",
           "fullName": "google.cloud.run.v2.JobsClient"
@@ -510,7 +510,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -538,7 +538,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "runpb.Job",
+        "resultType": "*runpb.Job",
         "client": {
           "shortName": "JobsClient",
           "fullName": "google.cloud.run.v2.JobsClient"
@@ -584,17 +584,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "longrunningpb.Operation",
+        "resultType": "*longrunningpb.Operation",
         "client": {
           "shortName": "JobsClient",
           "fullName": "google.cloud.run.v2.JobsClient"
         },
         "method": {
           "shortName": "GetOperation",
-          "fullName": "google.cloud.run.v2.Jobs.GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
           "service": {
-            "shortName": "Jobs",
-            "fullName": "google.cloud.run.v2.Jobs"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -602,7 +602,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -683,10 +683,10 @@
         },
         "method": {
           "shortName": "ListOperations",
-          "fullName": "google.cloud.run.v2.Jobs.ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
           "service": {
-            "shortName": "Jobs",
-            "fullName": "google.cloud.run.v2.Jobs"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -694,7 +694,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 61,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -768,7 +768,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "iampb.Policy",
+        "resultType": "*iampb.Policy",
         "client": {
           "shortName": "JobsClient",
           "fullName": "google.cloud.run.v2.JobsClient"
@@ -786,7 +786,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -814,7 +814,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "iampb.TestIamPermissionsResponse",
+        "resultType": "*iampb.TestIamPermissionsResponse",
         "client": {
           "shortName": "JobsClient",
           "fullName": "google.cloud.run.v2.JobsClient"
@@ -832,7 +832,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -906,17 +906,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "longrunningpb.Operation",
+        "resultType": "*longrunningpb.Operation",
         "client": {
           "shortName": "JobsClient",
           "fullName": "google.cloud.run.v2.JobsClient"
         },
         "method": {
           "shortName": "WaitOperation",
-          "fullName": "google.cloud.run.v2.Jobs.WaitOperation",
+          "fullName": "google.longrunning.Operations.WaitOperation",
           "service": {
-            "shortName": "Jobs",
-            "fullName": "google.cloud.run.v2.Jobs"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -924,7 +924,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -958,10 +958,10 @@
         },
         "method": {
           "shortName": "DeleteOperation",
-          "fullName": "google.cloud.run.v2.Revisions.DeleteOperation",
+          "fullName": "google.longrunning.Operations.DeleteOperation",
           "service": {
-            "shortName": "Revisions",
-            "fullName": "google.cloud.run.v2.Revisions"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -969,7 +969,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -1043,17 +1043,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "longrunningpb.Operation",
+        "resultType": "*longrunningpb.Operation",
         "client": {
           "shortName": "RevisionsClient",
           "fullName": "google.cloud.run.v2.RevisionsClient"
         },
         "method": {
           "shortName": "GetOperation",
-          "fullName": "google.cloud.run.v2.Revisions.GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
           "service": {
-            "shortName": "Revisions",
-            "fullName": "google.cloud.run.v2.Revisions"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -1061,7 +1061,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -1089,7 +1089,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "runpb.Revision",
+        "resultType": "*runpb.Revision",
         "client": {
           "shortName": "RevisionsClient",
           "fullName": "google.cloud.run.v2.RevisionsClient"
@@ -1142,10 +1142,10 @@
         },
         "method": {
           "shortName": "ListOperations",
-          "fullName": "google.cloud.run.v2.Revisions.ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
           "service": {
-            "shortName": "Revisions",
-            "fullName": "google.cloud.run.v2.Revisions"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -1153,7 +1153,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 61,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -1227,17 +1227,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "longrunningpb.Operation",
+        "resultType": "*longrunningpb.Operation",
         "client": {
           "shortName": "RevisionsClient",
           "fullName": "google.cloud.run.v2.RevisionsClient"
         },
         "method": {
           "shortName": "WaitOperation",
-          "fullName": "google.cloud.run.v2.Revisions.WaitOperation",
+          "fullName": "google.longrunning.Operations.WaitOperation",
           "service": {
-            "shortName": "Revisions",
-            "fullName": "google.cloud.run.v2.Revisions"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -1245,7 +1245,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -1325,10 +1325,10 @@
         },
         "method": {
           "shortName": "DeleteOperation",
-          "fullName": "google.cloud.run.v2.Services.DeleteOperation",
+          "fullName": "google.longrunning.Operations.DeleteOperation",
           "service": {
-            "shortName": "Services",
-            "fullName": "google.cloud.run.v2.Services"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -1336,7 +1336,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -1410,7 +1410,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "iampb.Policy",
+        "resultType": "*iampb.Policy",
         "client": {
           "shortName": "ServicesClient",
           "fullName": "google.cloud.run.v2.ServicesClient"
@@ -1428,7 +1428,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -1456,17 +1456,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "longrunningpb.Operation",
+        "resultType": "*longrunningpb.Operation",
         "client": {
           "shortName": "ServicesClient",
           "fullName": "google.cloud.run.v2.ServicesClient"
         },
         "method": {
           "shortName": "GetOperation",
-          "fullName": "google.cloud.run.v2.Services.GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
           "service": {
-            "shortName": "Services",
-            "fullName": "google.cloud.run.v2.Services"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -1474,7 +1474,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -1502,7 +1502,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "runpb.Service",
+        "resultType": "*runpb.Service",
         "client": {
           "shortName": "ServicesClient",
           "fullName": "google.cloud.run.v2.ServicesClient"
@@ -1555,10 +1555,10 @@
         },
         "method": {
           "shortName": "ListOperations",
-          "fullName": "google.cloud.run.v2.Services.ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
           "service": {
-            "shortName": "Services",
-            "fullName": "google.cloud.run.v2.Services"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -1566,7 +1566,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 61,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -1640,7 +1640,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "iampb.Policy",
+        "resultType": "*iampb.Policy",
         "client": {
           "shortName": "ServicesClient",
           "fullName": "google.cloud.run.v2.ServicesClient"
@@ -1658,7 +1658,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -1686,7 +1686,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "iampb.TestIamPermissionsResponse",
+        "resultType": "*iampb.TestIamPermissionsResponse",
         "client": {
           "shortName": "ServicesClient",
           "fullName": "google.cloud.run.v2.ServicesClient"
@@ -1704,7 +1704,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -1778,17 +1778,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "longrunningpb.Operation",
+        "resultType": "*longrunningpb.Operation",
         "client": {
           "shortName": "ServicesClient",
           "fullName": "google.cloud.run.v2.ServicesClient"
         },
         "method": {
           "shortName": "WaitOperation",
-          "fullName": "google.cloud.run.v2.Services.WaitOperation",
+          "fullName": "google.longrunning.Operations.WaitOperation",
           "service": {
-            "shortName": "Services",
-            "fullName": "google.cloud.run.v2.Services"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -1796,7 +1796,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -1830,10 +1830,10 @@
         },
         "method": {
           "shortName": "DeleteOperation",
-          "fullName": "google.cloud.run.v2.Tasks.DeleteOperation",
+          "fullName": "google.longrunning.Operations.DeleteOperation",
           "service": {
-            "shortName": "Tasks",
-            "fullName": "google.cloud.run.v2.Tasks"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -1841,7 +1841,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -1869,17 +1869,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "longrunningpb.Operation",
+        "resultType": "*longrunningpb.Operation",
         "client": {
           "shortName": "TasksClient",
           "fullName": "google.cloud.run.v2.TasksClient"
         },
         "method": {
           "shortName": "GetOperation",
-          "fullName": "google.cloud.run.v2.Tasks.GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
           "service": {
-            "shortName": "Tasks",
-            "fullName": "google.cloud.run.v2.Tasks"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -1887,7 +1887,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -1915,7 +1915,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "runpb.Task",
+        "resultType": "*runpb.Task",
         "client": {
           "shortName": "TasksClient",
           "fullName": "google.cloud.run.v2.TasksClient"
@@ -1968,10 +1968,10 @@
         },
         "method": {
           "shortName": "ListOperations",
-          "fullName": "google.cloud.run.v2.Tasks.ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
           "service": {
-            "shortName": "Tasks",
-            "fullName": "google.cloud.run.v2.Tasks"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -1979,7 +1979,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 61,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -2053,17 +2053,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "longrunningpb.Operation",
+        "resultType": "*longrunningpb.Operation",
         "client": {
           "shortName": "TasksClient",
           "fullName": "google.cloud.run.v2.TasksClient"
         },
         "method": {
           "shortName": "WaitOperation",
-          "fullName": "google.cloud.run.v2.Tasks.WaitOperation",
+          "fullName": "google.longrunning.Operations.WaitOperation",
           "service": {
-            "shortName": "Tasks",
-            "fullName": "google.cloud.run.v2.Tasks"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -2071,7 +2071,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]

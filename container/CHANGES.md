@@ -1,5 +1,115 @@
 # Changes
 
+## [1.23.0](https://github.com/googleapis/google-cloud-go/compare/container/v1.22.1...container/v1.23.0) (2023-07-10)
+
+
+### Features
+
+* **container:** Add `KUBE_DNS` option to `DNSConfig.cluster_dns` ([#8183](https://github.com/googleapis/google-cloud-go/issues/8183)) ([a3ec3cf](https://github.com/googleapis/google-cloud-go/commit/a3ec3cf858c7d9154338ac4cd8a9a068dc7a7f4d))
+
+## [1.22.1](https://github.com/googleapis/google-cloud-go/compare/container/v1.22.0...container/v1.22.1) (2023-06-20)
+
+
+### Bug Fixes
+
+* **container:** REST query UpdateMask bug ([df52820](https://github.com/googleapis/google-cloud-go/commit/df52820b0e7721954809a8aa8700b93c5662dc9b))
+
+## [1.22.0](https://github.com/googleapis/google-cloud-go/compare/container/v1.21.0...container/v1.22.0) (2023-06-13)
+
+
+### Features
+
+* **container:** Add API for GPU driver installation config ([3abdfa1](https://github.com/googleapis/google-cloud-go/commit/3abdfa14dd56cf773c477f289a7f888e20bbbd9a))
+
+## [1.21.0](https://github.com/googleapis/google-cloud-go/compare/container/v1.20.0...container/v1.21.0) (2023-06-07)
+
+
+### Features
+
+* **container:** Add a API field to enable FQDN Network Policy on clusters ([79eac77](https://github.com/googleapis/google-cloud-go/commit/79eac771ecf99172157cc4499ba95536778354e6))
+
+## [1.20.0](https://github.com/googleapis/google-cloud-go/compare/container/v1.19.0...container/v1.20.0) (2023-05-31)
+
+
+### Features
+
+* **container:** Add SoleTenantConfig API ([#8015](https://github.com/googleapis/google-cloud-go/issues/8015)) ([01eff11](https://github.com/googleapis/google-cloud-go/commit/01eff11eedb3edde69cc33db23e26be6a7e42f10))
+
+## [1.19.0](https://github.com/googleapis/google-cloud-go/compare/container/v1.18.1...container/v1.19.0) (2023-05-30)
+
+
+### Features
+
+* **container:** Update all direct dependencies ([b340d03](https://github.com/googleapis/google-cloud-go/commit/b340d030f2b52a4ce48846ce63984b28583abde6))
+
+
+### Documentation
+
+* **container:** Clarified release channel defaulting behavior for create cluster requests when release channel is unspecified ([2b3e7d9](https://github.com/googleapis/google-cloud-go/commit/2b3e7d9af7d2f500e736e3db77487127cb44ca23))
+
+## [1.18.1](https://github.com/googleapis/google-cloud-go/compare/container/v1.18.0...container/v1.18.1) (2023-05-08)
+
+
+### Bug Fixes
+
+* **container:** Update grpc to v1.55.0 ([1147ce0](https://github.com/googleapis/google-cloud-go/commit/1147ce02a990276ca4f8ab7a1ab65c14da4450ef))
+
+## [1.18.0](https://github.com/googleapis/google-cloud-go/compare/container/v1.17.0...container/v1.18.0) (2023-05-03)
+
+
+### Features
+
+* **container:** Support fleet registration via cluster update ([#7877](https://github.com/googleapis/google-cloud-go/issues/7877)) ([d5d1fe9](https://github.com/googleapis/google-cloud-go/commit/d5d1fe96c9cf3cc3bb0e05fb75297a68bbbd8e41))
+
+## [1.17.0](https://github.com/googleapis/google-cloud-go/compare/container/v1.16.0...container/v1.17.0) (2023-04-25)
+
+
+### Features
+
+* **container:** Add support for updating additional pod IPv4 ranges for Standard and Autopilot clusters ([87a67b4](https://github.com/googleapis/google-cloud-go/commit/87a67b44b2c7ffc3cea986b255614ea0d21aa6fc))
+
+
+### Documentation
+
+* **container:** Minor formatting in docstring ([#7814](https://github.com/googleapis/google-cloud-go/issues/7814)) ([4900851](https://github.com/googleapis/google-cloud-go/commit/49008518e168fe6f7891b907d6fc14eecdef758c))
+* **container:** Operation.Type is now documented in detail ([#7811](https://github.com/googleapis/google-cloud-go/issues/7811)) ([87eaf38](https://github.com/googleapis/google-cloud-go/commit/87eaf383fab91f5e1dcbaa037bff36d3044d06db))
+
+## [1.16.0](https://github.com/googleapis/google-cloud-go/compare/container/v1.15.0...container/v1.16.0) (2023-04-11)
+
+
+### Features
+
+* **container:** Add support for disabling pod IP cidr overprovision ([fc90e54](https://github.com/googleapis/google-cloud-go/commit/fc90e54b25bda6b339266e3e5388174339ed6a44))
+* **container:** Add support for updating additional pod IPv4 ranges for Standard and Autopilot clusters ([fc90e54](https://github.com/googleapis/google-cloud-go/commit/fc90e54b25bda6b339266e3e5388174339ed6a44))
+
+## [1.15.0](https://github.com/googleapis/google-cloud-go/compare/container/v1.14.0...container/v1.15.0) (2023-04-04)
+
+
+### Features
+
+* **container:** Add a new fleet registration feature ([3f1ed9c](https://github.com/googleapis/google-cloud-go/commit/3f1ed9c63fb115f47607a3ab478842fe5ba0df11))
+
+## [1.14.0](https://github.com/googleapis/google-cloud-go/compare/container/v1.13.1...container/v1.14.0) (2023-03-15)
+
+
+### Features
+
+* **container:** Update iam and longrunning deps ([91a1f78](https://github.com/googleapis/google-cloud-go/commit/91a1f784a109da70f63b96414bba8a9b4254cddd))
+
+
+### Documentation
+
+* **container:** Minor grammar improvements ([69067f8](https://github.com/googleapis/google-cloud-go/commit/69067f8c0075099a84dd9d40e438711881710784))
+* **container:** Minor typo fix ([69067f8](https://github.com/googleapis/google-cloud-go/commit/69067f8c0075099a84dd9d40e438711881710784))
+
+## [1.13.1](https://github.com/googleapis/google-cloud-go/compare/container/v1.13.0...container/v1.13.1) (2023-02-14)
+
+
+### Documentation
+
+* **container:** Add clarification on whether `NodePool.version` is a required field ([2fef56f](https://github.com/googleapis/google-cloud-go/commit/2fef56f75a63dc4ff6e0eea56c7b26d4831c8e27))
+* **container:** Clarified wording around the NodePoolUpdateStrategy default behavior docs: add references for available node image types ([3f118f9](https://github.com/googleapis/google-cloud-go/commit/3f118f9a4fb8ccbd96c81e6044ccb05addc78ded))
+
 ## [1.13.0](https://github.com/googleapis/google-cloud-go/compare/container-v1.12.0...container/v1.13.0) (2023-01-26)
 
 

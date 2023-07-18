@@ -18,6 +18,7 @@ import (
 	"bufio"
 	"bytes"
 	"context"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -36,6 +37,7 @@ import (
 	"cloud.google.com/go/kms/apiv1/kmspb"
 	pb "cloud.google.com/go/pubsub/apiv1/pubsubpb"
 	testutil2 "cloud.google.com/go/pubsub/internal/testutil"
+	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
 	gax "github.com/googleapis/gax-go/v2"
 	"golang.org/x/oauth2/google"
@@ -263,96 +265,98 @@ func withGoogleClientInfo(ctx context.Context) context.Context {
 func testPublishAndReceive(t *testing.T, client *Client, maxMsgs int, synchronous, exactlyOnceDelivery bool, numMsgs, extraBytes int) {
 	t.Run(fmt.Sprintf("maxMsgs:%d,synchronous:%t,exactlyOnceDelivery:%t,numMsgs:%d", maxMsgs, synchronous, exactlyOnceDelivery, numMsgs), func(t *testing.T) {
 		t.Parallel()
-		ctx := context.Background()
-		topic, err := client.CreateTopic(ctx, topicIDs.New())
-		if err != nil {
-			t.Errorf("CreateTopic error: %v", err)
-		}
-		defer topic.Stop()
-		exists, err := topic.Exists(ctx)
-		if err != nil {
-			t.Fatalf("TopicExists error: %v", err)
-		}
-		if !exists {
-			t.Errorf("topic %v should exist, but it doesn't", topic)
-		}
-
-		sub, err := client.CreateSubscription(ctx, subIDs.New(), SubscriptionConfig{
-			Topic:                     topic,
-			EnableExactlyOnceDelivery: exactlyOnceDelivery,
-		})
-		if err != nil {
-			t.Errorf("CreateSub error: %v", err)
-		}
-		exists, err = sub.Exists(ctx)
-		if err != nil {
-			t.Fatalf("SubExists error: %v", err)
-		}
-		if !exists {
-			t.Errorf("subscription %s should exist, but it doesn't", sub.ID())
-		}
-		var msgs []*Message
-		for i := 0; i < numMsgs; i++ {
-			text := fmt.Sprintf("a message with an index %d - %s", i, strings.Repeat(".", extraBytes))
-			attrs := make(map[string]string)
-			attrs["foo"] = "bar"
-			msgs = append(msgs, &Message{
-				Data:       []byte(text),
-				Attributes: attrs,
-			})
-		}
-
-		// Publish some messages.
-		type pubResult struct {
-			m *Message
-			r *PublishResult
-		}
-		var rs []pubResult
-		for _, m := range msgs {
-			r := topic.Publish(ctx, m)
-			rs = append(rs, pubResult{m, r})
-		}
-		want := make(map[string]messageData)
-		for _, res := range rs {
-			id, err := res.r.Get(ctx)
+		testutil.Retry(t, 3, 10*time.Second, func(r *testutil.R) {
+			ctx := context.Background()
+			topic, err := client.CreateTopic(ctx, topicIDs.New())
 			if err != nil {
-				t.Fatal(err)
+				r.Errorf("CreateTopic error: %v", err)
 			}
-			md := extractMessageData(res.m)
-			md.ID = id
-			want[md.ID] = md
-		}
+			defer topic.Stop()
+			exists, err := topic.Exists(ctx)
+			if err != nil {
+				r.Errorf("TopicExists error: %v", err)
+			}
+			if !exists {
+				r.Errorf("topic %v should exist, but it doesn't", topic)
+			}
 
-		sub.ReceiveSettings.MaxOutstandingMessages = maxMsgs
-		sub.ReceiveSettings.Synchronous = synchronous
+			sub, err := client.CreateSubscription(ctx, subIDs.New(), SubscriptionConfig{
+				Topic:                     topic,
+				EnableExactlyOnceDelivery: exactlyOnceDelivery,
+			})
+			if err != nil {
+				r.Errorf("CreateSub error: %v", err)
+			}
+			exists, err = sub.Exists(ctx)
+			if err != nil {
+				r.Errorf("SubExists error: %v", err)
+			}
+			if !exists {
+				r.Errorf("subscription %s should exist, but it doesn't", sub.ID())
+			}
+			var msgs []*Message
+			for i := 0; i < numMsgs; i++ {
+				text := fmt.Sprintf("a message with an index %d - %s", i, strings.Repeat(".", extraBytes))
+				attrs := make(map[string]string)
+				attrs["foo"] = "bar"
+				msgs = append(msgs, &Message{
+					Data:       []byte(text),
+					Attributes: attrs,
+				})
+			}
 
-		// Use a timeout to ensure that Pull does not block indefinitely if there are
-		// unexpectedly few messages available.
-		now := time.Now()
-		timeout := 3 * time.Minute
-		timeoutCtx, cancel := context.WithTimeout(ctx, timeout)
-		defer cancel()
-		gotMsgs, err := pullN(timeoutCtx, sub, len(want), func(ctx context.Context, m *Message) {
-			m.Ack()
-		})
-		if err != nil {
-			if c := status.Convert(err); c.Code() == codes.Canceled {
-				if time.Since(now) >= timeout {
-					t.Fatal("pullN took too long")
+			// Publish some messages.
+			type pubResult struct {
+				m *Message
+				r *PublishResult
+			}
+			var rs []pubResult
+			for _, m := range msgs {
+				r := topic.Publish(ctx, m)
+				rs = append(rs, pubResult{m, r})
+			}
+			want := make(map[string]messageData)
+			for _, res := range rs {
+				id, err := res.r.Get(ctx)
+				if err != nil {
+					r.Errorf("r.Get: %v", err)
 				}
-			} else {
-				t.Fatalf("Pull: %v", err)
+				md := extractMessageData(res.m)
+				md.ID = id
+				want[md.ID] = md
 			}
-		}
-		got := make(map[string]messageData)
-		for _, m := range gotMsgs {
-			md := extractMessageData(m)
-			got[md.ID] = md
-		}
-		if !testutil.Equal(got, want) {
-			t.Fatalf("MaxOutstandingMessages=%d, Synchronous=%t, messages got: %+v, messages want: %+v",
-				maxMsgs, synchronous, got, want)
-		}
+
+			sub.ReceiveSettings.MaxOutstandingMessages = maxMsgs
+			sub.ReceiveSettings.Synchronous = synchronous
+
+			// Use a timeout to ensure that Pull does not block indefinitely if there are
+			// unexpectedly few messages available.
+			now := time.Now()
+			timeout := 3 * time.Minute
+			timeoutCtx, cancel := context.WithTimeout(ctx, timeout)
+			defer cancel()
+			gotMsgs, err := pullN(timeoutCtx, sub, len(want), 0, func(ctx context.Context, m *Message) {
+				m.Ack()
+			})
+			if err != nil {
+				if c := status.Convert(err); c.Code() == codes.Canceled {
+					if time.Since(now) >= timeout {
+						r.Errorf("pullN took longer than %v", timeout)
+					}
+				} else {
+					r.Errorf("Pull: %v", err)
+				}
+			}
+			got := make(map[string]messageData)
+			for _, m := range gotMsgs {
+				md := extractMessageData(m)
+				got[md.ID] = md
+			}
+			if !testutil.Equal(got, want) {
+				r.Errorf("MaxOutstandingMessages=%d, Synchronous=%t, messages got: %+v, messages want: %+v",
+					maxMsgs, synchronous, got, want)
+			}
+		})
 	})
 }
 
@@ -1340,7 +1344,7 @@ func TestIntegration_OrderedKeys_ResumePublish(t *testing.T) {
 		Data:        []byte("should fail"),
 		OrderingKey: orderingKey,
 	})
-	if _, err := r.Get(ctx); err == nil || !strings.Contains(err.Error(), "pubsub: Publishing for ordering key") {
+	if _, err := r.Get(ctx); err == nil || !errors.As(err, &ErrPublishingPaused{}) {
 		t.Fatalf("expected ordering keys publish error, got %v", err)
 	}
 
@@ -1805,7 +1809,7 @@ func TestIntegration_SchemaAdmin(t *testing.T) {
 				Type:       tc.schemaType,
 				Definition: schema,
 			}
-			if diff := testutil.Diff(got, want); diff != "" {
+			if diff := testutil.Diff(got, want, cmpopts.IgnoreFields(SchemaConfig{}, "RevisionID", "RevisionCreateTime")); diff != "" {
 				t.Fatalf("\ngot: - want: +\n%s", diff)
 			}
 
@@ -1813,7 +1817,7 @@ func TestIntegration_SchemaAdmin(t *testing.T) {
 			if err != nil {
 				t.Fatalf("SchemaClient.Schema error: %v", err)
 			}
-			if diff := testutil.Diff(got, want); diff != "" {
+			if diff := testutil.Diff(got, want, cmpopts.IgnoreFields(SchemaConfig{}, "RevisionID", "RevisionCreateTime")); diff != "" {
 				t.Fatalf("\ngot: - want: +\n%s", diff)
 			}
 
@@ -1949,65 +1953,131 @@ func TestIntegration_TopicRetention(t *testing.T) {
 	c := integrationTestClient(ctx, t)
 	defer c.Close()
 
-	tc := TopicConfig{
-		RetentionDuration: 50 * time.Minute,
-	}
-	topic, err := c.CreateTopicWithConfig(ctx, topicIDs.New(), &tc)
-	if err != nil {
-		t.Fatal(err)
-	}
+	testutil.Retry(t, 5, 1*time.Second, func(r *testutil.R) {
+		tc := TopicConfig{
+			RetentionDuration: 50 * time.Minute,
+		}
+		topic, err := c.CreateTopicWithConfig(ctx, topicIDs.New(), &tc)
+		if err != nil {
+			r.Errorf("failed to create topic: %v", err)
+		}
+		defer topic.Delete(ctx)
+		defer topic.Stop()
 
-	cfg, err := topic.Config(ctx)
-	if err != nil {
-		t.Fatal(err)
-	}
+		newDur := 11 * time.Minute
+		cfg, err := topic.Update(ctx, TopicConfigToUpdate{
+			RetentionDuration: newDur,
+		})
+		if err != nil {
+			r.Errorf("failed to update topic: %v", err)
+		}
+		if got := cfg.RetentionDuration; got != newDur {
+			r.Errorf("cfg.RetentionDuration, got: %v, want: %v", got, newDur)
+		}
 
-	newDur := 11 * time.Minute
-	cfg, err = topic.Update(ctx, TopicConfigToUpdate{
-		RetentionDuration: newDur,
+		// Create a subscription on the topic and read TopicMessageRetentionDuration.
+		s, err := c.CreateSubscription(ctx, subIDs.New(), SubscriptionConfig{
+			Topic: topic,
+		})
+		if err != nil {
+			r.Errorf("failed to create subscription: %v", err)
+		}
+		sCfg, err := s.Config(ctx)
+		if err != nil {
+			r.Errorf("failed to get sub config: %v", err)
+		}
+		if got := sCfg.TopicMessageRetentionDuration; got != newDur {
+			r.Errorf("sCfg.TopicMessageRetentionDuration, got: %v, want: %v", got, newDur)
+		}
+
+		// Clear retention duration by setting to a negative value.
+		cfg, err = topic.Update(ctx, TopicConfigToUpdate{
+			RetentionDuration: -1 * time.Minute,
+		})
+		if err != nil {
+			t.Fatal(err)
+		}
+		if got := cfg.RetentionDuration; got != nil {
+			t.Fatalf("expected cleared retention duration, got: %v", got)
+		}
 	})
-	if err != nil {
-		t.Fatal(err)
-	}
-	if got := cfg.RetentionDuration; got != newDur {
-		t.Fatalf("cfg.RetentionDuration, got: %v, want: %v", got, newDur)
-	}
-
-	// Create a subscription on the topic and read TopicMessageRetentionDuration.
-	s, err := c.CreateSubscription(ctx, subIDs.New(), SubscriptionConfig{
-		Topic: topic,
-	})
-	if err != nil {
-		t.Fatal(err)
-	}
-	sCfg, err := s.Config(ctx)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if got := sCfg.TopicMessageRetentionDuration; got != newDur {
-		t.Fatalf("sCfg.TopicMessageRetentionDuration, got: %v, want: %v", got, newDur)
-	}
-
-	// Clear retention duration by setting to a negative value.
-	cfg, err = topic.Update(ctx, TopicConfigToUpdate{
-		RetentionDuration: -1 * time.Minute,
-	})
-	if err != nil {
-		t.Fatal(err)
-	}
-	if got := cfg.RetentionDuration; got != nil {
-		t.Fatalf("expected cleared retention duration, got: %v", got)
-	}
 }
 
-func TestExactlyOnceDelivery_PublishReceive(t *testing.T) {
+func TestIntegration_ExactlyOnceDelivery_PublishReceive(t *testing.T) {
 	ctx := context.Background()
 	client := integrationTestClient(ctx, t)
 
 	for _, maxMsgs := range []int{0, 3, -1} { // MaxOutstandingMessages = default, 3, unlimited
 		testPublishAndReceive(t, client, maxMsgs, false, true, 10, 0)
 	}
+}
 
-	// Tests for large messages (larger than the 4MB gRPC limit).
-	testPublishAndReceive(t, client, 0, false, true, 1, 5*1024*1024)
+func TestIntegration_TopicUpdateSchema(t *testing.T) {
+	ctx := context.Background()
+	c := integrationTestClient(ctx, t)
+	defer c.Close()
+
+	sc := integrationTestSchemaClient(ctx, t)
+	defer sc.Close()
+
+	schemaContent, err := ioutil.ReadFile("testdata/schema/us-states.avsc")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	schemaID := schemaIDs.New()
+	schemaCfg, err := sc.CreateSchema(ctx, schemaID, SchemaConfig{
+		Type:       SchemaAvro,
+		Definition: string(schemaContent),
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer sc.DeleteSchema(ctx, schemaID)
+
+	topic, err := c.CreateTopic(ctx, topicIDs.New())
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer topic.Delete(ctx)
+	defer topic.Stop()
+
+	schema := &SchemaSettings{
+		Schema:   schemaCfg.Name,
+		Encoding: EncodingJSON,
+	}
+	cfg, err := topic.Update(ctx, TopicConfigToUpdate{
+		SchemaSettings: schema,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if diff := cmp.Diff(cfg.SchemaSettings, schema); diff != "" {
+		t.Fatalf("schema settings for update -want, +got: %v", diff)
+	}
+}
+
+func TestIntegration_DetectProjectID(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Integration tests skipped in short mode")
+	}
+	ctx := context.Background()
+	testCreds := testutil.Credentials(ctx)
+	if testCreds == nil {
+		t.Skip("test credentials not present, skipping")
+	}
+
+	goodClient, err := NewClient(ctx, DetectProjectID, option.WithCredentials(testCreds))
+	if err != nil {
+		t.Errorf("test pubsub.NewClient: %v", err)
+	}
+	if goodClient.Project() != testutil.ProjID() {
+		t.Errorf("client.Project() got %q, want %q", goodClient.Project(), testutil.ProjID())
+	}
+
+	badTS := testutil.ErroringTokenSource{}
+
+	if badClient, err := NewClient(ctx, DetectProjectID, option.WithTokenSource(badTS)); err == nil {
+		t.Errorf("expected error from bad token source, NewClient succeeded with project: %s", badClient.projectID)
+	}
 }

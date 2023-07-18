@@ -20,10 +20,11 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"math"
 	"net/http"
 	"net/url"
+	"time"
 
 	servicecontrolpb "cloud.google.com/go/servicecontrol/apiv1/servicecontrolpb"
 	gax "github.com/googleapis/gax-go/v2"
@@ -33,6 +34,7 @@ import (
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/encoding/protojson"
 )
@@ -59,15 +61,40 @@ func defaultServiceControllerGRPCClientOptions() []option.ClientOption {
 
 func defaultServiceControllerCallOptions() *ServiceControllerCallOptions {
 	return &ServiceControllerCallOptions{
-		Check:  []gax.CallOption{},
-		Report: []gax.CallOption{},
+		Check: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		Report: []gax.CallOption{
+			gax.WithTimeout(16000 * time.Millisecond),
+		},
 	}
 }
 
 func defaultServiceControllerRESTCallOptions() *ServiceControllerCallOptions {
 	return &ServiceControllerCallOptions{
-		Check:  []gax.CallOption{},
-		Report: []gax.CallOption{},
+		Check: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		Report: []gax.CallOption{
+			gax.WithTimeout(16000 * time.Millisecond),
+		},
 	}
 }
 
@@ -165,9 +192,6 @@ type serviceControllerGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing ServiceControllerClient
 	CallOptions **ServiceControllerCallOptions
 
@@ -195,11 +219,6 @@ func NewServiceControllerClient(ctx context.Context, opts ...option.ClientOption
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -208,7 +227,6 @@ func NewServiceControllerClient(ctx context.Context, opts ...option.ClientOption
 
 	c := &serviceControllerGRPCClient{
 		connPool:                connPool,
-		disableDeadlines:        disableDeadlines,
 		serviceControllerClient: servicecontrolpb.NewServiceControllerClient(connPool),
 		CallOptions:             &client.CallOptions,
 	}
@@ -231,7 +249,7 @@ func (c *serviceControllerGRPCClient) Connection() *grpc.ClientConn {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *serviceControllerGRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -294,7 +312,7 @@ func defaultServiceControllerRESTClientOptions() []option.ClientOption {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *serviceControllerRESTClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -410,13 +428,13 @@ func (c *serviceControllerRESTClient) Check(ctx context.Context, req *servicecon
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -488,13 +506,13 @@ func (c *serviceControllerRESTClient) Report(ctx context.Context, req *serviceco
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil

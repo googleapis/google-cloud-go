@@ -20,12 +20,14 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"math"
 	"net/http"
 	"net/url"
+	"time"
 
 	datacatalogpb "cloud.google.com/go/datacatalog/apiv1beta1/datacatalogpb"
+	iampb "cloud.google.com/go/iam/apiv1/iampb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
@@ -33,7 +35,6 @@ import (
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
-	iampb "google.golang.org/genproto/googleapis/iam/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/encoding/protojson"
@@ -73,37 +74,89 @@ func defaultPolicyTagManagerGRPCClientOptions() []option.ClientOption {
 
 func defaultPolicyTagManagerCallOptions() *PolicyTagManagerCallOptions {
 	return &PolicyTagManagerCallOptions{
-		CreateTaxonomy:     []gax.CallOption{},
-		DeleteTaxonomy:     []gax.CallOption{},
-		UpdateTaxonomy:     []gax.CallOption{},
-		ListTaxonomies:     []gax.CallOption{},
-		GetTaxonomy:        []gax.CallOption{},
-		CreatePolicyTag:    []gax.CallOption{},
-		DeletePolicyTag:    []gax.CallOption{},
-		UpdatePolicyTag:    []gax.CallOption{},
-		ListPolicyTags:     []gax.CallOption{},
-		GetPolicyTag:       []gax.CallOption{},
-		GetIamPolicy:       []gax.CallOption{},
-		SetIamPolicy:       []gax.CallOption{},
-		TestIamPermissions: []gax.CallOption{},
+		CreateTaxonomy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteTaxonomy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateTaxonomy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ListTaxonomies: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetTaxonomy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		CreatePolicyTag: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeletePolicyTag: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdatePolicyTag: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ListPolicyTags: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetPolicyTag: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetIamPolicy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		SetIamPolicy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		TestIamPermissions: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 	}
 }
 
 func defaultPolicyTagManagerRESTCallOptions() *PolicyTagManagerCallOptions {
 	return &PolicyTagManagerCallOptions{
-		CreateTaxonomy:     []gax.CallOption{},
-		DeleteTaxonomy:     []gax.CallOption{},
-		UpdateTaxonomy:     []gax.CallOption{},
-		ListTaxonomies:     []gax.CallOption{},
-		GetTaxonomy:        []gax.CallOption{},
-		CreatePolicyTag:    []gax.CallOption{},
-		DeletePolicyTag:    []gax.CallOption{},
-		UpdatePolicyTag:    []gax.CallOption{},
-		ListPolicyTags:     []gax.CallOption{},
-		GetPolicyTag:       []gax.CallOption{},
-		GetIamPolicy:       []gax.CallOption{},
-		SetIamPolicy:       []gax.CallOption{},
-		TestIamPermissions: []gax.CallOption{},
+		CreateTaxonomy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteTaxonomy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateTaxonomy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ListTaxonomies: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetTaxonomy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		CreatePolicyTag: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeletePolicyTag: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdatePolicyTag: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ListPolicyTags: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetPolicyTag: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetIamPolicy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		SetIamPolicy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		TestIamPermissions: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 	}
 }
 
@@ -238,9 +291,6 @@ type policyTagManagerGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing PolicyTagManagerClient
 	CallOptions **PolicyTagManagerCallOptions
 
@@ -266,11 +316,6 @@ func NewPolicyTagManagerClient(ctx context.Context, opts ...option.ClientOption)
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -279,7 +324,6 @@ func NewPolicyTagManagerClient(ctx context.Context, opts ...option.ClientOption)
 
 	c := &policyTagManagerGRPCClient{
 		connPool:               connPool,
-		disableDeadlines:       disableDeadlines,
 		policyTagManagerClient: datacatalogpb.NewPolicyTagManagerClient(connPool),
 		CallOptions:            &client.CallOptions,
 	}
@@ -302,7 +346,7 @@ func (c *policyTagManagerGRPCClient) Connection() *grpc.ClientConn {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *policyTagManagerGRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -363,7 +407,7 @@ func defaultPolicyTagManagerRESTClientOptions() []option.ClientOption {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *policyTagManagerRESTClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -666,11 +710,6 @@ func (c *policyTagManagerRESTClient) CreateTaxonomy(ctx context.Context, req *da
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/taxonomies", req.GetParent())
 
-	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
-
-	baseUrl.RawQuery = params.Encode()
-
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
@@ -699,13 +738,13 @@ func (c *policyTagManagerRESTClient) CreateTaxonomy(ctx context.Context, req *da
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -724,11 +763,6 @@ func (c *policyTagManagerRESTClient) DeleteTaxonomy(ctx context.Context, req *da
 		return err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
-
-	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
-
-	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
@@ -773,13 +807,12 @@ func (c *policyTagManagerRESTClient) UpdateTaxonomy(ctx context.Context, req *da
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetTaxonomy().GetName())
 
 	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
 		updateMask, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask))
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -812,13 +845,13 @@ func (c *policyTagManagerRESTClient) UpdateTaxonomy(ctx context.Context, req *da
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -852,7 +885,9 @@ func (c *policyTagManagerRESTClient) ListTaxonomies(ctx context.Context, req *da
 		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/taxonomies", req.GetParent())
 
 		params := url.Values{}
-		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
 		if req.GetPageSize() != 0 {
 			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
 		}
@@ -884,13 +919,13 @@ func (c *policyTagManagerRESTClient) ListTaxonomies(ctx context.Context, req *da
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -926,11 +961,6 @@ func (c *policyTagManagerRESTClient) GetTaxonomy(ctx context.Context, req *datac
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
-	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
-
-	baseUrl.RawQuery = params.Encode()
-
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
@@ -959,13 +989,13 @@ func (c *policyTagManagerRESTClient) GetTaxonomy(ctx context.Context, req *datac
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -990,11 +1020,6 @@ func (c *policyTagManagerRESTClient) CreatePolicyTag(ctx context.Context, req *d
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/policyTags", req.GetParent())
-
-	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
-
-	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
@@ -1024,13 +1049,13 @@ func (c *policyTagManagerRESTClient) CreatePolicyTag(ctx context.Context, req *d
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1048,11 +1073,6 @@ func (c *policyTagManagerRESTClient) DeletePolicyTag(ctx context.Context, req *d
 		return err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
-
-	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
-
-	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
@@ -1097,13 +1117,12 @@ func (c *policyTagManagerRESTClient) UpdatePolicyTag(ctx context.Context, req *d
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetPolicyTag().GetName())
 
 	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
 		updateMask, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask))
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1136,13 +1155,13 @@ func (c *policyTagManagerRESTClient) UpdatePolicyTag(ctx context.Context, req *d
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1175,7 +1194,6 @@ func (c *policyTagManagerRESTClient) ListPolicyTags(ctx context.Context, req *da
 		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/policyTags", req.GetParent())
 
 		params := url.Values{}
-		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetPageSize() != 0 {
 			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
 		}
@@ -1207,13 +1225,13 @@ func (c *policyTagManagerRESTClient) ListPolicyTags(ctx context.Context, req *da
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -1249,11 +1267,6 @@ func (c *policyTagManagerRESTClient) GetPolicyTag(ctx context.Context, req *data
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
-	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
-
-	baseUrl.RawQuery = params.Encode()
-
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
@@ -1282,13 +1295,13 @@ func (c *policyTagManagerRESTClient) GetPolicyTag(ctx context.Context, req *data
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1312,11 +1325,6 @@ func (c *policyTagManagerRESTClient) GetIamPolicy(ctx context.Context, req *iamp
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:getIamPolicy", req.GetResource())
-
-	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
-
-	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
@@ -1346,13 +1354,13 @@ func (c *policyTagManagerRESTClient) GetIamPolicy(ctx context.Context, req *iamp
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1376,11 +1384,6 @@ func (c *policyTagManagerRESTClient) SetIamPolicy(ctx context.Context, req *iamp
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:setIamPolicy", req.GetResource())
-
-	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
-
-	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
@@ -1410,13 +1413,13 @@ func (c *policyTagManagerRESTClient) SetIamPolicy(ctx context.Context, req *iamp
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1441,11 +1444,6 @@ func (c *policyTagManagerRESTClient) TestIamPermissions(ctx context.Context, req
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:testIamPermissions", req.GetResource())
-
-	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
-
-	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
@@ -1475,13 +1473,13 @@ func (c *policyTagManagerRESTClient) TestIamPermissions(ctx context.Context, req
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil

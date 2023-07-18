@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/maps/routing/apiv2",
-    "version": "0.2.0",
+    "version": "1.3.0",
     "language": "GO",
     "apis": [
       {
@@ -12,54 +12,9 @@
   },
   "snippets": [
     {
-      "regionTag": "routes_v2_generated_Routes_ComputeRouteMatrix_sync",
-      "title": "routes ComputeRouteMatrix Sample",
-      "description": "ComputeRouteMatrix takes in a list of origins and destinations and returns a stream containing\nroute information for each combination of origin and destination.\n\nNOTE: This method requires that you specify a response field mask in\nthe input. You can provide the response field mask by using the URL\nparameter $fields or fields, or by using the HTTP/gRPC header\nX-Goog-FieldMask (see the available URL parameters and\nheaders (at https: //cloud.google.com/apis/docs/system-parameters). The value\nis a comma separated list of field paths. See this detailed documentation\nabout how to construct the field\npaths (at https: //github.com/protocolbuffers/protobuf/blob/master/src/google/protobuf/field_mask.proto).\n\nFor example, in this method: \n\n\tField mask of all available fields (for manual inspection): \n\tX-Goog-FieldMask: *\n\n\tField mask of route durations, distances, element status, condition, and\n\telement indices (an example production setup): \n\tX-Goog-FieldMask: originIndex,destinationIndex,status,condition,distanceMeters,duration\n\nIt is critical that you include status in your field mask as otherwise\nall messages will appear to be OK. Google discourages the use of the\nwildcard (*) response field mask, because: \n\n\tSelecting only the fields that you need helps our server save computation\n\tcycles, allowing us to return the result to you with a lower latency.\n\n\tSelecting only the fields that you need in your production job ensures\n\tstable latency performance. We might add more response fields in the\n\tfuture, and those new fields might require extra computation time. If you\n\tselect all fields, or if you select all fields at the top level, then you\n\tmight experience performance degradation because any new field we add will\n\tbe automatically included in the response.\n\n\tSelecting only the fields that you need results in a smaller response\n\tsize, and thus higher network throughput.",
-      "file": "RoutesClient/ComputeRouteMatrix/main.go",
-      "language": "GO",
-      "clientMethod": {
-        "shortName": "ComputeRouteMatrix",
-        "fullName": "google.maps.routing.v2.RoutesClient.ComputeRouteMatrix",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "routingpb.ComputeRouteMatrixRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "client": {
-          "shortName": "RoutesClient",
-          "fullName": "google.maps.routing.v2.RoutesClient"
-        },
-        "method": {
-          "shortName": "ComputeRouteMatrix",
-          "fullName": "google.maps.routing.v2.Routes.ComputeRouteMatrix",
-          "service": {
-            "shortName": "Routes",
-            "fullName": "google.maps.routing.v2.Routes"
-          }
-        }
-      },
-      "origin": "API_DEFINITION",
-      "segments": [
-        {
-          "start": 1,
-          "end": -1,
-          "type": "FULL"
-        }
-      ]
-    },
-    {
       "regionTag": "routes_v2_generated_Routes_ComputeRoutes_sync",
       "title": "routes ComputeRoutes Sample",
-      "description": "ComputeRoutes returns the primary route along with optional alternate routes, given a set\nof terminal and intermediate waypoints.\n\nNOTE: This method requires that you specify a response field mask in\nthe input. You can provide the response field mask by using URL parameter\n$fields or fields, or by using an HTTP/gRPC header X-Goog-FieldMask\n(see the available URL parameters and\nheaders (at https: //cloud.google.com/apis/docs/system-parameters). The value\nis a comma separated list of field paths. See detailed documentation about\nhow to construct the field\npaths (at https: //github.com/protocolbuffers/protobuf/blob/master/src/google/protobuf/field_mask.proto).\n\nFor example, in this method: \n\n\tField mask of all available fields (for manual inspection): \n\tX-Goog-FieldMask: *\n\n\tField mask of Route-level duration, distance, and polyline (an example\n\tproduction setup): \n\tX-Goog-FieldMask: routes.duration,routes.distanceMeters,routes.polyline.encodedPolyline\n\nGoogle discourage the use of the wildcard (*) response field mask, or\nspecifying the field mask at the top level (routes), because: \n\n\tSelecting only the fields that you need helps our server save computation\n\tcycles, allowing us to return the result to you with a lower latency.\n\n\tSelecting only the fields that you need\n\tin your production job ensures stable latency performance. We might add\n\tmore response fields in the future, and those new fields might require\n\textra computation time. If you select all fields, or if you select all\n\tfields at the top level, then you might experience performance degradation\n\tbecause any new field we add will be automatically included in the\n\tresponse.\n\n\tSelecting only the fields that you need results in a smaller response\n\tsize, and thus higher network throughput.",
+      "description": "ComputeRoutes returns the primary route along with optional alternate routes, given a set\nof terminal and intermediate waypoints.\n\n**NOTE: ** This method requires that you specify a response field mask in\nthe input. You can provide the response field mask by using URL parameter\n`$fields` or `fields`, or by using an HTTP/gRPC header `X-Goog-FieldMask`\n(see the [available URL parameters and\nheaders](https: //cloud.google.com/apis/docs/system-parameters). The value\nis a comma separated list of field paths. See detailed documentation about\n[how to construct the field\npaths](https: //github.com/protocolbuffers/protobuf/blob/master/src/google/protobuf/field_mask.proto).\n\nFor example, in this method: \n\n* Field mask of all available fields (for manual inspection): \n`X-Goog-FieldMask: *`\n* Field mask of Route-level duration, distance, and polyline (an example\nproduction setup): \n`X-Goog-FieldMask: \nroutes.duration,routes.distanceMeters,routes.polyline.encodedPolyline`\n\nGoogle discourage the use of the wildcard (`*`) response field mask, or\nspecifying the field mask at the top level (`routes`), because: \n\n* Selecting only the fields that you need helps our server save computation\ncycles, allowing us to return the result to you with a lower latency.\n* Selecting only the fields that you need\nin your production job ensures stable latency performance. We might add\nmore response fields in the future, and those new fields might require\nextra computation time. If you select all fields, or if you select all\nfields at the top level, then you might experience performance degradation\nbecause any new field we add will be automatically included in the\nresponse.\n* Selecting only the fields that you need results in a smaller response\nsize, and thus higher network throughput.",
       "file": "RoutesClient/ComputeRoutes/main.go",
       "language": "GO",
       "clientMethod": {
@@ -79,7 +34,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "routingpb.ComputeRoutesResponse",
+        "resultType": "*routingpb.ComputeRoutesResponse",
         "client": {
           "shortName": "RoutesClient",
           "fullName": "google.maps.routing.v2.RoutesClient"

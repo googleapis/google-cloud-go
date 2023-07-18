@@ -20,14 +20,16 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"math"
 	"net/http"
 	"net/url"
 	"time"
 
+	dialogflowpb "cloud.google.com/go/dialogflow/apiv2beta1/dialogflowpb"
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
@@ -35,9 +37,7 @@ import (
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
-	dialogflowpb "google.golang.org/genproto/googleapis/cloud/dialogflow/v2beta1"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -82,6 +82,7 @@ func defaultEntityTypesGRPCClientOptions() []option.ClientOption {
 func defaultEntityTypesCallOptions() *EntityTypesCallOptions {
 	return &EntityTypesCallOptions{
 		ListEntityTypes: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -93,6 +94,7 @@ func defaultEntityTypesCallOptions() *EntityTypesCallOptions {
 			}),
 		},
 		GetEntityType: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -104,6 +106,7 @@ func defaultEntityTypesCallOptions() *EntityTypesCallOptions {
 			}),
 		},
 		CreateEntityType: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -115,6 +118,7 @@ func defaultEntityTypesCallOptions() *EntityTypesCallOptions {
 			}),
 		},
 		UpdateEntityType: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -126,6 +130,7 @@ func defaultEntityTypesCallOptions() *EntityTypesCallOptions {
 			}),
 		},
 		DeleteEntityType: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -137,6 +142,7 @@ func defaultEntityTypesCallOptions() *EntityTypesCallOptions {
 			}),
 		},
 		BatchUpdateEntityTypes: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -148,6 +154,7 @@ func defaultEntityTypesCallOptions() *EntityTypesCallOptions {
 			}),
 		},
 		BatchDeleteEntityTypes: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -159,6 +166,7 @@ func defaultEntityTypesCallOptions() *EntityTypesCallOptions {
 			}),
 		},
 		BatchCreateEntities: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -170,6 +178,7 @@ func defaultEntityTypesCallOptions() *EntityTypesCallOptions {
 			}),
 		},
 		BatchUpdateEntities: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -181,6 +190,7 @@ func defaultEntityTypesCallOptions() *EntityTypesCallOptions {
 			}),
 		},
 		BatchDeleteEntities: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -202,6 +212,7 @@ func defaultEntityTypesCallOptions() *EntityTypesCallOptions {
 func defaultEntityTypesRESTCallOptions() *EntityTypesCallOptions {
 	return &EntityTypesCallOptions{
 		ListEntityTypes: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -212,6 +223,7 @@ func defaultEntityTypesRESTCallOptions() *EntityTypesCallOptions {
 			}),
 		},
 		GetEntityType: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -222,6 +234,7 @@ func defaultEntityTypesRESTCallOptions() *EntityTypesCallOptions {
 			}),
 		},
 		CreateEntityType: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -232,6 +245,7 @@ func defaultEntityTypesRESTCallOptions() *EntityTypesCallOptions {
 			}),
 		},
 		UpdateEntityType: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -242,6 +256,7 @@ func defaultEntityTypesRESTCallOptions() *EntityTypesCallOptions {
 			}),
 		},
 		DeleteEntityType: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -252,6 +267,7 @@ func defaultEntityTypesRESTCallOptions() *EntityTypesCallOptions {
 			}),
 		},
 		BatchUpdateEntityTypes: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -262,6 +278,7 @@ func defaultEntityTypesRESTCallOptions() *EntityTypesCallOptions {
 			}),
 		},
 		BatchDeleteEntityTypes: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -272,6 +289,7 @@ func defaultEntityTypesRESTCallOptions() *EntityTypesCallOptions {
 			}),
 		},
 		BatchCreateEntities: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -282,6 +300,7 @@ func defaultEntityTypesRESTCallOptions() *EntityTypesCallOptions {
 			}),
 		},
 		BatchUpdateEntities: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -292,6 +311,7 @@ func defaultEntityTypesRESTCallOptions() *EntityTypesCallOptions {
 			}),
 		},
 		BatchDeleteEntities: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -573,9 +593,6 @@ type entityTypesGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing EntityTypesClient
 	CallOptions **EntityTypesCallOptions
 
@@ -610,11 +627,6 @@ func NewEntityTypesClient(ctx context.Context, opts ...option.ClientOption) (*En
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -623,7 +635,6 @@ func NewEntityTypesClient(ctx context.Context, opts ...option.ClientOption) (*En
 
 	c := &entityTypesGRPCClient{
 		connPool:          connPool,
-		disableDeadlines:  disableDeadlines,
 		entityTypesClient: dialogflowpb.NewEntityTypesClient(connPool),
 		CallOptions:       &client.CallOptions,
 		operationsClient:  longrunningpb.NewOperationsClient(connPool),
@@ -659,7 +670,7 @@ func (c *entityTypesGRPCClient) Connection() *grpc.ClientConn {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *entityTypesGRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -735,7 +746,7 @@ func defaultEntityTypesRESTClientOptions() []option.ClientOption {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *entityTypesRESTClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -800,11 +811,6 @@ func (c *entityTypesGRPCClient) ListEntityTypes(ctx context.Context, req *dialog
 }
 
 func (c *entityTypesGRPCClient) GetEntityType(ctx context.Context, req *dialogflowpb.GetEntityTypeRequest, opts ...gax.CallOption) (*dialogflowpb.EntityType, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -822,11 +828,6 @@ func (c *entityTypesGRPCClient) GetEntityType(ctx context.Context, req *dialogfl
 }
 
 func (c *entityTypesGRPCClient) CreateEntityType(ctx context.Context, req *dialogflowpb.CreateEntityTypeRequest, opts ...gax.CallOption) (*dialogflowpb.EntityType, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -844,11 +845,6 @@ func (c *entityTypesGRPCClient) CreateEntityType(ctx context.Context, req *dialo
 }
 
 func (c *entityTypesGRPCClient) UpdateEntityType(ctx context.Context, req *dialogflowpb.UpdateEntityTypeRequest, opts ...gax.CallOption) (*dialogflowpb.EntityType, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "entity_type.name", url.QueryEscape(req.GetEntityType().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -866,11 +862,6 @@ func (c *entityTypesGRPCClient) UpdateEntityType(ctx context.Context, req *dialo
 }
 
 func (c *entityTypesGRPCClient) DeleteEntityType(ctx context.Context, req *dialogflowpb.DeleteEntityTypeRequest, opts ...gax.CallOption) error {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -884,11 +875,6 @@ func (c *entityTypesGRPCClient) DeleteEntityType(ctx context.Context, req *dialo
 }
 
 func (c *entityTypesGRPCClient) BatchUpdateEntityTypes(ctx context.Context, req *dialogflowpb.BatchUpdateEntityTypesRequest, opts ...gax.CallOption) (*BatchUpdateEntityTypesOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -908,11 +894,6 @@ func (c *entityTypesGRPCClient) BatchUpdateEntityTypes(ctx context.Context, req 
 }
 
 func (c *entityTypesGRPCClient) BatchDeleteEntityTypes(ctx context.Context, req *dialogflowpb.BatchDeleteEntityTypesRequest, opts ...gax.CallOption) (*BatchDeleteEntityTypesOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -932,11 +913,6 @@ func (c *entityTypesGRPCClient) BatchDeleteEntityTypes(ctx context.Context, req 
 }
 
 func (c *entityTypesGRPCClient) BatchCreateEntities(ctx context.Context, req *dialogflowpb.BatchCreateEntitiesRequest, opts ...gax.CallOption) (*BatchCreateEntitiesOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -956,11 +932,6 @@ func (c *entityTypesGRPCClient) BatchCreateEntities(ctx context.Context, req *di
 }
 
 func (c *entityTypesGRPCClient) BatchUpdateEntities(ctx context.Context, req *dialogflowpb.BatchUpdateEntitiesRequest, opts ...gax.CallOption) (*BatchUpdateEntitiesOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -980,11 +951,6 @@ func (c *entityTypesGRPCClient) BatchUpdateEntities(ctx context.Context, req *di
 }
 
 func (c *entityTypesGRPCClient) BatchDeleteEntities(ctx context.Context, req *dialogflowpb.BatchDeleteEntitiesRequest, opts ...gax.CallOption) (*BatchDeleteEntitiesOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1197,13 +1163,13 @@ func (c *entityTypesRESTClient) ListEntityTypes(ctx context.Context, req *dialog
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -1275,13 +1241,13 @@ func (c *entityTypesRESTClient) GetEntityType(ctx context.Context, req *dialogfl
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1347,13 +1313,13 @@ func (c *entityTypesRESTClient) CreateEntityType(ctx context.Context, req *dialo
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1393,7 +1359,7 @@ func (c *entityTypesRESTClient) UpdateEntityType(ctx context.Context, req *dialo
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask))
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1426,13 +1392,13 @@ func (c *entityTypesRESTClient) UpdateEntityType(ctx context.Context, req *dialo
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1547,13 +1513,13 @@ func (c *entityTypesRESTClient) BatchUpdateEntityTypes(ctx context.Context, req 
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1629,13 +1595,13 @@ func (c *entityTypesRESTClient) BatchDeleteEntityTypes(ctx context.Context, req 
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1711,13 +1677,13 @@ func (c *entityTypesRESTClient) BatchCreateEntities(ctx context.Context, req *di
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1795,13 +1761,13 @@ func (c *entityTypesRESTClient) BatchUpdateEntities(ctx context.Context, req *di
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1877,13 +1843,13 @@ func (c *entityTypesRESTClient) BatchDeleteEntities(ctx context.Context, req *di
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1940,13 +1906,13 @@ func (c *entityTypesRESTClient) GetLocation(ctx context.Context, req *locationpb
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2014,13 +1980,13 @@ func (c *entityTypesRESTClient) ListLocations(ctx context.Context, req *location
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -2129,13 +2095,13 @@ func (c *entityTypesRESTClient) GetOperation(ctx context.Context, req *longrunni
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2203,13 +2169,13 @@ func (c *entityTypesRESTClient) ListOperations(ctx context.Context, req *longrun
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil

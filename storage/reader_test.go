@@ -35,41 +35,40 @@ import (
 const readData = "0123456789"
 
 func TestRangeReader(t *testing.T) {
+	ctx := context.Background()
 	hc, close := newTestServer(handleRangeRead)
 	defer close()
-	ctx := context.Background()
-	c, err := NewClient(ctx, option.WithHTTPClient(hc))
-	if err != nil {
-		t.Fatal(err)
-	}
-	obj := c.Bucket("b").Object("o")
-	for _, test := range []struct {
-		offset, length int64
-		want           string
-	}{
-		{0, -1, readData},
-		{0, 10, readData},
-		{0, 5, readData[:5]},
-		{1, 3, readData[1:4]},
-		{6, -1, readData[6:]},
-		{4, 20, readData[4:]},
-		{-20, -1, readData},
-		{-6, -1, readData[4:]},
-	} {
-		r, err := obj.NewRangeReader(ctx, test.offset, test.length)
-		if err != nil {
-			t.Errorf("%d/%d: %v", test.offset, test.length, err)
-			continue
+
+	multiReaderTest(ctx, t, func(t *testing.T, c *Client) {
+		obj := c.Bucket("b").Object("o")
+		for _, test := range []struct {
+			offset, length int64
+			want           string
+		}{
+			{0, -1, readData},
+			{0, 10, readData},
+			{0, 5, readData[:5]},
+			{1, 3, readData[1:4]},
+			{6, -1, readData[6:]},
+			{4, 20, readData[4:]},
+			{-20, -1, readData},
+			{-6, -1, readData[4:]},
+		} {
+			r, err := obj.NewRangeReader(ctx, test.offset, test.length)
+			if err != nil {
+				t.Errorf("%d/%d: %v", test.offset, test.length, err)
+				continue
+			}
+			gotb, err := ioutil.ReadAll(r)
+			if err != nil {
+				t.Errorf("%d/%d: %v", test.offset, test.length, err)
+				continue
+			}
+			if got := string(gotb); got != test.want {
+				t.Errorf("%d/%d: got %q, want %q", test.offset, test.length, got, test.want)
+			}
 		}
-		gotb, err := ioutil.ReadAll(r)
-		if err != nil {
-			t.Errorf("%d/%d: %v", test.offset, test.length, err)
-			continue
-		}
-		if got := string(gotb); got != test.want {
-			t.Errorf("%d/%d: got %q, want %q", test.offset, test.length, got, test.want)
-		}
-	}
+	}, option.WithHTTPClient(hc))
 }
 
 func handleRangeRead(w http.ResponseWriter, r *http.Request) {
@@ -145,155 +144,153 @@ func TestRangeReaderRetry(t *testing.T) {
 	hc, close := newTestServer(handleRangeRead)
 	defer close()
 	ctx := context.Background()
-	c, err := NewClient(ctx, option.WithHTTPClient(hc))
-	if err != nil {
-		t.Fatal(err)
-	}
 
-	obj := c.Bucket("b").Object("o")
-	for i, test := range []struct {
-		offset, length int64
-		bodies         []fakeReadCloser
-		want           string
-	}{
-		{
-			offset: 0,
-			length: -1,
-			bodies: []fakeReadCloser{
-				{data: readBytes, counts: []int{10}, err: io.EOF},
+	multiReaderTest(ctx, t, func(t *testing.T, c *Client) {
+		obj := c.Bucket("b").Object("o")
+		for i, test := range []struct {
+			offset, length int64
+			bodies         []fakeReadCloser
+			want           string
+		}{
+			{
+				offset: 0,
+				length: -1,
+				bodies: []fakeReadCloser{
+					{data: readBytes, counts: []int{10}, err: io.EOF},
+				},
+				want: readData,
 			},
-			want: readData,
-		},
-		{
-			offset: 0,
-			length: -1,
-			bodies: []fakeReadCloser{
-				{data: readBytes, counts: []int{3}, err: internalErr},
-				{data: readBytes[3:], counts: []int{5, 2}, err: io.EOF},
+			{
+				offset: 0,
+				length: -1,
+				bodies: []fakeReadCloser{
+					{data: readBytes, counts: []int{3}, err: internalErr},
+					{data: readBytes[3:], counts: []int{5, 2}, err: io.EOF},
+				},
+				want: readData,
 			},
-			want: readData,
-		},
-		{
-			offset: 0,
-			length: -1,
-			bodies: []fakeReadCloser{
-				{data: readBytes, counts: []int{5}, err: internalErr},
-				{data: readBytes[5:], counts: []int{1, 3}, err: goawayErr},
-				{data: readBytes[9:], counts: []int{1}, err: io.EOF},
+			{
+				offset: 0,
+				length: -1,
+				bodies: []fakeReadCloser{
+					{data: readBytes, counts: []int{5}, err: internalErr},
+					{data: readBytes[5:], counts: []int{1, 3}, err: goawayErr},
+					{data: readBytes[9:], counts: []int{1}, err: io.EOF},
+				},
+				want: readData,
 			},
-			want: readData,
-		},
-		{
-			offset: 0,
-			length: 5,
-			bodies: []fakeReadCloser{
-				{data: readBytes, counts: []int{3}, err: internalErr},
-				{data: readBytes[3:], counts: []int{2}, err: io.EOF},
+			{
+				offset: 0,
+				length: 5,
+				bodies: []fakeReadCloser{
+					{data: readBytes, counts: []int{3}, err: internalErr},
+					{data: readBytes[3:], counts: []int{2}, err: io.EOF},
+				},
+				want: readData[:5],
 			},
-			want: readData[:5],
-		},
-		{
-			offset: 0,
-			length: 5,
-			bodies: []fakeReadCloser{
-				{data: readBytes, counts: []int{3}, err: goawayErr},
-				{data: readBytes[3:], counts: []int{2}, err: io.EOF},
+			{
+				offset: 0,
+				length: 5,
+				bodies: []fakeReadCloser{
+					{data: readBytes, counts: []int{3}, err: goawayErr},
+					{data: readBytes[3:], counts: []int{2}, err: io.EOF},
+				},
+				want: readData[:5],
 			},
-			want: readData[:5],
-		},
-		{
-			offset: 1,
-			length: 5,
-			bodies: []fakeReadCloser{
-				{data: readBytes, counts: []int{3}, err: internalErr},
-				{data: readBytes[3:], counts: []int{2}, err: io.EOF},
+			{
+				offset: 1,
+				length: 5,
+				bodies: []fakeReadCloser{
+					{data: readBytes, counts: []int{3}, err: internalErr},
+					{data: readBytes[3:], counts: []int{2}, err: io.EOF},
+				},
+				want: readData[:5],
 			},
-			want: readData[:5],
-		},
-		{
-			offset: 1,
-			length: 3,
-			bodies: []fakeReadCloser{
-				{data: readBytes[1:], counts: []int{1}, err: internalErr},
-				{data: readBytes[2:], counts: []int{2}, err: io.EOF},
+			{
+				offset: 1,
+				length: 3,
+				bodies: []fakeReadCloser{
+					{data: readBytes[1:], counts: []int{1}, err: internalErr},
+					{data: readBytes[2:], counts: []int{2}, err: io.EOF},
+				},
+				want: readData[1:4],
 			},
-			want: readData[1:4],
-		},
-		{
-			offset: 4,
-			length: -1,
-			bodies: []fakeReadCloser{
-				{data: readBytes[4:], counts: []int{1}, err: internalErr},
-				{data: readBytes[5:], counts: []int{4}, err: internalErr},
-				{data: readBytes[9:], counts: []int{1}, err: io.EOF},
+			{
+				offset: 4,
+				length: -1,
+				bodies: []fakeReadCloser{
+					{data: readBytes[4:], counts: []int{1}, err: internalErr},
+					{data: readBytes[5:], counts: []int{4}, err: internalErr},
+					{data: readBytes[9:], counts: []int{1}, err: io.EOF},
+				},
+				want: readData[4:],
 			},
-			want: readData[4:],
-		},
-		{
-			offset: -4,
-			length: -1,
-			bodies: []fakeReadCloser{
-				{data: readBytes[6:], counts: []int{1}, err: internalErr},
-				{data: readBytes[7:], counts: []int{3}, err: io.EOF},
+			{
+				offset: -4,
+				length: -1,
+				bodies: []fakeReadCloser{
+					{data: readBytes[6:], counts: []int{1}, err: internalErr},
+					{data: readBytes[7:], counts: []int{3}, err: io.EOF},
+				},
+				want: readData[6:],
 			},
-			want: readData[6:],
-		},
-	} {
-		r, err := obj.NewRangeReader(ctx, test.offset, test.length)
-		if err != nil {
-			t.Errorf("#%d: %v", i, err)
-			continue
-		}
-		b := 0
-		r.reader = &httpReader{
-			body: &test.bodies[0],
-			reopen: func(int64) (*http.Response, error) {
-				b++
-				return &http.Response{Body: &test.bodies[b]}, nil
-			},
-		}
-		buf := make([]byte, len(readData)/2)
-		var gotb []byte
-		for {
-			n, err := r.Read(buf)
-			gotb = append(gotb, buf[:n]...)
-			if err == io.EOF {
-				break
+		} {
+			r, err := obj.NewRangeReader(ctx, test.offset, test.length)
+			if err != nil {
+				t.Errorf("#%d: %v", i, err)
+				continue
+			}
+			b := 0
+			r.reader = &httpReader{
+				body: &test.bodies[0],
+				reopen: func(int64) (*http.Response, error) {
+					b++
+					return &http.Response{Body: &test.bodies[b]}, nil
+				},
+			}
+			buf := make([]byte, len(readData)/2)
+			var gotb []byte
+			for {
+				n, err := r.Read(buf)
+				gotb = append(gotb, buf[:n]...)
+				if err == io.EOF {
+					break
+				}
+				if err != nil {
+					t.Fatalf("#%d: %v", i, err)
+				}
 			}
 			if err != nil {
-				t.Fatalf("#%d: %v", i, err)
+				t.Errorf("#%d: %v", i, err)
+				continue
 			}
-		}
-		if err != nil {
-			t.Errorf("#%d: %v", i, err)
-			continue
-		}
-		if got := string(gotb); got != test.want {
-			t.Errorf("#%d: got %q, want %q", i, got, test.want)
-		}
-		if r.Attrs.Size != int64(len(readData)) {
-			t.Errorf("#%d: got Attrs.Size=%q, want %q", i, r.Attrs.Size, len(readData))
-		}
-		wantOffset := test.offset
-		if wantOffset < 0 {
-			wantOffset += int64(len(readData))
+			if got := string(gotb); got != test.want {
+				t.Errorf("#%d: got %q, want %q", i, got, test.want)
+			}
+			if r.Attrs.Size != int64(len(readData)) {
+				t.Errorf("#%d: got Attrs.Size=%q, want %q", i, r.Attrs.Size, len(readData))
+			}
+			wantOffset := test.offset
 			if wantOffset < 0 {
-				wantOffset = 0
+				wantOffset += int64(len(readData))
+				if wantOffset < 0 {
+					wantOffset = 0
+				}
+			}
+			if got := r.Attrs.StartOffset; got != wantOffset {
+				t.Errorf("#%d: got Attrs.Offset=%q, want %q", i, got, wantOffset)
 			}
 		}
-		if got := r.Attrs.StartOffset; got != wantOffset {
-			t.Errorf("#%d: got Attrs.Offset=%q, want %q", i, got, wantOffset)
+		r, err := obj.NewRangeReader(ctx, -100, 10)
+		if err == nil {
+			t.Fatal("Expected a non-nil error with negative offset and positive length")
+		} else if want := "storage: invalid offset"; !strings.HasPrefix(err.Error(), want) {
+			t.Errorf("Error mismatch\nGot:  %q\nWant prefix: %q\n", err.Error(), want)
 		}
-	}
-	r, err := obj.NewRangeReader(ctx, -100, 10)
-	if err == nil {
-		t.Fatal("Expected a non-nil error with negative offset and positive length")
-	} else if want := "storage: invalid offset"; !strings.HasPrefix(err.Error(), want) {
-		t.Errorf("Error mismatch\nGot:  %q\nWant prefix: %q\n", err.Error(), want)
-	}
-	if r != nil {
-		t.Errorf("Expected nil reader")
-	}
+		if r != nil {
+			t.Errorf("Expected nil reader")
+		}
+	}, option.WithHTTPClient(hc))
 }
 
 type fakeReadCloser struct {
@@ -359,10 +356,16 @@ func TestFakeReadCloser(t *testing.T) {
 }
 
 func TestContentEncodingGzipWithReader(t *testing.T) {
+	bucketName := "my-bucket"
+	objectName := "gzip-test"
+	getAttrsURL := fmt.Sprintf("/b/%s/o/%s?alt=json&prettyPrint=false&projection=full", bucketName, objectName)
+	downloadObjectXMLurl := fmt.Sprintf("/%s/%s", bucketName, objectName)
+	downloadObjectJSONurl := fmt.Sprintf("/b/%s/o/%s?alt=media&prettyPrint=false&projection=full", bucketName, objectName)
+
 	original := bytes.Repeat([]byte("a"), 4<<10)
 	mockGCS := httptest.NewUnstartedServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		switch r.URL.Path {
-		case "/b/bucket/o/object":
+		switch r.URL.String() {
+		case getAttrsURL:
 			fmt.Fprintf(w, `{
                             "bucket": "bucket", "name": "name", "contentEncoding": "gzip",
                             "contentLength": 43,
@@ -370,8 +373,7 @@ func TestContentEncodingGzipWithReader(t *testing.T) {
                             "updated": "2020-04-14T16:08:58-07:00"
                         }`)
 			return
-
-		default:
+		case downloadObjectXMLurl, downloadObjectJSONurl:
 			// Serve back the file.
 			w.Header().Set("Content-Type", "text/plain")
 			w.Header().Set("Content-Encoding", "gzip")
@@ -387,6 +389,8 @@ func TestContentEncodingGzipWithReader(t *testing.T) {
 			gz := gzip.NewWriter(w)
 			gz.Write(original)
 			gz.Close()
+		default:
+			fmt.Fprintf(w, "unrecognized URL %s", r.URL)
 		}
 	}))
 	mockGCS.EnableHTTP2 = true
@@ -403,11 +407,7 @@ func TestContentEncodingGzipWithReader(t *testing.T) {
 	}
 
 	whc := &http.Client{Transport: wrt}
-	client, err := NewClient(ctx, option.WithEndpoint(mockGCS.URL), option.WithoutAuthentication(), option.WithHTTPClient(whc))
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer client.Close()
+
 	// 2. Different flavours of the read should all return the body.
 	readerCreators := []struct {
 		name   string
@@ -444,28 +444,30 @@ func TestContentEncodingGzipWithReader(t *testing.T) {
 		},
 	}
 
-	for _, tt := range readerCreators {
-		t.Run(tt.name, func(t *testing.T) {
-			obj := client.Bucket("bucket").Object("object")
-			_, err := obj.Attrs(ctx)
-			if err != nil {
-				t.Fatal(err)
-			}
-			rd, err := tt.create(ctx, obj)
-			if err != nil {
-				t.Fatal(err)
-			}
-			defer rd.Close()
+	multiReaderTest(ctx, t, func(t *testing.T, c *Client) {
+		for _, tt := range readerCreators {
+			t.Run(tt.name, func(t *testing.T) {
+				obj := c.Bucket(bucketName).Object(objectName)
+				_, err := obj.Attrs(ctx)
+				if err != nil {
+					t.Fatal(err)
+				}
+				rd, err := tt.create(ctx, obj)
+				if err != nil {
+					t.Fatal(err)
+				}
+				defer rd.Close()
 
-			got, err := ioutil.ReadAll(rd)
-			if err != nil {
-				t.Fatal(err)
-			}
-			if g, w := got, original; !bytes.Equal(g, w) {
-				t.Fatalf("Response mismatch\nGot:\n%q\n\nWant:\n%q", g, w)
-			}
-		})
-	}
+				got, err := ioutil.ReadAll(rd)
+				if err != nil {
+					t.Fatal(err)
+				}
+				if g, w := got, original; !bytes.Equal(g, w) {
+					t.Fatalf("Response mismatch\nGot:\n%q\n\nWant:\n%q", g, w)
+				}
+			})
+		}
+	}, option.WithEndpoint(mockGCS.URL), option.WithoutAuthentication(), option.WithHTTPClient(whc))
 }
 
 // alwaysToTargetURLRoundTripper ensures that every single request
@@ -484,4 +486,35 @@ func (adrt *alwaysToTargetURLRoundTripper) RoundTrip(req *http.Request) (*http.R
 	// https://cloud.google.com/storage/docs/transcoding#range
 	delete(req.Header, "Range")
 	return adrt.hc.Do(req)
+}
+
+// multiTransportTest initializes fresh clients for each transport, then runs
+// given testing function using each transport-specific client, supplying the
+// test function with the sub-test instance, the context it was given, the name
+// of an existing bucket to use, a bucket name to use for bucket creation, and
+// the client to use.
+func multiReaderTest(ctx context.Context, t *testing.T, test func(*testing.T, *Client), opts ...option.ClientOption) {
+	jsonOpts := append(opts, WithJSONReads())
+	xmlOpts := append(opts, WithXMLReads())
+	jsonClient, err := NewClient(ctx, jsonOpts...)
+	if err != nil {
+		t.Fatal(err)
+	}
+	xmlClient, err := NewClient(ctx, xmlOpts...)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	clients := map[string]*Client{
+		"xmlReads":  xmlClient,
+		"jsonReads": jsonClient,
+	}
+
+	for transport, client := range clients {
+		t.Run(transport, func(t *testing.T) {
+			defer client.Close()
+
+			test(t, client)
+		})
+	}
 }

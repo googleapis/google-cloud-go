@@ -78,8 +78,8 @@ try3 go mod download
 # runDirectoryTests runs all tests in the current directory.
 # If a PATH argument is specified, it runs `go test [PATH]`.
 runDirectoryTests() {
-  if [[ $PWD != *"/internal/"* ]] ||
-    [[ $PWD != *"/third_party/"* ]] &&
+  if { [[ $PWD == *"/internal/"* ]] ||
+    [[ $PWD == *"/third_party/"* ]]; } &&
     [[ $KOKORO_JOB_NAME == *"earliest"* ]]; then
     # internal tools only expected to work with latest go version
     return
@@ -98,13 +98,13 @@ runDirectoryTests() {
 runEmulatorTests() {
   if [ -f "emulator_test.sh" ]; then
     ./emulator_test.sh
+    # Takes the kokoro output log (raw stdout) and creates a machine-parseable
+    # xUnit XML file.
+    cat sponge_log.log |
+      go-junit-report -set-exit-code >sponge_log.xml
+    # Add the exit codes together so we exit non-zero if any module fails.
+    exit_code=$(($exit_code + $?))
   fi
-  # Takes the kokoro output log (raw stdout) and creates a machine-parseable
-  # xUnit XML file.
-  cat sponge_log.log \
-    | go-junit-report -set-exit-code > sponge_log.xml
-  # Add the exit codes together so we exit non-zero if any module fails.
-  exit_code=$(($exit_code + $?))
 }
 
 # testAllModules runs all modules' tests, including emulator tests.

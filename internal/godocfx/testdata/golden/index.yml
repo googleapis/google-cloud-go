@@ -14,17 +14,20 @@ items:
     {\n    // TODO: Handle error.\n}\n</pre>\n<p>The client will use your default
     application credentials. Clients should be\nreused instead of created as needed.
     The methods of <a href=\"#Client\">Client</a> are safe for\nconcurrent use by
-    multiple goroutines.\n<p>If you only wish to access public data, you can create\nan
-    unauthenticated client with\n<pre class=\"prettyprint\">client, err := storage.NewClient(ctx,
-    option.WithoutAuthentication())\n</pre>\n<p>To use an emulator with this library,
-    you can set the STORAGE_EMULATOR_HOST\nenvironment variable to the address at
-    which your emulator is running. This will\nsend requests to that address instead
-    of to Cloud Storage. You can then create\nand use a client as usual:\n<pre class=\"prettyprint\">//
-    Set STORAGE_EMULATOR_HOST environment variable.\nerr := os.Setenv(&quot;STORAGE_EMULATOR_HOST&quot;,
-    &quot;localhost:9000&quot;)\nif err != nil {\n    // TODO: Handle error.\n}\n\n//
-    Create client as usual.\nclient, err := storage.NewClient(ctx)\nif err != nil
-    {\n    // TODO: Handle error.\n}\n\n// This request is now directed to http://localhost:9000/storage/v1/b\n//
-    instead of https://storage.googleapis.com/storage/v1/b\nif err := client.Bucket(&quot;my-bucket&quot;).Create(ctx,
+    multiple goroutines.\n<p>You may configure the client by passing in options from
+    the <a href=\"/google.golang.org/api/option\">google.golang.org/api/option</a>\npackage.
+    You may also use options defined in this package, such as <a href=\"#WithJSONReads\">WithJSONReads</a>.\n<p>If
+    you only wish to access public data, you can create\nan unauthenticated client
+    with\n<pre class=\"prettyprint\">client, err := storage.NewClient(ctx, option.WithoutAuthentication())\n</pre>\n<p>To
+    use an emulator with this library, you can set the STORAGE_EMULATOR_HOST\nenvironment
+    variable to the address at which your emulator is running. This will\nsend requests
+    to that address instead of to Cloud Storage. You can then create\nand use a client
+    as usual:\n<pre class=\"prettyprint\">// Set STORAGE_EMULATOR_HOST environment
+    variable.\nerr := os.Setenv(&quot;STORAGE_EMULATOR_HOST&quot;, &quot;localhost:9000&quot;)\nif
+    err != nil {\n    // TODO: Handle error.\n}\n\n// Create client as usual.\nclient,
+    err := storage.NewClient(ctx)\nif err != nil {\n    // TODO: Handle error.\n}\n\n//
+    This request is now directed to http://localhost:9000/storage/v1/b\n// instead
+    of https://storage.googleapis.com/storage/v1/b\nif err := client.Bucket(&quot;my-bucket&quot;).Create(ctx,
     projectID, nil); err != nil {\n    // TODO: Handle error.\n}\n</pre>\n<p>Please
     note that there is no official emulator for Cloud Storage.\n<h2 id=\"hdr-Buckets\">Buckets</h2>\n<p>A
     Google Cloud Storage bucket is a collection of objects. To work with a\nbucket,
@@ -316,6 +319,8 @@ items:
   - cloud.google.com/go/storage.Writer.Write
   - cloud.google.com/go/storage.ShouldRetry
   - cloud.google.com/go/storage.SignedURL
+  - cloud.google.com/go/storage.WithJSONReads
+  - cloud.google.com/go/storage.WithXMLReads
   alt_link: https://pkg.go.dev/cloud.google.com/go/storage
   friendlyApiName: Storage API
 - uid: cloud.google.com/go/storage.DeleteAction,SetStorageClassAction,AbortIncompleteMPUAction
@@ -1318,6 +1323,9 @@ items:
 
     Clients should be reused instead of created as needed. The methods of Client
     are safe for concurrent use by multiple goroutines.
+
+    You may configure the client by passing in options from the [google.golang.org/api/option]
+    package. You may also use options defined in this package, such as [WithJSONReads].
   parent: cloud.google.com/go/storage.Client
   type: function
   langs:
@@ -1578,17 +1586,19 @@ items:
       If GenerationMatch is zero, it has no effect.\n\t// Use DoesNotExist to specify
       that the object does not exist in the bucket.\n\tGenerationMatch <a href=\"https://pkg.go.dev/builtin#int64\">int64</a>\n\n\t//
       GenerationNotMatch specifies that the object must not have the given\n\t// generation
-      for the operation to occur.\n\t// If GenerationNotMatch is zero, it has no effect.\n\tGenerationNotMatch
-      <a href=\"https://pkg.go.dev/builtin#int64\">int64</a>\n\n\t// DoesNotExist
-      specifies that the object must not exist in the bucket for\n\t// the operation
-      to occur.\n\t// If DoesNotExist is false, it has no effect.\n\tDoesNotExist
+      for the operation to occur.\n\t// If GenerationNotMatch is zero, it has no effect.\n\t//
+      This condition only works for object reads if the WithJSONReads client\n\t//
+      option is set.\n\tGenerationNotMatch <a href=\"https://pkg.go.dev/builtin#int64\">int64</a>\n\n\t//
+      DoesNotExist specifies that the object must not exist in the bucket for\n\t//
+      the operation to occur.\n\t// If DoesNotExist is false, it has no effect.\n\tDoesNotExist
       <a href=\"https://pkg.go.dev/builtin#bool\">bool</a>\n\n\t// MetagenerationMatch
       specifies that the object must have the given\n\t// metageneration for the operation
       to occur.\n\t// If MetagenerationMatch is zero, it has no effect.\n\tMetagenerationMatch
       <a href=\"https://pkg.go.dev/builtin#int64\">int64</a>\n\n\t// MetagenerationNotMatch
       specifies that the object must not have the given\n\t// metageneration for the
-      operation to occur.\n\t// If MetagenerationNotMatch is zero, it has no effect.\n\tMetagenerationNotMatch
-      <a href=\"https://pkg.go.dev/builtin#int64\">int64</a>\n}"
+      operation to occur.\n\t// If MetagenerationNotMatch is zero, it has no effect.\n\t//
+      This condition only works for object reads if the WithJSONReads client\n\t//
+      option is set.\n\tMetagenerationNotMatch <a href=\"https://pkg.go.dev/builtin#int64\">int64</a>\n}"
 - uid: cloud.google.com/go/storage.Copier
   name: Copier
   id: Copier
@@ -2196,7 +2206,10 @@ items:
       to manage object lifecycles.\n\t//\n\t// CustomTime cannot be removed once set
       on an object. It can be updated to a\n\t// later value but not to an earlier
       one. For more information see\n\t// https://cloud.google.com/storage/docs/metadata#custom-time
-      .\n\tCustomTime <a href=\"https://pkg.go.dev/time\">time</a>.<a href=\"https://pkg.go.dev/time#Time\">Time</a>\n}"
+      .\n\tCustomTime <a href=\"https://pkg.go.dev/time\">time</a>.<a href=\"https://pkg.go.dev/time#Time\">Time</a>\n\n\t//
+      ComponentCount is the number of objects contained within a composite object.\n\t//
+      For non-composite objects, the value will be zero.\n\t// This field is read-only.\n\tComponentCount
+      <a href=\"https://pkg.go.dev/builtin#int64\">int64</a>\n}"
 - uid: cloud.google.com/go/storage.ObjectAttrsToUpdate
   name: ObjectAttrsToUpdate
   id: ObjectAttrsToUpdate
@@ -3601,7 +3614,7 @@ items:
       slow or unreliable\n\t// internet connection.\n\t//\n\t// To set a deadline
       on the entire upload, use context timeout or\n\t// cancellation.\n\tChunkRetryDeadline
       <a href=\"https://pkg.go.dev/time\">time</a>.<a href=\"https://pkg.go.dev/time#Duration\">Duration</a>\n\n\t//
-      ProgressFunc can be used to monitor the progress of a large write.\n\t// operation.
+      ProgressFunc can be used to monitor the progress of a large write\n\t// operation.
       If ProgressFunc is not nil and writing requires multiple\n\t// calls to the
       underlying service (see\n\t// https://cloud.google.com/storage/docs/json_api/v1/how-tos/resumable-upload),\n\t//
       then ProgressFunc will be invoked after each call with the number of bytes of\n\t//
@@ -3755,3 +3768,39 @@ items:
       \"my-object\", &storage.SignedURLOptions{\n\t\tGoogleAccessID: \"xxx@developer.gserviceaccount.com\",\n\t\tPrivateKey:
       \    pkey,\n\t\tMethod:         \"GET\",\n\t\tExpires:        time.Now().Add(48
       * time.Hour),\n\t})\n\tif err != nil {\n\t\t// TODO: handle error.\n\t}\n\tfmt.Println(url)\n}\n"
+- uid: cloud.google.com/go/storage.WithJSONReads
+  name: |
+    func WithJSONReads
+  id: WithJSONReads
+  summary: |
+    WithJSONReads is an option that may be passed to a Storage Client on creation.
+    It sets the client to use the JSON API for object reads. Currently, the
+    default API used for reads is XML.
+    Setting this option is required to use the GenerationNotMatch condition.
+
+    Note that when this option is set, reads will return a zero date for
+    [ReaderObjectAttrs].LastModified and may return a different value for
+    [ReaderObjectAttrs].CacheControl.
+  parent: cloud.google.com/go/storage
+  type: function
+  langs:
+  - go
+  syntax:
+    content: func WithJSONReads() <a href="https://pkg.go.dev/google.golang.org/api/option">option</a>.<a
+      href="https://pkg.go.dev/google.golang.org/api/option#ClientOption">ClientOption</a>
+- uid: cloud.google.com/go/storage.WithXMLReads
+  name: |
+    func WithXMLReads
+  id: WithXMLReads
+  summary: |
+    WithXMLReads is an option that may be passed to a Storage Client on creation.
+    It sets the client to use the XML API for object reads.
+
+    This is the current default.
+  parent: cloud.google.com/go/storage
+  type: function
+  langs:
+  - go
+  syntax:
+    content: func WithXMLReads() <a href="https://pkg.go.dev/google.golang.org/api/option">option</a>.<a
+      href="https://pkg.go.dev/google.golang.org/api/option#ClientOption">ClientOption</a>

@@ -20,8 +20,8 @@ import (
 	"testing"
 
 	translate "cloud.google.com/go/translate/apiv3"
+	"cloud.google.com/go/translate/apiv3/translatepb"
 	"google.golang.org/api/option"
-	translatepb "google.golang.org/genproto/googleapis/cloud/translate/v3"
 	"google.golang.org/grpc"
 )
 

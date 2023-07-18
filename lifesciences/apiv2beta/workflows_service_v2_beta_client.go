@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"math"
 	"net/http"
 	"net/url"
@@ -29,6 +29,7 @@ import (
 	lifesciencespb "cloud.google.com/go/lifesciences/apiv2beta/lifesciencespb"
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
@@ -37,7 +38,6 @@ import (
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/encoding/protojson"
@@ -70,7 +70,9 @@ func defaultWorkflowsServiceV2BetaGRPCClientOptions() []option.ClientOption {
 
 func defaultWorkflowsServiceV2BetaCallOptions() *WorkflowsServiceV2BetaCallOptions {
 	return &WorkflowsServiceV2BetaCallOptions{
-		RunPipeline:     []gax.CallOption{},
+		RunPipeline: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		GetLocation:     []gax.CallOption{},
 		ListLocations:   []gax.CallOption{},
 		CancelOperation: []gax.CallOption{},
@@ -81,7 +83,9 @@ func defaultWorkflowsServiceV2BetaCallOptions() *WorkflowsServiceV2BetaCallOptio
 
 func defaultWorkflowsServiceV2BetaRESTCallOptions() *WorkflowsServiceV2BetaCallOptions {
 	return &WorkflowsServiceV2BetaCallOptions{
-		RunPipeline:     []gax.CallOption{},
+		RunPipeline: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		GetLocation:     []gax.CallOption{},
 		ListLocations:   []gax.CallOption{},
 		CancelOperation: []gax.CallOption{},
@@ -147,11 +151,11 @@ func (c *WorkflowsServiceV2BetaClient) Connection() *grpc.ClientConn {
 
 // RunPipeline runs a pipeline.  The returned Operation’s [metadata]
 // [google.longrunning.Operation.metadata] field will contain a
-// google.cloud.lifesciences.v2beta.Metadata object describing the status
-// of the pipeline execution. The
+// google.cloud.lifesciences.v2beta.Metadata
+// object describing the status of the pipeline execution. The
 // response field will contain a
-// google.cloud.lifesciences.v2beta.RunPipelineResponse object if the
-// pipeline completes successfully.
+// google.cloud.lifesciences.v2beta.RunPipelineResponse
+// object if the pipeline completes successfully.
 //
 // Note: Before you can use this method, the Life Sciences Service Agent
 // must have access to your project. This is done automatically when the
@@ -224,9 +228,6 @@ type workflowsServiceV2BetaGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing WorkflowsServiceV2BetaClient
 	CallOptions **WorkflowsServiceV2BetaCallOptions
 
@@ -261,11 +262,6 @@ func NewWorkflowsServiceV2BetaClient(ctx context.Context, opts ...option.ClientO
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -274,7 +270,6 @@ func NewWorkflowsServiceV2BetaClient(ctx context.Context, opts ...option.ClientO
 
 	c := &workflowsServiceV2BetaGRPCClient{
 		connPool:                     connPool,
-		disableDeadlines:             disableDeadlines,
 		workflowsServiceV2BetaClient: lifesciencespb.NewWorkflowsServiceV2BetaClient(connPool),
 		CallOptions:                  &client.CallOptions,
 		operationsClient:             longrunningpb.NewOperationsClient(connPool),
@@ -310,7 +305,7 @@ func (c *workflowsServiceV2BetaGRPCClient) Connection() *grpc.ClientConn {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *workflowsServiceV2BetaGRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -386,7 +381,7 @@ func defaultWorkflowsServiceV2BetaRESTClientOptions() []option.ClientOption {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *workflowsServiceV2BetaRESTClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -406,11 +401,6 @@ func (c *workflowsServiceV2BetaRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 func (c *workflowsServiceV2BetaGRPCClient) RunPipeline(ctx context.Context, req *lifesciencespb.RunPipelineRequest, opts ...gax.CallOption) (*RunPipelineOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -568,11 +558,11 @@ func (c *workflowsServiceV2BetaGRPCClient) ListOperations(ctx context.Context, r
 
 // RunPipeline runs a pipeline.  The returned Operation’s [metadata]
 // [google.longrunning.Operation.metadata] field will contain a
-// google.cloud.lifesciences.v2beta.Metadata object describing the status
-// of the pipeline execution. The
+// google.cloud.lifesciences.v2beta.Metadata
+// object describing the status of the pipeline execution. The
 // response field will contain a
-// google.cloud.lifesciences.v2beta.RunPipelineResponse object if the
-// pipeline completes successfully.
+// google.cloud.lifesciences.v2beta.RunPipelineResponse
+// object if the pipeline completes successfully.
 //
 // Note: Before you can use this method, the Life Sciences Service Agent
 // must have access to your project. This is done automatically when the
@@ -628,13 +618,13 @@ func (c *workflowsServiceV2BetaRESTClient) RunPipeline(ctx context.Context, req 
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -691,13 +681,13 @@ func (c *workflowsServiceV2BetaRESTClient) GetLocation(ctx context.Context, req 
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -765,13 +755,13 @@ func (c *workflowsServiceV2BetaRESTClient) ListLocations(ctx context.Context, re
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -902,13 +892,13 @@ func (c *workflowsServiceV2BetaRESTClient) GetOperation(ctx context.Context, req
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -980,13 +970,13 @@ func (c *workflowsServiceV2BetaRESTClient) ListOperations(ctx context.Context, r
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil

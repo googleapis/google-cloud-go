@@ -1,5 +1,61 @@
 # Changes
 
+## [0.21.2](https://github.com/googleapis/google-cloud-go/compare/analytics/v0.21.1...analytics/v0.21.2) (2023-06-27)
+
+
+### Documentation
+
+* **analytics/admin:** Announce the deprecation of first-click, linear, time-decay and position-based attribution models ([94ea341](https://github.com/googleapis/google-cloud-go/commit/94ea3410e233db6040a7cb0a931948f1e3bb4c9a))
+
+## [0.21.1](https://github.com/googleapis/google-cloud-go/compare/analytics-v0.21.0...analytics/v0.21.1) (2023-06-20)
+
+
+### Bug Fixes
+
+* **analytics:** REST query UpdateMask bug ([df52820](https://github.com/googleapis/google-cloud-go/commit/df52820b0e7721954809a8aa8700b93c5662dc9b))
+
+## [0.21.0](https://github.com/googleapis/google-cloud-go/compare/analytics/v0.20.0...analytics/v0.21.0) (2023-05-30)
+
+
+### Features
+
+* **analytics:** Update all direct dependencies ([b340d03](https://github.com/googleapis/google-cloud-go/commit/b340d030f2b52a4ce48846ce63984b28583abde6))
+
+## [0.20.0](https://github.com/googleapis/google-cloud-go/compare/analytics/v0.19.1...analytics/v0.20.0) (2023-05-16)
+
+
+### Features
+
+* **analytics/admin:** Add `GetAdSenseLink`, `CreateAdSenseLink`, `DeleteAdSenseLink`, `ListAdSenseLinks` methods to the Admin API v1alpha ([8c479ac](https://github.com/googleapis/google-cloud-go/commit/8c479acd5ea710629b4b562a4654bc369e828c16))
+
+## [0.19.1](https://github.com/googleapis/google-cloud-go/compare/analytics/v0.19.0...analytics/v0.19.1) (2023-05-08)
+
+
+### Bug Fixes
+
+* **analytics:** Update grpc to v1.55.0 ([1147ce0](https://github.com/googleapis/google-cloud-go/commit/1147ce02a990276ca4f8ab7a1ab65c14da4450ef))
+
+## [0.19.0](https://github.com/googleapis/google-cloud-go/compare/analytics/v0.18.0...analytics/v0.19.0) (2023-03-22)
+
+
+### Features
+
+* **analytics/admin:** Support REST transport ([00fff3a](https://github.com/googleapis/google-cloud-go/commit/00fff3a58bed31274ab39af575876dab91d708c9))
+
+## [0.18.0](https://github.com/googleapis/google-cloud-go/compare/analytics/v0.17.0...analytics/v0.18.0) (2023-03-01)
+
+
+### Features
+
+* **analytics/admin:** Add `CreateAccessBinding`, `GetAccessBinding`, `UpdateAccessBinding`, `DeleteAccessBinding`, `ListAccessBindings`, `BatchCreateAccessBindings`, `BatchGetAccessBindings`, `BatchUpdateAccessBindings`, `BatchDeleteAccessBindings` methods to the Admin API v1alpha ([aeb6fec](https://github.com/googleapis/google-cloud-go/commit/aeb6fecc7fd3f088ff461a0c068ceb9a7ae7b2a3))
+
+## [0.17.0](https://github.com/googleapis/google-cloud-go/compare/analytics/v0.16.0...analytics/v0.17.0) (2023-02-14)
+
+
+### Features
+
+* **analytics/admin:** Add `GetSearchAds360Link`, `ListSearchAds360Links`, `CreateSearchAds360Link`, `DeleteSearchAds360Link`, `UpdateSearchAds360Link` methods to the Admin API v1alpha feat: add `SetAutomatedGa4ConfigurationOptOut`, `FetchAutomatedGa4ConfigurationOptOut` methods to the Admin API v1alpha feat: add `GetBigQueryLink`, `ListBigQueryLinks` methods to the Admin API v1alpha feat: add `tokens_per_project_per_hour` field to `AccessQuota` type feat: add `EXPANDED_DATA_SET`, `CHANNEL_GROUP` values to `ChangeHistoryResourceType` enum feat: add `search_ads_360_link`, `expanded_data_set`, `bigquery_link` values to ChangeHistoryResource.resource oneof field feat: add `BigQueryLink`, `SearchAds360Link` resource types to the Admin API v1alpha fix!: remove `LESS_THAN_OR_EQUAL`, `GREATER_THAN_OR_EQUAL` values from NumericFilter.Operation enum fix!: remove `PARTIAL_REGEXP` value from StringFilter.MatchType enum ([2fef56f](https://github.com/googleapis/google-cloud-go/commit/2fef56f75a63dc4ff6e0eea56c7b26d4831c8e27))
+
 ## [0.16.0](https://github.com/googleapis/google-cloud-go/compare/analytics-v0.15.0...analytics/v0.16.0) (2023-01-26)
 
 

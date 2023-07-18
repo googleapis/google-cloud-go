@@ -20,13 +20,14 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"math"
 	"net/http"
 	"net/url"
 	"time"
 
 	cxpb "cloud.google.com/go/dialogflow/cx/apiv3/cxpb"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
@@ -35,7 +36,6 @@ import (
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -74,6 +74,7 @@ func defaultTransitionRouteGroupsGRPCClientOptions() []option.ClientOption {
 func defaultTransitionRouteGroupsCallOptions() *TransitionRouteGroupsCallOptions {
 	return &TransitionRouteGroupsCallOptions{
 		ListTransitionRouteGroups: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -85,6 +86,7 @@ func defaultTransitionRouteGroupsCallOptions() *TransitionRouteGroupsCallOptions
 			}),
 		},
 		GetTransitionRouteGroup: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -96,6 +98,7 @@ func defaultTransitionRouteGroupsCallOptions() *TransitionRouteGroupsCallOptions
 			}),
 		},
 		CreateTransitionRouteGroup: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -107,6 +110,7 @@ func defaultTransitionRouteGroupsCallOptions() *TransitionRouteGroupsCallOptions
 			}),
 		},
 		UpdateTransitionRouteGroup: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -118,6 +122,7 @@ func defaultTransitionRouteGroupsCallOptions() *TransitionRouteGroupsCallOptions
 			}),
 		},
 		DeleteTransitionRouteGroup: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -139,6 +144,7 @@ func defaultTransitionRouteGroupsCallOptions() *TransitionRouteGroupsCallOptions
 func defaultTransitionRouteGroupsRESTCallOptions() *TransitionRouteGroupsCallOptions {
 	return &TransitionRouteGroupsCallOptions{
 		ListTransitionRouteGroups: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -149,6 +155,7 @@ func defaultTransitionRouteGroupsRESTCallOptions() *TransitionRouteGroupsCallOpt
 			}),
 		},
 		GetTransitionRouteGroup: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -159,6 +166,7 @@ func defaultTransitionRouteGroupsRESTCallOptions() *TransitionRouteGroupsCallOpt
 			}),
 		},
 		CreateTransitionRouteGroup: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -169,6 +177,7 @@ func defaultTransitionRouteGroupsRESTCallOptions() *TransitionRouteGroupsCallOpt
 			}),
 		},
 		UpdateTransitionRouteGroup: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -179,6 +188,7 @@ func defaultTransitionRouteGroupsRESTCallOptions() *TransitionRouteGroupsCallOpt
 			}),
 		},
 		DeleteTransitionRouteGroup: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -323,9 +333,6 @@ type transitionRouteGroupsGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing TransitionRouteGroupsClient
 	CallOptions **TransitionRouteGroupsCallOptions
 
@@ -355,11 +362,6 @@ func NewTransitionRouteGroupsClient(ctx context.Context, opts ...option.ClientOp
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -368,7 +370,6 @@ func NewTransitionRouteGroupsClient(ctx context.Context, opts ...option.ClientOp
 
 	c := &transitionRouteGroupsGRPCClient{
 		connPool:                    connPool,
-		disableDeadlines:            disableDeadlines,
 		transitionRouteGroupsClient: cxpb.NewTransitionRouteGroupsClient(connPool),
 		CallOptions:                 &client.CallOptions,
 		operationsClient:            longrunningpb.NewOperationsClient(connPool),
@@ -393,7 +394,7 @@ func (c *transitionRouteGroupsGRPCClient) Connection() *grpc.ClientConn {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *transitionRouteGroupsGRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -454,7 +455,7 @@ func defaultTransitionRouteGroupsRESTClientOptions() []option.ClientOption {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *transitionRouteGroupsRESTClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -519,11 +520,6 @@ func (c *transitionRouteGroupsGRPCClient) ListTransitionRouteGroups(ctx context.
 }
 
 func (c *transitionRouteGroupsGRPCClient) GetTransitionRouteGroup(ctx context.Context, req *cxpb.GetTransitionRouteGroupRequest, opts ...gax.CallOption) (*cxpb.TransitionRouteGroup, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -541,11 +537,6 @@ func (c *transitionRouteGroupsGRPCClient) GetTransitionRouteGroup(ctx context.Co
 }
 
 func (c *transitionRouteGroupsGRPCClient) CreateTransitionRouteGroup(ctx context.Context, req *cxpb.CreateTransitionRouteGroupRequest, opts ...gax.CallOption) (*cxpb.TransitionRouteGroup, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -563,11 +554,6 @@ func (c *transitionRouteGroupsGRPCClient) CreateTransitionRouteGroup(ctx context
 }
 
 func (c *transitionRouteGroupsGRPCClient) UpdateTransitionRouteGroup(ctx context.Context, req *cxpb.UpdateTransitionRouteGroupRequest, opts ...gax.CallOption) (*cxpb.TransitionRouteGroup, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "transition_route_group.name", url.QueryEscape(req.GetTransitionRouteGroup().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -585,11 +571,6 @@ func (c *transitionRouteGroupsGRPCClient) UpdateTransitionRouteGroup(ctx context
 }
 
 func (c *transitionRouteGroupsGRPCClient) DeleteTransitionRouteGroup(ctx context.Context, req *cxpb.DeleteTransitionRouteGroupRequest, opts ...gax.CallOption) error {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -796,13 +777,13 @@ func (c *transitionRouteGroupsRESTClient) ListTransitionRouteGroups(ctx context.
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -875,13 +856,13 @@ func (c *transitionRouteGroupsRESTClient) GetTransitionRouteGroup(ctx context.Co
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -949,13 +930,13 @@ func (c *transitionRouteGroupsRESTClient) CreateTransitionRouteGroup(ctx context
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -996,7 +977,7 @@ func (c *transitionRouteGroupsRESTClient) UpdateTransitionRouteGroup(ctx context
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask))
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1029,13 +1010,13 @@ func (c *transitionRouteGroupsRESTClient) UpdateTransitionRouteGroup(ctx context
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1135,13 +1116,13 @@ func (c *transitionRouteGroupsRESTClient) GetLocation(ctx context.Context, req *
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1209,13 +1190,13 @@ func (c *transitionRouteGroupsRESTClient) ListLocations(ctx context.Context, req
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -1324,13 +1305,13 @@ func (c *transitionRouteGroupsRESTClient) GetOperation(ctx context.Context, req 
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1398,13 +1379,13 @@ func (c *transitionRouteGroupsRESTClient) ListOperations(ctx context.Context, re
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil

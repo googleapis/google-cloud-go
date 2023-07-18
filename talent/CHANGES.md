@@ -1,6 +1,41 @@
 # Changes
 
 
+## [1.6.2](https://github.com/googleapis/google-cloud-go/compare/talent/v1.6.1...talent/v1.6.2) (2023-06-20)
+
+
+### Bug Fixes
+
+* **talent:** REST query UpdateMask bug ([df52820](https://github.com/googleapis/google-cloud-go/commit/df52820b0e7721954809a8aa8700b93c5662dc9b))
+
+## [1.6.1](https://github.com/googleapis/google-cloud-go/compare/talent/v1.6.0...talent/v1.6.1) (2023-05-31)
+
+
+### Documentation
+
+* **talent:** Add three per company option to diversification levels ([01eff11](https://github.com/googleapis/google-cloud-go/commit/01eff11eedb3edde69cc33db23e26be6a7e42f10))
+
+## [1.6.0](https://github.com/googleapis/google-cloud-go/compare/talent/v1.5.2...talent/v1.6.0) (2023-05-30)
+
+
+### Features
+
+* **talent:** Update all direct dependencies ([b340d03](https://github.com/googleapis/google-cloud-go/commit/b340d030f2b52a4ce48846ce63984b28583abde6))
+
+## [1.5.2](https://github.com/googleapis/google-cloud-go/compare/talent/v1.5.1...talent/v1.5.2) (2023-05-08)
+
+
+### Bug Fixes
+
+* **talent:** Update grpc to v1.55.0 ([1147ce0](https://github.com/googleapis/google-cloud-go/commit/1147ce02a990276ca4f8ab7a1ab65c14da4450ef))
+
+## [1.5.1](https://github.com/googleapis/google-cloud-go/compare/talent/v1.5.0...talent/v1.5.1) (2023-05-03)
+
+
+### Bug Fixes
+
+* **talent:** Change timeout settings for SearchJobsForAlert ([#7863](https://github.com/googleapis/google-cloud-go/issues/7863)) ([036656b](https://github.com/googleapis/google-cloud-go/commit/036656ba51ee4bb47b61d693e2862354c7e2f636))
+
 ## [1.5.0](https://github.com/googleapis/google-cloud-go/compare/talent/v1.4.1...talent/v1.5.0) (2023-01-04)
 
 

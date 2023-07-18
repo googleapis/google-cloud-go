@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"math"
 	"net/http"
 	"net/url"
@@ -28,6 +28,7 @@ import (
 
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	retailpb "cloud.google.com/go/retail/apiv2alpha/retailpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
@@ -36,7 +37,6 @@ import (
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -49,6 +49,7 @@ var newModelClientHook clientHook
 // ModelCallOptions contains the retry settings for each method of ModelClient.
 type ModelCallOptions struct {
 	CreateModel    []gax.CallOption
+	GetModel       []gax.CallOption
 	PauseModel     []gax.CallOption
 	ResumeModel    []gax.CallOption
 	DeleteModel    []gax.CallOption
@@ -74,6 +75,20 @@ func defaultModelGRPCClientOptions() []option.ClientOption {
 func defaultModelCallOptions() *ModelCallOptions {
 	return &ModelCallOptions{
 		CreateModel: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.DeadlineExceeded,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		GetModel: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -86,6 +101,7 @@ func defaultModelCallOptions() *ModelCallOptions {
 			}),
 		},
 		PauseModel: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -98,6 +114,7 @@ func defaultModelCallOptions() *ModelCallOptions {
 			}),
 		},
 		ResumeModel: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -110,6 +127,7 @@ func defaultModelCallOptions() *ModelCallOptions {
 			}),
 		},
 		DeleteModel: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -122,6 +140,7 @@ func defaultModelCallOptions() *ModelCallOptions {
 			}),
 		},
 		ListModels: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -134,6 +153,7 @@ func defaultModelCallOptions() *ModelCallOptions {
 			}),
 		},
 		UpdateModel: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -146,6 +166,7 @@ func defaultModelCallOptions() *ModelCallOptions {
 			}),
 		},
 		TuneModel: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -159,6 +180,7 @@ func defaultModelCallOptions() *ModelCallOptions {
 		},
 		GetOperation: []gax.CallOption{},
 		ListOperations: []gax.CallOption{
+			gax.WithTimeout(300000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -176,6 +198,19 @@ func defaultModelCallOptions() *ModelCallOptions {
 func defaultModelRESTCallOptions() *ModelCallOptions {
 	return &ModelCallOptions{
 		CreateModel: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusGatewayTimeout)
+			}),
+		},
+		GetModel: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -187,6 +222,7 @@ func defaultModelRESTCallOptions() *ModelCallOptions {
 			}),
 		},
 		PauseModel: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -198,6 +234,7 @@ func defaultModelRESTCallOptions() *ModelCallOptions {
 			}),
 		},
 		ResumeModel: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -209,6 +246,7 @@ func defaultModelRESTCallOptions() *ModelCallOptions {
 			}),
 		},
 		DeleteModel: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -220,6 +258,7 @@ func defaultModelRESTCallOptions() *ModelCallOptions {
 			}),
 		},
 		ListModels: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -231,6 +270,7 @@ func defaultModelRESTCallOptions() *ModelCallOptions {
 			}),
 		},
 		UpdateModel: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -242,6 +282,7 @@ func defaultModelRESTCallOptions() *ModelCallOptions {
 			}),
 		},
 		TuneModel: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -254,6 +295,7 @@ func defaultModelRESTCallOptions() *ModelCallOptions {
 		},
 		GetOperation: []gax.CallOption{},
 		ListOperations: []gax.CallOption{
+			gax.WithTimeout(300000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -274,6 +316,7 @@ type internalModelClient interface {
 	Connection() *grpc.ClientConn
 	CreateModel(context.Context, *retailpb.CreateModelRequest, ...gax.CallOption) (*CreateModelOperation, error)
 	CreateModelOperation(name string) *CreateModelOperation
+	GetModel(context.Context, *retailpb.GetModelRequest, ...gax.CallOption) (*retailpb.Model, error)
 	PauseModel(context.Context, *retailpb.PauseModelRequest, ...gax.CallOption) (*retailpb.Model, error)
 	ResumeModel(context.Context, *retailpb.ResumeModelRequest, ...gax.CallOption) (*retailpb.Model, error)
 	DeleteModel(context.Context, *retailpb.DeleteModelRequest, ...gax.CallOption) error
@@ -350,6 +393,11 @@ func (c *ModelClient) CreateModelOperation(name string) *CreateModelOperation {
 	return c.internalClient.CreateModelOperation(name)
 }
 
+// GetModel gets a model.
+func (c *ModelClient) GetModel(ctx context.Context, req *retailpb.GetModelRequest, opts ...gax.CallOption) (*retailpb.Model, error) {
+	return c.internalClient.GetModel(ctx, req, opts...)
+}
+
 // PauseModel pauses the training of an existing model.
 func (c *ModelClient) PauseModel(ctx context.Context, req *retailpb.PauseModelRequest, opts ...gax.CallOption) (*retailpb.Model, error) {
 	return c.internalClient.PauseModel(ctx, req, opts...)
@@ -406,9 +454,6 @@ type modelGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing ModelClient
 	CallOptions **ModelCallOptions
 
@@ -454,11 +499,6 @@ func NewModelClient(ctx context.Context, opts ...option.ClientOption) (*ModelCli
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -467,7 +507,6 @@ func NewModelClient(ctx context.Context, opts ...option.ClientOption) (*ModelCli
 
 	c := &modelGRPCClient{
 		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
 		modelClient:      retailpb.NewModelServiceClient(connPool),
 		CallOptions:      &client.CallOptions,
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
@@ -502,7 +541,7 @@ func (c *modelGRPCClient) Connection() *grpc.ClientConn {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *modelGRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -591,7 +630,7 @@ func defaultModelRESTClientOptions() []option.ClientOption {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *modelRESTClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -611,11 +650,6 @@ func (c *modelRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 func (c *modelGRPCClient) CreateModel(ctx context.Context, req *retailpb.CreateModelRequest, opts ...gax.CallOption) (*CreateModelOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -634,12 +668,24 @@ func (c *modelGRPCClient) CreateModel(ctx context.Context, req *retailpb.CreateM
 	}, nil
 }
 
-func (c *modelGRPCClient) PauseModel(ctx context.Context, req *retailpb.PauseModelRequest, opts ...gax.CallOption) (*retailpb.Model, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
+func (c *modelGRPCClient) GetModel(ctx context.Context, req *retailpb.GetModelRequest, opts ...gax.CallOption) (*retailpb.Model, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).GetModel[0:len((*c.CallOptions).GetModel):len((*c.CallOptions).GetModel)], opts...)
+	var resp *retailpb.Model
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.modelClient.GetModel(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
 	}
+	return resp, nil
+}
+
+func (c *modelGRPCClient) PauseModel(ctx context.Context, req *retailpb.PauseModelRequest, opts ...gax.CallOption) (*retailpb.Model, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -657,11 +703,6 @@ func (c *modelGRPCClient) PauseModel(ctx context.Context, req *retailpb.PauseMod
 }
 
 func (c *modelGRPCClient) ResumeModel(ctx context.Context, req *retailpb.ResumeModelRequest, opts ...gax.CallOption) (*retailpb.Model, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -679,11 +720,6 @@ func (c *modelGRPCClient) ResumeModel(ctx context.Context, req *retailpb.ResumeM
 }
 
 func (c *modelGRPCClient) DeleteModel(ctx context.Context, req *retailpb.DeleteModelRequest, opts ...gax.CallOption) error {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -742,11 +778,6 @@ func (c *modelGRPCClient) ListModels(ctx context.Context, req *retailpb.ListMode
 }
 
 func (c *modelGRPCClient) UpdateModel(ctx context.Context, req *retailpb.UpdateModelRequest, opts ...gax.CallOption) (*retailpb.Model, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "model.name", url.QueryEscape(req.GetModel().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -764,11 +795,6 @@ func (c *modelGRPCClient) UpdateModel(ctx context.Context, req *retailpb.UpdateM
 }
 
 func (c *modelGRPCClient) TuneModel(ctx context.Context, req *retailpb.TuneModelRequest, opts ...gax.CallOption) (*TuneModelOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -899,13 +925,13 @@ func (c *modelRESTClient) CreateModel(ctx context.Context, req *retailpb.CreateM
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -919,6 +945,64 @@ func (c *modelRESTClient) CreateModel(ctx context.Context, req *retailpb.CreateM
 		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
+}
+
+// GetModel gets a model.
+func (c *modelRESTClient) GetModel(ctx context.Context, req *retailpb.GetModelRequest, opts ...gax.CallOption) (*retailpb.Model, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v2alpha/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).GetModel[0:len((*c.CallOptions).GetModel):len((*c.CallOptions).GetModel)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &retailpb.Model{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
 }
 
 // PauseModel pauses the training of an existing model.
@@ -968,13 +1052,13 @@ func (c *modelRESTClient) PauseModel(ctx context.Context, req *retailpb.PauseMod
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1032,13 +1116,13 @@ func (c *modelRESTClient) ResumeModel(ctx context.Context, req *retailpb.ResumeM
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1143,13 +1227,13 @@ func (c *modelRESTClient) ListModels(ctx context.Context, req *retailpb.ListMode
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -1202,7 +1286,7 @@ func (c *modelRESTClient) UpdateModel(ctx context.Context, req *retailpb.UpdateM
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask))
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1235,13 +1319,13 @@ func (c *modelRESTClient) UpdateModel(ctx context.Context, req *retailpb.UpdateM
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1298,13 +1382,13 @@ func (c *modelRESTClient) TuneModel(ctx context.Context, req *retailpb.TuneModel
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1361,13 +1445,13 @@ func (c *modelRESTClient) GetOperation(ctx context.Context, req *longrunningpb.G
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1435,13 +1519,13 @@ func (c *modelRESTClient) ListOperations(ctx context.Context, req *longrunningpb
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil

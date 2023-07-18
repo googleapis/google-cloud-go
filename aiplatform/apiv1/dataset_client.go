@@ -24,16 +24,16 @@ import (
 	"time"
 
 	aiplatformpb "cloud.google.com/go/aiplatform/apiv1/aiplatformpb"
+	iampb "cloud.google.com/go/iam/apiv1/iampb"
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
-	iampb "google.golang.org/genproto/googleapis/iam/v1"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/proto"
@@ -53,6 +53,7 @@ type DatasetCallOptions struct {
 	ListDataItems      []gax.CallOption
 	SearchDataItems    []gax.CallOption
 	ListSavedQueries   []gax.CallOption
+	DeleteSavedQuery   []gax.CallOption
 	GetAnnotationSpec  []gax.CallOption
 	ListAnnotations    []gax.CallOption
 	GetLocation        []gax.CallOption
@@ -91,6 +92,7 @@ func defaultDatasetCallOptions() *DatasetCallOptions {
 		ListDataItems:      []gax.CallOption{},
 		SearchDataItems:    []gax.CallOption{},
 		ListSavedQueries:   []gax.CallOption{},
+		DeleteSavedQuery:   []gax.CallOption{},
 		GetAnnotationSpec:  []gax.CallOption{},
 		ListAnnotations:    []gax.CallOption{},
 		GetLocation:        []gax.CallOption{},
@@ -125,6 +127,8 @@ type internalDatasetClient interface {
 	ListDataItems(context.Context, *aiplatformpb.ListDataItemsRequest, ...gax.CallOption) *DataItemIterator
 	SearchDataItems(context.Context, *aiplatformpb.SearchDataItemsRequest, ...gax.CallOption) *DataItemViewIterator
 	ListSavedQueries(context.Context, *aiplatformpb.ListSavedQueriesRequest, ...gax.CallOption) *SavedQueryIterator
+	DeleteSavedQuery(context.Context, *aiplatformpb.DeleteSavedQueryRequest, ...gax.CallOption) (*DeleteSavedQueryOperation, error)
+	DeleteSavedQueryOperation(name string) *DeleteSavedQueryOperation
 	GetAnnotationSpec(context.Context, *aiplatformpb.GetAnnotationSpecRequest, ...gax.CallOption) (*aiplatformpb.AnnotationSpec, error)
 	ListAnnotations(context.Context, *aiplatformpb.ListAnnotationsRequest, ...gax.CallOption) *AnnotationIterator
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
@@ -142,8 +146,7 @@ type internalDatasetClient interface {
 // DatasetClient is a client for interacting with Vertex AI API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
-// The service that handles the CRUD of Vertex AI Dataset and its child
-// resources.
+// The service that manages Vertex AI Dataset and its child resources.
 type DatasetClient struct {
 	// The internal transport-dependent client.
 	internalClient internalDatasetClient
@@ -254,6 +257,17 @@ func (c *DatasetClient) ListSavedQueries(ctx context.Context, req *aiplatformpb.
 	return c.internalClient.ListSavedQueries(ctx, req, opts...)
 }
 
+// DeleteSavedQuery deletes a SavedQuery.
+func (c *DatasetClient) DeleteSavedQuery(ctx context.Context, req *aiplatformpb.DeleteSavedQueryRequest, opts ...gax.CallOption) (*DeleteSavedQueryOperation, error) {
+	return c.internalClient.DeleteSavedQuery(ctx, req, opts...)
+}
+
+// DeleteSavedQueryOperation returns a new DeleteSavedQueryOperation from a given name.
+// The name must be that of a previously created DeleteSavedQueryOperation, possibly from a different process.
+func (c *DatasetClient) DeleteSavedQueryOperation(name string) *DeleteSavedQueryOperation {
+	return c.internalClient.DeleteSavedQueryOperation(name)
+}
+
 // GetAnnotationSpec gets an AnnotationSpec.
 func (c *DatasetClient) GetAnnotationSpec(ctx context.Context, req *aiplatformpb.GetAnnotationSpecRequest, opts ...gax.CallOption) (*aiplatformpb.AnnotationSpec, error) {
 	return c.internalClient.GetAnnotationSpec(ctx, req, opts...)
@@ -332,9 +346,6 @@ type datasetGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing DatasetClient
 	CallOptions **DatasetCallOptions
 
@@ -359,8 +370,7 @@ type datasetGRPCClient struct {
 // NewDatasetClient creates a new dataset service client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
-// The service that handles the CRUD of Vertex AI Dataset and its child
-// resources.
+// The service that manages Vertex AI Dataset and its child resources.
 func NewDatasetClient(ctx context.Context, opts ...option.ClientOption) (*DatasetClient, error) {
 	clientOpts := defaultDatasetGRPCClientOptions()
 	if newDatasetClientHook != nil {
@@ -371,11 +381,6 @@ func NewDatasetClient(ctx context.Context, opts ...option.ClientOption) (*Datase
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -384,7 +389,6 @@ func NewDatasetClient(ctx context.Context, opts ...option.ClientOption) (*Datase
 
 	c := &datasetGRPCClient{
 		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
 		datasetClient:    aiplatformpb.NewDatasetServiceClient(connPool),
 		CallOptions:      &client.CallOptions,
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
@@ -421,7 +425,7 @@ func (c *datasetGRPCClient) Connection() *grpc.ClientConn {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *datasetGRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -720,6 +724,25 @@ func (c *datasetGRPCClient) ListSavedQueries(ctx context.Context, req *aiplatfor
 	it.pageInfo.Token = req.GetPageToken()
 
 	return it
+}
+
+func (c *datasetGRPCClient) DeleteSavedQuery(ctx context.Context, req *aiplatformpb.DeleteSavedQueryRequest, opts ...gax.CallOption) (*DeleteSavedQueryOperation, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).DeleteSavedQuery[0:len((*c.CallOptions).DeleteSavedQuery):len((*c.CallOptions).DeleteSavedQuery)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.datasetClient.DeleteSavedQuery(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &DeleteSavedQueryOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
 }
 
 func (c *datasetGRPCClient) GetAnnotationSpec(ctx context.Context, req *aiplatformpb.GetAnnotationSpecRequest, opts ...gax.CallOption) (*aiplatformpb.AnnotationSpec, error) {
@@ -1126,6 +1149,64 @@ func (op *DeleteDatasetOperation) Done() bool {
 // Name returns the name of the long-running operation.
 // The name is assigned by the server and is unique within the service from which the operation is created.
 func (op *DeleteDatasetOperation) Name() string {
+	return op.lro.Name()
+}
+
+// DeleteSavedQueryOperation manages a long-running operation from DeleteSavedQuery.
+type DeleteSavedQueryOperation struct {
+	lro *longrunning.Operation
+}
+
+// DeleteSavedQueryOperation returns a new DeleteSavedQueryOperation from a given name.
+// The name must be that of a previously created DeleteSavedQueryOperation, possibly from a different process.
+func (c *datasetGRPCClient) DeleteSavedQueryOperation(name string) *DeleteSavedQueryOperation {
+	return &DeleteSavedQueryOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *DeleteSavedQueryOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
+	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *DeleteSavedQueryOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
+	return op.lro.Poll(ctx, nil, opts...)
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *DeleteSavedQueryOperation) Metadata() (*aiplatformpb.DeleteOperationMetadata, error) {
+	var meta aiplatformpb.DeleteOperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *DeleteSavedQueryOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *DeleteSavedQueryOperation) Name() string {
 	return op.lro.Name()
 }
 

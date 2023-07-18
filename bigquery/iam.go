@@ -20,9 +20,9 @@ import (
 	"fmt"
 
 	"cloud.google.com/go/iam"
+	"cloud.google.com/go/iam/apiv1/iampb"
 	"cloud.google.com/go/internal/trace"
 	bq "google.golang.org/api/bigquery/v2"
-	iampb "google.golang.org/genproto/googleapis/iam/v1"
 )
 
 // IAM provides access to an iam.Handle that allows access to IAM functionality for
@@ -58,12 +58,12 @@ func (c *bqIAMClient) GetWithVersion(ctx context.Context, resource string, reque
 			RequestedPolicyVersion: int64(requestedPolicyVersion),
 		},
 	}
-	call := c.bqs.Tables.GetIamPolicy(resource, iamReq)
+	call := c.bqs.Tables.GetIamPolicy(resource, iamReq).Context(ctx)
 	setClientHeader(call.Header())
 
 	var bqp *bq.Policy
 	err = runWithRetry(ctx, func() error {
-		bqp, err = call.Context(ctx).Do()
+		bqp, err = call.Do()
 		return err
 	})
 	if err != nil {
@@ -77,10 +77,10 @@ func (c *bqIAMClient) Set(ctx context.Context, resource string, p *iampb.Policy)
 	defer func() { trace.EndSpan(ctx, err) }()
 
 	bqp := iamToBigQueryPolicy(p)
-	call := c.bqs.Tables.SetIamPolicy(resource, &bq.SetIamPolicyRequest{Policy: bqp})
+	call := c.bqs.Tables.SetIamPolicy(resource, &bq.SetIamPolicyRequest{Policy: bqp}).Context(ctx)
 	setClientHeader(call.Header())
 	return runWithRetry(ctx, func() error {
-		_, err := call.Context(ctx).Do()
+		_, err := call.Do()
 		return err
 	})
 }
@@ -89,12 +89,12 @@ func (c *bqIAMClient) Test(ctx context.Context, resource string, perms []string)
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/bigquery.IAM.Test")
 	defer func() { trace.EndSpan(ctx, err) }()
 
-	call := c.bqs.Tables.TestIamPermissions(resource, &bq.TestIamPermissionsRequest{Permissions: perms})
+	call := c.bqs.Tables.TestIamPermissions(resource, &bq.TestIamPermissionsRequest{Permissions: perms}).Context(ctx)
 	setClientHeader(call.Header())
 
 	var res *bq.TestIamPermissionsResponse
 	err = runWithRetry(ctx, func() error {
-		res, err = call.Context(ctx).Do()
+		res, err = call.Do()
 		return err
 	})
 	if err != nil {

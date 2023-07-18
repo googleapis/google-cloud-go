@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/video/transcoder/apiv1",
-    "version": "1.12.0",
+    "version": "1.17.1",
     "language": "GO",
     "apis": [
       {
@@ -34,7 +34,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "transcoderpb.Job",
+        "resultType": "*transcoderpb.Job",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.video.transcoder.v1.Client"
@@ -80,7 +80,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "transcoderpb.JobTemplate",
+        "resultType": "*transcoderpb.JobTemplate",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.video.transcoder.v1.Client"
@@ -216,7 +216,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "transcoderpb.Job",
+        "resultType": "*transcoderpb.Job",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.video.transcoder.v1.Client"
@@ -262,7 +262,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "transcoderpb.JobTemplate",
+        "resultType": "*transcoderpb.JobTemplate",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.video.transcoder.v1.Client"

@@ -12,9 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-//go:build go1.15
-// +build go1.15
-
 // TODO:
 //   IDs for const/var groups have every name, not just the one to link to.
 //   Preserve IDs when sanitizing then use the right ID for linking.

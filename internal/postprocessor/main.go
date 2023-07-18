@@ -16,39 +16,45 @@ package main
 
 import (
 	"context"
-	"encoding/json"
+	_ "embed"
 	"errors"
 	"flag"
 	"fmt"
+	"go/ast"
+	"go/parser"
+	"go/token"
+	"html/template"
 	"io/fs"
 	"log"
 	"os"
 	"path/filepath"
 	"regexp"
 	"strings"
+	"time"
 
-	"cloud.google.com/go/internal/gapicgen/generator"
-	"cloud.google.com/go/internal/gapicgen/git"
-	"cloud.google.com/go/internal/gensnippets"
-	"cloud.google.com/go/internal/postprocessor/execv"
 	"cloud.google.com/go/internal/postprocessor/execv/gocmd"
-	"github.com/google/go-github/v35/github"
-
-	"gopkg.in/yaml.v2"
+	"github.com/google/go-github/v52/github"
 )
 
 const (
-	owlBotBranchPrefix = "owl-bot-copy"
-	apiNameOwlBotScope = "[REPLACEME]"
+	owlBotBranchPrefix         = "owl-bot-copy"
+	beginNestedCommitDelimiter = "BEGIN_NESTED_COMMIT"
+	endNestedCommitDelimiter   = "END_NESTED_COMMIT"
+	copyTagSubstring           = "Copy-Tag:"
 )
 
 var (
 	// hashFromLinePattern grabs the hash from the end of a github commit URL
 	hashFromLinePattern = regexp.MustCompile(`.*/(?P<hash>[a-zA-Z0-9]*).*`)
-	// firstPartTitlePattern grabs the existing commit title before the ': [REPLACEME]'
-	firstPartTitlePattern = regexp.MustCompile(`(?P<titleFirstPart>)(\: *\` + apiNameOwlBotScope + `)(.*)`)
-	// secondPartTitlePattern grabs the commit title after the ': [REPLACME]'
-	secondPartTitlePattern = regexp.MustCompile(`.*\: *\` + apiNameOwlBotScope + ` *(?P<titleSecondPart>.*)`)
+)
+
+var (
+	//go:embed _README.md.txt
+	readmeTmpl string
+	//go:embed _version.go.txt
+	versionTmpl string
+	//go:embed _internal_version.go.txt
+	internalVersionTmpl string
 )
 
 func main() {
@@ -60,26 +66,18 @@ func main() {
 	prFilepath := flag.String("pr-file", "/workspace/new_pull_request_text.txt", "Path at which to write text file if changing PR title or body.")
 
 	flag.Parse()
-
-	runAll, err := runAll(*clientRoot, *branchOverride)
-	if err != nil {
-		log.Fatal(err)
-	}
-
 	ctx := context.Background()
 
 	log.Println("client-root set to", *clientRoot)
 	log.Println("googleapis-dir set to", *googleapisDir)
 	log.Println("branch set to", *branchOverride)
 	log.Println("prFilepath is", *prFilepath)
+	log.Println("directories are", *directories)
 
-	var modules []string
+	dirSlice := []string{}
 	if *directories != "" {
-		dirSlice := strings.Split(*directories, ",")
-		for _, dir := range dirSlice {
-			modules = append(modules, filepath.Join(*clientRoot, dir))
-		}
-		log.Println("Postprocessor running on", modules)
+		dirSlice = strings.Split(*directories, ",")
+		log.Println("Postprocessor running on", dirSlice)
 	} else {
 		log.Println("Postprocessor running on all modules.")
 	}
@@ -95,247 +93,447 @@ func main() {
 		log.Printf("working out %s\n", tmpDir)
 		*googleapisDir = filepath.Join(tmpDir, "googleapis")
 
-		if err := git.DeepClone("https://github.com/googleapis/googleapis", *googleapisDir); err != nil {
+		if err := DeepClone("https://github.com/googleapis/googleapis", *googleapisDir); err != nil {
 			log.Fatal(err)
 		}
 	}
 
-	c := &config{
+	p := &postProcessor{
 		googleapisDir:  *googleapisDir,
 		googleCloudDir: *clientRoot,
-		modules:        modules,
+		modules:        dirSlice,
 		branchOverride: *branchOverride,
 		githubUsername: *githubUsername,
 		prFilepath:     *prFilepath,
-		runAll:         runAll,
 	}
 
-	if err := c.run(ctx); err != nil {
+	if err := p.loadConfig(); err != nil {
 		log.Fatal(err)
 	}
 
+	if err := p.run(ctx); err != nil {
+		log.Fatal(err)
+	}
 	log.Println("Completed successfully.")
 }
 
-type config struct {
+type postProcessor struct {
 	googleapisDir  string
 	googleCloudDir string
-	modules        []string
+
+	// At this time modules are either provided at the time of invocation locally
+	// and extracted from the open OwlBot PR description. If we would like
+	// the postprocessor to be able to be run on non-OwlBot PRs, we would
+	// need to change the method of populating this field.
+	modules []string
+
 	branchOverride string
 	githubUsername string
 	prFilepath     string
-	runAll         bool
+
+	config *config
 }
 
-// runAll uses git to tell if the PR being updated should run all post
-// processing logic.
-func runAll(dir, branchOverride string) (bool, error) {
-	if branchOverride != "" {
-		// This means we are running the post processor locally and want it to
-		// fully function -- so we lie.
-		return true, nil
-	}
-	c := execv.Command("git", "rev-parse", "--abbrev-ref", "HEAD")
-	c.Dir = dir
-	b, err := c.Output()
-	if err != nil {
-		return false, err
-	}
-	branchName := strings.TrimSpace(string(b))
-	return strings.HasPrefix(branchName, owlBotBranchPrefix), nil
-}
-
-func (c *config) run(ctx context.Context) error {
-	if !c.runAll {
+func (p *postProcessor) run(ctx context.Context) error {
+	if runAll, err := runAll(p.googleCloudDir, p.branchOverride); err != nil {
+		return err
+	} else if !runAll {
 		log.Println("exiting post processing early")
 		return nil
 	}
-	if err := gocmd.ModTidyAll(c.googleCloudDir); err != nil {
-		return err
-	}
-	if err := gocmd.Vet(c.googleCloudDir); err != nil {
-		return err
-	}
-	if err := c.RegenSnippets(); err != nil {
-		return err
-	}
-	if _, err := c.Manifest(generator.MicrogenGapicConfigs); err != nil {
-		return err
-	}
-	// TODO(codyoss): In the future we may want to make it possible to be able
-	// to run this locally with a user defined remote branch.
-	if err := c.AmendPRDescription(ctx); err != nil {
-		return err
-	}
-	return nil
-}
 
-// RegenSnippets regenerates the snippets for all GAPICs configured to be generated.
-func (c *config) RegenSnippets() error {
-	log.Println("regenerating snippets")
-
-	snippetDir := filepath.Join(c.googleCloudDir, "internal", "generated", "snippets")
-	apiShortnames, err := generator.ParseAPIShortnames(c.googleapisDir, generator.MicrogenGapicConfigs, generator.ManualEntries)
-
+	manifest, err := p.Manifest()
 	if err != nil {
 		return err
 	}
-	if err := gensnippets.GenerateSnippetsDirs(c.googleCloudDir, snippetDir, apiShortnames, c.modules); err != nil {
-		log.Printf("warning: got the following non-fatal errors generating snippets: %v", err)
-	}
-	if err := c.replaceAllForSnippets(c.googleCloudDir, snippetDir); err != nil {
+	if err := p.InitializeNewModules(manifest); err != nil {
 		return err
 	}
-	if err := gocmd.ModTidy(snippetDir); err != nil {
+	if err := p.UpdateSnippetsMetadata(); err != nil {
 		return err
 	}
-
+	prTitle, prBody, err := p.GetNewPRTitleAndBody(ctx)
+	if err != nil {
+		return err
+	}
+	if err := p.TidyAffectedMods(); err != nil {
+		return err
+	}
+	if err := p.UpdateReleaseFiles(); err != nil {
+		return err
+	}
+	if err := gocmd.Vet(p.googleCloudDir); err != nil {
+		return err
+	}
+	if err := p.WritePRInfoToFile(prTitle, prBody); err != nil {
+		return err
+	}
 	return nil
 }
 
-func (c *config) replaceAllForSnippets(googleCloudDir, snippetDir string) error {
-	return execv.ForEachMod(googleCloudDir, func(dir string) error {
-		if c.modules != nil {
-			for _, mod := range c.modules {
-				if !strings.Contains(dir, mod) {
-					return nil
+// InitializeNewModule detects new modules and clients and generates the required minimum files
+// For modules, the minimum required files are internal/version.go, README.md, CHANGES.md, and go.mod
+// For clients, the minimum required files are a version.go file
+func (p *postProcessor) InitializeNewModules(manifest map[string]ManifestEntry) error {
+	log.Println("checking for new modules and clients")
+	for _, moduleName := range p.config.Modules {
+		modulePath := filepath.Join(p.googleCloudDir, moduleName)
+		importPath := filepath.Join("cloud.google.com/go", moduleName)
+
+		pathToModVersionFile := filepath.Join(modulePath, "internal/version.go")
+		// Check if <module>/internal/version.go file exists
+		if _, err := os.Stat(pathToModVersionFile); errors.Is(err, fs.ErrNotExist) {
+			log.Println("detected missing file: ", pathToModVersionFile)
+			var serviceImportPath string
+			for _, v := range p.config.GapicImportPaths() {
+				if strings.Contains(v, importPath) {
+					serviceImportPath = v
+					break
 				}
 			}
+			if serviceImportPath == "" {
+				return fmt.Errorf("no config found for module %s. Cannot generate min required files", importPath)
+			}
+			// serviceImportPath here should be a valid ImportPath from a MicrogenGapicConfigs
+			apiName := manifest[serviceImportPath].Description
+			if err := p.generateMinReqFilesNewMod(moduleName, modulePath, importPath, apiName); err != nil {
+				return err
+			}
+			if err := p.modEditReplaceInSnippets(modulePath, importPath); err != nil {
+				return err
+			}
 		}
-		if dir == snippetDir {
+		// Check if version.go files exist for each client
+		err := filepath.WalkDir(modulePath, func(path string, d fs.DirEntry, err error) error {
+			if err != nil {
+				return err
+			}
+			if !d.IsDir() {
+				return nil
+			}
+			splitPath := strings.Split(path, "/")
+			lastElement := splitPath[len(splitPath)-1]
+			if !strings.Contains(lastElement, "apiv") {
+				return nil
+			}
+			pathToClientVersionFile := filepath.Join(path, "version.go")
+			if _, err = os.Stat(pathToClientVersionFile); errors.Is(err, fs.ErrNotExist) {
+				if err := p.generateVersionFile(moduleName, path); err != nil {
+					return err
+				}
+			}
 			return nil
-		}
-		mod, err := gocmd.ListModName(dir)
+		})
 		if err != nil {
 			return err
 		}
-		// Replace it. Use a relative path to avoid issues on different systems.
-		rel, err := filepath.Rel(snippetDir, dir)
-		if err != nil {
-			return err
-		}
-		c := execv.Command("bash", "-c", `go mod edit -replace "$MODULE=$MODULE_PATH"`)
-		c.Dir = snippetDir
-		c.Env = []string{
-			fmt.Sprintf("PATH=%s", os.Getenv("PATH")), // TODO(deklerk): Why do we need to do this? Doesn't seem to be necessary in other exec.Commands.
-			fmt.Sprintf("HOME=%s", os.Getenv("HOME")), // TODO(deklerk): Why do we need to do this? Doesn't seem to be necessary in other exec.Commands.
-			fmt.Sprintf("MODULE=%s", mod),
-			fmt.Sprintf("MODULE_PATH=%s", rel),
-		}
-		return c.Run()
-	})
+	}
+	return nil
 }
 
-// manifest writes a manifest file with info about all of the confs.
-func (c *config) Manifest(confs []*generator.MicrogenConfig) (map[string]generator.ManifestEntry, error) {
-	log.Println("updating gapic manifest")
-	entries := map[string]generator.ManifestEntry{} // Key is the package name.
-	f, err := os.Create(filepath.Join(c.googleCloudDir, "internal", ".repo-metadata-full.json"))
+func (p *postProcessor) generateMinReqFilesNewMod(moduleName, modulePath, importPath, apiName string) error {
+	log.Println("generating files for new module", apiName)
+	if err := generateReadmeAndChanges(modulePath, importPath, apiName); err != nil {
+		return err
+	}
+	if err := p.generateInternalVersionFile(moduleName); err != nil {
+		return err
+	}
+	if err := p.generateModule(modulePath, importPath); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (p *postProcessor) generateModule(modPath, importPath string) error {
+	if err := os.MkdirAll(modPath, os.ModePerm); err != nil {
+		return err
+	}
+	log.Printf("Creating %s/go.mod", modPath)
+	if err := gocmd.ModInit(modPath, importPath); err != nil {
+		return err
+	}
+	log.Print("Updating workspace")
+	return gocmd.WorkUse(p.googleCloudDir)
+}
+
+func (p *postProcessor) generateVersionFile(moduleName, path string) error {
+	// These directories are not modules on purpose, don't generate a version
+	// file for them.
+	if strings.Contains(path, "debugger/apiv2") || strings.Contains(path, "orgpolicy/apiv1") {
+		return nil
+	}
+	log.Println("generating version.go file in", path)
+	pathSegments := strings.Split(filepath.Dir(path), "/")
+
+	rootModInternal := fmt.Sprintf("cloud.google.com/go/%s/internal", moduleName)
+
+	f, err := os.Create(filepath.Join(path, "version.go"))
 	if err != nil {
-		return nil, err
+		return err
 	}
 	defer f.Close()
-	for _, manual := range generator.ManualEntries {
-		entries[manual.DistributionName] = manual
+
+	t := template.Must(template.New("version").Parse(versionTmpl))
+	versionData := struct {
+		Year               int
+		Package            string
+		ModuleRootInternal string
+	}{
+		Year:               time.Now().Year(),
+		Package:            pathSegments[len(pathSegments)-1],
+		ModuleRootInternal: rootModInternal,
 	}
-	for _, conf := range confs {
-		yamlPath := filepath.Join(c.googleapisDir, conf.InputDirectoryPath, conf.ApiServiceConfigPath)
-		yamlFile, err := os.Open(yamlPath)
-		if err != nil {
-			return nil, err
-		}
-		yamlConfig := struct {
-			Title string `yaml:"title"` // We only need the title field.
-		}{}
-		if err := yaml.NewDecoder(yamlFile).Decode(&yamlConfig); err != nil {
-			return nil, fmt.Errorf("decode: %v", err)
-		}
-		docURL, err := docURL(c.googleCloudDir, conf.ImportPath)
-		if err != nil {
-			return nil, fmt.Errorf("unable to build docs URL: %v", err)
-		}
-		entry := generator.ManifestEntry{
-			DistributionName:  conf.ImportPath,
-			Description:       yamlConfig.Title,
-			Language:          "Go",
-			ClientLibraryType: "generated",
-			DocsURL:           docURL,
-			ReleaseLevel:      conf.ReleaseLevel,
-			LibraryType:       generator.GapicAutoLibraryType,
-		}
-		entries[conf.ImportPath] = entry
+	if err := t.Execute(f, versionData); err != nil {
+		return err
 	}
-	enc := json.NewEncoder(f)
-	enc.SetIndent("", "  ")
-	return entries, enc.Encode(entries)
+	return nil
 }
 
-func docURL(cloudDir, importPath string) (string, error) {
-	suffix := strings.TrimPrefix(importPath, "cloud.google.com/go/")
-	mod, err := gocmd.CurrentMod(filepath.Join(cloudDir, suffix))
+func (p *postProcessor) generateInternalVersionFile(apiName string) error {
+	rootModInternal := filepath.Join(apiName, "internal")
+	os.MkdirAll(filepath.Join(p.googleCloudDir, rootModInternal), os.ModePerm)
+
+	f, err := os.Create(filepath.Join(p.googleCloudDir, rootModInternal, "version.go"))
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+
+	t := template.Must(template.New("internal_version").Parse(internalVersionTmpl))
+	internalVersionData := struct {
+		Year int
+	}{
+		Year: time.Now().Year(),
+	}
+	if err := t.Execute(f, internalVersionData); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (p *postProcessor) getDirs() []string {
+	dirs := []string{}
+	for _, module := range p.modules {
+		dirs = append(dirs, filepath.Join(p.googleCloudDir, module))
+	}
+	return dirs
+}
+
+func (p *postProcessor) modEditReplaceInSnippets(modulePath, importPath string) error {
+	// Replace it. Use a relative path to avoid issues on different systems.
+	snippetsDir := filepath.Join(p.googleCloudDir, "internal", "generated", "snippets")
+	rel, err := filepath.Rel(snippetsDir, modulePath)
+	if err != nil {
+		return err
+	}
+	return gocmd.EditReplace(snippetsDir, importPath, rel)
+}
+
+func (p *postProcessor) UpdateSnippetsMetadata() error {
+	log.Println("updating snippets metadata")
+	for _, clientRelPath := range p.config.ClientRelPaths {
+		// OwlBot dest relative paths in ClientRelPaths begin with /, so the
+		// first path segment is the second element.
+		moduleName := strings.Split(clientRelPath, "/")[1]
+		if moduleName == "" {
+			return fmt.Errorf("unable to parse module name for %v", clientRelPath)
+		}
+		// Skip if dirs option set and this module is not included.
+		if len(p.modules) > 0 && !contains(p.modules, moduleName) {
+			continue
+		}
+		// debugger/apiv2 is not in a module so it does not have version info to read.
+		if strings.Contains(clientRelPath, "debugger/apiv2") {
+			continue
+		}
+		snpDir := filepath.Join(p.googleCloudDir, "internal", "generated", "snippets", clientRelPath)
+		glob := filepath.Join(snpDir, "snippet_metadata.*.json")
+		metadataFiles, err := filepath.Glob(glob)
+		if err != nil {
+			return err
+		}
+		if len(metadataFiles) == 0 {
+			log.Println("skipping, file not found with glob: ", glob)
+			continue
+		}
+		log.Println("updating ", glob)
+		version, err := getModuleVersion(filepath.Join(p.googleCloudDir, moduleName))
+		if err != nil {
+			return err
+		}
+		read, err := os.ReadFile(metadataFiles[0])
+		if err != nil {
+			return err
+		}
+		if strings.Contains(string(read), "$VERSION") {
+			log.Printf("setting $VERSION to %s in %s", version, metadataFiles[0])
+			s := strings.Replace(string(read), "$VERSION", version, 1)
+			err = os.WriteFile(metadataFiles[0], []byte(s), 0)
+			if err != nil {
+				return err
+			}
+		}
+	}
+	return nil
+}
+
+func getModuleVersion(dir string) (string, error) {
+	node, err := parser.ParseFile(token.NewFileSet(), filepath.Join(dir, "internal", "version.go"), nil, parser.ParseComments)
 	if err != nil {
 		return "", err
 	}
-	pkgPath := strings.TrimPrefix(strings.TrimPrefix(importPath, mod), "/")
-	return "https://cloud.google.com/go/docs/reference/" + mod + "/latest/" + pkgPath, nil
+	version := node.Scope.Objects["Version"].Decl.(*ast.ValueSpec).Values[0].(*ast.BasicLit).Value
+	version = strings.Trim(version, `"`)
+	return version, nil
 }
 
-func (c *config) AmendPRDescription(ctx context.Context) error {
+func (p *postProcessor) TidyAffectedMods() error {
+	dirs := p.getDirs()
+	for _, dir := range dirs {
+		if err := gocmd.ModTidy(dir); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+// Copied from generator package
+func generateReadmeAndChanges(path, importPath, apiName string) error {
+	readmePath := filepath.Join(path, "README.md")
+	log.Printf("Creating %q", readmePath)
+	readmeFile, err := os.Create(readmePath)
+	if err != nil {
+		return err
+	}
+	defer readmeFile.Close()
+	t := template.Must(template.New("readme").Parse(readmeTmpl))
+	readmeData := struct {
+		Name       string
+		ImportPath string
+	}{
+		Name:       apiName,
+		ImportPath: importPath,
+	}
+	if err := t.Execute(readmeFile, readmeData); err != nil {
+		return err
+	}
+
+	changesPath := filepath.Join(path, "CHANGES.md")
+	log.Printf("Creating %q", changesPath)
+	changesFile, err := os.Create(changesPath)
+	if err != nil {
+		return err
+	}
+	defer changesFile.Close()
+	_, err = changesFile.WriteString("# Changes\n")
+	return err
+}
+
+func (p *postProcessor) GetNewPRTitleAndBody(ctx context.Context) (string, string, error) {
+	var prTitle, prBody string
 	log.Println("Amending PR title and body")
-	pr, err := c.getPR(ctx)
+	pr, err := p.getPR(ctx)
 	if err != nil {
-		return err
+		return prTitle, prBody, err
 	}
-	newPRTitle, newPRBody, err := c.processCommit(*pr.Title, *pr.Body)
+	newPRTitle, newPRBody, err := p.processCommit(*pr.Title, *pr.Body)
 	if err != nil {
-		return err
+		return prTitle, prBody, err
 	}
-	return c.writePRCommitToFile(newPRTitle, newPRBody)
+	return newPRTitle, newPRBody, nil
 }
 
-func (c *config) processCommit(title, body string) (string, string, error) {
-	var newPRTitle string
-	var commitTitle string
-	var commitTitleIndex int
+func contains(s []string, str string) bool {
+	for _, elem := range s {
+		if elem == str {
+			return true
+		}
+	}
+	return false
+}
+
+func (p *postProcessor) processCommit(title, body string) (string, string, error) {
+	var newTitle string
+	var newBody strings.Builder
+	var commitsSlice []string
+	startCommitIndex := 0
 
 	bodySlice := strings.Split(body, "\n")
+
+	// Split body into separate commits, stripping nested commit delimiters
 	for index, line := range bodySlice {
-		if strings.Contains(line, apiNameOwlBotScope) {
-			commitTitle = line
-			commitTitleIndex = index
-			continue
+		if strings.Contains(line, beginNestedCommitDelimiter) || strings.Contains(line, endNestedCommitDelimiter) {
+			startCommitIndex = index + 1
 		}
-		// When OwlBot generates the commit body, after commit titles it provides 'Source-Link's.
-		// The source-link pointing to the googleapis/googleapis repo commit allows us to extract
-		// hash and find files changed in order to identify the commit's scope.
-		if !strings.Contains(line, "googleapis/googleapis/") {
-			continue
+		if strings.Contains(line, copyTagSubstring) {
+			thisCommit := strings.Join(bodySlice[startCommitIndex:index+1], "\n")
+			commitsSlice = append(commitsSlice, thisCommit)
+			startCommitIndex = index + 1
 		}
-		hash := extractHashFromLine(line)
-		scope, err := c.getScopeFromGoogleapisCommitHash(hash)
-		if err != nil {
-			return "", "", err
-		}
-		if newPRTitle == "" {
-			newPRTitle = updateCommitTitle(title, scope)
-			continue
-		}
-		newCommitTitle := updateCommitTitle(commitTitle, scope)
-		bodySlice[commitTitleIndex] = newCommitTitle
 	}
-	body = strings.Join(bodySlice, "\n")
-	return newPRTitle, body, nil
+
+	// Add scope to each commit
+	for commitIndex, commit := range commitsSlice {
+		commitLines := strings.Split(strings.TrimSpace(commit), "\n")
+		var currTitle string
+		if commitIndex == 0 {
+			currTitle = title
+		} else {
+			currTitle = commitLines[0]
+			commitLines = commitLines[1:]
+			newBody.WriteString(fmt.Sprintf("\n%v\n", beginNestedCommitDelimiter))
+		}
+		for _, line := range commitLines {
+			// When OwlBot generates the commit body, after commit titles it provides 'Source-Link's.
+			// The source-link pointing to the googleapis/googleapis repo commit allows us to extract
+			// hash and find files changed in order to identify the commit's scope.
+			if strings.Contains(line, "googleapis/googleapis/") {
+				hash := extractHashFromLine(line)
+				scopes, err := p.getScopesFromGoogleapisCommitHash(hash)
+				if err != nil {
+					return "", "", err
+				}
+				for _, scope := range scopes {
+					if !contains(p.modules, scope) {
+						p.modules = append(p.modules, scope)
+					}
+				}
+				var scope string
+				if len(scopes) == 1 {
+					scope = scopes[0]
+				}
+
+				newCommitTitle := updateCommitTitle(currTitle, scope)
+				if newTitle == "" {
+					newTitle = newCommitTitle
+				} else {
+					newBody.WriteString(fmt.Sprintf("%v\n", newCommitTitle))
+				}
+
+				newBody.WriteString(strings.Join(commitLines, "\n"))
+				if commitIndex != 0 {
+					newBody.WriteString(fmt.Sprintf("\n%v", endNestedCommitDelimiter))
+				}
+			}
+		}
+	}
+	if p.branchOverride != "" {
+		p.modules = []string{}
+		p.modules = append(p.modules, p.config.Modules...)
+	}
+	return newTitle, newBody.String(), nil
 }
 
-func (c *config) getPR(ctx context.Context) (*github.PullRequest, error) {
+func (p *postProcessor) getPR(ctx context.Context) (*github.PullRequest, error) {
 	client := github.NewClient(nil)
-	prs, _, err := client.PullRequests.List(ctx, c.githubUsername, "google-cloud-go", nil)
+	prs, _, err := client.PullRequests.List(ctx, p.githubUsername, "google-cloud-go", nil)
 	if err != nil {
 		return nil, err
 	}
 	var owlbotPR *github.PullRequest
-	branch := c.branchOverride
-	if c.branchOverride == "" {
+	branch := p.branchOverride
+	if p.branchOverride == "" {
 		branch = owlBotBranchPrefix
 	}
 	for _, pr := range prs {
@@ -349,24 +547,25 @@ func (c *config) getPR(ctx context.Context) (*github.PullRequest, error) {
 	return owlbotPR, nil
 }
 
-func (c *config) getScopeFromGoogleapisCommitHash(commitHash string) (string, error) {
-	files, err := c.filesChanged(commitHash)
+func (p *postProcessor) getScopesFromGoogleapisCommitHash(commitHash string) ([]string, error) {
+	files, err := filesChanged(p.googleapisDir, commitHash)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 	// if no files changed, return empty string
 	if len(files) == 0 {
-		return "", nil
+		return nil, nil
 	}
 	scopesMap := make(map[string]bool)
 	scopes := []string{}
 	for _, filePath := range files {
-		for _, config := range generator.MicrogenGapicConfigs {
-			if config.InputDirectoryPath == filepath.Dir(filePath) {
-				// trim prefix
-				scope := strings.TrimPrefix(config.ImportPath, "cloud.google.com/go/")
-				// trim version
-				scope = filepath.Dir(scope)
+		// Need import path
+		for inputDir, li := range p.config.GoogleapisToImportPath {
+			if inputDir == filepath.Dir(filePath) {
+				// trim service version
+				scope := filepath.Dir(li.RelPath)
+				// trim leading slash
+				scope = strings.TrimPrefix(scope, "/")
 				if _, value := scopesMap[scope]; !value {
 					scopesMap[scope] = true
 					scopes = append(scopes, scope)
@@ -375,68 +574,56 @@ func (c *config) getScopeFromGoogleapisCommitHash(commitHash string) (string, er
 			}
 		}
 	}
-	// if no in-scope packages are found or if many packages found, return empty string
-	if len(scopes) != 1 {
-		return "", nil
-	}
-	// if single scope found, return
-	return scopes[0], nil
-}
-
-// filesChanged returns a list of files changed in a commit for the provdied
-// hash in the given gitDir. Copied fromm google-cloud-go/gapicgen/git/git.go
-func (c *config) filesChanged(hash string) ([]string, error) {
-	out := execv.Command("git", "show", "--pretty=format:", "--name-only", hash)
-	out.Dir = c.googleapisDir
-	b, err := out.Output()
-	if err != nil {
-		return nil, err
-	}
-	return strings.Split(string(b), "\n"), nil
+	return scopes, nil
 }
 
 func extractHashFromLine(line string) string {
 	hash := fmt.Sprintf("${%s}", hashFromLinePattern.SubexpNames()[1])
 	hashVal := hashFromLinePattern.ReplaceAllString(line, hash)
-
 	return hashVal
 }
 
 func updateCommitTitle(title, titlePkg string) string {
-	var newTitle string
-
-	firstTitlePart := firstPartTitlePattern.ReplaceAllString(title, "$titleFirstPart")
-	secondTitlePart := secondPartTitlePattern.ReplaceAllString(title, "$titleSecondPart")
-
 	var breakChangeIndicator string
-	if strings.HasSuffix(firstTitlePart, "!") {
+	titleParts := strings.Split(title, ":")
+	commitPrefix := titleParts[0]
+	msg := strings.TrimSpace(titleParts[1])
+
+	// If a scope is already provided, remove it.
+	if i := strings.Index(commitPrefix, "("); i > 0 {
+		commitPrefix = commitPrefix[:i]
+	}
+	if strings.HasSuffix(commitPrefix, "!") {
 		breakChangeIndicator = "!"
 	}
 	if titlePkg == "" {
-		newTitle = fmt.Sprintf("%v%v: %v", firstTitlePart, breakChangeIndicator, secondTitlePart)
-		return newTitle
+		return fmt.Sprintf("%v%v: %v", commitPrefix, breakChangeIndicator, msg)
 	}
-	newTitle = fmt.Sprintf("%v(%v)%v: %v", firstTitlePart, titlePkg, breakChangeIndicator, secondTitlePart)
-
-	return newTitle
+	return fmt.Sprintf("%v(%v)%v: %v", commitPrefix, titlePkg, breakChangeIndicator, msg)
 }
 
-// writePRCommitToFile uses OwlBot env variable specified path to write updated PR title and body at that location
-func (c *config) writePRCommitToFile(title, body string) error {
+// WritePRInfoToFile uses OwlBot env variable specified path to write updated
+// PR title and body at that location
+func (p *postProcessor) WritePRInfoToFile(prTitle, prBody string) error {
+	if prTitle == "" && prBody == "" {
+		log.Println("No updated PR info found, will not write PR title and description to file.")
+		return nil
+	}
 	// if file exists at location, delete
-	if err := os.Remove(c.prFilepath); err != nil {
+	if err := os.Remove(p.prFilepath); err != nil {
 		if errors.Is(err, fs.ErrNotExist) {
 			log.Println(err)
 		} else {
 			return err
 		}
 	}
-	f, err := os.OpenFile(c.prFilepath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
+	f, err := os.OpenFile(p.prFilepath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
 	if err != nil {
 		return err
 	}
 	defer f.Close()
-	if _, err := f.WriteString(fmt.Sprintf("%s\n\n%s", title, body)); err != nil {
+	log.Println("Writing PR title and description to file.")
+	if _, err := f.WriteString(fmt.Sprintf("%s\n\n%s", prTitle, prBody)); err != nil {
 		return err
 	}
 	return nil

@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/orgpolicy/apiv2",
-    "version": "1.6.0",
+    "version": "1.11.1",
     "language": "GO",
     "apis": [
       {
@@ -14,7 +14,7 @@
     {
       "regionTag": "orgpolicy_v2_generated_OrgPolicy_CreatePolicy_sync",
       "title": "orgpolicy CreatePolicy Sample",
-      "description": "CreatePolicy creates a Policy.\n\nReturns a google.rpc.Status with google.rpc.Code.NOT_FOUND if the\nconstraint does not exist.\nReturns a google.rpc.Status with google.rpc.Code.ALREADY_EXISTS if the\npolicy already exists on the given Cloud resource.",
+      "description": "CreatePolicy creates a Policy.\n\nReturns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the\nconstraint does not exist.\nReturns a `google.rpc.Status` with `google.rpc.Code.ALREADY_EXISTS` if the\npolicy already exists on the given Cloud resource.",
       "file": "Client/CreatePolicy/main.go",
       "language": "GO",
       "clientMethod": {
@@ -34,7 +34,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "orgpolicypb.Policy",
+        "resultType": "*orgpolicypb.Policy",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.orgpolicy.v2.Client"
@@ -60,7 +60,7 @@
     {
       "regionTag": "orgpolicy_v2_generated_OrgPolicy_DeletePolicy_sync",
       "title": "orgpolicy DeletePolicy Sample",
-      "description": "DeletePolicy deletes a Policy.\n\nReturns a google.rpc.Status with google.rpc.Code.NOT_FOUND if the\nconstraint or Org Policy does not exist.",
+      "description": "DeletePolicy deletes a Policy.\n\nReturns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the\nconstraint or Org Policy does not exist.",
       "file": "Client/DeletePolicy/main.go",
       "language": "GO",
       "clientMethod": {
@@ -105,7 +105,7 @@
     {
       "regionTag": "orgpolicy_v2_generated_OrgPolicy_GetEffectivePolicy_sync",
       "title": "orgpolicy GetEffectivePolicy Sample",
-      "description": "GetEffectivePolicy gets the effective Policy on a resource. This is the result of merging\nPolicies in the resource hierarchy and evaluating conditions. The\nreturned Policy will not have an etag or condition set because it is\na computed Policy across multiple resources.\nSubtrees of Resource Manager resource hierarchy with ‘under: ’ prefix will\nnot be expanded.",
+      "description": "GetEffectivePolicy gets the effective `Policy` on a resource. This is the result of merging\n`Policies` in the resource hierarchy and evaluating conditions. The\nreturned `Policy` will not have an `etag` or `condition` set because it is\na computed `Policy` across multiple resources.\nSubtrees of Resource Manager resource hierarchy with 'under: ' prefix will\nnot be expanded.",
       "file": "Client/GetEffectivePolicy/main.go",
       "language": "GO",
       "clientMethod": {
@@ -125,7 +125,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "orgpolicypb.Policy",
+        "resultType": "*orgpolicypb.Policy",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.orgpolicy.v2.Client"
@@ -151,7 +151,7 @@
     {
       "regionTag": "orgpolicy_v2_generated_OrgPolicy_GetPolicy_sync",
       "title": "orgpolicy GetPolicy Sample",
-      "description": "GetPolicy gets a Policy on a resource.\n\nIf no Policy is set on the resource, NOT_FOUND is returned. The\netag value can be used with UpdatePolicy() to update a\nPolicy during read-modify-write.",
+      "description": "GetPolicy gets a `Policy` on a resource.\n\nIf no `Policy` is set on the resource, NOT_FOUND is returned. The\n`etag` value can be used with `UpdatePolicy()` to update a\n`Policy` during read-modify-write.",
       "file": "Client/GetPolicy/main.go",
       "language": "GO",
       "clientMethod": {
@@ -171,7 +171,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "orgpolicypb.Policy",
+        "resultType": "*orgpolicypb.Policy",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.orgpolicy.v2.Client"
@@ -197,7 +197,7 @@
     {
       "regionTag": "orgpolicy_v2_generated_OrgPolicy_ListConstraints_sync",
       "title": "orgpolicy ListConstraints Sample",
-      "description": "ListConstraints lists Constraints that could be applied on the specified resource.",
+      "description": "ListConstraints lists `Constraints` that could be applied on the specified resource.",
       "file": "Client/ListConstraints/main.go",
       "language": "GO",
       "clientMethod": {
@@ -243,7 +243,7 @@
     {
       "regionTag": "orgpolicy_v2_generated_OrgPolicy_ListPolicies_sync",
       "title": "orgpolicy ListPolicies Sample",
-      "description": "ListPolicies retrieves all of the Policies that exist on a particular resource.",
+      "description": "ListPolicies retrieves all of the `Policies` that exist on a particular resource.",
       "file": "Client/ListPolicies/main.go",
       "language": "GO",
       "clientMethod": {
@@ -289,7 +289,7 @@
     {
       "regionTag": "orgpolicy_v2_generated_OrgPolicy_UpdatePolicy_sync",
       "title": "orgpolicy UpdatePolicy Sample",
-      "description": "UpdatePolicy updates a Policy.\n\nReturns a google.rpc.Status with google.rpc.Code.NOT_FOUND if the\nconstraint or the policy do not exist.\nReturns a google.rpc.Status with google.rpc.Code.ABORTED if the etag\nsupplied in the request does not match the persisted etag of the policy\n\nNote: the supplied policy will perform a full overwrite of all\nfields.",
+      "description": "UpdatePolicy updates a Policy.\n\nReturns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the\nconstraint or the policy do not exist.\nReturns a `google.rpc.Status` with `google.rpc.Code.ABORTED` if the etag\nsupplied in the request does not match the persisted etag of the policy\n\nNote: the supplied policy will perform a full overwrite of all\nfields.",
       "file": "Client/UpdatePolicy/main.go",
       "language": "GO",
       "clientMethod": {
@@ -309,7 +309,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "orgpolicypb.Policy",
+        "resultType": "*orgpolicypb.Policy",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.orgpolicy.v2.Client"

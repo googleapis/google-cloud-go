@@ -47,9 +47,8 @@ exit_code=0
 # Run tests in the current directory and tee output to log file,
 # to be pushed to GCS as artifact.
 runPresubmitTests() {
-  if [[ $PWD != *"/internal/"* ]] ||
-    [[ $PWD != *"/third_party/"* ]] &&
-    [[ $KOKORO_JOB_NAME == *"earliest"* ]]; then
+  if [[ $PWD == *"/internal/"* ]] ||
+    [[ $PWD == *"/third_party/"* ]]; then
     # internal tools only expected to work with latest go version
     return
   fi

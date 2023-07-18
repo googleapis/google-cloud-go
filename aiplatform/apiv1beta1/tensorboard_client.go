@@ -20,15 +20,17 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"math"
 	"net/http"
 	"net/url"
 	"time"
 
 	aiplatformpb "cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb"
+	iampb "cloud.google.com/go/iam/apiv1/iampb"
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
@@ -37,8 +39,6 @@ import (
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
-	iampb "google.golang.org/genproto/googleapis/iam/v1"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/encoding/protojson"
@@ -51,10 +51,11 @@ var newTensorboardClientHook clientHook
 type TensorboardCallOptions struct {
 	CreateTensorboard                  []gax.CallOption
 	GetTensorboard                     []gax.CallOption
-	ReadTensorboardUsage               []gax.CallOption
 	UpdateTensorboard                  []gax.CallOption
 	ListTensorboards                   []gax.CallOption
 	DeleteTensorboard                  []gax.CallOption
+	ReadTensorboardUsage               []gax.CallOption
+	ReadTensorboardSize                []gax.CallOption
 	CreateTensorboardExperiment        []gax.CallOption
 	GetTensorboardExperiment           []gax.CallOption
 	UpdateTensorboardExperiment        []gax.CallOption
@@ -106,10 +107,11 @@ func defaultTensorboardCallOptions() *TensorboardCallOptions {
 	return &TensorboardCallOptions{
 		CreateTensorboard:                  []gax.CallOption{},
 		GetTensorboard:                     []gax.CallOption{},
-		ReadTensorboardUsage:               []gax.CallOption{},
 		UpdateTensorboard:                  []gax.CallOption{},
 		ListTensorboards:                   []gax.CallOption{},
 		DeleteTensorboard:                  []gax.CallOption{},
+		ReadTensorboardUsage:               []gax.CallOption{},
+		ReadTensorboardSize:                []gax.CallOption{},
 		CreateTensorboardExperiment:        []gax.CallOption{},
 		GetTensorboardExperiment:           []gax.CallOption{},
 		UpdateTensorboardExperiment:        []gax.CallOption{},
@@ -150,10 +152,11 @@ func defaultTensorboardRESTCallOptions() *TensorboardCallOptions {
 	return &TensorboardCallOptions{
 		CreateTensorboard:                  []gax.CallOption{},
 		GetTensorboard:                     []gax.CallOption{},
-		ReadTensorboardUsage:               []gax.CallOption{},
 		UpdateTensorboard:                  []gax.CallOption{},
 		ListTensorboards:                   []gax.CallOption{},
 		DeleteTensorboard:                  []gax.CallOption{},
+		ReadTensorboardUsage:               []gax.CallOption{},
+		ReadTensorboardSize:                []gax.CallOption{},
 		CreateTensorboardExperiment:        []gax.CallOption{},
 		GetTensorboardExperiment:           []gax.CallOption{},
 		UpdateTensorboardExperiment:        []gax.CallOption{},
@@ -198,12 +201,13 @@ type internalTensorboardClient interface {
 	CreateTensorboard(context.Context, *aiplatformpb.CreateTensorboardRequest, ...gax.CallOption) (*CreateTensorboardOperation, error)
 	CreateTensorboardOperation(name string) *CreateTensorboardOperation
 	GetTensorboard(context.Context, *aiplatformpb.GetTensorboardRequest, ...gax.CallOption) (*aiplatformpb.Tensorboard, error)
-	ReadTensorboardUsage(context.Context, *aiplatformpb.ReadTensorboardUsageRequest, ...gax.CallOption) (*aiplatformpb.ReadTensorboardUsageResponse, error)
 	UpdateTensorboard(context.Context, *aiplatformpb.UpdateTensorboardRequest, ...gax.CallOption) (*UpdateTensorboardOperation, error)
 	UpdateTensorboardOperation(name string) *UpdateTensorboardOperation
 	ListTensorboards(context.Context, *aiplatformpb.ListTensorboardsRequest, ...gax.CallOption) *TensorboardIterator
 	DeleteTensorboard(context.Context, *aiplatformpb.DeleteTensorboardRequest, ...gax.CallOption) (*DeleteTensorboardOperation, error)
 	DeleteTensorboardOperation(name string) *DeleteTensorboardOperation
+	ReadTensorboardUsage(context.Context, *aiplatformpb.ReadTensorboardUsageRequest, ...gax.CallOption) (*aiplatformpb.ReadTensorboardUsageResponse, error)
+	ReadTensorboardSize(context.Context, *aiplatformpb.ReadTensorboardSizeRequest, ...gax.CallOption) (*aiplatformpb.ReadTensorboardSizeResponse, error)
 	CreateTensorboardExperiment(context.Context, *aiplatformpb.CreateTensorboardExperimentRequest, ...gax.CallOption) (*aiplatformpb.TensorboardExperiment, error)
 	GetTensorboardExperiment(context.Context, *aiplatformpb.GetTensorboardExperimentRequest, ...gax.CallOption) (*aiplatformpb.TensorboardExperiment, error)
 	UpdateTensorboardExperiment(context.Context, *aiplatformpb.UpdateTensorboardExperimentRequest, ...gax.CallOption) (*aiplatformpb.TensorboardExperiment, error)
@@ -298,11 +302,6 @@ func (c *TensorboardClient) GetTensorboard(ctx context.Context, req *aiplatformp
 	return c.internalClient.GetTensorboard(ctx, req, opts...)
 }
 
-// ReadTensorboardUsage returns a list of monthly active users for a given TensorBoard instance.
-func (c *TensorboardClient) ReadTensorboardUsage(ctx context.Context, req *aiplatformpb.ReadTensorboardUsageRequest, opts ...gax.CallOption) (*aiplatformpb.ReadTensorboardUsageResponse, error) {
-	return c.internalClient.ReadTensorboardUsage(ctx, req, opts...)
-}
-
 // UpdateTensorboard updates a Tensorboard.
 func (c *TensorboardClient) UpdateTensorboard(ctx context.Context, req *aiplatformpb.UpdateTensorboardRequest, opts ...gax.CallOption) (*UpdateTensorboardOperation, error) {
 	return c.internalClient.UpdateTensorboard(ctx, req, opts...)
@@ -328,6 +327,16 @@ func (c *TensorboardClient) DeleteTensorboard(ctx context.Context, req *aiplatfo
 // The name must be that of a previously created DeleteTensorboardOperation, possibly from a different process.
 func (c *TensorboardClient) DeleteTensorboardOperation(name string) *DeleteTensorboardOperation {
 	return c.internalClient.DeleteTensorboardOperation(name)
+}
+
+// ReadTensorboardUsage returns a list of monthly active users for a given TensorBoard instance.
+func (c *TensorboardClient) ReadTensorboardUsage(ctx context.Context, req *aiplatformpb.ReadTensorboardUsageRequest, opts ...gax.CallOption) (*aiplatformpb.ReadTensorboardUsageResponse, error) {
+	return c.internalClient.ReadTensorboardUsage(ctx, req, opts...)
+}
+
+// ReadTensorboardSize returns the storage size for a given TensorBoard instance.
+func (c *TensorboardClient) ReadTensorboardSize(ctx context.Context, req *aiplatformpb.ReadTensorboardSizeRequest, opts ...gax.CallOption) (*aiplatformpb.ReadTensorboardSizeResponse, error) {
+	return c.internalClient.ReadTensorboardSize(ctx, req, opts...)
 }
 
 // CreateTensorboardExperiment creates a TensorboardExperiment.
@@ -545,9 +554,6 @@ type tensorboardGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing TensorboardClient
 	CallOptions **TensorboardCallOptions
 
@@ -583,11 +589,6 @@ func NewTensorboardClient(ctx context.Context, opts ...option.ClientOption) (*Te
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -596,7 +597,6 @@ func NewTensorboardClient(ctx context.Context, opts ...option.ClientOption) (*Te
 
 	c := &tensorboardGRPCClient{
 		connPool:          connPool,
-		disableDeadlines:  disableDeadlines,
 		tensorboardClient: aiplatformpb.NewTensorboardServiceClient(connPool),
 		CallOptions:       &client.CallOptions,
 		operationsClient:  longrunningpb.NewOperationsClient(connPool),
@@ -633,7 +633,7 @@ func (c *tensorboardGRPCClient) Connection() *grpc.ClientConn {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *tensorboardGRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -708,7 +708,7 @@ func defaultTensorboardRESTClientOptions() []option.ClientOption {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *tensorboardRESTClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -755,23 +755,6 @@ func (c *tensorboardGRPCClient) GetTensorboard(ctx context.Context, req *aiplatf
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.tensorboardClient.GetTensorboard(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return resp, nil
-}
-
-func (c *tensorboardGRPCClient) ReadTensorboardUsage(ctx context.Context, req *aiplatformpb.ReadTensorboardUsageRequest, opts ...gax.CallOption) (*aiplatformpb.ReadTensorboardUsageResponse, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "tensorboard", url.QueryEscape(req.GetTensorboard())))
-
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append((*c.CallOptions).ReadTensorboardUsage[0:len((*c.CallOptions).ReadTensorboardUsage):len((*c.CallOptions).ReadTensorboardUsage)], opts...)
-	var resp *aiplatformpb.ReadTensorboardUsageResponse
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = c.tensorboardClient.ReadTensorboardUsage(ctx, req, settings.GRPC...)
 		return err
 	}, opts...)
 	if err != nil {
@@ -861,6 +844,40 @@ func (c *tensorboardGRPCClient) DeleteTensorboard(ctx context.Context, req *aipl
 	return &DeleteTensorboardOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
+}
+
+func (c *tensorboardGRPCClient) ReadTensorboardUsage(ctx context.Context, req *aiplatformpb.ReadTensorboardUsageRequest, opts ...gax.CallOption) (*aiplatformpb.ReadTensorboardUsageResponse, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "tensorboard", url.QueryEscape(req.GetTensorboard())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).ReadTensorboardUsage[0:len((*c.CallOptions).ReadTensorboardUsage):len((*c.CallOptions).ReadTensorboardUsage)], opts...)
+	var resp *aiplatformpb.ReadTensorboardUsageResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.tensorboardClient.ReadTensorboardUsage(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *tensorboardGRPCClient) ReadTensorboardSize(ctx context.Context, req *aiplatformpb.ReadTensorboardSizeRequest, opts ...gax.CallOption) (*aiplatformpb.ReadTensorboardSizeResponse, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "tensorboard", url.QueryEscape(req.GetTensorboard())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).ReadTensorboardSize[0:len((*c.CallOptions).ReadTensorboardSize):len((*c.CallOptions).ReadTensorboardSize)], opts...)
+	var resp *aiplatformpb.ReadTensorboardSizeResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.tensorboardClient.ReadTensorboardSize(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
 }
 
 func (c *tensorboardGRPCClient) CreateTensorboardExperiment(ctx context.Context, req *aiplatformpb.CreateTensorboardExperimentRequest, opts ...gax.CallOption) (*aiplatformpb.TensorboardExperiment, error) {
@@ -1632,13 +1649,13 @@ func (c *tensorboardRESTClient) CreateTensorboard(ctx context.Context, req *aipl
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1690,66 +1707,13 @@ func (c *tensorboardRESTClient) GetTensorboard(ctx context.Context, req *aiplatf
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
-		}
-
-		return nil
-	}, opts...)
-	if e != nil {
-		return nil, e
-	}
-	return resp, nil
-}
-
-// ReadTensorboardUsage returns a list of monthly active users for a given TensorBoard instance.
-func (c *tensorboardRESTClient) ReadTensorboardUsage(ctx context.Context, req *aiplatformpb.ReadTensorboardUsageRequest, opts ...gax.CallOption) (*aiplatformpb.ReadTensorboardUsageResponse, error) {
-	baseUrl, err := url.Parse(c.endpoint)
-	if err != nil {
-		return nil, err
-	}
-	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:readUsage", req.GetTensorboard())
-
-	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "tensorboard", url.QueryEscape(req.GetTensorboard())))
-
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
-	opts = append((*c.CallOptions).ReadTensorboardUsage[0:len((*c.CallOptions).ReadTensorboardUsage):len((*c.CallOptions).ReadTensorboardUsage)], opts...)
-	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
-	resp := &aiplatformpb.ReadTensorboardUsageResponse{}
-	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		if settings.Path != "" {
-			baseUrl.Path = settings.Path
-		}
-		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
-		if err != nil {
 			return err
-		}
-		httpReq = httpReq.WithContext(ctx)
-		httpReq.Header = headers
-
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := ioutil.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
-		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
 		}
 
 		return nil
@@ -1781,7 +1745,7 @@ func (c *tensorboardRESTClient) UpdateTensorboard(ctx context.Context, req *aipl
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask))
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1813,13 +1777,13 @@ func (c *tensorboardRESTClient) UpdateTensorboard(ctx context.Context, req *aipl
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1874,7 +1838,7 @@ func (c *tensorboardRESTClient) ListTensorboards(ctx context.Context, req *aipla
 			if err != nil {
 				return nil, "", err
 			}
-			params.Add("readMask", string(readMask))
+			params.Add("readMask", string(readMask[1:len(readMask)-1]))
 		}
 
 		baseUrl.RawQuery = params.Encode()
@@ -1901,13 +1865,13 @@ func (c *tensorboardRESTClient) ListTensorboards(ctx context.Context, req *aipla
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -1970,13 +1934,13 @@ func (c *tensorboardRESTClient) DeleteTensorboard(ctx context.Context, req *aipl
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1990,6 +1954,112 @@ func (c *tensorboardRESTClient) DeleteTensorboard(ctx context.Context, req *aipl
 		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
+}
+
+// ReadTensorboardUsage returns a list of monthly active users for a given TensorBoard instance.
+func (c *tensorboardRESTClient) ReadTensorboardUsage(ctx context.Context, req *aiplatformpb.ReadTensorboardUsageRequest, opts ...gax.CallOption) (*aiplatformpb.ReadTensorboardUsageResponse, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:readUsage", req.GetTensorboard())
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "tensorboard", url.QueryEscape(req.GetTensorboard())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).ReadTensorboardUsage[0:len((*c.CallOptions).ReadTensorboardUsage):len((*c.CallOptions).ReadTensorboardUsage)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &aiplatformpb.ReadTensorboardUsageResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// ReadTensorboardSize returns the storage size for a given TensorBoard instance.
+func (c *tensorboardRESTClient) ReadTensorboardSize(ctx context.Context, req *aiplatformpb.ReadTensorboardSizeRequest, opts ...gax.CallOption) (*aiplatformpb.ReadTensorboardSizeResponse, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:readSize", req.GetTensorboard())
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "tensorboard", url.QueryEscape(req.GetTensorboard())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).ReadTensorboardSize[0:len((*c.CallOptions).ReadTensorboardSize):len((*c.CallOptions).ReadTensorboardSize)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &aiplatformpb.ReadTensorboardSizeResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
 }
 
 // CreateTensorboardExperiment creates a TensorboardExperiment.
@@ -2040,13 +2110,13 @@ func (c *tensorboardRESTClient) CreateTensorboardExperiment(ctx context.Context,
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2093,13 +2163,13 @@ func (c *tensorboardRESTClient) GetTensorboardExperiment(ctx context.Context, re
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2131,7 +2201,7 @@ func (c *tensorboardRESTClient) UpdateTensorboardExperiment(ctx context.Context,
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask))
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -2164,13 +2234,13 @@ func (c *tensorboardRESTClient) UpdateTensorboardExperiment(ctx context.Context,
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2220,7 +2290,7 @@ func (c *tensorboardRESTClient) ListTensorboardExperiments(ctx context.Context, 
 			if err != nil {
 				return nil, "", err
 			}
-			params.Add("readMask", string(readMask))
+			params.Add("readMask", string(readMask[1:len(readMask)-1]))
 		}
 
 		baseUrl.RawQuery = params.Encode()
@@ -2247,13 +2317,13 @@ func (c *tensorboardRESTClient) ListTensorboardExperiments(ctx context.Context, 
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -2316,13 +2386,13 @@ func (c *tensorboardRESTClient) DeleteTensorboardExperiment(ctx context.Context,
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2386,13 +2456,13 @@ func (c *tensorboardRESTClient) CreateTensorboardRun(ctx context.Context, req *a
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2445,13 +2515,13 @@ func (c *tensorboardRESTClient) BatchCreateTensorboardRuns(ctx context.Context, 
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2498,13 +2568,13 @@ func (c *tensorboardRESTClient) GetTensorboardRun(ctx context.Context, req *aipl
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2536,7 +2606,7 @@ func (c *tensorboardRESTClient) UpdateTensorboardRun(ctx context.Context, req *a
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask))
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -2569,13 +2639,13 @@ func (c *tensorboardRESTClient) UpdateTensorboardRun(ctx context.Context, req *a
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2625,7 +2695,7 @@ func (c *tensorboardRESTClient) ListTensorboardRuns(ctx context.Context, req *ai
 			if err != nil {
 				return nil, "", err
 			}
-			params.Add("readMask", string(readMask))
+			params.Add("readMask", string(readMask[1:len(readMask)-1]))
 		}
 
 		baseUrl.RawQuery = params.Encode()
@@ -2652,13 +2722,13 @@ func (c *tensorboardRESTClient) ListTensorboardRuns(ctx context.Context, req *ai
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -2721,13 +2791,13 @@ func (c *tensorboardRESTClient) DeleteTensorboardRun(ctx context.Context, req *a
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2785,13 +2855,13 @@ func (c *tensorboardRESTClient) BatchCreateTensorboardTimeSeries(ctx context.Con
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2852,13 +2922,13 @@ func (c *tensorboardRESTClient) CreateTensorboardTimeSeries(ctx context.Context,
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2905,13 +2975,13 @@ func (c *tensorboardRESTClient) GetTensorboardTimeSeries(ctx context.Context, re
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2943,7 +3013,7 @@ func (c *tensorboardRESTClient) UpdateTensorboardTimeSeries(ctx context.Context,
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask))
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -2976,13 +3046,13 @@ func (c *tensorboardRESTClient) UpdateTensorboardTimeSeries(ctx context.Context,
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -3032,7 +3102,7 @@ func (c *tensorboardRESTClient) ListTensorboardTimeSeries(ctx context.Context, r
 			if err != nil {
 				return nil, "", err
 			}
-			params.Add("readMask", string(readMask))
+			params.Add("readMask", string(readMask[1:len(readMask)-1]))
 		}
 
 		baseUrl.RawQuery = params.Encode()
@@ -3059,13 +3129,13 @@ func (c *tensorboardRESTClient) ListTensorboardTimeSeries(ctx context.Context, r
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -3128,13 +3198,13 @@ func (c *tensorboardRESTClient) DeleteTensorboardTimeSeries(ctx context.Context,
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -3199,13 +3269,13 @@ func (c *tensorboardRESTClient) BatchReadTensorboardTimeSeriesData(ctx context.C
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -3266,13 +3336,13 @@ func (c *tensorboardRESTClient) ReadTensorboardTimeSeriesData(ctx context.Contex
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -3431,13 +3501,13 @@ func (c *tensorboardRESTClient) WriteTensorboardExperimentData(ctx context.Conte
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -3491,13 +3561,13 @@ func (c *tensorboardRESTClient) WriteTensorboardRunData(ctx context.Context, req
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -3558,13 +3628,13 @@ func (c *tensorboardRESTClient) ExportTensorboardTimeSeriesData(ctx context.Cont
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -3628,13 +3698,13 @@ func (c *tensorboardRESTClient) GetLocation(ctx context.Context, req *locationpb
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -3701,13 +3771,13 @@ func (c *tensorboardRESTClient) ListLocations(ctx context.Context, req *location
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -3778,13 +3848,13 @@ func (c *tensorboardRESTClient) GetIamPolicy(ctx context.Context, req *iampb.Get
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -3841,13 +3911,13 @@ func (c *tensorboardRESTClient) SetIamPolicy(ctx context.Context, req *iampb.Set
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -3906,13 +3976,13 @@ func (c *tensorboardRESTClient) TestIamPermissions(ctx context.Context, req *iam
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -4029,13 +4099,13 @@ func (c *tensorboardRESTClient) GetOperation(ctx context.Context, req *longrunni
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -4102,13 +4172,13 @@ func (c *tensorboardRESTClient) ListOperations(ctx context.Context, req *longrun
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -4150,7 +4220,7 @@ func (c *tensorboardRESTClient) WaitOperation(ctx context.Context, req *longrunn
 		if err != nil {
 			return nil, err
 		}
-		params.Add("timeout", string(timeout))
+		params.Add("timeout", string(timeout[1:len(timeout)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -4183,13 +4253,13 @@ func (c *tensorboardRESTClient) WaitOperation(ctx context.Context, req *longrunn
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil

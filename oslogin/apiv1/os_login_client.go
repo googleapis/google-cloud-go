@@ -20,20 +20,20 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"math"
 	"net/http"
 	"net/url"
 	"time"
 
 	osloginpb "cloud.google.com/go/oslogin/apiv1/osloginpb"
+	commonpb "cloud.google.com/go/oslogin/common/commonpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
-	commonpb "google.golang.org/genproto/googleapis/cloud/oslogin/common"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -69,6 +69,7 @@ func defaultCallOptions() *CallOptions {
 	return &CallOptions{
 		CreateSshPublicKey: []gax.CallOption{},
 		DeletePosixAccount: []gax.CallOption{
+			gax.WithTimeout(10000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -81,6 +82,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		DeleteSshPublicKey: []gax.CallOption{
+			gax.WithTimeout(10000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -93,6 +95,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		GetLoginProfile: []gax.CallOption{
+			gax.WithTimeout(10000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -105,6 +108,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		GetSshPublicKey: []gax.CallOption{
+			gax.WithTimeout(10000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -117,6 +121,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		ImportSshPublicKey: []gax.CallOption{
+			gax.WithTimeout(10000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -129,6 +134,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		UpdateSshPublicKey: []gax.CallOption{
+			gax.WithTimeout(10000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -147,6 +153,7 @@ func defaultRESTCallOptions() *CallOptions {
 	return &CallOptions{
 		CreateSshPublicKey: []gax.CallOption{},
 		DeletePosixAccount: []gax.CallOption{
+			gax.WithTimeout(10000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -158,6 +165,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		DeleteSshPublicKey: []gax.CallOption{
+			gax.WithTimeout(10000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -169,6 +177,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		GetLoginProfile: []gax.CallOption{
+			gax.WithTimeout(10000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -180,6 +189,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		GetSshPublicKey: []gax.CallOption{
+			gax.WithTimeout(10000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -191,6 +201,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		ImportSshPublicKey: []gax.CallOption{
+			gax.WithTimeout(10000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -202,6 +213,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		UpdateSshPublicKey: []gax.CallOption{
+			gax.WithTimeout(10000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -313,9 +325,6 @@ type gRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing Client
 	CallOptions **CallOptions
 
@@ -343,11 +352,6 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -355,10 +359,9 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 	client := Client{CallOptions: defaultCallOptions()}
 
 	c := &gRPCClient{
-		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
-		client:           osloginpb.NewOsLoginServiceClient(connPool),
-		CallOptions:      &client.CallOptions,
+		connPool:    connPool,
+		client:      osloginpb.NewOsLoginServiceClient(connPool),
+		CallOptions: &client.CallOptions,
 	}
 	c.setGoogleClientInfo()
 
@@ -379,7 +382,7 @@ func (c *gRPCClient) Connection() *grpc.ClientConn {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -442,7 +445,7 @@ func defaultRESTClientOptions() []option.ClientOption {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *restClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -479,11 +482,6 @@ func (c *gRPCClient) CreateSshPublicKey(ctx context.Context, req *osloginpb.Crea
 }
 
 func (c *gRPCClient) DeletePosixAccount(ctx context.Context, req *osloginpb.DeletePosixAccountRequest, opts ...gax.CallOption) error {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 10000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -497,11 +495,6 @@ func (c *gRPCClient) DeletePosixAccount(ctx context.Context, req *osloginpb.Dele
 }
 
 func (c *gRPCClient) DeleteSshPublicKey(ctx context.Context, req *osloginpb.DeleteSshPublicKeyRequest, opts ...gax.CallOption) error {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 10000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -515,11 +508,6 @@ func (c *gRPCClient) DeleteSshPublicKey(ctx context.Context, req *osloginpb.Dele
 }
 
 func (c *gRPCClient) GetLoginProfile(ctx context.Context, req *osloginpb.GetLoginProfileRequest, opts ...gax.CallOption) (*osloginpb.LoginProfile, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 10000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -537,11 +525,6 @@ func (c *gRPCClient) GetLoginProfile(ctx context.Context, req *osloginpb.GetLogi
 }
 
 func (c *gRPCClient) GetSshPublicKey(ctx context.Context, req *osloginpb.GetSshPublicKeyRequest, opts ...gax.CallOption) (*commonpb.SshPublicKey, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 10000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -559,11 +542,6 @@ func (c *gRPCClient) GetSshPublicKey(ctx context.Context, req *osloginpb.GetSshP
 }
 
 func (c *gRPCClient) ImportSshPublicKey(ctx context.Context, req *osloginpb.ImportSshPublicKeyRequest, opts ...gax.CallOption) (*osloginpb.ImportSshPublicKeyResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 10000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -581,11 +559,6 @@ func (c *gRPCClient) ImportSshPublicKey(ctx context.Context, req *osloginpb.Impo
 }
 
 func (c *gRPCClient) UpdateSshPublicKey(ctx context.Context, req *osloginpb.UpdateSshPublicKeyRequest, opts ...gax.CallOption) (*commonpb.SshPublicKey, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 10000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -650,13 +623,13 @@ func (c *restClient) CreateSshPublicKey(ctx context.Context, req *osloginpb.Crea
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -795,13 +768,13 @@ func (c *restClient) GetLoginProfile(ctx context.Context, req *osloginpb.GetLogi
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -853,13 +826,13 @@ func (c *restClient) GetSshPublicKey(ctx context.Context, req *osloginpb.GetSshP
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -923,13 +896,13 @@ func (c *restClient) ImportSshPublicKey(ctx context.Context, req *osloginpb.Impo
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -963,7 +936,7 @@ func (c *restClient) UpdateSshPublicKey(ctx context.Context, req *osloginpb.Upda
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask))
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -996,13 +969,13 @@ func (c *restClient) UpdateSshPublicKey(ctx context.Context, req *osloginpb.Upda
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil

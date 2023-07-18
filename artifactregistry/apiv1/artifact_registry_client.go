@@ -20,15 +20,17 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"math"
 	"net/http"
 	"net/url"
 	"time"
 
 	artifactregistrypb "cloud.google.com/go/artifactregistry/apiv1/artifactregistrypb"
+	iampb "cloud.google.com/go/iam/apiv1/iampb"
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
@@ -37,8 +39,6 @@ import (
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
-	iampb "google.golang.org/genproto/googleapis/iam/v1"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/encoding/protojson"
@@ -51,6 +51,12 @@ var newClientHook clientHook
 type CallOptions struct {
 	ListDockerImages      []gax.CallOption
 	GetDockerImage        []gax.CallOption
+	ListMavenArtifacts    []gax.CallOption
+	GetMavenArtifact      []gax.CallOption
+	ListNpmPackages       []gax.CallOption
+	GetNpmPackage         []gax.CallOption
+	ListPythonPackages    []gax.CallOption
+	GetPythonPackage      []gax.CallOption
 	ImportAptArtifacts    []gax.CallOption
 	ImportYumArtifacts    []gax.CallOption
 	ListRepositories      []gax.CallOption
@@ -76,8 +82,11 @@ type CallOptions struct {
 	TestIamPermissions    []gax.CallOption
 	GetProjectSettings    []gax.CallOption
 	UpdateProjectSettings []gax.CallOption
+	GetVPCSCConfig        []gax.CallOption
+	UpdateVPCSCConfig     []gax.CallOption
 	GetLocation           []gax.CallOption
 	ListLocations         []gax.CallOption
+	GetOperation          []gax.CallOption
 }
 
 func defaultGRPCClientOptions() []option.ClientOption {
@@ -94,69 +103,227 @@ func defaultGRPCClientOptions() []option.ClientOption {
 
 func defaultCallOptions() *CallOptions {
 	return &CallOptions{
-		ListDockerImages:      []gax.CallOption{},
-		GetDockerImage:        []gax.CallOption{},
-		ImportAptArtifacts:    []gax.CallOption{},
-		ImportYumArtifacts:    []gax.CallOption{},
-		ListRepositories:      []gax.CallOption{},
-		GetRepository:         []gax.CallOption{},
-		CreateRepository:      []gax.CallOption{},
-		UpdateRepository:      []gax.CallOption{},
-		DeleteRepository:      []gax.CallOption{},
-		ListPackages:          []gax.CallOption{},
-		GetPackage:            []gax.CallOption{},
-		DeletePackage:         []gax.CallOption{},
-		ListVersions:          []gax.CallOption{},
-		GetVersion:            []gax.CallOption{},
-		DeleteVersion:         []gax.CallOption{},
-		ListFiles:             []gax.CallOption{},
-		GetFile:               []gax.CallOption{},
-		ListTags:              []gax.CallOption{},
-		GetTag:                []gax.CallOption{},
-		CreateTag:             []gax.CallOption{},
-		UpdateTag:             []gax.CallOption{},
-		DeleteTag:             []gax.CallOption{},
-		SetIamPolicy:          []gax.CallOption{},
-		GetIamPolicy:          []gax.CallOption{},
-		TestIamPermissions:    []gax.CallOption{},
-		GetProjectSettings:    []gax.CallOption{},
-		UpdateProjectSettings: []gax.CallOption{},
-		GetLocation:           []gax.CallOption{},
-		ListLocations:         []gax.CallOption{},
+		ListDockerImages: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetDockerImage: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ListMavenArtifacts: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetMavenArtifact: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ListNpmPackages: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetNpmPackage: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ListPythonPackages: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetPythonPackage: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ImportAptArtifacts: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ImportYumArtifacts: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ListRepositories: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetRepository: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		CreateRepository: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateRepository: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteRepository: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ListPackages: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetPackage: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeletePackage: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ListVersions: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetVersion: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteVersion: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ListFiles: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetFile: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ListTags: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetTag: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		CreateTag: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateTag: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteTag: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		SetIamPolicy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetIamPolicy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		TestIamPermissions: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetProjectSettings: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateProjectSettings: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetVPCSCConfig: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateVPCSCConfig: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetLocation:   []gax.CallOption{},
+		ListLocations: []gax.CallOption{},
+		GetOperation:  []gax.CallOption{},
 	}
 }
 
 func defaultRESTCallOptions() *CallOptions {
 	return &CallOptions{
-		ListDockerImages:      []gax.CallOption{},
-		GetDockerImage:        []gax.CallOption{},
-		ImportAptArtifacts:    []gax.CallOption{},
-		ImportYumArtifacts:    []gax.CallOption{},
-		ListRepositories:      []gax.CallOption{},
-		GetRepository:         []gax.CallOption{},
-		CreateRepository:      []gax.CallOption{},
-		UpdateRepository:      []gax.CallOption{},
-		DeleteRepository:      []gax.CallOption{},
-		ListPackages:          []gax.CallOption{},
-		GetPackage:            []gax.CallOption{},
-		DeletePackage:         []gax.CallOption{},
-		ListVersions:          []gax.CallOption{},
-		GetVersion:            []gax.CallOption{},
-		DeleteVersion:         []gax.CallOption{},
-		ListFiles:             []gax.CallOption{},
-		GetFile:               []gax.CallOption{},
-		ListTags:              []gax.CallOption{},
-		GetTag:                []gax.CallOption{},
-		CreateTag:             []gax.CallOption{},
-		UpdateTag:             []gax.CallOption{},
-		DeleteTag:             []gax.CallOption{},
-		SetIamPolicy:          []gax.CallOption{},
-		GetIamPolicy:          []gax.CallOption{},
-		TestIamPermissions:    []gax.CallOption{},
-		GetProjectSettings:    []gax.CallOption{},
-		UpdateProjectSettings: []gax.CallOption{},
-		GetLocation:           []gax.CallOption{},
-		ListLocations:         []gax.CallOption{},
+		ListDockerImages: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetDockerImage: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ListMavenArtifacts: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetMavenArtifact: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ListNpmPackages: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetNpmPackage: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ListPythonPackages: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetPythonPackage: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ImportAptArtifacts: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ImportYumArtifacts: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ListRepositories: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetRepository: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		CreateRepository: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateRepository: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteRepository: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ListPackages: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetPackage: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeletePackage: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ListVersions: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetVersion: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteVersion: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ListFiles: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetFile: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ListTags: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetTag: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		CreateTag: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateTag: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteTag: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		SetIamPolicy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetIamPolicy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		TestIamPermissions: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetProjectSettings: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateProjectSettings: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetVPCSCConfig: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateVPCSCConfig: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetLocation:   []gax.CallOption{},
+		ListLocations: []gax.CallOption{},
+		GetOperation:  []gax.CallOption{},
 	}
 }
 
@@ -167,6 +334,12 @@ type internalClient interface {
 	Connection() *grpc.ClientConn
 	ListDockerImages(context.Context, *artifactregistrypb.ListDockerImagesRequest, ...gax.CallOption) *DockerImageIterator
 	GetDockerImage(context.Context, *artifactregistrypb.GetDockerImageRequest, ...gax.CallOption) (*artifactregistrypb.DockerImage, error)
+	ListMavenArtifacts(context.Context, *artifactregistrypb.ListMavenArtifactsRequest, ...gax.CallOption) *MavenArtifactIterator
+	GetMavenArtifact(context.Context, *artifactregistrypb.GetMavenArtifactRequest, ...gax.CallOption) (*artifactregistrypb.MavenArtifact, error)
+	ListNpmPackages(context.Context, *artifactregistrypb.ListNpmPackagesRequest, ...gax.CallOption) *NpmPackageIterator
+	GetNpmPackage(context.Context, *artifactregistrypb.GetNpmPackageRequest, ...gax.CallOption) (*artifactregistrypb.NpmPackage, error)
+	ListPythonPackages(context.Context, *artifactregistrypb.ListPythonPackagesRequest, ...gax.CallOption) *PythonPackageIterator
+	GetPythonPackage(context.Context, *artifactregistrypb.GetPythonPackageRequest, ...gax.CallOption) (*artifactregistrypb.PythonPackage, error)
 	ImportAptArtifacts(context.Context, *artifactregistrypb.ImportAptArtifactsRequest, ...gax.CallOption) (*ImportAptArtifactsOperation, error)
 	ImportAptArtifactsOperation(name string) *ImportAptArtifactsOperation
 	ImportYumArtifacts(context.Context, *artifactregistrypb.ImportYumArtifactsRequest, ...gax.CallOption) (*ImportYumArtifactsOperation, error)
@@ -198,8 +371,11 @@ type internalClient interface {
 	TestIamPermissions(context.Context, *iampb.TestIamPermissionsRequest, ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error)
 	GetProjectSettings(context.Context, *artifactregistrypb.GetProjectSettingsRequest, ...gax.CallOption) (*artifactregistrypb.ProjectSettings, error)
 	UpdateProjectSettings(context.Context, *artifactregistrypb.UpdateProjectSettingsRequest, ...gax.CallOption) (*artifactregistrypb.ProjectSettings, error)
+	GetVPCSCConfig(context.Context, *artifactregistrypb.GetVPCSCConfigRequest, ...gax.CallOption) (*artifactregistrypb.VPCSCConfig, error)
+	UpdateVPCSCConfig(context.Context, *artifactregistrypb.UpdateVPCSCConfigRequest, ...gax.CallOption) (*artifactregistrypb.VPCSCConfig, error)
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
 	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
+	GetOperation(context.Context, *longrunningpb.GetOperationRequest, ...gax.CallOption) (*longrunningpb.Operation, error)
 }
 
 // Client is a client for interacting with Artifact Registry API.
@@ -266,6 +442,36 @@ func (c *Client) ListDockerImages(ctx context.Context, req *artifactregistrypb.L
 // GetDockerImage gets a docker image.
 func (c *Client) GetDockerImage(ctx context.Context, req *artifactregistrypb.GetDockerImageRequest, opts ...gax.CallOption) (*artifactregistrypb.DockerImage, error) {
 	return c.internalClient.GetDockerImage(ctx, req, opts...)
+}
+
+// ListMavenArtifacts lists maven artifacts.
+func (c *Client) ListMavenArtifacts(ctx context.Context, req *artifactregistrypb.ListMavenArtifactsRequest, opts ...gax.CallOption) *MavenArtifactIterator {
+	return c.internalClient.ListMavenArtifacts(ctx, req, opts...)
+}
+
+// GetMavenArtifact gets a maven artifact.
+func (c *Client) GetMavenArtifact(ctx context.Context, req *artifactregistrypb.GetMavenArtifactRequest, opts ...gax.CallOption) (*artifactregistrypb.MavenArtifact, error) {
+	return c.internalClient.GetMavenArtifact(ctx, req, opts...)
+}
+
+// ListNpmPackages lists npm packages.
+func (c *Client) ListNpmPackages(ctx context.Context, req *artifactregistrypb.ListNpmPackagesRequest, opts ...gax.CallOption) *NpmPackageIterator {
+	return c.internalClient.ListNpmPackages(ctx, req, opts...)
+}
+
+// GetNpmPackage gets a npm package.
+func (c *Client) GetNpmPackage(ctx context.Context, req *artifactregistrypb.GetNpmPackageRequest, opts ...gax.CallOption) (*artifactregistrypb.NpmPackage, error) {
+	return c.internalClient.GetNpmPackage(ctx, req, opts...)
+}
+
+// ListPythonPackages lists python packages.
+func (c *Client) ListPythonPackages(ctx context.Context, req *artifactregistrypb.ListPythonPackagesRequest, opts ...gax.CallOption) *PythonPackageIterator {
+	return c.internalClient.ListPythonPackages(ctx, req, opts...)
+}
+
+// GetPythonPackage gets a python package.
+func (c *Client) GetPythonPackage(ctx context.Context, req *artifactregistrypb.GetPythonPackageRequest, opts ...gax.CallOption) (*artifactregistrypb.PythonPackage, error) {
+	return c.internalClient.GetPythonPackage(ctx, req, opts...)
 }
 
 // ImportAptArtifacts imports Apt artifacts. The returned Operation will complete once the
@@ -440,6 +646,16 @@ func (c *Client) UpdateProjectSettings(ctx context.Context, req *artifactregistr
 	return c.internalClient.UpdateProjectSettings(ctx, req, opts...)
 }
 
+// GetVPCSCConfig retrieves the VPCSC Config for the Project.
+func (c *Client) GetVPCSCConfig(ctx context.Context, req *artifactregistrypb.GetVPCSCConfigRequest, opts ...gax.CallOption) (*artifactregistrypb.VPCSCConfig, error) {
+	return c.internalClient.GetVPCSCConfig(ctx, req, opts...)
+}
+
+// UpdateVPCSCConfig updates the VPCSC Config for the Project.
+func (c *Client) UpdateVPCSCConfig(ctx context.Context, req *artifactregistrypb.UpdateVPCSCConfigRequest, opts ...gax.CallOption) (*artifactregistrypb.VPCSCConfig, error) {
+	return c.internalClient.UpdateVPCSCConfig(ctx, req, opts...)
+}
+
 // GetLocation gets information about a location.
 func (c *Client) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	return c.internalClient.GetLocation(ctx, req, opts...)
@@ -450,15 +666,17 @@ func (c *Client) ListLocations(ctx context.Context, req *locationpb.ListLocation
 	return c.internalClient.ListLocations(ctx, req, opts...)
 }
 
+// GetOperation is a utility method from google.longrunning.Operations.
+func (c *Client) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+	return c.internalClient.GetOperation(ctx, req, opts...)
+}
+
 // gRPCClient is a client for interacting with Artifact Registry API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type gRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
-
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
 
 	// Points back to the CallOptions field of the containing Client
 	CallOptions **CallOptions
@@ -470,6 +688,8 @@ type gRPCClient struct {
 	// It is exposed so that its CallOptions can be modified if required.
 	// Users should not Close this client.
 	LROClient **lroauto.OperationsClient
+
+	operationsClient longrunningpb.OperationsClient
 
 	locationsClient locationpb.LocationsClient
 
@@ -507,11 +727,6 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -520,9 +735,9 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 
 	c := &gRPCClient{
 		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
 		client:           artifactregistrypb.NewArtifactRegistryClient(connPool),
 		CallOptions:      &client.CallOptions,
+		operationsClient: longrunningpb.NewOperationsClient(connPool),
 		locationsClient:  locationpb.NewLocationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
@@ -555,7 +770,7 @@ func (c *gRPCClient) Connection() *grpc.ClientConn {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -646,7 +861,7 @@ func defaultRESTClientOptions() []option.ClientOption {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *restClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -711,11 +926,6 @@ func (c *gRPCClient) ListDockerImages(ctx context.Context, req *artifactregistry
 }
 
 func (c *gRPCClient) GetDockerImage(ctx context.Context, req *artifactregistrypb.GetDockerImageRequest, opts ...gax.CallOption) (*artifactregistrypb.DockerImage, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -732,12 +942,193 @@ func (c *gRPCClient) GetDockerImage(ctx context.Context, req *artifactregistrypb
 	return resp, nil
 }
 
-func (c *gRPCClient) ImportAptArtifacts(ctx context.Context, req *artifactregistrypb.ImportAptArtifactsRequest, opts ...gax.CallOption) (*ImportAptArtifactsOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
+func (c *gRPCClient) ListMavenArtifacts(ctx context.Context, req *artifactregistrypb.ListMavenArtifactsRequest, opts ...gax.CallOption) *MavenArtifactIterator {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).ListMavenArtifacts[0:len((*c.CallOptions).ListMavenArtifacts):len((*c.CallOptions).ListMavenArtifacts)], opts...)
+	it := &MavenArtifactIterator{}
+	req = proto.Clone(req).(*artifactregistrypb.ListMavenArtifactsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*artifactregistrypb.MavenArtifact, string, error) {
+		resp := &artifactregistrypb.ListMavenArtifactsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.client.ListMavenArtifacts(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetMavenArtifacts(), resp.GetNextPageToken(), nil
 	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *gRPCClient) GetMavenArtifact(ctx context.Context, req *artifactregistrypb.GetMavenArtifactRequest, opts ...gax.CallOption) (*artifactregistrypb.MavenArtifact, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).GetMavenArtifact[0:len((*c.CallOptions).GetMavenArtifact):len((*c.CallOptions).GetMavenArtifact)], opts...)
+	var resp *artifactregistrypb.MavenArtifact
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.GetMavenArtifact(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) ListNpmPackages(ctx context.Context, req *artifactregistrypb.ListNpmPackagesRequest, opts ...gax.CallOption) *NpmPackageIterator {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).ListNpmPackages[0:len((*c.CallOptions).ListNpmPackages):len((*c.CallOptions).ListNpmPackages)], opts...)
+	it := &NpmPackageIterator{}
+	req = proto.Clone(req).(*artifactregistrypb.ListNpmPackagesRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*artifactregistrypb.NpmPackage, string, error) {
+		resp := &artifactregistrypb.ListNpmPackagesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.client.ListNpmPackages(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetNpmPackages(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *gRPCClient) GetNpmPackage(ctx context.Context, req *artifactregistrypb.GetNpmPackageRequest, opts ...gax.CallOption) (*artifactregistrypb.NpmPackage, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).GetNpmPackage[0:len((*c.CallOptions).GetNpmPackage):len((*c.CallOptions).GetNpmPackage)], opts...)
+	var resp *artifactregistrypb.NpmPackage
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.GetNpmPackage(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) ListPythonPackages(ctx context.Context, req *artifactregistrypb.ListPythonPackagesRequest, opts ...gax.CallOption) *PythonPackageIterator {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).ListPythonPackages[0:len((*c.CallOptions).ListPythonPackages):len((*c.CallOptions).ListPythonPackages)], opts...)
+	it := &PythonPackageIterator{}
+	req = proto.Clone(req).(*artifactregistrypb.ListPythonPackagesRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*artifactregistrypb.PythonPackage, string, error) {
+		resp := &artifactregistrypb.ListPythonPackagesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.client.ListPythonPackages(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetPythonPackages(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *gRPCClient) GetPythonPackage(ctx context.Context, req *artifactregistrypb.GetPythonPackageRequest, opts ...gax.CallOption) (*artifactregistrypb.PythonPackage, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).GetPythonPackage[0:len((*c.CallOptions).GetPythonPackage):len((*c.CallOptions).GetPythonPackage)], opts...)
+	var resp *artifactregistrypb.PythonPackage
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.GetPythonPackage(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) ImportAptArtifacts(ctx context.Context, req *artifactregistrypb.ImportAptArtifactsRequest, opts ...gax.CallOption) (*ImportAptArtifactsOperation, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -757,11 +1148,6 @@ func (c *gRPCClient) ImportAptArtifacts(ctx context.Context, req *artifactregist
 }
 
 func (c *gRPCClient) ImportYumArtifacts(ctx context.Context, req *artifactregistrypb.ImportYumArtifactsRequest, opts ...gax.CallOption) (*ImportYumArtifactsOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -826,11 +1212,6 @@ func (c *gRPCClient) ListRepositories(ctx context.Context, req *artifactregistry
 }
 
 func (c *gRPCClient) GetRepository(ctx context.Context, req *artifactregistrypb.GetRepositoryRequest, opts ...gax.CallOption) (*artifactregistrypb.Repository, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -848,11 +1229,6 @@ func (c *gRPCClient) GetRepository(ctx context.Context, req *artifactregistrypb.
 }
 
 func (c *gRPCClient) CreateRepository(ctx context.Context, req *artifactregistrypb.CreateRepositoryRequest, opts ...gax.CallOption) (*CreateRepositoryOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -872,11 +1248,6 @@ func (c *gRPCClient) CreateRepository(ctx context.Context, req *artifactregistry
 }
 
 func (c *gRPCClient) UpdateRepository(ctx context.Context, req *artifactregistrypb.UpdateRepositoryRequest, opts ...gax.CallOption) (*artifactregistrypb.Repository, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "repository.name", url.QueryEscape(req.GetRepository().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -894,11 +1265,6 @@ func (c *gRPCClient) UpdateRepository(ctx context.Context, req *artifactregistry
 }
 
 func (c *gRPCClient) DeleteRepository(ctx context.Context, req *artifactregistrypb.DeleteRepositoryRequest, opts ...gax.CallOption) (*DeleteRepositoryOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -963,11 +1329,6 @@ func (c *gRPCClient) ListPackages(ctx context.Context, req *artifactregistrypb.L
 }
 
 func (c *gRPCClient) GetPackage(ctx context.Context, req *artifactregistrypb.GetPackageRequest, opts ...gax.CallOption) (*artifactregistrypb.Package, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -985,11 +1346,6 @@ func (c *gRPCClient) GetPackage(ctx context.Context, req *artifactregistrypb.Get
 }
 
 func (c *gRPCClient) DeletePackage(ctx context.Context, req *artifactregistrypb.DeletePackageRequest, opts ...gax.CallOption) (*DeletePackageOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1054,11 +1410,6 @@ func (c *gRPCClient) ListVersions(ctx context.Context, req *artifactregistrypb.L
 }
 
 func (c *gRPCClient) GetVersion(ctx context.Context, req *artifactregistrypb.GetVersionRequest, opts ...gax.CallOption) (*artifactregistrypb.Version, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1076,11 +1427,6 @@ func (c *gRPCClient) GetVersion(ctx context.Context, req *artifactregistrypb.Get
 }
 
 func (c *gRPCClient) DeleteVersion(ctx context.Context, req *artifactregistrypb.DeleteVersionRequest, opts ...gax.CallOption) (*DeleteVersionOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1145,11 +1491,6 @@ func (c *gRPCClient) ListFiles(ctx context.Context, req *artifactregistrypb.List
 }
 
 func (c *gRPCClient) GetFile(ctx context.Context, req *artifactregistrypb.GetFileRequest, opts ...gax.CallOption) (*artifactregistrypb.File, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1212,11 +1553,6 @@ func (c *gRPCClient) ListTags(ctx context.Context, req *artifactregistrypb.ListT
 }
 
 func (c *gRPCClient) GetTag(ctx context.Context, req *artifactregistrypb.GetTagRequest, opts ...gax.CallOption) (*artifactregistrypb.Tag, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1234,11 +1570,6 @@ func (c *gRPCClient) GetTag(ctx context.Context, req *artifactregistrypb.GetTagR
 }
 
 func (c *gRPCClient) CreateTag(ctx context.Context, req *artifactregistrypb.CreateTagRequest, opts ...gax.CallOption) (*artifactregistrypb.Tag, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1256,11 +1587,6 @@ func (c *gRPCClient) CreateTag(ctx context.Context, req *artifactregistrypb.Crea
 }
 
 func (c *gRPCClient) UpdateTag(ctx context.Context, req *artifactregistrypb.UpdateTagRequest, opts ...gax.CallOption) (*artifactregistrypb.Tag, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "tag.name", url.QueryEscape(req.GetTag().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1278,11 +1604,6 @@ func (c *gRPCClient) UpdateTag(ctx context.Context, req *artifactregistrypb.Upda
 }
 
 func (c *gRPCClient) DeleteTag(ctx context.Context, req *artifactregistrypb.DeleteTagRequest, opts ...gax.CallOption) error {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1296,11 +1617,6 @@ func (c *gRPCClient) DeleteTag(ctx context.Context, req *artifactregistrypb.Dele
 }
 
 func (c *gRPCClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1318,11 +1634,6 @@ func (c *gRPCClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRe
 }
 
 func (c *gRPCClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1340,11 +1651,6 @@ func (c *gRPCClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRe
 }
 
 func (c *gRPCClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermissionsRequest, opts ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1362,11 +1668,6 @@ func (c *gRPCClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamP
 }
 
 func (c *gRPCClient) GetProjectSettings(ctx context.Context, req *artifactregistrypb.GetProjectSettingsRequest, opts ...gax.CallOption) (*artifactregistrypb.ProjectSettings, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1384,11 +1685,6 @@ func (c *gRPCClient) GetProjectSettings(ctx context.Context, req *artifactregist
 }
 
 func (c *gRPCClient) UpdateProjectSettings(ctx context.Context, req *artifactregistrypb.UpdateProjectSettingsRequest, opts ...gax.CallOption) (*artifactregistrypb.ProjectSettings, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "project_settings.name", url.QueryEscape(req.GetProjectSettings().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1397,6 +1693,40 @@ func (c *gRPCClient) UpdateProjectSettings(ctx context.Context, req *artifactreg
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.client.UpdateProjectSettings(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) GetVPCSCConfig(ctx context.Context, req *artifactregistrypb.GetVPCSCConfigRequest, opts ...gax.CallOption) (*artifactregistrypb.VPCSCConfig, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).GetVPCSCConfig[0:len((*c.CallOptions).GetVPCSCConfig):len((*c.CallOptions).GetVPCSCConfig)], opts...)
+	var resp *artifactregistrypb.VPCSCConfig
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.GetVPCSCConfig(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) UpdateVPCSCConfig(ctx context.Context, req *artifactregistrypb.UpdateVPCSCConfigRequest, opts ...gax.CallOption) (*artifactregistrypb.VPCSCConfig, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "vpcsc_config.name", url.QueryEscape(req.GetVpcscConfig().GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).UpdateVPCSCConfig[0:len((*c.CallOptions).UpdateVPCSCConfig):len((*c.CallOptions).UpdateVPCSCConfig)], opts...)
+	var resp *artifactregistrypb.VPCSCConfig
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.UpdateVPCSCConfig(ctx, req, settings.GRPC...)
 		return err
 	}, opts...)
 	if err != nil {
@@ -1467,6 +1797,23 @@ func (c *gRPCClient) ListLocations(ctx context.Context, req *locationpb.ListLoca
 	return it
 }
 
+func (c *gRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
 // ListDockerImages lists docker images.
 func (c *restClient) ListDockerImages(ctx context.Context, req *artifactregistrypb.ListDockerImagesRequest, opts ...gax.CallOption) *DockerImageIterator {
 	it := &DockerImageIterator{}
@@ -1490,6 +1837,9 @@ func (c *restClient) ListDockerImages(ctx context.Context, req *artifactregistry
 
 		params := url.Values{}
 		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetOrderBy() != "" {
+			params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))
+		}
 		if req.GetPageSize() != 0 {
 			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
 		}
@@ -1521,13 +1871,13 @@ func (c *restClient) ListDockerImages(ctx context.Context, req *artifactregistry
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -1596,13 +1946,451 @@ func (c *restClient) GetDockerImage(ctx context.Context, req *artifactregistrypb
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// ListMavenArtifacts lists maven artifacts.
+func (c *restClient) ListMavenArtifacts(ctx context.Context, req *artifactregistrypb.ListMavenArtifactsRequest, opts ...gax.CallOption) *MavenArtifactIterator {
+	it := &MavenArtifactIterator{}
+	req = proto.Clone(req).(*artifactregistrypb.ListMavenArtifactsRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*artifactregistrypb.MavenArtifact, string, error) {
+		resp := &artifactregistrypb.ListMavenArtifactsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v/mavenArtifacts", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			httpRsp, err := c.httpClient.Do(httpReq)
+			if err != nil {
+				return err
+			}
+			defer httpRsp.Body.Close()
+
+			if err = googleapi.CheckResponse(httpRsp); err != nil {
+				return err
+			}
+
+			buf, err := io.ReadAll(httpRsp.Body)
+			if err != nil {
+				return err
+			}
+
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetMavenArtifacts(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// GetMavenArtifact gets a maven artifact.
+func (c *restClient) GetMavenArtifact(ctx context.Context, req *artifactregistrypb.GetMavenArtifactRequest, opts ...gax.CallOption) (*artifactregistrypb.MavenArtifact, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).GetMavenArtifact[0:len((*c.CallOptions).GetMavenArtifact):len((*c.CallOptions).GetMavenArtifact)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &artifactregistrypb.MavenArtifact{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// ListNpmPackages lists npm packages.
+func (c *restClient) ListNpmPackages(ctx context.Context, req *artifactregistrypb.ListNpmPackagesRequest, opts ...gax.CallOption) *NpmPackageIterator {
+	it := &NpmPackageIterator{}
+	req = proto.Clone(req).(*artifactregistrypb.ListNpmPackagesRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*artifactregistrypb.NpmPackage, string, error) {
+		resp := &artifactregistrypb.ListNpmPackagesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v/npmPackages", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			httpRsp, err := c.httpClient.Do(httpReq)
+			if err != nil {
+				return err
+			}
+			defer httpRsp.Body.Close()
+
+			if err = googleapi.CheckResponse(httpRsp); err != nil {
+				return err
+			}
+
+			buf, err := io.ReadAll(httpRsp.Body)
+			if err != nil {
+				return err
+			}
+
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetNpmPackages(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// GetNpmPackage gets a npm package.
+func (c *restClient) GetNpmPackage(ctx context.Context, req *artifactregistrypb.GetNpmPackageRequest, opts ...gax.CallOption) (*artifactregistrypb.NpmPackage, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).GetNpmPackage[0:len((*c.CallOptions).GetNpmPackage):len((*c.CallOptions).GetNpmPackage)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &artifactregistrypb.NpmPackage{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// ListPythonPackages lists python packages.
+func (c *restClient) ListPythonPackages(ctx context.Context, req *artifactregistrypb.ListPythonPackagesRequest, opts ...gax.CallOption) *PythonPackageIterator {
+	it := &PythonPackageIterator{}
+	req = proto.Clone(req).(*artifactregistrypb.ListPythonPackagesRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*artifactregistrypb.PythonPackage, string, error) {
+		resp := &artifactregistrypb.ListPythonPackagesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v/pythonPackages", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			httpRsp, err := c.httpClient.Do(httpReq)
+			if err != nil {
+				return err
+			}
+			defer httpRsp.Body.Close()
+
+			if err = googleapi.CheckResponse(httpRsp); err != nil {
+				return err
+			}
+
+			buf, err := io.ReadAll(httpRsp.Body)
+			if err != nil {
+				return err
+			}
+
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetPythonPackages(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// GetPythonPackage gets a python package.
+func (c *restClient) GetPythonPackage(ctx context.Context, req *artifactregistrypb.GetPythonPackageRequest, opts ...gax.CallOption) (*artifactregistrypb.PythonPackage, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).GetPythonPackage[0:len((*c.CallOptions).GetPythonPackage):len((*c.CallOptions).GetPythonPackage)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &artifactregistrypb.PythonPackage{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
 		}
 
 		return nil
@@ -1662,13 +2450,13 @@ func (c *restClient) ImportAptArtifacts(ctx context.Context, req *artifactregist
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1733,13 +2521,13 @@ func (c *restClient) ImportYumArtifacts(ctx context.Context, req *artifactregist
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1809,13 +2597,13 @@ func (c *restClient) ListRepositories(ctx context.Context, req *artifactregistry
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -1884,13 +2672,13 @@ func (c *restClient) GetRepository(ctx context.Context, req *artifactregistrypb.
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1952,13 +2740,13 @@ func (c *restClient) CreateRepository(ctx context.Context, req *artifactregistry
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1996,7 +2784,7 @@ func (c *restClient) UpdateRepository(ctx context.Context, req *artifactregistry
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask))
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -2029,13 +2817,13 @@ func (c *restClient) UpdateRepository(ctx context.Context, req *artifactregistry
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2088,13 +2876,13 @@ func (c *restClient) DeleteRepository(ctx context.Context, req *artifactregistry
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2164,13 +2952,13 @@ func (c *restClient) ListPackages(ctx context.Context, req *artifactregistrypb.L
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -2239,13 +3027,13 @@ func (c *restClient) GetPackage(ctx context.Context, req *artifactregistrypb.Get
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2297,13 +3085,13 @@ func (c *restClient) DeletePackage(ctx context.Context, req *artifactregistrypb.
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2379,13 +3167,13 @@ func (c *restClient) ListVersions(ctx context.Context, req *artifactregistrypb.L
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -2457,13 +3245,13 @@ func (c *restClient) GetVersion(ctx context.Context, req *artifactregistrypb.Get
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2518,13 +3306,13 @@ func (c *restClient) DeleteVersion(ctx context.Context, req *artifactregistrypb.
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2600,13 +3388,13 @@ func (c *restClient) ListFiles(ctx context.Context, req *artifactregistrypb.List
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -2675,13 +3463,13 @@ func (c *restClient) GetFile(ctx context.Context, req *artifactregistrypb.GetFil
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2749,13 +3537,13 @@ func (c *restClient) ListTags(ctx context.Context, req *artifactregistrypb.ListT
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -2824,13 +3612,13 @@ func (c *restClient) GetTag(ctx context.Context, req *artifactregistrypb.GetTagR
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2892,13 +3680,13 @@ func (c *restClient) CreateTag(ctx context.Context, req *artifactregistrypb.Crea
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2931,7 +3719,7 @@ func (c *restClient) UpdateTag(ctx context.Context, req *artifactregistrypb.Upda
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask))
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -2964,13 +3752,13 @@ func (c *restClient) UpdateTag(ctx context.Context, req *artifactregistrypb.Upda
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -3068,13 +3856,13 @@ func (c *restClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRe
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -3129,13 +3917,13 @@ func (c *restClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRe
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -3193,13 +3981,13 @@ func (c *restClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamP
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -3251,13 +4039,13 @@ func (c *restClient) GetProjectSettings(ctx context.Context, req *artifactregist
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -3290,7 +4078,7 @@ func (c *restClient) UpdateProjectSettings(ctx context.Context, req *artifactreg
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask))
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -3323,13 +4111,143 @@ func (c *restClient) UpdateProjectSettings(ctx context.Context, req *artifactreg
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// GetVPCSCConfig retrieves the VPCSC Config for the Project.
+func (c *restClient) GetVPCSCConfig(ctx context.Context, req *artifactregistrypb.GetVPCSCConfigRequest, opts ...gax.CallOption) (*artifactregistrypb.VPCSCConfig, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).GetVPCSCConfig[0:len((*c.CallOptions).GetVPCSCConfig):len((*c.CallOptions).GetVPCSCConfig)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &artifactregistrypb.VPCSCConfig{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// UpdateVPCSCConfig updates the VPCSC Config for the Project.
+func (c *restClient) UpdateVPCSCConfig(ctx context.Context, req *artifactregistrypb.UpdateVPCSCConfigRequest, opts ...gax.CallOption) (*artifactregistrypb.VPCSCConfig, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetVpcscConfig()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetVpcscConfig().GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetUpdateMask() != nil {
+		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "vpcsc_config.name", url.QueryEscape(req.GetVpcscConfig().GetName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).UpdateVPCSCConfig[0:len((*c.CallOptions).UpdateVPCSCConfig):len((*c.CallOptions).UpdateVPCSCConfig)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &artifactregistrypb.VPCSCConfig{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
 		}
 
 		return nil
@@ -3381,13 +4299,13 @@ func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -3455,13 +4373,13 @@ func (c *restClient) ListLocations(ctx context.Context, req *locationpb.ListLoca
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -3487,6 +4405,64 @@ func (c *restClient) ListLocations(ctx context.Context, req *locationpb.ListLoca
 	it.pageInfo.Token = req.GetPageToken()
 
 	return it
+}
+
+// GetOperation is a utility method from google.longrunning.Operations.
+func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
 }
 
 // CreateRepositoryOperation manages a long-running operation from CreateRepository.
@@ -4089,6 +5065,100 @@ func (it *LocationIterator) takeBuf() interface{} {
 	return b
 }
 
+// MavenArtifactIterator manages a stream of *artifactregistrypb.MavenArtifact.
+type MavenArtifactIterator struct {
+	items    []*artifactregistrypb.MavenArtifact
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*artifactregistrypb.MavenArtifact, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *MavenArtifactIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *MavenArtifactIterator) Next() (*artifactregistrypb.MavenArtifact, error) {
+	var item *artifactregistrypb.MavenArtifact
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *MavenArtifactIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *MavenArtifactIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// NpmPackageIterator manages a stream of *artifactregistrypb.NpmPackage.
+type NpmPackageIterator struct {
+	items    []*artifactregistrypb.NpmPackage
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*artifactregistrypb.NpmPackage, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *NpmPackageIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *NpmPackageIterator) Next() (*artifactregistrypb.NpmPackage, error) {
+	var item *artifactregistrypb.NpmPackage
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *NpmPackageIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *NpmPackageIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
 // PackageIterator manages a stream of *artifactregistrypb.Package.
 type PackageIterator struct {
 	items    []*artifactregistrypb.Package
@@ -4131,6 +5201,53 @@ func (it *PackageIterator) bufLen() int {
 }
 
 func (it *PackageIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// PythonPackageIterator manages a stream of *artifactregistrypb.PythonPackage.
+type PythonPackageIterator struct {
+	items    []*artifactregistrypb.PythonPackage
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*artifactregistrypb.PythonPackage, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *PythonPackageIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *PythonPackageIterator) Next() (*artifactregistrypb.PythonPackage, error) {
+	var item *artifactregistrypb.PythonPackage
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *PythonPackageIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *PythonPackageIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b

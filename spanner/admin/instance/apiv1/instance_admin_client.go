@@ -20,14 +20,16 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"math"
 	"net/http"
 	"net/url"
 	"time"
 
+	iampb "cloud.google.com/go/iam/apiv1/iampb"
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	instancepb "cloud.google.com/go/spanner/admin/instance/apiv1/instancepb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
@@ -36,8 +38,6 @@ import (
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
-	iampb "google.golang.org/genproto/googleapis/iam/v1"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -80,6 +80,7 @@ func defaultInstanceAdminGRPCClientOptions() []option.ClientOption {
 func defaultInstanceAdminCallOptions() *InstanceAdminCallOptions {
 	return &InstanceAdminCallOptions{
 		ListInstanceConfigs: []gax.CallOption{
+			gax.WithTimeout(3600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -92,6 +93,7 @@ func defaultInstanceAdminCallOptions() *InstanceAdminCallOptions {
 			}),
 		},
 		GetInstanceConfig: []gax.CallOption{
+			gax.WithTimeout(3600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -108,6 +110,7 @@ func defaultInstanceAdminCallOptions() *InstanceAdminCallOptions {
 		DeleteInstanceConfig:         []gax.CallOption{},
 		ListInstanceConfigOperations: []gax.CallOption{},
 		ListInstances: []gax.CallOption{
+			gax.WithTimeout(3600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -120,6 +123,7 @@ func defaultInstanceAdminCallOptions() *InstanceAdminCallOptions {
 			}),
 		},
 		GetInstance: []gax.CallOption{
+			gax.WithTimeout(3600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -131,9 +135,14 @@ func defaultInstanceAdminCallOptions() *InstanceAdminCallOptions {
 				})
 			}),
 		},
-		CreateInstance: []gax.CallOption{},
-		UpdateInstance: []gax.CallOption{},
+		CreateInstance: []gax.CallOption{
+			gax.WithTimeout(3600000 * time.Millisecond),
+		},
+		UpdateInstance: []gax.CallOption{
+			gax.WithTimeout(3600000 * time.Millisecond),
+		},
 		DeleteInstance: []gax.CallOption{
+			gax.WithTimeout(3600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -145,8 +154,11 @@ func defaultInstanceAdminCallOptions() *InstanceAdminCallOptions {
 				})
 			}),
 		},
-		SetIamPolicy: []gax.CallOption{},
+		SetIamPolicy: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+		},
 		GetIamPolicy: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -158,13 +170,16 @@ func defaultInstanceAdminCallOptions() *InstanceAdminCallOptions {
 				})
 			}),
 		},
-		TestIamPermissions: []gax.CallOption{},
+		TestIamPermissions: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+		},
 	}
 }
 
 func defaultInstanceAdminRESTCallOptions() *InstanceAdminCallOptions {
 	return &InstanceAdminCallOptions{
 		ListInstanceConfigs: []gax.CallOption{
+			gax.WithTimeout(3600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -176,6 +191,7 @@ func defaultInstanceAdminRESTCallOptions() *InstanceAdminCallOptions {
 			}),
 		},
 		GetInstanceConfig: []gax.CallOption{
+			gax.WithTimeout(3600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -191,6 +207,7 @@ func defaultInstanceAdminRESTCallOptions() *InstanceAdminCallOptions {
 		DeleteInstanceConfig:         []gax.CallOption{},
 		ListInstanceConfigOperations: []gax.CallOption{},
 		ListInstances: []gax.CallOption{
+			gax.WithTimeout(3600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -202,6 +219,7 @@ func defaultInstanceAdminRESTCallOptions() *InstanceAdminCallOptions {
 			}),
 		},
 		GetInstance: []gax.CallOption{
+			gax.WithTimeout(3600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -212,9 +230,14 @@ func defaultInstanceAdminRESTCallOptions() *InstanceAdminCallOptions {
 					http.StatusGatewayTimeout)
 			}),
 		},
-		CreateInstance: []gax.CallOption{},
-		UpdateInstance: []gax.CallOption{},
+		CreateInstance: []gax.CallOption{
+			gax.WithTimeout(3600000 * time.Millisecond),
+		},
+		UpdateInstance: []gax.CallOption{
+			gax.WithTimeout(3600000 * time.Millisecond),
+		},
 		DeleteInstance: []gax.CallOption{
+			gax.WithTimeout(3600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -225,8 +248,11 @@ func defaultInstanceAdminRESTCallOptions() *InstanceAdminCallOptions {
 					http.StatusGatewayTimeout)
 			}),
 		},
-		SetIamPolicy: []gax.CallOption{},
+		SetIamPolicy: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+		},
 		GetIamPolicy: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -237,7 +263,9 @@ func defaultInstanceAdminRESTCallOptions() *InstanceAdminCallOptions {
 					http.StatusGatewayTimeout)
 			}),
 		},
-		TestIamPermissions: []gax.CallOption{},
+		TestIamPermissions: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+		},
 	}
 }
 
@@ -637,9 +665,6 @@ type instanceAdminGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing InstanceAdminClient
 	CallOptions **InstanceAdminCallOptions
 
@@ -689,11 +714,6 @@ func NewInstanceAdminClient(ctx context.Context, opts ...option.ClientOption) (*
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -702,7 +722,6 @@ func NewInstanceAdminClient(ctx context.Context, opts ...option.ClientOption) (*
 
 	c := &instanceAdminGRPCClient{
 		connPool:            connPool,
-		disableDeadlines:    disableDeadlines,
 		instanceAdminClient: instancepb.NewInstanceAdminClient(connPool),
 		CallOptions:         &client.CallOptions,
 	}
@@ -736,7 +755,7 @@ func (c *instanceAdminGRPCClient) Connection() *grpc.ClientConn {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *instanceAdminGRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -831,7 +850,7 @@ func defaultInstanceAdminRESTClientOptions() []option.ClientOption {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *instanceAdminRESTClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -896,11 +915,6 @@ func (c *instanceAdminGRPCClient) ListInstanceConfigs(ctx context.Context, req *
 }
 
 func (c *instanceAdminGRPCClient) GetInstanceConfig(ctx context.Context, req *instancepb.GetInstanceConfigRequest, opts ...gax.CallOption) (*instancepb.InstanceConfig, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 3600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1059,11 +1073,6 @@ func (c *instanceAdminGRPCClient) ListInstances(ctx context.Context, req *instan
 }
 
 func (c *instanceAdminGRPCClient) GetInstance(ctx context.Context, req *instancepb.GetInstanceRequest, opts ...gax.CallOption) (*instancepb.Instance, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 3600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1081,11 +1090,6 @@ func (c *instanceAdminGRPCClient) GetInstance(ctx context.Context, req *instance
 }
 
 func (c *instanceAdminGRPCClient) CreateInstance(ctx context.Context, req *instancepb.CreateInstanceRequest, opts ...gax.CallOption) (*CreateInstanceOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 3600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1105,11 +1109,6 @@ func (c *instanceAdminGRPCClient) CreateInstance(ctx context.Context, req *insta
 }
 
 func (c *instanceAdminGRPCClient) UpdateInstance(ctx context.Context, req *instancepb.UpdateInstanceRequest, opts ...gax.CallOption) (*UpdateInstanceOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 3600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "instance.name", url.QueryEscape(req.GetInstance().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1129,11 +1128,6 @@ func (c *instanceAdminGRPCClient) UpdateInstance(ctx context.Context, req *insta
 }
 
 func (c *instanceAdminGRPCClient) DeleteInstance(ctx context.Context, req *instancepb.DeleteInstanceRequest, opts ...gax.CallOption) error {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 3600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1147,11 +1141,6 @@ func (c *instanceAdminGRPCClient) DeleteInstance(ctx context.Context, req *insta
 }
 
 func (c *instanceAdminGRPCClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1169,11 +1158,6 @@ func (c *instanceAdminGRPCClient) SetIamPolicy(ctx context.Context, req *iampb.S
 }
 
 func (c *instanceAdminGRPCClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1191,11 +1175,6 @@ func (c *instanceAdminGRPCClient) GetIamPolicy(ctx context.Context, req *iampb.G
 }
 
 func (c *instanceAdminGRPCClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermissionsRequest, opts ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1266,13 +1245,13 @@ func (c *instanceAdminRESTClient) ListInstanceConfigs(ctx context.Context, req *
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -1341,13 +1320,13 @@ func (c *instanceAdminRESTClient) GetInstanceConfig(ctx context.Context, req *in
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1446,13 +1425,13 @@ func (c *instanceAdminRESTClient) CreateInstanceConfig(ctx context.Context, req 
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1561,13 +1540,13 @@ func (c *instanceAdminRESTClient) UpdateInstanceConfig(ctx context.Context, req 
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1703,13 +1682,13 @@ func (c *instanceAdminRESTClient) ListInstanceConfigOperations(ctx context.Conte
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -1794,13 +1773,13 @@ func (c *instanceAdminRESTClient) ListInstances(ctx context.Context, req *instan
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -1843,7 +1822,7 @@ func (c *instanceAdminRESTClient) GetInstance(ctx context.Context, req *instance
 		if err != nil {
 			return nil, err
 		}
-		params.Add("fieldMask", string(fieldMask))
+		params.Add("fieldMask", string(fieldMask[1:len(fieldMask)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1876,13 +1855,13 @@ func (c *instanceAdminRESTClient) GetInstance(ctx context.Context, req *instance
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1977,13 +1956,13 @@ func (c *instanceAdminRESTClient) CreateInstance(ctx context.Context, req *insta
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2088,13 +2067,13 @@ func (c *instanceAdminRESTClient) UpdateInstance(ctx context.Context, req *insta
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2211,13 +2190,13 @@ func (c *instanceAdminRESTClient) SetIamPolicy(ctx context.Context, req *iampb.S
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2279,13 +2258,13 @@ func (c *instanceAdminRESTClient) GetIamPolicy(ctx context.Context, req *iampb.G
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2348,13 +2327,13 @@ func (c *instanceAdminRESTClient) TestIamPermissions(ctx context.Context, req *i
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil

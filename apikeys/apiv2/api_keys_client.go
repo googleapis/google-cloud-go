@@ -20,14 +20,16 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"math"
 	"net/http"
 	"net/url"
 	"time"
 
+	apikeyspb "cloud.google.com/go/apikeys/apiv2/apikeyspb"
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
@@ -35,8 +37,6 @@ import (
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
-	apikeyspb "google.golang.org/genproto/googleapis/api/apikeys/v2"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/encoding/protojson"
@@ -73,28 +73,60 @@ func defaultGRPCClientOptions() []option.ClientOption {
 
 func defaultCallOptions() *CallOptions {
 	return &CallOptions{
-		CreateKey:    []gax.CallOption{},
-		ListKeys:     []gax.CallOption{},
-		GetKey:       []gax.CallOption{},
-		GetKeyString: []gax.CallOption{},
-		UpdateKey:    []gax.CallOption{},
-		DeleteKey:    []gax.CallOption{},
-		UndeleteKey:  []gax.CallOption{},
-		LookupKey:    []gax.CallOption{},
+		CreateKey: []gax.CallOption{
+			gax.WithTimeout(10000 * time.Millisecond),
+		},
+		ListKeys: []gax.CallOption{
+			gax.WithTimeout(10000 * time.Millisecond),
+		},
+		GetKey: []gax.CallOption{
+			gax.WithTimeout(10000 * time.Millisecond),
+		},
+		GetKeyString: []gax.CallOption{
+			gax.WithTimeout(10000 * time.Millisecond),
+		},
+		UpdateKey: []gax.CallOption{
+			gax.WithTimeout(10000 * time.Millisecond),
+		},
+		DeleteKey: []gax.CallOption{
+			gax.WithTimeout(10000 * time.Millisecond),
+		},
+		UndeleteKey: []gax.CallOption{
+			gax.WithTimeout(10000 * time.Millisecond),
+		},
+		LookupKey: []gax.CallOption{
+			gax.WithTimeout(10000 * time.Millisecond),
+		},
 		GetOperation: []gax.CallOption{},
 	}
 }
 
 func defaultRESTCallOptions() *CallOptions {
 	return &CallOptions{
-		CreateKey:    []gax.CallOption{},
-		ListKeys:     []gax.CallOption{},
-		GetKey:       []gax.CallOption{},
-		GetKeyString: []gax.CallOption{},
-		UpdateKey:    []gax.CallOption{},
-		DeleteKey:    []gax.CallOption{},
-		UndeleteKey:  []gax.CallOption{},
-		LookupKey:    []gax.CallOption{},
+		CreateKey: []gax.CallOption{
+			gax.WithTimeout(10000 * time.Millisecond),
+		},
+		ListKeys: []gax.CallOption{
+			gax.WithTimeout(10000 * time.Millisecond),
+		},
+		GetKey: []gax.CallOption{
+			gax.WithTimeout(10000 * time.Millisecond),
+		},
+		GetKeyString: []gax.CallOption{
+			gax.WithTimeout(10000 * time.Millisecond),
+		},
+		UpdateKey: []gax.CallOption{
+			gax.WithTimeout(10000 * time.Millisecond),
+		},
+		DeleteKey: []gax.CallOption{
+			gax.WithTimeout(10000 * time.Millisecond),
+		},
+		UndeleteKey: []gax.CallOption{
+			gax.WithTimeout(10000 * time.Millisecond),
+		},
+		LookupKey: []gax.CallOption{
+			gax.WithTimeout(10000 * time.Millisecond),
+		},
 		GetOperation: []gax.CallOption{},
 	}
 }
@@ -264,9 +296,6 @@ type gRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing Client
 	CallOptions **CallOptions
 
@@ -298,11 +327,6 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -311,7 +335,6 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 
 	c := &gRPCClient{
 		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
 		client:           apikeyspb.NewApiKeysClient(connPool),
 		CallOptions:      &client.CallOptions,
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
@@ -346,7 +369,7 @@ func (c *gRPCClient) Connection() *grpc.ClientConn {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -421,7 +444,7 @@ func defaultRESTClientOptions() []option.ClientOption {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *restClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -441,11 +464,6 @@ func (c *restClient) Connection() *grpc.ClientConn {
 	return nil
 }
 func (c *gRPCClient) CreateKey(ctx context.Context, req *apikeyspb.CreateKeyRequest, opts ...gax.CallOption) (*CreateKeyOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 10000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -510,11 +528,6 @@ func (c *gRPCClient) ListKeys(ctx context.Context, req *apikeyspb.ListKeysReques
 }
 
 func (c *gRPCClient) GetKey(ctx context.Context, req *apikeyspb.GetKeyRequest, opts ...gax.CallOption) (*apikeyspb.Key, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 10000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -532,11 +545,6 @@ func (c *gRPCClient) GetKey(ctx context.Context, req *apikeyspb.GetKeyRequest, o
 }
 
 func (c *gRPCClient) GetKeyString(ctx context.Context, req *apikeyspb.GetKeyStringRequest, opts ...gax.CallOption) (*apikeyspb.GetKeyStringResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 10000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -554,11 +562,6 @@ func (c *gRPCClient) GetKeyString(ctx context.Context, req *apikeyspb.GetKeyStri
 }
 
 func (c *gRPCClient) UpdateKey(ctx context.Context, req *apikeyspb.UpdateKeyRequest, opts ...gax.CallOption) (*UpdateKeyOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 10000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "key.name", url.QueryEscape(req.GetKey().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -578,11 +581,6 @@ func (c *gRPCClient) UpdateKey(ctx context.Context, req *apikeyspb.UpdateKeyRequ
 }
 
 func (c *gRPCClient) DeleteKey(ctx context.Context, req *apikeyspb.DeleteKeyRequest, opts ...gax.CallOption) (*DeleteKeyOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 10000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -602,11 +600,6 @@ func (c *gRPCClient) DeleteKey(ctx context.Context, req *apikeyspb.DeleteKeyRequ
 }
 
 func (c *gRPCClient) UndeleteKey(ctx context.Context, req *apikeyspb.UndeleteKeyRequest, opts ...gax.CallOption) (*UndeleteKeyOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 10000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -626,11 +619,6 @@ func (c *gRPCClient) UndeleteKey(ctx context.Context, req *apikeyspb.UndeleteKey
 }
 
 func (c *gRPCClient) LookupKey(ctx context.Context, req *apikeyspb.LookupKeyRequest, opts ...gax.CallOption) (*apikeyspb.LookupKeyResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 10000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
 	opts = append((*c.CallOptions).LookupKey[0:len((*c.CallOptions).LookupKey):len((*c.CallOptions).LookupKey)], opts...)
 	var resp *apikeyspb.LookupKeyResponse
@@ -715,13 +703,13 @@ func (c *restClient) CreateKey(ctx context.Context, req *apikeyspb.CreateKeyRequ
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -798,13 +786,13 @@ func (c *restClient) ListKeys(ctx context.Context, req *apikeyspb.ListKeysReques
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -877,13 +865,13 @@ func (c *restClient) GetKey(ctx context.Context, req *apikeyspb.GetKeyRequest, o
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -938,13 +926,13 @@ func (c *restClient) GetKeyString(ctx context.Context, req *apikeyspb.GetKeyStri
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -981,7 +969,7 @@ func (c *restClient) UpdateKey(ctx context.Context, req *apikeyspb.UpdateKeyRequ
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask))
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1013,13 +1001,13 @@ func (c *restClient) UpdateKey(ctx context.Context, req *apikeyspb.UpdateKeyRequ
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1082,13 +1070,13 @@ func (c *restClient) DeleteKey(ctx context.Context, req *apikeyspb.DeleteKeyRequ
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1153,13 +1141,13 @@ func (c *restClient) UndeleteKey(ctx context.Context, req *apikeyspb.UndeleteKey
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1219,13 +1207,13 @@ func (c *restClient) LookupKey(ctx context.Context, req *apikeyspb.LookupKeyRequ
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1277,13 +1265,13 @@ func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil

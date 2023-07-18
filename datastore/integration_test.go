@@ -33,6 +33,7 @@ import (
 	"cloud.google.com/go/rpcreplay"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
+	pb "google.golang.org/genproto/googleapis/datastore/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -485,6 +486,70 @@ func testSmallQueries(ctx context.Context, t *testing.T, client *Client, parent 
 	}
 }
 
+func TestIntegration_FilterEntity(t *testing.T) {
+	ctx := context.Background()
+	client := newTestClient(ctx, t)
+	defer client.Close()
+
+	parent := NameKey("SQParent", "TestIntegration_Filters"+suffix, nil)
+	now := timeNow.Truncate(time.Millisecond).Unix()
+	tomorrow := timeNow.Truncate(time.Millisecond).AddDate(0, 0, 1).Unix()
+	children := []*SQChild{
+		{I: 0, J: 99, T: tomorrow, U: now},
+		{I: 1, J: 98, T: tomorrow, U: now},
+		{I: 2, J: 97, T: tomorrow, U: now},
+		{I: 3, J: 96, T: now, U: now},
+		{I: 4, J: 95, T: now, U: now},
+		{I: 5, J: 94, T: now, U: now},
+		{I: 6, J: 93, T: now, U: now},
+		{I: 7, J: 92, T: now, U: now},
+	}
+	baseQuery := NewQuery("SQChild").Ancestor(parent)
+	testSmallQueries(ctx, t, client, parent, children, []SQTestCase{
+		{
+			desc: "I>1",
+			q: baseQuery.Filter("T=", now).FilterEntity(
+				PropertyFilter{FieldName: "I", Operator: ">", Value: 1}),
+			wantCount: 5,
+			wantSum:   3 + 4 + 5 + 6 + 7 + 96 + 95 + 94 + 93 + 92,
+		},
+		{
+			desc: "I<=1 or I >= 6",
+			q: baseQuery.Filter("T=", now).FilterEntity(OrFilter{
+				[]EntityFilter{
+					PropertyFilter{FieldName: "I", Operator: "<", Value: 4},
+					PropertyFilter{FieldName: "I", Operator: ">=", Value: 6},
+				},
+			}),
+			wantCount: 3,
+			wantSum:   3 + 6 + 7 + 92 + 93 + 96,
+		},
+		{
+			desc: "(T = now) and (((J > 97) and (T = tomorrow)) or (J < 94))",
+			q: baseQuery.FilterEntity(
+				AndFilter{
+					Filters: []EntityFilter{
+						OrFilter{
+							Filters: []EntityFilter{
+								AndFilter{
+									[]EntityFilter{
+										PropertyFilter{FieldName: "J", Operator: ">", Value: 97},
+										PropertyFilter{FieldName: "T", Operator: "=", Value: tomorrow},
+									},
+								},
+								PropertyFilter{FieldName: "J", Operator: "<", Value: 94},
+							},
+						},
+						PropertyFilter{FieldName: "T", Operator: "=", Value: now},
+					},
+				},
+			),
+			wantCount: 2,
+			wantSum:   6 + 7 + 92 + 93,
+		},
+	})
+}
+
 func TestIntegration_Filters(t *testing.T) {
 	ctx := context.Background()
 	client := newTestClient(ctx, t)
@@ -585,6 +650,82 @@ func TestIntegration_Filters(t *testing.T) {
 			t.Errorf("compare: got=%v, want=%v", got, want)
 		}
 	})
+}
+
+func TestIntegration_AggregationQueries(t *testing.T) {
+	ctx := context.Background()
+	client := newTestClient(ctx, t)
+	defer client.Close()
+
+	parent := NameKey("SQParent", "TestIntegration_Filters"+suffix, nil)
+	now := timeNow.Truncate(time.Millisecond).Unix()
+	children := []*SQChild{
+		{I: 0, T: now, U: now},
+		{I: 1, T: now, U: now},
+		{I: 2, T: now, U: now},
+		{I: 3, T: now, U: now},
+		{I: 4, T: now, U: now},
+		{I: 5, T: now, U: now},
+		{I: 6, T: now, U: now},
+		{I: 7, T: now, U: now},
+	}
+
+	keys := make([]*Key, len(children))
+	for i := range keys {
+		keys[i] = IncompleteKey("SQChild", parent)
+	}
+	keys, err := client.PutMulti(ctx, keys, children)
+	if err != nil {
+		t.Fatalf("client.PutMulti: %v", err)
+	}
+	defer func() {
+		err := client.DeleteMulti(ctx, keys)
+		if err != nil {
+			t.Errorf("client.DeleteMulti: %v", err)
+		}
+	}()
+
+	baseQuery := NewQuery("SQChild").Ancestor(parent)
+	testCases := []struct {
+		desc          string
+		aggQuery      *AggregationQuery
+		wantFailure   bool
+		wantErrMsg    string
+		wantAggResult AggregationResult
+	}{
+		{
+			desc:          "Count Failure - Missing index",
+			aggQuery:      baseQuery.Filter("T>=", now).NewAggregationQuery().WithCount("count"),
+			wantFailure:   true,
+			wantErrMsg:    "no matching index found",
+			wantAggResult: nil,
+		},
+		{
+			desc:        "Count Success",
+			aggQuery:    baseQuery.Filter("T=", now).Filter("I>=", 3).NewAggregationQuery().WithCount("count"),
+			wantFailure: false,
+			wantErrMsg:  "",
+			wantAggResult: map[string]interface{}{
+				"count": &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: 5}},
+			},
+		},
+	}
+
+	for _, testCase := range testCases {
+		gotAggResult, gotErr := client.RunAggregationQuery(ctx, testCase.aggQuery)
+		gotFailure := gotErr != nil
+
+		if gotFailure != testCase.wantFailure ||
+			(gotErr != nil && !strings.Contains(gotErr.Error(), testCase.wantErrMsg)) {
+			t.Errorf("%q: Mismatch in error got: %v, want: %q", testCase.desc, gotErr, testCase.wantErrMsg)
+			continue
+		}
+		if !reflect.DeepEqual(gotAggResult, testCase.wantAggResult) {
+			t.Errorf("%q: Mismatch in aggregation result got: %v, want: %v", testCase.desc, gotAggResult, testCase.wantAggResult)
+			continue
+		}
+	}
+
 }
 
 type ckey struct{}
