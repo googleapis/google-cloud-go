@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.12.0](https://github.com/googleapis/google-cloud-go/compare/deploy/v1.11.0...deploy/v1.12.0) (2023-07-18)
+
+
+### Features
+
+* **deploy:** Added support routeUpdateWaitTime field for Deployment Strategies ([dda1f9d](https://github.com/googleapis/google-cloud-go/commit/dda1f9dc2f5b54dca15ae05302d8cac821fe8da1))
+
 ## [1.11.0](https://github.com/googleapis/google-cloud-go/compare/deploy/v1.10.1...deploy/v1.11.0) (2023-06-27)
 
 
