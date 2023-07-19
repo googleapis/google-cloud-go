@@ -148,6 +148,10 @@ type PushConfig struct {
 	// This field is optional and should be set only by users interested in
 	// authenticated push.
 	AuthenticationMethod AuthenticationMethod
+
+	// The format of the delivered message to the push endpoint is defined by
+	// the chosen wrapper. When unset, `PubsubWrapper` is used.
+	Wrapper Wrapper
 }
 
 func (pc *PushConfig) toProto() *pb.PushConfig {
@@ -163,6 +167,15 @@ func (pc *PushConfig) toProto() *pb.PushConfig {
 		case *OIDCToken:
 			pbCfg.AuthenticationMethod = am.toProto()
 		default: // TODO: add others here when GAIC adds more definitions.
+		}
+	}
+	if w := pc.Wrapper; w != nil {
+		switch wt := w.(type) {
+		case *PubsubWrapper:
+			pbCfg.Wrapper = wt.toProto()
+		case *NoWrapper:
+			pbCfg.Wrapper = wt.toProto()
+		default:
 		}
 	}
 	return pbCfg
@@ -208,6 +221,48 @@ func (oidcToken *OIDCToken) toProto() *pb.PushConfig_OidcToken_ {
 		OidcToken: &pb.PushConfig_OidcToken{
 			Audience:            oidcToken.Audience,
 			ServiceAccountEmail: oidcToken.ServiceAccountEmail,
+		},
+	}
+}
+
+type Wrapper interface {
+	isWrapper() bool
+}
+
+// PubsubWrapper denotes sending the payload to the push endpoint in the form of the JSON
+// representation of a PubsubMessage
+// (https://cloud.google.com/pubsub/docs/reference/rpc/google.pubsub.v1#pubsubmessage).
+type PubsubWrapper struct{}
+
+var _ Wrapper = (*PubsubWrapper)(nil)
+
+func (p *PubsubWrapper) isWrapper() bool { return true }
+
+func (p *PubsubWrapper) toProto() *pb.PushConfig_PubsubWrapper_ {
+	if p == nil {
+		return nil
+	}
+	return &pb.PushConfig_PubsubWrapper_{
+		PubsubWrapper: &pb.PushConfig_PubsubWrapper{},
+	}
+}
+
+// NoWrapper denotes not wrapping the payload sent to the push endpoint.
+type NoWrapper struct {
+	WriteMetadata bool
+}
+
+var _ Wrapper = (*NoWrapper)(nil)
+
+func (n *NoWrapper) isWrapper() bool { return true }
+
+func (n *NoWrapper) toProto() *pb.PushConfig_NoWrapper_ {
+	if n == nil {
+		return nil
+	}
+	return &pb.PushConfig_NoWrapper_{
+		NoWrapper: &pb.PushConfig_NoWrapper{
+			WriteMetadata: n.WriteMetadata,
 		},
 	}
 }
@@ -645,6 +700,16 @@ func protoToPushConfig(pbPc *pb.PushConfig) *PushConfig {
 			pc.AuthenticationMethod = &OIDCToken{
 				Audience:            oidcToken.OidcToken.GetAudience(),
 				ServiceAccountEmail: oidcToken.OidcToken.GetServiceAccountEmail(),
+			}
+		}
+	}
+	if w := pbPc.Wrapper; w != nil {
+		switch wt := w.(type) {
+		case *pb.PushConfig_PubsubWrapper_:
+			pc.Wrapper = &PubsubWrapper{}
+		case *pb.PushConfig_NoWrapper_:
+			pc.Wrapper = &NoWrapper{
+				WriteMetadata: wt.NoWrapper.WriteMetadata,
 			}
 		}
 	}
