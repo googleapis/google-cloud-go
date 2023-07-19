@@ -54,7 +54,7 @@ type connectionPool struct {
 
 	// We centralize the open function on the pool, rather than having an instance of the open func on every
 	// connection.  Opening the connection is a stateless operation.
-	open func(opts ...gax.CallOption) (storagepb.BigQueryWrite_AppendRowsClient, error)
+	open func(ctx context.Context, opts ...gax.CallOption) (storagepb.BigQueryWrite_AppendRowsClient, error)
 
 	// We specify default calloptions for the pool.
 	// Explicit connections may have their own calloptions as well.
@@ -137,7 +137,7 @@ func (cp *connectionPool) openWithRetry(co *connection) (storagepb.BigQueryWrite
 	r := &unaryRetryer{}
 	for {
 		recordStat(cp.ctx, AppendClientOpenCount, 1)
-		arc, err := cp.open(cp.mergeCallOptions(co)...)
+		arc, err := cp.open(co.ctx, cp.mergeCallOptions(co)...)
 		if err != nil {
 			bo, shouldRetry := r.Retry(err)
 			if shouldRetry {

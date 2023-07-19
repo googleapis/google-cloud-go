@@ -61,7 +61,7 @@ func TestConnection_OpenWithRetry(t *testing.T) {
 	for _, tc := range testCases {
 		pool := &connectionPool{
 			ctx: context.Background(),
-			open: func(opts ...gax.CallOption) (storagepb.BigQueryWrite_AppendRowsClient, error) {
+			open: func(ctx context.Context, opts ...gax.CallOption) (storagepb.BigQueryWrite_AppendRowsClient, error) {
 				if len(tc.errors) == 0 {
 					panic("out of errors")
 				}
@@ -162,7 +162,7 @@ func TestConnectionPool_OpenCallOptionPropagation(t *testing.T) {
 	pool := &connectionPool{
 		ctx:    ctx,
 		cancel: cancel,
-		open: createOpenF(ctx, func(ctx context.Context, opts ...gax.CallOption) (storage.BigQueryWrite_AppendRowsClient, error) {
+		open: createOpenF(func(ctx context.Context, opts ...gax.CallOption) (storage.BigQueryWrite_AppendRowsClient, error) {
 			if len(opts) == 0 {
 				t.Fatalf("no options were propagated")
 			}

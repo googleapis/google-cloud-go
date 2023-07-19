@@ -129,8 +129,8 @@ func (c *Client) NewManagedStream(ctx context.Context, opts ...WriterOption) (*M
 }
 
 // createOpenF builds the opener function we need to access the AppendRows bidi stream.
-func createOpenF(ctx context.Context, streamFunc streamClientFunc, routingHeader string) func(opts ...gax.CallOption) (storagepb.BigQueryWrite_AppendRowsClient, error) {
-	return func(opts ...gax.CallOption) (storagepb.BigQueryWrite_AppendRowsClient, error) {
+func createOpenF(streamFunc streamClientFunc, routingHeader string) func(ctx context.Context, opts ...gax.CallOption) (storagepb.BigQueryWrite_AppendRowsClient, error) {
+	return func(ctx context.Context, opts ...gax.CallOption) (storagepb.BigQueryWrite_AppendRowsClient, error) {
 		if routingHeader != "" {
 			ctx = metadata.AppendToOutgoingContext(ctx, "x-goog-request-params", routingHeader)
 		}
@@ -266,7 +266,7 @@ func (c *Client) createPool(location string, streamFunc streamClientFunc) (*conn
 		location:           location,
 		ctx:                cCtx,
 		cancel:             cancel,
-		open:               createOpenF(cCtx, streamFunc, routingHeader),
+		open:               createOpenF(streamFunc, routingHeader),
 		callOptions:        c.cfg.defaultAppendRowsCallOptions,
 		baseFlowController: newFlowController(c.cfg.defaultInflightRequests, c.cfg.defaultInflightBytes),
 	}
