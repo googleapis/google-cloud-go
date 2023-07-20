@@ -37,6 +37,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/types/known/structpb"
 )
 
 // TODO(djd): Make test entity clean up more robust: some test entities may
@@ -427,6 +428,8 @@ func TestIntegration_NilKey(t *testing.T) {
 type SQChild struct {
 	I, J int
 	T, U int64
+	V    float64
+	W    string
 }
 
 type SQTestCase struct {
@@ -660,14 +663,14 @@ func TestIntegration_AggregationQueries(t *testing.T) {
 	parent := NameKey("SQParent", "TestIntegration_Filters"+suffix, nil)
 	now := timeNow.Truncate(time.Millisecond).Unix()
 	children := []*SQChild{
-		{I: 0, T: now, U: now},
-		{I: 1, T: now, U: now},
-		{I: 2, T: now, U: now},
-		{I: 3, T: now, U: now},
-		{I: 4, T: now, U: now},
-		{I: 5, T: now, U: now},
-		{I: 6, T: now, U: now},
-		{I: 7, T: now, U: now},
+		{I: 0, T: now, U: now, V: 1.5, W: "str"},
+		{I: 1, T: now, U: now, V: 1.5, W: "str"},
+		{I: 2, T: now, U: now, V: 1.5, W: "str"},
+		{I: 3, T: now, U: now, V: 1.5, W: "str"},
+		{I: 4, T: now, U: now, V: 1.5, W: "str"},
+		{I: 5, T: now, U: now, V: 1.5, W: "str"},
+		{I: 6, T: now, U: now, V: 1.5, W: "str"},
+		{I: 7, T: now, U: now, V: 1.5, W: "str"},
 	}
 
 	keys := make([]*Key, len(children))
@@ -708,6 +711,67 @@ func TestIntegration_AggregationQueries(t *testing.T) {
 			wantAggResult: map[string]interface{}{
 				"count": &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: 5}},
 			},
+		},
+		{
+			desc:        "Multiple aggregations",
+			aggQuery:    baseQuery.Filter("T=", now).NewAggregationQuery().WithSum("I", "i_sum").WithAvg("I", "avg").WithSum("V", "v_sum"),
+			wantFailure: false,
+			wantErrMsg:  "",
+			wantAggResult: map[string]interface{}{
+				"i_sum": &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: 28}},
+				"v_sum": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: 3.5}},
+				"avg":   &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: 3.5}},
+			},
+		},
+		{
+			desc:        "Multiple aggregations with limit ",
+			aggQuery:    baseQuery.Filter("T=", now).Limit(2).NewAggregationQuery().WithSum("I", "sum").WithAvg("I", "avg"),
+			wantFailure: false,
+			wantErrMsg:  "",
+			wantAggResult: map[string]interface{}{
+				"sum": &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: 1}},
+				"avg": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: 0.5}},
+			},
+		},
+		{
+			desc:        "Multiple aggregations on non-numeric field",
+			aggQuery:    baseQuery.Filter("T=", now).Limit(2).NewAggregationQuery().WithSum("W", "sum").WithAvg("W", "avg"),
+			wantFailure: false,
+			wantErrMsg:  "",
+			wantAggResult: map[string]interface{}{
+				"sum": &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: int64(0)}},
+				"avg": &pb.Value{ValueType: &pb.Value_NullValue{NullValue: structpb.NullValue_NULL_VALUE}},
+			},
+		},
+		{
+			desc:        "Sum aggregation without alias",
+			aggQuery:    baseQuery.Filter("T=", now).NewAggregationQuery().WithSum("I", ""),
+			wantFailure: false,
+			wantErrMsg:  "",
+			wantAggResult: map[string]interface{}{
+				"property_1": &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: 28}},
+			},
+		},
+		{
+			desc:        "Average aggregation without alias",
+			aggQuery:    baseQuery.Filter("T=", now).NewAggregationQuery().WithAvg("I", ""),
+			wantFailure: false,
+			wantErrMsg:  "",
+			wantAggResult: map[string]interface{}{
+				"property_1": &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: 8}},
+			},
+		},
+		{
+			desc:        "Aggregation with invalid alias",
+			aggQuery:    baseQuery.Filter("T=", now).NewAggregationQuery().WithAvg("I", "*****"),
+			wantFailure: true,
+			wantErrMsg:  "",
+		},
+		{
+			desc:        "Aggregation with invalid field name",
+			aggQuery:    baseQuery.Filter("T=", now).NewAggregationQuery().WithSum("I2", "").WithAvg("I2", ""),
+			wantFailure: true,
+			wantErrMsg:  "",
 		},
 	}
 
