@@ -1,8 +1,8 @@
-# Vertex AI API
+# Generative Language API
 
 [![Go Reference](https://pkg.go.dev/badge/cloud.google.com/go/ai.svg)](https://pkg.go.dev/cloud.google.com/go/ai)
 
-Go Client Library for Vertex AI API.
+Go Client Library for Generative Language API.
 
 ## Install
 
