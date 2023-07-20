@@ -20,8 +20,6 @@
 // The Rapid Migration Assessment service is our first-party migration
 // assessment and planning tool.
 //
-//	NOTE: This package is in beta. It is not stable, and may be subject to changes.
-//
 // # General documentation
 //
 // For information about setting deadlines, reusing contexts, and more
