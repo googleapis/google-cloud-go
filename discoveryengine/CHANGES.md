@@ -1,5 +1,6 @@
 # Changelog
 
+
 ## [0.5.0](https://github.com/googleapis/google-cloud-go/compare/discoveryengine/v0.4.1...discoveryengine/v0.5.0) (2023-06-20)
 
 
