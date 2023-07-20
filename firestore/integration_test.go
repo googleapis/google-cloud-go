@@ -33,6 +33,7 @@ import (
 	apiv1 "cloud.google.com/go/firestore/apiv1/admin"
 	"cloud.google.com/go/firestore/apiv1/admin/adminpb"
 	firestorev1 "cloud.google.com/go/firestore/apiv1/firestorepb"
+	pb "cloud.google.com/go/firestore/apiv1/firestorepb"
 	"cloud.google.com/go/internal/pretty"
 	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/internal/uid"
@@ -43,6 +44,7 @@ import (
 	"google.golang.org/genproto/googleapis/type/latlng"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	structpb "google.golang.org/protobuf/types/known/structpb"
 )
 
 func TestMain(m *testing.M) {
@@ -133,7 +135,11 @@ func initIntegrationTest() {
 func createIndexes(ctx context.Context, dbPath string) {
 	var createIndexWg sync.WaitGroup
 
-	indexFields := [][]string{{"updatedAt", "weight", "height"}, {"weight", "height"}}
+	indexFields := [][]string{
+		{"updatedAt", "weight", "height"},
+		{"weight", "height"},
+		{"width", "depth"},
+		{"width", "model"}}
 	indexNames = make([]string, len(indexFields))
 	indexParent := fmt.Sprintf("%s/collectionGroups/%s", dbPath, iColl.ID)
 
@@ -2044,6 +2050,124 @@ func TestIntegration_BulkWriter(t *testing.T) {
 
 		if res == nil {
 			t.Error("bulkwriter: write attempt returned nil results")
+		}
+	}
+}
+
+func TestIntegration_AggregationQueries(t *testing.T) {
+	ctx := context.Background()
+	coll := integrationColl(t)
+	h := testHelper{t}
+	docs := []map[string]interface{}{
+		{"width": 1, "depth": 99, "model": "A"},
+		{"width": 2, "depth": 98, "model": "A"},
+		{"width": 3, "depth": 97, "model": "B"},
+		{"width": 4, "depth": 96, "model": "B"},
+		{"width": 5, "depth": 95, "model": "C"},
+		{"width": 6, "depth": 94, "model": "B"},
+		{"width": 7, "depth": 93, "model": "C"},
+		{"width": 8, "depth": 93, "model": "A"},
+	}
+	for _, doc := range docs {
+		newDoc := coll.NewDoc()
+		h.mustCreate(newDoc, doc)
+	}
+
+	query := coll.Where("width", ">=", 1)
+
+	limitQuery := coll.Where("width", ">=", 1).Limit(4)
+	limitQueryPtr := &limitQuery
+
+	emptyResultsQuery := coll.Where("width", "<", 1)
+	emptyResultsQueryPtr := &emptyResultsQuery
+
+	testcases := []struct {
+		desc             string
+		aggregationQuery *AggregationQuery
+		wantErr          bool
+		result           map[string]interface{}
+	}{
+		{
+			desc:             "Multiple aggregations",
+			aggregationQuery: query.NewAggregationQuery().WithCount("count1").WithAvg("width", "width_avg1").WithAvg("depth", "depth_avg1").WithSum("width", "width_sum1").WithSum("depth", "depth_sum1"),
+			wantErr:          false,
+			result: map[string]interface{}{
+				"count1":     int64(8),
+				"width_sum1": int64(36),
+				"depth_sum1": int64(765),
+				"width_avg1": float64(4.5),
+				"depth_avg1": float64(95.625),
+			},
+		},
+		{
+			desc:             "Aggregations with limit",
+			aggregationQuery: limitQueryPtr.NewAggregationQuery().WithCount("count1").WithAvgPath([]string{"width"}, "width_avg1").WithSumPath([]string{"width"}, "width_sum1"),
+			wantErr:          false,
+			result: map[string]interface{}{
+				"count1":     int64(4),
+				"width_sum1": int64(10),
+				"width_avg1": float64(2.5),
+			},
+		},
+		{
+			desc:             "Aggregations on empty results",
+			aggregationQuery: emptyResultsQueryPtr.NewAggregationQuery().WithCount("count1").WithAvg("width", "width_avg1").WithSum("width", "width_sum1"),
+			wantErr:          false,
+			result: map[string]interface{}{
+				"count1":     int64(0),
+				"width_sum1": int64(0),
+				"width_avg1": structpb.NullValue_NULL_VALUE,
+			},
+		},
+		{
+			desc:             "Aggregation on non-numeric property values",
+			aggregationQuery: query.NewAggregationQuery().WithAvg("model", "model_avg1").WithSum("model", "model_sum1"),
+			wantErr:          false,
+			result: map[string]interface{}{
+				"model_sum1": int64(0),
+				"model_avg1": structpb.NullValue_NULL_VALUE,
+			},
+		},
+		{
+			desc:             "Aggregation on non existent key",
+			aggregationQuery: query.NewAggregationQuery().WithAvg("randKey", "key_avg1").WithSum("randKey", "key_sum1"),
+			wantErr:          true,
+		},
+	}
+
+	for _, tc := range testcases {
+		aggResult, err := tc.aggregationQuery.Get(ctx)
+		// fmt.Printf("%s: err: %v, aggResult: %v\n", tc.desc, err, aggResult)
+		if err != nil && !tc.wantErr {
+			t.Errorf("%s: got: %v, want: nil", tc.desc, err)
+			continue
+		} else if err == nil && tc.wantErr {
+			t.Errorf("%s: got: %v, wanted error", tc.desc, err)
+			continue
+		} else if len(aggResult) != len(tc.result) {
+			t.Errorf("%s: Number of results - got: %d, want: %d", tc.desc, len(aggResult), len(tc.result))
+			continue
+		}
+		for k, v := range aggResult {
+			pbVal := v.(*pb.Value)
+
+			isEqual := false
+
+			switch tc.result[k].(type) {
+			case int64:
+				isEqual = pbVal.GetIntegerValue() == tc.result[k]
+			case float64:
+				isEqual = pbVal.GetDoubleValue() == tc.result[k]
+			case structpb.NullValue:
+				isEqual = pbVal.GetNullValue() == tc.result[k]
+			default:
+				isEqual = false
+			}
+
+			if !isEqual {
+				t.Errorf("%s: %s got: %v, want: %v", tc.desc, k, pbVal, tc.result[k])
+				continue
+			}
 		}
 	}
 }

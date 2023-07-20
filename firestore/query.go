@@ -1233,6 +1233,80 @@ func (a *AggregationQuery) WithCount(alias string) *AggregationQuery {
 	return a
 }
 
+// WithSumPath specifies that the aggregation query should provide a sum of the values
+// of the provided field in the results returned by the underlying Query.
+// The path argument can be a single field or a dot-separated sequence of
+// fields, and must not contain any of the runes "˜*/[]".
+// The alias argument must be a valid Firestore document field name.
+func (a *AggregationQuery) WithSumPath(fp FieldPath, alias string) *AggregationQuery {
+	ref, err := fref(fp)
+	if err != nil {
+		a.query.err = err
+		return a
+	}
+
+	aq := &pb.StructuredAggregationQuery_Aggregation{
+		Alias: alias,
+		Operator: &pb.StructuredAggregationQuery_Aggregation_Sum_{
+			Sum: &pb.StructuredAggregationQuery_Aggregation_Sum{
+				Field: ref,
+			},
+		},
+	}
+
+	a.aggregateQueries = append(a.aggregateQueries, aq)
+	return a
+}
+
+// WithSum specifies that the aggregation query should provide a sum of the values
+// of the provided field in the results returned by the underlying Query.
+// The alias argument must be a valid Firestore document field name.
+func (a *AggregationQuery) WithSum(path string, alias string) *AggregationQuery {
+	fp, err := parseDotSeparatedString(path)
+	if err != nil {
+		a.query.err = err
+		return a
+	}
+	return a.WithSumPath(fp, alias)
+}
+
+// WithAvgPath specifies that the aggregation query should provide an average of the values
+// of the provided field in the results returned by the underlying Query.
+// The path argument can be a single field or a dot-separated sequence of
+// fields, and must not contain any of the runes "˜*/[]".
+// The alias argument must be a valid Firestore document field name.
+func (a *AggregationQuery) WithAvgPath(fp FieldPath, alias string) *AggregationQuery {
+	ref, err := fref(fp)
+	if err != nil {
+		a.query.err = err
+		return a
+	}
+
+	aq := &pb.StructuredAggregationQuery_Aggregation{
+		Alias: alias,
+		Operator: &pb.StructuredAggregationQuery_Aggregation_Avg_{
+			Avg: &pb.StructuredAggregationQuery_Aggregation_Avg{
+				Field: ref,
+			},
+		},
+	}
+
+	a.aggregateQueries = append(a.aggregateQueries, aq)
+	return a
+}
+
+// WithAvg specifies that the aggregation query should provide an average of the values
+// of the provided field in the results returned by the underlying Query.
+// The alias argument must be a valid Firestore document field name.
+func (a *AggregationQuery) WithAvg(path string, alias string) *AggregationQuery {
+	fp, err := parseDotSeparatedString(path)
+	if err != nil {
+		a.query.err = err
+		return a
+	}
+	return a.WithAvgPath(fp, alias)
+}
+
 // Get retrieves the aggregation query results from the service.
 func (a *AggregationQuery) Get(ctx context.Context) (AggregationResult, error) {
 
