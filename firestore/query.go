@@ -1237,7 +1237,9 @@ func (a *AggregationQuery) WithCount(alias string) *AggregationQuery {
 // of the provided field in the results returned by the underlying Query.
 // The path argument can be a single field or a dot-separated sequence of
 // fields, and must not contain any of the runes "˜*/[]".
-// The alias argument must be a valid Firestore document field name.
+// The alias argument can be empty or a valid Firestore document field name. It can be used
+// as key in the AggregationResult to get the sum value. If alias is empty, Firestore
+// will autogenerate a key.
 func (a *AggregationQuery) WithSumPath(fp FieldPath, alias string) *AggregationQuery {
 	ref, err := fref(fp)
 	if err != nil {
@@ -1260,7 +1262,9 @@ func (a *AggregationQuery) WithSumPath(fp FieldPath, alias string) *AggregationQ
 
 // WithSum specifies that the aggregation query should provide a sum of the values
 // of the provided field in the results returned by the underlying Query.
-// The alias argument must be a valid Firestore document field name.
+// The alias argument can be empty or a valid Firestore document field name. It can be used
+// as key in the AggregationResult to get the sum value. If alias is empty, Firestore
+// will autogenerate a key.
 func (a *AggregationQuery) WithSum(path string, alias string) *AggregationQuery {
 	fp, err := parseDotSeparatedString(path)
 	if err != nil {
@@ -1274,7 +1278,9 @@ func (a *AggregationQuery) WithSum(path string, alias string) *AggregationQuery 
 // of the provided field in the results returned by the underlying Query.
 // The path argument can be a single field or a dot-separated sequence of
 // fields, and must not contain any of the runes "˜*/[]".
-// The alias argument must be a valid Firestore document field name.
+// The alias argument can be empty or a valid Firestore document field name. It can be used
+// as key in the AggregationResult to get the average value. If alias is empty, Firestore
+// will autogenerate a key.
 func (a *AggregationQuery) WithAvgPath(fp FieldPath, alias string) *AggregationQuery {
 	ref, err := fref(fp)
 	if err != nil {
@@ -1297,7 +1303,9 @@ func (a *AggregationQuery) WithAvgPath(fp FieldPath, alias string) *AggregationQ
 
 // WithAvg specifies that the aggregation query should provide an average of the values
 // of the provided field in the results returned by the underlying Query.
-// The alias argument must be a valid Firestore document field name.
+// The alias argument can be empty or a valid Firestore document field name. It can be used
+// as key in the AggregationResult to get the average value. If alias is empty, Firestore
+// will autogenerate a key.
 func (a *AggregationQuery) WithAvg(path string, alias string) *AggregationQuery {
 	fp, err := parseDotSeparatedString(path)
 	if err != nil {

@@ -44,7 +44,7 @@ import (
 	"google.golang.org/genproto/googleapis/type/latlng"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
-	structpb "google.golang.org/protobuf/types/known/structpb"
+	"google.golang.org/protobuf/types/known/structpb"
 )
 
 func TestMain(m *testing.M) {
@@ -2059,14 +2059,14 @@ func TestIntegration_AggregationQueries(t *testing.T) {
 	coll := integrationColl(t)
 	h := testHelper{t}
 	docs := []map[string]interface{}{
-		{"width": 1, "depth": 99, "model": "A"},
-		{"width": 2, "depth": 98, "model": "A"},
-		{"width": 3, "depth": 97, "model": "B"},
-		{"width": 4, "depth": 96, "model": "B"},
-		{"width": 5, "depth": 95, "model": "C"},
-		{"width": 6, "depth": 94, "model": "B"},
-		{"width": 7, "depth": 93, "model": "C"},
-		{"width": 8, "depth": 93, "model": "A"},
+		{"width": 1.5, "depth": 99, "model": "A"},
+		{"width": 2.6, "depth": 98, "model": "A"},
+		{"width": 3.7, "depth": 97, "model": "B"},
+		{"width": 4.8, "depth": 96, "model": "B"},
+		{"width": 5.9, "depth": 95, "model": "C"},
+		{"width": 6.0, "depth": 94, "model": "B"},
+		{"width": 7.1, "depth": 93, "model": "C"},
+		{"width": 8.2, "depth": 93, "model": "A"},
 	}
 	for _, doc := range docs {
 		newDoc := coll.NewDoc()
@@ -2085,18 +2085,50 @@ func TestIntegration_AggregationQueries(t *testing.T) {
 		desc             string
 		aggregationQuery *AggregationQuery
 		wantErr          bool
-		result           map[string]interface{}
+		result           AggregationResult
 	}{
 		{
 			desc:             "Multiple aggregations",
 			aggregationQuery: query.NewAggregationQuery().WithCount("count1").WithAvg("width", "width_avg1").WithAvg("depth", "depth_avg1").WithSum("width", "width_sum1").WithSum("depth", "depth_sum1"),
 			wantErr:          false,
 			result: map[string]interface{}{
-				"count1":     int64(8),
-				"width_sum1": int64(36),
-				"depth_sum1": int64(765),
-				"width_avg1": float64(4.5),
-				"depth_avg1": float64(95.625),
+				"count1":     &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: int64(8)}},
+				"width_sum1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(39.8)}},
+				"depth_sum1": &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: int64(765)}},
+				"width_avg1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(4.975)}},
+				"depth_avg1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(95.625)}},
+			},
+		},
+		{
+			desc:             "WithSum aggregation without alias",
+			aggregationQuery: query.NewAggregationQuery().WithSum("width", ""),
+			wantErr:          false,
+			result: map[string]interface{}{
+				"field_1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(39.8)}},
+			},
+		},
+		{
+			desc:             "WithSumPath aggregation without alias",
+			aggregationQuery: query.NewAggregationQuery().WithSumPath([]string{"width"}, ""),
+			wantErr:          false,
+			result: map[string]interface{}{
+				"field_1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(39.8)}},
+			},
+		},
+		{
+			desc:             "WithAvg aggregation without alias",
+			aggregationQuery: query.NewAggregationQuery().WithAvg("width", ""),
+			wantErr:          false,
+			result: map[string]interface{}{
+				"field_1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(4.975)}},
+			},
+		},
+		{
+			desc:             "WithAvgPath aggregation without alias",
+			aggregationQuery: query.NewAggregationQuery().WithAvgPath([]string{"width"}, ""),
+			wantErr:          false,
+			result: map[string]interface{}{
+				"field_1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(4.975)}},
 			},
 		},
 		{
@@ -2104,9 +2136,9 @@ func TestIntegration_AggregationQueries(t *testing.T) {
 			aggregationQuery: limitQueryPtr.NewAggregationQuery().WithCount("count1").WithAvgPath([]string{"width"}, "width_avg1").WithSumPath([]string{"width"}, "width_sum1"),
 			wantErr:          false,
 			result: map[string]interface{}{
-				"count1":     int64(4),
-				"width_sum1": int64(10),
-				"width_avg1": float64(2.5),
+				"count1":     &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: int64(4)}},
+				"width_sum1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(12.6)}},
+				"width_avg1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(3.15)}},
 			},
 		},
 		{
@@ -2114,18 +2146,18 @@ func TestIntegration_AggregationQueries(t *testing.T) {
 			aggregationQuery: emptyResultsQueryPtr.NewAggregationQuery().WithCount("count1").WithAvg("width", "width_avg1").WithSum("width", "width_sum1"),
 			wantErr:          false,
 			result: map[string]interface{}{
-				"count1":     int64(0),
-				"width_sum1": int64(0),
-				"width_avg1": structpb.NullValue_NULL_VALUE,
+				"count1":     &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: int64(0)}},
+				"width_sum1": &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: int64(0)}},
+				"width_avg1": &pb.Value{ValueType: &pb.Value_NullValue{NullValue: structpb.NullValue_NULL_VALUE}},
 			},
 		},
 		{
-			desc:             "Aggregation on non-numeric property values",
+			desc:             "Aggregation on non-numeric field",
 			aggregationQuery: query.NewAggregationQuery().WithAvg("model", "model_avg1").WithSum("model", "model_sum1"),
 			wantErr:          false,
 			result: map[string]interface{}{
-				"model_sum1": int64(0),
-				"model_avg1": structpb.NullValue_NULL_VALUE,
+				"model_sum1": &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: int64(0)}},
+				"model_avg1": &pb.Value{ValueType: &pb.Value_NullValue{NullValue: structpb.NullValue_NULL_VALUE}},
 			},
 		},
 		{
@@ -2137,37 +2169,15 @@ func TestIntegration_AggregationQueries(t *testing.T) {
 
 	for _, tc := range testcases {
 		aggResult, err := tc.aggregationQuery.Get(ctx)
-		// fmt.Printf("%s: err: %v, aggResult: %v\n", tc.desc, err, aggResult)
 		if err != nil && !tc.wantErr {
 			t.Errorf("%s: got: %v, want: nil", tc.desc, err)
 			continue
 		} else if err == nil && tc.wantErr {
 			t.Errorf("%s: got: %v, wanted error", tc.desc, err)
 			continue
-		} else if len(aggResult) != len(tc.result) {
-			t.Errorf("%s: Number of results - got: %d, want: %d", tc.desc, len(aggResult), len(tc.result))
+		} else if !reflect.DeepEqual(aggResult, tc.result) {
+			t.Errorf("%s: got: %v, want: %v", tc.desc, aggResult, tc.result)
 			continue
-		}
-		for k, v := range aggResult {
-			pbVal := v.(*pb.Value)
-
-			isEqual := false
-
-			switch tc.result[k].(type) {
-			case int64:
-				isEqual = pbVal.GetIntegerValue() == tc.result[k]
-			case float64:
-				isEqual = pbVal.GetDoubleValue() == tc.result[k]
-			case structpb.NullValue:
-				isEqual = pbVal.GetNullValue() == tc.result[k]
-			default:
-				isEqual = false
-			}
-
-			if !isEqual {
-				t.Errorf("%s: %s got: %v, want: %v", tc.desc, k, pbVal, tc.result[k])
-				continue
-			}
 		}
 	}
 }
