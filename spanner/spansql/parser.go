@@ -1005,8 +1005,8 @@ func (p *parser) parseDDLStmt() (DDLStmt, *parseError) {
 	} else if p.eat("DROP") {
 		pos := p.Pos()
 		// These statements are simple.
-		// DROP TABLE table_name
-		// DROP INDEX index_name
+		// DROP TABLE [ IF EXISTS ] table_name
+		// DROP INDEX [ IF EXISTS ] index_name
 		// DROP VIEW view_name
 		// DROP ROLE role_name
 		// DROP CHANGE STREAM change_stream_name
@@ -1018,17 +1018,25 @@ func (p *parser) parseDDLStmt() (DDLStmt, *parseError) {
 		default:
 			return nil, p.errorf("got %q, want TABLE, VIEW, INDEX or CHANGE", tok.value)
 		case tok.caseEqual("TABLE"):
+			var ifExists bool
+			if p.eat("IF", "EXISTS") {
+				ifExists = true
+			}
 			name, err := p.parseTableOrIndexOrColumnName()
 			if err != nil {
 				return nil, err
 			}
-			return &DropTable{Name: name, Position: pos}, nil
+			return &DropTable{Name: name, IfExists: ifExists, Position: pos}, nil
 		case tok.caseEqual("INDEX"):
+			var ifExists bool
+			if p.eat("IF", "EXISTS") {
+				ifExists = true
+			}
 			name, err := p.parseTableOrIndexOrColumnName()
 			if err != nil {
 				return nil, err
 			}
-			return &DropIndex{Name: name, Position: pos}, nil
+			return &DropIndex{Name: name, IfExists: ifExists, Position: pos}, nil
 		case tok.caseEqual("VIEW"):
 			name, err := p.parseTableOrIndexOrColumnName()
 			if err != nil {
@@ -1081,7 +1089,7 @@ func (p *parser) parseCreateTable() (*CreateTable, *parseError) {
 	debugf("parseCreateTable: %v", p)
 
 	/*
-		CREATE TABLE table_name(
+		CREATE TABLE [ IF NOT EXISTS ] table_name(
 			[column_def, ...] [ table_constraint, ...] )
 			primary_key [, cluster]
 
@@ -1091,6 +1099,7 @@ func (p *parser) parseCreateTable() (*CreateTable, *parseError) {
 		cluster:
 			INTERLEAVE IN PARENT table_name [ ON DELETE { CASCADE | NO ACTION } ]
 	*/
+	var ifNotExists bool
 
 	if err := p.expect("CREATE"); err != nil {
 		return nil, err
@@ -1099,12 +1108,15 @@ func (p *parser) parseCreateTable() (*CreateTable, *parseError) {
 	if err := p.expect("TABLE"); err != nil {
 		return nil, err
 	}
+	if p.eat("IF", "NOT", "EXISTS") {
+		ifNotExists = true
+	}
 	tname, err := p.parseTableOrIndexOrColumnName()
 	if err != nil {
 		return nil, err
 	}
 
-	ct := &CreateTable{Name: tname, Position: pos}
+	ct := &CreateTable{Name: tname, Position: pos, IfNotExists: ifNotExists}
 	err = p.parseCommaList("(", ")", func(p *parser) *parseError {
 		if p.sniffTableConstraint() {
 			tc, err := p.parseTableConstraint()
@@ -1204,7 +1216,7 @@ func (p *parser) parseCreateIndex() (*CreateIndex, *parseError) {
 	debugf("parseCreateIndex: %v", p)
 
 	/*
-		CREATE [UNIQUE] [NULL_FILTERED] INDEX index_name
+		CREATE [UNIQUE] [NULL_FILTERED] INDEX [IF NOT EXISTS] index_name
 			ON table_name ( key_part [, ...] ) [ storing_clause ] [ , interleave_clause ]
 
 		index_name:
@@ -1217,7 +1229,7 @@ func (p *parser) parseCreateIndex() (*CreateIndex, *parseError) {
 			INTERLEAVE IN table_name
 	*/
 
-	var unique, nullFiltered bool
+	var unique, nullFiltered, ifNotExists bool
 
 	if err := p.expect("CREATE"); err != nil {
 		return nil, err
@@ -1231,6 +1243,9 @@ func (p *parser) parseCreateIndex() (*CreateIndex, *parseError) {
 	}
 	if err := p.expect("INDEX"); err != nil {
 		return nil, err
+	}
+	if p.eat("IF", "NOT", "EXISTS") {
+		ifNotExists = true
 	}
 	iname, err := p.parseTableOrIndexOrColumnName()
 	if err != nil {
@@ -1249,6 +1264,7 @@ func (p *parser) parseCreateIndex() (*CreateIndex, *parseError) {
 
 		Unique:       unique,
 		NullFiltered: nullFiltered,
+		IfNotExists:  ifNotExists,
 
 		Position: pos,
 	}
@@ -1527,7 +1543,7 @@ func (p *parser) parseAlterTable() (*AlterTable, *parseError) {
 			ALTER TABLE table_name { table_alteration | table_column_alteration }
 
 		table_alteration:
-			{ ADD [ COLUMN ] column_def
+			{ ADD [ COLUMN ] [ IF NOT EXISTS ] column_def
 			| DROP [ COLUMN ] column_name
 			| ADD table_constraint
 			| DROP CONSTRAINT constraint_name
@@ -1580,11 +1596,15 @@ func (p *parser) parseAlterTable() (*AlterTable, *parseError) {
 		if err := p.expect("COLUMN"); err != nil {
 			return nil, err
 		}
+		var ifNotExists bool
+		if p.eat("IF", "NOT", "EXISTS") {
+			ifNotExists = true
+		}
 		cd, err := p.parseColumnDef()
 		if err != nil {
 			return nil, err
 		}
-		a.Alteration = AddColumn{Def: cd}
+		a.Alteration = AddColumn{Def: cd, IfNotExists: ifNotExists}
 		return a, nil
 	case tok.caseEqual("DROP"):
 		if p.eat("CONSTRAINT") {
