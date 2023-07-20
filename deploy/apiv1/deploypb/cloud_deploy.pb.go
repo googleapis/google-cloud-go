@@ -21,11 +21,8 @@
 package deploypb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	date "google.golang.org/genproto/googleapis/type/date"
 	grpc "google.golang.org/grpc"
@@ -37,6 +34,8 @@ import (
 	_ "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -281,13 +280,13 @@ const (
 	// No reason for failure is specified.
 	Release_TargetRender_FAILURE_CAUSE_UNSPECIFIED Release_TargetRender_FailureCause = 0
 	// Cloud Build is not available, either because it is not enabled or
-	// because Google Cloud Deploy has insufficient permissions. See [required
+	// because Cloud Deploy has insufficient permissions. See [required
 	// permission](/deploy/docs/cloud-deploy-service-account#required_permissions).
 	Release_TargetRender_CLOUD_BUILD_UNAVAILABLE Release_TargetRender_FailureCause = 1
 	// The render operation did not complete successfully; check Cloud Build
 	// logs.
 	Release_TargetRender_EXECUTION_FAILED Release_TargetRender_FailureCause = 2
-	// Cloud Build failed to fulfill Google Cloud Deploy's request. See
+	// Cloud Build failed to fulfill Cloud Deploy's request. See
 	// failure_message for additional details.
 	Release_TargetRender_CLOUD_BUILD_REQUEST_FAILED Release_TargetRender_FailureCause = 3
 )
@@ -503,8 +502,8 @@ const (
 	Rollout_RELEASE_ABANDONED Rollout_FailureCause = 5
 	// No skaffold verify configuration was found.
 	Rollout_VERIFICATION_CONFIG_NOT_FOUND Rollout_FailureCause = 6
-	// Cloud Build failed to fulfill Google Cloud Deploy's request. See
-	// failure_message for additional details.
+	// Cloud Build failed to fulfill Cloud Deploy's request. See failure_message
+	// for additional details.
 	Rollout_CLOUD_BUILD_REQUEST_FAILED Rollout_FailureCause = 7
 )
 
@@ -777,7 +776,7 @@ const (
 	// No reason for failure is specified.
 	DeployJobRun_FAILURE_CAUSE_UNSPECIFIED DeployJobRun_FailureCause = 0
 	// Cloud Build is not available, either because it is not enabled or because
-	// Google Cloud Deploy has insufficient permissions. See [Required
+	// Cloud Deploy has insufficient permissions. See [Required
 	// permission](/deploy/docs/cloud-deploy-service-account#required_permissions).
 	DeployJobRun_CLOUD_BUILD_UNAVAILABLE DeployJobRun_FailureCause = 1
 	// The deploy operation did not complete successfully; check Cloud Build
@@ -788,8 +787,8 @@ const (
 	// There were missing resources in the runtime environment required for a
 	// canary deployment. Check the Cloud Build logs for more information.
 	DeployJobRun_MISSING_RESOURCES_FOR_CANARY DeployJobRun_FailureCause = 4
-	// Cloud Build failed to fulfill Google Cloud Deploy's request. See
-	// failure_message for additional details.
+	// Cloud Build failed to fulfill Cloud Deploy's request. See failure_message
+	// for additional details.
 	DeployJobRun_CLOUD_BUILD_REQUEST_FAILED DeployJobRun_FailureCause = 5
 )
 
@@ -847,7 +846,7 @@ const (
 	// No reason for failure is specified.
 	VerifyJobRun_FAILURE_CAUSE_UNSPECIFIED VerifyJobRun_FailureCause = 0
 	// Cloud Build is not available, either because it is not enabled or because
-	// Google Cloud Deploy has insufficient permissions. See [required
+	// Cloud Deploy has insufficient permissions. See [required
 	// permission](/deploy/docs/cloud-deploy-service-account#required_permissions).
 	VerifyJobRun_CLOUD_BUILD_UNAVAILABLE VerifyJobRun_FailureCause = 1
 	// The verify operation did not complete successfully; check Cloud Build
@@ -857,8 +856,8 @@ const (
 	VerifyJobRun_DEADLINE_EXCEEDED VerifyJobRun_FailureCause = 3
 	// No Skaffold verify configuration was found.
 	VerifyJobRun_VERIFICATION_CONFIG_NOT_FOUND VerifyJobRun_FailureCause = 4
-	// Cloud Build failed to fulfill Google Cloud Deploy's request. See
-	// failure_message for additional details.
+	// Cloud Build failed to fulfill Cloud Deploy's request. See failure_message
+	// for additional details.
 	VerifyJobRun_CLOUD_BUILD_REQUEST_FAILED VerifyJobRun_FailureCause = 5
 )
 
@@ -909,7 +908,7 @@ func (VerifyJobRun_FailureCause) EnumDescriptor() ([]byte, []int) {
 	return file_google_cloud_deploy_v1_cloud_deploy_proto_rawDescGZIP(), []int{77, 0}
 }
 
-// A `DeliveryPipeline` resource in the Google Cloud Deploy API.
+// A `DeliveryPipeline` resource in the Cloud Deploy API.
 //
 // A `DeliveryPipeline` defines a pipeline through which a Skaffold
 // configuration can progress.
@@ -926,11 +925,10 @@ type DeliveryPipeline struct {
 	// Description of the `DeliveryPipeline`. Max length is 255 characters.
 	Description string `protobuf:"bytes,3,opt,name=description,proto3" json:"description,omitempty"`
 	// User annotations. These attributes can only be set and used by the
-	// user, and not by Google Cloud Deploy.
+	// user, and not by Cloud Deploy.
 	Annotations map[string]string `protobuf:"bytes,4,rep,name=annotations,proto3" json:"annotations,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 	// Labels are attributes that can be set and used by both the
-	// user and by Google Cloud Deploy. Labels must meet the following
-	// constraints:
+	// user and by Cloud Deploy. Labels must meet the following constraints:
 	//
 	// * Keys and values can contain only lowercase letters, numeric characters,
 	// underscores, and dashes.
@@ -2636,7 +2634,7 @@ func (x *DeleteDeliveryPipelineRequest) GetEtag() string {
 	return ""
 }
 
-// A `Target` resource in the Google Cloud Deploy API.
+// A `Target` resource in the Cloud Deploy API.
 //
 // A `Target` defines a location to which a Skaffold configuration
 // can be deployed.
@@ -2655,13 +2653,12 @@ type Target struct {
 	// Optional. Description of the `Target`. Max length is 255 characters.
 	Description string `protobuf:"bytes,4,opt,name=description,proto3" json:"description,omitempty"`
 	// Optional. User annotations. These attributes can only be set and used by
-	// the user, and not by Google Cloud Deploy. See
+	// the user, and not by Cloud Deploy. See
 	// https://google.aip.dev/128#annotations for more details such as format and
 	// size limitations.
 	Annotations map[string]string `protobuf:"bytes,5,rep,name=annotations,proto3" json:"annotations,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 	// Optional. Labels are attributes that can be set and used by both the
-	// user and by Google Cloud Deploy. Labels must meet the following
-	// constraints:
+	// user and by Cloud Deploy. Labels must meet the following constraints:
 	//
 	// * Keys and values can contain only lowercase letters, numeric characters,
 	// underscores, and dashes.
@@ -3896,7 +3893,7 @@ func (x *DeleteTargetRequest) GetEtag() string {
 	return ""
 }
 
-// A `Release` resource in the Google Cloud Deploy API.
+// A `Release` resource in the Cloud Deploy API.
 //
 // A `Release` defines a specific Skaffold configuration instance
 // that can be deployed.
@@ -3914,13 +3911,11 @@ type Release struct {
 	// Description of the `Release`. Max length is 255 characters.
 	Description string `protobuf:"bytes,3,opt,name=description,proto3" json:"description,omitempty"`
 	// User annotations. These attributes can only be set and used by the
-	// user, and not by Google Cloud Deploy. See
-	// https://google.aip.dev/128#annotations for more details such as format and
-	// size limitations.
+	// user, and not by Cloud Deploy. See https://google.aip.dev/128#annotations
+	// for more details such as format and size limitations.
 	Annotations map[string]string `protobuf:"bytes,4,rep,name=annotations,proto3" json:"annotations,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 	// Labels are attributes that can be set and used by both the
-	// user and by Google Cloud Deploy. Labels must meet the following
-	// constraints:
+	// user and by Cloud Deploy. Labels must meet the following constraints:
 	//
 	// * Keys and values can contain only lowercase letters, numeric characters,
 	// underscores, and dashes.
@@ -3957,8 +3952,8 @@ type Release struct {
 	// client has an up-to-date value before proceeding.
 	Etag string `protobuf:"bytes,16,opt,name=etag,proto3" json:"etag,omitempty"`
 	// The Skaffold version to use when operating on this release, such as
-	// "1.20.0". Not all versions are valid; Google Cloud Deploy supports a
-	// specific set of versions.
+	// "1.20.0". Not all versions are valid; Cloud Deploy supports a specific set
+	// of versions.
 	//
 	// If unset, the most recent supported Skaffold version will be used.
 	SkaffoldVersion string `protobuf:"bytes,19,opt,name=skaffold_version,json=skaffoldVersion,proto3" json:"skaffold_version,omitempty"`
@@ -4784,7 +4779,7 @@ func (x *CreateReleaseRequest) GetValidateOnly() bool {
 	return false
 }
 
-// A `Rollout` resource in the Google Cloud Deploy API.
+// A `Rollout` resource in the Cloud Deploy API.
 //
 // A `Rollout` contains information around a specific deployment to a `Target`.
 type Rollout struct {
@@ -4802,13 +4797,11 @@ type Rollout struct {
 	// characters.
 	Description string `protobuf:"bytes,3,opt,name=description,proto3" json:"description,omitempty"`
 	// User annotations. These attributes can only be set and used by the
-	// user, and not by Google Cloud Deploy. See
-	// https://google.aip.dev/128#annotations for more details such as format and
-	// size limitations.
+	// user, and not by Cloud Deploy. See https://google.aip.dev/128#annotations
+	// for more details such as format and size limitations.
 	Annotations map[string]string `protobuf:"bytes,4,rep,name=annotations,proto3" json:"annotations,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 	// Labels are attributes that can be set and used by both the
-	// user and by Google Cloud Deploy. Labels must meet the following
-	// constraints:
+	// user and by Cloud Deploy. Labels must meet the following constraints:
 	//
 	// * Keys and values can contain only lowercase letters, numeric characters,
 	// underscores, and dashes.
@@ -6764,7 +6757,7 @@ func (*AbandonReleaseResponse) Descriptor() ([]byte, []int) {
 	return file_google_cloud_deploy_v1_cloud_deploy_proto_rawDescGZIP(), []int{74}
 }
 
-// A `JobRun` resource in the Google Cloud Deploy API.
+// A `JobRun` resource in the Cloud Deploy API.
 //
 // A `JobRun` contains information of a single `Rollout` job evaluation.
 type JobRun struct {

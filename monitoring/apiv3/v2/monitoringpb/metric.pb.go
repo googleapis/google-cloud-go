@@ -21,14 +21,13 @@
 package monitoringpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	label "google.golang.org/genproto/googleapis/api/label"
 	metric "google.golang.org/genproto/googleapis/api/metric"
 	monitoredres "google.golang.org/genproto/googleapis/api/monitoredres"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -522,19 +521,19 @@ func (x *QueryError) GetMessage() string {
 //
 // For example, suppose the request field `text` contains:
 //
-//	text: "The quick brown fox jumps over the lazy dog."
+//   text: "The quick brown fox jumps over the lazy dog."
 //
 // Then the locator:
 //
-//	source: "text"
-//	start_position {
-//	  line: 1
-//	  column: 17
-//	}
-//	end_position {
-//	  line: 1
-//	  column: 19
-//	}
+//   source: "text"
+//   start_position {
+//     line: 1
+//     column: 17
+//   }
+//   end_position {
+//     line: 1
+//     column: 19
+//   }
 //
 // refers to the part of the text: "fox".
 type TextLocator struct {
