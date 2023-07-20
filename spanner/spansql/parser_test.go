@@ -1483,6 +1483,78 @@ func TestParseDDL(t *testing.T) {
 				},
 			},
 		},
+		{
+			`CREATE TABLE IF NOT EXISTS tname (id INT64, name STRING(64)) PRIMARY KEY (id)`,
+			&DDL{
+				Filename: "filename",
+				List: []DDLStmt{
+					&CreateTable{
+						Name:        "tname",
+						IfNotExists: true,
+						Columns: []ColumnDef{
+							{Name: "id", Type: Type{Base: Int64}, Position: line(1)},
+							{Name: "name", Type: Type{Base: String, Len: 64}, Position: line(1)},
+						},
+						PrimaryKey: []KeyPart{
+							{Column: "id"},
+						},
+						Position: line(1),
+					},
+				},
+			},
+		},
+		{
+			`CREATE INDEX IF NOT EXISTS iname ON tname (cname)`,
+			&DDL{
+				Filename: "filename",
+				List: []DDLStmt{
+					&CreateIndex{
+						Name:        "iname",
+						IfNotExists: true,
+						Table:       "tname",
+						Columns: []KeyPart{
+							{Column: "cname"},
+						},
+						Position: line(1),
+					},
+				},
+			},
+		},
+		{
+			`ALTER TABLE tname ADD COLUMN IF NOT EXISTS cname STRING(64)`,
+			&DDL{
+				Filename: "filename",
+				List: []DDLStmt{
+					&AlterTable{
+						Name: "tname",
+						Alteration: AddColumn{
+							IfNotExists: true,
+							Def:         ColumnDef{Name: "cname", Type: Type{Base: String, Len: 64}, Position: line(1)},
+						},
+						Position: line(1),
+					},
+				},
+			},
+		},
+		{
+			`DROP TABLE IF EXISTS tname;
+			DROP INDEX IF EXISTS iname;`,
+			&DDL{
+				Filename: "filename",
+				List: []DDLStmt{
+					&DropTable{
+						Name:     "tname",
+						IfExists: true,
+						Position: line(1),
+					},
+					&DropIndex{
+						Name:     "iname",
+						IfExists: true,
+						Position: line(2),
+					},
+				},
+			},
+		},
 	}
 	for _, test := range tests {
 		got, err := ParseDDL("filename", test.in)
