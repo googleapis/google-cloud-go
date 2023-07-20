@@ -1,5 +1,12 @@
 # Changes
 
+## [1.12.0](https://github.com/googleapis/google-cloud-go/compare/cloudtasks/v1.11.1...cloudtasks/v1.12.0) (2023-07-18)
+
+
+### Features
+
+* **cloudtasks:** Increase timeout of RPC methods to 20s for v2 ([4a5651c](https://github.com/googleapis/google-cloud-go/commit/4a5651caa472882fe4c7f6be400f782f60f6f258))
+
 ## [1.11.1](https://github.com/googleapis/google-cloud-go/compare/cloudtasks/v1.11.0...cloudtasks/v1.11.1) (2023-06-20)
 
 

@@ -470,7 +470,7 @@ func defaultCloudDeployRESTCallOptions() *CloudDeployCallOptions {
 	}
 }
 
-// internalCloudDeployClient is an interface that defines the methods available from Google Cloud Deploy API.
+// internalCloudDeployClient is an interface that defines the methods available from Cloud Deploy API.
 type internalCloudDeployClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -520,7 +520,7 @@ type internalCloudDeployClient interface {
 	ListOperations(context.Context, *longrunningpb.ListOperationsRequest, ...gax.CallOption) *OperationIterator
 }
 
-// CloudDeployClient is a client for interacting with Google Cloud Deploy API.
+// CloudDeployClient is a client for interacting with Cloud Deploy API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // CloudDeploy service creates and manages Continuous Delivery operations
@@ -795,7 +795,7 @@ func (c *CloudDeployClient) ListOperations(ctx context.Context, req *longrunning
 	return c.internalClient.ListOperations(ctx, req, opts...)
 }
 
-// cloudDeployGRPCClient is a client for interacting with Google Cloud Deploy API over gRPC transport.
+// cloudDeployGRPCClient is a client for interacting with Cloud Deploy API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type cloudDeployGRPCClient struct {

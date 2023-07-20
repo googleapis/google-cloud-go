@@ -118,8 +118,9 @@ func (c *IamCheckerClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// TroubleshootIamPolicy checks whether a member has a specific permission for a specific resource,
-// and explains why the member does or does not have that permission.
+// TroubleshootIamPolicy checks whether a principal has a specific permission for a specific
+// resource, and explains why the principal does or does not have that
+// permission.
 func (c *IamCheckerClient) TroubleshootIamPolicy(ctx context.Context, req *policytroubleshooterpb.TroubleshootIamPolicyRequest, opts ...gax.CallOption) (*policytroubleshooterpb.TroubleshootIamPolicyResponse, error) {
 	return c.internalClient.TroubleshootIamPolicy(ctx, req, opts...)
 }
@@ -283,8 +284,9 @@ func (c *iamCheckerGRPCClient) TroubleshootIamPolicy(ctx context.Context, req *p
 	return resp, nil
 }
 
-// TroubleshootIamPolicy checks whether a member has a specific permission for a specific resource,
-// and explains why the member does or does not have that permission.
+// TroubleshootIamPolicy checks whether a principal has a specific permission for a specific
+// resource, and explains why the principal does or does not have that
+// permission.
 func (c *iamCheckerRESTClient) TroubleshootIamPolicy(ctx context.Context, req *policytroubleshooterpb.TroubleshootIamPolicyRequest, opts ...gax.CallOption) (*policytroubleshooterpb.TroubleshootIamPolicyResponse, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
