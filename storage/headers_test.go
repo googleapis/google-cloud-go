@@ -17,12 +17,13 @@ package storage
 import (
 	"context"
 	"fmt"
-	"github.com/googleapis/gax-go/v2/callctx"
-	"google.golang.org/api/option"
 	"io"
 	"net/http"
 	"strings"
 	"testing"
+
+	"github.com/googleapis/gax-go/v2/callctx"
+	"google.golang.org/api/option"
 )
 
 // Tests that sending a custom header via the context works as expected
