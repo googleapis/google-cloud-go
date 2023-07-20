@@ -656,6 +656,68 @@ func TestSQL(t *testing.T) {
 			reparseDDL,
 		},
 		{
+			&CreateTable{
+				Name:        "tname",
+				IfNotExists: true,
+				Columns: []ColumnDef{
+					{Name: "id", Type: Type{Base: Int64}, Position: line(2)},
+					{Name: "name", Type: Type{Base: String, Len: 64}, Position: line(3)},
+				},
+				PrimaryKey: []KeyPart{
+					{Column: "id"},
+				},
+				Position: line(1),
+			},
+			`CREATE TABLE IF NOT EXISTS tname (
+  id INT64,
+  name STRING(64),
+) PRIMARY KEY(id)`,
+			reparseDDL,
+		},
+		{
+			&CreateIndex{
+				Name:  "Ia",
+				Table: "Ta",
+				Columns: []KeyPart{
+					{Column: "Ca"},
+				},
+				IfNotExists: true,
+				Position:    line(1),
+			},
+			"CREATE INDEX IF NOT EXISTS Ia ON Ta(Ca)",
+			reparseDDL,
+		},
+		{
+			&AlterTable{
+				Name: "tname",
+				Alteration: AddColumn{
+					IfNotExists: true,
+					Def:         ColumnDef{Name: "cname", Type: Type{Base: String, Len: 64}, Position: line(1)},
+				},
+				Position: line(1),
+			},
+			"ALTER TABLE tname ADD COLUMN IF NOT EXISTS cname STRING(64)",
+			reparseDDL,
+		},
+		{
+			&DropTable{
+				Name:     "tname",
+				IfExists: true,
+				Position: line(1),
+			},
+			"DROP TABLE IF EXISTS tname",
+			reparseDDL,
+		},
+		{
+			&DropIndex{
+				Name:     "iname",
+				IfExists: true,
+				Position: line(1),
+			},
+			"DROP INDEX IF EXISTS iname",
+			reparseDDL,
+		},
+		{
 			&Insert{
 				Table:   "Singers",
 				Columns: []ID{ID("SingerId"), ID("FirstName"), ID("LastName")},
