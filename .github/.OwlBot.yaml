@@ -54,7 +54,7 @@ deep-remove-regex:
   - /binaryauthorization/apiv1beta1/
   - /certificatemanager/apiv1/
   - /channel/apiv1/
-  # - /cloudbuild/apiv1/v2/
+  - /cloudbuild/apiv1/v2/
   - /cloudbuild/apiv2/
   - /clouddms/apiv1/
   - /cloudtasks/apiv2/
@@ -166,7 +166,7 @@ deep-remove-regex:
   - /internal/generated/snippets/binaryauthorization/apiv1beta1/
   - /internal/generated/snippets/certificatemanager/apiv1/
   - /internal/generated/snippets/channel/apiv1/
-  # - /internal/generated/snippets/cloudbuild/apiv1/v2/
+  - /internal/generated/snippets/cloudbuild/apiv1/v2/
   - /internal/generated/snippets/cloudbuild/apiv2/
   - /internal/generated/snippets/clouddms/apiv1/
   - /internal/generated/snippets/cloudtasks/apiv2/
@@ -248,6 +248,7 @@ deep-remove-regex:
   - /internal/generated/snippets/monitoring/apiv3/v2/
   - /internal/generated/snippets/monitoring/dashboard/apiv1/
   - /internal/generated/snippets/monitoring/metricsscope/apiv1/
+  - /internal/generated/snippets/netapp/apiv1beta1/
   - /internal/generated/snippets/networkconnectivity/apiv1/
   - /internal/generated/snippets/networkconnectivity/apiv1alpha1/
   - /internal/generated/snippets/networkmanagement/apiv1/
@@ -360,6 +361,7 @@ deep-remove-regex:
   - /monitoring/apiv3/v2/
   - /monitoring/dashboard/apiv1/
   - /monitoring/metricsscope/apiv1/
+  - /netapp/apiv1beta1/
   - /networkconnectivity/apiv1/
   - /networkconnectivity/apiv1alpha1/
   - /networkmanagement/apiv1/
@@ -596,8 +598,8 @@ deep-copy-regex:
     dest: /
   - source: /google/cloud/channel/v1/cloud.google.com/go
     dest: /
-  # - source: /google/devtools/cloudbuild/v1/cloud.google.com/go
-  #   dest: /
+  - source: /google/devtools/cloudbuild/v1/cloud.google.com/go
+    dest: /
   - source: /google/devtools/cloudbuild/v2/cloud.google.com/go
     dest: /
   - source: /google/cloud/clouddms/v1/cloud.google.com/go
@@ -761,6 +763,8 @@ deep-copy-regex:
   - source: /google/monitoring/dashboard/v1/cloud.google.com/go
     dest: /
   - source: /google/monitoring/metricsscope/v1/cloud.google.com/go
+    dest: /
+  - source: /google/cloud/netapp/v1beta1/cloud.google.com/go
     dest: /
   - source: /google/cloud/networkconnectivity/v1/cloud.google.com/go
     dest: /
