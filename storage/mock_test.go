@@ -68,7 +68,7 @@ func (t *mockTransport) gotJSONBody() map[string]interface{} {
 	return m
 }
 
-func mockClient(t *testing.T, m *mockTransport) *Client {
+func mockClient(t *testing.T, m *mockTransport, opts ...option.ClientOption) *Client {
 	client, err := NewClient(context.Background(), option.WithHTTPClient(&http.Client{Transport: m}))
 	if err != nil {
 		t.Fatal(err)

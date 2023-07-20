@@ -19,6 +19,7 @@ import (
 	"encoding/base64"
 	"errors"
 	"fmt"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -812,6 +813,15 @@ func (c *httpStorageClient) newRangeReaderXML(ctx context.Context, params *newRa
 
 	if err := setRangeReaderHeaders(req.Header, params); err != nil {
 		return nil, err
+	}
+
+	// Set custom headers passed in via the context. This is only required for XML;
+	// for gRPC & JSON this is handled in the GAPIC and Apiary layers respectively.
+	ctxHeaders := callctx.HeadersFromContext(ctx)
+	for k, vals := range ctxHeaders {
+		for _, v := range vals {
+			req.Header.Add(k, v)
+		}
 	}
 
 	reopen := readerReopen(ctx, req.Header, params, s,
