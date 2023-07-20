@@ -181,9 +181,7 @@ func (pc *PushConfig) toProto() *pb.PushConfig {
 	return pbCfg
 }
 
-// AuthenticationMethod is used by push points to verify the source of push requests.
-// This interface defines fields that are part of a closed alpha that may not be accessible
-// to all users.
+// AuthenticationMethod is used by push subscriptions to verify the source of push requests.
 type AuthenticationMethod interface {
 	isAuthMethod() bool
 }
@@ -225,6 +223,7 @@ func (oidcToken *OIDCToken) toProto() *pb.PushConfig_OidcToken_ {
 	}
 }
 
+// Wrapper defines the format of message delivered to push endpoints.
 type Wrapper interface {
 	isWrapper() bool
 }
