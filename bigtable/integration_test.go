@@ -1535,6 +1535,94 @@ func TestIntegration_TableDeletionProtection(t *testing.T) {
 	}
 }
 
+// testing if change stream works properly i.e. can create table with change
+// stream and disable change stream on existing table and delete fails if change
+// stream is enabled.
+func TestIntegration_EnableChangeStream(t *testing.T) {
+	t.Skip("https://github.com/googleapis/google-cloud-go/issues/8266")
+	testEnv, err := NewIntegrationEnv()
+	if err != nil {
+		t.Fatalf("IntegrationEnv: %v", err)
+	}
+	defer testEnv.Close()
+
+	timeout := 2 * time.Second
+	if testEnv.Config().UseProd {
+		timeout = 5 * time.Minute
+	}
+	ctx, _ := context.WithTimeout(context.Background(), timeout)
+
+	adminClient, err := testEnv.NewAdminClient()
+	if err != nil {
+		t.Fatalf("NewAdminClient: %v", err)
+	}
+	defer adminClient.Close()
+
+	changeStreamRetention, err := time.ParseDuration("24h")
+	if err != nil {
+		t.Fatalf("ChangeStreamRetention not valid: %v", err)
+	}
+
+	tableConf := TableConf{
+		TableID: myTableName,
+		Families: map[string]GCPolicy{
+			"fam1": MaxVersionsPolicy(1),
+			"fam2": MaxVersionsPolicy(2),
+		},
+		ChangeStreamRetention: changeStreamRetention,
+	}
+
+	if err := adminClient.CreateTableFromConf(ctx, &tableConf); err != nil {
+		t.Fatalf("Create table from config: %v", err)
+	}
+
+	table, err := adminClient.TableInfo(ctx, myTableName)
+	if err != nil {
+		t.Fatalf("Getting table info: %v", err)
+	}
+
+	if table.ChangeStreamRetention != changeStreamRetention {
+		t.Errorf("Expect table change stream to be enabled for table: %v has info: %v", myTableName, table)
+	}
+
+	// Update retention
+	changeStreamRetention, err = time.ParseDuration("70h")
+	if err != nil {
+		t.Fatalf("ChangeStreamRetention not valid: %v", err)
+	}
+
+	if err := adminClient.UpdateTableWithChangeStream(ctx, myTableName, changeStreamRetention); err != nil {
+		t.Fatalf("Update table from config: %v", err)
+	}
+
+	table, err = adminClient.TableInfo(ctx, myTableName)
+	if err != nil {
+		t.Fatalf("Getting table info: %v", err)
+	}
+
+	if table.ChangeStreamRetention != changeStreamRetention {
+		t.Errorf("Expect table change stream to be enabled for table: %v has info: %v", myTableName, table)
+	}
+
+	// Disable change stream
+	if err := adminClient.UpdateTableDisableChangeStream(ctx, myTableName); err != nil {
+		t.Fatalf("Update table from config: %v", err)
+	}
+
+	table, err = adminClient.TableInfo(ctx, myTableName)
+	if err != nil {
+		t.Fatalf("Getting table info: %v", err)
+	}
+
+	if table.ChangeStreamRetention != nil {
+		t.Errorf("Expect table change stream to be disabled for table: %v has info: %v", myTableName, table)
+	}
+
+	if err = adminClient.DeleteTable(ctx, tableConf.TableID); err != nil {
+		t.Errorf("Deleting the table failed when change stream is disabled: %v", err)
+	}
+}
+
 func TestIntegration_Admin(t *testing.T) {
 	testEnv, err := NewIntegrationEnv()
 	if err != nil {

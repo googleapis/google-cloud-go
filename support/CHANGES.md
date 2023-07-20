@@ -1,5 +1,26 @@
 # Changelog
 
+## [0.2.2](https://github.com/googleapis/google-cloud-go/compare/support/v0.2.1...support/v0.2.2) (2023-06-20)
+
+
+### Bug Fixes
+
+* **support:** REST query UpdateMask bug ([df52820](https://github.com/googleapis/google-cloud-go/commit/df52820b0e7721954809a8aa8700b93c5662dc9b))
+
+## [0.2.1](https://github.com/googleapis/google-cloud-go/compare/support/v0.2.0...support/v0.2.1) (2023-05-31)
+
+
+### Bug Fixes
+
+* **support:** Fix go.sum ([1c7edc8](https://github.com/googleapis/google-cloud-go/commit/1c7edc8f6e9e485052f04c74756987861d825def))
+
+## [0.2.0](https://github.com/googleapis/google-cloud-go/compare/support/v0.1.0...support/v0.2.0) (2023-05-30)
+
+
+### Features
+
+* **support:** Update deps ([71b1326](https://github.com/googleapis/google-cloud-go/commit/71b1326dd650d998703d788de6d982acebe1e121))
+
 ## 0.1.0 (2023-05-03)
 
 

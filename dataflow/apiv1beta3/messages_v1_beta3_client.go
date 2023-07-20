@@ -19,10 +19,11 @@ package dataflow
 import (
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"math"
 	"net/http"
 	"net/url"
+	"time"
 
 	dataflowpb "cloud.google.com/go/dataflow/apiv1beta3/dataflowpb"
 	gax "github.com/googleapis/gax-go/v2"
@@ -59,13 +60,17 @@ func defaultMessagesV1Beta3GRPCClientOptions() []option.ClientOption {
 
 func defaultMessagesV1Beta3CallOptions() *MessagesV1Beta3CallOptions {
 	return &MessagesV1Beta3CallOptions{
-		ListJobMessages: []gax.CallOption{},
+		ListJobMessages: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 	}
 }
 
 func defaultMessagesV1Beta3RESTCallOptions() *MessagesV1Beta3CallOptions {
 	return &MessagesV1Beta3CallOptions{
-		ListJobMessages: []gax.CallOption{},
+		ListJobMessages: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 	}
 }
 
@@ -131,9 +136,6 @@ type messagesV1Beta3GRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing MessagesV1Beta3Client
 	CallOptions **MessagesV1Beta3CallOptions
 
@@ -159,11 +161,6 @@ func NewMessagesV1Beta3Client(ctx context.Context, opts ...option.ClientOption) 
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -172,7 +169,6 @@ func NewMessagesV1Beta3Client(ctx context.Context, opts ...option.ClientOption) 
 
 	c := &messagesV1Beta3GRPCClient{
 		connPool:              connPool,
-		disableDeadlines:      disableDeadlines,
 		messagesV1Beta3Client: dataflowpb.NewMessagesV1Beta3Client(connPool),
 		CallOptions:           &client.CallOptions,
 	}
@@ -195,7 +191,7 @@ func (c *messagesV1Beta3GRPCClient) Connection() *grpc.ClientConn {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *messagesV1Beta3GRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -256,7 +252,7 @@ func defaultMessagesV1Beta3RESTClientOptions() []option.ClientOption {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *messagesV1Beta3RESTClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -354,7 +350,7 @@ func (c *messagesV1Beta3RESTClient) ListJobMessages(ctx context.Context, req *da
 			if err != nil {
 				return nil, "", err
 			}
-			params.Add("endTime", string(endTime))
+			params.Add("endTime", string(endTime[1:len(endTime)-1]))
 		}
 		if req.GetMinimumImportance() != 0 {
 			params.Add("minimumImportance", fmt.Sprintf("%v", req.GetMinimumImportance()))
@@ -370,7 +366,7 @@ func (c *messagesV1Beta3RESTClient) ListJobMessages(ctx context.Context, req *da
 			if err != nil {
 				return nil, "", err
 			}
-			params.Add("startTime", string(startTime))
+			params.Add("startTime", string(startTime[1:len(startTime)-1]))
 		}
 
 		baseUrl.RawQuery = params.Encode()
@@ -397,13 +393,13 @@ func (c *messagesV1Beta3RESTClient) ListJobMessages(ctx context.Context, req *da
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil

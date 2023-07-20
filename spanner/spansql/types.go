@@ -34,6 +34,7 @@ import (
 // https://cloud.google.com/spanner/docs/data-definition-language#create_table
 type CreateTable struct {
 	Name              ID
+	IfNotExists       bool
 	Columns           []ColumnDef
 	Constraints       []TableConstraint
 	PrimaryKey        []KeyPart
@@ -106,6 +107,7 @@ type CreateIndex struct {
 
 	Unique       bool
 	NullFiltered bool
+	IfNotExists  bool
 
 	Storing    []ID
 	Interleave ID
@@ -149,7 +151,8 @@ func (cr *CreateRole) clearOffset()   { cr.Position.Offset = 0 }
 // DropTable represents a DROP TABLE statement.
 // https://cloud.google.com/spanner/docs/data-definition-language#drop_table
 type DropTable struct {
-	Name ID
+	Name     ID
+	IfExists bool
 
 	Position Position // position of the "DROP" token
 }
@@ -162,7 +165,8 @@ func (dt *DropTable) clearOffset()   { dt.Position.Offset = 0 }
 // DropIndex represents a DROP INDEX statement.
 // https://cloud.google.com/spanner/docs/data-definition-language#drop-index
 type DropIndex struct {
-	Name ID
+	Name     ID
+	IfExists bool
 
 	Position Position // position of the "DROP" token
 }
@@ -284,7 +288,10 @@ func (ReplaceRowDeletionPolicy) isTableAlteration() {}
 func (DropRowDeletionPolicy) isTableAlteration()    {}
 
 type (
-	AddColumn      struct{ Def ColumnDef }
+	AddColumn struct {
+		IfNotExists bool
+		Def         ColumnDef
+	}
 	DropColumn     struct{ Name ID }
 	AddConstraint  struct{ Constraint TableConstraint }
 	DropConstraint struct{ Name ID }

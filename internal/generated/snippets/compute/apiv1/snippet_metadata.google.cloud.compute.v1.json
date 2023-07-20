@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/compute/apiv1",
-    "version": "1.19.2",
+    "version": "1.22.0",
     "language": "GO",
     "apis": [
       {
@@ -375,6 +375,52 @@
         {
           "start": 18,
           "end": 60,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_Addresses_Move_sync",
+      "title": "compute Move Sample",
+      "description": "Move moves the specified address resource.",
+      "file": "AddressesClient/Move/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "Move",
+        "fullName": "google.cloud.compute.v1.AddressesClient.Move",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.MoveAddressRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "AddressesClient",
+          "fullName": "google.cloud.compute.v1.AddressesClient"
+        },
+        "method": {
+          "shortName": "Move",
+          "fullName": "google.cloud.compute.v1.Addresses.Move",
+          "service": {
+            "shortName": "Addresses",
+            "fullName": "google.cloud.compute.v1.Addresses"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
           "type": "FULL"
         }
       ]
@@ -2036,6 +2082,52 @@
       ]
     },
     {
+      "regionTag": "compute_v1_generated_Disks_BulkInsert_sync",
+      "title": "compute BulkInsert Sample",
+      "description": "BulkInsert bulk create a set of disks.",
+      "file": "DisksClient/BulkInsert/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "BulkInsert",
+        "fullName": "google.cloud.compute.v1.DisksClient.BulkInsert",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.BulkInsertDiskRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "DisksClient",
+          "fullName": "google.cloud.compute.v1.DisksClient"
+        },
+        "method": {
+          "shortName": "BulkInsert",
+          "fullName": "google.cloud.compute.v1.Disks.BulkInsert",
+          "service": {
+            "shortName": "Disks",
+            "fullName": "google.cloud.compute.v1.Disks"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "compute_v1_generated_Disks_CreateSnapshot_sync",
       "title": "compute CreateSnapshot Sample",
       "description": "CreateSnapshot creates a snapshot of a specified persistent disk. For regular snapshot creation, consider using snapshots.insert instead, as that method supports more features, such as creating snapshots in a project different from the source disk project.",
@@ -2480,6 +2572,144 @@
         "method": {
           "shortName": "SetLabels",
           "fullName": "google.cloud.compute.v1.Disks.SetLabels",
+          "service": {
+            "shortName": "Disks",
+            "fullName": "google.cloud.compute.v1.Disks"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_Disks_StartAsyncReplication_sync",
+      "title": "compute StartAsyncReplication Sample",
+      "description": "StartAsyncReplication starts asynchronous replication. Must be invoked on the primary disk.",
+      "file": "DisksClient/StartAsyncReplication/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "StartAsyncReplication",
+        "fullName": "google.cloud.compute.v1.DisksClient.StartAsyncReplication",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.StartAsyncReplicationDiskRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "DisksClient",
+          "fullName": "google.cloud.compute.v1.DisksClient"
+        },
+        "method": {
+          "shortName": "StartAsyncReplication",
+          "fullName": "google.cloud.compute.v1.Disks.StartAsyncReplication",
+          "service": {
+            "shortName": "Disks",
+            "fullName": "google.cloud.compute.v1.Disks"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_Disks_StopAsyncReplication_sync",
+      "title": "compute StopAsyncReplication Sample",
+      "description": "StopAsyncReplication stops asynchronous replication. Can be invoked either on the primary or on the secondary disk.",
+      "file": "DisksClient/StopAsyncReplication/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "StopAsyncReplication",
+        "fullName": "google.cloud.compute.v1.DisksClient.StopAsyncReplication",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.StopAsyncReplicationDiskRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "DisksClient",
+          "fullName": "google.cloud.compute.v1.DisksClient"
+        },
+        "method": {
+          "shortName": "StopAsyncReplication",
+          "fullName": "google.cloud.compute.v1.Disks.StopAsyncReplication",
+          "service": {
+            "shortName": "Disks",
+            "fullName": "google.cloud.compute.v1.Disks"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_Disks_StopGroupAsyncReplication_sync",
+      "title": "compute StopGroupAsyncReplication Sample",
+      "description": "StopGroupAsyncReplication stops asynchronous replication for a consistency group of disks. Can be invoked either in the primary or secondary scope.",
+      "file": "DisksClient/StopGroupAsyncReplication/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "StopGroupAsyncReplication",
+        "fullName": "google.cloud.compute.v1.DisksClient.StopGroupAsyncReplication",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.StopGroupAsyncReplicationDiskRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "DisksClient",
+          "fullName": "google.cloud.compute.v1.DisksClient"
+        },
+        "method": {
+          "shortName": "StopGroupAsyncReplication",
+          "fullName": "google.cloud.compute.v1.Disks.StopGroupAsyncReplication",
           "service": {
             "shortName": "Disks",
             "fullName": "google.cloud.compute.v1.Disks"
@@ -4515,6 +4745,52 @@
         {
           "start": 18,
           "end": 60,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_GlobalAddresses_Move_sync",
+      "title": "compute Move Sample",
+      "description": "Move moves the specified address resource from one project to another project.",
+      "file": "GlobalAddressesClient/Move/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "Move",
+        "fullName": "google.cloud.compute.v1.GlobalAddressesClient.Move",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.MoveGlobalAddressRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "GlobalAddressesClient",
+          "fullName": "google.cloud.compute.v1.GlobalAddressesClient"
+        },
+        "method": {
+          "shortName": "Move",
+          "fullName": "google.cloud.compute.v1.GlobalAddresses.Move",
+          "service": {
+            "shortName": "GlobalAddresses",
+            "fullName": "google.cloud.compute.v1.GlobalAddresses"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
           "type": "FULL"
         }
       ]
@@ -10914,6 +11190,98 @@
       ]
     },
     {
+      "regionTag": "compute_v1_generated_InterconnectRemoteLocations_Get_sync",
+      "title": "compute Get Sample",
+      "description": "Get returns the details for the specified interconnect remote location. Gets a list of available interconnect remote locations by making a list() request.",
+      "file": "InterconnectRemoteLocationsClient/Get/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "Get",
+        "fullName": "google.cloud.compute.v1.InterconnectRemoteLocationsClient.Get",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.GetInterconnectRemoteLocationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*computepb.InterconnectRemoteLocation",
+        "client": {
+          "shortName": "InterconnectRemoteLocationsClient",
+          "fullName": "google.cloud.compute.v1.InterconnectRemoteLocationsClient"
+        },
+        "method": {
+          "shortName": "Get",
+          "fullName": "google.cloud.compute.v1.InterconnectRemoteLocations.Get",
+          "service": {
+            "shortName": "InterconnectRemoteLocations",
+            "fullName": "google.cloud.compute.v1.InterconnectRemoteLocations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_InterconnectRemoteLocations_List_sync",
+      "title": "compute List Sample",
+      "description": "List retrieves the list of interconnect remote locations available to the specified project.",
+      "file": "InterconnectRemoteLocationsClient/List/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "List",
+        "fullName": "google.cloud.compute.v1.InterconnectRemoteLocationsClient.List",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.ListInterconnectRemoteLocationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "InterconnectRemoteLocationIterator",
+        "client": {
+          "shortName": "InterconnectRemoteLocationsClient",
+          "fullName": "google.cloud.compute.v1.InterconnectRemoteLocationsClient"
+        },
+        "method": {
+          "shortName": "List",
+          "fullName": "google.cloud.compute.v1.InterconnectRemoteLocations.List",
+          "service": {
+            "shortName": "InterconnectRemoteLocations",
+            "fullName": "google.cloud.compute.v1.InterconnectRemoteLocations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 60,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "compute_v1_generated_Interconnects_Delete_sync",
       "title": "compute Delete Sample",
       "description": "Delete deletes the specified Interconnect.",
@@ -16252,7 +16620,7 @@
     {
       "regionTag": "compute_v1_generated_Projects_MoveInstance_sync",
       "title": "compute MoveInstance Sample",
-      "description": "MoveInstance moves an instance and its attached persistent disks from one zone to another. *Note*: Moving VMs or disks by using this method might cause unexpected behavior. For more information, see the [known issue](/compute/docs/troubleshooting/known-issues#moving_vms_or_disks_using_the_moveinstance_api_or_the_causes_unexpected_behavior).",
+      "description": "MoveInstance moves an instance and its attached persistent disks from one zone to another. *Note*: Moving VMs or disks by using this method might cause unexpected behavior. For more information, see the [known issue](/compute/docs/troubleshooting/known-issues#moving_vms_or_disks_using_the_moveinstance_api_or_the_causes_unexpected_behavior). [Deprecated] This method is deprecated. See [moving instance across zones](/compute/docs/instances/moving-instance-across-zones) instead.",
       "file": "ProjectsClient/MoveInstance/main.go",
       "language": "GO",
       "clientMethod": {
@@ -17998,6 +18366,52 @@
       ]
     },
     {
+      "regionTag": "compute_v1_generated_RegionDisks_BulkInsert_sync",
+      "title": "compute BulkInsert Sample",
+      "description": "BulkInsert bulk create a set of disks.",
+      "file": "RegionDisksClient/BulkInsert/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "BulkInsert",
+        "fullName": "google.cloud.compute.v1.RegionDisksClient.BulkInsert",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.BulkInsertRegionDiskRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "RegionDisksClient",
+          "fullName": "google.cloud.compute.v1.RegionDisksClient"
+        },
+        "method": {
+          "shortName": "BulkInsert",
+          "fullName": "google.cloud.compute.v1.RegionDisks.BulkInsert",
+          "service": {
+            "shortName": "RegionDisks",
+            "fullName": "google.cloud.compute.v1.RegionDisks"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "compute_v1_generated_RegionDisks_CreateSnapshot_sync",
       "title": "compute CreateSnapshot Sample",
       "description": "CreateSnapshot creates a snapshot of a specified persistent disk. For regular snapshot creation, consider using snapshots.insert instead, as that method supports more features, such as creating snapshots in a project different from the source disk project.",
@@ -18442,6 +18856,144 @@
         "method": {
           "shortName": "SetLabels",
           "fullName": "google.cloud.compute.v1.RegionDisks.SetLabels",
+          "service": {
+            "shortName": "RegionDisks",
+            "fullName": "google.cloud.compute.v1.RegionDisks"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_RegionDisks_StartAsyncReplication_sync",
+      "title": "compute StartAsyncReplication Sample",
+      "description": "StartAsyncReplication starts asynchronous replication. Must be invoked on the primary disk.",
+      "file": "RegionDisksClient/StartAsyncReplication/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "StartAsyncReplication",
+        "fullName": "google.cloud.compute.v1.RegionDisksClient.StartAsyncReplication",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.StartAsyncReplicationRegionDiskRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "RegionDisksClient",
+          "fullName": "google.cloud.compute.v1.RegionDisksClient"
+        },
+        "method": {
+          "shortName": "StartAsyncReplication",
+          "fullName": "google.cloud.compute.v1.RegionDisks.StartAsyncReplication",
+          "service": {
+            "shortName": "RegionDisks",
+            "fullName": "google.cloud.compute.v1.RegionDisks"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_RegionDisks_StopAsyncReplication_sync",
+      "title": "compute StopAsyncReplication Sample",
+      "description": "StopAsyncReplication stops asynchronous replication. Can be invoked either on the primary or on the secondary disk.",
+      "file": "RegionDisksClient/StopAsyncReplication/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "StopAsyncReplication",
+        "fullName": "google.cloud.compute.v1.RegionDisksClient.StopAsyncReplication",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.StopAsyncReplicationRegionDiskRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "RegionDisksClient",
+          "fullName": "google.cloud.compute.v1.RegionDisksClient"
+        },
+        "method": {
+          "shortName": "StopAsyncReplication",
+          "fullName": "google.cloud.compute.v1.RegionDisks.StopAsyncReplication",
+          "service": {
+            "shortName": "RegionDisks",
+            "fullName": "google.cloud.compute.v1.RegionDisks"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_RegionDisks_StopGroupAsyncReplication_sync",
+      "title": "compute StopGroupAsyncReplication Sample",
+      "description": "StopGroupAsyncReplication stops asynchronous replication for a consistency group of disks. Can be invoked either in the primary or secondary scope.",
+      "file": "RegionDisksClient/StopGroupAsyncReplication/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "StopGroupAsyncReplication",
+        "fullName": "google.cloud.compute.v1.RegionDisksClient.StopGroupAsyncReplication",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.StopGroupAsyncReplicationRegionDiskRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "RegionDisksClient",
+          "fullName": "google.cloud.compute.v1.RegionDisksClient"
+        },
+        "method": {
+          "shortName": "StopGroupAsyncReplication",
+          "fullName": "google.cloud.compute.v1.RegionDisks.StopGroupAsyncReplication",
           "service": {
             "shortName": "RegionDisks",
             "fullName": "google.cloud.compute.v1.RegionDisks"

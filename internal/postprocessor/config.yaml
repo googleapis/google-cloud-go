@@ -1,6 +1,7 @@
 modules:
   - accessapproval
   - accesscontextmanager
+  - ai
   - aiplatform
   - advisorynotifications
   - alloydb
@@ -44,6 +45,7 @@ modules:
   - datastream
   - deploy
   - dialogflow
+  - discoveryengine
   - dlp
   - documentai
   - domains
@@ -54,7 +56,6 @@ modules:
   - filestore
   - firestore
   - functions
-  - gaming
   - gkebackup
   - gkeconnect
   - gkehub
@@ -75,7 +76,9 @@ modules:
   - mediatranslation
   - memcache
   - metastore
+  - migrationcenter
   - monitoring
+  - netapp
   - networkconnectivity
   - networkmanagement
   - networksecurity
@@ -91,8 +94,8 @@ modules:
   - profiler
   - pubsub
   - pubsublite
+  - rapidmigrationassessment
   - recaptchaenterprise
-  - recaptchaenterprise/v2
   - recommendationengine
   - recommender
   - redis
@@ -124,7 +127,6 @@ modules:
   - video
   - videointelligence
   - vision
-  - vision/v2
   - vmmigration
   - vmwareengine
   - vpcaccess
@@ -134,113 +136,131 @@ modules:
   - workstations
 
 manual-clients:
-  - distribution-name: cloud.google.com/go/bigquery
+  - api-shortname: bigquery
+    distribution-name: cloud.google.com/go/bigquery
     description: BigQuery
-    language: Go
+    language: go
     client-library-type: manual
-    docs-url: https://cloud.google.com/go/docs/reference/cloud.google.com/go/bigquery/latest
-    release-level: ga
+    client-documentation: https://cloud.google.com/go/docs/reference/cloud.google.com/go/bigquery/latest
+    release-level: stable
     library-type: GAPIC_MANUAL
-  - distribution-name: cloud.google.com/go/bigtable
+  - api-shortname: bigtable
+    distribution-name: cloud.google.com/go/bigtable
     description: Cloud BigTable
-    language: Go
+    language: go
     client-library-type: manual
-    docs-url: https://cloud.google.com/go/docs/reference/cloud.google.com/go/bigtable/latest
-    release-level: ga
+    client-documentation: https://cloud.google.com/go/docs/reference/cloud.google.com/go/bigtable/latest
+    release-level: stable
     library-type: GAPIC_MANUAL
-  - distribution-name: cloud.google.com/go/compute/metadata
+  - api-shortname: compute-metadata
+    distribution-name: cloud.google.com/go/compute/metadata
     description: Service Metadata API
-    language: Go
+    language: go
     client-library-type: manual
-    docs-url: https://cloud.google.com/go/docs/reference/cloud.google.com/go/compute/latest/metadata
-    release-level: ga
+    client-documentation: https://cloud.google.com/go/docs/reference/cloud.google.com/go/compute/latest/metadata
+    release-level: stable
     library-type: CORE
-  - distribution-name: cloud.google.com/go/datastore
+  - api-shortname: datastore
+    distribution-name: cloud.google.com/go/datastore
     description: Cloud Datastore
-    language: Go
+    language: go
     client-library-type: manual
-    docs-url: https://cloud.google.com/go/docs/reference/cloud.google.com/go/datastore/latest
-    release-level: ga
+    client-documentation: https://cloud.google.com/go/docs/reference/cloud.google.com/go/datastore/latest
+    release-level: stable
     library-type: GAPIC_MANUAL
-  - distribution-name: cloud.google.com/go/errorreporting
+  - api-shortname: clouderrorreporting
+    distribution-name: cloud.google.com/go/errorreporting
     description: Cloud Error Reporting API
-    language: Go
+    language: go
     client-library-type: manual
-    docs-url: https://cloud.google.com/go/docs/reference/cloud.google.com/go/errorreporting/latest
-    release-level: beta
+    client-documentation: https://cloud.google.com/go/docs/reference/cloud.google.com/go/errorreporting/latest
+    release-level: preview
     library-type: GAPIC_MANUAL
-  - distribution-name: cloud.google.com/go/firestore
+  - api-shortname: firestore
+    distribution-name: cloud.google.com/go/firestore
     description: Cloud Firestore API
-    language: Go
+    language: go
     client-library-type: manual
-    docs-url: https://cloud.google.com/go/docs/reference/cloud.google.com/go/firestore/latest
-    release-level: ga
+    client-documentation: https://cloud.google.com/go/docs/reference/cloud.google.com/go/firestore/latest
+    release-level: stable
     library-type: GAPIC_MANUAL
-  - distribution-name: cloud.google.com/go/functions/metadata
+  - api-shortname: firestore-metadata
+    distribution-name: cloud.google.com/go/functions/metadata
     description: Cloud Functions
-    language: Go
+    language: go
     client-library-type: manual
-    docs-url: https://cloud.google.com/go/docs/reference/cloud.google.com/go/functions/latest/metadata
-    release-level: alpha
+    client-documentation: https://cloud.google.com/go/docs/reference/cloud.google.com/go/functions/latest/metadata
+    release-level: preview
     library-type: CORE
-  - distribution-name: cloud.google.com/go/iam
+  - api-shortname: iam
+    distribution-name: cloud.google.com/go/iam
     description: Cloud IAM
-    language: Go
+    language: go
     client-library-type: manual
-    docs-url: https://cloud.google.com/go/docs/reference/cloud.google.com/go/iam/latest
-    release-level: ga
+    client-documentation: https://cloud.google.com/go/docs/reference/cloud.google.com/go/iam/latest
+    release-level: stable
     library-type: CORE
-  - distribution-name: cloud.google.com/go/logging
+  - api-shortname: logging
+    distribution-name: cloud.google.com/go/logging
     description: Cloud Logging API
-    language: Go
+    language: go
     client-library-type: manual
-    docs-url: https://cloud.google.com/go/docs/reference/cloud.google.com/go/logging/latest
-    release-level: ga
+    client-documentation: https://cloud.google.com/go/docs/reference/cloud.google.com/go/logging/latest
+    release-level: stable
     library-type: GAPIC_MANUAL
-  - distribution-name: cloud.google.com/go/profiler
+  - api-shortname: cloudprofiler
+    distribution-name: cloud.google.com/go/profiler
     description: Cloud Profiler
-    language: Go
+    language: go
     client-library-type: manual
-    docs-url: https://cloud.google.com/go/docs/reference/cloud.google.com/go/profiler/latest
-    release-level: ga
+    client-documentation: https://cloud.google.com/go/docs/reference/cloud.google.com/go/profiler/latest
+    release-level: stable
     library-type: AGENT
-  - distribution-name: cloud.google.com/go/pubsub
+  - api-shortname: pubsub
+    distribution-name: cloud.google.com/go/pubsub
     description: Cloud PubSub
-    language: Go
+    language: go
     client-library-type: manual
-    docs-url: https://cloud.google.com/go/docs/reference/cloud.google.com/go/pubsub/latest
-    release-level: ga
+    client-documentation: https://cloud.google.com/go/docs/reference/cloud.google.com/go/pubsub/latest
+    release-level: stable
     library-type: GAPIC_MANUAL
-  - distribution-name: cloud.google.com/go/pubsublite
+  - api-shortname: pubsublite
+    distribution-name: cloud.google.com/go/pubsublite
     description: Cloud PubSub Lite
-    language: Go
+    language: go
     client-library-type: manual
-    docs-url: https://cloud.google.com/go/docs/reference/cloud.google.com/go/pubsublite/latest
-    release-level: ga
+    client-documentation: https://cloud.google.com/go/docs/reference/cloud.google.com/go/pubsublite/latest
+    release-level: stable
     library-type: GAPIC_MANUAL
-  - distribution-name: cloud.google.com/go/rpcreplay
+  - api-shortname: rpcreplay
+    distribution-name: cloud.google.com/go/rpcreplay
     description: RPC Replay
-    language: Go
+    language: go
     client-library-type: manual
-    docs-url: https://cloud.google.com/go/docs/reference/cloud.google.com/go/latest/rpcreplay
-    release-level: ga
+    client-documentation: https://cloud.google.com/go/docs/reference/cloud.google.com/go/latest/rpcreplay
+    release-level: stable
     library-type: OTHER
-  - distribution-name: cloud.google.com/go/spanner
+  - api-shortname: spanner
+    distribution-name: cloud.google.com/go/spanner
     description: Cloud Spanner
-    language: Go
+    language: go
     client-library-type: manual
-    docs-url: https://cloud.google.com/go/docs/reference/cloud.google.com/go/spanner/latest
-    release-level: ga
+    client-documentation: https://cloud.google.com/go/docs/reference/cloud.google.com/go/spanner/latest
+    release-level: stable
     library-type: GAPIC_MANUAL
-  - distribution-name: cloud.google.com/go/storage
+  - api-shortname: storage
+    distribution-name: cloud.google.com/go/storage
     description: Cloud Storage (GCS)
-    language: Go
+    language: go
     client-library-type: manual
-    docs-url: https://cloud.google.com/go/docs/reference/cloud.google.com/go/storage/latest
-    release-level: ga
+    client-documentation: https://cloud.google.com/go/docs/reference/cloud.google.com/go/storage/latest
+    release-level: stable
     library-type: GAPIC_MANUAL
 
 service-configs:
+  - input-directory: google/ai/generativelanguage/v1beta2
+    service-config: generativelanguage_v1beta2.yaml
+    import-path: cloud.google.com/go/ai/generativelanguage/apiv1beta2
   - input-directory: google/analytics/admin/v1alpha
     service-config: analyticsadmin_v1alpha.yaml
     import-path: cloud.google.com/go/analytics/admin/apiv1alpha
@@ -452,6 +472,9 @@ service-configs:
   - input-directory: google/cloud/dialogflow/v2beta1
     service-config: dialogflow_v2beta1.yaml
     import-path: cloud.google.com/go/dialogflow/apiv2beta1
+  - input-directory: google/cloud/discoveryengine/v1
+    service-config: discoveryengine_v1.yaml
+    import-path: cloud.google.com/go/discoveryengine/apiv1
   - input-directory: google/cloud/discoveryengine/v1beta
     service-config: discoveryengine_v1beta.yaml
     import-path: cloud.google.com/go/discoveryengine/apiv1beta
@@ -488,12 +511,6 @@ service-configs:
   - input-directory: google/cloud/functions/v2beta
     service-config: cloudfunctions_v2beta.yaml
     import-path: cloud.google.com/go/functions/apiv2beta
-  - input-directory: google/cloud/gaming/v1
-    service-config: gameservices_v1.yaml
-    import-path: cloud.google.com/go/gaming/apiv1
-  - input-directory: google/cloud/gaming/v1beta
-    service-config: gameservices_v1beta.yaml
-    import-path: cloud.google.com/go/gaming/apiv1beta
   - input-directory: google/cloud/gkebackup/v1
     service-config: gkebackup_v1.yaml
     import-path: cloud.google.com/go/gkebackup/apiv1
@@ -554,6 +571,12 @@ service-configs:
   - input-directory: google/cloud/metastore/v1beta
     service-config: metastore_v1beta.yaml
     import-path: cloud.google.com/go/metastore/apiv1beta
+  - input-directory: google/cloud/migrationcenter/v1
+    service-config: migrationcenter_v1.yaml
+    import-path: cloud.google.com/go/migrationcenter/apiv1
+  - input-directory: google/cloud/netapp/v1beta1
+    service-config: netapp_v1beta1.yaml
+    import-path: cloud.google.com/go/netapp/apiv1beta1
   - input-directory: google/cloud/networkconnectivity/v1
     service-config: networkconnectivity_v1.yaml
     import-path: cloud.google.com/go/networkconnectivity/apiv1
@@ -620,12 +643,17 @@ service-configs:
   - input-directory: google/cloud/pubsublite/v1
     service-config: pubsublite_v1.yaml
     import-path: cloud.google.com/go/pubsublite/apiv1
+  - input-directory: google/cloud/rapidmigrationassessment/v1
+    service-config: rapidmigrationassessment_v1.yaml
+    import-path: cloud.google.com/go/rapidmigrationassessment/apiv1
   - input-directory: google/cloud/recaptchaenterprise/v1
     service-config: recaptchaenterprise_v1.yaml
     import-path: cloud.google.com/go/recaptchaenterprise/v2/apiv1
+    rel-path: /recaptchaenterprise/apiv1
   - input-directory: google/cloud/recaptchaenterprise/v1beta1
     service-config: recaptchaenterprise_v1beta1.yaml
     import-path: cloud.google.com/go/recaptchaenterprise/v2/apiv1beta1
+    rel-path: /recaptchaenterprise/apiv1beta1
   - input-directory: google/cloud/recommendationengine/v1beta1
     service-config: recommendationengine_v1beta1.yaml
     import-path: cloud.google.com/go/recommendationengine/apiv1beta1
@@ -770,9 +798,11 @@ service-configs:
   - input-directory: google/cloud/vision/v1
     service-config: vision_v1.yaml
     import-path: cloud.google.com/go/vision/v2/apiv1
+    rel-path: /vision/apiv1
   - input-directory: google/cloud/vision/v1p1beta1
     service-config: vision_v1p1beta1.yaml
     import-path: cloud.google.com/go/vision/v2/apiv1p1beta1
+    rel-path: /vision/apiv1p1beta1
   - input-directory: google/cloud/vmmigration/v1
     service-config: vmmigration_v1.yaml
     import-path: cloud.google.com/go/vmmigration/apiv1
@@ -872,6 +902,9 @@ service-configs:
   - input-directory: google/maps/mapsplatformdatasets/v1alpha
     service-config: mapsplatformdatasets_v1alpha.yaml
     import-path: cloud.google.com/go/maps/mapsplatformdatasets/apiv1alpha
+  - input-directory: google/maps/places/v1
+    service-config: places_v1.yaml
+    import-path: cloud.google.com/go/maps/places/apiv1
   - input-directory: google/maps/routing/v2
     service-config: routes_v2.yaml
     import-path: cloud.google.com/go/maps/routing/apiv2

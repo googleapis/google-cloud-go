@@ -1,5 +1,26 @@
 # Changes
 
+## [1.11.0](https://github.com/googleapis/google-cloud-go/compare/cloudbuild/v1.10.1...cloudbuild/v1.11.0) (2023-07-10)
+
+
+### Features
+
+* **cloudbuild:** Add GitLabConfig and fetchGitRefs for Cloud Build Repositories ([a3ec3cf](https://github.com/googleapis/google-cloud-go/commit/a3ec3cf858c7d9154338ac4cd8a9a068dc7a7f4d))
+
+## [1.10.1](https://github.com/googleapis/google-cloud-go/compare/cloudbuild/v1.10.0...cloudbuild/v1.10.1) (2023-06-20)
+
+
+### Bug Fixes
+
+* **cloudbuild:** REST query UpdateMask bug ([df52820](https://github.com/googleapis/google-cloud-go/commit/df52820b0e7721954809a8aa8700b93c5662dc9b))
+
+## [1.10.0](https://github.com/googleapis/google-cloud-go/compare/cloudbuild/v1.9.1...cloudbuild/v1.10.0) (2023-05-30)
+
+
+### Features
+
+* **cloudbuild:** Update all direct dependencies ([b340d03](https://github.com/googleapis/google-cloud-go/commit/b340d030f2b52a4ce48846ce63984b28583abde6))
+
 ## [1.9.1](https://github.com/googleapis/google-cloud-go/compare/cloudbuild/v1.9.0...cloudbuild/v1.9.1) (2023-05-08)
 
 

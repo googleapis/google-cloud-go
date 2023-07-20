@@ -1,6 +1,27 @@
 # Changelog
 
 
+## [1.2.0](https://github.com/googleapis/google-cloud-go/compare/run/v1.1.1...run/v1.2.0) (2023-07-10)
+
+
+### Features
+
+* **run:** Adds support for custom audiences ([#8227](https://github.com/googleapis/google-cloud-go/issues/8227)) ([7732b8c](https://github.com/googleapis/google-cloud-go/commit/7732b8c2c19aef0fad4a7bae6d4bd7354018cfc4))
+
+## [1.1.1](https://github.com/googleapis/google-cloud-go/compare/run/v1.1.0...run/v1.1.1) (2023-06-20)
+
+
+### Bug Fixes
+
+* **run:** REST query UpdateMask bug ([df52820](https://github.com/googleapis/google-cloud-go/commit/df52820b0e7721954809a8aa8700b93c5662dc9b))
+
+## [1.1.0](https://github.com/googleapis/google-cloud-go/compare/run/v1.0.1...run/v1.1.0) (2023-05-30)
+
+
+### Features
+
+* **run:** Update all direct dependencies ([b340d03](https://github.com/googleapis/google-cloud-go/commit/b340d030f2b52a4ce48846ce63984b28583abde6))
+
 ## [1.0.1](https://github.com/googleapis/google-cloud-go/compare/run/v1.0.0...run/v1.0.1) (2023-05-08)
 
 

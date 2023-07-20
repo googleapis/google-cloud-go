@@ -1,6 +1,39 @@
 # Changelog
 
 
+## [1.3.1](https://github.com/googleapis/google-cloud-go/compare/batch/v1.3.0...batch/v1.3.1) (2023-07-10)
+
+
+### Documentation
+
+* **batch:** Add image shortcut example for Batch HPC CentOS Image ([14b95d3](https://github.com/googleapis/google-cloud-go/commit/14b95d33753d0b391d0b49533e92b551e5dc3072))
+
+## [1.3.0](https://github.com/googleapis/google-cloud-go/compare/batch/v1.2.0...batch/v1.3.0) (2023-06-20)
+
+
+### Features
+
+* **batch:** Add support for scheduling_policy ([3382ef8](https://github.com/googleapis/google-cloud-go/commit/3382ef81b6bcefe1c7bfc14aa5ff9bbf25850966))
+
+
+### Bug Fixes
+
+* **batch:** REST query UpdateMask bug ([df52820](https://github.com/googleapis/google-cloud-go/commit/df52820b0e7721954809a8aa8700b93c5662dc9b))
+
+## [1.2.0](https://github.com/googleapis/google-cloud-go/compare/batch/v1.1.0...batch/v1.2.0) (2023-05-30)
+
+
+### Features
+
+* **batch:** Update all direct dependencies ([b340d03](https://github.com/googleapis/google-cloud-go/commit/b340d030f2b52a4ce48846ce63984b28583abde6))
+
+## [1.1.0](https://github.com/googleapis/google-cloud-go/compare/batch/v1.0.1...batch/v1.1.0) (2023-05-16)
+
+
+### Features
+
+* **batch:** Add support for placement policies ([#7943](https://github.com/googleapis/google-cloud-go/issues/7943)) ([7c2f642](https://github.com/googleapis/google-cloud-go/commit/7c2f642ac308fcdfcb41985aae425785afa27823))
+
 ## [1.0.1](https://github.com/googleapis/google-cloud-go/compare/batch/v1.0.0...batch/v1.0.1) (2023-05-08)
 
 

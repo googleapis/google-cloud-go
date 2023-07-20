@@ -19,10 +19,11 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
-	"log"
 	"os"
 	"os/exec"
 	"strings"
+
+	"cloud.google.com/go/internal/actions/logg"
 )
 
 var (
@@ -30,51 +31,49 @@ var (
 	format    = flag.String("format", "plain", "output format, one of [plain|github], defaults to 'plain'")
 	ghVarName = flag.String("gh-var", "submodules", "github format's variable name to set output for, defaults to 'submodules'.")
 	base      = flag.String("base", "origin/main", "the base ref to compare to, defaults to 'origin/main'")
-	quiet     = flag.Bool("q", false, "quiet mode, minimal logging")
-	// Only used in quiet mode, printed in the event of an error.
-	logBuffer []string
 )
 
 func main() {
+	flag.BoolVar(&logg.Quiet, "q", false, "quiet mode, minimal logging")
 	flag.Parse()
 	rootDir, err := os.Getwd()
 	if err != nil {
-		fatalE(err)
+		logg.Fatal(err)
 	}
 	if *dir != "" {
 		rootDir = *dir
 	}
-	logg("Root dir: %q", rootDir)
+	logg.Printf("Root dir: %q", rootDir)
 
-	submodules, err := mods(rootDir)
+	submodulesDirs, err := modDirs(rootDir)
 	if err != nil {
-		fatalE(err)
+		logg.Fatal(err)
 	}
 
 	changes, err := gitFilesChanges(rootDir)
 	if err != nil {
-		fatal("unable to get files changed: %v", err)
+		logg.Fatalf("unable to get files changed: %v", err)
 	}
 
 	modulesSeen := map[string]bool{}
-	updatedSubmodules := []string{}
+	updatedSubmoduleDirs := []string{}
 	for _, change := range changes {
 		if strings.HasPrefix(change, "internal") {
 			continue
 		}
-		submod, ok := owner(change, submodules)
+		submodDir, ok := owner(change, submodulesDirs)
 		if !ok {
-			logg("no module for: %s", change)
+			logg.Printf("no module for: %s", change)
 			continue
 		}
-		if _, seen := modulesSeen[submod]; !seen {
-			logg("changes in submodule: %s", submod)
-			updatedSubmodules = append(updatedSubmodules, submod)
-			modulesSeen[submod] = true
+		if _, seen := modulesSeen[submodDir]; !seen {
+			logg.Printf("changes in submodule: %s", submodDir)
+			updatedSubmoduleDirs = append(updatedSubmoduleDirs, submodDir)
+			modulesSeen[submodDir] = true
 		}
 	}
 
-	output(updatedSubmodules)
+	output(updatedSubmoduleDirs)
 }
 
 func output(s []string) error {
@@ -82,7 +81,7 @@ func output(s []string) error {
 	case "github":
 		b, err := json.Marshal(s)
 		if err != nil {
-			fatal("unable to marshal submodules: %v", err)
+			logg.Fatalf("unable to marshal submodules: %v", err)
 		}
 		fmt.Printf("::set-output name=%s::%s", *ghVarName, b)
 	case "plain":
@@ -93,9 +92,9 @@ func output(s []string) error {
 	return nil
 }
 
-func owner(file string, submodules []string) (string, bool) {
+func owner(file string, submoduleDirs []string) (string, bool) {
 	submod := ""
-	for _, mod := range submodules {
+	for _, mod := range submoduleDirs {
 		if strings.HasPrefix(file, mod) && len(mod) > len(submod) {
 			submod = mod
 		}
@@ -104,27 +103,28 @@ func owner(file string, submodules []string) (string, bool) {
 	return submod, submod != ""
 }
 
-func mods(dir string) (submodules []string, err error) {
-	c := exec.Command("go", "list", "-m")
+func modDirs(dir string) (submodulesDirs []string, err error) {
+	c := exec.Command("go", "list", "-m", "-f", "{{.Dir}}")
 	c.Dir = dir
 	b, err := c.Output()
 	if err != nil {
-		return submodules, err
+		return submodulesDirs, err
 	}
-	list := strings.Split(strings.TrimSpace(string(b)), "\n")
+	// Skip the root mod
+	list := strings.Split(strings.TrimSpace(string(b)), "\n")[1:]
 
-	submodules = []string{}
-	for _, mod := range list {
+	submodulesDirs = []string{}
+	for _, modPath := range list {
 		// Skip non-submodule or internal submodules.
-		if mod == "cloud.google.com/go" || strings.Contains(mod, "internal") {
+		if strings.Contains(modPath, "internal") {
 			continue
 		}
-		logg("found module: %s", mod)
-		mod = strings.TrimPrefix(mod, "cloud.google.com/go/")
-		submodules = append(submodules, mod)
+		logg.Printf("found module: %s", modPath)
+		modPath = strings.TrimPrefix(modPath, dir+"/")
+		submodulesDirs = append(submodulesDirs, modPath)
 	}
 
-	return submodules, nil
+	return submodulesDirs, nil
 }
 
 func gitFilesChanges(dir string) ([]string, error) {
@@ -135,29 +135,6 @@ func gitFilesChanges(dir string) ([]string, error) {
 		return nil, err
 	}
 	b = bytes.TrimSpace(b)
-	logg("Files changed:\n%s", b)
+	logg.Printf("Files changed:\n%s", b)
 	return strings.Split(string(b), "\n"), nil
-}
-
-// logg is a potentially quiet log.Printf.
-func logg(format string, values ...interface{}) {
-	if *quiet {
-		logBuffer = append(logBuffer, fmt.Sprintf(format, values...))
-		return
-	}
-	log.Printf(format, values...)
-}
-
-func fatalE(err error) {
-	if *quiet {
-		log.Print(strings.Join(logBuffer, "\n"))
-	}
-	log.Fatal(err)
-}
-
-func fatal(format string, values ...interface{}) {
-	if *quiet {
-		log.Print(strings.Join(logBuffer, "\n"))
-	}
-	log.Fatalf(format, values...)
 }

@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"math"
 	"net/http"
 	"net/url"
@@ -68,9 +68,14 @@ func defaultMapsPlatformDatasetsV1AlphaGRPCClientOptions() []option.ClientOption
 
 func defaultMapsPlatformDatasetsV1AlphaCallOptions() *MapsPlatformDatasetsV1AlphaCallOptions {
 	return &MapsPlatformDatasetsV1AlphaCallOptions{
-		CreateDataset:         []gax.CallOption{},
-		UpdateDatasetMetadata: []gax.CallOption{},
+		CreateDataset: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateDatasetMetadata: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		GetDataset: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -82,6 +87,7 @@ func defaultMapsPlatformDatasetsV1AlphaCallOptions() *MapsPlatformDatasetsV1Alph
 			}),
 		},
 		ListDatasetVersions: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -93,6 +99,7 @@ func defaultMapsPlatformDatasetsV1AlphaCallOptions() *MapsPlatformDatasetsV1Alph
 			}),
 		},
 		ListDatasets: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -103,16 +110,23 @@ func defaultMapsPlatformDatasetsV1AlphaCallOptions() *MapsPlatformDatasetsV1Alph
 				})
 			}),
 		},
-		DeleteDataset:        []gax.CallOption{},
+		DeleteDataset: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		DeleteDatasetVersion: []gax.CallOption{},
 	}
 }
 
 func defaultMapsPlatformDatasetsV1AlphaRESTCallOptions() *MapsPlatformDatasetsV1AlphaCallOptions {
 	return &MapsPlatformDatasetsV1AlphaCallOptions{
-		CreateDataset:         []gax.CallOption{},
-		UpdateDatasetMetadata: []gax.CallOption{},
+		CreateDataset: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateDatasetMetadata: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		GetDataset: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -123,6 +137,7 @@ func defaultMapsPlatformDatasetsV1AlphaRESTCallOptions() *MapsPlatformDatasetsV1
 			}),
 		},
 		ListDatasetVersions: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -133,6 +148,7 @@ func defaultMapsPlatformDatasetsV1AlphaRESTCallOptions() *MapsPlatformDatasetsV1
 			}),
 		},
 		ListDatasets: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -142,7 +158,9 @@ func defaultMapsPlatformDatasetsV1AlphaRESTCallOptions() *MapsPlatformDatasetsV1
 					http.StatusServiceUnavailable)
 			}),
 		},
-		DeleteDataset:        []gax.CallOption{},
+		DeleteDataset: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		DeleteDatasetVersion: []gax.CallOption{},
 	}
 }
@@ -239,9 +257,6 @@ type mapsPlatformDatasetsV1AlphaGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing MapsPlatformDatasetsV1AlphaClient
 	CallOptions **MapsPlatformDatasetsV1AlphaCallOptions
 
@@ -266,11 +281,6 @@ func NewMapsPlatformDatasetsV1AlphaClient(ctx context.Context, opts ...option.Cl
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -279,7 +289,6 @@ func NewMapsPlatformDatasetsV1AlphaClient(ctx context.Context, opts ...option.Cl
 
 	c := &mapsPlatformDatasetsV1AlphaGRPCClient{
 		connPool:                          connPool,
-		disableDeadlines:                  disableDeadlines,
 		mapsPlatformDatasetsV1AlphaClient: mapsplatformdatasetspb.NewMapsPlatformDatasetsV1AlphaClient(connPool),
 		CallOptions:                       &client.CallOptions,
 	}
@@ -302,7 +311,7 @@ func (c *mapsPlatformDatasetsV1AlphaGRPCClient) Connection() *grpc.ClientConn {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *mapsPlatformDatasetsV1AlphaGRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -362,7 +371,7 @@ func defaultMapsPlatformDatasetsV1AlphaRESTClientOptions() []option.ClientOption
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *mapsPlatformDatasetsV1AlphaRESTClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -382,11 +391,6 @@ func (c *mapsPlatformDatasetsV1AlphaRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 func (c *mapsPlatformDatasetsV1AlphaGRPCClient) CreateDataset(ctx context.Context, req *mapsplatformdatasetspb.CreateDatasetRequest, opts ...gax.CallOption) (*mapsplatformdatasetspb.Dataset, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -404,11 +408,6 @@ func (c *mapsPlatformDatasetsV1AlphaGRPCClient) CreateDataset(ctx context.Contex
 }
 
 func (c *mapsPlatformDatasetsV1AlphaGRPCClient) UpdateDatasetMetadata(ctx context.Context, req *mapsplatformdatasetspb.UpdateDatasetMetadataRequest, opts ...gax.CallOption) (*mapsplatformdatasetspb.Dataset, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "dataset.name", url.QueryEscape(req.GetDataset().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -426,11 +425,6 @@ func (c *mapsPlatformDatasetsV1AlphaGRPCClient) UpdateDatasetMetadata(ctx contex
 }
 
 func (c *mapsPlatformDatasetsV1AlphaGRPCClient) GetDataset(ctx context.Context, req *mapsplatformdatasetspb.GetDatasetRequest, opts ...gax.CallOption) (*mapsplatformdatasetspb.Dataset, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -538,11 +532,6 @@ func (c *mapsPlatformDatasetsV1AlphaGRPCClient) ListDatasets(ctx context.Context
 }
 
 func (c *mapsPlatformDatasetsV1AlphaGRPCClient) DeleteDataset(ctx context.Context, req *mapsplatformdatasetspb.DeleteDatasetRequest, opts ...gax.CallOption) error {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -616,13 +605,13 @@ func (c *mapsPlatformDatasetsV1AlphaRESTClient) CreateDataset(ctx context.Contex
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -655,7 +644,7 @@ func (c *mapsPlatformDatasetsV1AlphaRESTClient) UpdateDatasetMetadata(ctx contex
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask))
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -688,13 +677,13 @@ func (c *mapsPlatformDatasetsV1AlphaRESTClient) UpdateDatasetMetadata(ctx contex
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -749,13 +738,13 @@ func (c *mapsPlatformDatasetsV1AlphaRESTClient) GetDataset(ctx context.Context, 
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -820,13 +809,13 @@ func (c *mapsPlatformDatasetsV1AlphaRESTClient) ListDatasetVersions(ctx context.
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -908,13 +897,13 @@ func (c *mapsPlatformDatasetsV1AlphaRESTClient) ListDatasets(ctx context.Context
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil

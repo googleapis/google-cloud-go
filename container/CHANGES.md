@@ -1,5 +1,59 @@
 # Changes
 
+## [1.24.0](https://github.com/googleapis/google-cloud-go/compare/container/v1.23.0...container/v1.24.0) (2023-07-18)
+
+
+### Features
+
+* **container:** Add Multi-networking API ([#8270](https://github.com/googleapis/google-cloud-go/issues/8270)) ([4a5651c](https://github.com/googleapis/google-cloud-go/commit/4a5651caa472882fe4c7f6be400f782f60f6f258))
+
+## [1.23.0](https://github.com/googleapis/google-cloud-go/compare/container/v1.22.1...container/v1.23.0) (2023-07-10)
+
+
+### Features
+
+* **container:** Add `KUBE_DNS` option to `DNSConfig.cluster_dns` ([#8183](https://github.com/googleapis/google-cloud-go/issues/8183)) ([a3ec3cf](https://github.com/googleapis/google-cloud-go/commit/a3ec3cf858c7d9154338ac4cd8a9a068dc7a7f4d))
+
+## [1.22.1](https://github.com/googleapis/google-cloud-go/compare/container/v1.22.0...container/v1.22.1) (2023-06-20)
+
+
+### Bug Fixes
+
+* **container:** REST query UpdateMask bug ([df52820](https://github.com/googleapis/google-cloud-go/commit/df52820b0e7721954809a8aa8700b93c5662dc9b))
+
+## [1.22.0](https://github.com/googleapis/google-cloud-go/compare/container/v1.21.0...container/v1.22.0) (2023-06-13)
+
+
+### Features
+
+* **container:** Add API for GPU driver installation config ([3abdfa1](https://github.com/googleapis/google-cloud-go/commit/3abdfa14dd56cf773c477f289a7f888e20bbbd9a))
+
+## [1.21.0](https://github.com/googleapis/google-cloud-go/compare/container/v1.20.0...container/v1.21.0) (2023-06-07)
+
+
+### Features
+
+* **container:** Add a API field to enable FQDN Network Policy on clusters ([79eac77](https://github.com/googleapis/google-cloud-go/commit/79eac771ecf99172157cc4499ba95536778354e6))
+
+## [1.20.0](https://github.com/googleapis/google-cloud-go/compare/container/v1.19.0...container/v1.20.0) (2023-05-31)
+
+
+### Features
+
+* **container:** Add SoleTenantConfig API ([#8015](https://github.com/googleapis/google-cloud-go/issues/8015)) ([01eff11](https://github.com/googleapis/google-cloud-go/commit/01eff11eedb3edde69cc33db23e26be6a7e42f10))
+
+## [1.19.0](https://github.com/googleapis/google-cloud-go/compare/container/v1.18.1...container/v1.19.0) (2023-05-30)
+
+
+### Features
+
+* **container:** Update all direct dependencies ([b340d03](https://github.com/googleapis/google-cloud-go/commit/b340d030f2b52a4ce48846ce63984b28583abde6))
+
+
+### Documentation
+
+* **container:** Clarified release channel defaulting behavior for create cluster requests when release channel is unspecified ([2b3e7d9](https://github.com/googleapis/google-cloud-go/commit/2b3e7d9af7d2f500e736e3db77487127cb44ca23))
+
 ## [1.18.1](https://github.com/googleapis/google-cloud-go/compare/container/v1.18.0...container/v1.18.1) (2023-05-08)
 
 

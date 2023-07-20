@@ -1,5 +1,19 @@
 # Changes
 
+## [1.6.1](https://github.com/googleapis/google-cloud-go/compare/gsuiteaddons/v1.6.0...gsuiteaddons/v1.6.1) (2023-06-20)
+
+
+### Bug Fixes
+
+* **gsuiteaddons:** REST query UpdateMask bug ([df52820](https://github.com/googleapis/google-cloud-go/commit/df52820b0e7721954809a8aa8700b93c5662dc9b))
+
+## [1.6.0](https://github.com/googleapis/google-cloud-go/compare/gsuiteaddons/v1.5.1...gsuiteaddons/v1.6.0) (2023-05-30)
+
+
+### Features
+
+* **gsuiteaddons:** Update all direct dependencies ([b340d03](https://github.com/googleapis/google-cloud-go/commit/b340d030f2b52a4ce48846ce63984b28583abde6))
+
 ## [1.5.1](https://github.com/googleapis/google-cloud-go/compare/gsuiteaddons/v1.5.0...gsuiteaddons/v1.5.1) (2023-05-08)
 
 

@@ -1,0 +1,61 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/maps/places/apiv1",
+    "version": "1.3.0",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.maps.places.v1",
+        "version": "v1"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "places_v1_generated_Places_SearchText_sync",
+      "title": "places SearchText Sample",
+      "description": "SearchText text query based place search.",
+      "file": "Client/SearchText/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SearchText",
+        "fullName": "google.maps.places.v1.Client.SearchText",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "placespb.SearchTextRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*placespb.SearchTextResponse",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.maps.places.v1.Client"
+        },
+        "method": {
+          "shortName": "SearchText",
+          "fullName": "google.maps.places.v1.Places.SearchText",
+          "service": {
+            "shortName": "Places",
+            "fullName": "google.maps.places.v1.Places"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}

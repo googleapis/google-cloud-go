@@ -1,5 +1,21 @@
 # Changes
 
+## [1.10.1](https://github.com/googleapis/google-cloud-go/compare/language/v1.10.0...language/v1.10.1) (2023-06-20)
+
+
+### Bug Fixes
+
+* **language:** REST query UpdateMask bug ([df52820](https://github.com/googleapis/google-cloud-go/commit/df52820b0e7721954809a8aa8700b93c5662dc9b))
+
+## [1.10.0](https://github.com/googleapis/google-cloud-go/compare/language/v1.9.1...language/v1.10.0) (2023-05-30)
+
+
+### Features
+
+* **language:** Added client library support for ModerateText in the Natural Language API (V1) ([ca94e27](https://github.com/googleapis/google-cloud-go/commit/ca94e2724f9e2610b46aefd0a3b5ddc06102e91b))
+* **language:** Added client library support for ModerateText in the Natural Language API (V1Beta2) ([ca94e27](https://github.com/googleapis/google-cloud-go/commit/ca94e2724f9e2610b46aefd0a3b5ddc06102e91b))
+* **language:** Update all direct dependencies ([b340d03](https://github.com/googleapis/google-cloud-go/commit/b340d030f2b52a4ce48846ce63984b28583abde6))
+
 ## [1.9.1](https://github.com/googleapis/google-cloud-go/compare/language/v1.9.0...language/v1.9.1) (2023-05-08)
 
 

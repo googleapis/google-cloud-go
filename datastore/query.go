@@ -744,7 +744,10 @@ func (c *Client) Run(ctx context.Context, q *Query) *Iterator {
 }
 
 // RunAggregationQuery gets aggregation query (e.g. COUNT) results from the service.
-func (c *Client) RunAggregationQuery(ctx context.Context, aq *AggregationQuery) (AggregationResult, error) {
+func (c *Client) RunAggregationQuery(ctx context.Context, aq *AggregationQuery) (ar AggregationResult, err error) {
+	ctx = trace.StartSpan(ctx, "cloud.google.com/go/datastore.Query.RunAggregationQuery")
+	defer func() { trace.EndSpan(ctx, err) }()
+
 	if aq == nil {
 		return nil, errors.New("datastore: aggregation query cannot be nil")
 	}
@@ -791,7 +794,7 @@ func (c *Client) RunAggregationQuery(ctx context.Context, aq *AggregationQuery) 
 		return nil, err
 	}
 
-	ar := make(AggregationResult)
+	ar = make(AggregationResult)
 
 	// TODO(developer): change batch parsing logic if other aggregations are supported.
 	for _, a := range res.Batch.AggregationResults {

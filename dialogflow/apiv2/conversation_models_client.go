@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"math"
 	"net/http"
 	"net/url"
@@ -80,6 +80,7 @@ func defaultConversationModelsGRPCClientOptions() []option.ClientOption {
 func defaultConversationModelsCallOptions() *ConversationModelsCallOptions {
 	return &ConversationModelsCallOptions{
 		CreateConversationModel: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -91,6 +92,7 @@ func defaultConversationModelsCallOptions() *ConversationModelsCallOptions {
 			}),
 		},
 		GetConversationModel: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -102,6 +104,7 @@ func defaultConversationModelsCallOptions() *ConversationModelsCallOptions {
 			}),
 		},
 		ListConversationModels: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -113,6 +116,7 @@ func defaultConversationModelsCallOptions() *ConversationModelsCallOptions {
 			}),
 		},
 		DeleteConversationModel: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -124,6 +128,7 @@ func defaultConversationModelsCallOptions() *ConversationModelsCallOptions {
 			}),
 		},
 		DeployConversationModel: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -135,6 +140,7 @@ func defaultConversationModelsCallOptions() *ConversationModelsCallOptions {
 			}),
 		},
 		UndeployConversationModel: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -146,6 +152,7 @@ func defaultConversationModelsCallOptions() *ConversationModelsCallOptions {
 			}),
 		},
 		GetConversationModelEvaluation: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -157,6 +164,7 @@ func defaultConversationModelsCallOptions() *ConversationModelsCallOptions {
 			}),
 		},
 		ListConversationModelEvaluations: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -168,6 +176,7 @@ func defaultConversationModelsCallOptions() *ConversationModelsCallOptions {
 			}),
 		},
 		CreateConversationModelEvaluation: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -189,6 +198,7 @@ func defaultConversationModelsCallOptions() *ConversationModelsCallOptions {
 func defaultConversationModelsRESTCallOptions() *ConversationModelsCallOptions {
 	return &ConversationModelsCallOptions{
 		CreateConversationModel: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -199,6 +209,7 @@ func defaultConversationModelsRESTCallOptions() *ConversationModelsCallOptions {
 			}),
 		},
 		GetConversationModel: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -209,6 +220,7 @@ func defaultConversationModelsRESTCallOptions() *ConversationModelsCallOptions {
 			}),
 		},
 		ListConversationModels: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -219,6 +231,7 @@ func defaultConversationModelsRESTCallOptions() *ConversationModelsCallOptions {
 			}),
 		},
 		DeleteConversationModel: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -229,6 +242,7 @@ func defaultConversationModelsRESTCallOptions() *ConversationModelsCallOptions {
 			}),
 		},
 		DeployConversationModel: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -239,6 +253,7 @@ func defaultConversationModelsRESTCallOptions() *ConversationModelsCallOptions {
 			}),
 		},
 		UndeployConversationModel: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -249,6 +264,7 @@ func defaultConversationModelsRESTCallOptions() *ConversationModelsCallOptions {
 			}),
 		},
 		GetConversationModelEvaluation: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -259,6 +275,7 @@ func defaultConversationModelsRESTCallOptions() *ConversationModelsCallOptions {
 			}),
 		},
 		ListConversationModelEvaluations: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -269,6 +286,7 @@ func defaultConversationModelsRESTCallOptions() *ConversationModelsCallOptions {
 			}),
 		},
 		CreateConversationModelEvaluation: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -506,9 +524,6 @@ type conversationModelsGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing ConversationModelsClient
 	CallOptions **ConversationModelsCallOptions
 
@@ -542,11 +557,6 @@ func NewConversationModelsClient(ctx context.Context, opts ...option.ClientOptio
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -555,7 +565,6 @@ func NewConversationModelsClient(ctx context.Context, opts ...option.ClientOptio
 
 	c := &conversationModelsGRPCClient{
 		connPool:                 connPool,
-		disableDeadlines:         disableDeadlines,
 		conversationModelsClient: dialogflowpb.NewConversationModelsClient(connPool),
 		CallOptions:              &client.CallOptions,
 		operationsClient:         longrunningpb.NewOperationsClient(connPool),
@@ -591,7 +600,7 @@ func (c *conversationModelsGRPCClient) Connection() *grpc.ClientConn {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *conversationModelsGRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -666,7 +675,7 @@ func defaultConversationModelsRESTClientOptions() []option.ClientOption {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *conversationModelsRESTClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -686,11 +695,6 @@ func (c *conversationModelsRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 func (c *conversationModelsGRPCClient) CreateConversationModel(ctx context.Context, req *dialogflowpb.CreateConversationModelRequest, opts ...gax.CallOption) (*CreateConversationModelOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -710,11 +714,6 @@ func (c *conversationModelsGRPCClient) CreateConversationModel(ctx context.Conte
 }
 
 func (c *conversationModelsGRPCClient) GetConversationModel(ctx context.Context, req *dialogflowpb.GetConversationModelRequest, opts ...gax.CallOption) (*dialogflowpb.ConversationModel, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -777,11 +776,6 @@ func (c *conversationModelsGRPCClient) ListConversationModels(ctx context.Contex
 }
 
 func (c *conversationModelsGRPCClient) DeleteConversationModel(ctx context.Context, req *dialogflowpb.DeleteConversationModelRequest, opts ...gax.CallOption) (*DeleteConversationModelOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -801,11 +795,6 @@ func (c *conversationModelsGRPCClient) DeleteConversationModel(ctx context.Conte
 }
 
 func (c *conversationModelsGRPCClient) DeployConversationModel(ctx context.Context, req *dialogflowpb.DeployConversationModelRequest, opts ...gax.CallOption) (*DeployConversationModelOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -825,11 +814,6 @@ func (c *conversationModelsGRPCClient) DeployConversationModel(ctx context.Conte
 }
 
 func (c *conversationModelsGRPCClient) UndeployConversationModel(ctx context.Context, req *dialogflowpb.UndeployConversationModelRequest, opts ...gax.CallOption) (*UndeployConversationModelOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -849,11 +833,6 @@ func (c *conversationModelsGRPCClient) UndeployConversationModel(ctx context.Con
 }
 
 func (c *conversationModelsGRPCClient) GetConversationModelEvaluation(ctx context.Context, req *dialogflowpb.GetConversationModelEvaluationRequest, opts ...gax.CallOption) (*dialogflowpb.ConversationModelEvaluation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -916,11 +895,6 @@ func (c *conversationModelsGRPCClient) ListConversationModelEvaluations(ctx cont
 }
 
 func (c *conversationModelsGRPCClient) CreateConversationModelEvaluation(ctx context.Context, req *dialogflowpb.CreateConversationModelEvaluationRequest, opts ...gax.CallOption) (*CreateConversationModelEvaluationOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1133,13 +1107,13 @@ func (c *conversationModelsRESTClient) CreateConversationModel(ctx context.Conte
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1196,13 +1170,13 @@ func (c *conversationModelsRESTClient) GetConversationModel(ctx context.Context,
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1267,13 +1241,13 @@ func (c *conversationModelsRESTClient) ListConversationModels(ctx context.Contex
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -1351,13 +1325,13 @@ func (c *conversationModelsRESTClient) DeleteConversationModel(ctx context.Conte
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1432,13 +1406,13 @@ func (c *conversationModelsRESTClient) DeployConversationModel(ctx context.Conte
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1514,13 +1488,13 @@ func (c *conversationModelsRESTClient) UndeployConversationModel(ctx context.Con
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1577,13 +1551,13 @@ func (c *conversationModelsRESTClient) GetConversationModelEvaluation(ctx contex
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1648,13 +1622,13 @@ func (c *conversationModelsRESTClient) ListConversationModelEvaluations(ctx cont
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -1728,13 +1702,13 @@ func (c *conversationModelsRESTClient) CreateConversationModelEvaluation(ctx con
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1791,13 +1765,13 @@ func (c *conversationModelsRESTClient) GetLocation(ctx context.Context, req *loc
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1865,13 +1839,13 @@ func (c *conversationModelsRESTClient) ListLocations(ctx context.Context, req *l
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -1980,13 +1954,13 @@ func (c *conversationModelsRESTClient) GetOperation(ctx context.Context, req *lo
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2054,13 +2028,13 @@ func (c *conversationModelsRESTClient) ListOperations(ctx context.Context, req *
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil

@@ -1,5 +1,20 @@
 # Changes
 
+## [1.9.1](https://github.com/googleapis/google-cloud-go/compare/webrisk/v1.9.0...webrisk/v1.9.1) (2023-06-20)
+
+
+### Bug Fixes
+
+* **webrisk:** REST query UpdateMask bug ([df52820](https://github.com/googleapis/google-cloud-go/commit/df52820b0e7721954809a8aa8700b93c5662dc9b))
+
+## [1.9.0](https://github.com/googleapis/google-cloud-go/compare/webrisk/v1.8.1...webrisk/v1.9.0) (2023-05-30)
+
+
+### Features
+
+* **webrisk:** Add SubmitUri endpoint ([#7953](https://github.com/googleapis/google-cloud-go/issues/7953)) ([2b3e7d9](https://github.com/googleapis/google-cloud-go/commit/2b3e7d9af7d2f500e736e3db77487127cb44ca23))
+* **webrisk:** Update all direct dependencies ([b340d03](https://github.com/googleapis/google-cloud-go/commit/b340d030f2b52a4ce48846ce63984b28583abde6))
+
 ## [1.8.1](https://github.com/googleapis/google-cloud-go/compare/webrisk/v1.8.0...webrisk/v1.8.1) (2023-05-08)
 
 

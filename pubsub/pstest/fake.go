@@ -362,8 +362,7 @@ func (s *GServer) UpdateTopic(_ context.Context, req *pb.UpdateTopicRequest) (*p
 			}
 			t.proto.MessageRetentionDuration = req.Topic.MessageRetentionDuration
 		case "schema_settings":
-			// Clear this field.
-			t.proto.SchemaSettings = &pb.SchemaSettings{}
+			t.proto.SchemaSettings = req.Topic.SchemaSettings
 		case "schema_settings.schema":
 			if t.proto.SchemaSettings == nil {
 				t.proto.SchemaSettings = &pb.SchemaSettings{}
@@ -500,10 +499,14 @@ func (s *GServer) CreateSubscription(_ context.Context, ps *pb.Subscription) (*p
 	if ps.PushConfig == nil {
 		ps.PushConfig = &pb.PushConfig{}
 	}
-	if ps.BigqueryConfig == nil {
-		ps.BigqueryConfig = &pb.BigQueryConfig{}
-	} else if ps.BigqueryConfig.Table != "" {
+	// Consider any table set to mean the config is active.
+	// We don't convert nil config to empty like with PushConfig above
+	// as this mimics the live service behavior.
+	if ps.GetBigqueryConfig() != nil && ps.GetBigqueryConfig().GetTable() != "" {
 		ps.BigqueryConfig.State = pb.BigQueryConfig_ACTIVE
+	}
+	if ps.CloudStorageConfig != nil && ps.CloudStorageConfig.Bucket != "" {
+		ps.CloudStorageConfig.State = pb.CloudStorageConfig_ACTIVE
 	}
 	ps.TopicMessageRetentionDuration = top.proto.MessageRetentionDuration
 	var deadLetterTopic *topic
@@ -554,10 +557,10 @@ func checkAckDeadline(ads int32) error {
 
 const (
 	minMessageRetentionDuration = 10 * time.Minute
-	maxMessageRetentionDuration = 168 * time.Hour
+	maxMessageRetentionDuration = 31 * 24 * time.Hour // 31 days is the maximum supported duration (https://cloud.google.com/pubsub/docs/replay-overview#configuring_message_retention)
 )
 
-var defaultMessageRetentionDuration = durpb.New(maxMessageRetentionDuration)
+var defaultMessageRetentionDuration = durpb.New(168 * time.Hour) // default is 7 days
 
 func checkMRD(pmrd *durpb.Duration) error {
 	if pmrd == nil {
@@ -606,9 +609,23 @@ func (s *GServer) UpdateSubscription(_ context.Context, req *pb.UpdateSubscripti
 			sub.proto.PushConfig = req.Subscription.PushConfig
 
 		case "bigquery_config":
+			// If bq config is nil here, it will be cleared.
+			// Otherwise, we'll consider the subscription active if any table is set.
 			sub.proto.BigqueryConfig = req.GetSubscription().GetBigqueryConfig()
-			if sub.proto.GetBigqueryConfig().GetTable() != "" {
-				sub.proto.GetBigqueryConfig().State = pb.BigQueryConfig_ACTIVE
+			if sub.proto.GetBigqueryConfig() != nil {
+				if sub.proto.GetBigqueryConfig().GetTable() != "" {
+					sub.proto.BigqueryConfig.State = pb.BigQueryConfig_ACTIVE
+				} else {
+					return nil, status.Errorf(codes.InvalidArgument, "table must be provided")
+				}
+			}
+
+		case "cloud_storage_config":
+			sub.proto.CloudStorageConfig = req.GetSubscription().GetCloudStorageConfig()
+			// As long as the storage config is not nil, we assume it's valid
+			// without additional checks.
+			if sub.proto.GetCloudStorageConfig() != nil {
+				sub.proto.CloudStorageConfig.State = pb.CloudStorageConfig_ACTIVE
 			}
 
 		case "ack_deadline_seconds":

@@ -12,9 +12,13 @@
 /pubsublite/            @googleapis/api-pubsub @googleapis/yoshi-go-admins @shollyman
 /spanner/               @googleapis/api-spanner-go @googleapis/yoshi-go-admins
 /storage/               @googleapis/cloud-storage-dpe @googleapis/yoshi-go-admins
+/httpreplay/            @googleapis/cloud-storage-dpe @googleapis/yoshi-go-admins
 /errorreporting/        @googleapis/api-logging @googleapis/yoshi-go-admins
 /logging/               @googleapis/api-logging @googleapis/yoshi-go-admins
 /profiler/              @googleapis/api-profiler @googleapis/yoshi-go-admins
 
 # individual release versions manifest is unowned (to avoid notifying every team)
 .release-please-manifest-individual.json
+# Owned by all
+go.work
+go.work.sum

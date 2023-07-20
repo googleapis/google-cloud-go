@@ -3,10 +3,12 @@ module cloud.google.com/go/internal/generated
 go 1.19
 
 require (
-	cloud.google.com/go v0.110.0
+	cloud.google.com/go v0.110.2
 	cloud.google.com/go/accessapproval v1.6.0
-	cloud.google.com/go/accesscontextmanager v1.7.0
+	cloud.google.com/go/accesscontextmanager v1.8.0
+	cloud.google.com/go/advisorynotifications v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/aiplatform v1.37.0
+	cloud.google.com/go/alloydb v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/analytics v0.19.0
 	cloud.google.com/go/apigateway v1.5.0
 	cloud.google.com/go/apigeeconnect v1.5.0
@@ -29,12 +31,12 @@ require (
 	cloud.google.com/go/cloudbuild v1.9.0
 	cloud.google.com/go/clouddms v1.5.0
 	cloud.google.com/go/cloudtasks v1.10.0
-	cloud.google.com/go/compute v1.19.0
+	cloud.google.com/go/compute v1.20.0
 	cloud.google.com/go/confidentialcomputing v0.1.0
 	cloud.google.com/go/contactcenterinsights v1.6.0
 	cloud.google.com/go/container v1.15.0
 	cloud.google.com/go/containeranalysis v0.9.0
-	cloud.google.com/go/datacatalog v1.13.0
+	cloud.google.com/go/datacatalog v1.14.0
 	cloud.google.com/go/dataflow v0.8.0
 	cloud.google.com/go/dataform v0.7.0
 	cloud.google.com/go/datafusion v1.6.0
@@ -46,6 +48,7 @@ require (
 	cloud.google.com/go/datastream v1.7.0
 	cloud.google.com/go/deploy v1.8.0
 	cloud.google.com/go/dialogflow v1.32.0
+	cloud.google.com/go/discoveryengine v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/dlp v1.9.0
 	cloud.google.com/go/documentai v1.18.0
 	cloud.google.com/go/domains v0.8.0
@@ -56,22 +59,22 @@ require (
 	cloud.google.com/go/filestore v1.6.0
 	cloud.google.com/go/firestore v1.9.0
 	cloud.google.com/go/functions v1.13.0
-	cloud.google.com/go/gaming v1.9.0
 	cloud.google.com/go/gkebackup v0.4.0
 	cloud.google.com/go/gkeconnect v0.7.0
 	cloud.google.com/go/gkehub v0.12.0
 	cloud.google.com/go/gkemulticloud v0.5.0
 	cloud.google.com/go/gsuiteaddons v1.5.0
-	cloud.google.com/go/iam v0.13.0
+	cloud.google.com/go/iam v1.1.0
 	cloud.google.com/go/iap v1.7.1
 	cloud.google.com/go/ids v1.3.0
 	cloud.google.com/go/iot v1.6.0
-	cloud.google.com/go/kms v1.10.1
+	cloud.google.com/go/kms v1.11.0
 	cloud.google.com/go/language v1.9.0
 	cloud.google.com/go/lifesciences v0.8.0
 	cloud.google.com/go/logging v1.7.0
-	cloud.google.com/go/longrunning v0.4.1
+	cloud.google.com/go/longrunning v0.5.0
 	cloud.google.com/go/managedidentities v1.5.0
+	cloud.google.com/go/maps v0.7.0
 	cloud.google.com/go/mediatranslation v0.7.0
 	cloud.google.com/go/memcache v1.9.0
 	cloud.google.com/go/metastore v1.10.0
@@ -82,15 +85,15 @@ require (
 	cloud.google.com/go/notebooks v1.8.0
 	cloud.google.com/go/optimization v1.3.1
 	cloud.google.com/go/orchestration v1.6.0
-	cloud.google.com/go/orgpolicy v1.10.0
-	cloud.google.com/go/osconfig v1.11.0
+	cloud.google.com/go/orgpolicy v1.11.0
+	cloud.google.com/go/osconfig v1.12.0
 	cloud.google.com/go/oslogin v1.9.0
 	cloud.google.com/go/phishingprotection v0.7.0
 	cloud.google.com/go/policytroubleshooter v1.6.0
 	cloud.google.com/go/privatecatalog v0.8.0
-	cloud.google.com/go/pubsub v1.30.0
+	cloud.google.com/go/pubsub v1.31.0
 	cloud.google.com/go/pubsublite v1.7.0
-	cloud.google.com/go/recaptchaenterprise v1.3.1
+	cloud.google.com/go/recaptchaenterprise/v2 v2.7.1
 	cloud.google.com/go/recommendationengine v0.7.0
 	cloud.google.com/go/recommender v1.9.0
 	cloud.google.com/go/redis v1.11.0
@@ -119,27 +122,25 @@ require (
 	cloud.google.com/go/translate v1.7.0
 	cloud.google.com/go/video v1.15.0
 	cloud.google.com/go/videointelligence v1.10.0
-	cloud.google.com/go/vision v1.2.0
+	cloud.google.com/go/vision/v2 v2.7.1
 	cloud.google.com/go/vmmigration v1.6.0
+	cloud.google.com/go/vmwareengine v0.3.0
 	cloud.google.com/go/vpcaccess v1.6.0
 	cloud.google.com/go/webrisk v1.8.0
 	cloud.google.com/go/websecurityscanner v1.5.0
 	cloud.google.com/go/workflows v1.10.0
+	cloud.google.com/go/workstations v0.0.0-00010101000000-000000000000
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
-	google.golang.org/api v0.120.0
-	google.golang.org/genproto v0.0.0-20230410155749-daa745c078e1
+	google.golang.org/api v0.130.0
+	google.golang.org/genproto v0.0.0-20230629202037-9506855d4529
 )
 
 require (
-	cloud.google.com/go/advisorynotifications v0.0.0-00010101000000-000000000000
-	cloud.google.com/go/alloydb v0.0.0-00010101000000-000000000000
-	cloud.google.com/go/discoveryengine v0.0.0-00010101000000-000000000000
-	cloud.google.com/go/maps v0.7.0
-	cloud.google.com/go/recaptchaenterprise/v2 v2.7.0
-	cloud.google.com/go/storage v1.29.0
-	cloud.google.com/go/vision/v2 v2.7.0
-	cloud.google.com/go/vmwareengine v0.3.0
-	cloud.google.com/go/workstations v0.0.0-00010101000000-000000000000
+	cloud.google.com/go/ai v0.0.0-00010101000000-000000000000
+	cloud.google.com/go/migrationcenter v0.0.0-00010101000000-000000000000
+	cloud.google.com/go/rapidmigrationassessment v0.0.0-00010101000000-000000000000
+	cloud.google.com/go/recaptchaenterprise v1.3.1
+	google.golang.org/genproto/googleapis/api v0.0.0-20230706204954-ccb25ca9f130
 )
 
 require (
@@ -147,18 +148,19 @@ require (
 	cloud.google.com/go/dataproc v1.12.0 // indirect
 	github.com/golang/protobuf v1.5.3 // indirect
 	github.com/google/go-cmp v0.5.9 // indirect
-	github.com/google/s2a-go v0.1.2 // indirect
-	github.com/googleapis/enterprise-certificate-proxy v0.2.3 // indirect
-	github.com/googleapis/gax-go/v2 v2.8.0 // indirect
+	github.com/google/s2a-go v0.1.4 // indirect
+	github.com/googleapis/enterprise-certificate-proxy v0.2.5 // indirect
+	github.com/googleapis/gax-go/v2 v2.12.0 // indirect
 	go.opencensus.io v0.24.0 // indirect
-	golang.org/x/crypto v0.7.0 // indirect
-	golang.org/x/net v0.9.0 // indirect
-	golang.org/x/oauth2 v0.7.0 // indirect
-	golang.org/x/sys v0.7.0 // indirect
-	golang.org/x/text v0.9.0 // indirect
+	golang.org/x/crypto v0.11.0 // indirect
+	golang.org/x/net v0.12.0 // indirect
+	golang.org/x/oauth2 v0.9.0 // indirect
+	golang.org/x/sys v0.10.0 // indirect
+	golang.org/x/text v0.11.0 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
-	google.golang.org/grpc v1.55.0 // indirect
-	google.golang.org/protobuf v1.30.0 // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20230629202037-9506855d4529 // indirect
+	google.golang.org/grpc v1.56.2 // indirect
+	google.golang.org/protobuf v1.31.0 // indirect
 )
 
 replace cloud.google.com/go/storageinsights => ../../../storageinsights
@@ -227,8 +229,6 @@ replace cloud.google.com/go/eventarc => ../../../eventarc
 
 replace cloud.google.com/go/functions => ../../../functions
 
-replace cloud.google.com/go/gaming => ../../../gaming
-
 replace cloud.google.com/go/gsuiteaddons => ../../../gsuiteaddons
 
 replace cloud.google.com/go/iap => ../../../iap
@@ -268,8 +268,6 @@ replace cloud.google.com/go/policytroubleshooter => ../../../policytroubleshoote
 replace cloud.google.com/go/privatecatalog => ../../../privatecatalog
 
 replace cloud.google.com/go/profiler => ../../../profiler
-
-replace cloud.google.com/go/recaptchaenterprise => ../../../recaptchaenterprise
 
 replace cloud.google.com/go/recommendationengine => ../../../recommendationengine
 
@@ -311,7 +309,7 @@ replace cloud.google.com/go/translate => ../../../translate
 
 replace cloud.google.com/go/videointelligence => ../../../videointelligence
 
-replace cloud.google.com/go/vision => ../../../vision
+replace cloud.google.com/go/vision/v2 => ../../../vision
 
 replace cloud.google.com/go/vpcaccess => ../../../vpcaccess
 
@@ -393,9 +391,7 @@ replace cloud.google.com/go/gkebackup => ../../../gkebackup
 
 replace cloud.google.com/go/gkemulticloud => ../../../gkemulticloud
 
-replace cloud.google.com/go/recaptchaenterprise/v2 => ../../../recaptchaenterprise/v2
-
-replace cloud.google.com/go/vision/v2 => ../../../vision/v2
+replace cloud.google.com/go/recaptchaenterprise/v2 => ../../../recaptchaenterprise
 
 replace cloud.google.com/go/baremetalsolution => ../../../baremetalsolution
 
@@ -430,3 +426,9 @@ replace cloud.google.com/go/workstations => ../../../workstations
 replace cloud.google.com/go/confidentialcomputing => ../../../confidentialcomputing
 
 replace cloud.google.com/go/support => ../../../support
+
+replace cloud.google.com/go/rapidmigrationassessment => ../../../rapidmigrationassessment
+
+replace cloud.google.com/go/migrationcenter => ../../../migrationcenter
+
+replace cloud.google.com/go/ai => ../../../ai

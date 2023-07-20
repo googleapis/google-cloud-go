@@ -1,6 +1,41 @@
 # Changes
 
 
+## [1.12.0](https://github.com/googleapis/google-cloud-go/compare/deploy/v1.11.0...deploy/v1.12.0) (2023-07-18)
+
+
+### Features
+
+* **deploy:** Added support routeUpdateWaitTime field for Deployment Strategies ([dda1f9d](https://github.com/googleapis/google-cloud-go/commit/dda1f9dc2f5b54dca15ae05302d8cac821fe8da1))
+
+## [1.11.0](https://github.com/googleapis/google-cloud-go/compare/deploy/v1.10.1...deploy/v1.11.0) (2023-06-27)
+
+
+### Features
+
+* **deploy:** Add deploy parameters for cloud deploy ([94ea341](https://github.com/googleapis/google-cloud-go/commit/94ea3410e233db6040a7cb0a931948f1e3bb4c9a))
+
+## [1.10.1](https://github.com/googleapis/google-cloud-go/compare/deploy/v1.10.0...deploy/v1.10.1) (2023-06-20)
+
+
+### Bug Fixes
+
+* **deploy:** REST query UpdateMask bug ([df52820](https://github.com/googleapis/google-cloud-go/commit/df52820b0e7721954809a8aa8700b93c5662dc9b))
+
+## [1.10.0](https://github.com/googleapis/google-cloud-go/compare/deploy/v1.9.0...deploy/v1.10.0) (2023-06-07)
+
+
+### Features
+
+* **deploy:** Add support for disabling Pod overprovisioning in the progressive deployment strategy configuration for a Kubernetes Target ([#8052](https://github.com/googleapis/google-cloud-go/issues/8052)) ([f2c3dd3](https://github.com/googleapis/google-cloud-go/commit/f2c3dd38fce43f15f4d3a4da5d621de79e174475))
+
+## [1.9.0](https://github.com/googleapis/google-cloud-go/compare/deploy/v1.8.1...deploy/v1.9.0) (2023-05-30)
+
+
+### Features
+
+* **deploy:** Update all direct dependencies ([b340d03](https://github.com/googleapis/google-cloud-go/commit/b340d030f2b52a4ce48846ce63984b28583abde6))
+
 ## [1.8.1](https://github.com/googleapis/google-cloud-go/compare/deploy/v1.8.0...deploy/v1.8.1) (2023-05-08)
 
 
