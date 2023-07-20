@@ -1,5 +1,6 @@
 # Changelog
 
+
 ## [0.1.2](https://github.com/googleapis/google-cloud-go/compare/rapidmigrationassessment/v0.1.1...rapidmigrationassessment/v0.1.2) (2023-06-20)
 
 
