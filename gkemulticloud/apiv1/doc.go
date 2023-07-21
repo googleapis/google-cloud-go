@@ -25,8 +25,6 @@
 // on your behalf. You can deploy workloads with the Anthos Multi-Cloud API
 // or the gcloud and kubectl command-line tools.
 //
-//	NOTE: This package is in beta. It is not stable, and may be subject to changes.
-//
 // # General documentation
 //
 // For information about setting deadlines, reusing contexts, and more
