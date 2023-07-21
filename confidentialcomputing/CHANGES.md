@@ -1,5 +1,6 @@
 # Changelog
 
+
 ## [0.3.1](https://github.com/googleapis/google-cloud-go/compare/confidentialcomputing/v0.3.0...confidentialcomputing/v0.3.1) (2023-06-20)
 
 
