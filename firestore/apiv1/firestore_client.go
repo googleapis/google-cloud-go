@@ -743,7 +743,7 @@ func ReqParamsHeaderVal(dbPath string) string {
 	splitPath := strings.Split(dbPath, "/")
 	projectID := splitPath[1]
 	databaseID := splitPath[3]
-	return fmt.Sprintf("project_id=%s&database_id=%s", projectID, databaseID)
+	return fmt.Sprintf("project_id=%s&database_id=%s", url.QueryEscape(projectID), url.QueryEscape(databaseID))
 }
 
 // NewClient creates a new firestore client based on gRPC.

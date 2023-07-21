@@ -111,7 +111,7 @@ func NewClient(ctx context.Context, projectID string, opts ...option.ClientOptio
 // specified database.
 func NewClientWithDatabase(ctx context.Context, projectID string, databaseID string, opts ...option.ClientOption) (*Client, error) {
 	if databaseID == "" {
-		return nil, errors.New("firestore: databaseID cannot be empty")
+		return nil, fmt.Errorf("firestore: To create a client using the %s database, please use NewClient", DefaultDatabaseID)
 	}
 
 	client, err := NewClient(ctx, projectID, opts...)
