@@ -1393,21 +1393,20 @@ func testProtoNormalization(ctx context.Context, t *testing.T, mwClient *Client,
 }
 
 func TestIntegration_MultiplexWrites(t *testing.T) {
-	mwClient, bqClient := getTestClients(context.Background(), t,
+	ctx, cancel := context.WithTimeout(context.Background(), defaultTestTimeout)
+	defer cancel()
+	mwClient, bqClient := getTestClients(ctx, t,
 		WithMultiplexing(),
 		WithMultiplexPoolLimit(2),
 	)
 	defer mwClient.Close()
 	defer bqClient.Close()
 
-	dataset, cleanup, err := setupTestDataset(context.Background(), t, bqClient, "us-east1")
+	dataset, cleanup, err := setupTestDataset(ctx, t, bqClient, "us-east1")
 	if err != nil {
 		t.Fatalf("failed to init test dataset: %v", err)
 	}
 	defer cleanup()
-
-	ctx, cancel := context.WithTimeout(context.Background(), defaultTestTimeout)
-	defer cancel()
 
 	wantWrites := 10
 
@@ -1537,4 +1536,104 @@ func TestIntegration_MultiplexWrites(t *testing.T) {
 		validateTableConstraints(ctx, t, bqClient, testTable.tbl, "", testTable.constraints...)
 	}
 
+}
+
+func TestIntegration_MingledContexts(t *testing.T) {
+	ctx, cancel := context.WithTimeout(context.Background(), defaultTestTimeout)
+	defer cancel()
+	mwClient, bqClient := getTestClients(ctx, t,
+		WithMultiplexing(),
+		WithMultiplexPoolLimit(2),
+	)
+	defer mwClient.Close()
+	defer bqClient.Close()
+
+	wantLocation := "us-east4"
+
+	dataset, cleanup, err := setupTestDataset(ctx, t, bqClient, wantLocation)
+	if err != nil {
+		t.Fatalf("failed to init test dataset: %v", err)
+	}
+	defer cleanup()
+
+	testTable := dataset.Table(tableIDs.New())
+	if err := testTable.Create(ctx, &bigquery.TableMetadata{Schema: testdata.SimpleMessageSchema}); err != nil {
+		t.Fatalf("failed to create test table %s: %v", testTable.FullyQualifiedName(), err)
+	}
+
+	m := &testdata.SimpleMessageProto2{}
+	descriptorProto := protodesc.ToDescriptorProto(m.ProtoReflect().Descriptor())
+
+	numWriters := 4
+	contexts := make([]context.Context, numWriters)
+	cancels := make([]context.CancelFunc, numWriters)
+	writers := make([]*ManagedStream, numWriters)
+	for i := 0; i < numWriters; i++ {
+		contexts[i], cancels[i] = context.WithCancel(ctx)
+		ms, err := mwClient.NewManagedStream(contexts[i],
+			WithDestinationTable(TableParentFromParts(testTable.ProjectID, testTable.DatasetID, testTable.TableID)),
+			WithType(DefaultStream),
+			WithSchemaDescriptor(descriptorProto),
+		)
+		if err != nil {
+			t.Fatalf("instantating writer %d failed: %v", i, err)
+		}
+		writers[i] = ms
+	}
+
+	sampleRow, err := proto.Marshal(&testdata.SimpleMessageProto2{
+		Name:  proto.String("datafield"),
+		Value: proto.Int64(1234),
+	})
+	if err != nil {
+		t.Fatalf("failed to generate sample row")
+	}
+
+	for i := 0; i < numWriters; i++ {
+		res, err := writers[i].AppendRows(contexts[i], [][]byte{sampleRow})
+		if err != nil {
+			t.Errorf("initial write on %d failed: %v", i, err)
+		} else {
+			if _, err := res.GetResult(contexts[i]); err != nil {
+				t.Errorf("GetResult initial write %d: %v", i, err)
+			}
+		}
+	}
+
+	// cancel the first context
+	cancels[0]()
+	// repeat writes on all other writers with the second context
+	for i := 1; i < numWriters; i++ {
+		res, err := writers[i].AppendRows(contexts[i], [][]byte{sampleRow})
+		if err != nil {
+			t.Errorf("second write on %d failed: %v", i, err)
+		} else {
+			if _, err := res.GetResult(contexts[1]); err != nil {
+				t.Errorf("GetResult err on second write %d: %v", i, err)
+			}
+		}
+	}
+
+	// check that writes to the first writer should fail, even with a valid request context.
+	if _, err := writers[0].AppendRows(contexts[1], [][]byte{sampleRow}); err == nil {
+		t.Errorf("write succeeded on first writer when it should have failed")
+	}
+
+	// cancel the second context as well, ensure writer created with good context and bad request context fails
+	cancels[1]()
+	if _, err := writers[2].AppendRows(contexts[1], [][]byte{sampleRow}); err == nil {
+		t.Errorf("write succeeded on third writer with a bad request context")
+	}
+
+	// repeat writes on remaining good writers/contexts
+	for i := 2; i < numWriters; i++ {
+		res, err := writers[i].AppendRows(contexts[i], [][]byte{sampleRow})
+		if err != nil {
+			t.Errorf("second write on %d failed: %v", i, err)
+		} else {
+			if _, err := res.GetResult(contexts[i]); err != nil {
+				t.Errorf("GetResult err on second write %d: %v", i, err)
+			}
+		}
+	}
 }
