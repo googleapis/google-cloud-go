@@ -1,5 +1,6 @@
 # Changelog
 
+
 ## [0.2.2](https://github.com/googleapis/google-cloud-go/compare/storageinsights/v0.2.1...storageinsights/v0.2.2) (2023-06-20)
 
 
