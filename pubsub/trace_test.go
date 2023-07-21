@@ -17,44 +17,40 @@ package pubsub
 import (
 	"context"
 	"fmt"
+	"log"
 	"testing"
-	"time"
 
 	"cloud.google.com/go/internal/testutil"
+	pb "cloud.google.com/go/pubsub/apiv1/pubsubpb"
+	"cloud.google.com/go/pubsub/internal"
+	"github.com/google/go-cmp/cmp"
+	"github.com/google/go-cmp/cmp/cmpopts"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
-	"go.opentelemetry.io/otel/sdk/trace"
+	"go.opentelemetry.io/otel/codes"
+	"go.opentelemetry.io/otel/sdk/instrumentation"
+	sdktrace "go.opentelemetry.io/otel/sdk/trace"
 	"go.opentelemetry.io/otel/sdk/trace/tracetest"
 	semconv "go.opentelemetry.io/otel/semconv/v1.4.0"
-	pb "google.golang.org/genproto/googleapis/pubsub/v1"
+	"go.opentelemetry.io/otel/trace"
 	"google.golang.org/protobuf/proto"
 )
 
-func TestPublishSpan(t *testing.T) {
+func TestTrace_PublishSpan(t *testing.T) {
 	ctx := context.Background()
 	c, srv := newFake(t)
 	defer c.Close()
 	defer srv.Close()
 
-	spanRecorder := tracetest.NewSpanRecorder()
-	provider := trace.NewTracerProvider(trace.WithSpanProcessor(spanRecorder))
-	otel.SetTracerProvider(provider)
+	e := tracetest.NewInMemoryExporter()
+	tp := sdktrace.NewTracerProvider(sdktrace.WithSyncer(e))
+	defer tp.Shutdown(ctx)
+	otel.SetTracerProvider(tp)
 
-	topic, err := c.CreateTopic(ctx, "t")
-	if err != nil {
-		t.Fatalf("failed to create topic: %v", err)
-	}
 	m := &Message{
-		Data: []byte("test"),
+		Data:        []byte("test"),
+		OrderingKey: "my-key",
 	}
-	r := topic.Publish(ctx, m)
-	id, err := r.Get(ctx)
-	if err != nil {
-		t.Fatalf("failed to publish message: %v", err)
-	}
-	defer topic.Stop()
-
-	spans := spanRecorder.Ended()
 
 	msgSize := proto.Size(&pb.PubsubMessage{
 		Data:        m.Data,
@@ -62,138 +58,172 @@ func TestPublishSpan(t *testing.T) {
 		OrderingKey: m.OrderingKey,
 	})
 
-	want := []struct {
-		spanName   string
-		attributes []attribute.KeyValue
-	}{
-		{
-			spanName:   publishFlowControlSpanName,
-			attributes: []attribute.KeyValue{},
-		},
-		{
-			spanName:   publishSchedulerSpanName,
-			attributes: []attribute.KeyValue{},
-		},
-		{
-			spanName: publishRPCSpanName,
-			attributes: []attribute.KeyValue{
-				attribute.Int(numBatchedMessagesAttribute, 1),
-			},
-		},
-		{
-			spanName: "projects/P/topics/t send",
-			attributes: []attribute.KeyValue{
-				semconv.MessagingSystemKey.String("pubsub"),
-				semconv.MessagingDestinationKey.String(topic.name),
+	topicID := "t"
+	topicName := fmt.Sprintf("projects/P/topics/%s", topicID)
+
+	expectedSpans := tracetest.SpanStubs{
+		tracetest.SpanStub{
+			Name:     fmt.Sprintf("%s %s", topicName, publisherSpanName),
+			SpanKind: trace.SpanKindProducer,
+			Attributes: []attribute.KeyValue{
 				semconv.MessagingDestinationKindTopic,
-				semconv.MessagingMessageIDKey.String(id),
+				semconv.MessagingDestinationKey.String(topicName),
+				// Hardcoded since the fake server always returns m0 first.
+				semconv.MessagingMessageIDKey.String("m0"),
 				semconv.MessagingMessagePayloadSizeBytesKey.Int(msgSize),
 				attribute.String(orderingAttribute, m.OrderingKey),
+				semconv.MessagingSystemKey.String("pubsub"),
+			},
+			ChildSpanCount: 1,
+			InstrumentationLibrary: instrumentation.Scope{
+				Name:    "cloud.google.com/go/pubsub",
+				Version: internal.Version,
+			},
+		},
+		tracetest.SpanStub{
+			Name: publishFlowControlSpanName,
+			InstrumentationLibrary: instrumentation.Scope{
+				Name:    "cloud.google.com/go/pubsub",
+				Version: internal.Version,
+			},
+		},
+		tracetest.SpanStub{
+			Name: publishSchedulerSpanName,
+			InstrumentationLibrary: instrumentation.Scope{
+				Name:    "cloud.google.com/go/pubsub",
+				Version: internal.Version,
+			},
+		},
+		tracetest.SpanStub{
+			Name: publishRPCSpanName,
+			Attributes: []attribute.KeyValue{
+				attribute.Int(numBatchedMessagesAttribute, 1),
+			},
+			InstrumentationLibrary: instrumentation.Scope{
+				Name:    "cloud.google.com/go/pubsub",
+				Version: internal.Version,
 			},
 		},
 	}
-	for i, span := range spans {
-		if !span.SpanContext().IsValid() {
-			t.Fatalf("span(%d) is invalid: %v", i, span)
-		}
-		if span.Name() != want[i].spanName {
-			t.Errorf("span(%d) got name: %s, want: %s", i, span.Name(), want[i].spanName)
-		}
-		gotLength := len(span.Attributes())
-		wantLength := len(want[i].attributes)
-		if gotLength != wantLength {
-			t.Fatalf("got mismatched attribute lengths for span(%d), got: %d, want: %d", i, gotLength, wantLength)
-		}
-		for j, kv := range span.Attributes() {
-			// got := kv.Value
-			if diff := testutil.Diff(kv.Key, want[i].attributes[j].Key); diff != "" {
-				t.Errorf("span(%d): +got,-want: %s", i, diff)
-			}
-		}
+
+	topic, err := c.CreateTopic(ctx, topicID)
+	if err != nil {
+		t.Fatalf("failed to create topic: %v", err)
+	}
+	if m.OrderingKey != "" {
+		topic.EnableMessageOrdering = true
+	}
+	r := topic.Publish(ctx, m)
+	_, err = r.Get(ctx)
+	if err != nil {
+		t.Fatalf("failed to publish message: %v", err)
+	}
+	defer topic.Stop()
+
+	spans := e.GetSpans()
+	opts := []cmp.Option{
+		cmp.Comparer(spanStubComparer),
+		cmpopts.SortSlices(sortSpanStub),
+	}
+	if diff := testutil.Diff(spans, expectedSpans, opts...); diff != "" {
+		t.Errorf("diff: -got, +want:\n%s\n", diff)
 	}
 }
 
-func TestSubscribeSpan(t *testing.T) {
+func TestTrace_PublishSpanError(t *testing.T) {
 	ctx := context.Background()
 	c, srv := newFake(t)
 	defer c.Close()
 	defer srv.Close()
 
-	topic := c.Topic("t")
-	r := topic.Publish(ctx, &Message{
-		Data: []byte("test"),
+	e := tracetest.NewInMemoryExporter()
+	tp := sdktrace.NewTracerProvider(sdktrace.WithSyncer(e))
+	defer tp.Shutdown(ctx)
+	otel.SetTracerProvider(tp)
+
+	m := &Message{
+		Data:        []byte("test"),
+		OrderingKey: "my-key",
+	}
+
+	msgSize := proto.Size(&pb.PubsubMessage{
+		Data:        m.Data,
+		Attributes:  m.Attributes,
+		OrderingKey: m.OrderingKey,
 	})
-	_, err := r.Get(ctx)
+
+	topicID := "t"
+	topicName := fmt.Sprintf("projects/P/topics/%s", topicID)
+
+	expectedSpans := tracetest.SpanStubs{
+		tracetest.SpanStub{
+			Name:     fmt.Sprintf("%s %s", topicName, publisherSpanName),
+			SpanKind: trace.SpanKindProducer,
+			Attributes: []attribute.KeyValue{
+				semconv.MessagingDestinationKindTopic,
+				semconv.MessagingDestinationKey.String(topicName),
+				semconv.MessagingMessageIDKey.String(""),
+				semconv.MessagingMessagePayloadSizeBytesKey.Int(msgSize),
+				attribute.String(orderingAttribute, m.OrderingKey),
+				semconv.MessagingSystemKey.String("pubsub"),
+			},
+			ChildSpanCount: 0,
+			InstrumentationLibrary: instrumentation.Scope{
+				Name:    "cloud.google.com/go/pubsub",
+				Version: internal.Version,
+			},
+			Status: sdktrace.Status{
+				Code:        codes.Error,
+				Description: errTopicOrderingNotEnabled.Error(),
+			},
+		},
+	}
+
+	topic, err := c.CreateTopic(ctx, topicID)
 	if err != nil {
-		t.Fatalf("Failed to publish message: %v", err)
+		t.Fatalf("failed to create topic: %v", err)
+	}
+
+	r := topic.Publish(ctx, m)
+	_, err = r.Get(ctx)
+	if err == nil {
+		t.Fatal("expected err, got nil")
 	}
 	defer topic.Stop()
 
-	spanRecorder := tracetest.NewSpanRecorder()
-	provider := trace.NewTracerProvider(trace.WithSpanProcessor(spanRecorder))
-	otel.SetTracerProvider(provider)
+	spans := e.GetSpans()
+	opts := []cmp.Option{
+		cmp.Comparer(spanStubComparer),
+		cmpopts.SortSlices(sortSpanStub),
+	}
+	if diff := testutil.Diff(spans, expectedSpans, opts...); diff != "" {
+		log.Printf("print spans: %+v\n", spans)
+		t.Errorf("diff: -got, +want:\n%s\n", diff)
+	}
+}
 
-	sub, err := c.CreateSubscription(ctx, "sub", SubscriptionConfig{
-		Topic: topic,
-	})
-	if err != nil {
-		t.Fatalf("Failed to create subscription: %v", err)
+func spanStubComparer(a, b tracetest.SpanStub) bool {
+	if a.Name != b.Name {
+		return false
 	}
-	ctx2, cancel := context.WithTimeout(ctx, 10*time.Second)
-	defer cancel()
-	sub.Receive(ctx2, func(ctx context.Context, m *Message) {
-		m.Ack()
-	})
-	spans := spanRecorder.Ended()
+	if a.ChildSpanCount != b.ChildSpanCount {
+		return false
+	}
+	as := attribute.NewSet(a.Attributes...)
+	bs := attribute.NewSet(b.Attributes...)
+	if !as.Equals(&bs) {
+		return false
+	}
+	if a.InstrumentationLibrary != b.InstrumentationLibrary {
+		return false
+	}
+	if a.Status != b.Status {
+		return false
+	}
+	return true
 
-	want := []struct {
-		spanName   string
-		attributes []attribute.KeyValue
-	}{
-		{
-			spanName:   publishFlowControlSpanName,
-			attributes: []attribute.KeyValue{},
-		},
-		{
-			spanName:   publishSchedulerSpanName,
-			attributes: []attribute.KeyValue{},
-		},
-		{
-			spanName: publishRPCSpanName,
-			attributes: []attribute.KeyValue{
-				attribute.Int(numBatchedMessagesAttribute, 1),
-			},
-		},
-		{
-			spanName: "projects/P/topics/t process",
-			attributes: []attribute.KeyValue{
-				semconv.MessagingSystemKey.String("pubsub"),
-				semconv.MessagingDestinationKey.String(topic.name),
-				semconv.MessagingDestinationKindTopic,
-			},
-		},
-	}
-	for i, span := range spans {
-		if !span.SpanContext().IsValid() {
-			t.Fatalf("span(%d) is invalid: %v", i, span)
-		}
-		if span.Name() != want[i].spanName {
-			t.Errorf("span(%d) got name: %s, want: %s", i, span.Name(), want[i].spanName)
-		}
-		gotLength := len(span.Attributes())
-		wantLength := len(want[i].attributes)
-		if gotLength != wantLength {
-			t.Fatalf("got mismatched attribute lengths for span(%d), got: %d, want: %d", i, gotLength, wantLength)
-		}
-		for j, kv := range span.Attributes() {
-			// got := kv.Value
-			if diff := testutil.Diff(kv.Key, want[i].attributes[j].Key); diff != "" {
-				t.Errorf("span(%d): +got,-want: %s", i, diff)
-			}
-		}
-	}
-	for i, span := range spans {
-		// TODO(hongalex): test subscribe path spans
-		fmt.Printf("got span(%d): %+v\n", i, span)
-	}
+}
+
+func sortSpanStub(a, b tracetest.SpanStub) bool {
+	return a.Name < b.Name
 }

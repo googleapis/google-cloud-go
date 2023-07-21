@@ -35,6 +35,7 @@ import (
 	"go.opencensus.io/tag"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
+	otelcodes "go.opentelemetry.io/otel/codes"
 	semconv "go.opentelemetry.io/otel/semconv/v1.4.0"
 	"go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/support/bundler"
@@ -43,7 +44,6 @@ import (
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/durationpb"
-	otelcodes "go.opentelemetry.io/otel/codes"
 	fmpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 )
 
@@ -582,7 +582,7 @@ func (t *Topic) Publish(ctx context.Context, msg *Message) *PublishResult {
 	r := ipubsub.NewPublishResult()
 	if !t.EnableMessageOrdering && msg.OrderingKey != "" {
 		ipubsub.SetPublishResult(r, "", errTopicOrderingNotEnabled)
-		spanRecordError(span, err)
+		spanRecordError(span, errTopicOrderingNotEnabled)
 		return r
 	}
 
@@ -601,7 +601,7 @@ func (t *Topic) Publish(ctx context.Context, msg *Message) *PublishResult {
 	// TODO(aboulhosn) [from bcmills] consider changing the semantics of bundler to perform this logic so we don't have to do it here
 	if t.stopped {
 		ipubsub.SetPublishResult(r, "", ErrTopicStopped)
-		spanRecordError(span, errTopicStopped)
+		spanRecordError(span, ErrTopicStopped)
 		return r
 	}
 

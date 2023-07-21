@@ -15,15 +15,11 @@
 package pubsub
 
 import (
-	"context"
 	"fmt"
 	"time"
 
 	ipubsub "cloud.google.com/go/internal/pubsub"
 	pb "cloud.google.com/go/pubsub/apiv1/pubsubpb"
-	"go.opentelemetry.io/otel"
-	"go.opentelemetry.io/otel/attribute"
-	semconv "go.opentelemetry.io/otel/semconv/v1.4.0"
 )
 
 // Message represents a Pub/Sub message.
@@ -64,10 +60,10 @@ func msgAckID(m *Message) string {
 // The done method of the iterator that created a Message.
 type iterDoneFunc func(string, bool, *AckResult, time.Time)
 
-func convertMessages(rms []*pb.ReceivedMessage, receiveTime time.Time, doneFunc iterDoneFunc, subName string, eos bool) ([]*Message, error) {
+func convertMessages(rms []*pb.ReceivedMessage, receiveTime time.Time, doneFunc iterDoneFunc) ([]*Message, error) {
 	msgs := make([]*Message, 0, len(rms))
 	for i, m := range rms {
-		msg, err := toMessage(m, receiveTime, doneFunc, subName, eos, len(rms))
+		msg, err := toMessage(m, receiveTime, doneFunc)
 		if err != nil {
 			return nil, fmt.Errorf("pubsub: cannot decode the retrieved message at index: %d, message: %+v", i, m)
 		}
@@ -76,7 +72,7 @@ func convertMessages(rms []*pb.ReceivedMessage, receiveTime time.Time, doneFunc 
 	return msgs, nil
 }
 
-func toMessage(resp *pb.ReceivedMessage, receiveTime time.Time, doneFunc iterDoneFunc, subName string, eos bool, numMsgs int) (*Message, error) {
+func toMessage(resp *pb.ReceivedMessage, receiveTime time.Time, doneFunc iterDoneFunc) (*Message, error) {
 	ackh := &psAckHandler{ackID: resp.AckId}
 	msg := ipubsub.NewMessage(ackh)
 	if resp.Message == nil {
@@ -97,34 +93,8 @@ func toMessage(resp *pb.ReceivedMessage, receiveTime time.Time, doneFunc iterDon
 	msg.PublishTime = pubTime
 	msg.DeliveryAttempt = deliveryAttempt
 	msg.OrderingKey = resp.Message.OrderingKey
-
-	ctx := context.Background()
-	opts := getSubSpanAttributes(subName, msg, semconv.MessagingOperationReceive)
-	if msg.Attributes != nil {
-		ctx = otel.GetTextMapPropagator().Extract(ctx, NewPubsubMessageCarrier(msg))
-	}
-	ctx, span := tracer().Start(ctx, fmt.Sprintf("%s %s", subName, subscriberSpanName), opts...)
-	span.SetAttributes(
-		attribute.Bool(eosAttribute, eos),
-		attribute.String(ackIDAttribute, resp.AckId),
-		attribute.Int(numBatchedMessagesAttribute, numMsgs),
-		attribute.Bool(ackAttribute, false),
-	)
-	// inject the new ctx into message for propagation across the other receive paths
-	// that cannot directly access this ctx. We do this to avoid storing context
-	// inside a message.
-	if msg.Attributes == nil {
-		msg.Attributes = map[string]string{}
-	}
-	otel.GetTextMapPropagator().Inject(ctx, NewPubsubMessageCarrier(msg))
-
 	ackh.receiveTime = receiveTime
 	ackh.doneFunc = doneFunc
-	ackh.doneFunc = func(ackID string, ack bool, r *ipubsub.AckResult, receiveTime time.Time) {
-		span.SetAttributes(attribute.Bool(ackAttribute, ack))
-		defer span.End()
-		doneFunc(ackID, ack, r, receiveTime)
-	}
 	ackh.ackResult = ipubsub.NewAckResult()
 	return msg, nil
 }
@@ -219,8 +189,4 @@ func newSuccessAckResult() *AckResult {
 	ar := ipubsub.NewAckResult()
 	ipubsub.SetAckResult(ar, AcknowledgeStatusSuccess, nil)
 	return ar
-}
-
-func setAckResult(ar *AckResult, s AcknowledgeStatus, err error) {
-	ipubsub.SetAckResult(ar, s, err)
 }

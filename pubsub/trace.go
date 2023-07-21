@@ -312,26 +312,9 @@ const (
 	publishSchedulerSpanName   = "publish scheduler"
 	publishRPCSpanName         = "send Publish"
 
-	subscriberSpanName            = "receive"
-	subscriberFlowControlSpanName = "subscriber flow control"
-	processSpanName               = "process"
-	subscribeSchedulerSpanName    = "subscribe scheduler"
-	receiptModAckSpanName         = "send initial ModifyAckDeadline"
-	modAckSpanName                = "send ModifyAckDeadline"
-	ackSpanName                   = "send Acknowledge"
-	nackSpanName                  = "send Negative Acknowledge"
-
 	// custom pubsub specific attributes
 	numBatchedMessagesAttribute = "messaging.pubsub.num_messages_in_batch"
-	subscriptionAttribute       = "messaging.pubsub.subscription"
 	orderingAttribute           = "messaging.pubsub.ordering_key"
-	deliveryAttemptAttribute    = "messaging.pubsub.delivery_attempt"
-	eosAttribute                = "messaging.pubsub.exactly_once_delivery"
-	ackIDAttribute              = "messaging.pubsub.ack_id"
-	ackAttribute                = "messaging.pubsub.is_acked"
-
-	modackDeadlineSecondsAttribute = "messaging.pubsub.modack_deadline_seconds"
-	initialModackAttribute         = "messaging.pubsub.is_initial_modack"
 )
 
 func getPublishSpanAttributes(topic string, msg *Message, opts ...attribute.KeyValue) []trace.SpanStartOption {
@@ -354,30 +337,6 @@ func getPublishSpanAttributes(topic string, msg *Message, opts ...attribute.KeyV
 		),
 		trace.WithAttributes(opts...),
 		trace.WithSpanKind(trace.SpanKindProducer),
-	}
-	return ss
-}
-
-func getSubSpanAttributes(sub string, msg *Message, opts ...attribute.KeyValue) []trace.SpanStartOption {
-	msgSize := proto.Size(&pb.PubsubMessage{
-		Data:        msg.Data,
-		Attributes:  msg.Attributes,
-		OrderingKey: msg.OrderingKey,
-	})
-	ss := []trace.SpanStartOption{
-		trace.WithAttributes(
-			semconv.MessagingSystemKey.String("pubsub"),
-			semconv.MessagingDestinationKindTopic,
-			semconv.MessagingMessageIDKey.String(msg.ID),
-			semconv.MessagingMessagePayloadSizeBytesKey.Int(msgSize),
-			attribute.String(subscriptionAttribute, sub),
-			attribute.String(orderingAttribute, msg.OrderingKey),
-		),
-		trace.WithAttributes(opts...),
-		trace.WithSpanKind(trace.SpanKindConsumer),
-	}
-	if msg.DeliveryAttempt != nil {
-		ss = append(ss, trace.WithAttributes(attribute.Int(deliveryAttemptAttribute, *msg.DeliveryAttempt)))
 	}
 	return ss
 }
