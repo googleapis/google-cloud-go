@@ -78,7 +78,6 @@ modules:
   - metastore
   - migrationcenter
   - monitoring
-  - netapp
   - networkconnectivity
   - networkmanagement
   - networksecurity
@@ -574,9 +573,6 @@ service-configs:
   - input-directory: google/cloud/migrationcenter/v1
     service-config: migrationcenter_v1.yaml
     import-path: cloud.google.com/go/migrationcenter/apiv1
-  - input-directory: google/cloud/netapp/v1beta1
-    service-config: netapp_v1beta1.yaml
-    import-path: cloud.google.com/go/netapp/apiv1beta1
   - input-directory: google/cloud/networkconnectivity/v1
     service-config: networkconnectivity_v1.yaml
     import-path: cloud.google.com/go/networkconnectivity/apiv1
