@@ -53,7 +53,7 @@ const DetectProjectID = "*detect-project-id*"
 // the resource being operated on.
 const resourcePrefixHeader = "google-cloud-resource-prefix"
 
-// DefaultDatabaseID is ID of the default database
+// DefaultDatabaseID is ID of the default database denoted by an empty string
 const DefaultDatabaseID = ""
 
 var (
@@ -85,8 +85,8 @@ func NewClient(ctx context.Context, projectID string, opts ...option.ClientOptio
 	return client, nil
 }
 
-// NewClientWithDatabase creates a new Client for given dataset and database.  If the project ID is
-// empty, it is derived from the DATASTORE_PROJECT_ID environment variable.
+// NewClientWithDatabase creates a new Client for given dataset and database.
+// If the project ID is empty, it is derived from the DATASTORE_PROJECT_ID environment variable.
 // If the DATASTORE_EMULATOR_HOST environment variable is set, client will use
 // its value to connect to a locally-running datastore emulator.
 // DetectProjectID can be passed as the projectID argument to instruct

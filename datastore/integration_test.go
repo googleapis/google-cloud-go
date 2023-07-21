@@ -197,9 +197,10 @@ func TestIntegration_NewClient(t *testing.T) {
 	ctx := context.Background()
 	client, err := NewClient(ctx, testutil.ProjID())
 	if err != nil {
-		t.Errorf("NewClient: %v", err)
-	} else if client.databaseID != DefaultDatabaseID {
-		t.Errorf("NewClient: got %s, want %s", client.databaseID, DefaultDatabaseID)
+		t.Fatalf("NewClient: %v", err)
+	}
+	if client.databaseID != DefaultDatabaseID {
+		t.Fatalf("NewClient: got %s, want %s", client.databaseID, DefaultDatabaseID)
 	}
 }
 

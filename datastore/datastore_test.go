@@ -67,17 +67,19 @@ func TestNewClientWithDatabase(t *testing.T) {
 	}
 
 	for _, tc := range tests {
-		detectProjectIDFn = tc.detectProjectIDFn
-		gtransportDialPoolFn = tc.gtransportDialPoolFn
+		t.Run(tc.desc, func(t *testing.T) {
+			detectProjectIDFn = tc.detectProjectIDFn
+			gtransportDialPoolFn = tc.gtransportDialPoolFn
 
-		client, gotErr := NewClientWithDatabase(context.Background(), "my-project", tc.databaseID)
-		if gotErr != nil && !tc.wantErr {
-			t.Errorf("%s: got error %v, but none was expected", tc.desc, gotErr)
-		} else if gotErr == nil && tc.wantErr {
-			t.Errorf("%s: wanted error, but none returned", tc.desc)
-		} else if gotErr == nil && client.databaseID != tc.databaseID {
-			t.Errorf("%s: got %s, want %s", tc.desc, client.databaseID, tc.databaseID)
-		}
+			client, gotErr := NewClientWithDatabase(context.Background(), "my-project", tc.databaseID)
+			if gotErr != nil && !tc.wantErr {
+				t.Errorf("got error %v, but none was expected", gotErr)
+			} else if gotErr == nil && tc.wantErr {
+				t.Errorf("wanted error, but none returned")
+			} else if gotErr == nil && client.databaseID != tc.databaseID {
+				t.Errorf("got %s, want %s", client.databaseID, tc.databaseID)
+			}
+		})
 	}
 }
 

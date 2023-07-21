@@ -43,14 +43,14 @@ type datastoreClient struct {
 }
 
 func newDatastoreClient(conn grpc.ClientConnInterface, projectID, databaseID string) pb.DatastoreClient {
-	resourcePrefixHeaderVal := "projects/" + projectID
+	resourcePrefixValue := "projects/" + projectID
 	if databaseID != "" {
-		resourcePrefixHeaderVal += "/databases/" + databaseID
+		resourcePrefixValue += "/databases/" + databaseID
 	}
 	return &datastoreClient{
 		c: pb.NewDatastoreClient(conn),
 		md: metadata.Pairs(
-			resourcePrefixHeader, resourcePrefixHeaderVal,
+			resourcePrefixHeader, resourcePrefixValue,
 			"x-goog-api-client", fmt.Sprintf("gl-go/%s gccl/%s grpc/", version.Go(), internal.Version)),
 	}
 }
