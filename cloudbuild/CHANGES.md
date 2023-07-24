@@ -1,5 +1,15 @@
 # Changes
 
+## [1.12.0](https://github.com/googleapis/google-cloud-go/compare/cloudbuild/v1.11.0...cloudbuild/v1.12.0) (2023-07-24)
+
+
+### Features
+
+* **cloudbuild/apiv1:** Add repositoryevent to buildtrigger ([eca3c90](https://github.com/googleapis/google-cloud-go/commit/eca3c9070cd96a50fa857a6c016e35a98dbea5e7))
+* **cloudbuild/apiv1:** Add routing information in Cloud Build GRPC clients ([eca3c90](https://github.com/googleapis/google-cloud-go/commit/eca3c9070cd96a50fa857a6c016e35a98dbea5e7))
+* **cloudbuild/apiv1:** Added e2-medium machine type ([eca3c90](https://github.com/googleapis/google-cloud-go/commit/eca3c9070cd96a50fa857a6c016e35a98dbea5e7))
+* **cloudbuild/apiv1:** Update third party clodubuild.proto library to include git_source ([eca3c90](https://github.com/googleapis/google-cloud-go/commit/eca3c9070cd96a50fa857a6c016e35a98dbea5e7))
+
 ## [1.11.0](https://github.com/googleapis/google-cloud-go/compare/cloudbuild/v1.10.1...cloudbuild/v1.11.0) (2023-07-10)
 
 
