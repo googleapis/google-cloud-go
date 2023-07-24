@@ -605,7 +605,7 @@
     "description": "Cloud Commerce Consumer Procurement API",
     "language": "go",
     "client_library_type": "generated",
-    "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/latest/commerce/consumer/procurement/apiv1",
+    "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/commerce/latest/consumer/procurement/apiv1",
     "release_level": "preview",
     "library_type": "GAPIC_AUTO"
   },
