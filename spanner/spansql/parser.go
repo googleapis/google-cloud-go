@@ -2227,7 +2227,7 @@ func (p *parser) parseForeignKey() (ForeignKey, *parseError) {
 
 	/*
 		foreign_key:
-			FOREIGN KEY ( column_name [, ... ] ) REFERENCES ref_table ( ref_column [, ... ] )
+			FOREIGN KEY ( column_name [, ... ] ) REFERENCES ref_table ( ref_column [, ... ] ) [ ON DELETE { CASCADE | NO ACTION } ]
 	*/
 
 	if err := p.expect("FOREIGN"); err != nil {
@@ -2252,6 +2252,14 @@ func (p *parser) parseForeignKey() (ForeignKey, *parseError) {
 	fk.RefColumns, err = p.parseColumnNameList()
 	if err != nil {
 		return ForeignKey{}, err
+	}
+	// The ON DELETE clause is optional; it defaults to NoActionOnDelete.
+	fk.OnDelete = NoActionOnDelete
+	if p.eat("ON", "DELETE") {
+		fk.OnDelete, err = p.parseOnDelete()
+		if err != nil {
+			return ForeignKey{}, err
+		}
 	}
 	return fk, nil
 }
