@@ -248,7 +248,6 @@ deep-remove-regex:
   - /internal/generated/snippets/monitoring/apiv3/v2/
   - /internal/generated/snippets/monitoring/dashboard/apiv1/
   - /internal/generated/snippets/monitoring/metricsscope/apiv1/
-  - /internal/generated/snippets/netapp/apiv1beta1/
   - /internal/generated/snippets/networkconnectivity/apiv1/
   - /internal/generated/snippets/networkconnectivity/apiv1alpha1/
   - /internal/generated/snippets/networkmanagement/apiv1/
@@ -361,7 +360,6 @@ deep-remove-regex:
   - /monitoring/apiv3/v2/
   - /monitoring/dashboard/apiv1/
   - /monitoring/metricsscope/apiv1/
-  - /netapp/apiv1beta1/
   - /networkconnectivity/apiv1/
   - /networkconnectivity/apiv1alpha1/
   - /networkmanagement/apiv1/
@@ -763,8 +761,6 @@ deep-copy-regex:
   - source: /google/monitoring/dashboard/v1/cloud.google.com/go
     dest: /
   - source: /google/monitoring/metricsscope/v1/cloud.google.com/go
-    dest: /
-  - source: /google/cloud/netapp/v1beta1/cloud.google.com/go
     dest: /
   - source: /google/cloud/networkconnectivity/v1/cloud.google.com/go
     dest: /
