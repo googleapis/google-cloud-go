@@ -1,5 +1,12 @@
 # Changes
 
+## [1.19.0](https://github.com/googleapis/google-cloud-go/compare/speech/v1.18.0...speech/v1.19.0) (2023-07-18)
+
+
+### Features
+
+* **speech:** Promote to GA ([#8268](https://github.com/googleapis/google-cloud-go/issues/8268)) ([d9bb34f](https://github.com/googleapis/google-cloud-go/commit/d9bb34f1f83db94c4e07824b2158ff3c994821d8))
+
 ## [1.18.0](https://github.com/googleapis/google-cloud-go/compare/speech/v1.17.1...speech/v1.18.0) (2023-07-10)
 
 
