@@ -30,10 +30,11 @@ import (
 // for a few different ops.
 func TestCustomHeaders(t *testing.T) {
 	var cases = []struct {
-		name string
-		call func(ctx context.Context, client *Client) error
-		resp *http.Response
-		opts []option.ClientOption
+		name    string
+		call    func(ctx context.Context, client *Client) error
+		resp    *http.Response
+		opts    []option.ClientOption
+		wantURL string
 	}{
 		{
 			name: "Metadata op",
@@ -45,6 +46,7 @@ func TestCustomHeaders(t *testing.T) {
 				StatusCode: 200,
 				Body:       bodyReader(`{"name":"my-bucket"}`),
 			},
+			wantURL: "https://storage.googleapis.com/storage/v1/b/my-bucket?alt=json&prettyPrint=false&projection=full",
 		},
 		{
 			name: "Writer",
@@ -59,6 +61,7 @@ func TestCustomHeaders(t *testing.T) {
 				StatusCode: 200,
 				Body:       bodyReader(`{"name": "my-object"}`),
 			},
+			wantURL: "https://storage.googleapis.com/upload/storage/v1/b/my-bucket/o?alt=json&name=my-object&prettyPrint=false&projection=full&uploadType=multipart",
 		},
 		{
 			name: "Reader XML",
@@ -76,7 +79,8 @@ func TestCustomHeaders(t *testing.T) {
 				StatusCode: 200,
 				Body:       bodyReader("object data"),
 			},
-			opts: []option.ClientOption{WithXMLReads()},
+			opts:    []option.ClientOption{WithXMLReads()},
+			wantURL: "https://storage.googleapis.com/my-bucket/my-object",
 		},
 		{
 			name: "Reader JSON",
@@ -94,7 +98,8 @@ func TestCustomHeaders(t *testing.T) {
 				StatusCode: 200,
 				Body:       bodyReader("object data"),
 			},
-			opts: []option.ClientOption{WithJSONReads()},
+			opts:    []option.ClientOption{WithJSONReads()},
+			wantURL: "https://storage.googleapis.com/storage/v1/b/my-bucket/o/my-object?alt=media&prettyPrint=false&projection=full",
 		},
 	}
 	for _, c := range cases {
@@ -109,6 +114,9 @@ func TestCustomHeaders(t *testing.T) {
 			mt.addResult(c.resp, nil)
 			if err := c.call(ctx, client); err != nil {
 				r.Fatal(err)
+			}
+			if gotURL := mt.gotReq.URL.String(); gotURL != c.wantURL {
+				r.Errorf("Got URL %v, want %v", gotURL, c.wantURL)
 			}
 			if gotValue := mt.gotReq.Header.Get(key); gotValue != value {
 				r.Errorf("Got headers %v, want to contain %q: %q", mt.gotReq.Header, key, value)
