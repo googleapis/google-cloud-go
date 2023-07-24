@@ -154,7 +154,7 @@ func TestListTopicSubscriptions(t *testing.T) {
 
 const defaultRetentionDuration = 168 * time.Hour
 
-func TestUpdateSubscription(t *testing.T) {
+func TestSubscriptionConfig(t *testing.T) {
 	ctx := context.Background()
 	client, srv := newFake(t)
 	defer client.Close()
@@ -191,13 +191,14 @@ func TestUpdateSubscription(t *testing.T) {
 				ServiceAccountEmail: "foo@example.com",
 				Audience:            "client-12345",
 			},
+			Wrapper: &PubsubWrapper{},
 		},
 		EnableExactlyOnceDelivery: false,
 		State:                     SubscriptionStateActive,
 	}
 	opt := cmpopts.IgnoreUnexported(SubscriptionConfig{})
-	if !testutil.Equal(cfg, want, opt) {
-		t.Fatalf("\ngot  %+v\nwant %+v", cfg, want)
+	if diff := testutil.Diff(cfg, want, opt); diff != "" {
+		t.Fatalf("compare subscription config mismatch, -got, +want\n%s", diff)
 	}
 
 	got, err := sub.Update(ctx, SubscriptionConfigToUpdate{
@@ -206,10 +207,13 @@ func TestUpdateSubscription(t *testing.T) {
 		Labels:              map[string]string{"label": "value"},
 		ExpirationPolicy:    72 * time.Hour,
 		PushConfig: &PushConfig{
-			Endpoint: "https://example.com/push",
+			Endpoint: "https://example2.com/push",
 			AuthenticationMethod: &OIDCToken{
-				ServiceAccountEmail: "foo@example.com",
-				Audience:            "client-12345",
+				ServiceAccountEmail: "bar@example.com",
+				Audience:            "client-98765",
+			},
+			Wrapper: &NoWrapper{
+				WriteMetadata: true,
 			},
 		},
 		EnableExactlyOnceDelivery: true,
@@ -225,17 +229,20 @@ func TestUpdateSubscription(t *testing.T) {
 		Labels:              map[string]string{"label": "value"},
 		ExpirationPolicy:    72 * time.Hour,
 		PushConfig: PushConfig{
-			Endpoint: "https://example.com/push",
+			Endpoint: "https://example2.com/push",
 			AuthenticationMethod: &OIDCToken{
-				ServiceAccountEmail: "foo@example.com",
-				Audience:            "client-12345",
+				ServiceAccountEmail: "bar@example.com",
+				Audience:            "client-98765",
+			},
+			Wrapper: &NoWrapper{
+				WriteMetadata: true,
 			},
 		},
 		EnableExactlyOnceDelivery: true,
 		State:                     SubscriptionStateActive,
 	}
-	if !testutil.Equal(got, want, opt) {
-		t.Fatalf("\ngot  %+v\nwant %+v", got, want)
+	if diff := testutil.Diff(got, want, opt); diff != "" {
+		t.Fatalf("compare subscription config mismatch, -got, +want\n%s", diff)
 	}
 
 	got, err = sub.Update(ctx, SubscriptionConfigToUpdate{
@@ -247,8 +254,8 @@ func TestUpdateSubscription(t *testing.T) {
 	}
 	want.RetentionDuration = 2 * time.Hour
 	want.Labels = nil
-	if !testutil.Equal(got, want, opt) {
-		t.Fatalf("\ngot %+v\nwant %+v", got, want)
+	if diff := testutil.Diff(got, want, opt); diff != "" {
+		t.Fatalf("compare subscription config mismatch, -got, +want\n%s", diff)
 	}
 
 	_, err = sub.Update(ctx, SubscriptionConfigToUpdate{})
@@ -264,8 +271,8 @@ func TestUpdateSubscription(t *testing.T) {
 		t.Fatal(err)
 	}
 	want.ExpirationPolicy = time.Duration(0)
-	if !testutil.Equal(got, want, opt) {
-		t.Fatalf("\ngot %+v\nwant %+v", got, want)
+	if diff := testutil.Diff(got, want, opt); diff != "" {
+		t.Fatalf("compare subscription config mismatch, -got, +want\n%s", diff)
 	}
 }
 
