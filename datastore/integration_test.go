@@ -109,13 +109,13 @@ func testMain(m *testing.M) int {
 	suffix = fmt.Sprintf("-t%d", timeNow.UnixNano())
 
 	// Run tests on multiple databases
+	databaseIDs := []string{DefaultDatabaseID}
 	databasesStr, ok := os.LookupEnv(envDatabases)
-	if !ok {
-		databasesStr = ""
+	if ok {
+		databaseIDs = append(databaseIDs, strings.Split(databasesStr, ",")...)
 	}
-	databaseIDs := strings.Split(databasesStr, ",")
-	testParams = make(map[string]interface{})
 
+	testParams = make(map[string]interface{})
 	for _, databaseID := range databaseIDs {
 		log.Printf("Setting up tests to run on databaseID: %q\n", databaseID)
 		testParams["databaseID"] = databaseID
