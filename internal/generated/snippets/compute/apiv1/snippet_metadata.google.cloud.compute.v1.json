@@ -22416,7 +22416,7 @@
     {
       "regionTag": "compute_v1_generated_RegionSecurityPolicies_Patch_sync",
       "title": "compute Patch Sample",
-      "description": "Patch patches the specified policy with the data included in the request. To clear fields in the rule, leave the fields empty and specify them in the updateMask. This cannot be used to be update the rules in the policy. Please use the per rule methods like addRule, patchRule, and removeRule instead.",
+      "description": "Patch patches the specified policy with the data included in the request. To clear fields in the policy, leave the fields empty and specify them in the updateMask. This cannot be used to be update the rules in the policy. Please use the per rule methods like addRule, patchRule, and removeRule instead.",
       "file": "RegionSecurityPoliciesClient/Patch/main.go",
       "language": "GO",
       "clientMethod": {
@@ -24806,6 +24806,52 @@
       ]
     },
     {
+      "regionTag": "compute_v1_generated_ResourcePolicies_Patch_sync",
+      "title": "compute Patch Sample",
+      "description": "Patch modify the specified resource policy.",
+      "file": "ResourcePoliciesClient/Patch/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "Patch",
+        "fullName": "google.cloud.compute.v1.ResourcePoliciesClient.Patch",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.PatchResourcePolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "ResourcePoliciesClient",
+          "fullName": "google.cloud.compute.v1.ResourcePoliciesClient"
+        },
+        "method": {
+          "shortName": "Patch",
+          "fullName": "google.cloud.compute.v1.ResourcePolicies.Patch",
+          "service": {
+            "shortName": "ResourcePolicies",
+            "fullName": "google.cloud.compute.v1.ResourcePolicies"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "compute_v1_generated_ResourcePolicies_SetIamPolicy_sync",
       "title": "compute SetIamPolicy Sample",
       "description": "SetIamPolicy sets the access control policy on the specified resource. Replaces any existing policy.",
@@ -25912,7 +25958,7 @@
     {
       "regionTag": "compute_v1_generated_SecurityPolicies_Patch_sync",
       "title": "compute Patch Sample",
-      "description": "Patch patches the specified policy with the data included in the request. To clear fields in the rule, leave the fields empty and specify them in the updateMask. This cannot be used to be update the rules in the policy. Please use the per rule methods like addRule, patchRule, and removeRule instead.",
+      "description": "Patch patches the specified policy with the data included in the request. To clear fields in the policy, leave the fields empty and specify them in the updateMask. This cannot be used to be update the rules in the policy. Please use the per rule methods like addRule, patchRule, and removeRule instead.",
       "file": "SecurityPoliciesClient/Patch/main.go",
       "language": "GO",
       "clientMethod": {
@@ -25958,7 +26004,7 @@
     {
       "regionTag": "compute_v1_generated_SecurityPolicies_PatchRule_sync",
       "title": "compute PatchRule Sample",
-      "description": "PatchRule patches a rule at the specified priority.",
+      "description": "PatchRule patches a rule at the specified priority. To clear fields in the rule, leave the fields empty and specify them in the updateMask.",
       "file": "SecurityPoliciesClient/PatchRule/main.go",
       "language": "GO",
       "clientMethod": {
