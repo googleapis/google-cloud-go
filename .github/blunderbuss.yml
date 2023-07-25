@@ -30,3 +30,7 @@ assign_issues_by:
   - 'api: clouderrorreporting'
   to:
   - googleapis/api-logging
+- labels:
+  - 'api: cloudprofiler'
+  to:
+  - googleapis/api-profiler

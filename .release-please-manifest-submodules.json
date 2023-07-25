@@ -26,6 +26,7 @@
     "cloudbuild": "1.12.0",
     "clouddms": "1.6.1",
     "cloudtasks": "1.12.0",
+    "commerce": "0.0.0",
     "compute": "1.22.0",
     "compute/metadata": "0.2.3",
     "confidentialcomputing": "1.0.0",
