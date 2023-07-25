@@ -1066,7 +1066,7 @@ func testInstrumentation(ctx context.Context, t *testing.T, mwClient *Client, bq
 
 	// metric to key tag names
 	wantTags := map[string][]string{
-		"cloud.google.com/go/bigquery/storage/managedwriter/stream_open_count":       nil,
+		"cloud.google.com/go/bigquery/storage/managedwriter/stream_open_count":       {"error"},
 		"cloud.google.com/go/bigquery/storage/managedwriter/stream_open_retry_count": nil,
 		"cloud.google.com/go/bigquery/storage/managedwriter/append_requests":         {"streamID"},
 		"cloud.google.com/go/bigquery/storage/managedwriter/append_request_bytes":    {"streamID"},
