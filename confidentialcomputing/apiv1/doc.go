@@ -17,6 +17,8 @@
 // Package confidentialcomputing is an auto-generated package for the
 // Confidential Computing API.
 //
+// Attestation verifier for Confidential Space.
+//
 // # General documentation
 //
 // For information about setting deadlines, reusing contexts, and more
