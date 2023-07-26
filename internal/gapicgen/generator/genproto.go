@@ -25,8 +25,6 @@ import (
 	"strconv"
 	"strings"
 
-	"cloud.google.com/go/internal/aliasfix"
-	"cloud.google.com/go/internal/aliasgen"
 	"cloud.google.com/go/internal/gapicgen/execv"
 	"cloud.google.com/go/internal/gapicgen/execv/gocmd"
 	"cloud.google.com/go/internal/gapicgen/git"
@@ -34,48 +32,53 @@ import (
 )
 
 var goPkgOptRe = regexp.MustCompile(`(?m)^option go_package = (.*);`)
-
-// denylist is a set of clients to NOT generate.
-var denylist = map[string]bool{
-	// Temporarily stop generation of removed protos. Will be manually cleaned
-	// up with: https://github.com/googleapis/google-cloud-go/issues/4098
-	"google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1alpha2": true,
-
-	// Not properly configured:
-	"google.golang.org/genproto/googleapis/cloud/ondemandscanning/v1beta1": true,
-	"google.golang.org/genproto/googleapis/cloud/ondemandscanning/v1":      true,
-}
+var ErrNoProcessing = errors.New("there are not files to regenerate")
 
 // GenprotoGenerator is used to generate code for googleapis/go-genproto.
 type GenprotoGenerator struct {
-	genprotoDir     string
-	googleapisDir   string
-	protoSrcDir     string
-	googleCloudDir  string
-	gapicToGenerate string
-	forceAll        bool
-	genAlias        bool
+	genprotoDir   string
+	googleapisDir string
+	protoSrcDir   string
+	forceAll      bool
 }
 
 // NewGenprotoGenerator creates a new GenprotoGenerator.
 func NewGenprotoGenerator(c *Config) *GenprotoGenerator {
 	return &GenprotoGenerator{
-		genprotoDir:     c.GenprotoDir,
-		googleapisDir:   c.GoogleapisDir,
-		protoSrcDir:     filepath.Join(c.ProtoDir, "/src"),
-		googleCloudDir:  c.GapicDir,
-		gapicToGenerate: c.GapicToGenerate,
-		forceAll:        c.ForceAll,
-		genAlias:        c.GenAlias,
+		genprotoDir:   c.GenprotoDir,
+		googleapisDir: c.GoogleapisDir,
+		protoSrcDir:   filepath.Join(c.ProtoDir, "/src"),
+		forceAll:      c.ForceAll,
 	}
 }
 
+// TODO: consider flipping this to an allowlist
 var skipPrefixes = []string{
 	"google.golang.org/genproto/googleapis/ads/",
+	"google.golang.org/genproto/googleapis/ai/",
+	"google.golang.org/genproto/googleapis/analytics/",
+	"google.golang.org/genproto/googleapis/api/servicecontrol/",
+	"google.golang.org/genproto/googleapis/api/servicemanagement/",
+	"google.golang.org/genproto/googleapis/api/serviceusage/",
+	"google.golang.org/genproto/googleapis/appengine/",
+	"google.golang.org/genproto/googleapis/area120/",
 	"google.golang.org/genproto/googleapis/cloud/",
+	"google.golang.org/genproto/googleapis/compute/",
+	"google.golang.org/genproto/googleapis/dataflow/",
+	"google.golang.org/genproto/googleapis/datastore/",
 	"google.golang.org/genproto/googleapis/devtools/",
+	"google.golang.org/genproto/googleapis/firestore/",
+	"google.golang.org/genproto/googleapis/iam/",
+	"google.golang.org/genproto/googleapis/identity/",
+	"google.golang.org/genproto/googleapis/logging/",
+	"google.golang.org/genproto/googleapis/longrunning/",
 	"google.golang.org/genproto/googleapis/maps/",
+	"google.golang.org/genproto/googleapis/monitoring/",
+	"google.golang.org/genproto/googleapis/privacy/",
+	"google.golang.org/genproto/googleapis/pubsub/",
+	"google.golang.org/genproto/googleapis/spanner/",
 	"google.golang.org/genproto/googleapis/storage/",
+	"google.golang.org/genproto/googleapis/storagetransfer/",
 }
 
 func hasPrefix(s string, prefixes []string) bool {
@@ -103,11 +106,6 @@ func hasPrefix(s string, prefixes []string) bool {
 // declaring the same Go package.
 func (g *GenprotoGenerator) Regen(ctx context.Context) error {
 	log.Println("regenerating genproto")
-
-	if g.genAlias {
-		return g.generateAliases()
-	}
-
 	// Create space to put generated .pb.go's.
 	c := execv.Command("mkdir", "-p", "generated")
 	c.Dir = g.genprotoDir
@@ -129,27 +127,24 @@ func (g *GenprotoGenerator) Regen(ctx context.Context) error {
 	if err != nil {
 		return err
 	}
-	if len(pkgFiles) == 0 {
-		return errors.New("couldn't find any pkgfiles")
+	pkgFiles, err = filterPackages(pkgFiles)
+	if err != nil {
+		return err
 	}
 
 	log.Println("generating from protos")
 	grp, _ := errgroup.WithContext(ctx)
 	for pkg, fileNames := range pkgFiles {
-		if !strings.HasPrefix(pkg, "google.golang.org/genproto") || denylist[pkg] || hasPrefix(pkg, skipPrefixes) {
+		if !strings.HasPrefix(pkg, "google.golang.org/genproto") || hasPrefix(pkg, skipPrefixes) {
 			continue
 		}
 		pk := pkg
 		fn := fileNames
 
-		if !isMigrated(pkg) {
-			grp.Go(func() error {
-				log.Println("running protoc on", pk)
-				return g.protoc(fn)
-			})
-		} else {
-			log.Printf("skipping, %q has been migrated", pkg)
-		}
+		grp.Go(func() error {
+			log.Println("running protoc on", pk)
+			return g.protoc(fn)
+		})
 	}
 	if err := grp.Wait(); err != nil {
 		return err
@@ -168,6 +163,20 @@ func (g *GenprotoGenerator) Regen(ctx context.Context) error {
 	}
 
 	return nil
+}
+
+func filterPackages(in map[string][]string) (map[string][]string, error) {
+	out := map[string][]string{}
+	for pkg, fileNames := range in {
+		if !strings.HasPrefix(pkg, "google.golang.org/genproto") || hasPrefix(pkg, skipPrefixes) {
+			continue
+		}
+		out[pkg] = fileNames
+	}
+	if len(out) == 0 {
+		return nil, ErrNoProcessing
+	}
+	return out, nil
 }
 
 // goPkg reports the import path declared in the given file's `go_package`
@@ -197,7 +206,6 @@ func goPkg(fileName string) (string, error) {
 func (g *GenprotoGenerator) protoc(fileNames []string) error {
 	args := []string{
 		"--experimental_allow_proto3_optional",
-		fmt.Sprintf("--go_out=%s/generated", g.genprotoDir),
 		fmt.Sprintf("--go_out=plugins=grpc:%s/generated", g.genprotoDir),
 		"-I", g.googleapisDir,
 		"-I", g.protoSrcDir,
@@ -287,24 +295,5 @@ func (g *GenprotoGenerator) moveAndCleanupGeneratedSrc() error {
 		return err
 	}
 
-	return nil
-}
-
-func (g *GenprotoGenerator) generateAliases() error {
-	for genprotoImport, newPkg := range aliasfix.GenprotoPkgMigration {
-		if !isMigrated(genprotoImport) || g.gapicToGenerate == "" {
-			continue
-		}
-		// remove the stubs dir segment from path
-		gapicImport := newPkg.ImportPath[:strings.LastIndex(newPkg.ImportPath, "/")]
-		if !strings.Contains(g.gapicToGenerate, gapicImport) {
-			continue
-		}
-		srdDir := filepath.Join(g.googleCloudDir, strings.TrimPrefix(newPkg.ImportPath, "cloud.google.com/go/"))
-		destDir := filepath.Join(g.genprotoDir, "googleapis", strings.TrimPrefix(genprotoImport, "google.golang.org/genproto/googleapis/"))
-		if err := aliasgen.Run(srdDir, destDir); err != nil {
-			return err
-		}
-	}
 	return nil
 }

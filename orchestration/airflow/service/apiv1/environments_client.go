@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"math"
 	"net/http"
 	"net/url"
@@ -47,16 +47,21 @@ var newEnvironmentsClientHook clientHook
 
 // EnvironmentsCallOptions contains the retry settings for each method of EnvironmentsClient.
 type EnvironmentsCallOptions struct {
-	CreateEnvironment []gax.CallOption
-	GetEnvironment    []gax.CallOption
-	ListEnvironments  []gax.CallOption
-	UpdateEnvironment []gax.CallOption
-	DeleteEnvironment []gax.CallOption
-	SaveSnapshot      []gax.CallOption
-	LoadSnapshot      []gax.CallOption
-	DeleteOperation   []gax.CallOption
-	GetOperation      []gax.CallOption
-	ListOperations    []gax.CallOption
+	CreateEnvironment       []gax.CallOption
+	GetEnvironment          []gax.CallOption
+	ListEnvironments        []gax.CallOption
+	UpdateEnvironment       []gax.CallOption
+	DeleteEnvironment       []gax.CallOption
+	ExecuteAirflowCommand   []gax.CallOption
+	StopAirflowCommand      []gax.CallOption
+	PollAirflowCommand      []gax.CallOption
+	SaveSnapshot            []gax.CallOption
+	LoadSnapshot            []gax.CallOption
+	DatabaseFailover        []gax.CallOption
+	FetchDatabaseProperties []gax.CallOption
+	DeleteOperation         []gax.CallOption
+	GetOperation            []gax.CallOption
+	ListOperations          []gax.CallOption
 }
 
 func defaultEnvironmentsGRPCClientOptions() []option.ClientOption {
@@ -73,31 +78,41 @@ func defaultEnvironmentsGRPCClientOptions() []option.ClientOption {
 
 func defaultEnvironmentsCallOptions() *EnvironmentsCallOptions {
 	return &EnvironmentsCallOptions{
-		CreateEnvironment: []gax.CallOption{},
-		GetEnvironment:    []gax.CallOption{},
-		ListEnvironments:  []gax.CallOption{},
-		UpdateEnvironment: []gax.CallOption{},
-		DeleteEnvironment: []gax.CallOption{},
-		SaveSnapshot:      []gax.CallOption{},
-		LoadSnapshot:      []gax.CallOption{},
-		DeleteOperation:   []gax.CallOption{},
-		GetOperation:      []gax.CallOption{},
-		ListOperations:    []gax.CallOption{},
+		CreateEnvironment:       []gax.CallOption{},
+		GetEnvironment:          []gax.CallOption{},
+		ListEnvironments:        []gax.CallOption{},
+		UpdateEnvironment:       []gax.CallOption{},
+		DeleteEnvironment:       []gax.CallOption{},
+		ExecuteAirflowCommand:   []gax.CallOption{},
+		StopAirflowCommand:      []gax.CallOption{},
+		PollAirflowCommand:      []gax.CallOption{},
+		SaveSnapshot:            []gax.CallOption{},
+		LoadSnapshot:            []gax.CallOption{},
+		DatabaseFailover:        []gax.CallOption{},
+		FetchDatabaseProperties: []gax.CallOption{},
+		DeleteOperation:         []gax.CallOption{},
+		GetOperation:            []gax.CallOption{},
+		ListOperations:          []gax.CallOption{},
 	}
 }
 
 func defaultEnvironmentsRESTCallOptions() *EnvironmentsCallOptions {
 	return &EnvironmentsCallOptions{
-		CreateEnvironment: []gax.CallOption{},
-		GetEnvironment:    []gax.CallOption{},
-		ListEnvironments:  []gax.CallOption{},
-		UpdateEnvironment: []gax.CallOption{},
-		DeleteEnvironment: []gax.CallOption{},
-		SaveSnapshot:      []gax.CallOption{},
-		LoadSnapshot:      []gax.CallOption{},
-		DeleteOperation:   []gax.CallOption{},
-		GetOperation:      []gax.CallOption{},
-		ListOperations:    []gax.CallOption{},
+		CreateEnvironment:       []gax.CallOption{},
+		GetEnvironment:          []gax.CallOption{},
+		ListEnvironments:        []gax.CallOption{},
+		UpdateEnvironment:       []gax.CallOption{},
+		DeleteEnvironment:       []gax.CallOption{},
+		ExecuteAirflowCommand:   []gax.CallOption{},
+		StopAirflowCommand:      []gax.CallOption{},
+		PollAirflowCommand:      []gax.CallOption{},
+		SaveSnapshot:            []gax.CallOption{},
+		LoadSnapshot:            []gax.CallOption{},
+		DatabaseFailover:        []gax.CallOption{},
+		FetchDatabaseProperties: []gax.CallOption{},
+		DeleteOperation:         []gax.CallOption{},
+		GetOperation:            []gax.CallOption{},
+		ListOperations:          []gax.CallOption{},
 	}
 }
 
@@ -114,10 +129,16 @@ type internalEnvironmentsClient interface {
 	UpdateEnvironmentOperation(name string) *UpdateEnvironmentOperation
 	DeleteEnvironment(context.Context, *servicepb.DeleteEnvironmentRequest, ...gax.CallOption) (*DeleteEnvironmentOperation, error)
 	DeleteEnvironmentOperation(name string) *DeleteEnvironmentOperation
+	ExecuteAirflowCommand(context.Context, *servicepb.ExecuteAirflowCommandRequest, ...gax.CallOption) (*servicepb.ExecuteAirflowCommandResponse, error)
+	StopAirflowCommand(context.Context, *servicepb.StopAirflowCommandRequest, ...gax.CallOption) (*servicepb.StopAirflowCommandResponse, error)
+	PollAirflowCommand(context.Context, *servicepb.PollAirflowCommandRequest, ...gax.CallOption) (*servicepb.PollAirflowCommandResponse, error)
 	SaveSnapshot(context.Context, *servicepb.SaveSnapshotRequest, ...gax.CallOption) (*SaveSnapshotOperation, error)
 	SaveSnapshotOperation(name string) *SaveSnapshotOperation
 	LoadSnapshot(context.Context, *servicepb.LoadSnapshotRequest, ...gax.CallOption) (*LoadSnapshotOperation, error)
 	LoadSnapshotOperation(name string) *LoadSnapshotOperation
+	DatabaseFailover(context.Context, *servicepb.DatabaseFailoverRequest, ...gax.CallOption) (*DatabaseFailoverOperation, error)
+	DatabaseFailoverOperation(name string) *DatabaseFailoverOperation
+	FetchDatabaseProperties(context.Context, *servicepb.FetchDatabasePropertiesRequest, ...gax.CallOption) (*servicepb.FetchDatabasePropertiesResponse, error)
 	DeleteOperation(context.Context, *longrunningpb.DeleteOperationRequest, ...gax.CallOption) error
 	GetOperation(context.Context, *longrunningpb.GetOperationRequest, ...gax.CallOption) (*longrunningpb.Operation, error)
 	ListOperations(context.Context, *longrunningpb.ListOperationsRequest, ...gax.CallOption) *OperationIterator
@@ -206,6 +227,21 @@ func (c *EnvironmentsClient) DeleteEnvironmentOperation(name string) *DeleteEnvi
 	return c.internalClient.DeleteEnvironmentOperation(name)
 }
 
+// ExecuteAirflowCommand executes Airflow CLI command.
+func (c *EnvironmentsClient) ExecuteAirflowCommand(ctx context.Context, req *servicepb.ExecuteAirflowCommandRequest, opts ...gax.CallOption) (*servicepb.ExecuteAirflowCommandResponse, error) {
+	return c.internalClient.ExecuteAirflowCommand(ctx, req, opts...)
+}
+
+// StopAirflowCommand stops Airflow CLI command execution.
+func (c *EnvironmentsClient) StopAirflowCommand(ctx context.Context, req *servicepb.StopAirflowCommandRequest, opts ...gax.CallOption) (*servicepb.StopAirflowCommandResponse, error) {
+	return c.internalClient.StopAirflowCommand(ctx, req, opts...)
+}
+
+// PollAirflowCommand polls Airflow CLI command execution and fetches logs.
+func (c *EnvironmentsClient) PollAirflowCommand(ctx context.Context, req *servicepb.PollAirflowCommandRequest, opts ...gax.CallOption) (*servicepb.PollAirflowCommandResponse, error) {
+	return c.internalClient.PollAirflowCommand(ctx, req, opts...)
+}
+
 // SaveSnapshot creates a snapshots of a Cloud Composer environment.
 //
 // As a result of this operation, snapshot of environment’s state is stored
@@ -234,6 +270,22 @@ func (c *EnvironmentsClient) LoadSnapshotOperation(name string) *LoadSnapshotOpe
 	return c.internalClient.LoadSnapshotOperation(name)
 }
 
+// DatabaseFailover triggers database failover (only for highly resilient environments).
+func (c *EnvironmentsClient) DatabaseFailover(ctx context.Context, req *servicepb.DatabaseFailoverRequest, opts ...gax.CallOption) (*DatabaseFailoverOperation, error) {
+	return c.internalClient.DatabaseFailover(ctx, req, opts...)
+}
+
+// DatabaseFailoverOperation returns a new DatabaseFailoverOperation from a given name.
+// The name must be that of a previously created DatabaseFailoverOperation, possibly from a different process.
+func (c *EnvironmentsClient) DatabaseFailoverOperation(name string) *DatabaseFailoverOperation {
+	return c.internalClient.DatabaseFailoverOperation(name)
+}
+
+// FetchDatabaseProperties fetches database properties.
+func (c *EnvironmentsClient) FetchDatabaseProperties(ctx context.Context, req *servicepb.FetchDatabasePropertiesRequest, opts ...gax.CallOption) (*servicepb.FetchDatabasePropertiesResponse, error) {
+	return c.internalClient.FetchDatabaseProperties(ctx, req, opts...)
+}
+
 // DeleteOperation is a utility method from google.longrunning.Operations.
 func (c *EnvironmentsClient) DeleteOperation(ctx context.Context, req *longrunningpb.DeleteOperationRequest, opts ...gax.CallOption) error {
 	return c.internalClient.DeleteOperation(ctx, req, opts...)
@@ -255,9 +307,6 @@ func (c *EnvironmentsClient) ListOperations(ctx context.Context, req *longrunnin
 type environmentsGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
-
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
 
 	// Points back to the CallOptions field of the containing EnvironmentsClient
 	CallOptions **EnvironmentsCallOptions
@@ -290,11 +339,6 @@ func NewEnvironmentsClient(ctx context.Context, opts ...option.ClientOption) (*E
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -303,7 +347,6 @@ func NewEnvironmentsClient(ctx context.Context, opts ...option.ClientOption) (*E
 
 	c := &environmentsGRPCClient{
 		connPool:           connPool,
-		disableDeadlines:   disableDeadlines,
 		environmentsClient: servicepb.NewEnvironmentsClient(connPool),
 		CallOptions:        &client.CallOptions,
 		operationsClient:   longrunningpb.NewOperationsClient(connPool),
@@ -338,7 +381,7 @@ func (c *environmentsGRPCClient) Connection() *grpc.ClientConn {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *environmentsGRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -413,7 +456,7 @@ func defaultEnvironmentsRESTClientOptions() []option.ClientOption {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *environmentsRESTClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -551,6 +594,57 @@ func (c *environmentsGRPCClient) DeleteEnvironment(ctx context.Context, req *ser
 	}, nil
 }
 
+func (c *environmentsGRPCClient) ExecuteAirflowCommand(ctx context.Context, req *servicepb.ExecuteAirflowCommandRequest, opts ...gax.CallOption) (*servicepb.ExecuteAirflowCommandResponse, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "environment", url.QueryEscape(req.GetEnvironment())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).ExecuteAirflowCommand[0:len((*c.CallOptions).ExecuteAirflowCommand):len((*c.CallOptions).ExecuteAirflowCommand)], opts...)
+	var resp *servicepb.ExecuteAirflowCommandResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.environmentsClient.ExecuteAirflowCommand(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *environmentsGRPCClient) StopAirflowCommand(ctx context.Context, req *servicepb.StopAirflowCommandRequest, opts ...gax.CallOption) (*servicepb.StopAirflowCommandResponse, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "environment", url.QueryEscape(req.GetEnvironment())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).StopAirflowCommand[0:len((*c.CallOptions).StopAirflowCommand):len((*c.CallOptions).StopAirflowCommand)], opts...)
+	var resp *servicepb.StopAirflowCommandResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.environmentsClient.StopAirflowCommand(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *environmentsGRPCClient) PollAirflowCommand(ctx context.Context, req *servicepb.PollAirflowCommandRequest, opts ...gax.CallOption) (*servicepb.PollAirflowCommandResponse, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "environment", url.QueryEscape(req.GetEnvironment())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).PollAirflowCommand[0:len((*c.CallOptions).PollAirflowCommand):len((*c.CallOptions).PollAirflowCommand)], opts...)
+	var resp *servicepb.PollAirflowCommandResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.environmentsClient.PollAirflowCommand(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
 func (c *environmentsGRPCClient) SaveSnapshot(ctx context.Context, req *servicepb.SaveSnapshotRequest, opts ...gax.CallOption) (*SaveSnapshotOperation, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "environment", url.QueryEscape(req.GetEnvironment())))
 
@@ -587,6 +681,42 @@ func (c *environmentsGRPCClient) LoadSnapshot(ctx context.Context, req *servicep
 	return &LoadSnapshotOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
+}
+
+func (c *environmentsGRPCClient) DatabaseFailover(ctx context.Context, req *servicepb.DatabaseFailoverRequest, opts ...gax.CallOption) (*DatabaseFailoverOperation, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "environment", url.QueryEscape(req.GetEnvironment())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).DatabaseFailover[0:len((*c.CallOptions).DatabaseFailover):len((*c.CallOptions).DatabaseFailover)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.environmentsClient.DatabaseFailover(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &DatabaseFailoverOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *environmentsGRPCClient) FetchDatabaseProperties(ctx context.Context, req *servicepb.FetchDatabasePropertiesRequest, opts ...gax.CallOption) (*servicepb.FetchDatabasePropertiesResponse, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "environment", url.QueryEscape(req.GetEnvironment())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).FetchDatabaseProperties[0:len((*c.CallOptions).FetchDatabaseProperties):len((*c.CallOptions).FetchDatabaseProperties)], opts...)
+	var resp *servicepb.FetchDatabasePropertiesResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.environmentsClient.FetchDatabaseProperties(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
 }
 
 func (c *environmentsGRPCClient) DeleteOperation(ctx context.Context, req *longrunningpb.DeleteOperationRequest, opts ...gax.CallOption) error {
@@ -711,13 +841,13 @@ func (c *environmentsRESTClient) CreateEnvironment(ctx context.Context, req *ser
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -774,13 +904,13 @@ func (c *environmentsRESTClient) GetEnvironment(ctx context.Context, req *servic
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -845,13 +975,13 @@ func (c *environmentsRESTClient) ListEnvironments(ctx context.Context, req *serv
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -901,7 +1031,7 @@ func (c *environmentsRESTClient) UpdateEnvironment(ctx context.Context, req *ser
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask))
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -933,13 +1063,13 @@ func (c *environmentsRESTClient) UpdateEnvironment(ctx context.Context, req *ser
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -995,13 +1125,13 @@ func (c *environmentsRESTClient) DeleteEnvironment(ctx context.Context, req *ser
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1015,6 +1145,198 @@ func (c *environmentsRESTClient) DeleteEnvironment(ctx context.Context, req *ser
 		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
+}
+
+// ExecuteAirflowCommand executes Airflow CLI command.
+func (c *environmentsRESTClient) ExecuteAirflowCommand(ctx context.Context, req *servicepb.ExecuteAirflowCommandRequest, opts ...gax.CallOption) (*servicepb.ExecuteAirflowCommandResponse, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:executeAirflowCommand", req.GetEnvironment())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "environment", url.QueryEscape(req.GetEnvironment())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).ExecuteAirflowCommand[0:len((*c.CallOptions).ExecuteAirflowCommand):len((*c.CallOptions).ExecuteAirflowCommand)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &servicepb.ExecuteAirflowCommandResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// StopAirflowCommand stops Airflow CLI command execution.
+func (c *environmentsRESTClient) StopAirflowCommand(ctx context.Context, req *servicepb.StopAirflowCommandRequest, opts ...gax.CallOption) (*servicepb.StopAirflowCommandResponse, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:stopAirflowCommand", req.GetEnvironment())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "environment", url.QueryEscape(req.GetEnvironment())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).StopAirflowCommand[0:len((*c.CallOptions).StopAirflowCommand):len((*c.CallOptions).StopAirflowCommand)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &servicepb.StopAirflowCommandResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// PollAirflowCommand polls Airflow CLI command execution and fetches logs.
+func (c *environmentsRESTClient) PollAirflowCommand(ctx context.Context, req *servicepb.PollAirflowCommandRequest, opts ...gax.CallOption) (*servicepb.PollAirflowCommandResponse, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:pollAirflowCommand", req.GetEnvironment())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "environment", url.QueryEscape(req.GetEnvironment())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).PollAirflowCommand[0:len((*c.CallOptions).PollAirflowCommand):len((*c.CallOptions).PollAirflowCommand)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &servicepb.PollAirflowCommandResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
 }
 
 // SaveSnapshot creates a snapshots of a Cloud Composer environment.
@@ -1066,13 +1388,13 @@ func (c *environmentsRESTClient) SaveSnapshot(ctx context.Context, req *servicep
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1137,13 +1459,13 @@ func (c *environmentsRESTClient) LoadSnapshot(ctx context.Context, req *servicep
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1157,6 +1479,132 @@ func (c *environmentsRESTClient) LoadSnapshot(ctx context.Context, req *servicep
 		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
+}
+
+// DatabaseFailover triggers database failover (only for highly resilient environments).
+func (c *environmentsRESTClient) DatabaseFailover(ctx context.Context, req *servicepb.DatabaseFailoverRequest, opts ...gax.CallOption) (*DatabaseFailoverOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:databaseFailover", req.GetEnvironment())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "environment", url.QueryEscape(req.GetEnvironment())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &DatabaseFailoverOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// FetchDatabaseProperties fetches database properties.
+func (c *environmentsRESTClient) FetchDatabaseProperties(ctx context.Context, req *servicepb.FetchDatabasePropertiesRequest, opts ...gax.CallOption) (*servicepb.FetchDatabasePropertiesResponse, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:fetchDatabaseProperties", req.GetEnvironment())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "environment", url.QueryEscape(req.GetEnvironment())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).FetchDatabaseProperties[0:len((*c.CallOptions).FetchDatabaseProperties):len((*c.CallOptions).FetchDatabaseProperties)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &servicepb.FetchDatabasePropertiesResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
 }
 
 // DeleteOperation is a utility method from google.longrunning.Operations.
@@ -1240,13 +1688,13 @@ func (c *environmentsRESTClient) GetOperation(ctx context.Context, req *longrunn
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1314,13 +1762,13 @@ func (c *environmentsRESTClient) ListOperations(ctx context.Context, req *longru
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -1427,6 +1875,88 @@ func (op *CreateEnvironmentOperation) Done() bool {
 // Name returns the name of the long-running operation.
 // The name is assigned by the server and is unique within the service from which the operation is created.
 func (op *CreateEnvironmentOperation) Name() string {
+	return op.lro.Name()
+}
+
+// DatabaseFailoverOperation manages a long-running operation from DatabaseFailover.
+type DatabaseFailoverOperation struct {
+	lro      *longrunning.Operation
+	pollPath string
+}
+
+// DatabaseFailoverOperation returns a new DatabaseFailoverOperation from a given name.
+// The name must be that of a previously created DatabaseFailoverOperation, possibly from a different process.
+func (c *environmentsGRPCClient) DatabaseFailoverOperation(name string) *DatabaseFailoverOperation {
+	return &DatabaseFailoverOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// DatabaseFailoverOperation returns a new DatabaseFailoverOperation from a given name.
+// The name must be that of a previously created DatabaseFailoverOperation, possibly from a different process.
+func (c *environmentsRESTClient) DatabaseFailoverOperation(name string) *DatabaseFailoverOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &DatabaseFailoverOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *DatabaseFailoverOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*servicepb.DatabaseFailoverResponse, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp servicepb.DatabaseFailoverResponse
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *DatabaseFailoverOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*servicepb.DatabaseFailoverResponse, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp servicepb.DatabaseFailoverResponse
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *DatabaseFailoverOperation) Metadata() (*servicepb.OperationMetadata, error) {
+	var meta servicepb.OperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *DatabaseFailoverOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *DatabaseFailoverOperation) Name() string {
 	return op.lro.Name()
 }
 

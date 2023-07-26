@@ -24,6 +24,7 @@ import (
 	"time"
 
 	clouddmspb "cloud.google.com/go/clouddms/apiv1/clouddmspb"
+	iampb "cloud.google.com/go/iam/apiv1/iampb"
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
@@ -32,6 +33,7 @@ import (
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
+	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/proto"
@@ -41,23 +43,51 @@ var newDataMigrationClientHook clientHook
 
 // DataMigrationCallOptions contains the retry settings for each method of DataMigrationClient.
 type DataMigrationCallOptions struct {
-	ListMigrationJobs       []gax.CallOption
-	GetMigrationJob         []gax.CallOption
-	CreateMigrationJob      []gax.CallOption
-	UpdateMigrationJob      []gax.CallOption
-	DeleteMigrationJob      []gax.CallOption
-	StartMigrationJob       []gax.CallOption
-	StopMigrationJob        []gax.CallOption
-	ResumeMigrationJob      []gax.CallOption
-	PromoteMigrationJob     []gax.CallOption
-	VerifyMigrationJob      []gax.CallOption
-	RestartMigrationJob     []gax.CallOption
-	GenerateSshScript       []gax.CallOption
-	ListConnectionProfiles  []gax.CallOption
-	GetConnectionProfile    []gax.CallOption
-	CreateConnectionProfile []gax.CallOption
-	UpdateConnectionProfile []gax.CallOption
-	DeleteConnectionProfile []gax.CallOption
+	ListMigrationJobs                    []gax.CallOption
+	GetMigrationJob                      []gax.CallOption
+	CreateMigrationJob                   []gax.CallOption
+	UpdateMigrationJob                   []gax.CallOption
+	DeleteMigrationJob                   []gax.CallOption
+	StartMigrationJob                    []gax.CallOption
+	StopMigrationJob                     []gax.CallOption
+	ResumeMigrationJob                   []gax.CallOption
+	PromoteMigrationJob                  []gax.CallOption
+	VerifyMigrationJob                   []gax.CallOption
+	RestartMigrationJob                  []gax.CallOption
+	GenerateSshScript                    []gax.CallOption
+	ListConnectionProfiles               []gax.CallOption
+	GetConnectionProfile                 []gax.CallOption
+	CreateConnectionProfile              []gax.CallOption
+	UpdateConnectionProfile              []gax.CallOption
+	DeleteConnectionProfile              []gax.CallOption
+	CreatePrivateConnection              []gax.CallOption
+	GetPrivateConnection                 []gax.CallOption
+	ListPrivateConnections               []gax.CallOption
+	DeletePrivateConnection              []gax.CallOption
+	GetConversionWorkspace               []gax.CallOption
+	ListConversionWorkspaces             []gax.CallOption
+	CreateConversionWorkspace            []gax.CallOption
+	UpdateConversionWorkspace            []gax.CallOption
+	DeleteConversionWorkspace            []gax.CallOption
+	SeedConversionWorkspace              []gax.CallOption
+	ImportMappingRules                   []gax.CallOption
+	ConvertConversionWorkspace           []gax.CallOption
+	CommitConversionWorkspace            []gax.CallOption
+	RollbackConversionWorkspace          []gax.CallOption
+	ApplyConversionWorkspace             []gax.CallOption
+	DescribeDatabaseEntities             []gax.CallOption
+	SearchBackgroundJobs                 []gax.CallOption
+	DescribeConversionWorkspaceRevisions []gax.CallOption
+	FetchStaticIps                       []gax.CallOption
+	GetLocation                          []gax.CallOption
+	ListLocations                        []gax.CallOption
+	GetIamPolicy                         []gax.CallOption
+	SetIamPolicy                         []gax.CallOption
+	TestIamPermissions                   []gax.CallOption
+	CancelOperation                      []gax.CallOption
+	DeleteOperation                      []gax.CallOption
+	GetOperation                         []gax.CallOption
+	ListOperations                       []gax.CallOption
 }
 
 func defaultDataMigrationGRPCClientOptions() []option.ClientOption {
@@ -74,23 +104,123 @@ func defaultDataMigrationGRPCClientOptions() []option.ClientOption {
 
 func defaultDataMigrationCallOptions() *DataMigrationCallOptions {
 	return &DataMigrationCallOptions{
-		ListMigrationJobs:       []gax.CallOption{},
-		GetMigrationJob:         []gax.CallOption{},
-		CreateMigrationJob:      []gax.CallOption{},
-		UpdateMigrationJob:      []gax.CallOption{},
-		DeleteMigrationJob:      []gax.CallOption{},
-		StartMigrationJob:       []gax.CallOption{},
-		StopMigrationJob:        []gax.CallOption{},
-		ResumeMigrationJob:      []gax.CallOption{},
-		PromoteMigrationJob:     []gax.CallOption{},
-		VerifyMigrationJob:      []gax.CallOption{},
-		RestartMigrationJob:     []gax.CallOption{},
-		GenerateSshScript:       []gax.CallOption{},
-		ListConnectionProfiles:  []gax.CallOption{},
-		GetConnectionProfile:    []gax.CallOption{},
-		CreateConnectionProfile: []gax.CallOption{},
-		UpdateConnectionProfile: []gax.CallOption{},
-		DeleteConnectionProfile: []gax.CallOption{},
+		ListMigrationJobs: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetMigrationJob: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		CreateMigrationJob: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateMigrationJob: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteMigrationJob: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		StartMigrationJob: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		StopMigrationJob: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ResumeMigrationJob: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		PromoteMigrationJob: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		VerifyMigrationJob: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		RestartMigrationJob: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GenerateSshScript: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ListConnectionProfiles: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetConnectionProfile: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		CreateConnectionProfile: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateConnectionProfile: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteConnectionProfile: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		CreatePrivateConnection: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetPrivateConnection: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ListPrivateConnections: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeletePrivateConnection: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetConversionWorkspace: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ListConversionWorkspaces: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		CreateConversionWorkspace: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateConversionWorkspace: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteConversionWorkspace: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		SeedConversionWorkspace: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ImportMappingRules: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ConvertConversionWorkspace: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		CommitConversionWorkspace: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		RollbackConversionWorkspace: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ApplyConversionWorkspace: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DescribeDatabaseEntities: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		SearchBackgroundJobs: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DescribeConversionWorkspaceRevisions: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		FetchStaticIps: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetLocation:        []gax.CallOption{},
+		ListLocations:      []gax.CallOption{},
+		GetIamPolicy:       []gax.CallOption{},
+		SetIamPolicy:       []gax.CallOption{},
+		TestIamPermissions: []gax.CallOption{},
+		CancelOperation:    []gax.CallOption{},
+		DeleteOperation:    []gax.CallOption{},
+		GetOperation:       []gax.CallOption{},
+		ListOperations:     []gax.CallOption{},
 	}
 }
 
@@ -128,6 +258,45 @@ type internalDataMigrationClient interface {
 	UpdateConnectionProfileOperation(name string) *UpdateConnectionProfileOperation
 	DeleteConnectionProfile(context.Context, *clouddmspb.DeleteConnectionProfileRequest, ...gax.CallOption) (*DeleteConnectionProfileOperation, error)
 	DeleteConnectionProfileOperation(name string) *DeleteConnectionProfileOperation
+	CreatePrivateConnection(context.Context, *clouddmspb.CreatePrivateConnectionRequest, ...gax.CallOption) (*CreatePrivateConnectionOperation, error)
+	CreatePrivateConnectionOperation(name string) *CreatePrivateConnectionOperation
+	GetPrivateConnection(context.Context, *clouddmspb.GetPrivateConnectionRequest, ...gax.CallOption) (*clouddmspb.PrivateConnection, error)
+	ListPrivateConnections(context.Context, *clouddmspb.ListPrivateConnectionsRequest, ...gax.CallOption) *PrivateConnectionIterator
+	DeletePrivateConnection(context.Context, *clouddmspb.DeletePrivateConnectionRequest, ...gax.CallOption) (*DeletePrivateConnectionOperation, error)
+	DeletePrivateConnectionOperation(name string) *DeletePrivateConnectionOperation
+	GetConversionWorkspace(context.Context, *clouddmspb.GetConversionWorkspaceRequest, ...gax.CallOption) (*clouddmspb.ConversionWorkspace, error)
+	ListConversionWorkspaces(context.Context, *clouddmspb.ListConversionWorkspacesRequest, ...gax.CallOption) *ConversionWorkspaceIterator
+	CreateConversionWorkspace(context.Context, *clouddmspb.CreateConversionWorkspaceRequest, ...gax.CallOption) (*CreateConversionWorkspaceOperation, error)
+	CreateConversionWorkspaceOperation(name string) *CreateConversionWorkspaceOperation
+	UpdateConversionWorkspace(context.Context, *clouddmspb.UpdateConversionWorkspaceRequest, ...gax.CallOption) (*UpdateConversionWorkspaceOperation, error)
+	UpdateConversionWorkspaceOperation(name string) *UpdateConversionWorkspaceOperation
+	DeleteConversionWorkspace(context.Context, *clouddmspb.DeleteConversionWorkspaceRequest, ...gax.CallOption) (*DeleteConversionWorkspaceOperation, error)
+	DeleteConversionWorkspaceOperation(name string) *DeleteConversionWorkspaceOperation
+	SeedConversionWorkspace(context.Context, *clouddmspb.SeedConversionWorkspaceRequest, ...gax.CallOption) (*SeedConversionWorkspaceOperation, error)
+	SeedConversionWorkspaceOperation(name string) *SeedConversionWorkspaceOperation
+	ImportMappingRules(context.Context, *clouddmspb.ImportMappingRulesRequest, ...gax.CallOption) (*ImportMappingRulesOperation, error)
+	ImportMappingRulesOperation(name string) *ImportMappingRulesOperation
+	ConvertConversionWorkspace(context.Context, *clouddmspb.ConvertConversionWorkspaceRequest, ...gax.CallOption) (*ConvertConversionWorkspaceOperation, error)
+	ConvertConversionWorkspaceOperation(name string) *ConvertConversionWorkspaceOperation
+	CommitConversionWorkspace(context.Context, *clouddmspb.CommitConversionWorkspaceRequest, ...gax.CallOption) (*CommitConversionWorkspaceOperation, error)
+	CommitConversionWorkspaceOperation(name string) *CommitConversionWorkspaceOperation
+	RollbackConversionWorkspace(context.Context, *clouddmspb.RollbackConversionWorkspaceRequest, ...gax.CallOption) (*RollbackConversionWorkspaceOperation, error)
+	RollbackConversionWorkspaceOperation(name string) *RollbackConversionWorkspaceOperation
+	ApplyConversionWorkspace(context.Context, *clouddmspb.ApplyConversionWorkspaceRequest, ...gax.CallOption) (*ApplyConversionWorkspaceOperation, error)
+	ApplyConversionWorkspaceOperation(name string) *ApplyConversionWorkspaceOperation
+	DescribeDatabaseEntities(context.Context, *clouddmspb.DescribeDatabaseEntitiesRequest, ...gax.CallOption) *DatabaseEntityIterator
+	SearchBackgroundJobs(context.Context, *clouddmspb.SearchBackgroundJobsRequest, ...gax.CallOption) (*clouddmspb.SearchBackgroundJobsResponse, error)
+	DescribeConversionWorkspaceRevisions(context.Context, *clouddmspb.DescribeConversionWorkspaceRevisionsRequest, ...gax.CallOption) (*clouddmspb.DescribeConversionWorkspaceRevisionsResponse, error)
+	FetchStaticIps(context.Context, *clouddmspb.FetchStaticIpsRequest, ...gax.CallOption) *StringIterator
+	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
+	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
+	GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
+	SetIamPolicy(context.Context, *iampb.SetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
+	TestIamPermissions(context.Context, *iampb.TestIamPermissionsRequest, ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error)
+	CancelOperation(context.Context, *longrunningpb.CancelOperationRequest, ...gax.CallOption) error
+	DeleteOperation(context.Context, *longrunningpb.DeleteOperationRequest, ...gax.CallOption) error
+	GetOperation(context.Context, *longrunningpb.GetOperationRequest, ...gax.CallOption) (*longrunningpb.Operation, error)
+	ListOperations(context.Context, *longrunningpb.ListOperationsRequest, ...gax.CallOption) *OperationIterator
 }
 
 // DataMigrationClient is a client for interacting with Database Migration API.
@@ -290,7 +459,8 @@ func (c *DataMigrationClient) GenerateSshScript(ctx context.Context, req *cloudd
 	return c.internalClient.GenerateSshScript(ctx, req, opts...)
 }
 
-// ListConnectionProfiles retrieve a list of all connection profiles in a given project and location.
+// ListConnectionProfiles retrieves a list of all connection profiles in a given project and
+// location.
 func (c *DataMigrationClient) ListConnectionProfiles(ctx context.Context, req *clouddmspb.ListConnectionProfilesRequest, opts ...gax.CallOption) *ConnectionProfileIterator {
 	return c.internalClient.ListConnectionProfiles(ctx, req, opts...)
 }
@@ -335,15 +505,243 @@ func (c *DataMigrationClient) DeleteConnectionProfileOperation(name string) *Del
 	return c.internalClient.DeleteConnectionProfileOperation(name)
 }
 
+// CreatePrivateConnection creates a new private connection in a given project and location.
+func (c *DataMigrationClient) CreatePrivateConnection(ctx context.Context, req *clouddmspb.CreatePrivateConnectionRequest, opts ...gax.CallOption) (*CreatePrivateConnectionOperation, error) {
+	return c.internalClient.CreatePrivateConnection(ctx, req, opts...)
+}
+
+// CreatePrivateConnectionOperation returns a new CreatePrivateConnectionOperation from a given name.
+// The name must be that of a previously created CreatePrivateConnectionOperation, possibly from a different process.
+func (c *DataMigrationClient) CreatePrivateConnectionOperation(name string) *CreatePrivateConnectionOperation {
+	return c.internalClient.CreatePrivateConnectionOperation(name)
+}
+
+// GetPrivateConnection gets details of a single private connection.
+func (c *DataMigrationClient) GetPrivateConnection(ctx context.Context, req *clouddmspb.GetPrivateConnectionRequest, opts ...gax.CallOption) (*clouddmspb.PrivateConnection, error) {
+	return c.internalClient.GetPrivateConnection(ctx, req, opts...)
+}
+
+// ListPrivateConnections retrieves a list of private connections in a given project and location.
+func (c *DataMigrationClient) ListPrivateConnections(ctx context.Context, req *clouddmspb.ListPrivateConnectionsRequest, opts ...gax.CallOption) *PrivateConnectionIterator {
+	return c.internalClient.ListPrivateConnections(ctx, req, opts...)
+}
+
+// DeletePrivateConnection deletes a single Database Migration Service private connection.
+func (c *DataMigrationClient) DeletePrivateConnection(ctx context.Context, req *clouddmspb.DeletePrivateConnectionRequest, opts ...gax.CallOption) (*DeletePrivateConnectionOperation, error) {
+	return c.internalClient.DeletePrivateConnection(ctx, req, opts...)
+}
+
+// DeletePrivateConnectionOperation returns a new DeletePrivateConnectionOperation from a given name.
+// The name must be that of a previously created DeletePrivateConnectionOperation, possibly from a different process.
+func (c *DataMigrationClient) DeletePrivateConnectionOperation(name string) *DeletePrivateConnectionOperation {
+	return c.internalClient.DeletePrivateConnectionOperation(name)
+}
+
+// GetConversionWorkspace gets details of a single conversion workspace.
+func (c *DataMigrationClient) GetConversionWorkspace(ctx context.Context, req *clouddmspb.GetConversionWorkspaceRequest, opts ...gax.CallOption) (*clouddmspb.ConversionWorkspace, error) {
+	return c.internalClient.GetConversionWorkspace(ctx, req, opts...)
+}
+
+// ListConversionWorkspaces lists conversion workspaces in a given project and location.
+func (c *DataMigrationClient) ListConversionWorkspaces(ctx context.Context, req *clouddmspb.ListConversionWorkspacesRequest, opts ...gax.CallOption) *ConversionWorkspaceIterator {
+	return c.internalClient.ListConversionWorkspaces(ctx, req, opts...)
+}
+
+// CreateConversionWorkspace creates a new conversion workspace in a given project and location.
+func (c *DataMigrationClient) CreateConversionWorkspace(ctx context.Context, req *clouddmspb.CreateConversionWorkspaceRequest, opts ...gax.CallOption) (*CreateConversionWorkspaceOperation, error) {
+	return c.internalClient.CreateConversionWorkspace(ctx, req, opts...)
+}
+
+// CreateConversionWorkspaceOperation returns a new CreateConversionWorkspaceOperation from a given name.
+// The name must be that of a previously created CreateConversionWorkspaceOperation, possibly from a different process.
+func (c *DataMigrationClient) CreateConversionWorkspaceOperation(name string) *CreateConversionWorkspaceOperation {
+	return c.internalClient.CreateConversionWorkspaceOperation(name)
+}
+
+// UpdateConversionWorkspace updates the parameters of a single conversion workspace.
+func (c *DataMigrationClient) UpdateConversionWorkspace(ctx context.Context, req *clouddmspb.UpdateConversionWorkspaceRequest, opts ...gax.CallOption) (*UpdateConversionWorkspaceOperation, error) {
+	return c.internalClient.UpdateConversionWorkspace(ctx, req, opts...)
+}
+
+// UpdateConversionWorkspaceOperation returns a new UpdateConversionWorkspaceOperation from a given name.
+// The name must be that of a previously created UpdateConversionWorkspaceOperation, possibly from a different process.
+func (c *DataMigrationClient) UpdateConversionWorkspaceOperation(name string) *UpdateConversionWorkspaceOperation {
+	return c.internalClient.UpdateConversionWorkspaceOperation(name)
+}
+
+// DeleteConversionWorkspace deletes a single conversion workspace.
+func (c *DataMigrationClient) DeleteConversionWorkspace(ctx context.Context, req *clouddmspb.DeleteConversionWorkspaceRequest, opts ...gax.CallOption) (*DeleteConversionWorkspaceOperation, error) {
+	return c.internalClient.DeleteConversionWorkspace(ctx, req, opts...)
+}
+
+// DeleteConversionWorkspaceOperation returns a new DeleteConversionWorkspaceOperation from a given name.
+// The name must be that of a previously created DeleteConversionWorkspaceOperation, possibly from a different process.
+func (c *DataMigrationClient) DeleteConversionWorkspaceOperation(name string) *DeleteConversionWorkspaceOperation {
+	return c.internalClient.DeleteConversionWorkspaceOperation(name)
+}
+
+// SeedConversionWorkspace imports a snapshot of the source database into the
+// conversion workspace.
+func (c *DataMigrationClient) SeedConversionWorkspace(ctx context.Context, req *clouddmspb.SeedConversionWorkspaceRequest, opts ...gax.CallOption) (*SeedConversionWorkspaceOperation, error) {
+	return c.internalClient.SeedConversionWorkspace(ctx, req, opts...)
+}
+
+// SeedConversionWorkspaceOperation returns a new SeedConversionWorkspaceOperation from a given name.
+// The name must be that of a previously created SeedConversionWorkspaceOperation, possibly from a different process.
+func (c *DataMigrationClient) SeedConversionWorkspaceOperation(name string) *SeedConversionWorkspaceOperation {
+	return c.internalClient.SeedConversionWorkspaceOperation(name)
+}
+
+// ImportMappingRules imports the mapping rules for a given conversion workspace.
+// Supports various formats of external rules files.
+func (c *DataMigrationClient) ImportMappingRules(ctx context.Context, req *clouddmspb.ImportMappingRulesRequest, opts ...gax.CallOption) (*ImportMappingRulesOperation, error) {
+	return c.internalClient.ImportMappingRules(ctx, req, opts...)
+}
+
+// ImportMappingRulesOperation returns a new ImportMappingRulesOperation from a given name.
+// The name must be that of a previously created ImportMappingRulesOperation, possibly from a different process.
+func (c *DataMigrationClient) ImportMappingRulesOperation(name string) *ImportMappingRulesOperation {
+	return c.internalClient.ImportMappingRulesOperation(name)
+}
+
+// ConvertConversionWorkspace creates a draft tree schema for the destination database.
+func (c *DataMigrationClient) ConvertConversionWorkspace(ctx context.Context, req *clouddmspb.ConvertConversionWorkspaceRequest, opts ...gax.CallOption) (*ConvertConversionWorkspaceOperation, error) {
+	return c.internalClient.ConvertConversionWorkspace(ctx, req, opts...)
+}
+
+// ConvertConversionWorkspaceOperation returns a new ConvertConversionWorkspaceOperation from a given name.
+// The name must be that of a previously created ConvertConversionWorkspaceOperation, possibly from a different process.
+func (c *DataMigrationClient) ConvertConversionWorkspaceOperation(name string) *ConvertConversionWorkspaceOperation {
+	return c.internalClient.ConvertConversionWorkspaceOperation(name)
+}
+
+// CommitConversionWorkspace marks all the data in the conversion workspace as committed.
+func (c *DataMigrationClient) CommitConversionWorkspace(ctx context.Context, req *clouddmspb.CommitConversionWorkspaceRequest, opts ...gax.CallOption) (*CommitConversionWorkspaceOperation, error) {
+	return c.internalClient.CommitConversionWorkspace(ctx, req, opts...)
+}
+
+// CommitConversionWorkspaceOperation returns a new CommitConversionWorkspaceOperation from a given name.
+// The name must be that of a previously created CommitConversionWorkspaceOperation, possibly from a different process.
+func (c *DataMigrationClient) CommitConversionWorkspaceOperation(name string) *CommitConversionWorkspaceOperation {
+	return c.internalClient.CommitConversionWorkspaceOperation(name)
+}
+
+// RollbackConversionWorkspace rolls back a conversion workspace to the last committed snapshot.
+func (c *DataMigrationClient) RollbackConversionWorkspace(ctx context.Context, req *clouddmspb.RollbackConversionWorkspaceRequest, opts ...gax.CallOption) (*RollbackConversionWorkspaceOperation, error) {
+	return c.internalClient.RollbackConversionWorkspace(ctx, req, opts...)
+}
+
+// RollbackConversionWorkspaceOperation returns a new RollbackConversionWorkspaceOperation from a given name.
+// The name must be that of a previously created RollbackConversionWorkspaceOperation, possibly from a different process.
+func (c *DataMigrationClient) RollbackConversionWorkspaceOperation(name string) *RollbackConversionWorkspaceOperation {
+	return c.internalClient.RollbackConversionWorkspaceOperation(name)
+}
+
+// ApplyConversionWorkspace applies draft tree onto a specific destination database.
+func (c *DataMigrationClient) ApplyConversionWorkspace(ctx context.Context, req *clouddmspb.ApplyConversionWorkspaceRequest, opts ...gax.CallOption) (*ApplyConversionWorkspaceOperation, error) {
+	return c.internalClient.ApplyConversionWorkspace(ctx, req, opts...)
+}
+
+// ApplyConversionWorkspaceOperation returns a new ApplyConversionWorkspaceOperation from a given name.
+// The name must be that of a previously created ApplyConversionWorkspaceOperation, possibly from a different process.
+func (c *DataMigrationClient) ApplyConversionWorkspaceOperation(name string) *ApplyConversionWorkspaceOperation {
+	return c.internalClient.ApplyConversionWorkspaceOperation(name)
+}
+
+// DescribeDatabaseEntities describes the database entities tree for a specific conversion workspace
+// and a specific tree type.
+//
+// Database entities are not resources like conversion workspaces or mapping
+// rules, and they can’t be created, updated or deleted. Instead, they are
+// simple data objects describing the structure of the client database.
+func (c *DataMigrationClient) DescribeDatabaseEntities(ctx context.Context, req *clouddmspb.DescribeDatabaseEntitiesRequest, opts ...gax.CallOption) *DatabaseEntityIterator {
+	return c.internalClient.DescribeDatabaseEntities(ctx, req, opts...)
+}
+
+// SearchBackgroundJobs searches/lists the background jobs for a specific
+// conversion workspace.
+//
+// The background jobs are not resources like conversion workspaces or
+// mapping rules, and they can’t be created, updated or deleted.
+// Instead, they are a way to expose the data plane jobs log.
+func (c *DataMigrationClient) SearchBackgroundJobs(ctx context.Context, req *clouddmspb.SearchBackgroundJobsRequest, opts ...gax.CallOption) (*clouddmspb.SearchBackgroundJobsResponse, error) {
+	return c.internalClient.SearchBackgroundJobs(ctx, req, opts...)
+}
+
+// DescribeConversionWorkspaceRevisions retrieves a list of committed revisions of a specific conversion
+// workspace.
+func (c *DataMigrationClient) DescribeConversionWorkspaceRevisions(ctx context.Context, req *clouddmspb.DescribeConversionWorkspaceRevisionsRequest, opts ...gax.CallOption) (*clouddmspb.DescribeConversionWorkspaceRevisionsResponse, error) {
+	return c.internalClient.DescribeConversionWorkspaceRevisions(ctx, req, opts...)
+}
+
+// FetchStaticIps fetches a set of static IP addresses that need to be allowlisted by the
+// customer when using the static-IP connectivity method.
+func (c *DataMigrationClient) FetchStaticIps(ctx context.Context, req *clouddmspb.FetchStaticIpsRequest, opts ...gax.CallOption) *StringIterator {
+	return c.internalClient.FetchStaticIps(ctx, req, opts...)
+}
+
+// GetLocation gets information about a location.
+func (c *DataMigrationClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
+	return c.internalClient.GetLocation(ctx, req, opts...)
+}
+
+// ListLocations lists information about the supported locations for this service.
+func (c *DataMigrationClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
+	return c.internalClient.ListLocations(ctx, req, opts...)
+}
+
+// GetIamPolicy gets the access control policy for a resource. Returns an empty policy
+// if the resource exists and does not have a policy set.
+func (c *DataMigrationClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
+	return c.internalClient.GetIamPolicy(ctx, req, opts...)
+}
+
+// SetIamPolicy sets the access control policy on the specified resource. Replaces
+// any existing policy.
+//
+// Can return NOT_FOUND, INVALID_ARGUMENT, and PERMISSION_DENIED
+// errors.
+func (c *DataMigrationClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
+	return c.internalClient.SetIamPolicy(ctx, req, opts...)
+}
+
+// TestIamPermissions returns permissions that a caller has on the specified resource. If the
+// resource does not exist, this will return an empty set of
+// permissions, not a NOT_FOUND error.
+//
+// Note: This operation is designed to be used for building
+// permission-aware UIs and command-line tools, not for authorization
+// checking. This operation may “fail open” without warning.
+func (c *DataMigrationClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermissionsRequest, opts ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error) {
+	return c.internalClient.TestIamPermissions(ctx, req, opts...)
+}
+
+// CancelOperation is a utility method from google.longrunning.Operations.
+func (c *DataMigrationClient) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
+	return c.internalClient.CancelOperation(ctx, req, opts...)
+}
+
+// DeleteOperation is a utility method from google.longrunning.Operations.
+func (c *DataMigrationClient) DeleteOperation(ctx context.Context, req *longrunningpb.DeleteOperationRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteOperation(ctx, req, opts...)
+}
+
+// GetOperation is a utility method from google.longrunning.Operations.
+func (c *DataMigrationClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+	return c.internalClient.GetOperation(ctx, req, opts...)
+}
+
+// ListOperations is a utility method from google.longrunning.Operations.
+func (c *DataMigrationClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
+	return c.internalClient.ListOperations(ctx, req, opts...)
+}
+
 // dataMigrationGRPCClient is a client for interacting with Database Migration API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type dataMigrationGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
-
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
 
 	// Points back to the CallOptions field of the containing DataMigrationClient
 	CallOptions **DataMigrationCallOptions
@@ -355,6 +753,12 @@ type dataMigrationGRPCClient struct {
 	// It is exposed so that its CallOptions can be modified if required.
 	// Users should not Close this client.
 	LROClient **lroauto.OperationsClient
+
+	operationsClient longrunningpb.OperationsClient
+
+	iamPolicyClient iampb.IAMPolicyClient
+
+	locationsClient locationpb.LocationsClient
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
@@ -374,11 +778,6 @@ func NewDataMigrationClient(ctx context.Context, opts ...option.ClientOption) (*
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -387,9 +786,11 @@ func NewDataMigrationClient(ctx context.Context, opts ...option.ClientOption) (*
 
 	c := &dataMigrationGRPCClient{
 		connPool:            connPool,
-		disableDeadlines:    disableDeadlines,
 		dataMigrationClient: clouddmspb.NewDataMigrationServiceClient(connPool),
 		CallOptions:         &client.CallOptions,
+		operationsClient:    longrunningpb.NewOperationsClient(connPool),
+		iamPolicyClient:     iampb.NewIAMPolicyClient(connPool),
+		locationsClient:     locationpb.NewLocationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
 
@@ -421,7 +822,7 @@ func (c *dataMigrationGRPCClient) Connection() *grpc.ClientConn {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *dataMigrationGRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -478,11 +879,6 @@ func (c *dataMigrationGRPCClient) ListMigrationJobs(ctx context.Context, req *cl
 }
 
 func (c *dataMigrationGRPCClient) GetMigrationJob(ctx context.Context, req *clouddmspb.GetMigrationJobRequest, opts ...gax.CallOption) (*clouddmspb.MigrationJob, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -500,11 +896,6 @@ func (c *dataMigrationGRPCClient) GetMigrationJob(ctx context.Context, req *clou
 }
 
 func (c *dataMigrationGRPCClient) CreateMigrationJob(ctx context.Context, req *clouddmspb.CreateMigrationJobRequest, opts ...gax.CallOption) (*CreateMigrationJobOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -524,11 +915,6 @@ func (c *dataMigrationGRPCClient) CreateMigrationJob(ctx context.Context, req *c
 }
 
 func (c *dataMigrationGRPCClient) UpdateMigrationJob(ctx context.Context, req *clouddmspb.UpdateMigrationJobRequest, opts ...gax.CallOption) (*UpdateMigrationJobOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "migration_job.name", url.QueryEscape(req.GetMigrationJob().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -548,11 +934,6 @@ func (c *dataMigrationGRPCClient) UpdateMigrationJob(ctx context.Context, req *c
 }
 
 func (c *dataMigrationGRPCClient) DeleteMigrationJob(ctx context.Context, req *clouddmspb.DeleteMigrationJobRequest, opts ...gax.CallOption) (*DeleteMigrationJobOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -572,11 +953,6 @@ func (c *dataMigrationGRPCClient) DeleteMigrationJob(ctx context.Context, req *c
 }
 
 func (c *dataMigrationGRPCClient) StartMigrationJob(ctx context.Context, req *clouddmspb.StartMigrationJobRequest, opts ...gax.CallOption) (*StartMigrationJobOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -596,11 +972,6 @@ func (c *dataMigrationGRPCClient) StartMigrationJob(ctx context.Context, req *cl
 }
 
 func (c *dataMigrationGRPCClient) StopMigrationJob(ctx context.Context, req *clouddmspb.StopMigrationJobRequest, opts ...gax.CallOption) (*StopMigrationJobOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -620,11 +991,6 @@ func (c *dataMigrationGRPCClient) StopMigrationJob(ctx context.Context, req *clo
 }
 
 func (c *dataMigrationGRPCClient) ResumeMigrationJob(ctx context.Context, req *clouddmspb.ResumeMigrationJobRequest, opts ...gax.CallOption) (*ResumeMigrationJobOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -644,11 +1010,6 @@ func (c *dataMigrationGRPCClient) ResumeMigrationJob(ctx context.Context, req *c
 }
 
 func (c *dataMigrationGRPCClient) PromoteMigrationJob(ctx context.Context, req *clouddmspb.PromoteMigrationJobRequest, opts ...gax.CallOption) (*PromoteMigrationJobOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -668,11 +1029,6 @@ func (c *dataMigrationGRPCClient) PromoteMigrationJob(ctx context.Context, req *
 }
 
 func (c *dataMigrationGRPCClient) VerifyMigrationJob(ctx context.Context, req *clouddmspb.VerifyMigrationJobRequest, opts ...gax.CallOption) (*VerifyMigrationJobOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -692,11 +1048,6 @@ func (c *dataMigrationGRPCClient) VerifyMigrationJob(ctx context.Context, req *c
 }
 
 func (c *dataMigrationGRPCClient) RestartMigrationJob(ctx context.Context, req *clouddmspb.RestartMigrationJobRequest, opts ...gax.CallOption) (*RestartMigrationJobOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -716,11 +1067,6 @@ func (c *dataMigrationGRPCClient) RestartMigrationJob(ctx context.Context, req *
 }
 
 func (c *dataMigrationGRPCClient) GenerateSshScript(ctx context.Context, req *clouddmspb.GenerateSshScriptRequest, opts ...gax.CallOption) (*clouddmspb.SshScript, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "migration_job", url.QueryEscape(req.GetMigrationJob())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -783,11 +1129,6 @@ func (c *dataMigrationGRPCClient) ListConnectionProfiles(ctx context.Context, re
 }
 
 func (c *dataMigrationGRPCClient) GetConnectionProfile(ctx context.Context, req *clouddmspb.GetConnectionProfileRequest, opts ...gax.CallOption) (*clouddmspb.ConnectionProfile, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -805,11 +1146,6 @@ func (c *dataMigrationGRPCClient) GetConnectionProfile(ctx context.Context, req 
 }
 
 func (c *dataMigrationGRPCClient) CreateConnectionProfile(ctx context.Context, req *clouddmspb.CreateConnectionProfileRequest, opts ...gax.CallOption) (*CreateConnectionProfileOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -829,11 +1165,6 @@ func (c *dataMigrationGRPCClient) CreateConnectionProfile(ctx context.Context, r
 }
 
 func (c *dataMigrationGRPCClient) UpdateConnectionProfile(ctx context.Context, req *clouddmspb.UpdateConnectionProfileRequest, opts ...gax.CallOption) (*UpdateConnectionProfileOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "connection_profile.name", url.QueryEscape(req.GetConnectionProfile().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -853,11 +1184,6 @@ func (c *dataMigrationGRPCClient) UpdateConnectionProfile(ctx context.Context, r
 }
 
 func (c *dataMigrationGRPCClient) DeleteConnectionProfile(ctx context.Context, req *clouddmspb.DeleteConnectionProfileRequest, opts ...gax.CallOption) (*DeleteConnectionProfileOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -874,6 +1200,871 @@ func (c *dataMigrationGRPCClient) DeleteConnectionProfile(ctx context.Context, r
 	return &DeleteConnectionProfileOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
+}
+
+func (c *dataMigrationGRPCClient) CreatePrivateConnection(ctx context.Context, req *clouddmspb.CreatePrivateConnectionRequest, opts ...gax.CallOption) (*CreatePrivateConnectionOperation, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).CreatePrivateConnection[0:len((*c.CallOptions).CreatePrivateConnection):len((*c.CallOptions).CreatePrivateConnection)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.dataMigrationClient.CreatePrivateConnection(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &CreatePrivateConnectionOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *dataMigrationGRPCClient) GetPrivateConnection(ctx context.Context, req *clouddmspb.GetPrivateConnectionRequest, opts ...gax.CallOption) (*clouddmspb.PrivateConnection, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).GetPrivateConnection[0:len((*c.CallOptions).GetPrivateConnection):len((*c.CallOptions).GetPrivateConnection)], opts...)
+	var resp *clouddmspb.PrivateConnection
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.dataMigrationClient.GetPrivateConnection(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *dataMigrationGRPCClient) ListPrivateConnections(ctx context.Context, req *clouddmspb.ListPrivateConnectionsRequest, opts ...gax.CallOption) *PrivateConnectionIterator {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).ListPrivateConnections[0:len((*c.CallOptions).ListPrivateConnections):len((*c.CallOptions).ListPrivateConnections)], opts...)
+	it := &PrivateConnectionIterator{}
+	req = proto.Clone(req).(*clouddmspb.ListPrivateConnectionsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*clouddmspb.PrivateConnection, string, error) {
+		resp := &clouddmspb.ListPrivateConnectionsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.dataMigrationClient.ListPrivateConnections(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetPrivateConnections(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *dataMigrationGRPCClient) DeletePrivateConnection(ctx context.Context, req *clouddmspb.DeletePrivateConnectionRequest, opts ...gax.CallOption) (*DeletePrivateConnectionOperation, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).DeletePrivateConnection[0:len((*c.CallOptions).DeletePrivateConnection):len((*c.CallOptions).DeletePrivateConnection)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.dataMigrationClient.DeletePrivateConnection(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &DeletePrivateConnectionOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *dataMigrationGRPCClient) GetConversionWorkspace(ctx context.Context, req *clouddmspb.GetConversionWorkspaceRequest, opts ...gax.CallOption) (*clouddmspb.ConversionWorkspace, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).GetConversionWorkspace[0:len((*c.CallOptions).GetConversionWorkspace):len((*c.CallOptions).GetConversionWorkspace)], opts...)
+	var resp *clouddmspb.ConversionWorkspace
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.dataMigrationClient.GetConversionWorkspace(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *dataMigrationGRPCClient) ListConversionWorkspaces(ctx context.Context, req *clouddmspb.ListConversionWorkspacesRequest, opts ...gax.CallOption) *ConversionWorkspaceIterator {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).ListConversionWorkspaces[0:len((*c.CallOptions).ListConversionWorkspaces):len((*c.CallOptions).ListConversionWorkspaces)], opts...)
+	it := &ConversionWorkspaceIterator{}
+	req = proto.Clone(req).(*clouddmspb.ListConversionWorkspacesRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*clouddmspb.ConversionWorkspace, string, error) {
+		resp := &clouddmspb.ListConversionWorkspacesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.dataMigrationClient.ListConversionWorkspaces(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetConversionWorkspaces(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *dataMigrationGRPCClient) CreateConversionWorkspace(ctx context.Context, req *clouddmspb.CreateConversionWorkspaceRequest, opts ...gax.CallOption) (*CreateConversionWorkspaceOperation, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).CreateConversionWorkspace[0:len((*c.CallOptions).CreateConversionWorkspace):len((*c.CallOptions).CreateConversionWorkspace)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.dataMigrationClient.CreateConversionWorkspace(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &CreateConversionWorkspaceOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *dataMigrationGRPCClient) UpdateConversionWorkspace(ctx context.Context, req *clouddmspb.UpdateConversionWorkspaceRequest, opts ...gax.CallOption) (*UpdateConversionWorkspaceOperation, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "conversion_workspace.name", url.QueryEscape(req.GetConversionWorkspace().GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).UpdateConversionWorkspace[0:len((*c.CallOptions).UpdateConversionWorkspace):len((*c.CallOptions).UpdateConversionWorkspace)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.dataMigrationClient.UpdateConversionWorkspace(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &UpdateConversionWorkspaceOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *dataMigrationGRPCClient) DeleteConversionWorkspace(ctx context.Context, req *clouddmspb.DeleteConversionWorkspaceRequest, opts ...gax.CallOption) (*DeleteConversionWorkspaceOperation, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).DeleteConversionWorkspace[0:len((*c.CallOptions).DeleteConversionWorkspace):len((*c.CallOptions).DeleteConversionWorkspace)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.dataMigrationClient.DeleteConversionWorkspace(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &DeleteConversionWorkspaceOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *dataMigrationGRPCClient) SeedConversionWorkspace(ctx context.Context, req *clouddmspb.SeedConversionWorkspaceRequest, opts ...gax.CallOption) (*SeedConversionWorkspaceOperation, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).SeedConversionWorkspace[0:len((*c.CallOptions).SeedConversionWorkspace):len((*c.CallOptions).SeedConversionWorkspace)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.dataMigrationClient.SeedConversionWorkspace(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &SeedConversionWorkspaceOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *dataMigrationGRPCClient) ImportMappingRules(ctx context.Context, req *clouddmspb.ImportMappingRulesRequest, opts ...gax.CallOption) (*ImportMappingRulesOperation, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).ImportMappingRules[0:len((*c.CallOptions).ImportMappingRules):len((*c.CallOptions).ImportMappingRules)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.dataMigrationClient.ImportMappingRules(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &ImportMappingRulesOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *dataMigrationGRPCClient) ConvertConversionWorkspace(ctx context.Context, req *clouddmspb.ConvertConversionWorkspaceRequest, opts ...gax.CallOption) (*ConvertConversionWorkspaceOperation, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).ConvertConversionWorkspace[0:len((*c.CallOptions).ConvertConversionWorkspace):len((*c.CallOptions).ConvertConversionWorkspace)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.dataMigrationClient.ConvertConversionWorkspace(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &ConvertConversionWorkspaceOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *dataMigrationGRPCClient) CommitConversionWorkspace(ctx context.Context, req *clouddmspb.CommitConversionWorkspaceRequest, opts ...gax.CallOption) (*CommitConversionWorkspaceOperation, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).CommitConversionWorkspace[0:len((*c.CallOptions).CommitConversionWorkspace):len((*c.CallOptions).CommitConversionWorkspace)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.dataMigrationClient.CommitConversionWorkspace(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &CommitConversionWorkspaceOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *dataMigrationGRPCClient) RollbackConversionWorkspace(ctx context.Context, req *clouddmspb.RollbackConversionWorkspaceRequest, opts ...gax.CallOption) (*RollbackConversionWorkspaceOperation, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).RollbackConversionWorkspace[0:len((*c.CallOptions).RollbackConversionWorkspace):len((*c.CallOptions).RollbackConversionWorkspace)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.dataMigrationClient.RollbackConversionWorkspace(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &RollbackConversionWorkspaceOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *dataMigrationGRPCClient) ApplyConversionWorkspace(ctx context.Context, req *clouddmspb.ApplyConversionWorkspaceRequest, opts ...gax.CallOption) (*ApplyConversionWorkspaceOperation, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).ApplyConversionWorkspace[0:len((*c.CallOptions).ApplyConversionWorkspace):len((*c.CallOptions).ApplyConversionWorkspace)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.dataMigrationClient.ApplyConversionWorkspace(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &ApplyConversionWorkspaceOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *dataMigrationGRPCClient) DescribeDatabaseEntities(ctx context.Context, req *clouddmspb.DescribeDatabaseEntitiesRequest, opts ...gax.CallOption) *DatabaseEntityIterator {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "conversion_workspace", url.QueryEscape(req.GetConversionWorkspace())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).DescribeDatabaseEntities[0:len((*c.CallOptions).DescribeDatabaseEntities):len((*c.CallOptions).DescribeDatabaseEntities)], opts...)
+	it := &DatabaseEntityIterator{}
+	req = proto.Clone(req).(*clouddmspb.DescribeDatabaseEntitiesRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*clouddmspb.DatabaseEntity, string, error) {
+		resp := &clouddmspb.DescribeDatabaseEntitiesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.dataMigrationClient.DescribeDatabaseEntities(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetDatabaseEntities(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *dataMigrationGRPCClient) SearchBackgroundJobs(ctx context.Context, req *clouddmspb.SearchBackgroundJobsRequest, opts ...gax.CallOption) (*clouddmspb.SearchBackgroundJobsResponse, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "conversion_workspace", url.QueryEscape(req.GetConversionWorkspace())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).SearchBackgroundJobs[0:len((*c.CallOptions).SearchBackgroundJobs):len((*c.CallOptions).SearchBackgroundJobs)], opts...)
+	var resp *clouddmspb.SearchBackgroundJobsResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.dataMigrationClient.SearchBackgroundJobs(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *dataMigrationGRPCClient) DescribeConversionWorkspaceRevisions(ctx context.Context, req *clouddmspb.DescribeConversionWorkspaceRevisionsRequest, opts ...gax.CallOption) (*clouddmspb.DescribeConversionWorkspaceRevisionsResponse, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "conversion_workspace", url.QueryEscape(req.GetConversionWorkspace())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).DescribeConversionWorkspaceRevisions[0:len((*c.CallOptions).DescribeConversionWorkspaceRevisions):len((*c.CallOptions).DescribeConversionWorkspaceRevisions)], opts...)
+	var resp *clouddmspb.DescribeConversionWorkspaceRevisionsResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.dataMigrationClient.DescribeConversionWorkspaceRevisions(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *dataMigrationGRPCClient) FetchStaticIps(ctx context.Context, req *clouddmspb.FetchStaticIpsRequest, opts ...gax.CallOption) *StringIterator {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).FetchStaticIps[0:len((*c.CallOptions).FetchStaticIps):len((*c.CallOptions).FetchStaticIps)], opts...)
+	it := &StringIterator{}
+	req = proto.Clone(req).(*clouddmspb.FetchStaticIpsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]string, string, error) {
+		resp := &clouddmspb.FetchStaticIpsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.dataMigrationClient.FetchStaticIps(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetStaticIps(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *dataMigrationGRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).GetLocation[0:len((*c.CallOptions).GetLocation):len((*c.CallOptions).GetLocation)], opts...)
+	var resp *locationpb.Location
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.locationsClient.GetLocation(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *dataMigrationGRPCClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
+	it := &LocationIterator{}
+	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
+		resp := &locationpb.ListLocationsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.locationsClient.ListLocations(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetLocations(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *dataMigrationGRPCClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).GetIamPolicy[0:len((*c.CallOptions).GetIamPolicy):len((*c.CallOptions).GetIamPolicy)], opts...)
+	var resp *iampb.Policy
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.iamPolicyClient.GetIamPolicy(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *dataMigrationGRPCClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).SetIamPolicy[0:len((*c.CallOptions).SetIamPolicy):len((*c.CallOptions).SetIamPolicy)], opts...)
+	var resp *iampb.Policy
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.iamPolicyClient.SetIamPolicy(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *dataMigrationGRPCClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermissionsRequest, opts ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).TestIamPermissions[0:len((*c.CallOptions).TestIamPermissions):len((*c.CallOptions).TestIamPermissions)], opts...)
+	var resp *iampb.TestIamPermissionsResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.iamPolicyClient.TestIamPermissions(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *dataMigrationGRPCClient) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = c.operationsClient.CancelOperation(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	return err
+}
+
+func (c *dataMigrationGRPCClient) DeleteOperation(ctx context.Context, req *longrunningpb.DeleteOperationRequest, opts ...gax.CallOption) error {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = c.operationsClient.DeleteOperation(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	return err
+}
+
+func (c *dataMigrationGRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *dataMigrationGRPCClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
+	it := &OperationIterator{}
+	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
+		resp := &longrunningpb.ListOperationsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetOperations(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// ApplyConversionWorkspaceOperation manages a long-running operation from ApplyConversionWorkspace.
+type ApplyConversionWorkspaceOperation struct {
+	lro *longrunning.Operation
+}
+
+// ApplyConversionWorkspaceOperation returns a new ApplyConversionWorkspaceOperation from a given name.
+// The name must be that of a previously created ApplyConversionWorkspaceOperation, possibly from a different process.
+func (c *dataMigrationGRPCClient) ApplyConversionWorkspaceOperation(name string) *ApplyConversionWorkspaceOperation {
+	return &ApplyConversionWorkspaceOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *ApplyConversionWorkspaceOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*clouddmspb.ConversionWorkspace, error) {
+	var resp clouddmspb.ConversionWorkspace
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *ApplyConversionWorkspaceOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*clouddmspb.ConversionWorkspace, error) {
+	var resp clouddmspb.ConversionWorkspace
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *ApplyConversionWorkspaceOperation) Metadata() (*clouddmspb.OperationMetadata, error) {
+	var meta clouddmspb.OperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *ApplyConversionWorkspaceOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *ApplyConversionWorkspaceOperation) Name() string {
+	return op.lro.Name()
+}
+
+// CommitConversionWorkspaceOperation manages a long-running operation from CommitConversionWorkspace.
+type CommitConversionWorkspaceOperation struct {
+	lro *longrunning.Operation
+}
+
+// CommitConversionWorkspaceOperation returns a new CommitConversionWorkspaceOperation from a given name.
+// The name must be that of a previously created CommitConversionWorkspaceOperation, possibly from a different process.
+func (c *dataMigrationGRPCClient) CommitConversionWorkspaceOperation(name string) *CommitConversionWorkspaceOperation {
+	return &CommitConversionWorkspaceOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *CommitConversionWorkspaceOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*clouddmspb.ConversionWorkspace, error) {
+	var resp clouddmspb.ConversionWorkspace
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *CommitConversionWorkspaceOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*clouddmspb.ConversionWorkspace, error) {
+	var resp clouddmspb.ConversionWorkspace
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *CommitConversionWorkspaceOperation) Metadata() (*clouddmspb.OperationMetadata, error) {
+	var meta clouddmspb.OperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *CommitConversionWorkspaceOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *CommitConversionWorkspaceOperation) Name() string {
+	return op.lro.Name()
+}
+
+// ConvertConversionWorkspaceOperation manages a long-running operation from ConvertConversionWorkspace.
+type ConvertConversionWorkspaceOperation struct {
+	lro *longrunning.Operation
+}
+
+// ConvertConversionWorkspaceOperation returns a new ConvertConversionWorkspaceOperation from a given name.
+// The name must be that of a previously created ConvertConversionWorkspaceOperation, possibly from a different process.
+func (c *dataMigrationGRPCClient) ConvertConversionWorkspaceOperation(name string) *ConvertConversionWorkspaceOperation {
+	return &ConvertConversionWorkspaceOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *ConvertConversionWorkspaceOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*clouddmspb.ConversionWorkspace, error) {
+	var resp clouddmspb.ConversionWorkspace
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *ConvertConversionWorkspaceOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*clouddmspb.ConversionWorkspace, error) {
+	var resp clouddmspb.ConversionWorkspace
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *ConvertConversionWorkspaceOperation) Metadata() (*clouddmspb.OperationMetadata, error) {
+	var meta clouddmspb.OperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *ConvertConversionWorkspaceOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *ConvertConversionWorkspaceOperation) Name() string {
+	return op.lro.Name()
 }
 
 // CreateConnectionProfileOperation manages a long-running operation from CreateConnectionProfile.
@@ -942,6 +2133,75 @@ func (op *CreateConnectionProfileOperation) Done() bool {
 // Name returns the name of the long-running operation.
 // The name is assigned by the server and is unique within the service from which the operation is created.
 func (op *CreateConnectionProfileOperation) Name() string {
+	return op.lro.Name()
+}
+
+// CreateConversionWorkspaceOperation manages a long-running operation from CreateConversionWorkspace.
+type CreateConversionWorkspaceOperation struct {
+	lro *longrunning.Operation
+}
+
+// CreateConversionWorkspaceOperation returns a new CreateConversionWorkspaceOperation from a given name.
+// The name must be that of a previously created CreateConversionWorkspaceOperation, possibly from a different process.
+func (c *dataMigrationGRPCClient) CreateConversionWorkspaceOperation(name string) *CreateConversionWorkspaceOperation {
+	return &CreateConversionWorkspaceOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *CreateConversionWorkspaceOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*clouddmspb.ConversionWorkspace, error) {
+	var resp clouddmspb.ConversionWorkspace
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *CreateConversionWorkspaceOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*clouddmspb.ConversionWorkspace, error) {
+	var resp clouddmspb.ConversionWorkspace
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *CreateConversionWorkspaceOperation) Metadata() (*clouddmspb.OperationMetadata, error) {
+	var meta clouddmspb.OperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *CreateConversionWorkspaceOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *CreateConversionWorkspaceOperation) Name() string {
 	return op.lro.Name()
 }
 
@@ -1014,6 +2274,75 @@ func (op *CreateMigrationJobOperation) Name() string {
 	return op.lro.Name()
 }
 
+// CreatePrivateConnectionOperation manages a long-running operation from CreatePrivateConnection.
+type CreatePrivateConnectionOperation struct {
+	lro *longrunning.Operation
+}
+
+// CreatePrivateConnectionOperation returns a new CreatePrivateConnectionOperation from a given name.
+// The name must be that of a previously created CreatePrivateConnectionOperation, possibly from a different process.
+func (c *dataMigrationGRPCClient) CreatePrivateConnectionOperation(name string) *CreatePrivateConnectionOperation {
+	return &CreatePrivateConnectionOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *CreatePrivateConnectionOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*clouddmspb.PrivateConnection, error) {
+	var resp clouddmspb.PrivateConnection
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *CreatePrivateConnectionOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*clouddmspb.PrivateConnection, error) {
+	var resp clouddmspb.PrivateConnection
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *CreatePrivateConnectionOperation) Metadata() (*clouddmspb.OperationMetadata, error) {
+	var meta clouddmspb.OperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *CreatePrivateConnectionOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *CreatePrivateConnectionOperation) Name() string {
+	return op.lro.Name()
+}
+
 // DeleteConnectionProfileOperation manages a long-running operation from DeleteConnectionProfile.
 type DeleteConnectionProfileOperation struct {
 	lro *longrunning.Operation
@@ -1072,6 +2401,64 @@ func (op *DeleteConnectionProfileOperation) Name() string {
 	return op.lro.Name()
 }
 
+// DeleteConversionWorkspaceOperation manages a long-running operation from DeleteConversionWorkspace.
+type DeleteConversionWorkspaceOperation struct {
+	lro *longrunning.Operation
+}
+
+// DeleteConversionWorkspaceOperation returns a new DeleteConversionWorkspaceOperation from a given name.
+// The name must be that of a previously created DeleteConversionWorkspaceOperation, possibly from a different process.
+func (c *dataMigrationGRPCClient) DeleteConversionWorkspaceOperation(name string) *DeleteConversionWorkspaceOperation {
+	return &DeleteConversionWorkspaceOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *DeleteConversionWorkspaceOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
+	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *DeleteConversionWorkspaceOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
+	return op.lro.Poll(ctx, nil, opts...)
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *DeleteConversionWorkspaceOperation) Metadata() (*clouddmspb.OperationMetadata, error) {
+	var meta clouddmspb.OperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *DeleteConversionWorkspaceOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *DeleteConversionWorkspaceOperation) Name() string {
+	return op.lro.Name()
+}
+
 // DeleteMigrationJobOperation manages a long-running operation from DeleteMigrationJob.
 type DeleteMigrationJobOperation struct {
 	lro *longrunning.Operation
@@ -1127,6 +2514,133 @@ func (op *DeleteMigrationJobOperation) Done() bool {
 // Name returns the name of the long-running operation.
 // The name is assigned by the server and is unique within the service from which the operation is created.
 func (op *DeleteMigrationJobOperation) Name() string {
+	return op.lro.Name()
+}
+
+// DeletePrivateConnectionOperation manages a long-running operation from DeletePrivateConnection.
+type DeletePrivateConnectionOperation struct {
+	lro *longrunning.Operation
+}
+
+// DeletePrivateConnectionOperation returns a new DeletePrivateConnectionOperation from a given name.
+// The name must be that of a previously created DeletePrivateConnectionOperation, possibly from a different process.
+func (c *dataMigrationGRPCClient) DeletePrivateConnectionOperation(name string) *DeletePrivateConnectionOperation {
+	return &DeletePrivateConnectionOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *DeletePrivateConnectionOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
+	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *DeletePrivateConnectionOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
+	return op.lro.Poll(ctx, nil, opts...)
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *DeletePrivateConnectionOperation) Metadata() (*clouddmspb.OperationMetadata, error) {
+	var meta clouddmspb.OperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *DeletePrivateConnectionOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *DeletePrivateConnectionOperation) Name() string {
+	return op.lro.Name()
+}
+
+// ImportMappingRulesOperation manages a long-running operation from ImportMappingRules.
+type ImportMappingRulesOperation struct {
+	lro *longrunning.Operation
+}
+
+// ImportMappingRulesOperation returns a new ImportMappingRulesOperation from a given name.
+// The name must be that of a previously created ImportMappingRulesOperation, possibly from a different process.
+func (c *dataMigrationGRPCClient) ImportMappingRulesOperation(name string) *ImportMappingRulesOperation {
+	return &ImportMappingRulesOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *ImportMappingRulesOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*clouddmspb.ConversionWorkspace, error) {
+	var resp clouddmspb.ConversionWorkspace
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *ImportMappingRulesOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*clouddmspb.ConversionWorkspace, error) {
+	var resp clouddmspb.ConversionWorkspace
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *ImportMappingRulesOperation) Metadata() (*clouddmspb.OperationMetadata, error) {
+	var meta clouddmspb.OperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *ImportMappingRulesOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *ImportMappingRulesOperation) Name() string {
 	return op.lro.Name()
 }
 
@@ -1337,6 +2851,144 @@ func (op *ResumeMigrationJobOperation) Name() string {
 	return op.lro.Name()
 }
 
+// RollbackConversionWorkspaceOperation manages a long-running operation from RollbackConversionWorkspace.
+type RollbackConversionWorkspaceOperation struct {
+	lro *longrunning.Operation
+}
+
+// RollbackConversionWorkspaceOperation returns a new RollbackConversionWorkspaceOperation from a given name.
+// The name must be that of a previously created RollbackConversionWorkspaceOperation, possibly from a different process.
+func (c *dataMigrationGRPCClient) RollbackConversionWorkspaceOperation(name string) *RollbackConversionWorkspaceOperation {
+	return &RollbackConversionWorkspaceOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *RollbackConversionWorkspaceOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*clouddmspb.ConversionWorkspace, error) {
+	var resp clouddmspb.ConversionWorkspace
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *RollbackConversionWorkspaceOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*clouddmspb.ConversionWorkspace, error) {
+	var resp clouddmspb.ConversionWorkspace
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *RollbackConversionWorkspaceOperation) Metadata() (*clouddmspb.OperationMetadata, error) {
+	var meta clouddmspb.OperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *RollbackConversionWorkspaceOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *RollbackConversionWorkspaceOperation) Name() string {
+	return op.lro.Name()
+}
+
+// SeedConversionWorkspaceOperation manages a long-running operation from SeedConversionWorkspace.
+type SeedConversionWorkspaceOperation struct {
+	lro *longrunning.Operation
+}
+
+// SeedConversionWorkspaceOperation returns a new SeedConversionWorkspaceOperation from a given name.
+// The name must be that of a previously created SeedConversionWorkspaceOperation, possibly from a different process.
+func (c *dataMigrationGRPCClient) SeedConversionWorkspaceOperation(name string) *SeedConversionWorkspaceOperation {
+	return &SeedConversionWorkspaceOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *SeedConversionWorkspaceOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*clouddmspb.ConversionWorkspace, error) {
+	var resp clouddmspb.ConversionWorkspace
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *SeedConversionWorkspaceOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*clouddmspb.ConversionWorkspace, error) {
+	var resp clouddmspb.ConversionWorkspace
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *SeedConversionWorkspaceOperation) Metadata() (*clouddmspb.OperationMetadata, error) {
+	var meta clouddmspb.OperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *SeedConversionWorkspaceOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *SeedConversionWorkspaceOperation) Name() string {
+	return op.lro.Name()
+}
+
 // StartMigrationJobOperation manages a long-running operation from StartMigrationJob.
 type StartMigrationJobOperation struct {
 	lro *longrunning.Operation
@@ -1544,6 +3196,75 @@ func (op *UpdateConnectionProfileOperation) Name() string {
 	return op.lro.Name()
 }
 
+// UpdateConversionWorkspaceOperation manages a long-running operation from UpdateConversionWorkspace.
+type UpdateConversionWorkspaceOperation struct {
+	lro *longrunning.Operation
+}
+
+// UpdateConversionWorkspaceOperation returns a new UpdateConversionWorkspaceOperation from a given name.
+// The name must be that of a previously created UpdateConversionWorkspaceOperation, possibly from a different process.
+func (c *dataMigrationGRPCClient) UpdateConversionWorkspaceOperation(name string) *UpdateConversionWorkspaceOperation {
+	return &UpdateConversionWorkspaceOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *UpdateConversionWorkspaceOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*clouddmspb.ConversionWorkspace, error) {
+	var resp clouddmspb.ConversionWorkspace
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *UpdateConversionWorkspaceOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*clouddmspb.ConversionWorkspace, error) {
+	var resp clouddmspb.ConversionWorkspace
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *UpdateConversionWorkspaceOperation) Metadata() (*clouddmspb.OperationMetadata, error) {
+	var meta clouddmspb.OperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *UpdateConversionWorkspaceOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *UpdateConversionWorkspaceOperation) Name() string {
+	return op.lro.Name()
+}
+
 // UpdateMigrationJobOperation manages a long-running operation from UpdateMigrationJob.
 type UpdateMigrationJobOperation struct {
 	lro *longrunning.Operation
@@ -1729,6 +3450,147 @@ func (it *ConnectionProfileIterator) takeBuf() interface{} {
 	return b
 }
 
+// ConversionWorkspaceIterator manages a stream of *clouddmspb.ConversionWorkspace.
+type ConversionWorkspaceIterator struct {
+	items    []*clouddmspb.ConversionWorkspace
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*clouddmspb.ConversionWorkspace, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *ConversionWorkspaceIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *ConversionWorkspaceIterator) Next() (*clouddmspb.ConversionWorkspace, error) {
+	var item *clouddmspb.ConversionWorkspace
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *ConversionWorkspaceIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *ConversionWorkspaceIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// DatabaseEntityIterator manages a stream of *clouddmspb.DatabaseEntity.
+type DatabaseEntityIterator struct {
+	items    []*clouddmspb.DatabaseEntity
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*clouddmspb.DatabaseEntity, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *DatabaseEntityIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *DatabaseEntityIterator) Next() (*clouddmspb.DatabaseEntity, error) {
+	var item *clouddmspb.DatabaseEntity
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *DatabaseEntityIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *DatabaseEntityIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// LocationIterator manages a stream of *locationpb.Location.
+type LocationIterator struct {
+	items    []*locationpb.Location
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*locationpb.Location, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *LocationIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *LocationIterator) Next() (*locationpb.Location, error) {
+	var item *locationpb.Location
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *LocationIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *LocationIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
 // MigrationJobIterator manages a stream of *clouddmspb.MigrationJob.
 type MigrationJobIterator struct {
 	items    []*clouddmspb.MigrationJob
@@ -1771,6 +3633,147 @@ func (it *MigrationJobIterator) bufLen() int {
 }
 
 func (it *MigrationJobIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// OperationIterator manages a stream of *longrunningpb.Operation.
+type OperationIterator struct {
+	items    []*longrunningpb.Operation
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*longrunningpb.Operation, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *OperationIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *OperationIterator) Next() (*longrunningpb.Operation, error) {
+	var item *longrunningpb.Operation
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *OperationIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *OperationIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// PrivateConnectionIterator manages a stream of *clouddmspb.PrivateConnection.
+type PrivateConnectionIterator struct {
+	items    []*clouddmspb.PrivateConnection
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*clouddmspb.PrivateConnection, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *PrivateConnectionIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *PrivateConnectionIterator) Next() (*clouddmspb.PrivateConnection, error) {
+	var item *clouddmspb.PrivateConnection
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *PrivateConnectionIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *PrivateConnectionIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// StringIterator manages a stream of string.
+type StringIterator struct {
+	items    []string
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []string, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *StringIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *StringIterator) Next() (string, error) {
+	var item string
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *StringIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *StringIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b

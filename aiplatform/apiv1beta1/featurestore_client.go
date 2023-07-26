@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"math"
 	"net/http"
 	"net/url"
@@ -96,73 +96,149 @@ func defaultFeaturestoreGRPCClientOptions() []option.ClientOption {
 
 func defaultFeaturestoreCallOptions() *FeaturestoreCallOptions {
 	return &FeaturestoreCallOptions{
-		CreateFeaturestore:     []gax.CallOption{},
-		GetFeaturestore:        []gax.CallOption{},
-		ListFeaturestores:      []gax.CallOption{},
-		UpdateFeaturestore:     []gax.CallOption{},
-		DeleteFeaturestore:     []gax.CallOption{},
-		CreateEntityType:       []gax.CallOption{},
-		GetEntityType:          []gax.CallOption{},
-		ListEntityTypes:        []gax.CallOption{},
-		UpdateEntityType:       []gax.CallOption{},
-		DeleteEntityType:       []gax.CallOption{},
-		CreateFeature:          []gax.CallOption{},
-		BatchCreateFeatures:    []gax.CallOption{},
-		GetFeature:             []gax.CallOption{},
-		ListFeatures:           []gax.CallOption{},
-		UpdateFeature:          []gax.CallOption{},
-		DeleteFeature:          []gax.CallOption{},
-		ImportFeatureValues:    []gax.CallOption{},
-		BatchReadFeatureValues: []gax.CallOption{},
-		ExportFeatureValues:    []gax.CallOption{},
-		DeleteFeatureValues:    []gax.CallOption{},
-		SearchFeatures:         []gax.CallOption{},
-		GetLocation:            []gax.CallOption{},
-		ListLocations:          []gax.CallOption{},
-		GetIamPolicy:           []gax.CallOption{},
-		SetIamPolicy:           []gax.CallOption{},
-		TestIamPermissions:     []gax.CallOption{},
-		CancelOperation:        []gax.CallOption{},
-		DeleteOperation:        []gax.CallOption{},
-		GetOperation:           []gax.CallOption{},
-		ListOperations:         []gax.CallOption{},
-		WaitOperation:          []gax.CallOption{},
+		CreateFeaturestore: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		GetFeaturestore: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		ListFeaturestores: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		UpdateFeaturestore: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		DeleteFeaturestore: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		CreateEntityType: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		GetEntityType: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		ListEntityTypes: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		UpdateEntityType: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		DeleteEntityType: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		CreateFeature: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		BatchCreateFeatures: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		GetFeature: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		ListFeatures: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		UpdateFeature: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		DeleteFeature: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		ImportFeatureValues: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		BatchReadFeatureValues: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		ExportFeatureValues: []gax.CallOption{},
+		DeleteFeatureValues: []gax.CallOption{},
+		SearchFeatures: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		GetLocation:        []gax.CallOption{},
+		ListLocations:      []gax.CallOption{},
+		GetIamPolicy:       []gax.CallOption{},
+		SetIamPolicy:       []gax.CallOption{},
+		TestIamPermissions: []gax.CallOption{},
+		CancelOperation:    []gax.CallOption{},
+		DeleteOperation:    []gax.CallOption{},
+		GetOperation:       []gax.CallOption{},
+		ListOperations:     []gax.CallOption{},
+		WaitOperation:      []gax.CallOption{},
 	}
 }
 
 func defaultFeaturestoreRESTCallOptions() *FeaturestoreCallOptions {
 	return &FeaturestoreCallOptions{
-		CreateFeaturestore:     []gax.CallOption{},
-		GetFeaturestore:        []gax.CallOption{},
-		ListFeaturestores:      []gax.CallOption{},
-		UpdateFeaturestore:     []gax.CallOption{},
-		DeleteFeaturestore:     []gax.CallOption{},
-		CreateEntityType:       []gax.CallOption{},
-		GetEntityType:          []gax.CallOption{},
-		ListEntityTypes:        []gax.CallOption{},
-		UpdateEntityType:       []gax.CallOption{},
-		DeleteEntityType:       []gax.CallOption{},
-		CreateFeature:          []gax.CallOption{},
-		BatchCreateFeatures:    []gax.CallOption{},
-		GetFeature:             []gax.CallOption{},
-		ListFeatures:           []gax.CallOption{},
-		UpdateFeature:          []gax.CallOption{},
-		DeleteFeature:          []gax.CallOption{},
-		ImportFeatureValues:    []gax.CallOption{},
-		BatchReadFeatureValues: []gax.CallOption{},
-		ExportFeatureValues:    []gax.CallOption{},
-		DeleteFeatureValues:    []gax.CallOption{},
-		SearchFeatures:         []gax.CallOption{},
-		GetLocation:            []gax.CallOption{},
-		ListLocations:          []gax.CallOption{},
-		GetIamPolicy:           []gax.CallOption{},
-		SetIamPolicy:           []gax.CallOption{},
-		TestIamPermissions:     []gax.CallOption{},
-		CancelOperation:        []gax.CallOption{},
-		DeleteOperation:        []gax.CallOption{},
-		GetOperation:           []gax.CallOption{},
-		ListOperations:         []gax.CallOption{},
-		WaitOperation:          []gax.CallOption{},
+		CreateFeaturestore: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		GetFeaturestore: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		ListFeaturestores: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		UpdateFeaturestore: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		DeleteFeaturestore: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		CreateEntityType: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		GetEntityType: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		ListEntityTypes: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		UpdateEntityType: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		DeleteEntityType: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		CreateFeature: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		BatchCreateFeatures: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		GetFeature: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		ListFeatures: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		UpdateFeature: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		DeleteFeature: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		ImportFeatureValues: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		BatchReadFeatureValues: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		ExportFeatureValues: []gax.CallOption{},
+		DeleteFeatureValues: []gax.CallOption{},
+		SearchFeatures: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+		},
+		GetLocation:        []gax.CallOption{},
+		ListLocations:      []gax.CallOption{},
+		GetIamPolicy:       []gax.CallOption{},
+		SetIamPolicy:       []gax.CallOption{},
+		TestIamPermissions: []gax.CallOption{},
+		CancelOperation:    []gax.CallOption{},
+		DeleteOperation:    []gax.CallOption{},
+		GetOperation:       []gax.CallOption{},
+		ListOperations:     []gax.CallOption{},
+		WaitOperation:      []gax.CallOption{},
 	}
 }
 
@@ -521,8 +597,7 @@ func (c *FeaturestoreClient) GetOperation(ctx context.Context, req *longrunningp
 	return c.internalClient.GetOperation(ctx, req, opts...)
 }
 
-// ListOperations lists operations that match the specified filter in the request. If
-// the server doesn’t support this method, it returns UNIMPLEMENTED.
+// ListOperations is a utility method from google.longrunning.Operations.
 func (c *FeaturestoreClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	return c.internalClient.ListOperations(ctx, req, opts...)
 }
@@ -538,9 +613,6 @@ func (c *FeaturestoreClient) WaitOperation(ctx context.Context, req *longrunning
 type featurestoreGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
-
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
 
 	// Points back to the CallOptions field of the containing FeaturestoreClient
 	CallOptions **FeaturestoreCallOptions
@@ -577,11 +649,6 @@ func NewFeaturestoreClient(ctx context.Context, opts ...option.ClientOption) (*F
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -590,7 +657,6 @@ func NewFeaturestoreClient(ctx context.Context, opts ...option.ClientOption) (*F
 
 	c := &featurestoreGRPCClient{
 		connPool:           connPool,
-		disableDeadlines:   disableDeadlines,
 		featurestoreClient: aiplatformpb.NewFeaturestoreServiceClient(connPool),
 		CallOptions:        &client.CallOptions,
 		operationsClient:   longrunningpb.NewOperationsClient(connPool),
@@ -627,7 +693,7 @@ func (c *featurestoreGRPCClient) Connection() *grpc.ClientConn {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *featurestoreGRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -702,7 +768,7 @@ func defaultFeaturestoreRESTClientOptions() []option.ClientOption {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *featurestoreRESTClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -722,11 +788,6 @@ func (c *featurestoreRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 func (c *featurestoreGRPCClient) CreateFeaturestore(ctx context.Context, req *aiplatformpb.CreateFeaturestoreRequest, opts ...gax.CallOption) (*CreateFeaturestoreOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -746,11 +807,6 @@ func (c *featurestoreGRPCClient) CreateFeaturestore(ctx context.Context, req *ai
 }
 
 func (c *featurestoreGRPCClient) GetFeaturestore(ctx context.Context, req *aiplatformpb.GetFeaturestoreRequest, opts ...gax.CallOption) (*aiplatformpb.Featurestore, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -813,11 +869,6 @@ func (c *featurestoreGRPCClient) ListFeaturestores(ctx context.Context, req *aip
 }
 
 func (c *featurestoreGRPCClient) UpdateFeaturestore(ctx context.Context, req *aiplatformpb.UpdateFeaturestoreRequest, opts ...gax.CallOption) (*UpdateFeaturestoreOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "featurestore.name", url.QueryEscape(req.GetFeaturestore().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -837,11 +888,6 @@ func (c *featurestoreGRPCClient) UpdateFeaturestore(ctx context.Context, req *ai
 }
 
 func (c *featurestoreGRPCClient) DeleteFeaturestore(ctx context.Context, req *aiplatformpb.DeleteFeaturestoreRequest, opts ...gax.CallOption) (*DeleteFeaturestoreOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -861,11 +907,6 @@ func (c *featurestoreGRPCClient) DeleteFeaturestore(ctx context.Context, req *ai
 }
 
 func (c *featurestoreGRPCClient) CreateEntityType(ctx context.Context, req *aiplatformpb.CreateEntityTypeRequest, opts ...gax.CallOption) (*CreateEntityTypeOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -885,11 +926,6 @@ func (c *featurestoreGRPCClient) CreateEntityType(ctx context.Context, req *aipl
 }
 
 func (c *featurestoreGRPCClient) GetEntityType(ctx context.Context, req *aiplatformpb.GetEntityTypeRequest, opts ...gax.CallOption) (*aiplatformpb.EntityType, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -952,11 +988,6 @@ func (c *featurestoreGRPCClient) ListEntityTypes(ctx context.Context, req *aipla
 }
 
 func (c *featurestoreGRPCClient) UpdateEntityType(ctx context.Context, req *aiplatformpb.UpdateEntityTypeRequest, opts ...gax.CallOption) (*aiplatformpb.EntityType, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "entity_type.name", url.QueryEscape(req.GetEntityType().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -974,11 +1005,6 @@ func (c *featurestoreGRPCClient) UpdateEntityType(ctx context.Context, req *aipl
 }
 
 func (c *featurestoreGRPCClient) DeleteEntityType(ctx context.Context, req *aiplatformpb.DeleteEntityTypeRequest, opts ...gax.CallOption) (*DeleteEntityTypeOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -998,11 +1024,6 @@ func (c *featurestoreGRPCClient) DeleteEntityType(ctx context.Context, req *aipl
 }
 
 func (c *featurestoreGRPCClient) CreateFeature(ctx context.Context, req *aiplatformpb.CreateFeatureRequest, opts ...gax.CallOption) (*CreateFeatureOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1022,11 +1043,6 @@ func (c *featurestoreGRPCClient) CreateFeature(ctx context.Context, req *aiplatf
 }
 
 func (c *featurestoreGRPCClient) BatchCreateFeatures(ctx context.Context, req *aiplatformpb.BatchCreateFeaturesRequest, opts ...gax.CallOption) (*BatchCreateFeaturesOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1046,11 +1062,6 @@ func (c *featurestoreGRPCClient) BatchCreateFeatures(ctx context.Context, req *a
 }
 
 func (c *featurestoreGRPCClient) GetFeature(ctx context.Context, req *aiplatformpb.GetFeatureRequest, opts ...gax.CallOption) (*aiplatformpb.Feature, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1113,11 +1124,6 @@ func (c *featurestoreGRPCClient) ListFeatures(ctx context.Context, req *aiplatfo
 }
 
 func (c *featurestoreGRPCClient) UpdateFeature(ctx context.Context, req *aiplatformpb.UpdateFeatureRequest, opts ...gax.CallOption) (*aiplatformpb.Feature, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "feature.name", url.QueryEscape(req.GetFeature().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1135,11 +1141,6 @@ func (c *featurestoreGRPCClient) UpdateFeature(ctx context.Context, req *aiplatf
 }
 
 func (c *featurestoreGRPCClient) DeleteFeature(ctx context.Context, req *aiplatformpb.DeleteFeatureRequest, opts ...gax.CallOption) (*DeleteFeatureOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1159,11 +1160,6 @@ func (c *featurestoreGRPCClient) DeleteFeature(ctx context.Context, req *aiplatf
 }
 
 func (c *featurestoreGRPCClient) ImportFeatureValues(ctx context.Context, req *aiplatformpb.ImportFeatureValuesRequest, opts ...gax.CallOption) (*ImportFeatureValuesOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "entity_type", url.QueryEscape(req.GetEntityType())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1183,11 +1179,6 @@ func (c *featurestoreGRPCClient) ImportFeatureValues(ctx context.Context, req *a
 }
 
 func (c *featurestoreGRPCClient) BatchReadFeatureValues(ctx context.Context, req *aiplatformpb.BatchReadFeatureValuesRequest, opts ...gax.CallOption) (*BatchReadFeatureValuesOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "featurestore", url.QueryEscape(req.GetFeaturestore())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1554,13 +1545,13 @@ func (c *featurestoreRESTClient) CreateFeaturestore(ctx context.Context, req *ai
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1612,13 +1603,13 @@ func (c *featurestoreRESTClient) GetFeaturestore(ctx context.Context, req *aipla
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1668,7 +1659,7 @@ func (c *featurestoreRESTClient) ListFeaturestores(ctx context.Context, req *aip
 			if err != nil {
 				return nil, "", err
 			}
-			params.Add("readMask", string(readMask))
+			params.Add("readMask", string(readMask[1:len(readMask)-1]))
 		}
 
 		baseUrl.RawQuery = params.Encode()
@@ -1695,13 +1686,13 @@ func (c *featurestoreRESTClient) ListFeaturestores(ctx context.Context, req *aip
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -1750,7 +1741,7 @@ func (c *featurestoreRESTClient) UpdateFeaturestore(ctx context.Context, req *ai
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask))
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1782,13 +1773,13 @@ func (c *featurestoreRESTClient) UpdateFeaturestore(ctx context.Context, req *ai
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1847,13 +1838,13 @@ func (c *featurestoreRESTClient) DeleteFeaturestore(ctx context.Context, req *ai
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1916,13 +1907,13 @@ func (c *featurestoreRESTClient) CreateEntityType(ctx context.Context, req *aipl
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1974,13 +1965,13 @@ func (c *featurestoreRESTClient) GetEntityType(ctx context.Context, req *aiplatf
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2030,7 +2021,7 @@ func (c *featurestoreRESTClient) ListEntityTypes(ctx context.Context, req *aipla
 			if err != nil {
 				return nil, "", err
 			}
-			params.Add("readMask", string(readMask))
+			params.Add("readMask", string(readMask[1:len(readMask)-1]))
 		}
 
 		baseUrl.RawQuery = params.Encode()
@@ -2057,13 +2048,13 @@ func (c *featurestoreRESTClient) ListEntityTypes(ctx context.Context, req *aipla
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -2112,7 +2103,7 @@ func (c *featurestoreRESTClient) UpdateEntityType(ctx context.Context, req *aipl
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask))
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -2145,13 +2136,13 @@ func (c *featurestoreRESTClient) UpdateEntityType(ctx context.Context, req *aipl
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2205,13 +2196,13 @@ func (c *featurestoreRESTClient) DeleteEntityType(ctx context.Context, req *aipl
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2274,13 +2265,13 @@ func (c *featurestoreRESTClient) CreateFeature(ctx context.Context, req *aiplatf
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2337,13 +2328,13 @@ func (c *featurestoreRESTClient) BatchCreateFeatures(ctx context.Context, req *a
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2395,13 +2386,13 @@ func (c *featurestoreRESTClient) GetFeature(ctx context.Context, req *aiplatform
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2454,7 +2445,7 @@ func (c *featurestoreRESTClient) ListFeatures(ctx context.Context, req *aiplatfo
 			if err != nil {
 				return nil, "", err
 			}
-			params.Add("readMask", string(readMask))
+			params.Add("readMask", string(readMask[1:len(readMask)-1]))
 		}
 
 		baseUrl.RawQuery = params.Encode()
@@ -2481,13 +2472,13 @@ func (c *featurestoreRESTClient) ListFeatures(ctx context.Context, req *aiplatfo
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -2536,7 +2527,7 @@ func (c *featurestoreRESTClient) UpdateFeature(ctx context.Context, req *aiplatf
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask))
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -2569,13 +2560,13 @@ func (c *featurestoreRESTClient) UpdateFeature(ctx context.Context, req *aiplatf
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2621,13 +2612,13 @@ func (c *featurestoreRESTClient) DeleteFeature(ctx context.Context, req *aiplatf
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2705,13 +2696,13 @@ func (c *featurestoreRESTClient) ImportFeatureValues(ctx context.Context, req *a
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2773,13 +2764,13 @@ func (c *featurestoreRESTClient) BatchReadFeatureValues(ctx context.Context, req
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2836,13 +2827,13 @@ func (c *featurestoreRESTClient) ExportFeatureValues(ctx context.Context, req *a
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2908,13 +2899,13 @@ func (c *featurestoreRESTClient) DeleteFeatureValues(ctx context.Context, req *a
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2986,13 +2977,13 @@ func (c *featurestoreRESTClient) SearchFeatures(ctx context.Context, req *aiplat
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -3056,13 +3047,13 @@ func (c *featurestoreRESTClient) GetLocation(ctx context.Context, req *locationp
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -3129,13 +3120,13 @@ func (c *featurestoreRESTClient) ListLocations(ctx context.Context, req *locatio
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -3206,13 +3197,13 @@ func (c *featurestoreRESTClient) GetIamPolicy(ctx context.Context, req *iampb.Ge
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -3269,13 +3260,13 @@ func (c *featurestoreRESTClient) SetIamPolicy(ctx context.Context, req *iampb.Se
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -3334,13 +3325,13 @@ func (c *featurestoreRESTClient) TestIamPermissions(ctx context.Context, req *ia
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -3457,13 +3448,13 @@ func (c *featurestoreRESTClient) GetOperation(ctx context.Context, req *longrunn
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -3474,8 +3465,7 @@ func (c *featurestoreRESTClient) GetOperation(ctx context.Context, req *longrunn
 	return resp, nil
 }
 
-// ListOperations lists operations that match the specified filter in the request. If
-// the server doesn’t support this method, it returns UNIMPLEMENTED.
+// ListOperations is a utility method from google.longrunning.Operations.
 func (c *featurestoreRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
 	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
@@ -3531,13 +3521,13 @@ func (c *featurestoreRESTClient) ListOperations(ctx context.Context, req *longru
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -3579,7 +3569,7 @@ func (c *featurestoreRESTClient) WaitOperation(ctx context.Context, req *longrun
 		if err != nil {
 			return nil, err
 		}
-		params.Add("timeout", string(timeout))
+		params.Add("timeout", string(timeout[1:len(timeout)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -3612,13 +3602,13 @@ func (c *featurestoreRESTClient) WaitOperation(ctx context.Context, req *longrun
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil

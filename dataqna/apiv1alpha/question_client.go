@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"math"
 	"net/http"
 	"net/url"
@@ -65,6 +65,7 @@ func defaultQuestionGRPCClientOptions() []option.ClientOption {
 func defaultQuestionCallOptions() *QuestionCallOptions {
 	return &QuestionCallOptions{
 		GetQuestion: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -75,9 +76,14 @@ func defaultQuestionCallOptions() *QuestionCallOptions {
 				})
 			}),
 		},
-		CreateQuestion:  []gax.CallOption{},
-		ExecuteQuestion: []gax.CallOption{},
+		CreateQuestion: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ExecuteQuestion: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		GetUserFeedback: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -88,13 +94,16 @@ func defaultQuestionCallOptions() *QuestionCallOptions {
 				})
 			}),
 		},
-		UpdateUserFeedback: []gax.CallOption{},
+		UpdateUserFeedback: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 	}
 }
 
 func defaultQuestionRESTCallOptions() *QuestionCallOptions {
 	return &QuestionCallOptions{
 		GetQuestion: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -104,9 +113,14 @@ func defaultQuestionRESTCallOptions() *QuestionCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
-		CreateQuestion:  []gax.CallOption{},
-		ExecuteQuestion: []gax.CallOption{},
+		CreateQuestion: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ExecuteQuestion: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		GetUserFeedback: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -116,7 +130,9 @@ func defaultQuestionRESTCallOptions() *QuestionCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
-		UpdateUserFeedback: []gax.CallOption{},
+		UpdateUserFeedback: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 	}
 }
 
@@ -214,9 +230,6 @@ type questionGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing QuestionClient
 	CallOptions **QuestionCallOptions
 
@@ -255,11 +268,6 @@ func NewQuestionClient(ctx context.Context, opts ...option.ClientOption) (*Quest
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -267,10 +275,9 @@ func NewQuestionClient(ctx context.Context, opts ...option.ClientOption) (*Quest
 	client := QuestionClient{CallOptions: defaultQuestionCallOptions()}
 
 	c := &questionGRPCClient{
-		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
-		questionClient:   dataqnapb.NewQuestionServiceClient(connPool),
-		CallOptions:      &client.CallOptions,
+		connPool:       connPool,
+		questionClient: dataqnapb.NewQuestionServiceClient(connPool),
+		CallOptions:    &client.CallOptions,
 	}
 	c.setGoogleClientInfo()
 
@@ -291,7 +298,7 @@ func (c *questionGRPCClient) Connection() *grpc.ClientConn {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *questionGRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -365,7 +372,7 @@ func defaultQuestionRESTClientOptions() []option.ClientOption {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *questionRESTClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -385,11 +392,6 @@ func (c *questionRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 func (c *questionGRPCClient) GetQuestion(ctx context.Context, req *dataqnapb.GetQuestionRequest, opts ...gax.CallOption) (*dataqnapb.Question, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -407,11 +409,6 @@ func (c *questionGRPCClient) GetQuestion(ctx context.Context, req *dataqnapb.Get
 }
 
 func (c *questionGRPCClient) CreateQuestion(ctx context.Context, req *dataqnapb.CreateQuestionRequest, opts ...gax.CallOption) (*dataqnapb.Question, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -429,11 +426,6 @@ func (c *questionGRPCClient) CreateQuestion(ctx context.Context, req *dataqnapb.
 }
 
 func (c *questionGRPCClient) ExecuteQuestion(ctx context.Context, req *dataqnapb.ExecuteQuestionRequest, opts ...gax.CallOption) (*dataqnapb.Question, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -451,11 +443,6 @@ func (c *questionGRPCClient) ExecuteQuestion(ctx context.Context, req *dataqnapb
 }
 
 func (c *questionGRPCClient) GetUserFeedback(ctx context.Context, req *dataqnapb.GetUserFeedbackRequest, opts ...gax.CallOption) (*dataqnapb.UserFeedback, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -473,11 +460,6 @@ func (c *questionGRPCClient) GetUserFeedback(ctx context.Context, req *dataqnapb
 }
 
 func (c *questionGRPCClient) UpdateUserFeedback(ctx context.Context, req *dataqnapb.UpdateUserFeedbackRequest, opts ...gax.CallOption) (*dataqnapb.UserFeedback, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "user_feedback.name", url.QueryEscape(req.GetUserFeedback().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -508,7 +490,7 @@ func (c *questionRESTClient) GetQuestion(ctx context.Context, req *dataqnapb.Get
 		if err != nil {
 			return nil, err
 		}
-		params.Add("readMask", string(readMask))
+		params.Add("readMask", string(readMask[1:len(readMask)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -541,13 +523,13 @@ func (c *questionRESTClient) GetQuestion(ctx context.Context, req *dataqnapb.Get
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -601,13 +583,13 @@ func (c *questionRESTClient) CreateQuestion(ctx context.Context, req *dataqnapb.
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -660,13 +642,13 @@ func (c *questionRESTClient) ExecuteQuestion(ctx context.Context, req *dataqnapb
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -713,13 +695,13 @@ func (c *questionRESTClient) GetUserFeedback(ctx context.Context, req *dataqnapb
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -752,7 +734,7 @@ func (c *questionRESTClient) UpdateUserFeedback(ctx context.Context, req *dataqn
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask))
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -785,13 +767,13 @@ func (c *questionRESTClient) UpdateUserFeedback(ctx context.Context, req *dataqn
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil

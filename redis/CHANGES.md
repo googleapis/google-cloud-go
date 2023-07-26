@@ -1,5 +1,33 @@
 # Changes
 
+## [1.13.1](https://github.com/googleapis/google-cloud-go/compare/redis/v1.13.0...redis/v1.13.1) (2023-06-20)
+
+
+### Bug Fixes
+
+* **redis:** REST query UpdateMask bug ([df52820](https://github.com/googleapis/google-cloud-go/commit/df52820b0e7721954809a8aa8700b93c5662dc9b))
+
+## [1.13.0](https://github.com/googleapis/google-cloud-go/compare/redis/v1.12.0...redis/v1.13.0) (2023-05-30)
+
+
+### Features
+
+* **redis:** Update all direct dependencies ([b340d03](https://github.com/googleapis/google-cloud-go/commit/b340d030f2b52a4ce48846ce63984b28583abde6))
+
+## [1.12.0](https://github.com/googleapis/google-cloud-go/compare/redis/v1.11.1...redis/v1.12.0) (2023-05-10)
+
+
+### Features
+
+* **redis:** [Cloud Memorystore for Redis] Add CMEK key field feat: [Cloud Memorystore for Redis] Add suspension_reasons field feat: [Cloud Memorystore for Redis] Add persistence support feat: [Cloud Memorystore for Redis] Add self service update maintenance version support ([31c3766](https://github.com/googleapis/google-cloud-go/commit/31c3766c9c4cab411669c14fc1a30bd6d2e3f2dd))
+
+## [1.11.1](https://github.com/googleapis/google-cloud-go/compare/redis/v1.11.0...redis/v1.11.1) (2023-05-08)
+
+
+### Bug Fixes
+
+* **redis:** Update grpc to v1.55.0 ([1147ce0](https://github.com/googleapis/google-cloud-go/commit/1147ce02a990276ca4f8ab7a1ab65c14da4450ef))
+
 ## [1.11.0](https://github.com/googleapis/google-cloud-go/compare/redis/v1.10.0...redis/v1.11.0) (2023-01-04)
 
 

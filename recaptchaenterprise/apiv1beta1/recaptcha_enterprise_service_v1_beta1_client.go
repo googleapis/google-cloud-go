@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,13 +20,13 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"math"
 	"net/http"
 	"net/url"
 	"time"
 
-	"cloud.google.com/go/recaptchaenterprise/v2/apiv1beta1/recaptchaenterprisepb"
+	recaptchaenterprisepb "cloud.google.com/go/recaptchaenterprise/v2/apiv1beta1/recaptchaenterprisepb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/option"
@@ -60,15 +60,23 @@ func defaultRecaptchaEnterpriseServiceV1Beta1GRPCClientOptions() []option.Client
 
 func defaultRecaptchaEnterpriseServiceV1Beta1CallOptions() *RecaptchaEnterpriseServiceV1Beta1CallOptions {
 	return &RecaptchaEnterpriseServiceV1Beta1CallOptions{
-		CreateAssessment:   []gax.CallOption{},
-		AnnotateAssessment: []gax.CallOption{},
+		CreateAssessment: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		AnnotateAssessment: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
 	}
 }
 
 func defaultRecaptchaEnterpriseServiceV1Beta1RESTCallOptions() *RecaptchaEnterpriseServiceV1Beta1CallOptions {
 	return &RecaptchaEnterpriseServiceV1Beta1CallOptions{
-		CreateAssessment:   []gax.CallOption{},
-		AnnotateAssessment: []gax.CallOption{},
+		CreateAssessment: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		AnnotateAssessment: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
 	}
 }
 
@@ -134,9 +142,6 @@ type recaptchaEnterpriseServiceV1Beta1GRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing RecaptchaEnterpriseServiceV1Beta1Client
 	CallOptions **RecaptchaEnterpriseServiceV1Beta1CallOptions
 
@@ -161,11 +166,6 @@ func NewRecaptchaEnterpriseServiceV1Beta1Client(ctx context.Context, opts ...opt
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -174,7 +174,6 @@ func NewRecaptchaEnterpriseServiceV1Beta1Client(ctx context.Context, opts ...opt
 
 	c := &recaptchaEnterpriseServiceV1Beta1GRPCClient{
 		connPool:                                connPool,
-		disableDeadlines:                        disableDeadlines,
 		recaptchaEnterpriseServiceV1Beta1Client: recaptchaenterprisepb.NewRecaptchaEnterpriseServiceV1Beta1Client(connPool),
 		CallOptions:                             &client.CallOptions,
 	}
@@ -197,7 +196,7 @@ func (c *recaptchaEnterpriseServiceV1Beta1GRPCClient) Connection() *grpc.ClientC
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *recaptchaEnterpriseServiceV1Beta1GRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -257,7 +256,7 @@ func defaultRecaptchaEnterpriseServiceV1Beta1RESTClientOptions() []option.Client
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *recaptchaEnterpriseServiceV1Beta1RESTClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -277,11 +276,6 @@ func (c *recaptchaEnterpriseServiceV1Beta1RESTClient) Connection() *grpc.ClientC
 	return nil
 }
 func (c *recaptchaEnterpriseServiceV1Beta1GRPCClient) CreateAssessment(ctx context.Context, req *recaptchaenterprisepb.CreateAssessmentRequest, opts ...gax.CallOption) (*recaptchaenterprisepb.Assessment, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -299,11 +293,6 @@ func (c *recaptchaEnterpriseServiceV1Beta1GRPCClient) CreateAssessment(ctx conte
 }
 
 func (c *recaptchaEnterpriseServiceV1Beta1GRPCClient) AnnotateAssessment(ctx context.Context, req *recaptchaenterprisepb.AnnotateAssessmentRequest, opts ...gax.CallOption) (*recaptchaenterprisepb.AnnotateAssessmentResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -335,6 +324,11 @@ func (c *recaptchaEnterpriseServiceV1Beta1RESTClient) CreateAssessment(ctx conte
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/assessments", req.GetParent())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
@@ -363,13 +357,13 @@ func (c *recaptchaEnterpriseServiceV1Beta1RESTClient) CreateAssessment(ctx conte
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -394,6 +388,11 @@ func (c *recaptchaEnterpriseServiceV1Beta1RESTClient) AnnotateAssessment(ctx con
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:annotate", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
@@ -423,13 +422,13 @@ func (c *recaptchaEnterpriseServiceV1Beta1RESTClient) AnnotateAssessment(ctx con
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil

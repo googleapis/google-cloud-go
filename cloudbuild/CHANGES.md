@@ -1,5 +1,43 @@
 # Changes
 
+## [1.12.0](https://github.com/googleapis/google-cloud-go/compare/cloudbuild/v1.11.0...cloudbuild/v1.12.0) (2023-07-24)
+
+
+### Features
+
+* **cloudbuild/apiv1:** Add repositoryevent to buildtrigger ([eca3c90](https://github.com/googleapis/google-cloud-go/commit/eca3c9070cd96a50fa857a6c016e35a98dbea5e7))
+* **cloudbuild/apiv1:** Add routing information in Cloud Build GRPC clients ([eca3c90](https://github.com/googleapis/google-cloud-go/commit/eca3c9070cd96a50fa857a6c016e35a98dbea5e7))
+* **cloudbuild/apiv1:** Added e2-medium machine type ([eca3c90](https://github.com/googleapis/google-cloud-go/commit/eca3c9070cd96a50fa857a6c016e35a98dbea5e7))
+* **cloudbuild/apiv1:** Update third party clodubuild.proto library to include git_source ([eca3c90](https://github.com/googleapis/google-cloud-go/commit/eca3c9070cd96a50fa857a6c016e35a98dbea5e7))
+
+## [1.11.0](https://github.com/googleapis/google-cloud-go/compare/cloudbuild/v1.10.1...cloudbuild/v1.11.0) (2023-07-10)
+
+
+### Features
+
+* **cloudbuild:** Add GitLabConfig and fetchGitRefs for Cloud Build Repositories ([a3ec3cf](https://github.com/googleapis/google-cloud-go/commit/a3ec3cf858c7d9154338ac4cd8a9a068dc7a7f4d))
+
+## [1.10.1](https://github.com/googleapis/google-cloud-go/compare/cloudbuild/v1.10.0...cloudbuild/v1.10.1) (2023-06-20)
+
+
+### Bug Fixes
+
+* **cloudbuild:** REST query UpdateMask bug ([df52820](https://github.com/googleapis/google-cloud-go/commit/df52820b0e7721954809a8aa8700b93c5662dc9b))
+
+## [1.10.0](https://github.com/googleapis/google-cloud-go/compare/cloudbuild/v1.9.1...cloudbuild/v1.10.0) (2023-05-30)
+
+
+### Features
+
+* **cloudbuild:** Update all direct dependencies ([b340d03](https://github.com/googleapis/google-cloud-go/commit/b340d030f2b52a4ce48846ce63984b28583abde6))
+
+## [1.9.1](https://github.com/googleapis/google-cloud-go/compare/cloudbuild/v1.9.0...cloudbuild/v1.9.1) (2023-05-08)
+
+
+### Bug Fixes
+
+* **cloudbuild:** Update grpc to v1.55.0 ([1147ce0](https://github.com/googleapis/google-cloud-go/commit/1147ce02a990276ca4f8ab7a1ab65c14da4450ef))
+
 ## [1.9.0](https://github.com/googleapis/google-cloud-go/compare/cloudbuild/v1.8.0...cloudbuild/v1.9.0) (2023-03-22)
 
 

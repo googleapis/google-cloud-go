@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"math"
 	"net/http"
 	"net/url"
@@ -76,6 +76,7 @@ func defaultConversationDatasetsGRPCClientOptions() []option.ClientOption {
 func defaultConversationDatasetsCallOptions() *ConversationDatasetsCallOptions {
 	return &ConversationDatasetsCallOptions{
 		CreateConversationDataset: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -87,6 +88,7 @@ func defaultConversationDatasetsCallOptions() *ConversationDatasetsCallOptions {
 			}),
 		},
 		GetConversationDataset: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -98,6 +100,7 @@ func defaultConversationDatasetsCallOptions() *ConversationDatasetsCallOptions {
 			}),
 		},
 		ListConversationDatasets: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -109,6 +112,7 @@ func defaultConversationDatasetsCallOptions() *ConversationDatasetsCallOptions {
 			}),
 		},
 		DeleteConversationDataset: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -120,6 +124,7 @@ func defaultConversationDatasetsCallOptions() *ConversationDatasetsCallOptions {
 			}),
 		},
 		ImportConversationData: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -141,6 +146,7 @@ func defaultConversationDatasetsCallOptions() *ConversationDatasetsCallOptions {
 func defaultConversationDatasetsRESTCallOptions() *ConversationDatasetsCallOptions {
 	return &ConversationDatasetsCallOptions{
 		CreateConversationDataset: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -151,6 +157,7 @@ func defaultConversationDatasetsRESTCallOptions() *ConversationDatasetsCallOptio
 			}),
 		},
 		GetConversationDataset: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -161,6 +168,7 @@ func defaultConversationDatasetsRESTCallOptions() *ConversationDatasetsCallOptio
 			}),
 		},
 		ListConversationDatasets: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -171,6 +179,7 @@ func defaultConversationDatasetsRESTCallOptions() *ConversationDatasetsCallOptio
 			}),
 		},
 		DeleteConversationDataset: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -181,6 +190,7 @@ func defaultConversationDatasetsRESTCallOptions() *ConversationDatasetsCallOptio
 			}),
 		},
 		ImportConversationData: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -357,8 +367,7 @@ func (c *ConversationDatasetsClient) GetOperation(ctx context.Context, req *long
 	return c.internalClient.GetOperation(ctx, req, opts...)
 }
 
-// ListOperations lists operations that match the specified filter in the request. If
-// the server doesn’t support this method, it returns UNIMPLEMENTED.
+// ListOperations is a utility method from google.longrunning.Operations.
 func (c *ConversationDatasetsClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	return c.internalClient.ListOperations(ctx, req, opts...)
 }
@@ -369,9 +378,6 @@ func (c *ConversationDatasetsClient) ListOperations(ctx context.Context, req *lo
 type conversationDatasetsGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
-
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
 
 	// Points back to the CallOptions field of the containing ConversationDatasetsClient
 	CallOptions **ConversationDatasetsCallOptions
@@ -409,11 +415,6 @@ func NewConversationDatasetsClient(ctx context.Context, opts ...option.ClientOpt
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -422,7 +423,6 @@ func NewConversationDatasetsClient(ctx context.Context, opts ...option.ClientOpt
 
 	c := &conversationDatasetsGRPCClient{
 		connPool:                   connPool,
-		disableDeadlines:           disableDeadlines,
 		conversationDatasetsClient: dialogflowpb.NewConversationDatasetsClient(connPool),
 		CallOptions:                &client.CallOptions,
 		operationsClient:           longrunningpb.NewOperationsClient(connPool),
@@ -458,7 +458,7 @@ func (c *conversationDatasetsGRPCClient) Connection() *grpc.ClientConn {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *conversationDatasetsGRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -536,7 +536,7 @@ func defaultConversationDatasetsRESTClientOptions() []option.ClientOption {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *conversationDatasetsRESTClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -556,11 +556,6 @@ func (c *conversationDatasetsRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 func (c *conversationDatasetsGRPCClient) CreateConversationDataset(ctx context.Context, req *dialogflowpb.CreateConversationDatasetRequest, opts ...gax.CallOption) (*CreateConversationDatasetOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -580,11 +575,6 @@ func (c *conversationDatasetsGRPCClient) CreateConversationDataset(ctx context.C
 }
 
 func (c *conversationDatasetsGRPCClient) GetConversationDataset(ctx context.Context, req *dialogflowpb.GetConversationDatasetRequest, opts ...gax.CallOption) (*dialogflowpb.ConversationDataset, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -647,11 +637,6 @@ func (c *conversationDatasetsGRPCClient) ListConversationDatasets(ctx context.Co
 }
 
 func (c *conversationDatasetsGRPCClient) DeleteConversationDataset(ctx context.Context, req *dialogflowpb.DeleteConversationDatasetRequest, opts ...gax.CallOption) (*DeleteConversationDatasetOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -671,11 +656,6 @@ func (c *conversationDatasetsGRPCClient) DeleteConversationDataset(ctx context.C
 }
 
 func (c *conversationDatasetsGRPCClient) ImportConversationData(ctx context.Context, req *dialogflowpb.ImportConversationDataRequest, opts ...gax.CallOption) (*ImportConversationDataOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -888,13 +868,13 @@ func (c *conversationDatasetsRESTClient) CreateConversationDataset(ctx context.C
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -951,13 +931,13 @@ func (c *conversationDatasetsRESTClient) GetConversationDataset(ctx context.Cont
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1023,13 +1003,13 @@ func (c *conversationDatasetsRESTClient) ListConversationDatasets(ctx context.Co
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -1107,13 +1087,13 @@ func (c *conversationDatasetsRESTClient) DeleteConversationDataset(ctx context.C
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1187,13 +1167,13 @@ func (c *conversationDatasetsRESTClient) ImportConversationData(ctx context.Cont
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1250,13 +1230,13 @@ func (c *conversationDatasetsRESTClient) GetLocation(ctx context.Context, req *l
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1324,13 +1304,13 @@ func (c *conversationDatasetsRESTClient) ListLocations(ctx context.Context, req 
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -1439,13 +1419,13 @@ func (c *conversationDatasetsRESTClient) GetOperation(ctx context.Context, req *
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1456,8 +1436,7 @@ func (c *conversationDatasetsRESTClient) GetOperation(ctx context.Context, req *
 	return resp, nil
 }
 
-// ListOperations lists operations that match the specified filter in the request. If
-// the server doesn’t support this method, it returns UNIMPLEMENTED.
+// ListOperations is a utility method from google.longrunning.Operations.
 func (c *conversationDatasetsRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
 	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
@@ -1514,13 +1493,13 @@ func (c *conversationDatasetsRESTClient) ListOperations(ctx context.Context, req
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil

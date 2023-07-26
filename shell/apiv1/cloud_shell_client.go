@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"math"
 	"net/http"
 	"net/url"
@@ -68,6 +68,7 @@ func defaultCloudShellGRPCClientOptions() []option.ClientOption {
 func defaultCloudShellCallOptions() *CloudShellCallOptions {
 	return &CloudShellCallOptions{
 		GetEnvironment: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -79,16 +80,25 @@ func defaultCloudShellCallOptions() *CloudShellCallOptions {
 				})
 			}),
 		},
-		StartEnvironment:     []gax.CallOption{},
-		AuthorizeEnvironment: []gax.CallOption{},
-		AddPublicKey:         []gax.CallOption{},
-		RemovePublicKey:      []gax.CallOption{},
+		StartEnvironment: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		AuthorizeEnvironment: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		AddPublicKey: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		RemovePublicKey: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 	}
 }
 
 func defaultCloudShellRESTCallOptions() *CloudShellCallOptions {
 	return &CloudShellCallOptions{
 		GetEnvironment: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -99,10 +109,18 @@ func defaultCloudShellRESTCallOptions() *CloudShellCallOptions {
 					http.StatusInternalServerError)
 			}),
 		},
-		StartEnvironment:     []gax.CallOption{},
-		AuthorizeEnvironment: []gax.CallOption{},
-		AddPublicKey:         []gax.CallOption{},
-		RemovePublicKey:      []gax.CallOption{},
+		StartEnvironment: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		AuthorizeEnvironment: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		AddPublicKey: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		RemovePublicKey: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 	}
 }
 
@@ -237,9 +255,6 @@ type cloudShellGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing CloudShellClient
 	CallOptions **CloudShellCallOptions
 
@@ -275,11 +290,6 @@ func NewCloudShellClient(ctx context.Context, opts ...option.ClientOption) (*Clo
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -288,7 +298,6 @@ func NewCloudShellClient(ctx context.Context, opts ...option.ClientOption) (*Clo
 
 	c := &cloudShellGRPCClient{
 		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
 		cloudShellClient: shellpb.NewCloudShellServiceClient(connPool),
 		CallOptions:      &client.CallOptions,
 	}
@@ -322,7 +331,7 @@ func (c *cloudShellGRPCClient) Connection() *grpc.ClientConn {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *cloudShellGRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -403,7 +412,7 @@ func defaultCloudShellRESTClientOptions() []option.ClientOption {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *cloudShellRESTClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -423,11 +432,6 @@ func (c *cloudShellRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 func (c *cloudShellGRPCClient) GetEnvironment(ctx context.Context, req *shellpb.GetEnvironmentRequest, opts ...gax.CallOption) (*shellpb.Environment, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -445,11 +449,6 @@ func (c *cloudShellGRPCClient) GetEnvironment(ctx context.Context, req *shellpb.
 }
 
 func (c *cloudShellGRPCClient) StartEnvironment(ctx context.Context, req *shellpb.StartEnvironmentRequest, opts ...gax.CallOption) (*StartEnvironmentOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -469,11 +468,6 @@ func (c *cloudShellGRPCClient) StartEnvironment(ctx context.Context, req *shellp
 }
 
 func (c *cloudShellGRPCClient) AuthorizeEnvironment(ctx context.Context, req *shellpb.AuthorizeEnvironmentRequest, opts ...gax.CallOption) (*AuthorizeEnvironmentOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -493,11 +487,6 @@ func (c *cloudShellGRPCClient) AuthorizeEnvironment(ctx context.Context, req *sh
 }
 
 func (c *cloudShellGRPCClient) AddPublicKey(ctx context.Context, req *shellpb.AddPublicKeyRequest, opts ...gax.CallOption) (*AddPublicKeyOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "environment", url.QueryEscape(req.GetEnvironment())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -517,11 +506,6 @@ func (c *cloudShellGRPCClient) AddPublicKey(ctx context.Context, req *shellpb.Ad
 }
 
 func (c *cloudShellGRPCClient) RemovePublicKey(ctx context.Context, req *shellpb.RemovePublicKeyRequest, opts ...gax.CallOption) (*RemovePublicKeyOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "environment", url.QueryEscape(req.GetEnvironment())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -581,13 +565,13 @@ func (c *cloudShellRESTClient) GetEnvironment(ctx context.Context, req *shellpb.
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -649,13 +633,13 @@ func (c *cloudShellRESTClient) StartEnvironment(ctx context.Context, req *shellp
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -720,13 +704,13 @@ func (c *cloudShellRESTClient) AuthorizeEnvironment(ctx context.Context, req *sh
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -790,13 +774,13 @@ func (c *cloudShellRESTClient) AddPublicKey(ctx context.Context, req *shellpb.Ad
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -861,13 +845,13 @@ func (c *cloudShellRESTClient) RemovePublicKey(ctx context.Context, req *shellpb
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil

@@ -24,6 +24,7 @@ import (
 	"cloud.google.com/go/pubsub"
 	api "cloud.google.com/go/pubsublite/apiv1"
 	"cloud.google.com/go/pubsublite/pscompat"
+	"github.com/golang/protobuf/ptypes/timestamp"
 	"golang.org/x/oauth2/google"
 	"golang.org/x/sync/errgroup"
 	"google.golang.org/api/option"
@@ -68,7 +69,7 @@ func ExamplePublisherClient_Publish() {
 // This example illustrates how to configure OAuth tokens to be refreshed 5
 // minutes before they expire, in order to mitigate delays which may occur
 // during refresh.
-func ExamplePublisherClient_Publish_earlyTokenRefresh() {
+func ExampleNewPublisherClient_earlyTokenRefresh() {
 	ctx := context.Background()
 	const topic = "projects/my-project/locations/region-or-zone/topics/my-topic"
 	params := google.CredentialsParams{
@@ -116,7 +117,7 @@ func ExamplePublisherClient_Publish_earlyTokenRefresh() {
 // that batching settings apply per partition. If BufferedByteLimit is being
 // used to bound memory usage, keep in mind the number of partitions in the
 // topic.
-func ExamplePublisherClient_Publish_batchingSettings() {
+func ExampleNewPublisherClientWithSettings_batchingSettings() {
 	ctx := context.Background()
 	const topic = "projects/my-project/locations/region-or-zone/topics/my-topic"
 	settings := pscompat.PublishSettings{
@@ -222,6 +223,62 @@ func ExamplePublisherClient_Publish_errorHandling() {
 	}
 }
 
+func ExampleEncodeEventTimeAttribute() {
+	ctx := context.Background()
+	const topic = "projects/my-project/locations/region-or-zone/topics/my-topic"
+	publisher, err := pscompat.NewPublisherClient(ctx, topic)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer publisher.Stop()
+
+	v, err := pscompat.EncodeEventTimeAttribute(&timestamp.Timestamp{
+		Seconds: 1672531200,
+		Nanos:   500000000,
+	})
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	r := publisher.Publish(ctx, &pubsub.Message{
+		Data: []byte("hello world"),
+		Attributes: map[string]string{
+			pscompat.EventTimeAttributeKey: v,
+		},
+	})
+	_, err = r.Get(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleDecodeEventTimeAttribute() {
+	ctx := context.Background()
+	const subscription = "projects/my-project/locations/region-or-zone/subscriptions/my-subscription"
+	subscriber, err := pscompat.NewSubscriberClient(ctx, subscription)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	cctx, cancel := context.WithCancel(ctx)
+	err = subscriber.Receive(cctx, func(ctx context.Context, m *pubsub.Message) {
+		m.Ack()
+		if v, ok := m.Attributes[pscompat.EventTimeAttributeKey]; ok {
+			eventTime, err := pscompat.DecodeEventTimeAttribute(v)
+			if err != nil {
+				// TODO: Handle error.
+			}
+			fmt.Printf("Received message with event time: %v\n", eventTime)
+		}
+	})
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	// Call cancel from the receiver callback or another goroutine to stop
+	// receiving.
+	cancel()
+}
+
 func ExampleSubscriberClient_Receive() {
 	ctx := context.Background()
 	const subscription = "projects/my-project/locations/region-or-zone/subscriptions/my-subscription"
@@ -287,7 +344,7 @@ func ExampleSubscriberClient_Receive_errorHandling() {
 // being processed at once, you can bound your program's resource consumption.
 // Note that ReceiveSettings apply per partition, so keep in mind the number of
 // partitions in the associated topic.
-func ExampleSubscriberClient_Receive_maxOutstanding() {
+func ExampleNewSubscriberClientWithSettings_maxOutstanding() {
 	ctx := context.Background()
 	const subscription = "projects/my-project/locations/region-or-zone/subscriptions/my-subscription"
 	settings := pscompat.ReceiveSettings{
@@ -317,7 +374,7 @@ func ExampleSubscriberClient_Receive_maxOutstanding() {
 // SubscriberClient should connect to. If not specified, the SubscriberClient
 // will use Pub/Sub Lite's partition assignment service to automatically
 // determine which partitions it should connect to.
-func ExampleSubscriberClient_Receive_manualPartitionAssignment() {
+func ExampleNewSubscriberClientWithSettings_manualPartitionAssignment() {
 	ctx := context.Background()
 	const subscription = "projects/my-project/locations/region-or-zone/subscriptions/my-subscription"
 	settings := pscompat.ReceiveSettings{

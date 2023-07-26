@@ -45,10 +45,10 @@ var newTensorboardClientHook clientHook
 type TensorboardCallOptions struct {
 	CreateTensorboard                  []gax.CallOption
 	GetTensorboard                     []gax.CallOption
-	ReadTensorboardUsage               []gax.CallOption
 	UpdateTensorboard                  []gax.CallOption
 	ListTensorboards                   []gax.CallOption
 	DeleteTensorboard                  []gax.CallOption
+	ReadTensorboardUsage               []gax.CallOption
 	CreateTensorboardExperiment        []gax.CallOption
 	GetTensorboardExperiment           []gax.CallOption
 	UpdateTensorboardExperiment        []gax.CallOption
@@ -100,10 +100,10 @@ func defaultTensorboardCallOptions() *TensorboardCallOptions {
 	return &TensorboardCallOptions{
 		CreateTensorboard:                  []gax.CallOption{},
 		GetTensorboard:                     []gax.CallOption{},
-		ReadTensorboardUsage:               []gax.CallOption{},
 		UpdateTensorboard:                  []gax.CallOption{},
 		ListTensorboards:                   []gax.CallOption{},
 		DeleteTensorboard:                  []gax.CallOption{},
+		ReadTensorboardUsage:               []gax.CallOption{},
 		CreateTensorboardExperiment:        []gax.CallOption{},
 		GetTensorboardExperiment:           []gax.CallOption{},
 		UpdateTensorboardExperiment:        []gax.CallOption{},
@@ -148,12 +148,12 @@ type internalTensorboardClient interface {
 	CreateTensorboard(context.Context, *aiplatformpb.CreateTensorboardRequest, ...gax.CallOption) (*CreateTensorboardOperation, error)
 	CreateTensorboardOperation(name string) *CreateTensorboardOperation
 	GetTensorboard(context.Context, *aiplatformpb.GetTensorboardRequest, ...gax.CallOption) (*aiplatformpb.Tensorboard, error)
-	ReadTensorboardUsage(context.Context, *aiplatformpb.ReadTensorboardUsageRequest, ...gax.CallOption) (*aiplatformpb.ReadTensorboardUsageResponse, error)
 	UpdateTensorboard(context.Context, *aiplatformpb.UpdateTensorboardRequest, ...gax.CallOption) (*UpdateTensorboardOperation, error)
 	UpdateTensorboardOperation(name string) *UpdateTensorboardOperation
 	ListTensorboards(context.Context, *aiplatformpb.ListTensorboardsRequest, ...gax.CallOption) *TensorboardIterator
 	DeleteTensorboard(context.Context, *aiplatformpb.DeleteTensorboardRequest, ...gax.CallOption) (*DeleteTensorboardOperation, error)
 	DeleteTensorboardOperation(name string) *DeleteTensorboardOperation
+	ReadTensorboardUsage(context.Context, *aiplatformpb.ReadTensorboardUsageRequest, ...gax.CallOption) (*aiplatformpb.ReadTensorboardUsageResponse, error)
 	CreateTensorboardExperiment(context.Context, *aiplatformpb.CreateTensorboardExperimentRequest, ...gax.CallOption) (*aiplatformpb.TensorboardExperiment, error)
 	GetTensorboardExperiment(context.Context, *aiplatformpb.GetTensorboardExperimentRequest, ...gax.CallOption) (*aiplatformpb.TensorboardExperiment, error)
 	UpdateTensorboardExperiment(context.Context, *aiplatformpb.UpdateTensorboardExperimentRequest, ...gax.CallOption) (*aiplatformpb.TensorboardExperiment, error)
@@ -248,11 +248,6 @@ func (c *TensorboardClient) GetTensorboard(ctx context.Context, req *aiplatformp
 	return c.internalClient.GetTensorboard(ctx, req, opts...)
 }
 
-// ReadTensorboardUsage returns a list of monthly active users for a given TensorBoard instance.
-func (c *TensorboardClient) ReadTensorboardUsage(ctx context.Context, req *aiplatformpb.ReadTensorboardUsageRequest, opts ...gax.CallOption) (*aiplatformpb.ReadTensorboardUsageResponse, error) {
-	return c.internalClient.ReadTensorboardUsage(ctx, req, opts...)
-}
-
 // UpdateTensorboard updates a Tensorboard.
 func (c *TensorboardClient) UpdateTensorboard(ctx context.Context, req *aiplatformpb.UpdateTensorboardRequest, opts ...gax.CallOption) (*UpdateTensorboardOperation, error) {
 	return c.internalClient.UpdateTensorboard(ctx, req, opts...)
@@ -278,6 +273,11 @@ func (c *TensorboardClient) DeleteTensorboard(ctx context.Context, req *aiplatfo
 // The name must be that of a previously created DeleteTensorboardOperation, possibly from a different process.
 func (c *TensorboardClient) DeleteTensorboardOperation(name string) *DeleteTensorboardOperation {
 	return c.internalClient.DeleteTensorboardOperation(name)
+}
+
+// ReadTensorboardUsage returns a list of monthly active users for a given TensorBoard instance.
+func (c *TensorboardClient) ReadTensorboardUsage(ctx context.Context, req *aiplatformpb.ReadTensorboardUsageRequest, opts ...gax.CallOption) (*aiplatformpb.ReadTensorboardUsageResponse, error) {
+	return c.internalClient.ReadTensorboardUsage(ctx, req, opts...)
 }
 
 // CreateTensorboardExperiment creates a TensorboardExperiment.
@@ -478,8 +478,7 @@ func (c *TensorboardClient) GetOperation(ctx context.Context, req *longrunningpb
 	return c.internalClient.GetOperation(ctx, req, opts...)
 }
 
-// ListOperations lists operations that match the specified filter in the request. If
-// the server doesn’t support this method, it returns UNIMPLEMENTED.
+// ListOperations is a utility method from google.longrunning.Operations.
 func (c *TensorboardClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	return c.internalClient.ListOperations(ctx, req, opts...)
 }
@@ -495,9 +494,6 @@ func (c *TensorboardClient) WaitOperation(ctx context.Context, req *longrunningp
 type tensorboardGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
-
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
 
 	// Points back to the CallOptions field of the containing TensorboardClient
 	CallOptions **TensorboardCallOptions
@@ -534,11 +530,6 @@ func NewTensorboardClient(ctx context.Context, opts ...option.ClientOption) (*Te
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -547,7 +538,6 @@ func NewTensorboardClient(ctx context.Context, opts ...option.ClientOption) (*Te
 
 	c := &tensorboardGRPCClient{
 		connPool:          connPool,
-		disableDeadlines:  disableDeadlines,
 		tensorboardClient: aiplatformpb.NewTensorboardServiceClient(connPool),
 		CallOptions:       &client.CallOptions,
 		operationsClient:  longrunningpb.NewOperationsClient(connPool),
@@ -584,7 +574,7 @@ func (c *tensorboardGRPCClient) Connection() *grpc.ClientConn {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *tensorboardGRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -623,23 +613,6 @@ func (c *tensorboardGRPCClient) GetTensorboard(ctx context.Context, req *aiplatf
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.tensorboardClient.GetTensorboard(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return resp, nil
-}
-
-func (c *tensorboardGRPCClient) ReadTensorboardUsage(ctx context.Context, req *aiplatformpb.ReadTensorboardUsageRequest, opts ...gax.CallOption) (*aiplatformpb.ReadTensorboardUsageResponse, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "tensorboard", url.QueryEscape(req.GetTensorboard())))
-
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append((*c.CallOptions).ReadTensorboardUsage[0:len((*c.CallOptions).ReadTensorboardUsage):len((*c.CallOptions).ReadTensorboardUsage)], opts...)
-	var resp *aiplatformpb.ReadTensorboardUsageResponse
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = c.tensorboardClient.ReadTensorboardUsage(ctx, req, settings.GRPC...)
 		return err
 	}, opts...)
 	if err != nil {
@@ -729,6 +702,23 @@ func (c *tensorboardGRPCClient) DeleteTensorboard(ctx context.Context, req *aipl
 	return &DeleteTensorboardOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
+}
+
+func (c *tensorboardGRPCClient) ReadTensorboardUsage(ctx context.Context, req *aiplatformpb.ReadTensorboardUsageRequest, opts ...gax.CallOption) (*aiplatformpb.ReadTensorboardUsageResponse, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "tensorboard", url.QueryEscape(req.GetTensorboard())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).ReadTensorboardUsage[0:len((*c.CallOptions).ReadTensorboardUsage):len((*c.CallOptions).ReadTensorboardUsage)], opts...)
+	var resp *aiplatformpb.ReadTensorboardUsageResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.tensorboardClient.ReadTensorboardUsage(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
 }
 
 func (c *tensorboardGRPCClient) CreateTensorboardExperiment(ctx context.Context, req *aiplatformpb.CreateTensorboardExperimentRequest, opts ...gax.CallOption) (*aiplatformpb.TensorboardExperiment, error) {

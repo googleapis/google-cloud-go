@@ -65,6 +65,7 @@ func defaultCursorCallOptions() *CursorCallOptions {
 	return &CursorCallOptions{
 		StreamingCommitCursor: []gax.CallOption{},
 		CommitCursor: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -80,6 +81,7 @@ func defaultCursorCallOptions() *CursorCallOptions {
 			}),
 		},
 		ListPartitionCursors: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -97,6 +99,7 @@ func defaultCursorCallOptions() *CursorCallOptions {
 		CancelOperation: []gax.CallOption{},
 		DeleteOperation: []gax.CallOption{},
 		GetOperation: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -112,6 +115,7 @@ func defaultCursorCallOptions() *CursorCallOptions {
 			}),
 		},
 		ListOperations: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -222,9 +226,6 @@ type cursorGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing CursorClient
 	CallOptions **CursorCallOptions
 
@@ -253,11 +254,6 @@ func NewCursorClient(ctx context.Context, opts ...option.ClientOption) (*CursorC
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -266,7 +262,6 @@ func NewCursorClient(ctx context.Context, opts ...option.ClientOption) (*CursorC
 
 	c := &cursorGRPCClient{
 		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
 		cursorClient:     pubsublitepb.NewCursorServiceClient(connPool),
 		CallOptions:      &client.CallOptions,
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
@@ -290,7 +285,7 @@ func (c *cursorGRPCClient) Connection() *grpc.ClientConn {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *cursorGRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -317,11 +312,6 @@ func (c *cursorGRPCClient) StreamingCommitCursor(ctx context.Context, opts ...ga
 }
 
 func (c *cursorGRPCClient) CommitCursor(ctx context.Context, req *pubsublitepb.CommitCursorRequest, opts ...gax.CallOption) (*pubsublitepb.CommitCursorResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "subscription", url.QueryEscape(req.GetSubscription())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -410,11 +400,6 @@ func (c *cursorGRPCClient) DeleteOperation(ctx context.Context, req *longrunning
 }
 
 func (c *cursorGRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)

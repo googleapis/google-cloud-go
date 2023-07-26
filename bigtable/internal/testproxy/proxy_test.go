@@ -260,8 +260,8 @@ func TestBulkMutateRows(t *testing.T) {
 		t.Errorf("testproxy test: BulkMutateRows() didn't return OK; got %v", resp.Status.Code)
 	}
 
-	if len(resp.Entry) != 0 {
-		t.Errorf("testproxy test: BulkMutateRows() returned individual errors; got %v", resp.Entry)
+	if len(resp.Entries) != 0 {
+		t.Errorf("testproxy test: BulkMutateRows() returned individual errors; got %v", resp.Entries)
 	}
 }
 
@@ -315,8 +315,8 @@ func TestReadRows(t *testing.T) {
 		t.Errorf("testproxy test: ReadRows() didn't return OK; got %v", resp.Status.Code)
 	}
 
-	if len(resp.Row) != 1 {
-		t.Errorf("testproxy test: SampleRowKeys() returned wrong number of results; got: %d", len(resp.Row))
+	if len(resp.Rows) != 1 {
+		t.Errorf("testproxy test: SampleRowKeys() returned wrong number of results; got: %d", len(resp.Rows))
 
 	}
 }
@@ -388,8 +388,8 @@ func TestSampleRowKeys(t *testing.T) {
 		t.Errorf("testproxy test: SampleRowKeys() didn't return OK; got %v", resp.Status.Code)
 	}
 
-	if len(resp.Sample) != 1 {
-		t.Errorf("testproxy test: SampleRowKeys() returned wrong number of results; got: %d", len(resp.Sample))
+	if len(resp.Samples) != 1 {
+		t.Errorf("testproxy test: SampleRowKeys() returned wrong number of results; got: %d", len(resp.Samples))
 	}
 }
 

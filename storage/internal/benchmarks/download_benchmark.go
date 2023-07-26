@@ -19,18 +19,21 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"path"
 	"time"
 
 	"cloud.google.com/go/storage"
 )
 
 type downloadOpts struct {
-	client      *storage.Client
-	objectSize  int64
-	bucket      string
-	object      string
-	rangeStart  int64
-	rangeLength int64
+	client              *storage.Client
+	objectSize          int64
+	bucket              string
+	object              string
+	rangeStart          int64
+	rangeLength         int64
+	downloadToDirectory string
+	timeout             time.Duration
 }
 
 func downloadBenchmark(ctx context.Context, dopts downloadOpts) (elapsedTime time.Duration, rerr error) {
@@ -43,30 +46,26 @@ func downloadBenchmark(ctx context.Context, dopts downloadOpts) (elapsedTime tim
 	defer func() { elapsedTime = time.Since(start) }()
 
 	// Set additional timeout
-	ctx, cancel := context.WithTimeout(ctx, time.Minute*2)
+	ctx, cancel := context.WithTimeout(ctx, dopts.timeout)
 	defer cancel()
 
+	o := dopts.client.Bucket(dopts.bucket).Object(dopts.object)
+
 	// Create file to download to
-	f, err := os.CreateTemp("", objectPrefix)
+	f, err := os.Create(path.Join(dopts.downloadToDirectory, o.ObjectName()))
 	if err != nil {
 		rerr = fmt.Errorf("os.Create: %w", err)
 		return
 	}
 	defer func() {
 		closeErr := f.Close()
-		removeErr := os.Remove(f.Name())
 		// if we don't have another error to return, return error for closing file
-		// if that error is also nil, return removeErr
 		if rerr == nil {
-			rerr = removeErr
-			if closeErr != nil {
-				rerr = closeErr
-			}
+			rerr = closeErr
 		}
 	}()
 
 	// Get reader from object
-	o := dopts.client.Bucket(dopts.bucket).Object(dopts.object)
 	objectReader, err := o.NewRangeReader(ctx, dopts.rangeStart, dopts.rangeLength)
 	if err != nil {
 		rerr = fmt.Errorf("Object(%q).NewReader: %w", o.ObjectName(), err)

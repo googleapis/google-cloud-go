@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"math"
 	"net/http"
 	"net/url"
@@ -59,13 +59,17 @@ func defaultIamCheckerGRPCClientOptions() []option.ClientOption {
 
 func defaultIamCheckerCallOptions() *IamCheckerCallOptions {
 	return &IamCheckerCallOptions{
-		TroubleshootIamPolicy: []gax.CallOption{},
+		TroubleshootIamPolicy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 	}
 }
 
 func defaultIamCheckerRESTCallOptions() *IamCheckerCallOptions {
 	return &IamCheckerCallOptions{
-		TroubleshootIamPolicy: []gax.CallOption{},
+		TroubleshootIamPolicy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 	}
 }
 
@@ -114,8 +118,9 @@ func (c *IamCheckerClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// TroubleshootIamPolicy checks whether a member has a specific permission for a specific resource,
-// and explains why the member does or does not have that permission.
+// TroubleshootIamPolicy checks whether a principal has a specific permission for a specific
+// resource, and explains why the principal does or does not have that
+// permission.
 func (c *IamCheckerClient) TroubleshootIamPolicy(ctx context.Context, req *policytroubleshooterpb.TroubleshootIamPolicyRequest, opts ...gax.CallOption) (*policytroubleshooterpb.TroubleshootIamPolicyResponse, error) {
 	return c.internalClient.TroubleshootIamPolicy(ctx, req, opts...)
 }
@@ -126,9 +131,6 @@ func (c *IamCheckerClient) TroubleshootIamPolicy(ctx context.Context, req *polic
 type iamCheckerGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
-
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
 
 	// Points back to the CallOptions field of the containing IamCheckerClient
 	CallOptions **IamCheckerCallOptions
@@ -156,11 +158,6 @@ func NewIamCheckerClient(ctx context.Context, opts ...option.ClientOption) (*Iam
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -169,7 +166,6 @@ func NewIamCheckerClient(ctx context.Context, opts ...option.ClientOption) (*Iam
 
 	c := &iamCheckerGRPCClient{
 		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
 		iamCheckerClient: policytroubleshooterpb.NewIamCheckerClient(connPool),
 		CallOptions:      &client.CallOptions,
 	}
@@ -192,7 +188,7 @@ func (c *iamCheckerGRPCClient) Connection() *grpc.ClientConn {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *iamCheckerGRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -254,7 +250,7 @@ func defaultIamCheckerRESTClientOptions() []option.ClientOption {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *iamCheckerRESTClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -274,11 +270,6 @@ func (c *iamCheckerRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 func (c *iamCheckerGRPCClient) TroubleshootIamPolicy(ctx context.Context, req *policytroubleshooterpb.TroubleshootIamPolicyRequest, opts ...gax.CallOption) (*policytroubleshooterpb.TroubleshootIamPolicyResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
 	opts = append((*c.CallOptions).TroubleshootIamPolicy[0:len((*c.CallOptions).TroubleshootIamPolicy):len((*c.CallOptions).TroubleshootIamPolicy)], opts...)
 	var resp *policytroubleshooterpb.TroubleshootIamPolicyResponse
@@ -293,8 +284,9 @@ func (c *iamCheckerGRPCClient) TroubleshootIamPolicy(ctx context.Context, req *p
 	return resp, nil
 }
 
-// TroubleshootIamPolicy checks whether a member has a specific permission for a specific resource,
-// and explains why the member does or does not have that permission.
+// TroubleshootIamPolicy checks whether a principal has a specific permission for a specific
+// resource, and explains why the principal does or does not have that
+// permission.
 func (c *iamCheckerRESTClient) TroubleshootIamPolicy(ctx context.Context, req *policytroubleshooterpb.TroubleshootIamPolicyRequest, opts ...gax.CallOption) (*policytroubleshooterpb.TroubleshootIamPolicyResponse, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -339,13 +331,13 @@ func (c *iamCheckerRESTClient) TroubleshootIamPolicy(ctx context.Context, req *p
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil

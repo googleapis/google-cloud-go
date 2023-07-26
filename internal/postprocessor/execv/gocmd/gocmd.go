@@ -75,30 +75,13 @@ func ModTidyAll(dir string) error {
 	return nil
 }
 
-// ListModName finds a modules name for a given directory.
+// ListModName finds a module's name for a given directory.
 func ListModName(dir string) (string, error) {
 	modC := execv.Command("go", "list", "-m")
 	modC.Dir = dir
+	modC.Env = []string{"GOWORK=off"}
 	mod, err := modC.Output()
-	return string(mod), err
-}
-
-// ListModDirName finds the directory in which the module resides. Returns
-// ErrBuildConstraint if all files in a module are constrained.
-func ListModDirName(dir string) (string, error) {
-	var out []byte
-	var err error
-	c := execv.Command("go", "list", "-f", "'{{.Module.Dir}}'")
-	c.Dir = dir
-	out, err = c.Output()
-	if err != nil {
-		var ee *exec.ExitError
-		if errors.As(err, &ee) && strings.Contains(string(ee.Stderr), "build constraints exclude all Go files") {
-			return "", ErrBuildConstraint
-		}
-		return "", err
-	}
-	return strings.Trim(strings.TrimSpace(string(out)), "'"), nil
+	return strings.TrimSpace(string(mod)), err
 }
 
 // Build attempts to build all packages recursively from the given directory.
@@ -135,6 +118,7 @@ func CurrentMod(dir string) (string, error) {
 	log.Println("detecting current module")
 	c := execv.Command("go", "list", "-m")
 	c.Dir = dir
+	c.Env = []string{"GOWORK=off"}
 	var out []byte
 	var err error
 	if out, err = c.Output(); err != nil {
@@ -152,5 +136,12 @@ func EditReplace(dir, mod, modPath string) error {
 		fmt.Sprintf("PATH=%s", os.Getenv("PATH")),
 		fmt.Sprintf("HOME=%s", os.Getenv("HOME")),
 	}
+	return c.Run()
+}
+
+// WorkUse updates the go.work file for added modules.
+func WorkUse(dir string) error {
+	c := execv.Command("go", "work", "use", "-r", ".")
+	c.Dir = dir
 	return c.Run()
 }

@@ -1,5 +1,34 @@
 # Changelog
 
+
+## [1.0.0](https://github.com/googleapis/google-cloud-go/compare/beyondcorp/v0.6.1...beyondcorp/v1.0.0) (2023-07-18)
+
+
+### Features
+
+* **beyondcorp:** Promote to GA ([#8285](https://github.com/googleapis/google-cloud-go/issues/8285)) ([02413ca](https://github.com/googleapis/google-cloud-go/commit/02413cacf908ce35df8dde6ae75c954917564ae7))
+
+## [0.6.1](https://github.com/googleapis/google-cloud-go/compare/beyondcorp/v0.6.0...beyondcorp/v0.6.1) (2023-06-20)
+
+
+### Bug Fixes
+
+* **beyondcorp:** REST query UpdateMask bug ([df52820](https://github.com/googleapis/google-cloud-go/commit/df52820b0e7721954809a8aa8700b93c5662dc9b))
+
+## [0.6.0](https://github.com/googleapis/google-cloud-go/compare/beyondcorp/v0.5.1...beyondcorp/v0.6.0) (2023-05-30)
+
+
+### Features
+
+* **beyondcorp:** Update all direct dependencies ([b340d03](https://github.com/googleapis/google-cloud-go/commit/b340d030f2b52a4ce48846ce63984b28583abde6))
+
+## [0.5.1](https://github.com/googleapis/google-cloud-go/compare/beyondcorp/v0.5.0...beyondcorp/v0.5.1) (2023-05-08)
+
+
+### Bug Fixes
+
+* **beyondcorp:** Update grpc to v1.55.0 ([1147ce0](https://github.com/googleapis/google-cloud-go/commit/1147ce02a990276ca4f8ab7a1ab65c14da4450ef))
+
 ## [0.5.0](https://github.com/googleapis/google-cloud-go/compare/beyondcorp/v0.4.0...beyondcorp/v0.5.0) (2023-03-15)
 
 
