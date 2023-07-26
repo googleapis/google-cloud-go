@@ -1,5 +1,12 @@
 # Changes
 
+## [1.12.1](https://github.com/googleapis/google-cloud-go/compare/cloudtasks/v1.12.0...cloudtasks/v1.12.1) (2023-07-26)
+
+
+### Documentation
+
+* **cloudtasks:** Minor formatting ([cdee2d9](https://github.com/googleapis/google-cloud-go/commit/cdee2d918015c9b0a53aa8283085214d9a11c77c))
+
 ## [1.12.0](https://github.com/googleapis/google-cloud-go/compare/cloudtasks/v1.11.1...cloudtasks/v1.12.0) (2023-07-18)
 
 

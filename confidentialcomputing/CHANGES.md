@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [1.1.0](https://github.com/googleapis/google-cloud-go/compare/confidentialcomputing/v1.0.0...confidentialcomputing/v1.1.0) (2023-07-26)
+
+
+### Features
+
+* **confidentialcomputing:** Added support for signed container image and custom audience and nonce requests ([327e101](https://github.com/googleapis/google-cloud-go/commit/327e10188a2e22dd7b7e6c12a8cf66729f65974c))
+
 ## [1.0.0](https://github.com/googleapis/google-cloud-go/compare/confidentialcomputing/v0.3.1...confidentialcomputing/v1.0.0) (2023-07-24)
 
 
