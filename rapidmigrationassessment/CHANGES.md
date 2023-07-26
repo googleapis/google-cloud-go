@@ -1,6 +1,14 @@
 # Changelog
 
 
+## [1.0.0](https://github.com/googleapis/google-cloud-go/compare/rapidmigrationassessment/v0.1.2...rapidmigrationassessment/v1.0.0) (2023-07-24)
+
+
+### Features
+
+* **rapidmigrationassessment:** Promote to GA ([08ec41a](https://github.com/googleapis/google-cloud-go/commit/08ec41aba981874a7b86a9a941b07f9eb2fc6ce1))
+* **rapidmigrationassessment:** Promote to GA ([#8304](https://github.com/googleapis/google-cloud-go/issues/8304)) ([e46c890](https://github.com/googleapis/google-cloud-go/commit/e46c8904d331e8faf3fa11e1ffcaf9165a77d8f3))
+
 ## [0.1.2](https://github.com/googleapis/google-cloud-go/compare/rapidmigrationassessment/v0.1.1...rapidmigrationassessment/v0.1.2) (2023-06-20)
 
 

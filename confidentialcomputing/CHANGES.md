@@ -1,6 +1,14 @@
 # Changelog
 
 
+## [1.0.0](https://github.com/googleapis/google-cloud-go/compare/confidentialcomputing/v0.3.1...confidentialcomputing/v1.0.0) (2023-07-24)
+
+
+### Features
+
+* **confidentialcomputing:** Promote to GA ([08ec41a](https://github.com/googleapis/google-cloud-go/commit/08ec41aba981874a7b86a9a941b07f9eb2fc6ce1))
+* **confidentialcomputing:** Promote to GA ([#8301](https://github.com/googleapis/google-cloud-go/issues/8301)) ([b2964a9](https://github.com/googleapis/google-cloud-go/commit/b2964a92d093a3d751e8b43aa70471bd989b1244))
+
 ## [0.3.1](https://github.com/googleapis/google-cloud-go/compare/confidentialcomputing/v0.3.0...confidentialcomputing/v0.3.1) (2023-06-20)
 
 

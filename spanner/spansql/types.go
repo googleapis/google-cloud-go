@@ -461,6 +461,7 @@ type ForeignKey struct {
 	Columns    []ID
 	RefTable   ID
 	RefColumns []ID
+	OnDelete   OnDelete
 
 	Position Position // position of the "FOREIGN" token
 }

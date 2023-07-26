@@ -727,7 +727,8 @@ func (c *Client) Run(ctx context.Context, q *Query) *Iterator {
 		pageCursor:   q.start,
 		entityCursor: q.start,
 		req: &pb.RunQueryRequest{
-			ProjectId: c.dataset,
+			ProjectId:  c.dataset,
+			DatabaseId: c.databaseID,
 		},
 	}
 
@@ -766,7 +767,8 @@ func (c *Client) RunAggregationQuery(ctx context.Context, aq *AggregationQuery) 
 	}
 
 	req := &pb.RunAggregationQueryRequest{
-		ProjectId: c.dataset,
+		ProjectId:  c.dataset,
+		DatabaseId: c.databaseID,
 		QueryType: &pb.RunAggregationQueryRequest_AggregationQuery{
 			AggregationQuery: &pb.AggregationQuery{
 				QueryType: &pb.AggregationQuery_NestedQuery{

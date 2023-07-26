@@ -1,5 +1,12 @@
 # Changes
 
+## [1.13.0](https://github.com/googleapis/google-cloud-go/compare/eventarc/v1.12.1...eventarc/v1.13.0) (2023-07-24)
+
+
+### Features
+
+* **eventarc/publishing:** Promote to GA ([#8308](https://github.com/googleapis/google-cloud-go/issues/8308)) ([432864c](https://github.com/googleapis/google-cloud-go/commit/432864c7fc0bb551a5017b423bbd5f76c3357dc3))
+
 ## [1.12.1](https://github.com/googleapis/google-cloud-go/compare/eventarc/v1.12.0...eventarc/v1.12.1) (2023-06-20)
 
 

@@ -1555,6 +1555,59 @@ func TestParseDDL(t *testing.T) {
 				},
 			},
 		},
+		{
+			`CREATE TABLE tname1 (col1 INT64, col2 INT64, CONSTRAINT con1 FOREIGN KEY (col2) REFERENCES tname2 (col3) ON DELETE CASCADE) PRIMARY KEY (col1);
+			CREATE TABLE tname1 (col1 INT64, col2 INT64, CONSTRAINT con1 FOREIGN KEY (col2) REFERENCES tname2 (col3) ON DELETE NO ACTION) PRIMARY KEY (col1);
+			ALTER TABLE tname1 ADD CONSTRAINT con1 FOREIGN KEY (col2) REFERENCES tname2 (col3) ON DELETE CASCADE;
+			ALTER TABLE tname1 ADD CONSTRAINT con1 FOREIGN KEY (col2) REFERENCES tname2 (col3) ON DELETE NO ACTION;`,
+			&DDL{
+				Filename: "filename",
+				List: []DDLStmt{
+					&CreateTable{
+						Name: "tname1",
+						Columns: []ColumnDef{
+							{Name: "col1", Type: Type{Base: Int64}, Position: line(1)},
+							{Name: "col2", Type: Type{Base: Int64}, Position: line(1)},
+						},
+						Constraints: []TableConstraint{
+							{Name: "con1", Constraint: ForeignKey{Columns: []ID{"col2"}, RefTable: "tname2", RefColumns: []ID{"col3"}, OnDelete: CascadeOnDelete, Position: line(1)}, Position: line(1)},
+						},
+						PrimaryKey: []KeyPart{
+							{Column: "col1"},
+						},
+						Position: line(1),
+					},
+					&CreateTable{
+						Name: "tname1",
+						Columns: []ColumnDef{
+							{Name: "col1", Type: Type{Base: Int64}, Position: line(2)},
+							{Name: "col2", Type: Type{Base: Int64}, Position: line(2)},
+						},
+						Constraints: []TableConstraint{
+							{Name: "con1", Constraint: ForeignKey{Columns: []ID{"col2"}, RefTable: "tname2", RefColumns: []ID{"col3"}, OnDelete: NoActionOnDelete, Position: line(2)}, Position: line(2)},
+						},
+						PrimaryKey: []KeyPart{
+							{Column: "col1"},
+						},
+						Position: line(2),
+					},
+					&AlterTable{
+						Name: "tname1",
+						Alteration: AddConstraint{
+							Constraint: TableConstraint{Name: "con1", Constraint: ForeignKey{Columns: []ID{"col2"}, RefTable: "tname2", RefColumns: []ID{"col3"}, OnDelete: CascadeOnDelete, Position: line(3)}, Position: line(3)},
+						},
+						Position: line(3),
+					},
+					&AlterTable{
+						Name: "tname1",
+						Alteration: AddConstraint{
+							Constraint: TableConstraint{Name: "con1", Constraint: ForeignKey{Columns: []ID{"col2"}, RefTable: "tname2", RefColumns: []ID{"col3"}, OnDelete: NoActionOnDelete, Position: line(4)}, Position: line(4)},
+						},
+						Position: line(4),
+					},
+				},
+			},
+		},
 	}
 	for _, test := range tests {
 		got, err := ParseDDL("filename", test.in)
