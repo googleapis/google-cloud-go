@@ -21,11 +21,8 @@
 package discoveryenginepb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -33,6 +30,8 @@ import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -115,7 +114,8 @@ type ListDocumentsRequest struct {
 	// Use `default_branch` as the branch ID, to list documents under the default
 	// branch.
 	//
-	// If the caller does not have permission to list [Documents][]s under this
+	// If the caller does not have permission to list
+	// [Document][google.cloud.discoveryengine.v1beta.Document]s under this
 	// branch, regardless of whether or not this branch exists, a
 	// `PERMISSION_DENIED` error is returned.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`

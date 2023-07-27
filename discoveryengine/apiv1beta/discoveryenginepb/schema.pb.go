@@ -21,13 +21,12 @@
 package discoveryenginepb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	structpb "google.golang.org/protobuf/types/known/structpb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -46,7 +45,7 @@ type Schema struct {
 	// Schema representation. One of
 	// [struct_schema][google.cloud.discoveryengine.v1beta.Schema.struct_schema]
 	// or [json_schema][google.cloud.discoveryengine.v1beta.Schema.json_schema]
-	// should be provided otherwise an INVALID_ARGUMENT error is thrown.
+	// should be provided otherwise an `INVALID_ARGUMENT` error is thrown.
 	//
 	// Types that are assignable to Schema:
 	//	*Schema_StructSchema

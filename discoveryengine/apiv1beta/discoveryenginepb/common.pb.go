@@ -21,12 +21,11 @@
 package discoveryenginepb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -268,8 +267,7 @@ type UserInfo struct {
 	// The field must be a UTF-8 encoded string with a length limit of 128
 	// characters. Otherwise, an `INVALID_ARGUMENT` error is returned.
 	UserId string `protobuf:"bytes,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
-	// User agent as included in the HTTP header. Required for getting
-	// [SearchResponse.sponsored_results][].
+	// User agent as included in the HTTP header.
 	//
 	// The field must be a UTF-8 encoded string with a length limit of 1,000
 	// characters. Otherwise, an `INVALID_ARGUMENT` error is returned.
