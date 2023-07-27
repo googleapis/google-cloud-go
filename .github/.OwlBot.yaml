@@ -267,6 +267,7 @@ deep-remove-regex:
   - /internal/generated/snippets/oslogin/apiv1/
   - /internal/generated/snippets/oslogin/apiv1beta/
   - /internal/generated/snippets/phishingprotection/apiv1beta1/
+  - /internal/generated/snippets/policysimulator/apiv1/
   - /internal/generated/snippets/policytroubleshooter/apiv1/
   - /internal/generated/snippets/privatecatalog/apiv1beta1/
   - /internal/generated/snippets/pubsub/apiv1/
@@ -381,6 +382,7 @@ deep-remove-regex:
   - /oslogin/apiv1beta/
   - /oslogin/common/
   - /phishingprotection/apiv1beta1/
+  - /policysimulator/apiv1/
   - /policytroubleshooter/apiv1/
   - /privatecatalog/apiv1beta1/
   - /pubsub/apiv1/
@@ -803,6 +805,8 @@ deep-copy-regex:
   - source: /google/cloud/oslogin/common/cloud.google.com/go
     dest: /
   - source: /google/cloud/phishingprotection/v1beta1/cloud.google.com/go
+    dest: /
+  - source: /google/cloud/policysimulator/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/policytroubleshooter/v1/cloud.google.com/go
     dest: /
