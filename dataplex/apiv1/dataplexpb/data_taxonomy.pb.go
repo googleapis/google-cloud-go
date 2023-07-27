@@ -21,8 +21,11 @@
 package dataplexpb
 
 import (
-	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	context "context"
+	reflect "reflect"
+	sync "sync"
+
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -32,8 +35,6 @@ import (
 	_ "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
-	reflect "reflect"
-	sync "sync"
 )
 
 const (
@@ -187,9 +188,10 @@ func (x *DataTaxonomy) GetClassCount() int32 {
 // ```
 // PII
 //   - ResourceAccessSpec :
-//                 - readers :foo@bar.com
+//   - readers :foo@bar.com
 //   - DataAccessSpec :
-//                 - readers :bar@foo.com
+//   - readers :bar@foo.com
+//
 // ```
 type DataAttribute struct {
 	state         protoimpl.MessageState
