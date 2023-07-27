@@ -31,6 +31,8 @@ var (
 	format    = flag.String("format", "plain", "output format, one of [plain|github], defaults to 'plain'")
 	ghVarName = flag.String("gh-var", "submodules", "github format's variable name to set output for, defaults to 'submodules'.")
 	base      = flag.String("base", "origin/main", "the base ref to compare to, defaults to 'origin/main'")
+	// See https://git-scm.com/docs/git-diff#Documentation/git-diff.txt---diff-filterACDMRTUXB82308203
+	filter = flag.String("diff-filter", "", "the git diff filter to apply [A|C|D|M|R|T|U|X|B] - lowercase to exclude")
 )
 
 func main() {
@@ -128,7 +130,13 @@ func modDirs(dir string) (submodulesDirs []string, err error) {
 }
 
 func gitFilesChanges(dir string) ([]string, error) {
-	c := exec.Command("git", "diff", "--name-only", *base)
+	args := []string{"diff", "--name-only"}
+	if *filter != "" {
+		args = append(args, "--diff-filter", *filter)
+	}
+	args = append(args, *base)
+
+	c := exec.Command("git", args...)
 	c.Dir = dir
 	b, err := c.Output()
 	if err != nil {
