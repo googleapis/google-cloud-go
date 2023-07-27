@@ -31,6 +31,7 @@ use (
 	./cloudbuild
 	./clouddms
 	./cloudtasks
+	./commerce
 	./compute
 	./compute/metadata
 	./confidentialcomputing
@@ -102,6 +103,7 @@ use (
 	./osconfig
 	./oslogin
 	./phishingprotection
+	./policysimulator
 	./policytroubleshooter
 	./privatecatalog
 	./profiler
