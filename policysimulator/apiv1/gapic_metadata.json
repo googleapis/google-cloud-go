@@ -1,0 +1,73 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.policysimulator.v1",
+  "libraryPackage": "cloud.google.com/go/policysimulator/apiv1",
+  "services": {
+    "Simulator": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "SimulatorClient",
+          "rpcs": {
+            "CreateReplay": {
+              "methods": [
+                "CreateReplay"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetReplay": {
+              "methods": [
+                "GetReplay"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListReplayResults": {
+              "methods": [
+                "ListReplayResults"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "SimulatorClient",
+          "rpcs": {
+            "CreateReplay": {
+              "methods": [
+                "CreateReplay"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetReplay": {
+              "methods": [
+                "GetReplay"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListReplayResults": {
+              "methods": [
+                "ListReplayResults"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}
