@@ -28,6 +28,7 @@ modules:
   - cloudbuild
   - clouddms
   - cloudtasks
+  - commerce
   - compute
   - confidentialcomputing
   - contactcenterinsights
@@ -88,6 +89,7 @@ modules:
   - osconfig
   - oslogin
   - phishingprotection
+  - policysimulator
   - policytroubleshooter
   - privatecatalog
   - profiler
@@ -413,6 +415,9 @@ service-configs:
   - input-directory: google/cloud/clouddms/v1
     service-config: datamigration_v1.yaml
     import-path: cloud.google.com/go/clouddms/apiv1
+  - input-directory: google/cloud/commerce/consumer/procurement/v1
+    service-config: cloudcommerceconsumerprocurement_v1.yaml
+    import-path: cloud.google.com/go/commerce/consumer/procurement/apiv1
   - input-directory: google/cloud/compute/v1
     service-config: compute_v1.yaml
     import-path: cloud.google.com/go/compute/apiv1
@@ -630,6 +635,9 @@ service-configs:
   - input-directory: google/cloud/phishingprotection/v1beta1
     service-config: phishingprotection_v1beta1.yaml
     import-path: cloud.google.com/go/phishingprotection/apiv1beta1
+  - input-directory: google/cloud/policysimulator/v1
+    service-config: policysimulator_v1.yaml
+    import-path: cloud.google.com/go/policysimulator/apiv1
   - input-directory: google/cloud/policytroubleshooter/v1
     service-config: policytroubleshooter_v1.yaml
     import-path: cloud.google.com/go/policytroubleshooter/apiv1

@@ -84,6 +84,9 @@
         "cloudtasks": {
             "component": "cloudtasks"
         },
+        "commerce": {
+            "component": "commerce"
+        },
         "compute": {
             "component": "compute"
         },

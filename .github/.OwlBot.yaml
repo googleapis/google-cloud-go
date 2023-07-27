@@ -60,6 +60,7 @@ deep-remove-regex:
   - /cloudtasks/apiv2/
   - /cloudtasks/apiv2beta2/
   - /cloudtasks/apiv2beta3/
+  - /commerce/consumer/procurement/apiv1
   - /compute/apiv1
   - /confidentialcomputing/apiv1
   - /confidentialcomputing/apiv1alpha1
@@ -172,6 +173,7 @@ deep-remove-regex:
   - /internal/generated/snippets/cloudtasks/apiv2/
   - /internal/generated/snippets/cloudtasks/apiv2beta2/
   - /internal/generated/snippets/cloudtasks/apiv2beta3/
+  - /internal/generated/snippets/commerce/consumer/procurement/apiv1
   - /internal/generated/snippets/compute/apiv1
   - /internal/generated/snippets/confidentialcomputing/apiv1
   - /internal/generated/snippets/confidentialcomputing/apiv1alpha1
@@ -265,6 +267,7 @@ deep-remove-regex:
   - /internal/generated/snippets/oslogin/apiv1/
   - /internal/generated/snippets/oslogin/apiv1beta/
   - /internal/generated/snippets/phishingprotection/apiv1beta1/
+  - /internal/generated/snippets/policysimulator/apiv1/
   - /internal/generated/snippets/policytroubleshooter/apiv1/
   - /internal/generated/snippets/privatecatalog/apiv1beta1/
   - /internal/generated/snippets/pubsub/apiv1/
@@ -379,6 +382,7 @@ deep-remove-regex:
   - /oslogin/apiv1beta/
   - /oslogin/common/
   - /phishingprotection/apiv1beta1/
+  - /policysimulator/apiv1/
   - /policytroubleshooter/apiv1/
   - /privatecatalog/apiv1beta1/
   - /pubsub/apiv1/
@@ -608,6 +612,8 @@ deep-copy-regex:
     dest: /
   - source: /google/cloud/tasks/v2beta3/cloud.google.com/go
     dest: /
+  - source: /google/cloud/commerce/consumer/procurement/v1/cloud.google.com/go
+    dest: /
   - source: /google/cloud/compute/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/confidentialcomputing/v1/cloud.google.com/go
@@ -799,6 +805,8 @@ deep-copy-regex:
   - source: /google/cloud/oslogin/common/cloud.google.com/go
     dest: /
   - source: /google/cloud/phishingprotection/v1beta1/cloud.google.com/go
+    dest: /
+  - source: /google/cloud/policysimulator/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/policytroubleshooter/v1/cloud.google.com/go
     dest: /

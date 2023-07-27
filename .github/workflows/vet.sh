@@ -55,6 +55,7 @@ golint ./... 2>&1 | (
     grep -vE " executeStreamingSql(Min|Rnd)Time" |
     grep -vE " executeSql(Min|Rnd)Time" |
     grep -vE "pubsub\/pstest\/fake\.go.+should have comment or be unexported" |
+    grep -vE "pubsub\/subscription\.go.+ type name will be used as pubsub.PubsubWrapper by other packages" |
     grep -v "ClusterId" |
     grep -v "InstanceId" |
     grep -v "firestore.arrayUnion" |
