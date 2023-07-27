@@ -27,6 +27,9 @@ import (
 	"testing"
 	"time"
 
+	"google.golang.org/grpc/metadata"
+
+	"cloud.google.com/go/bigtable/internal/option"
 	"cloud.google.com/go/internal/testutil"
 	"github.com/golang/protobuf/proto"
 	"github.com/golang/protobuf/ptypes/wrappers"
@@ -597,12 +600,20 @@ func TestDropRowRange(t *testing.T) {
 
 type MockReadRowsServer struct {
 	responses []*btpb.ReadRowsResponse
+	ctx       context.Context
 	grpc.ServerStream
 }
 
 func (s *MockReadRowsServer) Send(resp *btpb.ReadRowsResponse) error {
 	s.responses = append(s.responses, resp)
 	return nil
+}
+
+func (s *MockReadRowsServer) Context() context.Context {
+	if s.ctx == nil {
+		return context.Background()
+	}
+	return s.ctx
 }
 
 func TestCheckTimestampMaxValue(t *testing.T) {
@@ -702,6 +713,64 @@ func TestReadRows(t *testing.T) {
 		}
 		if got, want := len(mock.responses), 1; got != want {
 			t.Errorf("%+v: response count: got %d, want %d", rowset, got, want)
+		}
+	}
+}
+
+func TestReadRowsLastScannedRow(t *testing.T) {
+	ctx := context.Background()
+	s := &server{
+		tables: make(map[string]*table),
+	}
+	newTbl := btapb.Table{
+		ColumnFamilies: map[string]*btapb.ColumnFamily{
+			"cf0": {GcRule: &btapb.GcRule{Rule: &btapb.GcRule_MaxNumVersions{MaxNumVersions: 1}}},
+		},
+	}
+	tblInfo, err := s.CreateTable(ctx, &btapb.CreateTableRequest{Parent: "cluster", TableId: "t", Table: &newTbl})
+	if err != nil {
+		t.Fatalf("Creating table: %v", err)
+	}
+	mreq := &btpb.MutateRowRequest{
+		TableName: tblInfo.Name,
+		RowKey:    []byte("row"),
+		Mutations: []*btpb.Mutation{{
+			Mutation: &btpb.Mutation_SetCell_{SetCell: &btpb.Mutation_SetCell{
+				FamilyName:      "cf0",
+				ColumnQualifier: []byte("col"),
+				TimestampMicros: 1000,
+				Value:           []byte{},
+			}},
+		}},
+	}
+	if _, err := s.MutateRow(ctx, mreq); err != nil {
+		t.Fatalf("Populating table: %v", err)
+	}
+
+	for _, rowset := range []*btpb.RowSet{
+		{RowKeys: [][]byte{[]byte("row")}},
+		{RowRanges: []*btpb.RowRange{{StartKey: &btpb.RowRange_StartKeyClosed{StartKeyClosed: []byte("")}}}},
+		{RowRanges: []*btpb.RowRange{{StartKey: &btpb.RowRange_StartKeyClosed{StartKeyClosed: []byte("r")}}}},
+		{RowRanges: []*btpb.RowRange{{
+			StartKey: &btpb.RowRange_StartKeyClosed{StartKeyClosed: []byte("")},
+			EndKey:   &btpb.RowRange_EndKeyOpen{EndKeyOpen: []byte("s")},
+		}}},
+	} {
+		featureFlags := option.WithFeatureFlags()
+		ctx := metadata.NewIncomingContext(context.Background(), featureFlags)
+
+		mock := &MockReadRowsServer{ctx: ctx}
+		filter := &btpb.RowFilter{Filter: &btpb.RowFilter_BlockAllFilter{BlockAllFilter: true}}
+		req := &btpb.ReadRowsRequest{TableName: tblInfo.Name, Rows: rowset, Filter: filter}
+		if err = s.ReadRows(req, mock); err != nil {
+			t.Fatalf("ReadRows error: %v", err)
+		}
+		if got, want := len(mock.responses), 1; got != want {
+			t.Errorf("%+v: response count: got %d, want %d", rowset, got, want)
+		}
+		expect := &btpb.ReadRowsResponse{LastScannedRowKey: []byte("row")}
+		if !proto.Equal(mock.responses[0], expect) {
+			t.Errorf("%+v: response: got %+v, want %+v", rowset, mock.responses[0], expect)
 		}
 	}
 }
@@ -1093,7 +1162,8 @@ func TestReadRowsReversed(t *testing.T) {
 		}
 	}
 
-	rrss := new(MockReadRowsServer)
+	serverCtx := metadata.NewIncomingContext(context.Background(), option.WithFeatureFlags())
+	rrss := &MockReadRowsServer{ctx: serverCtx}
 	rreq := &btpb.ReadRowsRequest{TableName: tbl.Name, Reversed: true}
 	if err := srv.ReadRows(rreq, rrss); err != nil {
 		t.Fatalf("Failed to read rows: %v", err)
