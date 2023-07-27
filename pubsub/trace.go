@@ -272,30 +272,30 @@ func tracer() trace.Tracer {
 	return otel.Tracer(defaultTracerName, trace.WithInstrumentationVersion(internal.Version))
 }
 
-var _ propagation.TextMapCarrier = (*PubsubMessageCarrier)(nil)
+var _ propagation.TextMapCarrier = (*MessageCarrier)(nil)
 
-// PubsubMessageCarrier injects and extracts traces from a pubsub.Message.
-type PubsubMessageCarrier struct {
+// MessageCarrier injects and extracts traces from a pubsub.Message.
+type MessageCarrier struct {
 	msg *Message
 }
 
-// NewPubsubMessageCarrier creates a new PubsubMessageCarrier.
-func NewPubsubMessageCarrier(msg *Message) PubsubMessageCarrier {
-	return PubsubMessageCarrier{msg: msg}
+// NewMessageCarrier creates a new PubsubMessageCarrier.
+func NewMessageCarrier(msg *Message) MessageCarrier {
+	return MessageCarrier{msg: msg}
 }
 
 // Get retrieves a single value for a given key.
-func (c PubsubMessageCarrier) Get(key string) string {
+func (c MessageCarrier) Get(key string) string {
 	return c.msg.Attributes["googclient_"+key]
 }
 
 // Set sets an attribute.
-func (c PubsubMessageCarrier) Set(key, val string) {
+func (c MessageCarrier) Set(key, val string) {
 	c.msg.Attributes["googclient_"+key] = val
 }
 
 // Keys returns a slice of all keys in the carrier.
-func (c PubsubMessageCarrier) Keys() []string {
+func (c MessageCarrier) Keys() []string {
 	i := 0
 	out := make([]string, len(c.msg.Attributes))
 	for k := range c.msg.Attributes {
