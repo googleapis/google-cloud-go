@@ -258,6 +258,9 @@
         "phishingprotection": {
             "component": "phishingprotection"
         },
+        "policysimulator": {
+            "component": "policysimulator"
+        },
         "policytroubleshooter": {
             "component": "policytroubleshooter"
         },
