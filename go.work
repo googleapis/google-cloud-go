@@ -103,6 +103,7 @@ use (
 	./osconfig
 	./oslogin
 	./phishingprotection
+	./policysimulator
 	./policytroubleshooter
 	./privatecatalog
 	./profiler
