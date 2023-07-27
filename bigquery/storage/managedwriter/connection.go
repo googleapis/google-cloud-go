@@ -136,9 +136,18 @@ func (cp *connectionPool) mergeCallOptions(co *connection) []gax.CallOption {
 func (cp *connectionPool) openWithRetry(co *connection) (storagepb.BigQueryWrite_AppendRowsClient, chan *pendingWrite, error) {
 	r := &unaryRetryer{}
 	for {
-		recordStat(cp.ctx, AppendClientOpenCount, 1)
 		arc, err := cp.open(co.ctx, cp.mergeCallOptions(co)...)
+		metricCtx := cp.ctx
+		if err == nil {
+			// accumulate AppendClientOpenCount for the success case.
+			recordStat(metricCtx, AppendClientOpenCount, 1)
+		}
 		if err != nil {
+			if tagCtx, tagErr := tag.New(cp.ctx, tag.Insert(keyError, grpcstatus.Code(err).String())); tagErr == nil {
+				metricCtx = tagCtx
+			}
+			// accumulate AppendClientOpenCount for the error case.
+			recordStat(metricCtx, AppendClientOpenCount, 1)
 			bo, shouldRetry := r.Retry(err)
 			if shouldRetry {
 				recordStat(cp.ctx, AppendClientOpenRetryCount, 1)
@@ -396,6 +405,14 @@ func (co *connection) lockingAppend(pw *pendingWrite) error {
 	}
 	if err != nil {
 		if shouldReconnect(err) {
+			metricCtx := co.ctx // start with the ctx that must be present
+			if pw.writer != nil {
+				metricCtx = pw.writer.ctx // the writer ctx bears the stream/origin tagging, so prefer it.
+			}
+			if tagCtx, tagErr := tag.New(metricCtx, tag.Insert(keyError, grpcstatus.Code(err).String())); tagErr == nil {
+				metricCtx = tagCtx
+			}
+			recordStat(metricCtx, AppendRequestReconnects, 1)
 			// if we think this connection is unhealthy, force a reconnect on the next send.
 			co.reconnect = true
 		}

@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.22.0](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.21.0...documentai/v1.22.0) (2023-07-26)
+
+
+### Features
+
+* **documentai:** Exposed Import PV external_processor_version_source to v1beta3 public ([#8323](https://github.com/googleapis/google-cloud-go/issues/8323)) ([08b151a](https://github.com/googleapis/google-cloud-go/commit/08b151a3fd9b614b6696e99d065ecda339ed00ff))
+
 ## [1.21.0](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.20.0...documentai/v1.21.0) (2023-07-18)
 
 
