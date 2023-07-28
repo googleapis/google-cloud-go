@@ -21,11 +21,8 @@
 package translatepb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -33,6 +30,8 @@ import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -1471,10 +1470,10 @@ type OutputConfig_GcsDestination struct {
 	// If input file extension is a txt or html, the translation is directly
 	// written to the output file. If glossary is requested, a separate
 	// glossary_translations_file has format of
-	// gs://translation_test/a_b_c_'trg'_glossary_translations.[extension]
+	// `gs://translation_test/a_b_c_'trg'_glossary_translations.[extension]`
 	//
 	// The format of errors file (for target language code 'trg') is:
-	// gs://translation_test/a_b_c_'trg'_errors.[extension]
+	// `gs://translation_test/a_b_c_'trg'_errors.[extension]`
 	//
 	// If the input file extension is tsv, errors_file contains the following:
 	// Column 1: ID of the request provided in the input, if it's not
@@ -1486,7 +1485,7 @@ type OutputConfig_GcsDestination struct {
 	//
 	// If the input file extension is txt or html, glossary_error_file will be
 	// generated that contains error details. glossary_error_file has format of
-	// gs://translation_test/a_b_c_'trg'_glossary_errors.[extension]
+	// `gs://translation_test/a_b_c_'trg'_glossary_errors.[extension]`
 	GcsDestination *GcsDestination `protobuf:"bytes,1,opt,name=gcs_destination,json=gcsDestination,proto3,oneof"`
 }
 
