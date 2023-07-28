@@ -572,7 +572,7 @@ func (c *Client) UploadQueueYaml(ctx context.Context, req *cloudtaskspb.UploadQu
 // Google IAM (at https://cloud.google.com/iam) permission on the specified
 // resource parent:
 //
-//   cloudtasks.queues.getIamPolicy
+//	cloudtasks.queues.getIamPolicy
 func (c *Client) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
 	return c.internalClient.GetIamPolicy(ctx, req, opts...)
 }
@@ -587,7 +587,7 @@ func (c *Client) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyReques
 // Google IAM (at https://cloud.google.com/iam) permission on the specified
 // resource parent:
 //
-//   cloudtasks.queues.setIamPolicy
+//	cloudtasks.queues.setIamPolicy
 func (c *Client) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
 	return c.internalClient.SetIamPolicy(ctx, req, opts...)
 }
@@ -626,12 +626,12 @@ func (c *Client) GetTask(ctx context.Context, req *cloudtaskspb.GetTaskRequest, 
 //
 // Tasks cannot be updated after creation; there is no UpdateTask command.
 //
-//   For [App Engine queues][google.cloud.tasks.v2beta2.AppEngineHttpTarget],
-//   the maximum task size is
-//   100KB.
+//	For [App Engine queues][google.cloud.tasks.v2beta2.AppEngineHttpTarget],
+//	the maximum task size is
+//	100KB.
 //
-//   For [pull queues][google.cloud.tasks.v2beta2.PullTarget], the maximum
-//   task size is 1MB.
+//	For [pull queues][google.cloud.tasks.v2beta2.PullTarget], the maximum
+//	task size is 1MB.
 func (c *Client) CreateTask(ctx context.Context, req *cloudtaskspb.CreateTaskRequest, opts ...gax.CallOption) (*cloudtaskspb.Task, error) {
 	return c.internalClient.CreateTask(ctx, req, opts...)
 }
@@ -2042,7 +2042,7 @@ func (c *restClient) UploadQueueYaml(ctx context.Context, req *cloudtaskspb.Uplo
 // Google IAM (at https://cloud.google.com/iam) permission on the specified
 // resource parent:
 //
-//   cloudtasks.queues.getIamPolicy
+//	cloudtasks.queues.getIamPolicy
 func (c *restClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -2116,7 +2116,7 @@ func (c *restClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRe
 // Google IAM (at https://cloud.google.com/iam) permission on the specified
 // resource parent:
 //
-//   cloudtasks.queues.setIamPolicy
+//	cloudtasks.queues.setIamPolicy
 func (c *restClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -2415,12 +2415,12 @@ func (c *restClient) GetTask(ctx context.Context, req *cloudtaskspb.GetTaskReque
 //
 // Tasks cannot be updated after creation; there is no UpdateTask command.
 //
-//   For [App Engine queues][google.cloud.tasks.v2beta2.AppEngineHttpTarget],
-//   the maximum task size is
-//   100KB.
+//	For [App Engine queues][google.cloud.tasks.v2beta2.AppEngineHttpTarget],
+//	the maximum task size is
+//	100KB.
 //
-//   For [pull queues][google.cloud.tasks.v2beta2.PullTarget], the maximum
-//   task size is 1MB.
+//	For [pull queues][google.cloud.tasks.v2beta2.PullTarget], the maximum
+//	task size is 1MB.
 func (c *restClient) CreateTask(ctx context.Context, req *cloudtaskspb.CreateTaskRequest, opts ...gax.CallOption) (*cloudtaskspb.Task, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
