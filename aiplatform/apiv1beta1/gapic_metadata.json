@@ -3460,6 +3460,11 @@
                 "RawPredict"
               ]
             },
+            "ServerStreamingPredict": {
+              "methods": [
+                "ServerStreamingPredict"
+              ]
+            },
             "SetIamPolicy": {
               "methods": [
                 "SetIamPolicy"
@@ -3528,6 +3533,11 @@
             "RawPredict": {
               "methods": [
                 "RawPredict"
+              ]
+            },
+            "ServerStreamingPredict": {
+              "methods": [
+                "ServerStreamingPredict"
               ]
             },
             "SetIamPolicy": {

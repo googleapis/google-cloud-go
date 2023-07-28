@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -21,11 +21,8 @@
 package adminpb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -33,6 +30,8 @@ import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -351,8 +350,8 @@ type ExportEntitiesRequest struct {
 	//
 	// The resulting files will be nested deeper than the specified URL prefix.
 	// The final output URL will be provided in the
-	// [google.datastore.admin.v1.ExportEntitiesResponse.output_url][google.datastore.admin.v1.ExportEntitiesResponse.output_url] field. That
-	// value should be used for subsequent ImportEntities operations.
+	// [google.datastore.admin.v1.ExportEntitiesResponse.output_url][google.datastore.admin.v1.ExportEntitiesResponse.output_url]
+	// field. That value should be used for subsequent ImportEntities operations.
 	//
 	// By nesting the data files deeper, the same Cloud Storage bucket can be used
 	// in multiple ExportEntities operations without conflict.
@@ -430,8 +429,9 @@ type ImportEntitiesRequest struct {
 	ProjectId string `protobuf:"bytes,1,opt,name=project_id,json=projectId,proto3" json:"project_id,omitempty"`
 	// Client-assigned labels.
 	Labels map[string]string `protobuf:"bytes,2,rep,name=labels,proto3" json:"labels,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
-	// Required. The full resource URL of the external storage location. Currently, only
-	// Google Cloud Storage is supported. So input_url should be of the form:
+	// Required. The full resource URL of the external storage location.
+	// Currently, only Google Cloud Storage is supported. So input_url should be
+	// of the form:
 	// `gs://BUCKET_NAME[/NAMESPACE_PATH]/OVERALL_EXPORT_METADATA_FILE`, where
 	// `BUCKET_NAME` is the name of the Cloud Storage bucket, `NAMESPACE_PATH` is
 	// an optional Cloud Storage namespace path (this is not a Cloud Datastore
@@ -668,7 +668,9 @@ type ImportEntitiesMetadata struct {
 	// Description of which entities are being imported.
 	EntityFilter *EntityFilter `protobuf:"bytes,4,opt,name=entity_filter,json=entityFilter,proto3" json:"entity_filter,omitempty"`
 	// The location of the import metadata file. This will be the same value as
-	// the [google.datastore.admin.v1.ExportEntitiesResponse.output_url][google.datastore.admin.v1.ExportEntitiesResponse.output_url] field.
+	// the
+	// [google.datastore.admin.v1.ExportEntitiesResponse.output_url][google.datastore.admin.v1.ExportEntitiesResponse.output_url]
+	// field.
 	InputUrl string `protobuf:"bytes,5,opt,name=input_url,json=inputUrl,proto3" json:"input_url,omitempty"`
 }
 
@@ -745,24 +747,19 @@ func (x *ImportEntitiesMetadata) GetInputUrl() string {
 // Example usage:
 //
 // Entire project:
-//
-//	kinds=[], namespace_ids=[]
+//   kinds=[], namespace_ids=[]
 //
 // Kinds Foo and Bar in all namespaces:
-//
-//	kinds=['Foo', 'Bar'], namespace_ids=[]
+//   kinds=['Foo', 'Bar'], namespace_ids=[]
 //
 // Kinds Foo and Bar only in the default namespace:
-//
-//	kinds=['Foo', 'Bar'], namespace_ids=['']
+//   kinds=['Foo', 'Bar'], namespace_ids=['']
 //
 // Kinds Foo and Bar in both the default and Baz namespaces:
-//
-//	kinds=['Foo', 'Bar'], namespace_ids=['', 'Baz']
+//   kinds=['Foo', 'Bar'], namespace_ids=['', 'Baz']
 //
 // The entire Baz namespace:
-//
-//	kinds=[], namespace_ids=['Baz']
+//   kinds=[], namespace_ids=['Baz']
 type EntityFilter struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -945,7 +942,8 @@ func (x *DeleteIndexRequest) GetIndexId() string {
 	return ""
 }
 
-// The request for [google.datastore.admin.v1.DatastoreAdmin.GetIndex][google.datastore.admin.v1.DatastoreAdmin.GetIndex].
+// The request for
+// [google.datastore.admin.v1.DatastoreAdmin.GetIndex][google.datastore.admin.v1.DatastoreAdmin.GetIndex].
 type GetIndexRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -1918,9 +1916,9 @@ type DatastoreAdminClient interface {
 	ImportEntities(ctx context.Context, in *ImportEntitiesRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Creates the specified index.
 	// A newly created index's initial state is `CREATING`. On completion of the
-	// returned [google.longrunning.Operation][google.longrunning.Operation], the state will be `READY`.
-	// If the index already exists, the call will return an `ALREADY_EXISTS`
-	// status.
+	// returned [google.longrunning.Operation][google.longrunning.Operation], the
+	// state will be `READY`. If the index already exists, the call will return an
+	// `ALREADY_EXISTS` status.
 	//
 	// During index creation, the process could result in an error, in which
 	// case the index will move to the `ERROR` state. The process can be recovered
@@ -1935,7 +1933,8 @@ type DatastoreAdminClient interface {
 	// An index can only be deleted if it is in a `READY` or `ERROR` state. On
 	// successful execution of the request, the index will be in a `DELETING`
 	// [state][google.datastore.admin.v1.Index.State]. And on completion of the
-	// returned [google.longrunning.Operation][google.longrunning.Operation], the index will be removed.
+	// returned [google.longrunning.Operation][google.longrunning.Operation], the
+	// index will be removed.
 	//
 	// During index deletion, the process could result in an error, in which
 	// case the index will move to the `ERROR` state. The process can be recovered
@@ -2031,9 +2030,9 @@ type DatastoreAdminServer interface {
 	ImportEntities(context.Context, *ImportEntitiesRequest) (*longrunningpb.Operation, error)
 	// Creates the specified index.
 	// A newly created index's initial state is `CREATING`. On completion of the
-	// returned [google.longrunning.Operation][google.longrunning.Operation], the state will be `READY`.
-	// If the index already exists, the call will return an `ALREADY_EXISTS`
-	// status.
+	// returned [google.longrunning.Operation][google.longrunning.Operation], the
+	// state will be `READY`. If the index already exists, the call will return an
+	// `ALREADY_EXISTS` status.
 	//
 	// During index creation, the process could result in an error, in which
 	// case the index will move to the `ERROR` state. The process can be recovered
@@ -2048,7 +2047,8 @@ type DatastoreAdminServer interface {
 	// An index can only be deleted if it is in a `READY` or `ERROR` state. On
 	// successful execution of the request, the index will be in a `DELETING`
 	// [state][google.datastore.admin.v1.Index.State]. And on completion of the
-	// returned [google.longrunning.Operation][google.longrunning.Operation], the index will be removed.
+	// returned [google.longrunning.Operation][google.longrunning.Operation], the
+	// index will be removed.
 	//
 	// During index deletion, the process could result in an error, in which
 	// case the index will move to the `ERROR` state. The process can be recovered

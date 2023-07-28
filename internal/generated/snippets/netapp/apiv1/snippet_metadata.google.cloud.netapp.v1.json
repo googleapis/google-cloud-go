@@ -1,0 +1,1671 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/netapp/apiv1",
+    "version": "$VERSION",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.cloud.netapp.v1",
+        "version": "v1"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "netapp_v1_generated_NetApp_CreateActiveDirectory_sync",
+      "title": "netapp CreateActiveDirectory Sample",
+      "description": "CreateActiveDirectory createActiveDirectory\nCreates the active directory specified in the request.",
+      "file": "Client/CreateActiveDirectory/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateActiveDirectory",
+        "fullName": "google.cloud.netapp.v1.Client.CreateActiveDirectory",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "netapppb.CreateActiveDirectoryRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateActiveDirectoryOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.netapp.v1.Client"
+        },
+        "method": {
+          "shortName": "CreateActiveDirectory",
+          "fullName": "google.cloud.netapp.v1.NetApp.CreateActiveDirectory",
+          "service": {
+            "shortName": "NetApp",
+            "fullName": "google.cloud.netapp.v1.NetApp"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "netapp_v1_generated_NetApp_CreateKmsConfig_sync",
+      "title": "netapp CreateKmsConfig Sample",
+      "description": "CreateKmsConfig creates a new KMS config.",
+      "file": "Client/CreateKmsConfig/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateKmsConfig",
+        "fullName": "google.cloud.netapp.v1.Client.CreateKmsConfig",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "netapppb.CreateKmsConfigRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateKmsConfigOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.netapp.v1.Client"
+        },
+        "method": {
+          "shortName": "CreateKmsConfig",
+          "fullName": "google.cloud.netapp.v1.NetApp.CreateKmsConfig",
+          "service": {
+            "shortName": "NetApp",
+            "fullName": "google.cloud.netapp.v1.NetApp"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "netapp_v1_generated_NetApp_CreateReplication_sync",
+      "title": "netapp CreateReplication Sample",
+      "description": "CreateReplication create a new replication for a volume.",
+      "file": "Client/CreateReplication/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateReplication",
+        "fullName": "google.cloud.netapp.v1.Client.CreateReplication",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "netapppb.CreateReplicationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateReplicationOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.netapp.v1.Client"
+        },
+        "method": {
+          "shortName": "CreateReplication",
+          "fullName": "google.cloud.netapp.v1.NetApp.CreateReplication",
+          "service": {
+            "shortName": "NetApp",
+            "fullName": "google.cloud.netapp.v1.NetApp"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "netapp_v1_generated_NetApp_CreateSnapshot_sync",
+      "title": "netapp CreateSnapshot Sample",
+      "description": "CreateSnapshot create a new snapshot for a volume.",
+      "file": "Client/CreateSnapshot/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateSnapshot",
+        "fullName": "google.cloud.netapp.v1.Client.CreateSnapshot",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "netapppb.CreateSnapshotRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateSnapshotOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.netapp.v1.Client"
+        },
+        "method": {
+          "shortName": "CreateSnapshot",
+          "fullName": "google.cloud.netapp.v1.NetApp.CreateSnapshot",
+          "service": {
+            "shortName": "NetApp",
+            "fullName": "google.cloud.netapp.v1.NetApp"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "netapp_v1_generated_NetApp_CreateStoragePool_sync",
+      "title": "netapp CreateStoragePool Sample",
+      "description": "CreateStoragePool creates a new storage pool.",
+      "file": "Client/CreateStoragePool/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateStoragePool",
+        "fullName": "google.cloud.netapp.v1.Client.CreateStoragePool",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "netapppb.CreateStoragePoolRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateStoragePoolOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.netapp.v1.Client"
+        },
+        "method": {
+          "shortName": "CreateStoragePool",
+          "fullName": "google.cloud.netapp.v1.NetApp.CreateStoragePool",
+          "service": {
+            "shortName": "NetApp",
+            "fullName": "google.cloud.netapp.v1.NetApp"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "netapp_v1_generated_NetApp_CreateVolume_sync",
+      "title": "netapp CreateVolume Sample",
+      "description": "CreateVolume creates a new Volume in a given project and location.",
+      "file": "Client/CreateVolume/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateVolume",
+        "fullName": "google.cloud.netapp.v1.Client.CreateVolume",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "netapppb.CreateVolumeRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateVolumeOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.netapp.v1.Client"
+        },
+        "method": {
+          "shortName": "CreateVolume",
+          "fullName": "google.cloud.netapp.v1.NetApp.CreateVolume",
+          "service": {
+            "shortName": "NetApp",
+            "fullName": "google.cloud.netapp.v1.NetApp"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "netapp_v1_generated_NetApp_DeleteActiveDirectory_sync",
+      "title": "netapp DeleteActiveDirectory Sample",
+      "description": "DeleteActiveDirectory delete the active directory specified in the request.",
+      "file": "Client/DeleteActiveDirectory/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteActiveDirectory",
+        "fullName": "google.cloud.netapp.v1.Client.DeleteActiveDirectory",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "netapppb.DeleteActiveDirectoryRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteActiveDirectoryOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.netapp.v1.Client"
+        },
+        "method": {
+          "shortName": "DeleteActiveDirectory",
+          "fullName": "google.cloud.netapp.v1.NetApp.DeleteActiveDirectory",
+          "service": {
+            "shortName": "NetApp",
+            "fullName": "google.cloud.netapp.v1.NetApp"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "netapp_v1_generated_NetApp_DeleteKmsConfig_sync",
+      "title": "netapp DeleteKmsConfig Sample",
+      "description": "DeleteKmsConfig warning! This operation will permanently delete the Kms config.",
+      "file": "Client/DeleteKmsConfig/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteKmsConfig",
+        "fullName": "google.cloud.netapp.v1.Client.DeleteKmsConfig",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "netapppb.DeleteKmsConfigRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteKmsConfigOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.netapp.v1.Client"
+        },
+        "method": {
+          "shortName": "DeleteKmsConfig",
+          "fullName": "google.cloud.netapp.v1.NetApp.DeleteKmsConfig",
+          "service": {
+            "shortName": "NetApp",
+            "fullName": "google.cloud.netapp.v1.NetApp"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "netapp_v1_generated_NetApp_DeleteReplication_sync",
+      "title": "netapp DeleteReplication Sample",
+      "description": "DeleteReplication deletes a replication.",
+      "file": "Client/DeleteReplication/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteReplication",
+        "fullName": "google.cloud.netapp.v1.Client.DeleteReplication",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "netapppb.DeleteReplicationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteReplicationOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.netapp.v1.Client"
+        },
+        "method": {
+          "shortName": "DeleteReplication",
+          "fullName": "google.cloud.netapp.v1.NetApp.DeleteReplication",
+          "service": {
+            "shortName": "NetApp",
+            "fullName": "google.cloud.netapp.v1.NetApp"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "netapp_v1_generated_NetApp_DeleteSnapshot_sync",
+      "title": "netapp DeleteSnapshot Sample",
+      "description": "DeleteSnapshot deletes a snapshot.",
+      "file": "Client/DeleteSnapshot/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteSnapshot",
+        "fullName": "google.cloud.netapp.v1.Client.DeleteSnapshot",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "netapppb.DeleteSnapshotRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteSnapshotOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.netapp.v1.Client"
+        },
+        "method": {
+          "shortName": "DeleteSnapshot",
+          "fullName": "google.cloud.netapp.v1.NetApp.DeleteSnapshot",
+          "service": {
+            "shortName": "NetApp",
+            "fullName": "google.cloud.netapp.v1.NetApp"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "netapp_v1_generated_NetApp_DeleteStoragePool_sync",
+      "title": "netapp DeleteStoragePool Sample",
+      "description": "DeleteStoragePool warning! This operation will permanently delete the storage pool.",
+      "file": "Client/DeleteStoragePool/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteStoragePool",
+        "fullName": "google.cloud.netapp.v1.Client.DeleteStoragePool",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "netapppb.DeleteStoragePoolRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteStoragePoolOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.netapp.v1.Client"
+        },
+        "method": {
+          "shortName": "DeleteStoragePool",
+          "fullName": "google.cloud.netapp.v1.NetApp.DeleteStoragePool",
+          "service": {
+            "shortName": "NetApp",
+            "fullName": "google.cloud.netapp.v1.NetApp"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "netapp_v1_generated_NetApp_DeleteVolume_sync",
+      "title": "netapp DeleteVolume Sample",
+      "description": "DeleteVolume deletes a single Volume.",
+      "file": "Client/DeleteVolume/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteVolume",
+        "fullName": "google.cloud.netapp.v1.Client.DeleteVolume",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "netapppb.DeleteVolumeRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteVolumeOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.netapp.v1.Client"
+        },
+        "method": {
+          "shortName": "DeleteVolume",
+          "fullName": "google.cloud.netapp.v1.NetApp.DeleteVolume",
+          "service": {
+            "shortName": "NetApp",
+            "fullName": "google.cloud.netapp.v1.NetApp"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "netapp_v1_generated_NetApp_EncryptVolumes_sync",
+      "title": "netapp EncryptVolumes Sample",
+      "description": "EncryptVolumes encrypt the existing volumes without CMEK encryption with the desired the\nKMS config for the whole region.",
+      "file": "Client/EncryptVolumes/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "EncryptVolumes",
+        "fullName": "google.cloud.netapp.v1.Client.EncryptVolumes",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "netapppb.EncryptVolumesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "EncryptVolumesOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.netapp.v1.Client"
+        },
+        "method": {
+          "shortName": "EncryptVolumes",
+          "fullName": "google.cloud.netapp.v1.NetApp.EncryptVolumes",
+          "service": {
+            "shortName": "NetApp",
+            "fullName": "google.cloud.netapp.v1.NetApp"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "netapp_v1_generated_NetApp_GetActiveDirectory_sync",
+      "title": "netapp GetActiveDirectory Sample",
+      "description": "GetActiveDirectory describes a specified active directory.",
+      "file": "Client/GetActiveDirectory/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetActiveDirectory",
+        "fullName": "google.cloud.netapp.v1.Client.GetActiveDirectory",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "netapppb.GetActiveDirectoryRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*netapppb.ActiveDirectory",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.netapp.v1.Client"
+        },
+        "method": {
+          "shortName": "GetActiveDirectory",
+          "fullName": "google.cloud.netapp.v1.NetApp.GetActiveDirectory",
+          "service": {
+            "shortName": "NetApp",
+            "fullName": "google.cloud.netapp.v1.NetApp"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "netapp_v1_generated_NetApp_GetKmsConfig_sync",
+      "title": "netapp GetKmsConfig Sample",
+      "description": "GetKmsConfig returns the description of the specified KMS config by kms_config_id.",
+      "file": "Client/GetKmsConfig/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetKmsConfig",
+        "fullName": "google.cloud.netapp.v1.Client.GetKmsConfig",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "netapppb.GetKmsConfigRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*netapppb.KmsConfig",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.netapp.v1.Client"
+        },
+        "method": {
+          "shortName": "GetKmsConfig",
+          "fullName": "google.cloud.netapp.v1.NetApp.GetKmsConfig",
+          "service": {
+            "shortName": "NetApp",
+            "fullName": "google.cloud.netapp.v1.NetApp"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "netapp_v1_generated_NetApp_GetReplication_sync",
+      "title": "netapp GetReplication Sample",
+      "description": "GetReplication describe a replication for a volume.",
+      "file": "Client/GetReplication/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetReplication",
+        "fullName": "google.cloud.netapp.v1.Client.GetReplication",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "netapppb.GetReplicationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*netapppb.Replication",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.netapp.v1.Client"
+        },
+        "method": {
+          "shortName": "GetReplication",
+          "fullName": "google.cloud.netapp.v1.NetApp.GetReplication",
+          "service": {
+            "shortName": "NetApp",
+            "fullName": "google.cloud.netapp.v1.NetApp"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "netapp_v1_generated_NetApp_GetSnapshot_sync",
+      "title": "netapp GetSnapshot Sample",
+      "description": "GetSnapshot describe a snapshot for a volume.",
+      "file": "Client/GetSnapshot/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetSnapshot",
+        "fullName": "google.cloud.netapp.v1.Client.GetSnapshot",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "netapppb.GetSnapshotRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*netapppb.Snapshot",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.netapp.v1.Client"
+        },
+        "method": {
+          "shortName": "GetSnapshot",
+          "fullName": "google.cloud.netapp.v1.NetApp.GetSnapshot",
+          "service": {
+            "shortName": "NetApp",
+            "fullName": "google.cloud.netapp.v1.NetApp"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "netapp_v1_generated_NetApp_GetStoragePool_sync",
+      "title": "netapp GetStoragePool Sample",
+      "description": "GetStoragePool returns the description of the specified storage pool by poolId.",
+      "file": "Client/GetStoragePool/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetStoragePool",
+        "fullName": "google.cloud.netapp.v1.Client.GetStoragePool",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "netapppb.GetStoragePoolRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*netapppb.StoragePool",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.netapp.v1.Client"
+        },
+        "method": {
+          "shortName": "GetStoragePool",
+          "fullName": "google.cloud.netapp.v1.NetApp.GetStoragePool",
+          "service": {
+            "shortName": "NetApp",
+            "fullName": "google.cloud.netapp.v1.NetApp"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "netapp_v1_generated_NetApp_GetVolume_sync",
+      "title": "netapp GetVolume Sample",
+      "description": "GetVolume gets details of a single Volume.",
+      "file": "Client/GetVolume/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetVolume",
+        "fullName": "google.cloud.netapp.v1.Client.GetVolume",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "netapppb.GetVolumeRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*netapppb.Volume",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.netapp.v1.Client"
+        },
+        "method": {
+          "shortName": "GetVolume",
+          "fullName": "google.cloud.netapp.v1.NetApp.GetVolume",
+          "service": {
+            "shortName": "NetApp",
+            "fullName": "google.cloud.netapp.v1.NetApp"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "netapp_v1_generated_NetApp_ListActiveDirectories_sync",
+      "title": "netapp ListActiveDirectories Sample",
+      "description": "ListActiveDirectories lists active directories.",
+      "file": "Client/ListActiveDirectories/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListActiveDirectories",
+        "fullName": "google.cloud.netapp.v1.Client.ListActiveDirectories",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "netapppb.ListActiveDirectoriesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ActiveDirectoryIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.netapp.v1.Client"
+        },
+        "method": {
+          "shortName": "ListActiveDirectories",
+          "fullName": "google.cloud.netapp.v1.NetApp.ListActiveDirectories",
+          "service": {
+            "shortName": "NetApp",
+            "fullName": "google.cloud.netapp.v1.NetApp"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 60,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "netapp_v1_generated_NetApp_ListKmsConfigs_sync",
+      "title": "netapp ListKmsConfigs Sample",
+      "description": "ListKmsConfigs returns descriptions of all KMS configs owned by the caller.",
+      "file": "Client/ListKmsConfigs/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListKmsConfigs",
+        "fullName": "google.cloud.netapp.v1.Client.ListKmsConfigs",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "netapppb.ListKmsConfigsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "KmsConfigIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.netapp.v1.Client"
+        },
+        "method": {
+          "shortName": "ListKmsConfigs",
+          "fullName": "google.cloud.netapp.v1.NetApp.ListKmsConfigs",
+          "service": {
+            "shortName": "NetApp",
+            "fullName": "google.cloud.netapp.v1.NetApp"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 60,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "netapp_v1_generated_NetApp_ListReplications_sync",
+      "title": "netapp ListReplications Sample",
+      "description": "ListReplications returns descriptions of all replications for a volume.",
+      "file": "Client/ListReplications/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListReplications",
+        "fullName": "google.cloud.netapp.v1.Client.ListReplications",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "netapppb.ListReplicationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ReplicationIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.netapp.v1.Client"
+        },
+        "method": {
+          "shortName": "ListReplications",
+          "fullName": "google.cloud.netapp.v1.NetApp.ListReplications",
+          "service": {
+            "shortName": "NetApp",
+            "fullName": "google.cloud.netapp.v1.NetApp"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 60,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "netapp_v1_generated_NetApp_ListSnapshots_sync",
+      "title": "netapp ListSnapshots Sample",
+      "description": "ListSnapshots returns descriptions of all snapshots for a volume.",
+      "file": "Client/ListSnapshots/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListSnapshots",
+        "fullName": "google.cloud.netapp.v1.Client.ListSnapshots",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "netapppb.ListSnapshotsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "SnapshotIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.netapp.v1.Client"
+        },
+        "method": {
+          "shortName": "ListSnapshots",
+          "fullName": "google.cloud.netapp.v1.NetApp.ListSnapshots",
+          "service": {
+            "shortName": "NetApp",
+            "fullName": "google.cloud.netapp.v1.NetApp"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 60,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "netapp_v1_generated_NetApp_ListStoragePools_sync",
+      "title": "netapp ListStoragePools Sample",
+      "description": "ListStoragePools returns descriptions of all storage pools owned by the caller.",
+      "file": "Client/ListStoragePools/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListStoragePools",
+        "fullName": "google.cloud.netapp.v1.Client.ListStoragePools",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "netapppb.ListStoragePoolsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "StoragePoolIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.netapp.v1.Client"
+        },
+        "method": {
+          "shortName": "ListStoragePools",
+          "fullName": "google.cloud.netapp.v1.NetApp.ListStoragePools",
+          "service": {
+            "shortName": "NetApp",
+            "fullName": "google.cloud.netapp.v1.NetApp"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 60,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "netapp_v1_generated_NetApp_ListVolumes_sync",
+      "title": "netapp ListVolumes Sample",
+      "description": "ListVolumes lists Volumes in a given project.",
+      "file": "Client/ListVolumes/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListVolumes",
+        "fullName": "google.cloud.netapp.v1.Client.ListVolumes",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "netapppb.ListVolumesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "VolumeIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.netapp.v1.Client"
+        },
+        "method": {
+          "shortName": "ListVolumes",
+          "fullName": "google.cloud.netapp.v1.NetApp.ListVolumes",
+          "service": {
+            "shortName": "NetApp",
+            "fullName": "google.cloud.netapp.v1.NetApp"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 60,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "netapp_v1_generated_NetApp_ResumeReplication_sync",
+      "title": "netapp ResumeReplication Sample",
+      "description": "ResumeReplication resume Cross Region Replication.",
+      "file": "Client/ResumeReplication/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ResumeReplication",
+        "fullName": "google.cloud.netapp.v1.Client.ResumeReplication",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "netapppb.ResumeReplicationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ResumeReplicationOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.netapp.v1.Client"
+        },
+        "method": {
+          "shortName": "ResumeReplication",
+          "fullName": "google.cloud.netapp.v1.NetApp.ResumeReplication",
+          "service": {
+            "shortName": "NetApp",
+            "fullName": "google.cloud.netapp.v1.NetApp"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "netapp_v1_generated_NetApp_ReverseReplicationDirection_sync",
+      "title": "netapp ReverseReplicationDirection Sample",
+      "description": "ReverseReplicationDirection reverses direction of replication. Source becomes destination and\ndestination becomes source.",
+      "file": "Client/ReverseReplicationDirection/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ReverseReplicationDirection",
+        "fullName": "google.cloud.netapp.v1.Client.ReverseReplicationDirection",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "netapppb.ReverseReplicationDirectionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ReverseReplicationDirectionOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.netapp.v1.Client"
+        },
+        "method": {
+          "shortName": "ReverseReplicationDirection",
+          "fullName": "google.cloud.netapp.v1.NetApp.ReverseReplicationDirection",
+          "service": {
+            "shortName": "NetApp",
+            "fullName": "google.cloud.netapp.v1.NetApp"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "netapp_v1_generated_NetApp_RevertVolume_sync",
+      "title": "netapp RevertVolume Sample",
+      "description": "RevertVolume revert an existing volume to a specified snapshot.\nWarning! This operation will permanently revert all changes made after the\nsnapshot was created.",
+      "file": "Client/RevertVolume/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "RevertVolume",
+        "fullName": "google.cloud.netapp.v1.Client.RevertVolume",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "netapppb.RevertVolumeRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "RevertVolumeOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.netapp.v1.Client"
+        },
+        "method": {
+          "shortName": "RevertVolume",
+          "fullName": "google.cloud.netapp.v1.NetApp.RevertVolume",
+          "service": {
+            "shortName": "NetApp",
+            "fullName": "google.cloud.netapp.v1.NetApp"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "netapp_v1_generated_NetApp_StopReplication_sync",
+      "title": "netapp StopReplication Sample",
+      "description": "StopReplication stop Cross Region Replication.",
+      "file": "Client/StopReplication/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "StopReplication",
+        "fullName": "google.cloud.netapp.v1.Client.StopReplication",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "netapppb.StopReplicationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "StopReplicationOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.netapp.v1.Client"
+        },
+        "method": {
+          "shortName": "StopReplication",
+          "fullName": "google.cloud.netapp.v1.NetApp.StopReplication",
+          "service": {
+            "shortName": "NetApp",
+            "fullName": "google.cloud.netapp.v1.NetApp"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "netapp_v1_generated_NetApp_UpdateActiveDirectory_sync",
+      "title": "netapp UpdateActiveDirectory Sample",
+      "description": "UpdateActiveDirectory update the parameters of an active directories.",
+      "file": "Client/UpdateActiveDirectory/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateActiveDirectory",
+        "fullName": "google.cloud.netapp.v1.Client.UpdateActiveDirectory",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "netapppb.UpdateActiveDirectoryRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateActiveDirectoryOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.netapp.v1.Client"
+        },
+        "method": {
+          "shortName": "UpdateActiveDirectory",
+          "fullName": "google.cloud.netapp.v1.NetApp.UpdateActiveDirectory",
+          "service": {
+            "shortName": "NetApp",
+            "fullName": "google.cloud.netapp.v1.NetApp"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "netapp_v1_generated_NetApp_UpdateKmsConfig_sync",
+      "title": "netapp UpdateKmsConfig Sample",
+      "description": "UpdateKmsConfig updates the Kms config properties with the full spec",
+      "file": "Client/UpdateKmsConfig/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateKmsConfig",
+        "fullName": "google.cloud.netapp.v1.Client.UpdateKmsConfig",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "netapppb.UpdateKmsConfigRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateKmsConfigOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.netapp.v1.Client"
+        },
+        "method": {
+          "shortName": "UpdateKmsConfig",
+          "fullName": "google.cloud.netapp.v1.NetApp.UpdateKmsConfig",
+          "service": {
+            "shortName": "NetApp",
+            "fullName": "google.cloud.netapp.v1.NetApp"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "netapp_v1_generated_NetApp_UpdateReplication_sync",
+      "title": "netapp UpdateReplication Sample",
+      "description": "UpdateReplication updates the settings of a specific replication.",
+      "file": "Client/UpdateReplication/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateReplication",
+        "fullName": "google.cloud.netapp.v1.Client.UpdateReplication",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "netapppb.UpdateReplicationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateReplicationOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.netapp.v1.Client"
+        },
+        "method": {
+          "shortName": "UpdateReplication",
+          "fullName": "google.cloud.netapp.v1.NetApp.UpdateReplication",
+          "service": {
+            "shortName": "NetApp",
+            "fullName": "google.cloud.netapp.v1.NetApp"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "netapp_v1_generated_NetApp_UpdateSnapshot_sync",
+      "title": "netapp UpdateSnapshot Sample",
+      "description": "UpdateSnapshot updates the settings of a specific snapshot.",
+      "file": "Client/UpdateSnapshot/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateSnapshot",
+        "fullName": "google.cloud.netapp.v1.Client.UpdateSnapshot",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "netapppb.UpdateSnapshotRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateSnapshotOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.netapp.v1.Client"
+        },
+        "method": {
+          "shortName": "UpdateSnapshot",
+          "fullName": "google.cloud.netapp.v1.NetApp.UpdateSnapshot",
+          "service": {
+            "shortName": "NetApp",
+            "fullName": "google.cloud.netapp.v1.NetApp"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "netapp_v1_generated_NetApp_UpdateStoragePool_sync",
+      "title": "netapp UpdateStoragePool Sample",
+      "description": "UpdateStoragePool updates the storage pool properties with the full spec",
+      "file": "Client/UpdateStoragePool/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateStoragePool",
+        "fullName": "google.cloud.netapp.v1.Client.UpdateStoragePool",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "netapppb.UpdateStoragePoolRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateStoragePoolOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.netapp.v1.Client"
+        },
+        "method": {
+          "shortName": "UpdateStoragePool",
+          "fullName": "google.cloud.netapp.v1.NetApp.UpdateStoragePool",
+          "service": {
+            "shortName": "NetApp",
+            "fullName": "google.cloud.netapp.v1.NetApp"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "netapp_v1_generated_NetApp_UpdateVolume_sync",
+      "title": "netapp UpdateVolume Sample",
+      "description": "UpdateVolume updates the parameters of a single Volume.",
+      "file": "Client/UpdateVolume/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateVolume",
+        "fullName": "google.cloud.netapp.v1.Client.UpdateVolume",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "netapppb.UpdateVolumeRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateVolumeOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.netapp.v1.Client"
+        },
+        "method": {
+          "shortName": "UpdateVolume",
+          "fullName": "google.cloud.netapp.v1.NetApp.UpdateVolume",
+          "service": {
+            "shortName": "NetApp",
+            "fullName": "google.cloud.netapp.v1.NetApp"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "netapp_v1_generated_NetApp_VerifyKmsConfig_sync",
+      "title": "netapp VerifyKmsConfig Sample",
+      "description": "VerifyKmsConfig verifies KMS config reachability.",
+      "file": "Client/VerifyKmsConfig/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "VerifyKmsConfig",
+        "fullName": "google.cloud.netapp.v1.Client.VerifyKmsConfig",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "netapppb.VerifyKmsConfigRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*netapppb.VerifyKmsConfigResponse",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.netapp.v1.Client"
+        },
+        "method": {
+          "shortName": "VerifyKmsConfig",
+          "fullName": "google.cloud.netapp.v1.NetApp.VerifyKmsConfig",
+          "service": {
+            "shortName": "NetApp",
+            "fullName": "google.cloud.netapp.v1.NetApp"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}

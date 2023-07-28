@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -21,12 +21,11 @@
 package adminpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -231,9 +230,14 @@ type Index struct {
 	IndexId string `protobuf:"bytes,3,opt,name=index_id,json=indexId,proto3" json:"index_id,omitempty"`
 	// Required. The entity kind to which this index applies.
 	Kind string `protobuf:"bytes,4,opt,name=kind,proto3" json:"kind,omitempty"`
-	// Required. The index's ancestor mode.  Must not be ANCESTOR_MODE_UNSPECIFIED.
+	// Required. The index's ancestor mode.  Must not be
+	// ANCESTOR_MODE_UNSPECIFIED.
 	Ancestor Index_AncestorMode `protobuf:"varint,5,opt,name=ancestor,proto3,enum=google.datastore.admin.v1.Index_AncestorMode" json:"ancestor,omitempty"`
 	// Required. An ordered sequence of property names and their index attributes.
+	//
+	// Requires:
+	//
+	// * A maximum of 100 properties.
 	Properties []*Index_IndexedProperty `protobuf:"bytes,6,rep,name=properties,proto3" json:"properties,omitempty"`
 	// Output only. The state of the index.
 	State Index_State `protobuf:"varint,7,opt,name=state,proto3,enum=google.datastore.admin.v1.Index_State" json:"state,omitempty"`
@@ -321,7 +325,8 @@ type Index_IndexedProperty struct {
 
 	// Required. The property name to index.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	// Required. The indexed property's direction.  Must not be DIRECTION_UNSPECIFIED.
+	// Required. The indexed property's direction.  Must not be
+	// DIRECTION_UNSPECIFIED.
 	Direction Index_Direction `protobuf:"varint,2,opt,name=direction,proto3,enum=google.datastore.admin.v1.Index_Direction" json:"direction,omitempty"`
 }
 
