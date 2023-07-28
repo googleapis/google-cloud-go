@@ -125,7 +125,6 @@ deep-remove-regex:
   - /internal/generated/snippets/alloydb/apiv1/
   - /internal/generated/snippets/alloydb/apiv1alpha/
   - /internal/generated/snippets/alloydb/apiv1beta/
-  - /internal/generated/snippets/alloydb/connectors/apiv1alpha/
   - /internal/generated/snippets/analytics/admin/apiv1alpha/
   - /internal/generated/snippets/apigateway/apiv1/
   - /internal/generated/snippets/apigeeconnect/apiv1/
