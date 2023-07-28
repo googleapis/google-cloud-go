@@ -24,10 +24,64 @@ import (
 
 	"cloud.google.com/go/internal/testutil"
 	"github.com/google/go-cmp/cmp"
+	"google.golang.org/api/option"
+	"google.golang.org/api/transport/grpc"
 	pb "google.golang.org/genproto/googleapis/datastore/v1"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
+
+func TestNewClientWithDatabase(t *testing.T) {
+	origDetectProjectIDFn := detectProjectIDFn
+	origGtransportDialPoolFn := gtransportDialPoolFn
+	defer func() {
+		detectProjectIDFn = origDetectProjectIDFn
+		gtransportDialPoolFn = origGtransportDialPoolFn
+	}()
+
+	tests := []struct {
+		desc                 string
+		databaseID           string
+		wantErr              bool
+		detectProjectIDFn    func(ctx context.Context, opts ...option.ClientOption) (string, error)
+		gtransportDialPoolFn func(ctx context.Context, opts ...option.ClientOption) (grpc.ConnPool, error)
+	}{
+		{
+			desc:       "Error from detect project ID should not fail NewClientWithDatabase",
+			databaseID: "db1",
+			wantErr:    false,
+			detectProjectIDFn: func(ctx context.Context, opts ...option.ClientOption) (string, error) {
+				return "", errors.New("mock error from detect project ID")
+			},
+			gtransportDialPoolFn: origGtransportDialPoolFn,
+		},
+		{
+			desc:              "Error from DialPool",
+			databaseID:        "db1",
+			wantErr:           true,
+			detectProjectIDFn: origDetectProjectIDFn,
+			gtransportDialPoolFn: func(ctx context.Context, opts ...option.ClientOption) (grpc.ConnPool, error) {
+				return nil, errors.New("mock error from DialPool")
+			},
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.desc, func(t *testing.T) {
+			detectProjectIDFn = tc.detectProjectIDFn
+			gtransportDialPoolFn = tc.gtransportDialPoolFn
+
+			client, gotErr := NewClientWithDatabase(context.Background(), "my-project", tc.databaseID)
+			if gotErr != nil && !tc.wantErr {
+				t.Errorf("got error %v, but none was expected", gotErr)
+			} else if gotErr == nil && tc.wantErr {
+				t.Errorf("wanted error, but none returned")
+			} else if gotErr == nil && client.databaseID != tc.databaseID {
+				t.Errorf("got %s, want %s", client.databaseID, tc.databaseID)
+			}
+		})
+	}
+}
 
 func TestQueryConstruction(t *testing.T) {
 	tests := []struct {

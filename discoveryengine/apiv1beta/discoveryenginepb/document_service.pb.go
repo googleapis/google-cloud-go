@@ -115,7 +115,8 @@ type ListDocumentsRequest struct {
 	// Use `default_branch` as the branch ID, to list documents under the default
 	// branch.
 	//
-	// If the caller does not have permission to list [Documents][]s under this
+	// If the caller does not have permission to list
+	// [Document][google.cloud.discoveryengine.v1beta.Document]s under this
 	// branch, regardless of whether or not this branch exists, a
 	// `PERMISSION_DENIED` error is returned.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`

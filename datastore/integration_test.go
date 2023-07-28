@@ -50,7 +50,10 @@ var timeNow = time.Now()
 // when the tests are run in parallel.
 var suffix string
 
-const replayFilename = "datastore.replay"
+const (
+	replayFilename = "datastore.replay"
+	envDatabases   = "GCLOUD_TESTS_GOLANG_DATASTORE_DATABASES"
+)
 
 type replayInfo struct {
 	ProjectID string
@@ -63,6 +66,7 @@ var (
 	newTestClient = func(ctx context.Context, t *testing.T) *Client {
 		return newClient(ctx, t, nil)
 	}
+	testParams map[string]interface{}
 )
 
 func TestMain(m *testing.M) {
@@ -104,7 +108,25 @@ func testMain(m *testing.M) int {
 		log.Printf("recording to %s", replayFilename)
 	}
 	suffix = fmt.Sprintf("-t%d", timeNow.UnixNano())
-	return m.Run()
+
+	// Run tests on multiple databases
+	databaseIDs := []string{DefaultDatabaseID}
+	databasesStr, ok := os.LookupEnv(envDatabases)
+	if ok {
+		databaseIDs = append(databaseIDs, strings.Split(databasesStr, ",")...)
+	}
+
+	testParams = make(map[string]interface{})
+	for _, databaseID := range databaseIDs {
+		log.Printf("Setting up tests to run on databaseID: %q\n", databaseID)
+		testParams["databaseID"] = databaseID
+		status := m.Run()
+		if status != 0 {
+			return status
+		}
+	}
+
+	return 0
 }
 
 func initReplay() {
@@ -134,9 +156,9 @@ func initReplay() {
 		}
 
 		opts := append(grpcHeadersEnforcer.CallOptions(), option.WithGRPCConn(conn))
-		client, err := NewClient(ctx, ri.ProjectID, opts...)
+		client, err := NewClientWithDatabase(ctx, ri.ProjectID, testParams["databaseID"].(string), opts...)
 		if err != nil {
-			t.Fatalf("NewClient: %v", err)
+			t.Fatalf("NewClientWithDatabase: %v", err)
 		}
 		return client
 	}
@@ -162,11 +184,25 @@ func newClient(ctx context.Context, t *testing.T, dialOpts []grpc.DialOption) *C
 	for _, opt := range dialOpts {
 		opts = append(opts, option.WithGRPCDialOption(opt))
 	}
-	client, err := NewClient(ctx, testutil.ProjID(), opts...)
+	client, err := NewClientWithDatabase(ctx, testutil.ProjID(), testParams["databaseID"].(string), opts...)
+	if err != nil {
+		t.Fatalf("NewClientWithDatabase: %v", err)
+	}
+	return client
+}
+
+func TestIntegration_NewClient(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Integration tests skipped in short mode")
+	}
+	ctx := context.Background()
+	client, err := NewClient(ctx, testutil.ProjID())
 	if err != nil {
 		t.Fatalf("NewClient: %v", err)
 	}
-	return client
+	if client.databaseID != DefaultDatabaseID {
+		t.Fatalf("NewClient: got %s, want %s", client.databaseID, DefaultDatabaseID)
+	}
 }
 
 func TestIntegration_Basics(t *testing.T) {
@@ -1551,13 +1587,13 @@ func TestIntegration_DetectProjectID(t *testing.T) {
 	}
 
 	// Use creds with project ID.
-	if _, err := NewClient(ctx, DetectProjectID, option.WithCredentials(creds)); err != nil {
-		t.Errorf("NewClient: %v", err)
+	if _, err := NewClientWithDatabase(ctx, DetectProjectID, testParams["databaseID"].(string), option.WithCredentials(creds)); err != nil {
+		t.Errorf("NewClientWithDatabase: %v", err)
 	}
 
 	ts := testutil.ErroringTokenSource{}
 	// Try to use creds without project ID.
-	_, err := NewClient(ctx, DetectProjectID, option.WithTokenSource(ts))
+	_, err := NewClientWithDatabase(ctx, DetectProjectID, testParams["databaseID"].(string), option.WithTokenSource(ts))
 	if err == nil || err.Error() != "datastore: see the docs on DetectProjectID" {
 		t.Errorf("expected an error while using TokenSource that does not have a project ID")
 	}

@@ -183,16 +183,14 @@ type isDocument_Data interface {
 
 type Document_StructData struct {
 	// The structured JSON data for the document. It should conform to the
-	// registered
-	// [Schema.schema][google.cloud.discoveryengine.v1beta.Schema.schema] or an
+	// registered [Schema][google.cloud.discoveryengine.v1beta.Schema] or an
 	// `INVALID_ARGUMENT` error is thrown.
 	StructData *structpb.Struct `protobuf:"bytes,4,opt,name=struct_data,json=structData,proto3,oneof"`
 }
 
 type Document_JsonData struct {
 	// The JSON string representation of the document. It should conform to the
-	// registered
-	// [Schema.schema][google.cloud.discoveryengine.v1beta.Schema.schema] or an
+	// registered [Schema][google.cloud.discoveryengine.v1beta.Schema] or an
 	// `INVALID_ARGUMENT` error is thrown.
 	JsonData string `protobuf:"bytes,5,opt,name=json_data,json=jsonData,proto3,oneof"`
 }

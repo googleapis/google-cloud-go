@@ -599,6 +599,16 @@
     "release_level": "preview",
     "library_type": "GAPIC_AUTO"
   },
+  "cloud.google.com/go/commerce/consumer/procurement/apiv1": {
+    "api_shortname": "cloudcommerceconsumerprocurement",
+    "distribution_name": "cloud.google.com/go/commerce/consumer/procurement/apiv1",
+    "description": "Cloud Commerce Consumer Procurement API",
+    "language": "go",
+    "client_library_type": "generated",
+    "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/commerce/latest/consumer/procurement/apiv1",
+    "release_level": "preview",
+    "library_type": "GAPIC_AUTO"
+  },
   "cloud.google.com/go/compute/apiv1": {
     "api_shortname": "compute",
     "distribution_name": "cloud.google.com/go/compute/apiv1",
@@ -996,7 +1006,7 @@
     "language": "go",
     "client_library_type": "generated",
     "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/eventarc/latest/publishing/apiv1",
-    "release_level": "preview",
+    "release_level": "stable",
     "library_type": "GAPIC_AUTO"
   },
   "cloud.google.com/go/filestore/apiv1": {
@@ -1586,6 +1596,16 @@
     "language": "go",
     "client_library_type": "generated",
     "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/phishingprotection/latest/apiv1beta1",
+    "release_level": "preview",
+    "library_type": "GAPIC_AUTO"
+  },
+  "cloud.google.com/go/policysimulator/apiv1": {
+    "api_shortname": "policysimulator",
+    "distribution_name": "cloud.google.com/go/policysimulator/apiv1",
+    "description": "Policy Simulator API",
+    "language": "go",
+    "client_library_type": "generated",
+    "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/policysimulator/latest/apiv1",
     "release_level": "preview",
     "library_type": "GAPIC_AUTO"
   },

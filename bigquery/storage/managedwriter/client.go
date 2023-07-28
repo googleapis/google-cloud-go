@@ -45,6 +45,11 @@ type Client struct {
 	rawClient *storage.BigQueryWriteClient
 	projectID string
 
+	// retained context.  primarily used for connection management and the underlying
+	// client.
+	ctx    context.Context
+	cancel context.CancelFunc
+
 	// cfg retains general settings (custom ClientOptions).
 	cfg *writerClientConfig
 
@@ -66,8 +71,11 @@ func NewClient(ctx context.Context, projectID string, opts ...option.ClientOptio
 	}
 	o = append(o, opts...)
 
-	rawClient, err := storage.NewBigQueryWriteClient(ctx, o...)
+	cCtx, cancel := context.WithCancel(ctx)
+
+	rawClient, err := storage.NewBigQueryWriteClient(cCtx, o...)
 	if err != nil {
+		cancel()
 		return nil, err
 	}
 	rawClient.SetGoogleClientInfo("gccl", internal.Version)
@@ -75,12 +83,15 @@ func NewClient(ctx context.Context, projectID string, opts ...option.ClientOptio
 	// Handle project autodetection.
 	projectID, err = detect.ProjectID(ctx, projectID, "", opts...)
 	if err != nil {
+		cancel()
 		return nil, err
 	}
 
 	return &Client{
 		rawClient: rawClient,
 		projectID: projectID,
+		ctx:       cCtx,
+		cancel:    cancel,
 		cfg:       newWriterClientConfig(opts...),
 		pools:     make(map[string]*connectionPool),
 	}, nil
@@ -103,6 +114,10 @@ func (c *Client) Close() error {
 	if err := c.rawClient.Close(); err != nil && firstErr == nil {
 		firstErr = err
 	}
+	// Cancel the retained client context.
+	if c.cancel != nil {
+		c.cancel()
+	}
 	return firstErr
 }
 
@@ -114,8 +129,11 @@ func (c *Client) NewManagedStream(ctx context.Context, opts ...WriterOption) (*M
 }
 
 // createOpenF builds the opener function we need to access the AppendRows bidi stream.
-func createOpenF(ctx context.Context, streamFunc streamClientFunc) func(opts ...gax.CallOption) (storagepb.BigQueryWrite_AppendRowsClient, error) {
-	return func(opts ...gax.CallOption) (storagepb.BigQueryWrite_AppendRowsClient, error) {
+func createOpenF(streamFunc streamClientFunc, routingHeader string) func(ctx context.Context, opts ...gax.CallOption) (storagepb.BigQueryWrite_AppendRowsClient, error) {
+	return func(ctx context.Context, opts ...gax.CallOption) (storagepb.BigQueryWrite_AppendRowsClient, error) {
+		if routingHeader != "" {
+			ctx = metadata.AppendToOutgoingContext(ctx, "x-goog-request-params", routingHeader)
+		}
 		arc, err := streamFunc(ctx, opts...)
 		if err != nil {
 			return nil, err
@@ -167,11 +185,11 @@ func (c *Client) buildManagedStream(ctx context.Context, streamFunc streamClient
 	if err != nil {
 		return nil, err
 	}
-	// Add the writer to the pool, and derive context from the pool.
+	// Add the writer to the pool.
 	if err := pool.addWriter(writer); err != nil {
 		return nil, err
 	}
-	writer.ctx, writer.cancel = context.WithCancel(pool.ctx)
+	writer.ctx, writer.cancel = context.WithCancel(ctx)
 
 	// Attach any tag keys to the context on the writer, so instrumentation works as expected.
 	writer.ctx = setupWriterStatContext(writer)
@@ -218,7 +236,7 @@ func (c *Client) resolvePool(ctx context.Context, settings *streamSettings, stre
 	}
 
 	// No existing pool available, create one for the location and add to shared pools.
-	pool, err := c.createPool(ctx, loc, streamFunc)
+	pool, err := c.createPool(loc, streamFunc)
 	if err != nil {
 		return nil, err
 	}
@@ -227,24 +245,28 @@ func (c *Client) resolvePool(ctx context.Context, settings *streamSettings, stre
 }
 
 // createPool builds a connectionPool.
-func (c *Client) createPool(ctx context.Context, location string, streamFunc streamClientFunc) (*connectionPool, error) {
-	cCtx, cancel := context.WithCancel(ctx)
+func (c *Client) createPool(location string, streamFunc streamClientFunc) (*connectionPool, error) {
+	cCtx, cancel := context.WithCancel(c.ctx)
 
 	if c.cfg == nil {
 		cancel()
 		return nil, fmt.Errorf("missing client config")
 	}
-	if location != "" {
-		// add location header to the retained pool context.
-		cCtx = metadata.AppendToOutgoingContext(ctx, "x-goog-request-params", fmt.Sprintf("write_location=%s", location))
-	}
+
+	var routingHeader string
+	/*
+	 * TODO: set once backend respects the new routing header
+	 * if location != "" && c.projectID != "" {
+	 *  	routingHeader = fmt.Sprintf("write_location=projects/%s/locations/%s", c.projectID, location)
+	 * }
+	 */
 
 	pool := &connectionPool{
 		id:                 newUUID(poolIDPrefix),
 		location:           location,
 		ctx:                cCtx,
 		cancel:             cancel,
-		open:               createOpenF(ctx, streamFunc),
+		open:               createOpenF(streamFunc, routingHeader),
 		callOptions:        c.cfg.defaultAppendRowsCallOptions,
 		baseFlowController: newFlowController(c.cfg.defaultInflightRequests, c.cfg.defaultInflightBytes),
 	}

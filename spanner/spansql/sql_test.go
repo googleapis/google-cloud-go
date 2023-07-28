@@ -718,6 +718,47 @@ func TestSQL(t *testing.T) {
 			reparseDDL,
 		},
 		{
+			&CreateTable{
+				Name: "tname1",
+				Columns: []ColumnDef{
+					{Name: "cname1", Type: Type{Base: Int64}, NotNull: true, Position: line(2)},
+					{Name: "cname2", Type: Type{Base: Int64}, NotNull: true, Position: line(3)},
+				},
+				Constraints: []TableConstraint{
+					{
+						Name:       "con1",
+						Constraint: ForeignKey{Columns: []ID{"cname2"}, RefTable: "tname2", RefColumns: []ID{"cname3"}, OnDelete: NoActionOnDelete, Position: line(4)},
+						Position:   line(4),
+					},
+				},
+				PrimaryKey: []KeyPart{
+					{Column: "cname1"},
+				},
+				Position: line(1),
+			},
+			`CREATE TABLE tname1 (
+  cname1 INT64 NOT NULL,
+  cname2 INT64 NOT NULL,
+  CONSTRAINT con1 FOREIGN KEY (cname2) REFERENCES tname2 (cname3) ON DELETE NO ACTION,
+) PRIMARY KEY(cname1)`,
+			reparseDDL,
+		},
+		{
+			&AlterTable{
+				Name: "tname1",
+				Alteration: AddConstraint{
+					Constraint: TableConstraint{
+						Name:       "con1",
+						Constraint: ForeignKey{Columns: []ID{"cname2"}, RefTable: "tname2", RefColumns: []ID{"cname3"}, OnDelete: CascadeOnDelete, Position: line(1)},
+						Position:   line(1),
+					},
+				},
+				Position: line(1),
+			},
+			`ALTER TABLE tname1 ADD CONSTRAINT con1 FOREIGN KEY (cname2) REFERENCES tname2 (cname3) ON DELETE CASCADE`,
+			reparseDDL,
+		},
+		{
 			&Insert{
 				Table:   "Singers",
 				Columns: []ID{ID("SingerId"), ID("FirstName"), ID("LastName")},

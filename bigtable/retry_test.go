@@ -413,6 +413,15 @@ func TestRetryReadRows(t *testing.T) {
 		case 3:
 			// Write two more rows
 			must(writeReadRowsResponse(ss, "c", "d"))
+			err = status.Errorf(codes.Unavailable, "")
+		case 4:
+			must(ss.SendMsg(&btpb.ReadRowsResponse{LastScannedRowKey: []byte("e")}))
+			err = status.Errorf(codes.Unavailable, "")
+		case 5:
+			if want, got := "e\x00", string(req.Rows.RowRanges[0].GetStartKeyClosed()); want != got {
+				t.Errorf("3 range retries: got %q, want %q", got, want)
+			}
+			must(writeReadRowsResponse(ss, "f", "g"))
 			err = nil
 		}
 		errCount++
@@ -424,7 +433,7 @@ func TestRetryReadRows(t *testing.T) {
 		got = append(got, r.Key())
 		return true
 	}))
-	want := []string{"a", "b", "c", "d"}
+	want := []string{"a", "b", "c", "d", "f", "g"}
 	if !testutil.Equal(got, want) {
 		t.Errorf("retry range integration: got %v, want %v", got, want)
 	}
