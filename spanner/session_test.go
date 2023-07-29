@@ -449,7 +449,7 @@ func TestSessionLeak_WhenInactiveTransactions_RemoveSessionsFromPool(t *testing.
 		single.sh.mu.Unlock()
 		t.Fatalf("Missing stacktrace from session handle")
 	}
-	if g, w := single.sh.isLongRunningTransaction, false; g != w {
+	if g, w := single.sh.eligibleForLongRunning, false; g != w {
 		single.sh.mu.Unlock()
 		t.Fatalf("isLongRunningTransaction mismatch\nGot: %v\nWant: %v\n", g, w)
 	}
@@ -524,17 +524,17 @@ func TestMaintainer_LongRunningTransactionsCleanup_IfClose_VerifyInactiveSession
 	}
 	sp.mu.Unlock()
 	s1.mu.Lock()
-	s1.isLongRunningTransaction = false
+	s1.eligibleForLongRunning = false
 	s1.checkoutTime = time.Now().Add(-time.Hour)
 	s1.mu.Unlock()
 
 	s2.mu.Lock()
-	s2.isLongRunningTransaction = false
+	s2.eligibleForLongRunning = false
 	s2.checkoutTime = time.Now().Add(-time.Hour)
 	s2.mu.Unlock()
 
 	s3.mu.Lock()
-	s3.isLongRunningTransaction = true
+	s3.eligibleForLongRunning = true
 	s3.checkoutTime = time.Now().Add(-time.Hour)
 	s3.mu.Unlock()
 
@@ -594,17 +594,17 @@ func TestLongRunningTransactionsCleanup_IfClose_VerifyInactiveSessionsClosed(t *
 	}
 	sp.mu.Unlock()
 	s1.mu.Lock()
-	s1.isLongRunningTransaction = false
+	s1.eligibleForLongRunning = false
 	s1.checkoutTime = time.Now().Add(-time.Hour)
 	s1.mu.Unlock()
 
 	s2.mu.Lock()
-	s2.isLongRunningTransaction = false
+	s2.eligibleForLongRunning = false
 	s2.checkoutTime = time.Now().Add(-time.Hour)
 	s2.mu.Unlock()
 
 	s3.mu.Lock()
-	s3.isLongRunningTransaction = true
+	s3.eligibleForLongRunning = true
 	s3.checkoutTime = time.Now().Add(-time.Hour)
 	s3.mu.Unlock()
 
@@ -664,17 +664,17 @@ func TestLongRunningTransactionsCleanup_IfLog_VerifyInactiveSessionsOpen(t *test
 	}
 	sp.mu.Unlock()
 	s1.mu.Lock()
-	s1.isLongRunningTransaction = false
+	s1.eligibleForLongRunning = false
 	s1.checkoutTime = time.Now().Add(-time.Hour)
 	s1.mu.Unlock()
 
 	s2.mu.Lock()
-	s2.isLongRunningTransaction = false
+	s2.eligibleForLongRunning = false
 	s2.checkoutTime = time.Now().Add(-time.Hour)
 	s2.mu.Unlock()
 
 	s3.mu.Lock()
-	s3.isLongRunningTransaction = true
+	s3.eligibleForLongRunning = true
 	s3.checkoutTime = time.Now().Add(-time.Hour)
 	s3.mu.Unlock()
 
@@ -748,12 +748,12 @@ func TestLongRunningTransactionsCleanup_UtilisationBelowThreshold_VerifyInactive
 	}
 	sp.mu.Unlock()
 	s1.mu.Lock()
-	s1.isLongRunningTransaction = false
+	s1.eligibleForLongRunning = false
 	s1.checkoutTime = time.Now().Add(-time.Hour)
 	s1.mu.Unlock()
 
 	s2.mu.Lock()
-	s2.isLongRunningTransaction = false
+	s2.eligibleForLongRunning = false
 	s2.checkoutTime = time.Now().Add(-time.Hour)
 	s2.mu.Unlock()
 
@@ -814,17 +814,17 @@ func TestLongRunningTransactions_WhenAllExpectedlyLongRunning_VerifyInactiveSess
 	}
 	sp.mu.Unlock()
 	s1.mu.Lock()
-	s1.isLongRunningTransaction = true
+	s1.eligibleForLongRunning = true
 	s1.checkoutTime = time.Now().Add(-time.Hour)
 	s1.mu.Unlock()
 
 	s2.mu.Lock()
-	s2.isLongRunningTransaction = true
+	s2.eligibleForLongRunning = true
 	s2.checkoutTime = time.Now().Add(-time.Hour)
 	s2.mu.Unlock()
 
 	s3.mu.Lock()
-	s3.isLongRunningTransaction = true
+	s3.eligibleForLongRunning = true
 	s3.checkoutTime = time.Now().Add(-time.Hour)
 	s3.mu.Unlock()
 
@@ -884,17 +884,17 @@ func TestLongRunningTransactions_WhenDurationBelowThreshold_VerifyInactiveSessio
 	}
 	sp.mu.Unlock()
 	s1.mu.Lock()
-	s1.isLongRunningTransaction = false
+	s1.eligibleForLongRunning = false
 	s1.checkoutTime = time.Now().Add(-50 * time.Minute)
 	s1.mu.Unlock()
 
 	s2.mu.Lock()
-	s2.isLongRunningTransaction = false
+	s2.eligibleForLongRunning = false
 	s2.checkoutTime = time.Now().Add(-50 * time.Minute)
 	s2.mu.Unlock()
 
 	s3.mu.Lock()
-	s3.isLongRunningTransaction = true
+	s3.eligibleForLongRunning = true
 	s3.checkoutTime = time.Now().Add(-50 * time.Minute)
 	s3.mu.Unlock()
 

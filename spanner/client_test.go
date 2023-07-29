@@ -265,7 +265,7 @@ func TestClient_Single_WhenInactiveTransactionsAndSessionIsNotFoundOnBackend_Rem
 
 	sh.mu.Lock()
 	defer sh.mu.Unlock()
-	if g, w := sh.isLongRunningTransaction, false; g != w {
+	if g, w := sh.eligibleForLongRunning, false; g != w {
 		t.Fatalf("isLongRunningTransaction mismatch\nGot: %v\nWant: %v\n", g, w)
 	}
 	p.InactiveTransactionRemovalOptions.mu.Lock()
@@ -965,7 +965,7 @@ func TestClient_ReadWriteTransaction_WhenLongRunningSessionCleaned_TransactionSh
 		// The background task cleans up this long-running session.
 		tx.sh.mu.Lock()
 		tx.sh.checkoutTime = time.Now().Add(-time.Hour)
-		if g, w := tx.sh.isLongRunningTransaction, false; g != w {
+		if g, w := tx.sh.eligibleForLongRunning, false; g != w {
 			tx.sh.mu.Unlock()
 			return status.Errorf(codes.FailedPrecondition, "isLongRunningTransaction value mismatch\nGot: %v\nWant: %v", g, w)
 		}
@@ -1048,7 +1048,7 @@ func TestClient_ReadWriteTransaction_WhenLongRunningExecuteBatchUpdate_TakeNoAct
 			// Simulate the session to be long-running. The background task should not clean up this long-running session.
 			tx.sh.mu.Lock()
 			tx.sh.checkoutTime = time.Now().Add(-time.Hour)
-			if g, w := tx.sh.isLongRunningTransaction, true; g != w {
+			if g, w := tx.sh.eligibleForLongRunning, true; g != w {
 				tx.sh.mu.Unlock()
 				return status.Errorf(codes.FailedPrecondition, "isLongRunningTransaction value mismatch\nGot: %v\nWant: %v", g, w)
 			}

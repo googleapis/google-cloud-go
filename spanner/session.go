@@ -84,8 +84,8 @@ type sessionHandle struct {
 	// stack is the call stack of the goroutine that checked out the session
 	// from the pool. This can be used to track down session leak problems.
 	stack []byte
-	// isLongRunningTransaction tells if the inner session is eligible to be long-running.
-	isLongRunningTransaction bool
+	// eligibleForLongRunning tells if the inner session is eligible to be long-running.
+	eligibleForLongRunning bool
 	// if the inner session object is long-running then the stack gets logged once.
 	isSessionLeakLogged bool
 }
@@ -704,7 +704,7 @@ func (p *sessionPool) getLongRunningSessionsLocked() []*sessionHandle {
 			sh := element.Value.(*sessionHandle)
 			sh.mu.Lock()
 			diff := time.Now().Sub(sh.checkoutTime)
-			if !sh.isLongRunningTransaction && diff.Seconds() >= p.idleTimeThreshold.Seconds() {
+			if !sh.eligibleForLongRunning && diff.Seconds() >= p.idleTimeThreshold.Seconds() {
 				if p.LogInactiveTransactions && !sh.isSessionLeakLogged {
 					if sh.stack != nil {
 						logf(p.sc.logger, "session %s checked out of pool at %s is long running due to possible session leak for goroutine: \n%s", sh.session.getID(), sh.checkoutTime.Format(time.RFC3339), sh.stack)

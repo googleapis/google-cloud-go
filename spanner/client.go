@@ -563,7 +563,7 @@ func (c *Client) rwTransaction(ctx context.Context, f func(context.Context, *Rea
 				// when a batch update operation is called on this transaction, isLongRunningTransaction will be true
 				sh.mu.Lock()
 				t.mu.Lock()
-				sh.isLongRunningTransaction = t.isLongRunningTransaction
+				sh.eligibleForLongRunning = t.isLongRunningTransaction
 				t.mu.Unlock()
 				sh.mu.Unlock()
 			}

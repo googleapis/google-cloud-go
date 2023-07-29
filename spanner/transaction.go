@@ -671,7 +671,7 @@ func (t *ReadOnlyTransaction) begin(ctx context.Context) error {
 	// Retry the BeginTransaction call if a 'Session not found' is returned.
 	for {
 		sh, err = t.sp.take(ctx)
-		sh.isLongRunningTransaction = t.isLongRunningTransaction
+		sh.eligibleForLongRunning = t.isLongRunningTransaction
 		if err != nil {
 			return err
 		}
@@ -1134,7 +1134,7 @@ func (t *ReadWriteTransaction) batchUpdateWithOptions(ctx context.Context, stmts
 	t.isLongRunningTransaction = true
 	t.mu.Unlock()
 	t.sh.mu.Lock()
-	t.sh.isLongRunningTransaction = true
+	t.sh.eligibleForLongRunning = true
 	t.sh.mu.Unlock()
 
 	// Cloud Spanner will return "Session not found" on bad sessions.
@@ -1402,7 +1402,7 @@ func (t *ReadWriteTransaction) begin(ctx context.Context) error {
 			sh.mu.Lock()
 			t.mu.Lock()
 			// for batch update operations, isLongRunningTransaction will be true
-			sh.isLongRunningTransaction = t.isLongRunningTransaction
+			sh.eligibleForLongRunning = t.isLongRunningTransaction
 			t.mu.Unlock()
 			sh.mu.Unlock()
 		}
