@@ -45,7 +45,7 @@ const healthCheckIntervalMins = 50
 // InactiveTransactionRemovalOptions has configurations for action on long-running transactions.
 type InactiveTransactionRemovalOptions struct {
 	mu sync.Mutex
-	// CloseInactiveTransactions is the configuration to close inactive transactions.
+	// CloseInactiveTransactions is the configuration to log and close inactive transactions.
 	CloseInactiveTransactions bool
 	// LogInactiveTransactions is the configuration to log inactive transactions.
 	// Any inactive transaction gets logged only once.
