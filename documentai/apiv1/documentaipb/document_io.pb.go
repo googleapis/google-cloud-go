@@ -407,6 +407,109 @@ type DocumentOutputConfig_GcsOutputConfig_ struct {
 
 func (*DocumentOutputConfig_GcsOutputConfig_) isDocumentOutputConfig_Destination() {}
 
+// Config for Document OCR.
+type OcrConfig struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// Hints for the OCR model.
+	Hints *OcrConfig_Hints `protobuf:"bytes,2,opt,name=hints,proto3" json:"hints,omitempty"`
+	// Enables special handling for PDFs with existing text information. Results
+	// in better text extraction quality in such PDF inputs.
+	EnableNativePdfParsing bool `protobuf:"varint,3,opt,name=enable_native_pdf_parsing,json=enableNativePdfParsing,proto3" json:"enable_native_pdf_parsing,omitempty"`
+	// Enables intelligent document quality scores after OCR. Can help with
+	// diagnosing why OCR responses are of poor quality for a given input.
+	// Adds additional latency comparable to regular OCR to the process call.
+	EnableImageQualityScores bool `protobuf:"varint,4,opt,name=enable_image_quality_scores,json=enableImageQualityScores,proto3" json:"enable_image_quality_scores,omitempty"`
+	// A list of advanced OCR options to further fine-tune OCR behavior. Current
+	// valid values are:
+	//
+	// - `legacy_layout`: a heuristics layout detection algorithm, which serves as
+	// an alternative to the current ML-based layout detection algorithm.
+	// Customers can choose the best suitable layout algorithm based on their
+	// situation.
+	AdvancedOcrOptions []string `protobuf:"bytes,5,rep,name=advanced_ocr_options,json=advancedOcrOptions,proto3" json:"advanced_ocr_options,omitempty"`
+	// Includes symbol level OCR information if set to true.
+	EnableSymbol bool `protobuf:"varint,6,opt,name=enable_symbol,json=enableSymbol,proto3" json:"enable_symbol,omitempty"`
+	// Turn on font id model and returns font style information.
+	ComputeStyleInfo bool `protobuf:"varint,8,opt,name=compute_style_info,json=computeStyleInfo,proto3" json:"compute_style_info,omitempty"`
+}
+
+func (x *OcrConfig) Reset() {
+	*x = OcrConfig{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_google_cloud_documentai_v1_document_io_proto_msgTypes[6]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *OcrConfig) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*OcrConfig) ProtoMessage() {}
+
+func (x *OcrConfig) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_documentai_v1_document_io_proto_msgTypes[6]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use OcrConfig.ProtoReflect.Descriptor instead.
+func (*OcrConfig) Descriptor() ([]byte, []int) {
+	return file_google_cloud_documentai_v1_document_io_proto_rawDescGZIP(), []int{6}
+}
+
+func (x *OcrConfig) GetHints() *OcrConfig_Hints {
+	if x != nil {
+		return x.Hints
+	}
+	return nil
+}
+
+func (x *OcrConfig) GetEnableNativePdfParsing() bool {
+	if x != nil {
+		return x.EnableNativePdfParsing
+	}
+	return false
+}
+
+func (x *OcrConfig) GetEnableImageQualityScores() bool {
+	if x != nil {
+		return x.EnableImageQualityScores
+	}
+	return false
+}
+
+func (x *OcrConfig) GetAdvancedOcrOptions() []string {
+	if x != nil {
+		return x.AdvancedOcrOptions
+	}
+	return nil
+}
+
+func (x *OcrConfig) GetEnableSymbol() bool {
+	if x != nil {
+		return x.EnableSymbol
+	}
+	return false
+}
+
+func (x *OcrConfig) GetComputeStyleInfo() bool {
+	if x != nil {
+		return x.ComputeStyleInfo
+	}
+	return false
+}
+
 // The configuration used when outputting documents.
 type DocumentOutputConfig_GcsOutputConfig struct {
 	state         protoimpl.MessageState
@@ -426,7 +529,7 @@ type DocumentOutputConfig_GcsOutputConfig struct {
 func (x *DocumentOutputConfig_GcsOutputConfig) Reset() {
 	*x = DocumentOutputConfig_GcsOutputConfig{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_google_cloud_documentai_v1_document_io_proto_msgTypes[6]
+		mi := &file_google_cloud_documentai_v1_document_io_proto_msgTypes[7]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -439,7 +542,7 @@ func (x *DocumentOutputConfig_GcsOutputConfig) String() string {
 func (*DocumentOutputConfig_GcsOutputConfig) ProtoMessage() {}
 
 func (x *DocumentOutputConfig_GcsOutputConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_documentai_v1_document_io_proto_msgTypes[6]
+	mi := &file_google_cloud_documentai_v1_document_io_proto_msgTypes[7]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -491,7 +594,7 @@ type DocumentOutputConfig_GcsOutputConfig_ShardingConfig struct {
 func (x *DocumentOutputConfig_GcsOutputConfig_ShardingConfig) Reset() {
 	*x = DocumentOutputConfig_GcsOutputConfig_ShardingConfig{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_google_cloud_documentai_v1_document_io_proto_msgTypes[7]
+		mi := &file_google_cloud_documentai_v1_document_io_proto_msgTypes[8]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -504,7 +607,7 @@ func (x *DocumentOutputConfig_GcsOutputConfig_ShardingConfig) String() string {
 func (*DocumentOutputConfig_GcsOutputConfig_ShardingConfig) ProtoMessage() {}
 
 func (x *DocumentOutputConfig_GcsOutputConfig_ShardingConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_documentai_v1_document_io_proto_msgTypes[7]
+	mi := &file_google_cloud_documentai_v1_document_io_proto_msgTypes[8]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -532,6 +635,60 @@ func (x *DocumentOutputConfig_GcsOutputConfig_ShardingConfig) GetPagesOverlap() 
 		return x.PagesOverlap
 	}
 	return 0
+}
+
+// Hints for OCR Engine
+type OcrConfig_Hints struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// List of BCP-47 language codes to use for OCR. In most cases, not
+	// specifying it yields the best results since it enables automatic language
+	// detection. For languages based on the Latin alphabet, setting hints is
+	// not needed. In rare cases, when the language of the text in the
+	// image is known, setting a hint will help get better results (although it
+	// will be a significant hindrance if the hint is wrong).
+	LanguageHints []string `protobuf:"bytes,1,rep,name=language_hints,json=languageHints,proto3" json:"language_hints,omitempty"`
+}
+
+func (x *OcrConfig_Hints) Reset() {
+	*x = OcrConfig_Hints{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_google_cloud_documentai_v1_document_io_proto_msgTypes[9]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *OcrConfig_Hints) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*OcrConfig_Hints) ProtoMessage() {}
+
+func (x *OcrConfig_Hints) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_documentai_v1_document_io_proto_msgTypes[9]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use OcrConfig_Hints.ProtoReflect.Descriptor instead.
+func (*OcrConfig_Hints) Descriptor() ([]byte, []int) {
+	return file_google_cloud_documentai_v1_document_io_proto_rawDescGZIP(), []int{6, 0}
+}
+
+func (x *OcrConfig_Hints) GetLanguageHints() []string {
+	if x != nil {
+		return x.LanguageHints
+	}
+	return nil
 }
 
 var File_google_cloud_documentai_v1_document_io_proto protoreflect.FileDescriptor
@@ -602,7 +759,31 @@ var file_google_cloud_documentai_v1_document_io_proto_rawDesc = []byte{
 	0x65, 0x72, 0x53, 0x68, 0x61, 0x72, 0x64, 0x12, 0x23, 0x0a, 0x0d, 0x70, 0x61, 0x67, 0x65, 0x73,
 	0x5f, 0x6f, 0x76, 0x65, 0x72, 0x6c, 0x61, 0x70, 0x18, 0x02, 0x20, 0x01, 0x28, 0x05, 0x52, 0x0c,
 	0x70, 0x61, 0x67, 0x65, 0x73, 0x4f, 0x76, 0x65, 0x72, 0x6c, 0x61, 0x70, 0x42, 0x0d, 0x0a, 0x0b,
-	0x64, 0x65, 0x73, 0x74, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x42, 0xcd, 0x01, 0x0a, 0x1e,
+	0x64, 0x65, 0x73, 0x74, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0xfd, 0x02, 0x0a, 0x09,
+	0x4f, 0x63, 0x72, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x12, 0x41, 0x0a, 0x05, 0x68, 0x69, 0x6e,
+	0x74, 0x73, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x2b, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c,
+	0x65, 0x2e, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x64, 0x6f, 0x63, 0x75, 0x6d, 0x65, 0x6e, 0x74,
+	0x61, 0x69, 0x2e, 0x76, 0x31, 0x2e, 0x4f, 0x63, 0x72, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x2e,
+	0x48, 0x69, 0x6e, 0x74, 0x73, 0x52, 0x05, 0x68, 0x69, 0x6e, 0x74, 0x73, 0x12, 0x39, 0x0a, 0x19,
+	0x65, 0x6e, 0x61, 0x62, 0x6c, 0x65, 0x5f, 0x6e, 0x61, 0x74, 0x69, 0x76, 0x65, 0x5f, 0x70, 0x64,
+	0x66, 0x5f, 0x70, 0x61, 0x72, 0x73, 0x69, 0x6e, 0x67, 0x18, 0x03, 0x20, 0x01, 0x28, 0x08, 0x52,
+	0x16, 0x65, 0x6e, 0x61, 0x62, 0x6c, 0x65, 0x4e, 0x61, 0x74, 0x69, 0x76, 0x65, 0x50, 0x64, 0x66,
+	0x50, 0x61, 0x72, 0x73, 0x69, 0x6e, 0x67, 0x12, 0x3d, 0x0a, 0x1b, 0x65, 0x6e, 0x61, 0x62, 0x6c,
+	0x65, 0x5f, 0x69, 0x6d, 0x61, 0x67, 0x65, 0x5f, 0x71, 0x75, 0x61, 0x6c, 0x69, 0x74, 0x79, 0x5f,
+	0x73, 0x63, 0x6f, 0x72, 0x65, 0x73, 0x18, 0x04, 0x20, 0x01, 0x28, 0x08, 0x52, 0x18, 0x65, 0x6e,
+	0x61, 0x62, 0x6c, 0x65, 0x49, 0x6d, 0x61, 0x67, 0x65, 0x51, 0x75, 0x61, 0x6c, 0x69, 0x74, 0x79,
+	0x53, 0x63, 0x6f, 0x72, 0x65, 0x73, 0x12, 0x30, 0x0a, 0x14, 0x61, 0x64, 0x76, 0x61, 0x6e, 0x63,
+	0x65, 0x64, 0x5f, 0x6f, 0x63, 0x72, 0x5f, 0x6f, 0x70, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x18, 0x05,
+	0x20, 0x03, 0x28, 0x09, 0x52, 0x12, 0x61, 0x64, 0x76, 0x61, 0x6e, 0x63, 0x65, 0x64, 0x4f, 0x63,
+	0x72, 0x4f, 0x70, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x12, 0x23, 0x0a, 0x0d, 0x65, 0x6e, 0x61, 0x62,
+	0x6c, 0x65, 0x5f, 0x73, 0x79, 0x6d, 0x62, 0x6f, 0x6c, 0x18, 0x06, 0x20, 0x01, 0x28, 0x08, 0x52,
+	0x0c, 0x65, 0x6e, 0x61, 0x62, 0x6c, 0x65, 0x53, 0x79, 0x6d, 0x62, 0x6f, 0x6c, 0x12, 0x2c, 0x0a,
+	0x12, 0x63, 0x6f, 0x6d, 0x70, 0x75, 0x74, 0x65, 0x5f, 0x73, 0x74, 0x79, 0x6c, 0x65, 0x5f, 0x69,
+	0x6e, 0x66, 0x6f, 0x18, 0x08, 0x20, 0x01, 0x28, 0x08, 0x52, 0x10, 0x63, 0x6f, 0x6d, 0x70, 0x75,
+	0x74, 0x65, 0x53, 0x74, 0x79, 0x6c, 0x65, 0x49, 0x6e, 0x66, 0x6f, 0x1a, 0x2e, 0x0a, 0x05, 0x48,
+	0x69, 0x6e, 0x74, 0x73, 0x12, 0x25, 0x0a, 0x0e, 0x6c, 0x61, 0x6e, 0x67, 0x75, 0x61, 0x67, 0x65,
+	0x5f, 0x68, 0x69, 0x6e, 0x74, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x09, 0x52, 0x0d, 0x6c, 0x61,
+	0x6e, 0x67, 0x75, 0x61, 0x67, 0x65, 0x48, 0x69, 0x6e, 0x74, 0x73, 0x42, 0xcd, 0x01, 0x0a, 0x1e,
 	0x63, 0x6f, 0x6d, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x63, 0x6c, 0x6f, 0x75, 0x64,
 	0x2e, 0x64, 0x6f, 0x63, 0x75, 0x6d, 0x65, 0x6e, 0x74, 0x61, 0x69, 0x2e, 0x76, 0x31, 0x42, 0x0f,
 	0x44, 0x6f, 0x63, 0x75, 0x6d, 0x65, 0x6e, 0x74, 0x49, 0x6f, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50,
@@ -631,30 +812,33 @@ func file_google_cloud_documentai_v1_document_io_proto_rawDescGZIP() []byte {
 	return file_google_cloud_documentai_v1_document_io_proto_rawDescData
 }
 
-var file_google_cloud_documentai_v1_document_io_proto_msgTypes = make([]protoimpl.MessageInfo, 8)
+var file_google_cloud_documentai_v1_document_io_proto_msgTypes = make([]protoimpl.MessageInfo, 10)
 var file_google_cloud_documentai_v1_document_io_proto_goTypes = []interface{}{
-	(*RawDocument)(nil),                                         // 0: google.cloud.documentai.v1.RawDocument
-	(*GcsDocument)(nil),                                         // 1: google.cloud.documentai.v1.GcsDocument
-	(*GcsDocuments)(nil),                                        // 2: google.cloud.documentai.v1.GcsDocuments
-	(*GcsPrefix)(nil),                                           // 3: google.cloud.documentai.v1.GcsPrefix
-	(*BatchDocumentsInputConfig)(nil),                           // 4: google.cloud.documentai.v1.BatchDocumentsInputConfig
-	(*DocumentOutputConfig)(nil),                                // 5: google.cloud.documentai.v1.DocumentOutputConfig
-	(*DocumentOutputConfig_GcsOutputConfig)(nil),                // 6: google.cloud.documentai.v1.DocumentOutputConfig.GcsOutputConfig
-	(*DocumentOutputConfig_GcsOutputConfig_ShardingConfig)(nil), // 7: google.cloud.documentai.v1.DocumentOutputConfig.GcsOutputConfig.ShardingConfig
-	(*fieldmaskpb.FieldMask)(nil),                               // 8: google.protobuf.FieldMask
+	(*RawDocument)(nil),                          // 0: google.cloud.documentai.v1.RawDocument
+	(*GcsDocument)(nil),                          // 1: google.cloud.documentai.v1.GcsDocument
+	(*GcsDocuments)(nil),                         // 2: google.cloud.documentai.v1.GcsDocuments
+	(*GcsPrefix)(nil),                            // 3: google.cloud.documentai.v1.GcsPrefix
+	(*BatchDocumentsInputConfig)(nil),            // 4: google.cloud.documentai.v1.BatchDocumentsInputConfig
+	(*DocumentOutputConfig)(nil),                 // 5: google.cloud.documentai.v1.DocumentOutputConfig
+	(*OcrConfig)(nil),                            // 6: google.cloud.documentai.v1.OcrConfig
+	(*DocumentOutputConfig_GcsOutputConfig)(nil), // 7: google.cloud.documentai.v1.DocumentOutputConfig.GcsOutputConfig
+	(*DocumentOutputConfig_GcsOutputConfig_ShardingConfig)(nil), // 8: google.cloud.documentai.v1.DocumentOutputConfig.GcsOutputConfig.ShardingConfig
+	(*OcrConfig_Hints)(nil),       // 9: google.cloud.documentai.v1.OcrConfig.Hints
+	(*fieldmaskpb.FieldMask)(nil), // 10: google.protobuf.FieldMask
 }
 var file_google_cloud_documentai_v1_document_io_proto_depIdxs = []int32{
-	1, // 0: google.cloud.documentai.v1.GcsDocuments.documents:type_name -> google.cloud.documentai.v1.GcsDocument
-	3, // 1: google.cloud.documentai.v1.BatchDocumentsInputConfig.gcs_prefix:type_name -> google.cloud.documentai.v1.GcsPrefix
-	2, // 2: google.cloud.documentai.v1.BatchDocumentsInputConfig.gcs_documents:type_name -> google.cloud.documentai.v1.GcsDocuments
-	6, // 3: google.cloud.documentai.v1.DocumentOutputConfig.gcs_output_config:type_name -> google.cloud.documentai.v1.DocumentOutputConfig.GcsOutputConfig
-	8, // 4: google.cloud.documentai.v1.DocumentOutputConfig.GcsOutputConfig.field_mask:type_name -> google.protobuf.FieldMask
-	7, // 5: google.cloud.documentai.v1.DocumentOutputConfig.GcsOutputConfig.sharding_config:type_name -> google.cloud.documentai.v1.DocumentOutputConfig.GcsOutputConfig.ShardingConfig
-	6, // [6:6] is the sub-list for method output_type
-	6, // [6:6] is the sub-list for method input_type
-	6, // [6:6] is the sub-list for extension type_name
-	6, // [6:6] is the sub-list for extension extendee
-	0, // [0:6] is the sub-list for field type_name
+	1,  // 0: google.cloud.documentai.v1.GcsDocuments.documents:type_name -> google.cloud.documentai.v1.GcsDocument
+	3,  // 1: google.cloud.documentai.v1.BatchDocumentsInputConfig.gcs_prefix:type_name -> google.cloud.documentai.v1.GcsPrefix
+	2,  // 2: google.cloud.documentai.v1.BatchDocumentsInputConfig.gcs_documents:type_name -> google.cloud.documentai.v1.GcsDocuments
+	7,  // 3: google.cloud.documentai.v1.DocumentOutputConfig.gcs_output_config:type_name -> google.cloud.documentai.v1.DocumentOutputConfig.GcsOutputConfig
+	9,  // 4: google.cloud.documentai.v1.OcrConfig.hints:type_name -> google.cloud.documentai.v1.OcrConfig.Hints
+	10, // 5: google.cloud.documentai.v1.DocumentOutputConfig.GcsOutputConfig.field_mask:type_name -> google.protobuf.FieldMask
+	8,  // 6: google.cloud.documentai.v1.DocumentOutputConfig.GcsOutputConfig.sharding_config:type_name -> google.cloud.documentai.v1.DocumentOutputConfig.GcsOutputConfig.ShardingConfig
+	7,  // [7:7] is the sub-list for method output_type
+	7,  // [7:7] is the sub-list for method input_type
+	7,  // [7:7] is the sub-list for extension type_name
+	7,  // [7:7] is the sub-list for extension extendee
+	0,  // [0:7] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_documentai_v1_document_io_proto_init() }
@@ -736,7 +920,7 @@ func file_google_cloud_documentai_v1_document_io_proto_init() {
 			}
 		}
 		file_google_cloud_documentai_v1_document_io_proto_msgTypes[6].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*DocumentOutputConfig_GcsOutputConfig); i {
+			switch v := v.(*OcrConfig); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -748,7 +932,31 @@ func file_google_cloud_documentai_v1_document_io_proto_init() {
 			}
 		}
 		file_google_cloud_documentai_v1_document_io_proto_msgTypes[7].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*DocumentOutputConfig_GcsOutputConfig); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_google_cloud_documentai_v1_document_io_proto_msgTypes[8].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*DocumentOutputConfig_GcsOutputConfig_ShardingConfig); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_google_cloud_documentai_v1_document_io_proto_msgTypes[9].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*OcrConfig_Hints); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -773,7 +981,7 @@ func file_google_cloud_documentai_v1_document_io_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_google_cloud_documentai_v1_document_io_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   8,
+			NumMessages:   10,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

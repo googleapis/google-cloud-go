@@ -42,11 +42,15 @@ type datastoreClient struct {
 	md metadata.MD
 }
 
-func newDatastoreClient(conn grpc.ClientConnInterface, projectID string) pb.DatastoreClient {
+func newDatastoreClient(conn grpc.ClientConnInterface, projectID, databaseID string) pb.DatastoreClient {
+	resourcePrefixValue := "projects/" + projectID
+	if databaseID != "" {
+		resourcePrefixValue += "/databases/" + databaseID
+	}
 	return &datastoreClient{
 		c: pb.NewDatastoreClient(conn),
 		md: metadata.Pairs(
-			resourcePrefixHeader, "projects/"+projectID,
+			resourcePrefixHeader, resourcePrefixValue,
 			"x-goog-api-client", fmt.Sprintf("gl-go/%s gccl/%s grpc/", version.Go(), internal.Version)),
 	}
 }
@@ -81,7 +85,7 @@ func (dc *datastoreClient) RunAggregationQuery(ctx context.Context, in *pb.RunAg
 		res, err = dc.c.RunAggregationQuery(ctx, in, opts...)
 		return err
 	})
-	return res, nil
+	return res, err
 }
 
 func (dc *datastoreClient) BeginTransaction(ctx context.Context, in *pb.BeginTransactionRequest, opts ...grpc.CallOption) (res *pb.BeginTransactionResponse, err error) {

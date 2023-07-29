@@ -157,6 +157,7 @@ func (r *w1r3) run(ctx context.Context) error {
 			object:              r.objectName,
 			useDefaultChunkSize: opts.minChunkSize == useDefault || opts.maxChunkSize == useDefault,
 			objectPath:          r.objectPath,
+			timeout:             r.opts.timeoutPerOp,
 		})
 	})
 
@@ -186,6 +187,7 @@ func (r *w1r3) run(ctx context.Context) error {
 				rangeStart:          rangeStart,
 				rangeLength:         rangeLength,
 				downloadToDirectory: r.directoryPath,
+				timeout:             r.opts.timeoutPerOp,
 			})
 		})
 		if err != nil {

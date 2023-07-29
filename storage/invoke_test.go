@@ -73,6 +73,14 @@ func TestInvoke(t *testing.T) {
 			expectFinalErr:    true,
 		},
 		{
+			desc:              "retryable gRPC error is retried",
+			count:             1,
+			initialErr:        status.Error(codes.ResourceExhausted, "rate limit"),
+			finalErr:          nil,
+			isIdempotentValue: true,
+			expectFinalErr:    true,
+		},
+		{
 			desc:              "returns non-retryable error after retryable error",
 			count:             1,
 			initialErr:        &googleapi.Error{Code: 429},

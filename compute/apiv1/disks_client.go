@@ -44,20 +44,24 @@ var newDisksClientHook clientHook
 
 // DisksCallOptions contains the retry settings for each method of DisksClient.
 type DisksCallOptions struct {
-	AddResourcePolicies    []gax.CallOption
-	AggregatedList         []gax.CallOption
-	CreateSnapshot         []gax.CallOption
-	Delete                 []gax.CallOption
-	Get                    []gax.CallOption
-	GetIamPolicy           []gax.CallOption
-	Insert                 []gax.CallOption
-	List                   []gax.CallOption
-	RemoveResourcePolicies []gax.CallOption
-	Resize                 []gax.CallOption
-	SetIamPolicy           []gax.CallOption
-	SetLabels              []gax.CallOption
-	TestIamPermissions     []gax.CallOption
-	Update                 []gax.CallOption
+	AddResourcePolicies       []gax.CallOption
+	AggregatedList            []gax.CallOption
+	BulkInsert                []gax.CallOption
+	CreateSnapshot            []gax.CallOption
+	Delete                    []gax.CallOption
+	Get                       []gax.CallOption
+	GetIamPolicy              []gax.CallOption
+	Insert                    []gax.CallOption
+	List                      []gax.CallOption
+	RemoveResourcePolicies    []gax.CallOption
+	Resize                    []gax.CallOption
+	SetIamPolicy              []gax.CallOption
+	SetLabels                 []gax.CallOption
+	StartAsyncReplication     []gax.CallOption
+	StopAsyncReplication      []gax.CallOption
+	StopGroupAsyncReplication []gax.CallOption
+	TestIamPermissions        []gax.CallOption
+	Update                    []gax.CallOption
 }
 
 func defaultDisksRESTCallOptions() *DisksCallOptions {
@@ -76,6 +80,9 @@ func defaultDisksRESTCallOptions() *DisksCallOptions {
 					http.StatusGatewayTimeout,
 					http.StatusServiceUnavailable)
 			}),
+		},
+		BulkInsert: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 		},
 		CreateSnapshot: []gax.CallOption{
 			gax.WithTimeout(600000 * time.Millisecond),
@@ -134,6 +141,15 @@ func defaultDisksRESTCallOptions() *DisksCallOptions {
 		SetLabels: []gax.CallOption{
 			gax.WithTimeout(600000 * time.Millisecond),
 		},
+		StartAsyncReplication: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		StopAsyncReplication: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		StopGroupAsyncReplication: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
 		TestIamPermissions: []gax.CallOption{
 			gax.WithTimeout(600000 * time.Millisecond),
 		},
@@ -150,6 +166,7 @@ type internalDisksClient interface {
 	Connection() *grpc.ClientConn
 	AddResourcePolicies(context.Context, *computepb.AddResourcePoliciesDiskRequest, ...gax.CallOption) (*Operation, error)
 	AggregatedList(context.Context, *computepb.AggregatedListDisksRequest, ...gax.CallOption) *DisksScopedListPairIterator
+	BulkInsert(context.Context, *computepb.BulkInsertDiskRequest, ...gax.CallOption) (*Operation, error)
 	CreateSnapshot(context.Context, *computepb.CreateSnapshotDiskRequest, ...gax.CallOption) (*Operation, error)
 	Delete(context.Context, *computepb.DeleteDiskRequest, ...gax.CallOption) (*Operation, error)
 	Get(context.Context, *computepb.GetDiskRequest, ...gax.CallOption) (*computepb.Disk, error)
@@ -160,6 +177,9 @@ type internalDisksClient interface {
 	Resize(context.Context, *computepb.ResizeDiskRequest, ...gax.CallOption) (*Operation, error)
 	SetIamPolicy(context.Context, *computepb.SetIamPolicyDiskRequest, ...gax.CallOption) (*computepb.Policy, error)
 	SetLabels(context.Context, *computepb.SetLabelsDiskRequest, ...gax.CallOption) (*Operation, error)
+	StartAsyncReplication(context.Context, *computepb.StartAsyncReplicationDiskRequest, ...gax.CallOption) (*Operation, error)
+	StopAsyncReplication(context.Context, *computepb.StopAsyncReplicationDiskRequest, ...gax.CallOption) (*Operation, error)
+	StopGroupAsyncReplication(context.Context, *computepb.StopGroupAsyncReplicationDiskRequest, ...gax.CallOption) (*Operation, error)
 	TestIamPermissions(context.Context, *computepb.TestIamPermissionsDiskRequest, ...gax.CallOption) (*computepb.TestPermissionsResponse, error)
 	Update(context.Context, *computepb.UpdateDiskRequest, ...gax.CallOption) (*Operation, error)
 }
@@ -207,6 +227,11 @@ func (c *DisksClient) AddResourcePolicies(ctx context.Context, req *computepb.Ad
 // AggregatedList retrieves an aggregated list of persistent disks.
 func (c *DisksClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListDisksRequest, opts ...gax.CallOption) *DisksScopedListPairIterator {
 	return c.internalClient.AggregatedList(ctx, req, opts...)
+}
+
+// BulkInsert bulk create a set of disks.
+func (c *DisksClient) BulkInsert(ctx context.Context, req *computepb.BulkInsertDiskRequest, opts ...gax.CallOption) (*Operation, error) {
+	return c.internalClient.BulkInsert(ctx, req, opts...)
 }
 
 // CreateSnapshot creates a snapshot of a specified persistent disk. For regular snapshot creation, consider using snapshots.insert instead, as that method supports more features, such as creating snapshots in a project different from the source disk project.
@@ -257,6 +282,21 @@ func (c *DisksClient) SetIamPolicy(ctx context.Context, req *computepb.SetIamPol
 // SetLabels sets the labels on a disk. To learn more about labels, read the Labeling Resources documentation.
 func (c *DisksClient) SetLabels(ctx context.Context, req *computepb.SetLabelsDiskRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.SetLabels(ctx, req, opts...)
+}
+
+// StartAsyncReplication starts asynchronous replication. Must be invoked on the primary disk.
+func (c *DisksClient) StartAsyncReplication(ctx context.Context, req *computepb.StartAsyncReplicationDiskRequest, opts ...gax.CallOption) (*Operation, error) {
+	return c.internalClient.StartAsyncReplication(ctx, req, opts...)
+}
+
+// StopAsyncReplication stops asynchronous replication. Can be invoked either on the primary or on the secondary disk.
+func (c *DisksClient) StopAsyncReplication(ctx context.Context, req *computepb.StopAsyncReplicationDiskRequest, opts ...gax.CallOption) (*Operation, error) {
+	return c.internalClient.StopAsyncReplication(ctx, req, opts...)
+}
+
+// StopGroupAsyncReplication stops asynchronous replication for a consistency group of disks. Can be invoked either in the primary or secondary scope.
+func (c *DisksClient) StopGroupAsyncReplication(ctx context.Context, req *computepb.StopGroupAsyncReplicationDiskRequest, opts ...gax.CallOption) (*Operation, error) {
+	return c.internalClient.StopGroupAsyncReplication(ctx, req, opts...)
 }
 
 // TestIamPermissions returns permissions that a caller has on the specified resource.
@@ -533,6 +573,81 @@ func (c *disksRESTClient) AggregatedList(ctx context.Context, req *computepb.Agg
 	it.pageInfo.Token = req.GetPageToken()
 
 	return it
+}
+
+// BulkInsert bulk create a set of disks.
+func (c *disksRESTClient) BulkInsert(ctx context.Context, req *computepb.BulkInsertDiskRequest, opts ...gax.CallOption) (*Operation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true}
+	body := req.GetBulkInsertDiskResourceResource()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/disks/bulkInsert", req.GetProject(), req.GetZone())
+
+	params := url.Values{}
+	if req != nil && req.RequestId != nil {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "zone", url.QueryEscape(req.GetZone())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).BulkInsert[0:len((*c.CallOptions).BulkInsert):len((*c.CallOptions).BulkInsert)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &computepb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	op := &Operation{
+		&zoneOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+			zone:    req.GetZone(),
+		},
+	}
+	return op, nil
 }
 
 // CreateSnapshot creates a snapshot of a specified persistent disk. For regular snapshot creation, consider using snapshots.insert instead, as that method supports more features, such as creating snapshots in a project different from the source disk project.
@@ -1205,6 +1320,224 @@ func (c *disksRESTClient) SetLabels(ctx context.Context, req *computepb.SetLabel
 
 	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
 	opts = append((*c.CallOptions).SetLabels[0:len((*c.CallOptions).SetLabels):len((*c.CallOptions).SetLabels)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &computepb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	op := &Operation{
+		&zoneOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+			zone:    req.GetZone(),
+		},
+	}
+	return op, nil
+}
+
+// StartAsyncReplication starts asynchronous replication. Must be invoked on the primary disk.
+func (c *disksRESTClient) StartAsyncReplication(ctx context.Context, req *computepb.StartAsyncReplicationDiskRequest, opts ...gax.CallOption) (*Operation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true}
+	body := req.GetDisksStartAsyncReplicationRequestResource()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/disks/%v/startAsyncReplication", req.GetProject(), req.GetZone(), req.GetDisk())
+
+	params := url.Values{}
+	if req != nil && req.RequestId != nil {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "zone", url.QueryEscape(req.GetZone()), "disk", url.QueryEscape(req.GetDisk())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).StartAsyncReplication[0:len((*c.CallOptions).StartAsyncReplication):len((*c.CallOptions).StartAsyncReplication)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &computepb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	op := &Operation{
+		&zoneOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+			zone:    req.GetZone(),
+		},
+	}
+	return op, nil
+}
+
+// StopAsyncReplication stops asynchronous replication. Can be invoked either on the primary or on the secondary disk.
+func (c *disksRESTClient) StopAsyncReplication(ctx context.Context, req *computepb.StopAsyncReplicationDiskRequest, opts ...gax.CallOption) (*Operation, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/disks/%v/stopAsyncReplication", req.GetProject(), req.GetZone(), req.GetDisk())
+
+	params := url.Values{}
+	if req != nil && req.RequestId != nil {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "zone", url.QueryEscape(req.GetZone()), "disk", url.QueryEscape(req.GetDisk())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).StopAsyncReplication[0:len((*c.CallOptions).StopAsyncReplication):len((*c.CallOptions).StopAsyncReplication)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &computepb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	op := &Operation{
+		&zoneOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+			zone:    req.GetZone(),
+		},
+	}
+	return op, nil
+}
+
+// StopGroupAsyncReplication stops asynchronous replication for a consistency group of disks. Can be invoked either in the primary or secondary scope.
+func (c *disksRESTClient) StopGroupAsyncReplication(ctx context.Context, req *computepb.StopGroupAsyncReplicationDiskRequest, opts ...gax.CallOption) (*Operation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true}
+	body := req.GetDisksStopGroupAsyncReplicationResourceResource()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/disks/stopGroupAsyncReplication", req.GetProject(), req.GetZone())
+
+	params := url.Values{}
+	if req != nil && req.RequestId != nil {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "zone", url.QueryEscape(req.GetZone())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).StopGroupAsyncReplication[0:len((*c.CallOptions).StopGroupAsyncReplication):len((*c.CallOptions).StopGroupAsyncReplication)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {

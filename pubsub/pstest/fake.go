@@ -498,6 +498,11 @@ func (s *GServer) CreateSubscription(_ context.Context, ps *pb.Subscription) (*p
 	}
 	if ps.PushConfig == nil {
 		ps.PushConfig = &pb.PushConfig{}
+	} else if ps.PushConfig.Wrapper == nil {
+		// Wrapper should default to PubsubWrapper.
+		ps.PushConfig.Wrapper = &pb.PushConfig_PubsubWrapper_{
+			PubsubWrapper: &pb.PushConfig_PubsubWrapper{},
+		}
 	}
 	// Consider any table set to mean the config is active.
 	// We don't convert nil config to empty like with PushConfig above
@@ -557,10 +562,10 @@ func checkAckDeadline(ads int32) error {
 
 const (
 	minMessageRetentionDuration = 10 * time.Minute
-	maxMessageRetentionDuration = 168 * time.Hour
+	maxMessageRetentionDuration = 31 * 24 * time.Hour // 31 days is the maximum supported duration (https://cloud.google.com/pubsub/docs/replay-overview#configuring_message_retention)
 )
 
-var defaultMessageRetentionDuration = durpb.New(maxMessageRetentionDuration)
+var defaultMessageRetentionDuration = durpb.New(168 * time.Hour) // default is 7 days
 
 func checkMRD(pmrd *durpb.Duration) error {
 	if pmrd == nil {
