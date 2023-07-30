@@ -1627,6 +1627,11 @@
                 "RawPredict"
               ]
             },
+            "ServerStreamingPredict": {
+              "methods": [
+                "ServerStreamingPredict"
+              ]
+            },
             "SetIamPolicy": {
               "methods": [
                 "SetIamPolicy"
