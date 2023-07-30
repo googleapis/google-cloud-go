@@ -2109,7 +2109,8 @@ type CloudStorageConfig struct {
 	// requirements](https://cloud.google.com/storage/docs/objects#naming).
 	FilenamePrefix string `protobuf:"bytes,2,opt,name=filename_prefix,json=filenamePrefix,proto3" json:"filename_prefix,omitempty"`
 	// User-provided suffix for Cloud Storage filename. See the [object naming
-	// requirements](https://cloud.google.com/storage/docs/objects#naming).
+	// requirements](https://cloud.google.com/storage/docs/objects#naming). Must
+	// not end in "/".
 	FilenameSuffix string `protobuf:"bytes,3,opt,name=filename_suffix,json=filenameSuffix,proto3" json:"filename_suffix,omitempty"`
 	// Defaults to text format.
 	//
@@ -3996,7 +3997,11 @@ type CloudStorageConfig_AvroConfig struct {
 	unknownFields protoimpl.UnknownFields
 
 	// When true, write the subscription name, message_id, publish_time,
-	// attributes, and ordering_key as additional fields in the output.
+	// attributes, and ordering_key as additional fields in the output. The
+	// subscription name, message_id, and publish_time fields are put in their
+	// own fields while all other message properties other than data (for
+	// example, an ordering_key, if present) are added as entries in the
+	// attributes map.
 	WriteMetadata bool `protobuf:"varint,1,opt,name=write_metadata,json=writeMetadata,proto3" json:"write_metadata,omitempty"`
 }
 

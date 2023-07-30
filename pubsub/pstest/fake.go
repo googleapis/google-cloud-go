@@ -498,12 +498,20 @@ func (s *GServer) CreateSubscription(_ context.Context, ps *pb.Subscription) (*p
 	}
 	if ps.PushConfig == nil {
 		ps.PushConfig = &pb.PushConfig{}
+	} else if ps.PushConfig.Wrapper == nil {
+		// Wrapper should default to PubsubWrapper.
+		ps.PushConfig.Wrapper = &pb.PushConfig_PubsubWrapper_{
+			PubsubWrapper: &pb.PushConfig_PubsubWrapper{},
+		}
 	}
 	// Consider any table set to mean the config is active.
 	// We don't convert nil config to empty like with PushConfig above
 	// as this mimics the live service behavior.
 	if ps.GetBigqueryConfig() != nil && ps.GetBigqueryConfig().GetTable() != "" {
 		ps.BigqueryConfig.State = pb.BigQueryConfig_ACTIVE
+	}
+	if ps.CloudStorageConfig != nil && ps.CloudStorageConfig.Bucket != "" {
+		ps.CloudStorageConfig.State = pb.CloudStorageConfig_ACTIVE
 	}
 	ps.TopicMessageRetentionDuration = top.proto.MessageRetentionDuration
 	var deadLetterTopic *topic
@@ -554,10 +562,10 @@ func checkAckDeadline(ads int32) error {
 
 const (
 	minMessageRetentionDuration = 10 * time.Minute
-	maxMessageRetentionDuration = 168 * time.Hour
+	maxMessageRetentionDuration = 31 * 24 * time.Hour // 31 days is the maximum supported duration (https://cloud.google.com/pubsub/docs/replay-overview#configuring_message_retention)
 )
 
-var defaultMessageRetentionDuration = durpb.New(maxMessageRetentionDuration)
+var defaultMessageRetentionDuration = durpb.New(168 * time.Hour) // default is 7 days
 
 func checkMRD(pmrd *durpb.Duration) error {
 	if pmrd == nil {
@@ -615,6 +623,14 @@ func (s *GServer) UpdateSubscription(_ context.Context, req *pb.UpdateSubscripti
 				} else {
 					return nil, status.Errorf(codes.InvalidArgument, "table must be provided")
 				}
+			}
+
+		case "cloud_storage_config":
+			sub.proto.CloudStorageConfig = req.GetSubscription().GetCloudStorageConfig()
+			// As long as the storage config is not nil, we assume it's valid
+			// without additional checks.
+			if sub.proto.GetCloudStorageConfig() != nil {
+				sub.proto.CloudStorageConfig.State = pb.CloudStorageConfig_ACTIVE
 			}
 
 		case "ack_deadline_seconds":

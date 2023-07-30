@@ -1,6 +1,34 @@
 # Changes
 
 
+## [1.13.0](https://github.com/googleapis/google-cloud-go/compare/deploy/v1.12.1...deploy/v1.13.0) (2023-07-27)
+
+
+### Features
+
+* **deploy:** Added support for predeploy and postdeploy actions ([#8337](https://github.com/googleapis/google-cloud-go/issues/8337)) ([c51d006](https://github.com/googleapis/google-cloud-go/commit/c51d0064faadd77f39843b40231efc248a7f675a))
+
+## [1.12.1](https://github.com/googleapis/google-cloud-go/compare/deploy/v1.12.0...deploy/v1.12.1) (2023-07-24)
+
+
+### Documentation
+
+* **deploy:** Small documentation updates ([#8286](https://github.com/googleapis/google-cloud-go/issues/8286)) ([eca3c90](https://github.com/googleapis/google-cloud-go/commit/eca3c9070cd96a50fa857a6c016e35a98dbea5e7))
+
+## [1.12.0](https://github.com/googleapis/google-cloud-go/compare/deploy/v1.11.0...deploy/v1.12.0) (2023-07-18)
+
+
+### Features
+
+* **deploy:** Added support routeUpdateWaitTime field for Deployment Strategies ([dda1f9d](https://github.com/googleapis/google-cloud-go/commit/dda1f9dc2f5b54dca15ae05302d8cac821fe8da1))
+
+## [1.11.0](https://github.com/googleapis/google-cloud-go/compare/deploy/v1.10.1...deploy/v1.11.0) (2023-06-27)
+
+
+### Features
+
+* **deploy:** Add deploy parameters for cloud deploy ([94ea341](https://github.com/googleapis/google-cloud-go/commit/94ea3410e233db6040a7cb0a931948f1e3bb4c9a))
+
 ## [1.10.1](https://github.com/googleapis/google-cloud-go/compare/deploy/v1.10.0...deploy/v1.10.1) (2023-06-20)
 
 

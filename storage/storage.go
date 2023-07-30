@@ -109,8 +109,8 @@ type Client struct {
 	raw *raw.Service
 	// Scheme describes the scheme under the current host.
 	scheme string
-	// ReadHost is the default host used on the reader.
-	readHost string
+	// xmlHost is the default host used for XML requests.
+	xmlHost string
 	// May be nil.
 	creds *google.Credentials
 	retry *retryConfig
@@ -199,7 +199,7 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 	if err != nil {
 		return nil, fmt.Errorf("storage client: %w", err)
 	}
-	// Update readHost and scheme with the chosen endpoint.
+	// Update xmlHost and scheme with the chosen endpoint.
 	u, err := url.Parse(ep)
 	if err != nil {
 		return nil, fmt.Errorf("supplied endpoint %q is not valid: %w", ep, err)
@@ -211,12 +211,12 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 	}
 
 	return &Client{
-		hc:       hc,
-		raw:      rawService,
-		scheme:   u.Scheme,
-		readHost: u.Host,
-		creds:    creds,
-		tc:       tc,
+		hc:      hc,
+		raw:     rawService,
+		scheme:  u.Scheme,
+		xmlHost: u.Host,
+		creds:   creds,
+		tc:      tc,
 	}, nil
 }
 
@@ -262,13 +262,13 @@ const (
 	SigningSchemeV4
 )
 
-// URLStyle determines the style to use for the signed URL. pathStyle is the
+// URLStyle determines the style to use for the signed URL. PathStyle is the
 // default. All non-default options work with V4 scheme only. See
 // https://cloud.google.com/storage/docs/request-endpoints for details.
 type URLStyle interface {
 	// host should return the host portion of the signed URL, not including
 	// the scheme (e.g. storage.googleapis.com).
-	host(bucket string) string
+	host(hostname, bucket string) string
 
 	// path should return the path portion of the signed URL, which may include
 	// both the bucket and object name or only the object name depending on the
@@ -284,7 +284,11 @@ type bucketBoundHostname struct {
 	hostname string
 }
 
-func (s pathStyle) host(bucket string) string {
+func (s pathStyle) host(hostname, bucket string) string {
+	if hostname != "" {
+		return stripScheme(hostname)
+	}
+
 	if host := os.Getenv("STORAGE_EMULATOR_HOST"); host != "" {
 		return stripScheme(host)
 	}
@@ -292,7 +296,7 @@ func (s pathStyle) host(bucket string) string {
 	return "storage.googleapis.com"
 }
 
-func (s virtualHostedStyle) host(bucket string) string {
+func (s virtualHostedStyle) host(_, bucket string) string {
 	if host := os.Getenv("STORAGE_EMULATOR_HOST"); host != "" {
 		return bucket + "." + stripScheme(host)
 	}
@@ -300,7 +304,7 @@ func (s virtualHostedStyle) host(bucket string) string {
 	return bucket + ".storage.googleapis.com"
 }
 
-func (s bucketBoundHostname) host(bucket string) string {
+func (s bucketBoundHostname) host(_, bucket string) string {
 	return s.hostname
 }
 
@@ -321,7 +325,10 @@ func (s bucketBoundHostname) path(bucket, object string) string {
 }
 
 // PathStyle is the default style, and will generate a URL of the form
-// "storage.googleapis.com/<bucket-name>/<object-name>".
+// "<host-name>/<bucket-name>/<object-name>". By default, <host-name> is
+// storage.googleapis.com, but setting an endpoint on the storage Client or
+// through STORAGE_EMULATOR_HOST overrides this. Setting Hostname on
+// SignedURLOptions or PostPolicyV4Options overrides everything else.
 func PathStyle() URLStyle {
 	return pathStyle{}
 }
@@ -442,6 +449,12 @@ type SignedURLOptions struct {
 	// Scheme determines the version of URL signing to use. Default is
 	// SigningSchemeV2.
 	Scheme SigningScheme
+
+	// Hostname sets the host of the signed URL. This field overrides any
+	// endpoint set on a storage Client or through STORAGE_EMULATOR_HOST.
+	// Only compatible with PathStyle URLStyle.
+	// Optional.
+	Hostname string
 }
 
 func (opts *SignedURLOptions) clone() *SignedURLOptions {
@@ -458,6 +471,7 @@ func (opts *SignedURLOptions) clone() *SignedURLOptions {
 		Style:           opts.Style,
 		Insecure:        opts.Insecure,
 		Scheme:          opts.Scheme,
+		Hostname:        opts.Hostname,
 	}
 }
 
@@ -716,7 +730,7 @@ func signedURLV4(bucket, name string, opts *SignedURLOptions, now time.Time) (st
 	fmt.Fprintf(buf, "%s\n", escapedQuery)
 
 	// Fill in the hostname based on the desired URL style.
-	u.Host = opts.Style.host(bucket)
+	u.Host = opts.Style.host(opts.Hostname, bucket)
 
 	// Fill in the URL scheme.
 	if opts.Insecure {
@@ -850,7 +864,7 @@ func signedURLV2(bucket, name string, opts *SignedURLOptions) (string, error) {
 	}
 	encoded := base64.StdEncoding.EncodeToString(b)
 	u.Scheme = "https"
-	u.Host = PathStyle().host(bucket)
+	u.Host = PathStyle().host(opts.Hostname, bucket)
 	q := u.Query()
 	q.Set("GoogleAccessId", opts.GoogleAccessID)
 	q.Set("Expires", fmt.Sprintf("%d", opts.Expires.Unix()))

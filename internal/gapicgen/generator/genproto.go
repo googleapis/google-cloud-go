@@ -63,6 +63,7 @@ var skipPrefixes = []string{
 	"google.golang.org/genproto/googleapis/appengine/",
 	"google.golang.org/genproto/googleapis/area120/",
 	"google.golang.org/genproto/googleapis/cloud/",
+	"google.golang.org/genproto/googleapis/compute/",
 	"google.golang.org/genproto/googleapis/dataflow/",
 	"google.golang.org/genproto/googleapis/datastore/",
 	"google.golang.org/genproto/googleapis/devtools/",

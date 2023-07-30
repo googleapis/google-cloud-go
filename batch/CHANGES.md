@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [1.3.1](https://github.com/googleapis/google-cloud-go/compare/batch/v1.3.0...batch/v1.3.1) (2023-07-10)
+
+
+### Documentation
+
+* **batch:** Add image shortcut example for Batch HPC CentOS Image ([14b95d3](https://github.com/googleapis/google-cloud-go/commit/14b95d33753d0b391d0b49533e92b551e5dc3072))
+
 ## [1.3.0](https://github.com/googleapis/google-cloud-go/compare/batch/v1.2.0...batch/v1.3.0) (2023-06-20)
 
 
