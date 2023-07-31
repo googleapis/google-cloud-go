@@ -2,6 +2,13 @@
 
 
 
+## [1.4.0](https://github.com/googleapis/google-cloud-go/compare/maps/v1.3.0...maps/v1.4.0) (2023-07-24)
+
+
+### Features
+
+* **maps/places:** Promote to GA ([#8299](https://github.com/googleapis/google-cloud-go/issues/8299)) ([08ec41a](https://github.com/googleapis/google-cloud-go/commit/08ec41aba981874a7b86a9a941b07f9eb2fc6ce1))
+
 ## [1.3.0](https://github.com/googleapis/google-cloud-go/compare/maps/v1.2.1...maps/v1.3.0) (2023-07-10)
 
 

@@ -40,13 +40,14 @@ import (
 )
 
 const (
-	// defaultConnPoolSize is the default number of connections
+	// defaultConnPoolSize is the default number of channels
 	// to initialize in the GAPIC gRPC connection pool. A larger
 	// connection pool may be necessary for jobs that require
-	// high throughput and/or leverage many concurrent streams.
+	// high throughput and/or leverage many concurrent streams
+	// if not running via DirectPath.
 	//
 	// This is only used for the gRPC client.
-	defaultConnPoolSize = 4
+	defaultConnPoolSize = 1
 
 	// maxPerMessageWriteSize is the maximum amount of content that can be sent
 	// per WriteObjectRequest message. A buffer reaching this amount will
