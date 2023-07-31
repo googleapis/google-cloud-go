@@ -353,21 +353,25 @@ func TestIntegration_GetMulti(t *testing.T) {
 	cases := []struct {
 		key *Key
 		put bool
+		x   *X
 	}{
-		{key: NameKey("X", "item1", p), put: true},
+		{key: NameKey("X", "item1", p), put: true, x: &X{I: 1}},
 		{key: NameKey("X", "item2", p), put: false},
 		{key: NameKey("X", "item3", p), put: false},
 		{key: NameKey("X", "item3", p), put: false},
-		{key: NameKey("X", "item4", p), put: true},
+		{key: NameKey("X", "item4", p), put: true, x: &X{I: 4}},
+		{key: &Key{Kind: "X", Name: "item5", Namespace: "nm1"}, put: true, x: &X{I: 5}},
+		{key: &Key{Kind: "X", Name: "item5", Namespace: "nm2"}, put: true, x: &X{I: 6}},
 	}
 
-	var src, dst []*X
+	var src, dst, wantDst []*X
 	var srcKeys, dstKeys []*Key
 	for _, c := range cases {
 		dst = append(dst, &X{})
 		dstKeys = append(dstKeys, c.key)
+		wantDst = append(wantDst, c.x)
 		if c.put {
-			src = append(src, &X{})
+			src = append(src, c.x)
 			srcKeys = append(srcKeys, c.key)
 		}
 	}
@@ -390,6 +394,10 @@ func TestIntegration_GetMulti(t *testing.T) {
 		}
 		if got != want {
 			t.Errorf("MultiError[%d] == %v, want %v", i, got, want)
+		}
+
+		if got == nil && *dst[i] != *wantDst[i] {
+			t.Errorf("client.GetMulti got %+v, want %+v", dst[i], wantDst[i])
 		}
 	}
 }
