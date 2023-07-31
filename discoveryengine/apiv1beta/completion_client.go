@@ -433,6 +433,9 @@ func (c *completionRESTClient) CompleteQuery(ctx context.Context, req *discovery
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetIncludeTailSuggestions() {
+		params.Add("includeTailSuggestions", fmt.Sprintf("%v", req.GetIncludeTailSuggestions()))
+	}
 	params.Add("query", fmt.Sprintf("%v", req.GetQuery()))
 	if req.GetQueryModel() != "" {
 		params.Add("queryModel", fmt.Sprintf("%v", req.GetQueryModel()))

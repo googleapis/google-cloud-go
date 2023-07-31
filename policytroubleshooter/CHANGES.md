@@ -1,5 +1,12 @@
 # Changes
 
+## [1.8.0](https://github.com/googleapis/google-cloud-go/compare/policytroubleshooter/v1.7.1...policytroubleshooter/v1.8.0) (2023-07-24)
+
+
+### Features
+
+* **policytroubleshooter:** Include errors in troubleshoot response ([eca3c90](https://github.com/googleapis/google-cloud-go/commit/eca3c9070cd96a50fa857a6c016e35a98dbea5e7))
+
 ## [1.7.1](https://github.com/googleapis/google-cloud-go/compare/policytroubleshooter/v1.7.0...policytroubleshooter/v1.7.1) (2023-06-20)
 
 

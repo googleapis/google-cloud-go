@@ -17,8 +17,6 @@
 // Package publishing is an auto-generated package for the
 // Eventarc Publishing API.
 //
-//	NOTE: This package is in beta. It is not stable, and may be subject to changes.
-//
 // # General documentation
 //
 // For information about setting deadlines, reusing contexts, and more
