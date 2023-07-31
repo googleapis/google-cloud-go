@@ -1,0 +1,383 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.netapp.v1",
+  "libraryPackage": "cloud.google.com/go/netapp/apiv1",
+  "services": {
+    "NetApp": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "CreateActiveDirectory": {
+              "methods": [
+                "CreateActiveDirectory"
+              ]
+            },
+            "CreateKmsConfig": {
+              "methods": [
+                "CreateKmsConfig"
+              ]
+            },
+            "CreateReplication": {
+              "methods": [
+                "CreateReplication"
+              ]
+            },
+            "CreateSnapshot": {
+              "methods": [
+                "CreateSnapshot"
+              ]
+            },
+            "CreateStoragePool": {
+              "methods": [
+                "CreateStoragePool"
+              ]
+            },
+            "CreateVolume": {
+              "methods": [
+                "CreateVolume"
+              ]
+            },
+            "DeleteActiveDirectory": {
+              "methods": [
+                "DeleteActiveDirectory"
+              ]
+            },
+            "DeleteKmsConfig": {
+              "methods": [
+                "DeleteKmsConfig"
+              ]
+            },
+            "DeleteReplication": {
+              "methods": [
+                "DeleteReplication"
+              ]
+            },
+            "DeleteSnapshot": {
+              "methods": [
+                "DeleteSnapshot"
+              ]
+            },
+            "DeleteStoragePool": {
+              "methods": [
+                "DeleteStoragePool"
+              ]
+            },
+            "DeleteVolume": {
+              "methods": [
+                "DeleteVolume"
+              ]
+            },
+            "EncryptVolumes": {
+              "methods": [
+                "EncryptVolumes"
+              ]
+            },
+            "GetActiveDirectory": {
+              "methods": [
+                "GetActiveDirectory"
+              ]
+            },
+            "GetKmsConfig": {
+              "methods": [
+                "GetKmsConfig"
+              ]
+            },
+            "GetReplication": {
+              "methods": [
+                "GetReplication"
+              ]
+            },
+            "GetSnapshot": {
+              "methods": [
+                "GetSnapshot"
+              ]
+            },
+            "GetStoragePool": {
+              "methods": [
+                "GetStoragePool"
+              ]
+            },
+            "GetVolume": {
+              "methods": [
+                "GetVolume"
+              ]
+            },
+            "ListActiveDirectories": {
+              "methods": [
+                "ListActiveDirectories"
+              ]
+            },
+            "ListKmsConfigs": {
+              "methods": [
+                "ListKmsConfigs"
+              ]
+            },
+            "ListReplications": {
+              "methods": [
+                "ListReplications"
+              ]
+            },
+            "ListSnapshots": {
+              "methods": [
+                "ListSnapshots"
+              ]
+            },
+            "ListStoragePools": {
+              "methods": [
+                "ListStoragePools"
+              ]
+            },
+            "ListVolumes": {
+              "methods": [
+                "ListVolumes"
+              ]
+            },
+            "ResumeReplication": {
+              "methods": [
+                "ResumeReplication"
+              ]
+            },
+            "ReverseReplicationDirection": {
+              "methods": [
+                "ReverseReplicationDirection"
+              ]
+            },
+            "RevertVolume": {
+              "methods": [
+                "RevertVolume"
+              ]
+            },
+            "StopReplication": {
+              "methods": [
+                "StopReplication"
+              ]
+            },
+            "UpdateActiveDirectory": {
+              "methods": [
+                "UpdateActiveDirectory"
+              ]
+            },
+            "UpdateKmsConfig": {
+              "methods": [
+                "UpdateKmsConfig"
+              ]
+            },
+            "UpdateReplication": {
+              "methods": [
+                "UpdateReplication"
+              ]
+            },
+            "UpdateSnapshot": {
+              "methods": [
+                "UpdateSnapshot"
+              ]
+            },
+            "UpdateStoragePool": {
+              "methods": [
+                "UpdateStoragePool"
+              ]
+            },
+            "UpdateVolume": {
+              "methods": [
+                "UpdateVolume"
+              ]
+            },
+            "VerifyKmsConfig": {
+              "methods": [
+                "VerifyKmsConfig"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "CreateActiveDirectory": {
+              "methods": [
+                "CreateActiveDirectory"
+              ]
+            },
+            "CreateKmsConfig": {
+              "methods": [
+                "CreateKmsConfig"
+              ]
+            },
+            "CreateReplication": {
+              "methods": [
+                "CreateReplication"
+              ]
+            },
+            "CreateSnapshot": {
+              "methods": [
+                "CreateSnapshot"
+              ]
+            },
+            "CreateStoragePool": {
+              "methods": [
+                "CreateStoragePool"
+              ]
+            },
+            "CreateVolume": {
+              "methods": [
+                "CreateVolume"
+              ]
+            },
+            "DeleteActiveDirectory": {
+              "methods": [
+                "DeleteActiveDirectory"
+              ]
+            },
+            "DeleteKmsConfig": {
+              "methods": [
+                "DeleteKmsConfig"
+              ]
+            },
+            "DeleteReplication": {
+              "methods": [
+                "DeleteReplication"
+              ]
+            },
+            "DeleteSnapshot": {
+              "methods": [
+                "DeleteSnapshot"
+              ]
+            },
+            "DeleteStoragePool": {
+              "methods": [
+                "DeleteStoragePool"
+              ]
+            },
+            "DeleteVolume": {
+              "methods": [
+                "DeleteVolume"
+              ]
+            },
+            "EncryptVolumes": {
+              "methods": [
+                "EncryptVolumes"
+              ]
+            },
+            "GetActiveDirectory": {
+              "methods": [
+                "GetActiveDirectory"
+              ]
+            },
+            "GetKmsConfig": {
+              "methods": [
+                "GetKmsConfig"
+              ]
+            },
+            "GetReplication": {
+              "methods": [
+                "GetReplication"
+              ]
+            },
+            "GetSnapshot": {
+              "methods": [
+                "GetSnapshot"
+              ]
+            },
+            "GetStoragePool": {
+              "methods": [
+                "GetStoragePool"
+              ]
+            },
+            "GetVolume": {
+              "methods": [
+                "GetVolume"
+              ]
+            },
+            "ListActiveDirectories": {
+              "methods": [
+                "ListActiveDirectories"
+              ]
+            },
+            "ListKmsConfigs": {
+              "methods": [
+                "ListKmsConfigs"
+              ]
+            },
+            "ListReplications": {
+              "methods": [
+                "ListReplications"
+              ]
+            },
+            "ListSnapshots": {
+              "methods": [
+                "ListSnapshots"
+              ]
+            },
+            "ListStoragePools": {
+              "methods": [
+                "ListStoragePools"
+              ]
+            },
+            "ListVolumes": {
+              "methods": [
+                "ListVolumes"
+              ]
+            },
+            "ResumeReplication": {
+              "methods": [
+                "ResumeReplication"
+              ]
+            },
+            "ReverseReplicationDirection": {
+              "methods": [
+                "ReverseReplicationDirection"
+              ]
+            },
+            "RevertVolume": {
+              "methods": [
+                "RevertVolume"
+              ]
+            },
+            "StopReplication": {
+              "methods": [
+                "StopReplication"
+              ]
+            },
+            "UpdateActiveDirectory": {
+              "methods": [
+                "UpdateActiveDirectory"
+              ]
+            },
+            "UpdateKmsConfig": {
+              "methods": [
+                "UpdateKmsConfig"
+              ]
+            },
+            "UpdateReplication": {
+              "methods": [
+                "UpdateReplication"
+              ]
+            },
+            "UpdateSnapshot": {
+              "methods": [
+                "UpdateSnapshot"
+              ]
+            },
+            "UpdateStoragePool": {
+              "methods": [
+                "UpdateStoragePool"
+              ]
+            },
+            "UpdateVolume": {
+              "methods": [
+                "UpdateVolume"
+              ]
+            },
+            "VerifyKmsConfig": {
+              "methods": [
+                "VerifyKmsConfig"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}
