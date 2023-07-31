@@ -21,12 +21,11 @@
 package datacatalogpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -38,11 +37,11 @@ const (
 
 // Detailed counts on the entry's usage.
 // Caveats:
-//   - Only BigQuery tables have usage stats
-//   - The usage stats only include BigQuery query jobs
-//   - The usage stats might be underestimated, e.g. wildcard table references
-//     are not yet counted in usage computation
-//     https://cloud.google.com/bigquery/docs/querying-wildcard-tables
+// - Only BigQuery tables have usage stats
+// - The usage stats only include BigQuery query jobs
+// - The usage stats might be underestimated, e.g. wildcard table references
+// are not yet counted in usage computation
+// https://cloud.google.com/bigquery/docs/querying-wildcard-tables
 type UsageStats struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
