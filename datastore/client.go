@@ -17,6 +17,7 @@ package datastore
 import (
 	"context"
 	"fmt"
+	"net/url"
 	"time"
 
 	"cloud.google.com/go/datastore/internal"
@@ -47,10 +48,13 @@ func newDatastoreClient(conn grpc.ClientConnInterface, projectID, databaseID str
 	if databaseID != "" {
 		resourcePrefixValue += "/databases/" + databaseID
 	}
+	reqParamsHeaderValue := fmt.Sprintf("project_id=%s&database_id=%s", url.QueryEscape(projectID), url.QueryEscape(databaseID))
+
 	return &datastoreClient{
 		c: pb.NewDatastoreClient(conn),
 		md: metadata.Pairs(
 			resourcePrefixHeader, resourcePrefixValue,
+			reqParamsHeader, reqParamsHeaderValue,
 			"x-goog-api-client", fmt.Sprintf("gl-go/%s gccl/%s grpc/", version.Go(), internal.Version)),
 	}
 }
