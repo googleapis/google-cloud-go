@@ -156,7 +156,7 @@ $ gcloud auth login
 
 # Create the indexes for all the databases you want to use in the datastore integration tests. 
 # Use empty string as databaseID or skip database flag for default database.
-$ gcloud alpha datastore indexes create --database=your-databaseID-1 --project=cndb-sdk-golang-general testdata/index.yaml
+$ gcloud alpha datastore indexes create --database=your-databaseID-1 --project=$GCLOUD_TESTS_GOLANG_PROJECT_ID testdata/index.yaml
 
 # Creates a Google Cloud storage bucket with the same name as your test project,
 # and with the Cloud Logging service account as owner, for the sink
