@@ -21,11 +21,8 @@
 package adminpb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -33,6 +30,8 @@ import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -748,24 +747,19 @@ func (x *ImportEntitiesMetadata) GetInputUrl() string {
 // Example usage:
 //
 // Entire project:
-//
-//	kinds=[], namespace_ids=[]
+//   kinds=[], namespace_ids=[]
 //
 // Kinds Foo and Bar in all namespaces:
-//
-//	kinds=['Foo', 'Bar'], namespace_ids=[]
+//   kinds=['Foo', 'Bar'], namespace_ids=[]
 //
 // Kinds Foo and Bar only in the default namespace:
-//
-//	kinds=['Foo', 'Bar'], namespace_ids=['']
+//   kinds=['Foo', 'Bar'], namespace_ids=['']
 //
 // Kinds Foo and Bar in both the default and Baz namespaces:
-//
-//	kinds=['Foo', 'Bar'], namespace_ids=['', 'Baz']
+//   kinds=['Foo', 'Bar'], namespace_ids=['', 'Baz']
 //
 // The entire Baz namespace:
-//
-//	kinds=[], namespace_ids=['Baz']
+//   kinds=[], namespace_ids=['Baz']
 type EntityFilter struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
