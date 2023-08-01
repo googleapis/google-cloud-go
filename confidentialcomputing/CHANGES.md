@@ -1,5 +1,28 @@
 # Changelog
 
+
+## [1.1.0](https://github.com/googleapis/google-cloud-go/compare/confidentialcomputing/v1.0.0...confidentialcomputing/v1.1.0) (2023-07-26)
+
+
+### Features
+
+* **confidentialcomputing:** Added support for signed container image and custom audience and nonce requests ([327e101](https://github.com/googleapis/google-cloud-go/commit/327e10188a2e22dd7b7e6c12a8cf66729f65974c))
+
+## [1.0.0](https://github.com/googleapis/google-cloud-go/compare/confidentialcomputing/v0.3.1...confidentialcomputing/v1.0.0) (2023-07-24)
+
+
+### Features
+
+* **confidentialcomputing:** Promote to GA ([08ec41a](https://github.com/googleapis/google-cloud-go/commit/08ec41aba981874a7b86a9a941b07f9eb2fc6ce1))
+* **confidentialcomputing:** Promote to GA ([#8301](https://github.com/googleapis/google-cloud-go/issues/8301)) ([b2964a9](https://github.com/googleapis/google-cloud-go/commit/b2964a92d093a3d751e8b43aa70471bd989b1244))
+
+## [0.3.1](https://github.com/googleapis/google-cloud-go/compare/confidentialcomputing/v0.3.0...confidentialcomputing/v0.3.1) (2023-06-20)
+
+
+### Bug Fixes
+
+* **confidentialcomputing:** REST query UpdateMask bug ([df52820](https://github.com/googleapis/google-cloud-go/commit/df52820b0e7721954809a8aa8700b93c5662dc9b))
+
 ## [0.3.0](https://github.com/googleapis/google-cloud-go/compare/confidentialcomputing/v0.2.1...confidentialcomputing/v0.3.0) (2023-05-30)
 
 

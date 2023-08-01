@@ -1,5 +1,20 @@
 # Changes
 
+## [1.8.2](https://github.com/googleapis/google-cloud-go/compare/translate/v1.8.1...translate/v1.8.2) (2023-07-31)
+
+
+### Documentation
+
+* **translate:** Minor formatting ([#8341](https://github.com/googleapis/google-cloud-go/issues/8341)) ([95178ca](https://github.com/googleapis/google-cloud-go/commit/95178ca078eaff56fc6eab52e11e28386c822aa0))
+* **translate:** Minor formatting ([#8344](https://github.com/googleapis/google-cloud-go/issues/8344)) ([b890425](https://github.com/googleapis/google-cloud-go/commit/b8904253a0f8424ea4548469e5feef321bd7396a))
+
+## [1.8.1](https://github.com/googleapis/google-cloud-go/compare/translate/v1.8.0...translate/v1.8.1) (2023-06-20)
+
+
+### Bug Fixes
+
+* **translate:** REST query UpdateMask bug ([df52820](https://github.com/googleapis/google-cloud-go/commit/df52820b0e7721954809a8aa8700b93c5662dc9b))
+
 ## [1.8.0](https://github.com/googleapis/google-cloud-go/compare/translate/v1.7.1...translate/v1.8.0) (2023-05-30)
 
 

@@ -1,6 +1,27 @@
 # Changelog
 
 
+## [1.4.0](https://github.com/googleapis/google-cloud-go/compare/alloydb/v1.3.0...alloydb/v1.4.0) (2023-07-31)
+
+
+### Features
+
+* **alloydb:** Generate connector types ([#8357](https://github.com/googleapis/google-cloud-go/issues/8357)) ([f777e68](https://github.com/googleapis/google-cloud-go/commit/f777e6884b7ac63a0dafef56b5d9f8ae923fe073))
+
+## [1.3.0](https://github.com/googleapis/google-cloud-go/compare/alloydb/v1.2.1...alloydb/v1.3.0) (2023-07-18)
+
+
+### Features
+
+* **alloydb:** Add metadata exchange support for AlloyDB connectors ([#8255](https://github.com/googleapis/google-cloud-go/issues/8255)) ([22a908b](https://github.com/googleapis/google-cloud-go/commit/22a908b0bd26f131c6033ec3fc48eaa2d2cd0c0e))
+
+## [1.2.1](https://github.com/googleapis/google-cloud-go/compare/alloydb/v1.2.0...alloydb/v1.2.1) (2023-06-20)
+
+
+### Bug Fixes
+
+* **alloydb:** REST query UpdateMask bug ([df52820](https://github.com/googleapis/google-cloud-go/commit/df52820b0e7721954809a8aa8700b93c5662dc9b))
+
 ## [1.2.0](https://github.com/googleapis/google-cloud-go/compare/alloydb-v1.1.0...alloydb/v1.2.0) (2023-06-13)
 
 

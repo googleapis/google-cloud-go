@@ -1,5 +1,19 @@
 # Changes
 
+## [1.10.0](https://github.com/googleapis/google-cloud-go/compare/contactcenterinsights/v1.9.1...contactcenterinsights/v1.10.0) (2023-07-10)
+
+
+### Features
+
+* **contactcenterinsights:** Support topic model type V2 ([8ff13bf](https://github.com/googleapis/google-cloud-go/commit/8ff13bf87397ad524019268c1146e44f3c1cd0e6))
+
+## [1.9.1](https://github.com/googleapis/google-cloud-go/compare/contactcenterinsights/v1.9.0...contactcenterinsights/v1.9.1) (2023-06-20)
+
+
+### Bug Fixes
+
+* **contactcenterinsights:** REST query UpdateMask bug ([df52820](https://github.com/googleapis/google-cloud-go/commit/df52820b0e7721954809a8aa8700b93c5662dc9b))
+
 ## [1.9.0](https://github.com/googleapis/google-cloud-go/compare/contactcenterinsights/v1.8.0...contactcenterinsights/v1.9.0) (2023-06-07)
 
 

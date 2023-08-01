@@ -173,11 +173,17 @@ func (b *BucketHandle) Update(ctx context.Context, uattrs BucketAttrsToUpdate) (
 // [Overview of access control]: https://cloud.google.com/storage/docs/accesscontrol#signed_urls_query_string_authentication
 // [automatic detection of credentials]: https://pkg.go.dev/cloud.google.com/go/storage#hdr-Credential_requirements_for_signing
 func (b *BucketHandle) SignedURL(object string, opts *SignedURLOptions) (string, error) {
-	if opts.GoogleAccessID != "" && (opts.SignBytes != nil || len(opts.PrivateKey) > 0) {
-		return SignedURL(b.name, object, opts)
-	}
 	// Make a copy of opts so we don't modify the pointer parameter.
 	newopts := opts.clone()
+
+	if newopts.Hostname == "" {
+		// Extract the correct host from the readhost set on the client
+		newopts.Hostname = b.c.xmlHost
+	}
+
+	if opts.GoogleAccessID != "" && (opts.SignBytes != nil || len(opts.PrivateKey) > 0) {
+		return SignedURL(b.name, object, newopts)
+	}
 
 	if newopts.GoogleAccessID == "" {
 		id, err := b.detectDefaultGoogleAccessID()
@@ -215,11 +221,17 @@ func (b *BucketHandle) SignedURL(object string, opts *SignedURLOptions) (string,
 //
 // [automatic detection of credentials]: https://pkg.go.dev/cloud.google.com/go/storage#hdr-Credential_requirements_for_signing
 func (b *BucketHandle) GenerateSignedPostPolicyV4(object string, opts *PostPolicyV4Options) (*PostPolicyV4, error) {
-	if opts.GoogleAccessID != "" && (opts.SignRawBytes != nil || opts.SignBytes != nil || len(opts.PrivateKey) > 0) {
-		return GenerateSignedPostPolicyV4(b.name, object, opts)
-	}
 	// Make a copy of opts so we don't modify the pointer parameter.
 	newopts := opts.clone()
+
+	if newopts.Hostname == "" {
+		// Extract the correct host from the readhost set on the client
+		newopts.Hostname = b.c.xmlHost
+	}
+
+	if opts.GoogleAccessID != "" && (opts.SignRawBytes != nil || opts.SignBytes != nil || len(opts.PrivateKey) > 0) {
+		return GenerateSignedPostPolicyV4(b.name, object, newopts)
+	}
 
 	if newopts.GoogleAccessID == "" {
 		id, err := b.detectDefaultGoogleAccessID()
@@ -1546,7 +1558,6 @@ func toProtoLifecycle(l Lifecycle) *storagepb.Bucket_Lifecycle {
 				// doc states "format: int32"), so the client types used int64,
 				// but the proto uses int32 so we have a potentially lossy
 				// conversion.
-				AgeDays:                 proto.Int32(int32(r.Condition.AgeInDays)),
 				DaysSinceCustomTime:     proto.Int32(int32(r.Condition.DaysSinceCustomTime)),
 				DaysSinceNoncurrentTime: proto.Int32(int32(r.Condition.DaysSinceNoncurrentTime)),
 				MatchesPrefix:           r.Condition.MatchesPrefix,
@@ -1556,7 +1567,11 @@ func toProtoLifecycle(l Lifecycle) *storagepb.Bucket_Lifecycle {
 			},
 		}
 
-		// TODO(#6205): This may not be needed for gRPC
+		// Only set AgeDays in the proto if it is non-zero, or if the user has set
+		// Condition.AllObjects.
+		if r.Condition.AgeInDays != 0 {
+			rr.Condition.AgeDays = proto.Int32(int32(r.Condition.AgeInDays))
+		}
 		if r.Condition.AllObjects {
 			rr.Condition.AgeDays = proto.Int32(0)
 		}
@@ -1655,8 +1670,8 @@ func toLifecycleFromProto(rl *storagepb.Bucket_Lifecycle) Lifecycle {
 			},
 		}
 
-		// TODO(#6205): This may not be needed for gRPC
-		if rr.GetCondition().GetAgeDays() == 0 {
+		// Only set Condition.AllObjects if AgeDays is zero, not if it is nil.
+		if rr.GetCondition().AgeDays != nil && rr.GetCondition().GetAgeDays() == 0 {
 			r.Condition.AllObjects = true
 		}
 

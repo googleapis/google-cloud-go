@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"math"
 	"net/http"
 	"net/url"
@@ -35,6 +35,7 @@ import (
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
+	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -54,6 +55,7 @@ type CallOptions struct {
 	PurgeQueue         []gax.CallOption
 	PauseQueue         []gax.CallOption
 	ResumeQueue        []gax.CallOption
+	UploadQueueYaml    []gax.CallOption
 	GetIamPolicy       []gax.CallOption
 	SetIamPolicy       []gax.CallOption
 	TestIamPermissions []gax.CallOption
@@ -66,6 +68,9 @@ type CallOptions struct {
 	RenewLease         []gax.CallOption
 	CancelLease        []gax.CallOption
 	RunTask            []gax.CallOption
+	BufferTask         []gax.CallOption
+	GetLocation        []gax.CallOption
+	ListLocations      []gax.CallOption
 }
 
 func defaultGRPCClientOptions() []option.ClientOption {
@@ -136,6 +141,9 @@ func defaultCallOptions() *CallOptions {
 		ResumeQueue: []gax.CallOption{
 			gax.WithTimeout(20000 * time.Millisecond),
 		},
+		UploadQueueYaml: []gax.CallOption{
+			gax.WithTimeout(20000 * time.Millisecond),
+		},
 		GetIamPolicy: []gax.CallOption{
 			gax.WithTimeout(20000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -222,6 +230,11 @@ func defaultCallOptions() *CallOptions {
 		RunTask: []gax.CallOption{
 			gax.WithTimeout(20000 * time.Millisecond),
 		},
+		BufferTask: []gax.CallOption{
+			gax.WithTimeout(20000 * time.Millisecond),
+		},
+		GetLocation:   []gax.CallOption{},
+		ListLocations: []gax.CallOption{},
 	}
 }
 
@@ -278,6 +291,9 @@ func defaultRESTCallOptions() *CallOptions {
 		ResumeQueue: []gax.CallOption{
 			gax.WithTimeout(20000 * time.Millisecond),
 		},
+		UploadQueueYaml: []gax.CallOption{
+			gax.WithTimeout(20000 * time.Millisecond),
+		},
 		GetIamPolicy: []gax.CallOption{
 			gax.WithTimeout(20000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -359,6 +375,11 @@ func defaultRESTCallOptions() *CallOptions {
 		RunTask: []gax.CallOption{
 			gax.WithTimeout(20000 * time.Millisecond),
 		},
+		BufferTask: []gax.CallOption{
+			gax.WithTimeout(20000 * time.Millisecond),
+		},
+		GetLocation:   []gax.CallOption{},
+		ListLocations: []gax.CallOption{},
 	}
 }
 
@@ -375,6 +396,7 @@ type internalClient interface {
 	PurgeQueue(context.Context, *cloudtaskspb.PurgeQueueRequest, ...gax.CallOption) (*cloudtaskspb.Queue, error)
 	PauseQueue(context.Context, *cloudtaskspb.PauseQueueRequest, ...gax.CallOption) (*cloudtaskspb.Queue, error)
 	ResumeQueue(context.Context, *cloudtaskspb.ResumeQueueRequest, ...gax.CallOption) (*cloudtaskspb.Queue, error)
+	UploadQueueYaml(context.Context, *cloudtaskspb.UploadQueueYamlRequest, ...gax.CallOption) error
 	GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
 	SetIamPolicy(context.Context, *iampb.SetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
 	TestIamPermissions(context.Context, *iampb.TestIamPermissionsRequest, ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error)
@@ -387,6 +409,9 @@ type internalClient interface {
 	RenewLease(context.Context, *cloudtaskspb.RenewLeaseRequest, ...gax.CallOption) (*cloudtaskspb.Task, error)
 	CancelLease(context.Context, *cloudtaskspb.CancelLeaseRequest, ...gax.CallOption) (*cloudtaskspb.Task, error)
 	RunTask(context.Context, *cloudtaskspb.RunTaskRequest, ...gax.CallOption) (*cloudtaskspb.Task, error)
+	BufferTask(context.Context, *cloudtaskspb.BufferTaskRequest, ...gax.CallOption) (*cloudtaskspb.BufferTaskResponse, error)
+	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
+	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
 }
 
 // Client is a client for interacting with Cloud Tasks API.
@@ -528,6 +553,15 @@ func (c *Client) PauseQueue(ctx context.Context, req *cloudtaskspb.PauseQueueReq
 // Risks (at https://cloud.google.com/tasks/docs/manage-cloud-task-scaling).
 func (c *Client) ResumeQueue(ctx context.Context, req *cloudtaskspb.ResumeQueueRequest, opts ...gax.CallOption) (*cloudtaskspb.Queue, error) {
 	return c.internalClient.ResumeQueue(ctx, req, opts...)
+}
+
+// UploadQueueYaml update queue list by uploading a queue.yaml file.
+//
+// The queue.yaml file is supplied in the request body as a YAML encoded
+// string. This method was added to support gcloud clients versions before
+// 322.0.0. New clients should use CreateQueue instead of this method.
+func (c *Client) UploadQueueYaml(ctx context.Context, req *cloudtaskspb.UploadQueueYamlRequest, opts ...gax.CallOption) error {
+	return c.internalClient.UploadQueueYaml(ctx, req, opts...)
 }
 
 // GetIamPolicy gets the access control policy for a
@@ -710,6 +744,31 @@ func (c *Client) RunTask(ctx context.Context, req *cloudtaskspb.RunTaskRequest, 
 	return c.internalClient.RunTask(ctx, req, opts...)
 }
 
+// BufferTask creates and buffers a new task without the need to explicitly define a Task
+// message. The queue must have [HTTP
+// target][google.cloud.tasks.v2beta2.HttpTarget]. To create the task with a
+// custom ID, use the following format and set TASK_ID to your desired ID:
+// projects/PROJECT_ID/locations/LOCATION_ID/queues/QUEUE_ID/tasks/TASK_ID:buffer
+// To create the task with an automatically generated ID, use the following
+// format:
+// projects/PROJECT_ID/locations/LOCATION_ID/queues/QUEUE_ID/tasks:buffer.
+// Note: This feature is in its experimental stage. You must request access to
+// the API through the Cloud Tasks BufferTask Experiment Signup
+// form (at https://forms.gle/X8Zr5hiXH5tTGFqh8).
+func (c *Client) BufferTask(ctx context.Context, req *cloudtaskspb.BufferTaskRequest, opts ...gax.CallOption) (*cloudtaskspb.BufferTaskResponse, error) {
+	return c.internalClient.BufferTask(ctx, req, opts...)
+}
+
+// GetLocation gets information about a location.
+func (c *Client) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
+	return c.internalClient.GetLocation(ctx, req, opts...)
+}
+
+// ListLocations lists information about the supported locations for this service.
+func (c *Client) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
+	return c.internalClient.ListLocations(ctx, req, opts...)
+}
+
 // gRPCClient is a client for interacting with Cloud Tasks API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
@@ -722,6 +781,8 @@ type gRPCClient struct {
 
 	// The gRPC API client.
 	client cloudtaskspb.CloudTasksClient
+
+	locationsClient locationpb.LocationsClient
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
@@ -749,9 +810,10 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 	client := Client{CallOptions: defaultCallOptions()}
 
 	c := &gRPCClient{
-		connPool:    connPool,
-		client:      cloudtaskspb.NewCloudTasksClient(connPool),
-		CallOptions: &client.CallOptions,
+		connPool:        connPool,
+		client:          cloudtaskspb.NewCloudTasksClient(connPool),
+		CallOptions:     &client.CallOptions,
+		locationsClient: locationpb.NewLocationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
 
@@ -772,7 +834,7 @@ func (c *gRPCClient) Connection() *grpc.ClientConn {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -833,7 +895,7 @@ func defaultRESTClientOptions() []option.ClientOption {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *restClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -1010,6 +1072,17 @@ func (c *gRPCClient) ResumeQueue(ctx context.Context, req *cloudtaskspb.ResumeQu
 		return nil, err
 	}
 	return resp, nil
+}
+
+func (c *gRPCClient) UploadQueueYaml(ctx context.Context, req *cloudtaskspb.UploadQueueYamlRequest, opts ...gax.CallOption) error {
+	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	opts = append((*c.CallOptions).UploadQueueYaml[0:len((*c.CallOptions).UploadQueueYaml):len((*c.CallOptions).UploadQueueYaml)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = c.client.UploadQueueYaml(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	return err
 }
 
 func (c *gRPCClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
@@ -1236,6 +1309,85 @@ func (c *gRPCClient) RunTask(ctx context.Context, req *cloudtaskspb.RunTaskReque
 	return resp, nil
 }
 
+func (c *gRPCClient) BufferTask(ctx context.Context, req *cloudtaskspb.BufferTaskRequest, opts ...gax.CallOption) (*cloudtaskspb.BufferTaskResponse, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "queue", url.QueryEscape(req.GetQueue()), "task_id", url.QueryEscape(req.GetTaskId())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).BufferTask[0:len((*c.CallOptions).BufferTask):len((*c.CallOptions).BufferTask)], opts...)
+	var resp *cloudtaskspb.BufferTaskResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.BufferTask(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).GetLocation[0:len((*c.CallOptions).GetLocation):len((*c.CallOptions).GetLocation)], opts...)
+	var resp *locationpb.Location
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.locationsClient.GetLocation(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
+	it := &LocationIterator{}
+	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
+		resp := &locationpb.ListLocationsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.locationsClient.ListLocations(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetLocations(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
 // ListQueues lists queues.
 //
 // Queues are returned in lexicographical order.
@@ -1275,7 +1427,7 @@ func (c *restClient) ListQueues(ctx context.Context, req *cloudtaskspb.ListQueue
 			if err != nil {
 				return nil, "", err
 			}
-			params.Add("readMask", string(readMask))
+			params.Add("readMask", string(readMask[1:len(readMask)-1]))
 		}
 
 		baseUrl.RawQuery = params.Encode()
@@ -1302,13 +1454,13 @@ func (c *restClient) ListQueues(ctx context.Context, req *cloudtaskspb.ListQueue
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -1351,7 +1503,7 @@ func (c *restClient) GetQueue(ctx context.Context, req *cloudtaskspb.GetQueueReq
 		if err != nil {
 			return nil, err
 		}
-		params.Add("readMask", string(readMask))
+		params.Add("readMask", string(readMask[1:len(readMask)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1384,13 +1536,13 @@ func (c *restClient) GetQueue(ctx context.Context, req *cloudtaskspb.GetQueueReq
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1460,13 +1612,13 @@ func (c *restClient) CreateQueue(ctx context.Context, req *cloudtaskspb.CreateQu
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1513,7 +1665,7 @@ func (c *restClient) UpdateQueue(ctx context.Context, req *cloudtaskspb.UpdateQu
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask))
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1546,13 +1698,13 @@ func (c *restClient) UpdateQueue(ctx context.Context, req *cloudtaskspb.UpdateQu
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1667,13 +1819,13 @@ func (c *restClient) PurgeQueue(ctx context.Context, req *cloudtaskspb.PurgeQueu
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1738,13 +1890,13 @@ func (c *restClient) PauseQueue(ctx context.Context, req *cloudtaskspb.PauseQueu
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1816,13 +1968,13 @@ func (c *restClient) ResumeQueue(ctx context.Context, req *cloudtaskspb.ResumeQu
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1831,6 +1983,55 @@ func (c *restClient) ResumeQueue(ctx context.Context, req *cloudtaskspb.ResumeQu
 		return nil, e
 	}
 	return resp, nil
+}
+
+// UploadQueueYaml update queue list by uploading a queue.yaml file.
+//
+// The queue.yaml file is supplied in the request body as a YAML encoded
+// string. This method was added to support gcloud clients versions before
+// 322.0.0. New clients should use CreateQueue instead of this method.
+func (c *restClient) UploadQueueYaml(ctx context.Context, req *cloudtaskspb.UploadQueueYamlRequest, opts ...gax.CallOption) error {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return err
+	}
+	baseUrl.Path += fmt.Sprintf("")
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	params.Add("appId", fmt.Sprintf("%v", req.GetAppId()))
+	if req.GetHttpBody().GetContentType() != "" {
+		params.Add("httpBody.contentType", fmt.Sprintf("%v", req.GetHttpBody().GetContentType()))
+	}
+	if req.GetHttpBody().GetData() != nil {
+		params.Add("httpBody.data", fmt.Sprintf("%v", req.GetHttpBody().GetData()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		// Returns nil if there is no error, otherwise wraps
+		// the response code and body into a non-nil error
+		return googleapi.CheckResponse(httpRsp)
+	}, opts...)
 }
 
 // GetIamPolicy gets the access control policy for a
@@ -1888,13 +2089,13 @@ func (c *restClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRe
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1962,13 +2163,13 @@ func (c *restClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRe
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2033,13 +2234,13 @@ func (c *restClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamP
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2115,13 +2316,13 @@ func (c *restClient) ListTasks(ctx context.Context, req *cloudtaskspb.ListTasksR
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -2193,13 +2394,13 @@ func (c *restClient) GetTask(ctx context.Context, req *cloudtaskspb.GetTaskReque
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2266,13 +2467,13 @@ func (c *restClient) CreateTask(ctx context.Context, req *cloudtaskspb.CreateTas
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2396,13 +2597,13 @@ func (c *restClient) LeaseTasks(ctx context.Context, req *cloudtaskspb.LeaseTask
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2524,13 +2725,13 @@ func (c *restClient) RenewLease(ctx context.Context, req *cloudtaskspb.RenewLeas
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2593,13 +2794,13 @@ func (c *restClient) CancelLease(ctx context.Context, req *cloudtaskspb.CancelLe
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2686,13 +2887,13 @@ func (c *restClient) RunTask(ctx context.Context, req *cloudtaskspb.RunTaskReque
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2701,6 +2902,276 @@ func (c *restClient) RunTask(ctx context.Context, req *cloudtaskspb.RunTaskReque
 		return nil, e
 	}
 	return resp, nil
+}
+
+// BufferTask creates and buffers a new task without the need to explicitly define a Task
+// message. The queue must have [HTTP
+// target][google.cloud.tasks.v2beta2.HttpTarget]. To create the task with a
+// custom ID, use the following format and set TASK_ID to your desired ID:
+// projects/PROJECT_ID/locations/LOCATION_ID/queues/QUEUE_ID/tasks/TASK_ID:buffer
+// To create the task with an automatically generated ID, use the following
+// format:
+// projects/PROJECT_ID/locations/LOCATION_ID/queues/QUEUE_ID/tasks:buffer.
+// Note: This feature is in its experimental stage. You must request access to
+// the API through the Cloud Tasks BufferTask Experiment Signup
+// form (at https://forms.gle/X8Zr5hiXH5tTGFqh8).
+func (c *restClient) BufferTask(ctx context.Context, req *cloudtaskspb.BufferTaskRequest, opts ...gax.CallOption) (*cloudtaskspb.BufferTaskResponse, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v2beta2/%v/tasks/%v:buffer", req.GetQueue(), req.GetTaskId())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "queue", url.QueryEscape(req.GetQueue()), "task_id", url.QueryEscape(req.GetTaskId())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).BufferTask[0:len((*c.CallOptions).BufferTask):len((*c.CallOptions).BufferTask)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &cloudtaskspb.BufferTaskResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// GetLocation gets information about a location.
+func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v2beta2/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).GetLocation[0:len((*c.CallOptions).GetLocation):len((*c.CallOptions).GetLocation)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &locationpb.Location{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// ListLocations lists information about the supported locations for this service.
+func (c *restClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
+	it := &LocationIterator{}
+	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
+		resp := &locationpb.ListLocationsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v2beta2/%v/locations", req.GetName())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			httpRsp, err := c.httpClient.Do(httpReq)
+			if err != nil {
+				return err
+			}
+			defer httpRsp.Body.Close()
+
+			if err = googleapi.CheckResponse(httpRsp); err != nil {
+				return err
+			}
+
+			buf, err := io.ReadAll(httpRsp.Body)
+			if err != nil {
+				return err
+			}
+
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetLocations(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// LocationIterator manages a stream of *locationpb.Location.
+type LocationIterator struct {
+	items    []*locationpb.Location
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*locationpb.Location, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *LocationIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *LocationIterator) Next() (*locationpb.Location, error) {
+	var item *locationpb.Location
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *LocationIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *LocationIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
 }
 
 // QueueIterator manages a stream of *cloudtaskspb.Queue.

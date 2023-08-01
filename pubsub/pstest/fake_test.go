@@ -1530,6 +1530,7 @@ func TestStreaming_SubscriptionProperties(t *testing.T) {
 	}
 }
 
+// Test switching between the various subscription types: push to endpoint, bigquery, cloud storage, and pull.
 func TestSubscriptionPushPull(t *testing.T) {
 	ctx := context.Background()
 	pclient, sclient, _, cleanup := newFake(ctx, t)
@@ -1542,6 +1543,9 @@ func TestSubscriptionPushPull(t *testing.T) {
 	// Create a push subscription.
 	pc := &pb.PushConfig{
 		PushEndpoint: "some-endpoint",
+		Wrapper: &pb.PushConfig_PubsubWrapper_{
+			PubsubWrapper: &pb.PushConfig_PubsubWrapper{},
+		},
 	}
 	got := mustCreateSubscription(ctx, t, sclient, &pb.Subscription{
 		AckDeadlineSeconds: minAckDeadlineSecs,
@@ -1585,6 +1589,21 @@ func TestSubscriptionPushPull(t *testing.T) {
 	}
 	if got.BigqueryConfig != nil {
 		t.Errorf("sub.BigqueryConfig should be nil, got %s", got.BigqueryConfig)
+	}
+
+	// Update the subscription to write to Cloud Storage.
+	csc := &pb.CloudStorageConfig{
+		Bucket: "fake-bucket",
+	}
+	updateSub.CloudStorageConfig = csc
+	got = mustUpdateSubscription(ctx, t, sclient, &pb.UpdateSubscriptionRequest{
+		Subscription: updateSub,
+		UpdateMask:   &field_mask.FieldMask{Paths: []string{"cloud_storage_config"}},
+	})
+	want2 := csc
+	want2.State = pb.CloudStorageConfig_ACTIVE
+	if diff := testutil.Diff(got.CloudStorageConfig, want2); diff != "" {
+		t.Errorf("sub.CloudStorageConfig mismatch: %s", diff)
 	}
 }
 

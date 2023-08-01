@@ -346,7 +346,7 @@ type CreateConversationRequest struct {
 	// auto-generated one to you.
 	//
 	// The conversation ID must be compliant with the regression fomula
-	// "[a-zA-Z][a-zA-Z0-9_-]*" with the characters length in range of [3,64].
+	// `[a-zA-Z][a-zA-Z0-9_-]*` with the characters length in range of [3,64].
 	// If the field is provided, the caller is resposible for
 	// 1. the uniqueness of the ID, otherwise the request will be rejected.
 	// 2. the consistency for whether to use custom ID or not under a project to
@@ -740,7 +740,7 @@ type BatchCreateMessagesRequest struct {
 	// Format: `projects/<Project ID>/locations/<Location
 	// ID>/conversations/<Conversation ID>`.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
-	// Required. A maximum of 1000 Messages can be created in a batch.
+	// Required. A maximum of 300 messages can be created in a batch.
 	// [CreateMessageRequest.message.send_time][] is required. All created
 	// messages will have identical
 	// [Message.create_time][google.cloud.dialogflow.v2beta1.Message.create_time].
@@ -1013,7 +1013,7 @@ type SuggestConversationSummaryRequest struct {
 	// [latest_message] to use as context when compiling the
 	// suggestion. By default 500 and at most 1000.
 	ContextSize int32 `protobuf:"varint,4,opt,name=context_size,json=contextSize,proto3" json:"context_size,omitempty"`
-	// Parameters for a human assist query.
+	// Parameters for a human assist query. Only used for POC/demo purpose.
 	AssistQueryParams *AssistQueryParameters `protobuf:"bytes,5,opt,name=assist_query_params,json=assistQueryParams,proto3" json:"assist_query_params,omitempty"`
 }
 

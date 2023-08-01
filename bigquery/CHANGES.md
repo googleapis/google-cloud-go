@@ -2,6 +2,38 @@
 
 
 
+## [1.53.0](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.52.0...bigquery/v1.53.0) (2023-07-24)
+
+
+### Features
+
+* **bigquery/analyticshub:** Promote to GA ([130c571](https://github.com/googleapis/google-cloud-go/commit/130c5713dcbac7f670cb92ea113dd53d8029c960))
+* **bigquery/connection:** Add support for Salesforce connections, which are usable only by allowlisted partners ([bac978a](https://github.com/googleapis/google-cloud-go/commit/bac978ace43bb58db7c0b1475e41c8fdf8c49a29))
+* **bigquery/datapolicies:** Promote to GA ([130c571](https://github.com/googleapis/google-cloud-go/commit/130c5713dcbac7f670cb92ea113dd53d8029c960))
+* **bigquery/storage:** Add ResourceExhausted to retryable error for Write API unary calls ([#8214](https://github.com/googleapis/google-cloud-go/issues/8214)) ([8ff13bf](https://github.com/googleapis/google-cloud-go/commit/8ff13bf87397ad524019268c1146e44f3c1cd0e6))
+
+
+### Bug Fixes
+
+* **bigquery/storage/managedwriter:** Context refactoring ([#8275](https://github.com/googleapis/google-cloud-go/issues/8275)) ([c4104ea](https://github.com/googleapis/google-cloud-go/commit/c4104eaab0d7291c15aba37b78e71ce3cbb9f77a))
+
+## [1.52.0](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.51.2...bigquery/v1.52.0) (2023-06-23)
+
+
+### Features
+
+* **bigquery/storage:** Add estimated physical file sizes to ReadAPI v1 ([94ea341](https://github.com/googleapis/google-cloud-go/commit/94ea3410e233db6040a7cb0a931948f1e3bb4c9a))
+* **bigquery/storage:** Add table sampling to ReadAPI v1 ([ca94e27](https://github.com/googleapis/google-cloud-go/commit/ca94e2724f9e2610b46aefd0a3b5ddc06102e91b))
+* **bigquery:** Support for tables primary and foreign keys ([#8055](https://github.com/googleapis/google-cloud-go/issues/8055)) ([93d6a1a](https://github.com/googleapis/google-cloud-go/commit/93d6a1a1a3bde8d3519acc2b7e77bf8b7ba1678a))
+* **bigquery:** Update all direct dependencies ([b340d03](https://github.com/googleapis/google-cloud-go/commit/b340d030f2b52a4ce48846ce63984b28583abde6))
+
+
+### Bug Fixes
+
+* **bigquery/storage/managedwriter:** Correct reconnection logic ([#8164](https://github.com/googleapis/google-cloud-go/issues/8164)) ([a67d53d](https://github.com/googleapis/google-cloud-go/commit/a67d53ddf13b7d382d4c7856cafb068919021912))
+* **bigquery:** REST query UpdateMask bug ([df52820](https://github.com/googleapis/google-cloud-go/commit/df52820b0e7721954809a8aa8700b93c5662dc9b))
+* **bigquery:** RowIterator.Schema not filled when using Storage Read API ([#7671](https://github.com/googleapis/google-cloud-go/issues/7671)) ([31040e8](https://github.com/googleapis/google-cloud-go/commit/31040e8a7989b143c0c3c3f3e31c4a9dfbba8094))
+
 ## [1.51.2](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.51.1...bigquery/v1.51.2) (2023-05-08)
 
 

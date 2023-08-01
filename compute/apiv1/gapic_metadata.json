@@ -59,6 +59,11 @@
                 "List"
               ]
             },
+            "Move": {
+              "methods": [
+                "Move"
+              ]
+            },
             "SetLabels": {
               "methods": [
                 "SetLabels"
@@ -284,6 +289,11 @@
                 "AggregatedList"
               ]
             },
+            "BulkInsert": {
+              "methods": [
+                "BulkInsert"
+              ]
+            },
             "CreateSnapshot": {
               "methods": [
                 "CreateSnapshot"
@@ -332,6 +342,21 @@
             "SetLabels": {
               "methods": [
                 "SetLabels"
+              ]
+            },
+            "StartAsyncReplication": {
+              "methods": [
+                "StartAsyncReplication"
+              ]
+            },
+            "StopAsyncReplication": {
+              "methods": [
+                "StopAsyncReplication"
+              ]
+            },
+            "StopGroupAsyncReplication": {
+              "methods": [
+                "StopGroupAsyncReplication"
               ]
             },
             "TestIamPermissions": {
@@ -597,6 +622,11 @@
             "List": {
               "methods": [
                 "List"
+              ]
+            },
+            "Move": {
+              "methods": [
+                "Move"
               ]
             },
             "SetLabels": {
@@ -1409,6 +1439,25 @@
       "clients": {
         "rest": {
           "libraryClient": "InterconnectLocationsClient",
+          "rpcs": {
+            "Get": {
+              "methods": [
+                "Get"
+              ]
+            },
+            "List": {
+              "methods": [
+                "List"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "InterconnectRemoteLocations": {
+      "clients": {
+        "rest": {
+          "libraryClient": "InterconnectRemoteLocationsClient",
           "rpcs": {
             "Get": {
               "methods": [
@@ -2388,6 +2437,11 @@
                 "AddResourcePolicies"
               ]
             },
+            "BulkInsert": {
+              "methods": [
+                "BulkInsert"
+              ]
+            },
             "CreateSnapshot": {
               "methods": [
                 "CreateSnapshot"
@@ -2436,6 +2490,21 @@
             "SetLabels": {
               "methods": [
                 "SetLabels"
+              ]
+            },
+            "StartAsyncReplication": {
+              "methods": [
+                "StartAsyncReplication"
+              ]
+            },
+            "StopAsyncReplication": {
+              "methods": [
+                "StopAsyncReplication"
+              ]
+            },
+            "StopGroupAsyncReplication": {
+              "methods": [
+                "StopGroupAsyncReplication"
               ]
             },
             "TestIamPermissions": {
@@ -3246,6 +3315,11 @@
             "List": {
               "methods": [
                 "List"
+              ]
+            },
+            "Patch": {
+              "methods": [
+                "Patch"
               ]
             },
             "SetIamPolicy": {

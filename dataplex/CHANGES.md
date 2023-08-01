@@ -1,6 +1,20 @@
 # Changes
 
 
+## [1.9.0](https://github.com/googleapis/google-cloud-go/compare/dataplex/v1.8.1...dataplex/v1.9.0) (2023-07-26)
+
+
+### Features
+
+* **dataplex:** New service DataTaxonomyService and related messages ([#8320](https://github.com/googleapis/google-cloud-go/issues/8320)) ([cdee2d9](https://github.com/googleapis/google-cloud-go/commit/cdee2d918015c9b0a53aa8283085214d9a11c77c))
+
+## [1.8.1](https://github.com/googleapis/google-cloud-go/compare/dataplex/v1.8.0...dataplex/v1.8.1) (2023-06-20)
+
+
+### Bug Fixes
+
+* **dataplex:** REST query UpdateMask bug ([df52820](https://github.com/googleapis/google-cloud-go/commit/df52820b0e7721954809a8aa8700b93c5662dc9b))
+
 ## [1.8.0](https://github.com/googleapis/google-cloud-go/compare/dataplex/v1.7.1...dataplex/v1.8.0) (2023-05-30)
 
 

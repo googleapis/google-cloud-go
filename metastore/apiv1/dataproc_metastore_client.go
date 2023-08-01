@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"math"
 	"net/http"
 	"net/url"
@@ -50,30 +50,33 @@ var newDataprocMetastoreClientHook clientHook
 
 // DataprocMetastoreCallOptions contains the retry settings for each method of DataprocMetastoreClient.
 type DataprocMetastoreCallOptions struct {
-	ListServices         []gax.CallOption
-	GetService           []gax.CallOption
-	CreateService        []gax.CallOption
-	UpdateService        []gax.CallOption
-	DeleteService        []gax.CallOption
-	ListMetadataImports  []gax.CallOption
-	GetMetadataImport    []gax.CallOption
-	CreateMetadataImport []gax.CallOption
-	UpdateMetadataImport []gax.CallOption
-	ExportMetadata       []gax.CallOption
-	RestoreService       []gax.CallOption
-	ListBackups          []gax.CallOption
-	GetBackup            []gax.CallOption
-	CreateBackup         []gax.CallOption
-	DeleteBackup         []gax.CallOption
-	GetLocation          []gax.CallOption
-	ListLocations        []gax.CallOption
-	GetIamPolicy         []gax.CallOption
-	SetIamPolicy         []gax.CallOption
-	TestIamPermissions   []gax.CallOption
-	CancelOperation      []gax.CallOption
-	DeleteOperation      []gax.CallOption
-	GetOperation         []gax.CallOption
-	ListOperations       []gax.CallOption
+	ListServices                  []gax.CallOption
+	GetService                    []gax.CallOption
+	CreateService                 []gax.CallOption
+	UpdateService                 []gax.CallOption
+	DeleteService                 []gax.CallOption
+	ListMetadataImports           []gax.CallOption
+	GetMetadataImport             []gax.CallOption
+	CreateMetadataImport          []gax.CallOption
+	UpdateMetadataImport          []gax.CallOption
+	ExportMetadata                []gax.CallOption
+	RestoreService                []gax.CallOption
+	ListBackups                   []gax.CallOption
+	GetBackup                     []gax.CallOption
+	CreateBackup                  []gax.CallOption
+	DeleteBackup                  []gax.CallOption
+	QueryMetadata                 []gax.CallOption
+	MoveTableToDatabase           []gax.CallOption
+	AlterMetadataResourceLocation []gax.CallOption
+	GetLocation                   []gax.CallOption
+	ListLocations                 []gax.CallOption
+	GetIamPolicy                  []gax.CallOption
+	SetIamPolicy                  []gax.CallOption
+	TestIamPermissions            []gax.CallOption
+	CancelOperation               []gax.CallOption
+	DeleteOperation               []gax.CallOption
+	GetOperation                  []gax.CallOption
+	ListOperations                []gax.CallOption
 }
 
 func defaultDataprocMetastoreGRPCClientOptions() []option.ClientOption {
@@ -189,6 +192,42 @@ func defaultDataprocMetastoreCallOptions() *DataprocMetastoreCallOptions {
 		DeleteBackup: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
+		QueryMetadata: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		MoveTableToDatabase: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		AlterMetadataResourceLocation: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 		GetLocation:        []gax.CallOption{},
 		ListLocations:      []gax.CallOption{},
 		GetIamPolicy:       []gax.CallOption{},
@@ -296,6 +335,39 @@ func defaultDataprocMetastoreRESTCallOptions() *DataprocMetastoreCallOptions {
 		DeleteBackup: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
+		QueryMetadata: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		MoveTableToDatabase: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		AlterMetadataResourceLocation: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
 		GetLocation:        []gax.CallOption{},
 		ListLocations:      []gax.CallOption{},
 		GetIamPolicy:       []gax.CallOption{},
@@ -337,6 +409,12 @@ type internalDataprocMetastoreClient interface {
 	CreateBackupOperation(name string) *CreateBackupOperation
 	DeleteBackup(context.Context, *metastorepb.DeleteBackupRequest, ...gax.CallOption) (*DeleteBackupOperation, error)
 	DeleteBackupOperation(name string) *DeleteBackupOperation
+	QueryMetadata(context.Context, *metastorepb.QueryMetadataRequest, ...gax.CallOption) (*QueryMetadataOperation, error)
+	QueryMetadataOperation(name string) *QueryMetadataOperation
+	MoveTableToDatabase(context.Context, *metastorepb.MoveTableToDatabaseRequest, ...gax.CallOption) (*MoveTableToDatabaseOperation, error)
+	MoveTableToDatabaseOperation(name string) *MoveTableToDatabaseOperation
+	AlterMetadataResourceLocation(context.Context, *metastorepb.AlterMetadataResourceLocationRequest, ...gax.CallOption) (*AlterMetadataResourceLocationOperation, error)
+	AlterMetadataResourceLocationOperation(name string) *AlterMetadataResourceLocationOperation
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
 	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
 	GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
@@ -537,6 +615,42 @@ func (c *DataprocMetastoreClient) DeleteBackupOperation(name string) *DeleteBack
 	return c.internalClient.DeleteBackupOperation(name)
 }
 
+// QueryMetadata query DPMS metadata.
+func (c *DataprocMetastoreClient) QueryMetadata(ctx context.Context, req *metastorepb.QueryMetadataRequest, opts ...gax.CallOption) (*QueryMetadataOperation, error) {
+	return c.internalClient.QueryMetadata(ctx, req, opts...)
+}
+
+// QueryMetadataOperation returns a new QueryMetadataOperation from a given name.
+// The name must be that of a previously created QueryMetadataOperation, possibly from a different process.
+func (c *DataprocMetastoreClient) QueryMetadataOperation(name string) *QueryMetadataOperation {
+	return c.internalClient.QueryMetadataOperation(name)
+}
+
+// MoveTableToDatabase move a table to another database.
+func (c *DataprocMetastoreClient) MoveTableToDatabase(ctx context.Context, req *metastorepb.MoveTableToDatabaseRequest, opts ...gax.CallOption) (*MoveTableToDatabaseOperation, error) {
+	return c.internalClient.MoveTableToDatabase(ctx, req, opts...)
+}
+
+// MoveTableToDatabaseOperation returns a new MoveTableToDatabaseOperation from a given name.
+// The name must be that of a previously created MoveTableToDatabaseOperation, possibly from a different process.
+func (c *DataprocMetastoreClient) MoveTableToDatabaseOperation(name string) *MoveTableToDatabaseOperation {
+	return c.internalClient.MoveTableToDatabaseOperation(name)
+}
+
+// AlterMetadataResourceLocation alter metadata resource location. The metadata resource can be a database,
+// table, or partition. This functionality only updates the parent directory
+// for the respective metadata resource and does not transfer any existing
+// data to the new location.
+func (c *DataprocMetastoreClient) AlterMetadataResourceLocation(ctx context.Context, req *metastorepb.AlterMetadataResourceLocationRequest, opts ...gax.CallOption) (*AlterMetadataResourceLocationOperation, error) {
+	return c.internalClient.AlterMetadataResourceLocation(ctx, req, opts...)
+}
+
+// AlterMetadataResourceLocationOperation returns a new AlterMetadataResourceLocationOperation from a given name.
+// The name must be that of a previously created AlterMetadataResourceLocationOperation, possibly from a different process.
+func (c *DataprocMetastoreClient) AlterMetadataResourceLocationOperation(name string) *AlterMetadataResourceLocationOperation {
+	return c.internalClient.AlterMetadataResourceLocationOperation(name)
+}
+
 // GetLocation gets information about a location.
 func (c *DataprocMetastoreClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	return c.internalClient.GetLocation(ctx, req, opts...)
@@ -698,7 +812,7 @@ func (c *dataprocMetastoreGRPCClient) Connection() *grpc.ClientConn {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *dataprocMetastoreGRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -792,7 +906,7 @@ func defaultDataprocMetastoreRESTClientOptions() []option.ClientOption {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *dataprocMetastoreRESTClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -1168,6 +1282,63 @@ func (c *dataprocMetastoreGRPCClient) DeleteBackup(ctx context.Context, req *met
 	}, nil
 }
 
+func (c *dataprocMetastoreGRPCClient) QueryMetadata(ctx context.Context, req *metastorepb.QueryMetadataRequest, opts ...gax.CallOption) (*QueryMetadataOperation, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "service", url.QueryEscape(req.GetService())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).QueryMetadata[0:len((*c.CallOptions).QueryMetadata):len((*c.CallOptions).QueryMetadata)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.dataprocMetastoreClient.QueryMetadata(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &QueryMetadataOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *dataprocMetastoreGRPCClient) MoveTableToDatabase(ctx context.Context, req *metastorepb.MoveTableToDatabaseRequest, opts ...gax.CallOption) (*MoveTableToDatabaseOperation, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "service", url.QueryEscape(req.GetService())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).MoveTableToDatabase[0:len((*c.CallOptions).MoveTableToDatabase):len((*c.CallOptions).MoveTableToDatabase)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.dataprocMetastoreClient.MoveTableToDatabase(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &MoveTableToDatabaseOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *dataprocMetastoreGRPCClient) AlterMetadataResourceLocation(ctx context.Context, req *metastorepb.AlterMetadataResourceLocationRequest, opts ...gax.CallOption) (*AlterMetadataResourceLocationOperation, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "service", url.QueryEscape(req.GetService())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).AlterMetadataResourceLocation[0:len((*c.CallOptions).AlterMetadataResourceLocation):len((*c.CallOptions).AlterMetadataResourceLocation)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.dataprocMetastoreClient.AlterMetadataResourceLocation(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &AlterMetadataResourceLocationOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
 func (c *dataprocMetastoreGRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
@@ -1429,13 +1600,13 @@ func (c *dataprocMetastoreRESTClient) ListServices(ctx context.Context, req *met
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -1504,13 +1675,13 @@ func (c *dataprocMetastoreRESTClient) GetService(ctx context.Context, req *metas
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1572,13 +1743,13 @@ func (c *dataprocMetastoreRESTClient) CreateService(ctx context.Context, req *me
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1619,7 +1790,7 @@ func (c *dataprocMetastoreRESTClient) UpdateService(ctx context.Context, req *me
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask))
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1651,13 +1822,13 @@ func (c *dataprocMetastoreRESTClient) UpdateService(ctx context.Context, req *me
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1716,13 +1887,13 @@ func (c *dataprocMetastoreRESTClient) DeleteService(ctx context.Context, req *me
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1798,13 +1969,13 @@ func (c *dataprocMetastoreRESTClient) ListMetadataImports(ctx context.Context, r
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -1873,13 +2044,13 @@ func (c *dataprocMetastoreRESTClient) GetMetadataImport(ctx context.Context, req
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1941,13 +2112,13 @@ func (c *dataprocMetastoreRESTClient) CreateMetadataImport(ctx context.Context, 
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1989,7 +2160,7 @@ func (c *dataprocMetastoreRESTClient) UpdateMetadataImport(ctx context.Context, 
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask))
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -2021,13 +2192,13 @@ func (c *dataprocMetastoreRESTClient) UpdateMetadataImport(ctx context.Context, 
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2089,13 +2260,13 @@ func (c *dataprocMetastoreRESTClient) ExportMetadata(ctx context.Context, req *m
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2157,13 +2328,13 @@ func (c *dataprocMetastoreRESTClient) RestoreService(ctx context.Context, req *m
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2239,13 +2410,13 @@ func (c *dataprocMetastoreRESTClient) ListBackups(ctx context.Context, req *meta
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -2314,13 +2485,13 @@ func (c *dataprocMetastoreRESTClient) GetBackup(ctx context.Context, req *metast
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2382,13 +2553,13 @@ func (c *dataprocMetastoreRESTClient) CreateBackup(ctx context.Context, req *met
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2447,13 +2618,13 @@ func (c *dataprocMetastoreRESTClient) DeleteBackup(ctx context.Context, req *met
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2464,6 +2635,213 @@ func (c *dataprocMetastoreRESTClient) DeleteBackup(ctx context.Context, req *met
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
 	return &DeleteBackupOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// QueryMetadata query DPMS metadata.
+func (c *dataprocMetastoreRESTClient) QueryMetadata(ctx context.Context, req *metastorepb.QueryMetadataRequest, opts ...gax.CallOption) (*QueryMetadataOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:queryMetadata", req.GetService())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "service", url.QueryEscape(req.GetService())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &QueryMetadataOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// MoveTableToDatabase move a table to another database.
+func (c *dataprocMetastoreRESTClient) MoveTableToDatabase(ctx context.Context, req *metastorepb.MoveTableToDatabaseRequest, opts ...gax.CallOption) (*MoveTableToDatabaseOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:moveTableToDatabase", req.GetService())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "service", url.QueryEscape(req.GetService())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &MoveTableToDatabaseOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// AlterMetadataResourceLocation alter metadata resource location. The metadata resource can be a database,
+// table, or partition. This functionality only updates the parent directory
+// for the respective metadata resource and does not transfer any existing
+// data to the new location.
+func (c *dataprocMetastoreRESTClient) AlterMetadataResourceLocation(ctx context.Context, req *metastorepb.AlterMetadataResourceLocationRequest, opts ...gax.CallOption) (*AlterMetadataResourceLocationOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:alterLocation", req.GetService())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "service", url.QueryEscape(req.GetService())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &AlterMetadataResourceLocationOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
@@ -2510,13 +2888,13 @@ func (c *dataprocMetastoreRESTClient) GetLocation(ctx context.Context, req *loca
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2584,13 +2962,13 @@ func (c *dataprocMetastoreRESTClient) ListLocations(ctx context.Context, req *lo
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -2663,13 +3041,13 @@ func (c *dataprocMetastoreRESTClient) GetIamPolicy(ctx context.Context, req *iam
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2731,13 +3109,13 @@ func (c *dataprocMetastoreRESTClient) SetIamPolicy(ctx context.Context, req *iam
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2801,13 +3179,13 @@ func (c *dataprocMetastoreRESTClient) TestIamPermissions(ctx context.Context, re
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2945,13 +3323,13 @@ func (c *dataprocMetastoreRESTClient) GetOperation(ctx context.Context, req *lon
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -3019,13 +3397,13 @@ func (c *dataprocMetastoreRESTClient) ListOperations(ctx context.Context, req *l
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -3051,6 +3429,88 @@ func (c *dataprocMetastoreRESTClient) ListOperations(ctx context.Context, req *l
 	it.pageInfo.Token = req.GetPageToken()
 
 	return it
+}
+
+// AlterMetadataResourceLocationOperation manages a long-running operation from AlterMetadataResourceLocation.
+type AlterMetadataResourceLocationOperation struct {
+	lro      *longrunning.Operation
+	pollPath string
+}
+
+// AlterMetadataResourceLocationOperation returns a new AlterMetadataResourceLocationOperation from a given name.
+// The name must be that of a previously created AlterMetadataResourceLocationOperation, possibly from a different process.
+func (c *dataprocMetastoreGRPCClient) AlterMetadataResourceLocationOperation(name string) *AlterMetadataResourceLocationOperation {
+	return &AlterMetadataResourceLocationOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// AlterMetadataResourceLocationOperation returns a new AlterMetadataResourceLocationOperation from a given name.
+// The name must be that of a previously created AlterMetadataResourceLocationOperation, possibly from a different process.
+func (c *dataprocMetastoreRESTClient) AlterMetadataResourceLocationOperation(name string) *AlterMetadataResourceLocationOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &AlterMetadataResourceLocationOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *AlterMetadataResourceLocationOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*metastorepb.AlterMetadataResourceLocationResponse, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp metastorepb.AlterMetadataResourceLocationResponse
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *AlterMetadataResourceLocationOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*metastorepb.AlterMetadataResourceLocationResponse, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp metastorepb.AlterMetadataResourceLocationResponse
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *AlterMetadataResourceLocationOperation) Metadata() (*metastorepb.OperationMetadata, error) {
+	var meta metastorepb.OperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *AlterMetadataResourceLocationOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *AlterMetadataResourceLocationOperation) Name() string {
+	return op.lro.Name()
 }
 
 // CreateBackupOperation manages a long-running operation from CreateBackup.
@@ -3520,6 +3980,170 @@ func (op *ExportMetadataOperation) Done() bool {
 // Name returns the name of the long-running operation.
 // The name is assigned by the server and is unique within the service from which the operation is created.
 func (op *ExportMetadataOperation) Name() string {
+	return op.lro.Name()
+}
+
+// MoveTableToDatabaseOperation manages a long-running operation from MoveTableToDatabase.
+type MoveTableToDatabaseOperation struct {
+	lro      *longrunning.Operation
+	pollPath string
+}
+
+// MoveTableToDatabaseOperation returns a new MoveTableToDatabaseOperation from a given name.
+// The name must be that of a previously created MoveTableToDatabaseOperation, possibly from a different process.
+func (c *dataprocMetastoreGRPCClient) MoveTableToDatabaseOperation(name string) *MoveTableToDatabaseOperation {
+	return &MoveTableToDatabaseOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// MoveTableToDatabaseOperation returns a new MoveTableToDatabaseOperation from a given name.
+// The name must be that of a previously created MoveTableToDatabaseOperation, possibly from a different process.
+func (c *dataprocMetastoreRESTClient) MoveTableToDatabaseOperation(name string) *MoveTableToDatabaseOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &MoveTableToDatabaseOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *MoveTableToDatabaseOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*metastorepb.MoveTableToDatabaseResponse, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp metastorepb.MoveTableToDatabaseResponse
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *MoveTableToDatabaseOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*metastorepb.MoveTableToDatabaseResponse, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp metastorepb.MoveTableToDatabaseResponse
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *MoveTableToDatabaseOperation) Metadata() (*metastorepb.OperationMetadata, error) {
+	var meta metastorepb.OperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *MoveTableToDatabaseOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *MoveTableToDatabaseOperation) Name() string {
+	return op.lro.Name()
+}
+
+// QueryMetadataOperation manages a long-running operation from QueryMetadata.
+type QueryMetadataOperation struct {
+	lro      *longrunning.Operation
+	pollPath string
+}
+
+// QueryMetadataOperation returns a new QueryMetadataOperation from a given name.
+// The name must be that of a previously created QueryMetadataOperation, possibly from a different process.
+func (c *dataprocMetastoreGRPCClient) QueryMetadataOperation(name string) *QueryMetadataOperation {
+	return &QueryMetadataOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// QueryMetadataOperation returns a new QueryMetadataOperation from a given name.
+// The name must be that of a previously created QueryMetadataOperation, possibly from a different process.
+func (c *dataprocMetastoreRESTClient) QueryMetadataOperation(name string) *QueryMetadataOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &QueryMetadataOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *QueryMetadataOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*metastorepb.QueryMetadataResponse, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp metastorepb.QueryMetadataResponse
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *QueryMetadataOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*metastorepb.QueryMetadataResponse, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp metastorepb.QueryMetadataResponse
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *QueryMetadataOperation) Metadata() (*metastorepb.OperationMetadata, error) {
+	var meta metastorepb.OperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *QueryMetadataOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *QueryMetadataOperation) Name() string {
 	return op.lro.Name()
 }
 

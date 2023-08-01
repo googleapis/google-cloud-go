@@ -1,5 +1,26 @@
 # Changes
 
+## [1.12.0](https://github.com/googleapis/google-cloud-go/compare/firestore/v1.11.0...firestore/v1.12.0) (2023-08-01)
+
+
+### Features
+
+* **firestore:** Publish proto definitions for SUM/AVG in Firestore ([e3f8c89](https://github.com/googleapis/google-cloud-go/commit/e3f8c89429a207c05fee36d5d93efe76f9e29efe))
+
+## [1.11.0](https://github.com/googleapis/google-cloud-go/compare/firestore/v1.10.0...firestore/v1.11.0) (2023-06-26)
+
+
+### Features
+
+* **firestore:** Update all direct dependencies ([b340d03](https://github.com/googleapis/google-cloud-go/commit/b340d030f2b52a4ce48846ce63984b28583abde6))
+
+
+### Bug Fixes
+
+* **firestore:** Cleanup integration test resources ([#8057](https://github.com/googleapis/google-cloud-go/issues/8057)) ([210584d](https://github.com/googleapis/google-cloud-go/commit/210584df494e9627dd13c24138fcbebe85048647))
+* **firestore:** Do not trace iterator.Done error ([#8082](https://github.com/googleapis/google-cloud-go/issues/8082)) ([5f24d17](https://github.com/googleapis/google-cloud-go/commit/5f24d173db35358d241de186953cd094dae312c9)), refs [#7711](https://github.com/googleapis/google-cloud-go/issues/7711)
+* **firestore:** REST query UpdateMask bug ([df52820](https://github.com/googleapis/google-cloud-go/commit/df52820b0e7721954809a8aa8700b93c5662dc9b))
+
 ## [1.10.0](https://github.com/googleapis/google-cloud-go/compare/firestore/v1.9.0...firestore/v1.10.0) (2023-05-22)
 
 

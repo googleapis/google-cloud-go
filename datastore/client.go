@@ -42,11 +42,15 @@ type datastoreClient struct {
 	md metadata.MD
 }
 
-func newDatastoreClient(conn grpc.ClientConnInterface, projectID string) pb.DatastoreClient {
+func newDatastoreClient(conn grpc.ClientConnInterface, projectID, databaseID string) pb.DatastoreClient {
+	resourcePrefixValue := "projects/" + projectID
+	if databaseID != "" {
+		resourcePrefixValue += "/databases/" + databaseID
+	}
 	return &datastoreClient{
 		c: pb.NewDatastoreClient(conn),
 		md: metadata.Pairs(
-			resourcePrefixHeader, "projects/"+projectID,
+			resourcePrefixHeader, resourcePrefixValue,
 			"x-goog-api-client", fmt.Sprintf("gl-go/%s gccl/%s grpc/", version.Go(), internal.Version)),
 	}
 }
@@ -68,6 +72,17 @@ func (dc *datastoreClient) RunQuery(ctx context.Context, in *pb.RunQueryRequest,
 
 	err = dc.invoke(ctx, func(ctx context.Context) error {
 		res, err = dc.c.RunQuery(ctx, in, opts...)
+		return err
+	})
+	return res, err
+}
+
+func (dc *datastoreClient) RunAggregationQuery(ctx context.Context, in *pb.RunAggregationQueryRequest, opts ...grpc.CallOption) (res *pb.RunAggregationQueryResponse, err error) {
+	ctx = trace.StartSpan(ctx, "cloud.google.com/go/datastore.datastoreClient.RunAggregationQuery")
+	defer func() { trace.EndSpan(ctx, err) }()
+
+	err = dc.invoke(ctx, func(ctx context.Context) error {
+		res, err = dc.c.RunAggregationQuery(ctx, in, opts...)
 		return err
 	})
 	return res, err

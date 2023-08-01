@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"math"
 	"net/http"
 	"net/url"
@@ -435,7 +435,7 @@ func (c *gRPCClient) Connection() *grpc.ClientConn {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -510,7 +510,7 @@ func defaultRESTClientOptions() []option.ClientOption {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *restClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -778,13 +778,13 @@ func (c *restClient) CreateWorkload(ctx context.Context, req *assuredworkloadspb
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -818,7 +818,7 @@ func (c *restClient) UpdateWorkload(ctx context.Context, req *assuredworkloadspb
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask))
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
 	}
 	if req.GetWorkload().GetBillingAccount() != "" {
 		params.Add("workload.billingAccount", fmt.Sprintf("%v", req.GetWorkload().GetBillingAccount()))
@@ -828,14 +828,14 @@ func (c *restClient) UpdateWorkload(ctx context.Context, req *assuredworkloadspb
 		if err != nil {
 			return nil, err
 		}
-		params.Add("workload.cjisSettings.kmsSettings.nextRotationTime", string(nextRotationTime))
+		params.Add("workload.cjisSettings.kmsSettings.nextRotationTime", string(nextRotationTime[1:len(nextRotationTime)-1]))
 	}
 	if req.GetWorkload().GetCjisSettings().GetKmsSettings().GetRotationPeriod() != nil {
 		rotationPeriod, err := protojson.Marshal(req.GetWorkload().GetCjisSettings().GetKmsSettings().GetRotationPeriod())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("workload.cjisSettings.kmsSettings.rotationPeriod", string(rotationPeriod))
+		params.Add("workload.cjisSettings.kmsSettings.rotationPeriod", string(rotationPeriod[1:len(rotationPeriod)-1]))
 	}
 	params.Add("workload.complianceRegime", fmt.Sprintf("%v", req.GetWorkload().GetComplianceRegime()))
 	if items := req.GetWorkload().GetCompliantButDisallowedServices(); len(items) > 0 {
@@ -848,7 +848,7 @@ func (c *restClient) UpdateWorkload(ctx context.Context, req *assuredworkloadspb
 		if err != nil {
 			return nil, err
 		}
-		params.Add("workload.createTime", string(createTime))
+		params.Add("workload.createTime", string(createTime[1:len(createTime)-1]))
 	}
 	params.Add("workload.displayName", fmt.Sprintf("%v", req.GetWorkload().GetDisplayName()))
 	if req.GetWorkload().GetEnableSovereignControls() {
@@ -862,42 +862,42 @@ func (c *restClient) UpdateWorkload(ctx context.Context, req *assuredworkloadspb
 		if err != nil {
 			return nil, err
 		}
-		params.Add("workload.fedrampHighSettings.kmsSettings.nextRotationTime", string(nextRotationTime))
+		params.Add("workload.fedrampHighSettings.kmsSettings.nextRotationTime", string(nextRotationTime[1:len(nextRotationTime)-1]))
 	}
 	if req.GetWorkload().GetFedrampHighSettings().GetKmsSettings().GetRotationPeriod() != nil {
 		rotationPeriod, err := protojson.Marshal(req.GetWorkload().GetFedrampHighSettings().GetKmsSettings().GetRotationPeriod())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("workload.fedrampHighSettings.kmsSettings.rotationPeriod", string(rotationPeriod))
+		params.Add("workload.fedrampHighSettings.kmsSettings.rotationPeriod", string(rotationPeriod[1:len(rotationPeriod)-1]))
 	}
 	if req.GetWorkload().GetFedrampModerateSettings().GetKmsSettings().GetNextRotationTime() != nil {
 		nextRotationTime, err := protojson.Marshal(req.GetWorkload().GetFedrampModerateSettings().GetKmsSettings().GetNextRotationTime())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("workload.fedrampModerateSettings.kmsSettings.nextRotationTime", string(nextRotationTime))
+		params.Add("workload.fedrampModerateSettings.kmsSettings.nextRotationTime", string(nextRotationTime[1:len(nextRotationTime)-1]))
 	}
 	if req.GetWorkload().GetFedrampModerateSettings().GetKmsSettings().GetRotationPeriod() != nil {
 		rotationPeriod, err := protojson.Marshal(req.GetWorkload().GetFedrampModerateSettings().GetKmsSettings().GetRotationPeriod())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("workload.fedrampModerateSettings.kmsSettings.rotationPeriod", string(rotationPeriod))
+		params.Add("workload.fedrampModerateSettings.kmsSettings.rotationPeriod", string(rotationPeriod[1:len(rotationPeriod)-1]))
 	}
 	if req.GetWorkload().GetIl4Settings().GetKmsSettings().GetNextRotationTime() != nil {
 		nextRotationTime, err := protojson.Marshal(req.GetWorkload().GetIl4Settings().GetKmsSettings().GetNextRotationTime())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("workload.il4Settings.kmsSettings.nextRotationTime", string(nextRotationTime))
+		params.Add("workload.il4Settings.kmsSettings.nextRotationTime", string(nextRotationTime[1:len(nextRotationTime)-1]))
 	}
 	if req.GetWorkload().GetIl4Settings().GetKmsSettings().GetRotationPeriod() != nil {
 		rotationPeriod, err := protojson.Marshal(req.GetWorkload().GetIl4Settings().GetKmsSettings().GetRotationPeriod())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("workload.il4Settings.kmsSettings.rotationPeriod", string(rotationPeriod))
+		params.Add("workload.il4Settings.kmsSettings.rotationPeriod", string(rotationPeriod[1:len(rotationPeriod)-1]))
 	}
 	if req.GetWorkload().GetKajEnrollmentState() != 0 {
 		params.Add("workload.kajEnrollmentState", fmt.Sprintf("%v", req.GetWorkload().GetKajEnrollmentState()))
@@ -907,14 +907,14 @@ func (c *restClient) UpdateWorkload(ctx context.Context, req *assuredworkloadspb
 		if err != nil {
 			return nil, err
 		}
-		params.Add("workload.kmsSettings.nextRotationTime", string(nextRotationTime))
+		params.Add("workload.kmsSettings.nextRotationTime", string(nextRotationTime[1:len(nextRotationTime)-1]))
 	}
 	if req.GetWorkload().GetKmsSettings().GetRotationPeriod() != nil {
 		rotationPeriod, err := protojson.Marshal(req.GetWorkload().GetKmsSettings().GetRotationPeriod())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("workload.kmsSettings.rotationPeriod", string(rotationPeriod))
+		params.Add("workload.kmsSettings.rotationPeriod", string(rotationPeriod[1:len(rotationPeriod)-1]))
 	}
 	if req.GetWorkload().GetName() != "" {
 		params.Add("workload.name", fmt.Sprintf("%v", req.GetWorkload().GetName()))
@@ -959,13 +959,13 @@ func (c *restClient) UpdateWorkload(ctx context.Context, req *assuredworkloadspb
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1028,13 +1028,13 @@ func (c *restClient) RestrictAllowedResources(ctx context.Context, req *assuredw
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1133,13 +1133,13 @@ func (c *restClient) GetWorkload(ctx context.Context, req *assuredworkloadspb.Ge
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1197,13 +1197,13 @@ func (c *restClient) AnalyzeWorkloadMove(ctx context.Context, req *assuredworklo
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1272,13 +1272,13 @@ func (c *restClient) ListWorkloads(ctx context.Context, req *assuredworkloadspb.
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -1347,13 +1347,13 @@ func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1421,13 +1421,13 @@ func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.List
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil

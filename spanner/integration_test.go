@@ -62,6 +62,7 @@ const (
 	readDDLStatements      = "READ_DDL_STATEMENTS"
 	backupDDLStatements    = "BACKUP_DDL_STATEMENTS"
 	testTableDDLStatements = "TEST_TABLE_DDL_STATEMENTS"
+	fkdcDDLStatements      = "FKDC_DDL_STATEMENTS"
 )
 
 var (
@@ -259,6 +260,34 @@ var (
 					)`,
 	}
 
+	fkdcDBStatements = []string{
+		`CREATE TABLE Customers (
+            CustomerId INT64 NOT NULL,
+            CustomerName STRING(62) NOT NULL,
+          ) PRIMARY KEY (CustomerId)`,
+		`CREATE TABLE ShoppingCarts (
+            CartId INT64 NOT NULL,
+            CustomerId INT64 NOT NULL,
+            CustomerName STRING(62) NOT NULL,
+            CONSTRAINT FKShoppingCartsCustomerId FOREIGN KEY (CustomerId)
+            REFERENCES Customers (CustomerId) ON DELETE CASCADE
+         ) PRIMARY KEY (CartId)`,
+	}
+
+	fkdcDBPGStatements = []string{
+		`CREATE TABLE Customers (
+            CustomerId BIGINT,
+            CustomerName VARCHAR(62) NOT NULL,
+            PRIMARY KEY (CustomerId))`,
+		`CREATE TABLE ShoppingCarts (
+            CartId BIGINT,
+            CustomerId BIGINT NOT NULL,
+            CustomerName VARCHAR(62) NOT NULL,
+            CONSTRAINT "FKShoppingCartsCustomerId" FOREIGN KEY (CustomerId)
+            REFERENCES Customers (CustomerId) ON DELETE CASCADE,
+            PRIMARY KEY (CartId))`,
+	}
+
 	statements = map[adminpb.DatabaseDialect]map[string][]string{
 		adminpb.DatabaseDialect_GOOGLE_STANDARD_SQL: {
 			singerDDLStatements:    singerDBStatements,
@@ -266,6 +295,7 @@ var (
 			readDDLStatements:      readDBStatements,
 			backupDDLStatements:    backupDBStatements,
 			testTableDDLStatements: readDBStatements,
+			fkdcDDLStatements:      fkdcDBStatements,
 		},
 		adminpb.DatabaseDialect_POSTGRESQL: {
 			singerDDLStatements:    singerDBPGStatements,
@@ -273,6 +303,7 @@ var (
 			readDDLStatements:      readDBPGStatements,
 			backupDDLStatements:    backupDBPGStatements,
 			testTableDDLStatements: readDBPGStatements,
+			fkdcDDLStatements:      fkdcDBPGStatements,
 		},
 	}
 
@@ -3141,7 +3172,7 @@ func TestIntegration_BatchQuery(t *testing.T) {
 		t.Fatal(err)
 	}
 	defer txn.Cleanup(ctx)
-	if partitions, err = txn.PartitionQuery(ctx, stmt, PartitionOptions{0, 3}); err != nil {
+	if partitions, err = txn.PartitionQueryWithOptions(ctx, stmt, PartitionOptions{0, 3}, QueryOptions{DataBoostEnabled: false}); err != nil {
 		t.Fatal(err)
 	}
 
@@ -3224,7 +3255,7 @@ func TestIntegration_BatchRead(t *testing.T) {
 		t.Fatal(err)
 	}
 	defer txn.Cleanup(ctx)
-	if partitions, err = txn.PartitionRead(ctx, "test", AllKeys(), simpleDBTableColumns, PartitionOptions{0, 3}); err != nil {
+	if partitions, err = txn.PartitionReadWithOptions(ctx, "test", AllKeys(), simpleDBTableColumns, PartitionOptions{0, 3}, ReadOptions{DataBoostEnabled: false}); err != nil {
 		t.Fatal(err)
 	}
 
@@ -4314,6 +4345,212 @@ func TestIntegration_DirectPathFallback(t *testing.T) {
 	countEnough = examineTraffic(ctx, client /*blackholeDP = */, false)
 	if !countEnough {
 		t.Fatalf("Failed to fallback to CFE after blackhole DirectPath")
+	}
+}
+
+func TestIntegration_Foreign_Key_Delete_Cascade_Action(t *testing.T) {
+	skipEmulatorTest(t)
+	t.Parallel()
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
+	defer cancel()
+	// create table with foreign key actions
+	client, dbPath, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, statements[testDialect][fkdcDDLStatements])
+	defer cleanup()
+
+	var tests = []struct {
+		name     string
+		test     func() error
+		validate func()
+		wantErr  error
+	}{
+		{
+			name: "add delete cascade constraint",
+			test: func() error {
+				constraintName := "FKShoppingCartsCustomerName"
+				if testDialect == adminpb.DatabaseDialect_POSTGRESQL {
+					constraintName = `"FKShoppingCartsCustomerName"`
+				}
+				addConstraintDDL := fmt.Sprintf("ALTER TABLE ShoppingCarts ADD CONSTRAINT %s FOREIGN KEY (CustomerName) REFERENCES Customers(CustomerName) ON DELETE CASCADE", constraintName)
+				op, err := databaseAdmin.UpdateDatabaseDdl(ctx, &adminpb.UpdateDatabaseDdlRequest{
+					Database:   dbPath,
+					Statements: []string{addConstraintDDL},
+				})
+				if err != nil {
+					return err
+				}
+				if err := op.Wait(ctx); err != nil {
+					return err
+				}
+				return nil
+			},
+			validate: func() {
+				constraintName := `"FKShoppingCartsCustomerName"`
+				if testDialect == adminpb.DatabaseDialect_POSTGRESQL {
+					constraintName = `'FKShoppingCartsCustomerName'`
+				}
+				got, err := readAll(client.Single().Query(ctx, Statement{
+					fmt.Sprintf(`SELECT 1, '', DELETE_RULE FROM INFORMATION_SCHEMA.REFERENTIAL_CONSTRAINTS WHERE CONSTRAINT_NAME = %s`, constraintName),
+					map[string]interface{}{}}))
+				if err != nil {
+					t.Fatalf("Expect to read the delete_rule from information_schema, got: %v", err)
+				}
+				if !testEqual(got, [][]interface{}{{int64(1), "", "CASCADE"}}) {
+					t.Error("DELETE_RULE is not CASCADE")
+				}
+			},
+		},
+		{
+			name: "drop delete cascade constraint",
+			test: func() error {
+				constraintName := "FKShoppingCartsCustomerName"
+				if testDialect == adminpb.DatabaseDialect_POSTGRESQL {
+					constraintName = `"FKShoppingCartsCustomerName"`
+				}
+				dropConstraintDDL := fmt.Sprintf("ALTER TABLE ShoppingCarts DROP CONSTRAINT %s", constraintName)
+				op, err := databaseAdmin.UpdateDatabaseDdl(ctx, &adminpb.UpdateDatabaseDdlRequest{
+					Database:   dbPath,
+					Statements: []string{dropConstraintDDL},
+				})
+				if err != nil {
+					return err
+				}
+				if err := op.Wait(ctx); err != nil {
+					return err
+				}
+				return nil
+			},
+			validate: func() {
+				constraintName := `"FKShoppingCartsCustomerName"`
+				if testDialect == adminpb.DatabaseDialect_POSTGRESQL {
+					constraintName = `'FKShoppingCartsCustomerName'`
+				}
+				got, err := readAll(client.Single().Query(ctx, Statement{
+					fmt.Sprintf(`SELECT 1, '', DELETE_RULE FROM INFORMATION_SCHEMA.REFERENTIAL_CONSTRAINTS WHERE CONSTRAINT_NAME = %s`, constraintName),
+					map[string]interface{}{}}))
+				if err != nil {
+					t.Fatalf("Expect to read the delete_rule from information_schema, got: %v", err)
+				}
+				var want [][]interface{}
+				if !testEqual(got, want) {
+					t.Error("DELETE_RULE should be empty")
+				}
+			},
+		},
+		{
+			name: "success: insert a row in referencing table",
+			test: func() error {
+				// Populate the parent table.
+				columns := []string{"CustomerId", "CustomerName"}
+				var muts []*Mutation
+				for _, row := range [][]interface{}{
+					{1, "FKCustomer1"},
+					{2, "FKCustomer2"},
+					{3, "FKCustomer3"},
+				} {
+					muts = append(muts, Insert("Customers", columns, row))
+				}
+				if _, err := client.Apply(ctx, muts); err != nil {
+					return err
+				}
+
+				// Populate the referencing table.
+				columns = []string{"CartId", "CustomerId", "CustomerName"}
+				// Populate the parent table.
+				muts = []*Mutation{}
+				for _, row := range [][]interface{}{
+					{1, 1, "FKCustomer1"},
+					{2, 1, "FKCustomer1"},
+					{3, 2, "FKCustomer2"},
+				} {
+					muts = append(muts, Insert("ShoppingCarts", columns, row))
+				}
+				if _, err := client.Apply(ctx, muts); err != nil {
+					return err
+				}
+				return nil
+			},
+			validate: func() {},
+		},
+		{
+			name: "success: deleting a row in referenced table should delete all rows referencing it",
+			test: func() error {
+				_, err := client.Apply(ctx, []*Mutation{Delete("Customers", Key{1})})
+				return err
+			},
+			validate: func() {
+				if _, err := client.Single().ReadRow(ctx, "ShoppingCarts", Key{1}, []string{"CartId"}); err == nil {
+					t.Fatalf("expected to return not found error after deleting in referenced table")
+				}
+				if _, err := client.Single().ReadRow(ctx, "ShoppingCarts", Key{2}, []string{"CartId"}); err == nil {
+					t.Fatalf("expected to return not found error after deleting in referenced table")
+				}
+			},
+		},
+		{
+			name: "failure: conflicting insert and delete of referenced key",
+			test: func() error {
+				columns := []string{"CustomerId", "CustomerName"}
+				var muts []*Mutation
+				for _, row := range [][]interface{}{
+					{3, "FKCustomer3"},
+				} {
+					muts = append(muts, Insert("Customers", columns, row))
+				}
+				muts = append(muts, Delete("Customers", Key{3}))
+				_, err := client.Apply(ctx, muts)
+				return err
+			},
+			wantErr:  spannerErrorf(codes.FailedPrecondition, "Cannot write a value for the referenced column `Customers.CustomerId` and delete it in the same transaction."),
+			validate: func() {},
+		},
+		{
+			name: "failure: insert in child table and deleting referenced key from parent table",
+			test: func() error {
+				columns := []string{"CartId", "CustomerId", "CustomerName"}
+				// Populate the parent table.
+				muts := []*Mutation{}
+				for _, row := range [][]interface{}{
+					{4, 3, "FKCustomer3"},
+				} {
+					muts = append(muts, Insert("ShoppingCarts", columns, row))
+				}
+				muts = append(muts, Delete("Customers", Key{3}))
+				_, err := client.Apply(ctx, muts)
+				return err
+			},
+			wantErr:  spannerErrorf(codes.FailedPrecondition, "Foreign key constraint `FKShoppingCartsCustomerId` is violated on table `ShoppingCarts`. Cannot find referenced values in Customers(CustomerId)."),
+			validate: func() {},
+		},
+		{
+			name: "failure: insert a row in referencing table with reference key not present",
+			test: func() error {
+				// inset in the referencing table.
+				columns := []string{"CartId", "CustomerId", "CustomerName"}
+				muts := []*Mutation{}
+				for _, row := range [][]interface{}{
+					{1, 100, "FKCustomer1"},
+				} {
+					muts = append(muts, Insert("ShoppingCarts", columns, row))
+				}
+				if _, err := client.Apply(ctx, muts); err != nil {
+					return err
+				}
+				return nil
+			},
+			wantErr:  spannerErrorf(codes.FailedPrecondition, "Foreign key constraint `FKShoppingCartsCustomerId` is violated on table `ShoppingCarts`. Cannot find referenced values in Customers(CustomerId)."),
+			validate: func() {},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			gotErr := tt.test()
+			// convert the error to lower case because resource names are in lower case for PG dialect.
+			if gotErr != nil && strings.ToLower(gotErr.Error()) != strings.ToLower(tt.wantErr.Error()) {
+				t.Errorf("FKDC error=%v, wantErr: %v", gotErr, tt.wantErr)
+			} else {
+				tt.validate()
+			}
+		})
 	}
 }
 

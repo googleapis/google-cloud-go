@@ -1,5 +1,26 @@
 # Changes
 
+## [1.19.0](https://github.com/googleapis/google-cloud-go/compare/speech/v1.18.0...speech/v1.19.0) (2023-07-18)
+
+
+### Features
+
+* **speech:** Promote to GA ([#8268](https://github.com/googleapis/google-cloud-go/issues/8268)) ([d9bb34f](https://github.com/googleapis/google-cloud-go/commit/d9bb34f1f83db94c4e07824b2158ff3c994821d8))
+
+## [1.18.0](https://github.com/googleapis/google-cloud-go/compare/speech/v1.17.1...speech/v1.18.0) (2023-07-10)
+
+
+### Features
+
+* **speech:** Add `model` and `language_codes` fields in `RecognitionConfig` message + enable default `_` recognizer ([#8204](https://github.com/googleapis/google-cloud-go/issues/8204)) ([f41d56f](https://github.com/googleapis/google-cloud-go/commit/f41d56f2f5b1fa3d47be48874fece70136382a45))
+
+## [1.17.1](https://github.com/googleapis/google-cloud-go/compare/speech/v1.17.0...speech/v1.17.1) (2023-06-20)
+
+
+### Bug Fixes
+
+* **speech:** REST query UpdateMask bug ([df52820](https://github.com/googleapis/google-cloud-go/commit/df52820b0e7721954809a8aa8700b93c5662dc9b))
+
 ## [1.17.0](https://github.com/googleapis/google-cloud-go/compare/speech/v1.16.0...speech/v1.17.0) (2023-05-30)
 
 

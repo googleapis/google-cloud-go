@@ -1,5 +1,21 @@
 # Changelog
 
+
+## [1.0.0](https://github.com/googleapis/google-cloud-go/compare/vmwareengine/v0.4.1...vmwareengine/v1.0.0) (2023-07-24)
+
+
+### Features
+
+* **vmwareengine:** Promote to GA ([08ec41a](https://github.com/googleapis/google-cloud-go/commit/08ec41aba981874a7b86a9a941b07f9eb2fc6ce1))
+* **vmwareengine:** Promote to GA ([#8306](https://github.com/googleapis/google-cloud-go/issues/8306)) ([2b52374](https://github.com/googleapis/google-cloud-go/commit/2b523749162129c8272a64622b41df079e536c8f))
+
+## [0.4.1](https://github.com/googleapis/google-cloud-go/compare/vmwareengine/v0.4.0...vmwareengine/v0.4.1) (2023-06-20)
+
+
+### Bug Fixes
+
+* **vmwareengine:** REST query UpdateMask bug ([df52820](https://github.com/googleapis/google-cloud-go/commit/df52820b0e7721954809a8aa8700b93c5662dc9b))
+
 ## [0.4.0](https://github.com/googleapis/google-cloud-go/compare/vmwareengine/v0.3.1...vmwareengine/v0.4.0) (2023-05-30)
 
 

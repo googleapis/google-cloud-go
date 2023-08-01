@@ -2,6 +2,27 @@
 
 
 
+## [1.4.0](https://github.com/googleapis/google-cloud-go/compare/maps/v1.3.0...maps/v1.4.0) (2023-07-24)
+
+
+### Features
+
+* **maps/places:** Promote to GA ([#8299](https://github.com/googleapis/google-cloud-go/issues/8299)) ([08ec41a](https://github.com/googleapis/google-cloud-go/commit/08ec41aba981874a7b86a9a941b07f9eb2fc6ce1))
+
+## [1.3.0](https://github.com/googleapis/google-cloud-go/compare/maps/v1.2.1...maps/v1.3.0) (2023-07-10)
+
+
+### Features
+
+* **maps/routing:** Add HTML Navigation Instructions feature to ComputeRoutes ([a3ec3cf](https://github.com/googleapis/google-cloud-go/commit/a3ec3cf858c7d9154338ac4cd8a9a068dc7a7f4d))
+
+## [1.2.1](https://github.com/googleapis/google-cloud-go/compare/maps/v1.2.0...maps/v1.2.1) (2023-06-20)
+
+
+### Bug Fixes
+
+* **maps:** REST query UpdateMask bug ([df52820](https://github.com/googleapis/google-cloud-go/commit/df52820b0e7721954809a8aa8700b93c5662dc9b))
+
 ## [1.2.0](https://github.com/googleapis/google-cloud-go/compare/maps/v1.1.0...maps/v1.2.0) (2023-05-30)
 
 

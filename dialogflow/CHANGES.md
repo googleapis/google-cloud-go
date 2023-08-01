@@ -1,5 +1,46 @@
 # Changes
 
+## [1.40.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.39.0...dialogflow/v1.40.0) (2023-07-18)
+
+
+### Features
+
+* **dialogflow/cx:** Added GitIntegrationSettings to the Agent ([#8244](https://github.com/googleapis/google-cloud-go/issues/8244)) ([dda1f9d](https://github.com/googleapis/google-cloud-go/commit/dda1f9dc2f5b54dca15ae05302d8cac821fe8da1))
+
+## [1.39.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.38.0...dialogflow/v1.39.0) (2023-07-10)
+
+
+### Features
+
+* **dialogflow/cx:** Added GitIntegrationSettings to the Agent ([bac978a](https://github.com/googleapis/google-cloud-go/commit/bac978ace43bb58db7c0b1475e41c8fdf8c49a29))
+
+
+### Documentation
+
+* **dialogflow:** Added google.api.field_behavior for some fields in audio_config ([bac978a](https://github.com/googleapis/google-cloud-go/commit/bac978ace43bb58db7c0b1475e41c8fdf8c49a29))
+* **dialogflow:** Added google.api.field_behavior for some fields in audio_config ([#8230](https://github.com/googleapis/google-cloud-go/issues/8230)) ([bac978a](https://github.com/googleapis/google-cloud-go/commit/bac978ace43bb58db7c0b1475e41c8fdf8c49a29))
+
+## [1.38.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.37.0...dialogflow/v1.38.0) (2023-06-27)
+
+
+### Features
+
+* **dialogflow:** Added dialogflow_assist_answer ([94ea341](https://github.com/googleapis/google-cloud-go/commit/94ea3410e233db6040a7cb0a931948f1e3bb4c9a))
+* **dialogflow:** Added dialogflow_assist_answer ([94ea341](https://github.com/googleapis/google-cloud-go/commit/94ea3410e233db6040a7cb0a931948f1e3bb4c9a))
+
+## [1.37.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.36.0...dialogflow/v1.37.0) (2023-06-20)
+
+
+### Features
+
+* **dialogflow/cx:** Added include_bigquery_export_settings to ExportAgentRequest ([b726d41](https://github.com/googleapis/google-cloud-go/commit/b726d413166faa8c84c0a09c6019ff50f3249b9d))
+* **dialogflow/cx:** Added include_bigquery_export_settings to ExportAgentRequest ([b726d41](https://github.com/googleapis/google-cloud-go/commit/b726d413166faa8c84c0a09c6019ff50f3249b9d))
+
+
+### Bug Fixes
+
+* **dialogflow:** REST query UpdateMask bug ([df52820](https://github.com/googleapis/google-cloud-go/commit/df52820b0e7721954809a8aa8700b93c5662dc9b))
+
 ## [1.36.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.35.0...dialogflow/v1.36.0) (2023-06-13)
 
 

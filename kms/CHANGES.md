@@ -1,5 +1,33 @@
 # Changes
 
+## [1.15.0](https://github.com/googleapis/google-cloud-go/compare/kms/v1.14.0...kms/v1.15.0) (2023-07-24)
+
+
+### Features
+
+* **kms:** Add interoperable symmetric encryption system ([432864c](https://github.com/googleapis/google-cloud-go/commit/432864c7fc0bb551a5017b423bbd5f76c3357dc3))
+
+## [1.14.0](https://github.com/googleapis/google-cloud-go/compare/kms/v1.13.0...kms/v1.14.0) (2023-07-18)
+
+
+### Features
+
+* **kms/inventory:** Add resource_types to SearchAllResources, to allow filtering by resource type ([#8261](https://github.com/googleapis/google-cloud-go/issues/8261)) ([9d55bab](https://github.com/googleapis/google-cloud-go/commit/9d55bab76839af4ef4301544b856b042352a489e))
+
+## [1.13.0](https://github.com/googleapis/google-cloud-go/compare/kms/v1.12.1...kms/v1.13.0) (2023-07-10)
+
+
+### Features
+
+* **kms:** Add interoperable symmetric encryption system ([14b95d3](https://github.com/googleapis/google-cloud-go/commit/14b95d33753d0b391d0b49533e92b551e5dc3072))
+
+## [1.12.1](https://github.com/googleapis/google-cloud-go/compare/kms/v1.12.0...kms/v1.12.1) (2023-06-20)
+
+
+### Bug Fixes
+
+* **kms:** REST query UpdateMask bug ([df52820](https://github.com/googleapis/google-cloud-go/commit/df52820b0e7721954809a8aa8700b93c5662dc9b))
+
 ## [1.12.0](https://github.com/googleapis/google-cloud-go/compare/kms/v1.11.0...kms/v1.12.0) (2023-06-13)
 
 

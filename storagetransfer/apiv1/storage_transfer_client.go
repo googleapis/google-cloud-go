@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"math"
 	"net/http"
 	"net/url"
@@ -550,8 +550,8 @@ func (c *Client) CreateTransferJob(ctx context.Context, req *storagetransferpb.C
 // UpdateTransferJob updates a transfer job. Updating a job’s transfer spec does not affect
 // transfer operations that are running already.
 //
-// Note: The job’s status field can be modified
-// using this RPC (for example, to set a job’s status to
+// Note: The job’s status
+// field can be modified using this RPC (for example, to set a job’s status to
 // DELETED,
 // DISABLED, or
 // ENABLED).
@@ -579,9 +579,10 @@ func (c *Client) ResumeTransferOperation(ctx context.Context, req *storagetransf
 	return c.internalClient.ResumeTransferOperation(ctx, req, opts...)
 }
 
-// RunTransferJob attempts to start a new TransferOperation for the current TransferJob. A
-// TransferJob has a maximum of one active TransferOperation. If this method
-// is called while a TransferOperation is active, an error will be returned.
+// RunTransferJob starts a new operation for the specified transfer job.
+// A TransferJob has a maximum of one active TransferOperation. If this
+// method is called while a TransferOperation is active, an error is
+// returned.
 func (c *Client) RunTransferJob(ctx context.Context, req *storagetransferpb.RunTransferJobRequest, opts ...gax.CallOption) (*RunTransferJobOperation, error) {
 	return c.internalClient.RunTransferJob(ctx, req, opts...)
 }
@@ -741,7 +742,7 @@ func (c *gRPCClient) Connection() *grpc.ClientConn {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -818,7 +819,7 @@ func defaultRESTClientOptions() []option.ClientOption {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *restClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -1236,13 +1237,13 @@ func (c *restClient) GetGoogleServiceAccount(ctx context.Context, req *storagetr
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1299,13 +1300,13 @@ func (c *restClient) CreateTransferJob(ctx context.Context, req *storagetransfer
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1319,8 +1320,8 @@ func (c *restClient) CreateTransferJob(ctx context.Context, req *storagetransfer
 // UpdateTransferJob updates a transfer job. Updating a job’s transfer spec does not affect
 // transfer operations that are running already.
 //
-// Note: The job’s status field can be modified
-// using this RPC (for example, to set a job’s status to
+// Note: The job’s status
+// field can be modified using this RPC (for example, to set a job’s status to
 // DELETED,
 // DISABLED, or
 // ENABLED).
@@ -1370,13 +1371,13 @@ func (c *restClient) UpdateTransferJob(ctx context.Context, req *storagetransfer
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1429,13 +1430,13 @@ func (c *restClient) GetTransferJob(ctx context.Context, req *storagetransferpb.
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1501,13 +1502,13 @@ func (c *restClient) ListTransferJobs(ctx context.Context, req *storagetransferp
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -1627,9 +1628,10 @@ func (c *restClient) ResumeTransferOperation(ctx context.Context, req *storagetr
 	}, opts...)
 }
 
-// RunTransferJob attempts to start a new TransferOperation for the current TransferJob. A
-// TransferJob has a maximum of one active TransferOperation. If this method
-// is called while a TransferOperation is active, an error will be returned.
+// RunTransferJob starts a new operation for the specified transfer job.
+// A TransferJob has a maximum of one active TransferOperation. If this
+// method is called while a TransferOperation is active, an error is
+// returned.
 func (c *restClient) RunTransferJob(ctx context.Context, req *storagetransferpb.RunTransferJobRequest, opts ...gax.CallOption) (*RunTransferJobOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -1675,13 +1677,13 @@ func (c *restClient) RunTransferJob(ctx context.Context, req *storagetransferpb.
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1788,13 +1790,13 @@ func (c *restClient) CreateAgentPool(ctx context.Context, req *storagetransferpb
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1827,7 +1829,7 @@ func (c *restClient) UpdateAgentPool(ctx context.Context, req *storagetransferpb
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask))
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1860,13 +1862,13 @@ func (c *restClient) UpdateAgentPool(ctx context.Context, req *storagetransferpb
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1918,13 +1920,13 @@ func (c *restClient) GetAgentPool(ctx context.Context, req *storagetransferpb.Ge
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1992,13 +1994,13 @@ func (c *restClient) ListAgentPools(ctx context.Context, req *storagetransferpb.
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -2173,13 +2175,13 @@ func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2248,13 +2250,13 @@ func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.List
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil

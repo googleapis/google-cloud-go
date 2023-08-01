@@ -33,6 +33,7 @@ type downloadOpts struct {
 	rangeStart          int64
 	rangeLength         int64
 	downloadToDirectory string
+	timeout             time.Duration
 }
 
 func downloadBenchmark(ctx context.Context, dopts downloadOpts) (elapsedTime time.Duration, rerr error) {
@@ -45,7 +46,7 @@ func downloadBenchmark(ctx context.Context, dopts downloadOpts) (elapsedTime tim
 	defer func() { elapsedTime = time.Since(start) }()
 
 	// Set additional timeout
-	ctx, cancel := context.WithTimeout(ctx, time.Minute*2)
+	ctx, cancel := context.WithTimeout(ctx, dopts.timeout)
 	defer cancel()
 
 	o := dopts.client.Bucket(dopts.bucket).Object(dopts.object)

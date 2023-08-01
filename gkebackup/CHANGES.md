@@ -2,6 +2,20 @@
 
 
 
+## [1.3.0](https://github.com/googleapis/google-cloud-go/compare/gkebackup/v1.2.1...gkebackup/v1.3.0) (2023-06-27)
+
+
+### Features
+
+* **gkebackup:** Added new restore scope options ([#8176](https://github.com/googleapis/google-cloud-go/issues/8176)) ([1da334c](https://github.com/googleapis/google-cloud-go/commit/1da334c0cbeed9cfb8df0551714721284d164d60))
+
+## [1.2.1](https://github.com/googleapis/google-cloud-go/compare/gkebackup/v1.2.0...gkebackup/v1.2.1) (2023-06-20)
+
+
+### Bug Fixes
+
+* **gkebackup:** REST query UpdateMask bug ([df52820](https://github.com/googleapis/google-cloud-go/commit/df52820b0e7721954809a8aa8700b93c5662dc9b))
+
 ## [1.2.0](https://github.com/googleapis/google-cloud-go/compare/gkebackup/v1.1.0...gkebackup/v1.2.0) (2023-06-12)
 
 

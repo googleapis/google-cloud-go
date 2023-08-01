@@ -609,6 +609,56 @@ func ExampleKeyManagementClient_Decrypt() {
 	_ = resp
 }
 
+func ExampleKeyManagementClient_RawEncrypt() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := kms.NewKeyManagementClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &kmspb.RawEncryptRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/kms/apiv1/kmspb#RawEncryptRequest.
+	}
+	resp, err := c.RawEncrypt(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleKeyManagementClient_RawDecrypt() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := kms.NewKeyManagementClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &kmspb.RawDecryptRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/kms/apiv1/kmspb#RawDecryptRequest.
+	}
+	resp, err := c.RawDecrypt(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleKeyManagementClient_AsymmetricSign() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.

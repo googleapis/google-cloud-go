@@ -1,5 +1,21 @@
 # Changelog
 
+
+## [1.0.0](https://github.com/googleapis/google-cloud-go/compare/gkemulticloud/v0.6.1...gkemulticloud/v1.0.0) (2023-07-24)
+
+
+### Features
+
+* **gkemulticloud:** Promote to GA ([08ec41a](https://github.com/googleapis/google-cloud-go/commit/08ec41aba981874a7b86a9a941b07f9eb2fc6ce1))
+* **gkemulticloud:** Promote to GA ([#8303](https://github.com/googleapis/google-cloud-go/issues/8303)) ([c79b6cd](https://github.com/googleapis/google-cloud-go/commit/c79b6cde394392623ba6c45b7429c2f0417d221e))
+
+## [0.6.1](https://github.com/googleapis/google-cloud-go/compare/gkemulticloud/v0.6.0...gkemulticloud/v0.6.1) (2023-06-20)
+
+
+### Bug Fixes
+
+* **gkemulticloud:** REST query UpdateMask bug ([df52820](https://github.com/googleapis/google-cloud-go/commit/df52820b0e7721954809a8aa8700b93c5662dc9b))
+
 ## [0.6.0](https://github.com/googleapis/google-cloud-go/compare/gkemulticloud/v0.5.1...gkemulticloud/v0.6.0) (2023-05-30)
 
 
