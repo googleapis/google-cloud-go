@@ -47,8 +47,11 @@ type ActionOnInactiveTransactionKind int
 
 const (
 	noAction ActionOnInactiveTransactionKind = iota
+	// Warn action logs inactive transactions. Any inactive transaction gets logged only once.
 	Warn
+	// Close action closes inactive transactions without logging.
 	Close
+	// WarnAndClose action logs and closes the inactive transactions.
 	WarnAndClose
 )
 
