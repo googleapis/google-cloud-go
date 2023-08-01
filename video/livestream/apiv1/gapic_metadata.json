@@ -10,6 +10,16 @@
         "grpc": {
           "libraryClient": "Client",
           "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateAsset": {
+              "methods": [
+                "CreateAsset"
+              ]
+            },
             "CreateChannel": {
               "methods": [
                 "CreateChannel"
@@ -23,6 +33,11 @@
             "CreateInput": {
               "methods": [
                 "CreateInput"
+              ]
+            },
+            "DeleteAsset": {
+              "methods": [
+                "DeleteAsset"
               ]
             },
             "DeleteChannel": {
@@ -40,6 +55,16 @@
                 "DeleteInput"
               ]
             },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetAsset": {
+              "methods": [
+                "GetAsset"
+              ]
+            },
             "GetChannel": {
               "methods": [
                 "GetChannel"
@@ -55,6 +80,26 @@
                 "GetInput"
               ]
             },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetPool": {
+              "methods": [
+                "GetPool"
+              ]
+            },
+            "ListAssets": {
+              "methods": [
+                "ListAssets"
+              ]
+            },
             "ListChannels": {
               "methods": [
                 "ListChannels"
@@ -68,6 +113,16 @@
             "ListInputs": {
               "methods": [
                 "ListInputs"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
               ]
             },
             "StartChannel": {
@@ -88,6 +143,11 @@
             "UpdateInput": {
               "methods": [
                 "UpdateInput"
+              ]
+            },
+            "UpdatePool": {
+              "methods": [
+                "UpdatePool"
               ]
             }
           }
@@ -95,6 +155,16 @@
         "rest": {
           "libraryClient": "Client",
           "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateAsset": {
+              "methods": [
+                "CreateAsset"
+              ]
+            },
             "CreateChannel": {
               "methods": [
                 "CreateChannel"
@@ -108,6 +178,11 @@
             "CreateInput": {
               "methods": [
                 "CreateInput"
+              ]
+            },
+            "DeleteAsset": {
+              "methods": [
+                "DeleteAsset"
               ]
             },
             "DeleteChannel": {
@@ -125,6 +200,16 @@
                 "DeleteInput"
               ]
             },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetAsset": {
+              "methods": [
+                "GetAsset"
+              ]
+            },
             "GetChannel": {
               "methods": [
                 "GetChannel"
@@ -140,6 +225,26 @@
                 "GetInput"
               ]
             },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetPool": {
+              "methods": [
+                "GetPool"
+              ]
+            },
+            "ListAssets": {
+              "methods": [
+                "ListAssets"
+              ]
+            },
             "ListChannels": {
               "methods": [
                 "ListChannels"
@@ -153,6 +258,16 @@
             "ListInputs": {
               "methods": [
                 "ListInputs"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
               ]
             },
             "StartChannel": {
@@ -173,6 +288,11 @@
             "UpdateInput": {
               "methods": [
                 "UpdateInput"
+              ]
+            },
+            "UpdatePool": {
+              "methods": [
+                "UpdatePool"
               ]
             }
           }

@@ -20,13 +20,14 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"math"
 	"net/http"
 	"net/url"
 	"time"
 
 	dialogflowpb "cloud.google.com/go/dialogflow/apiv2beta1/dialogflowpb"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
@@ -35,7 +36,6 @@ import (
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -72,6 +72,7 @@ func defaultAnswerRecordsGRPCClientOptions() []option.ClientOption {
 func defaultAnswerRecordsCallOptions() *AnswerRecordsCallOptions {
 	return &AnswerRecordsCallOptions{
 		GetAnswerRecord: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -83,6 +84,7 @@ func defaultAnswerRecordsCallOptions() *AnswerRecordsCallOptions {
 			}),
 		},
 		ListAnswerRecords: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -94,6 +96,7 @@ func defaultAnswerRecordsCallOptions() *AnswerRecordsCallOptions {
 			}),
 		},
 		UpdateAnswerRecord: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -115,6 +118,7 @@ func defaultAnswerRecordsCallOptions() *AnswerRecordsCallOptions {
 func defaultAnswerRecordsRESTCallOptions() *AnswerRecordsCallOptions {
 	return &AnswerRecordsCallOptions{
 		GetAnswerRecord: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -125,6 +129,7 @@ func defaultAnswerRecordsRESTCallOptions() *AnswerRecordsCallOptions {
 			}),
 		},
 		ListAnswerRecords: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -135,6 +140,7 @@ func defaultAnswerRecordsRESTCallOptions() *AnswerRecordsCallOptions {
 			}),
 		},
 		UpdateAnswerRecord: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -242,8 +248,7 @@ func (c *AnswerRecordsClient) GetOperation(ctx context.Context, req *longrunning
 	return c.internalClient.GetOperation(ctx, req, opts...)
 }
 
-// ListOperations lists operations that match the specified filter in the request. If
-// the server doesn’t support this method, it returns UNIMPLEMENTED.
+// ListOperations is a utility method from google.longrunning.Operations.
 func (c *AnswerRecordsClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	return c.internalClient.ListOperations(ctx, req, opts...)
 }
@@ -254,9 +259,6 @@ func (c *AnswerRecordsClient) ListOperations(ctx context.Context, req *longrunni
 type answerRecordsGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
-
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
 
 	// Points back to the CallOptions field of the containing AnswerRecordsClient
 	CallOptions **AnswerRecordsCallOptions
@@ -287,11 +289,6 @@ func NewAnswerRecordsClient(ctx context.Context, opts ...option.ClientOption) (*
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -300,7 +297,6 @@ func NewAnswerRecordsClient(ctx context.Context, opts ...option.ClientOption) (*
 
 	c := &answerRecordsGRPCClient{
 		connPool:            connPool,
-		disableDeadlines:    disableDeadlines,
 		answerRecordsClient: dialogflowpb.NewAnswerRecordsClient(connPool),
 		CallOptions:         &client.CallOptions,
 		operationsClient:    longrunningpb.NewOperationsClient(connPool),
@@ -325,7 +321,7 @@ func (c *answerRecordsGRPCClient) Connection() *grpc.ClientConn {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *answerRecordsGRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -386,7 +382,7 @@ func defaultAnswerRecordsRESTClientOptions() []option.ClientOption {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *answerRecordsRESTClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -406,11 +402,6 @@ func (c *answerRecordsRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 func (c *answerRecordsGRPCClient) GetAnswerRecord(ctx context.Context, req *dialogflowpb.GetAnswerRecordRequest, opts ...gax.CallOption) (*dialogflowpb.AnswerRecord, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -473,11 +464,6 @@ func (c *answerRecordsGRPCClient) ListAnswerRecords(ctx context.Context, req *di
 }
 
 func (c *answerRecordsGRPCClient) UpdateAnswerRecord(ctx context.Context, req *dialogflowpb.UpdateAnswerRecordRequest, opts ...gax.CallOption) (*dialogflowpb.AnswerRecord, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "answer_record.name", url.QueryEscape(req.GetAnswerRecord().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -675,13 +661,13 @@ func (c *answerRecordsRESTClient) GetAnswerRecord(ctx context.Context, req *dial
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -750,13 +736,13 @@ func (c *answerRecordsRESTClient) ListAnswerRecords(ctx context.Context, req *di
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -806,7 +792,7 @@ func (c *answerRecordsRESTClient) UpdateAnswerRecord(ctx context.Context, req *d
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask))
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -839,13 +825,13 @@ func (c *answerRecordsRESTClient) UpdateAnswerRecord(ctx context.Context, req *d
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -897,13 +883,13 @@ func (c *answerRecordsRESTClient) GetLocation(ctx context.Context, req *location
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -971,13 +957,13 @@ func (c *answerRecordsRESTClient) ListLocations(ctx context.Context, req *locati
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -1086,13 +1072,13 @@ func (c *answerRecordsRESTClient) GetOperation(ctx context.Context, req *longrun
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1103,8 +1089,7 @@ func (c *answerRecordsRESTClient) GetOperation(ctx context.Context, req *longrun
 	return resp, nil
 }
 
-// ListOperations lists operations that match the specified filter in the request. If
-// the server doesn’t support this method, it returns UNIMPLEMENTED.
+// ListOperations is a utility method from google.longrunning.Operations.
 func (c *answerRecordsRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
 	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
@@ -1161,13 +1146,13 @@ func (c *answerRecordsRESTClient) ListOperations(ctx context.Context, req *longr
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil

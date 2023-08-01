@@ -21,7 +21,7 @@ import (
 	"github.com/golang/protobuf/ptypes"
 
 	pb "cloud.google.com/go/pubsublite/apiv1/pubsublitepb"
-	fmpb "google.golang.org/genproto/protobuf/field_mask"
+	fmpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 )
 
 // InfiniteRetention is a sentinel used in topic configs to denote an infinite

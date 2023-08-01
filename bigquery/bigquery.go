@@ -173,7 +173,7 @@ func (c *Client) insertJob(ctx context.Context, job *bq.Job, media io.Reader) (*
 // Due to differences in options it supports, it cannot be used for all existing
 // jobs.insert requests that are query jobs.
 func (c *Client) runQuery(ctx context.Context, queryRequest *bq.QueryRequest) (*bq.QueryResponse, error) {
-	call := c.bqs.Jobs.Query(c.projectID, queryRequest)
+	call := c.bqs.Jobs.Query(c.projectID, queryRequest).Context(ctx)
 	setClientHeader(call.Header())
 
 	var res *bq.QueryResponse

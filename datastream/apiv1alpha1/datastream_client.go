@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"math"
 	"net/http"
 	"net/url"
@@ -29,6 +29,7 @@ import (
 	datastreampb "cloud.google.com/go/datastream/apiv1alpha1/datastreampb"
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
@@ -36,7 +37,6 @@ import (
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -86,6 +86,7 @@ func defaultGRPCClientOptions() []option.ClientOption {
 func defaultCallOptions() *CallOptions {
 	return &CallOptions{
 		ListConnectionProfiles: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -97,6 +98,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		GetConnectionProfile: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -107,10 +109,17 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
-		CreateConnectionProfile: []gax.CallOption{},
-		UpdateConnectionProfile: []gax.CallOption{},
-		DeleteConnectionProfile: []gax.CallOption{},
+		CreateConnectionProfile: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateConnectionProfile: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteConnectionProfile: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		DiscoverConnectionProfile: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -122,6 +131,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		ListStreams: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -133,6 +143,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		GetStream: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -143,10 +154,17 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
-		CreateStream: []gax.CallOption{},
-		UpdateStream: []gax.CallOption{},
-		DeleteStream: []gax.CallOption{},
+		CreateStream: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateStream: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteStream: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		FetchErrors: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -158,6 +176,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		FetchStaticIps: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -168,8 +187,11 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
-		CreatePrivateConnection: []gax.CallOption{},
+		CreatePrivateConnection: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		GetPrivateConnection: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -181,6 +203,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		ListPrivateConnections: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -191,9 +214,14 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
-		DeletePrivateConnection: []gax.CallOption{},
-		CreateRoute:             []gax.CallOption{},
+		DeletePrivateConnection: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		CreateRoute: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		GetRoute: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -205,6 +233,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		ListRoutes: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -215,13 +244,16 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
-		DeleteRoute: []gax.CallOption{},
+		DeleteRoute: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 	}
 }
 
 func defaultRESTCallOptions() *CallOptions {
 	return &CallOptions{
 		ListConnectionProfiles: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -232,6 +264,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		GetConnectionProfile: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -241,10 +274,17 @@ func defaultRESTCallOptions() *CallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
-		CreateConnectionProfile: []gax.CallOption{},
-		UpdateConnectionProfile: []gax.CallOption{},
-		DeleteConnectionProfile: []gax.CallOption{},
+		CreateConnectionProfile: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateConnectionProfile: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteConnectionProfile: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		DiscoverConnectionProfile: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -255,6 +295,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		ListStreams: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -265,6 +306,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		GetStream: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -274,10 +316,17 @@ func defaultRESTCallOptions() *CallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
-		CreateStream: []gax.CallOption{},
-		UpdateStream: []gax.CallOption{},
-		DeleteStream: []gax.CallOption{},
+		CreateStream: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateStream: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteStream: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		FetchErrors: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -288,6 +337,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		FetchStaticIps: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -297,8 +347,11 @@ func defaultRESTCallOptions() *CallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
-		CreatePrivateConnection: []gax.CallOption{},
+		CreatePrivateConnection: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		GetPrivateConnection: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -309,6 +362,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		ListPrivateConnections: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -318,9 +372,14 @@ func defaultRESTCallOptions() *CallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
-		DeletePrivateConnection: []gax.CallOption{},
-		CreateRoute:             []gax.CallOption{},
+		DeletePrivateConnection: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		CreateRoute: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		GetRoute: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -331,6 +390,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		ListRoutes: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -340,7 +400,9 @@ func defaultRESTCallOptions() *CallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
-		DeleteRoute: []gax.CallOption{},
+		DeleteRoute: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 	}
 }
 
@@ -610,9 +672,6 @@ type gRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing Client
 	CallOptions **CallOptions
 
@@ -642,11 +701,6 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -654,10 +708,9 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 	client := Client{CallOptions: defaultCallOptions()}
 
 	c := &gRPCClient{
-		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
-		client:           datastreampb.NewDatastreamClient(connPool),
-		CallOptions:      &client.CallOptions,
+		connPool:    connPool,
+		client:      datastreampb.NewDatastreamClient(connPool),
+		CallOptions: &client.CallOptions,
 	}
 	c.setGoogleClientInfo()
 
@@ -689,7 +742,7 @@ func (c *gRPCClient) Connection() *grpc.ClientConn {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -764,7 +817,7 @@ func defaultRESTClientOptions() []option.ClientOption {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *restClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -829,11 +882,6 @@ func (c *gRPCClient) ListConnectionProfiles(ctx context.Context, req *datastream
 }
 
 func (c *gRPCClient) GetConnectionProfile(ctx context.Context, req *datastreampb.GetConnectionProfileRequest, opts ...gax.CallOption) (*datastreampb.ConnectionProfile, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -851,11 +899,6 @@ func (c *gRPCClient) GetConnectionProfile(ctx context.Context, req *datastreampb
 }
 
 func (c *gRPCClient) CreateConnectionProfile(ctx context.Context, req *datastreampb.CreateConnectionProfileRequest, opts ...gax.CallOption) (*CreateConnectionProfileOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -875,11 +918,6 @@ func (c *gRPCClient) CreateConnectionProfile(ctx context.Context, req *datastrea
 }
 
 func (c *gRPCClient) UpdateConnectionProfile(ctx context.Context, req *datastreampb.UpdateConnectionProfileRequest, opts ...gax.CallOption) (*UpdateConnectionProfileOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "connection_profile.name", url.QueryEscape(req.GetConnectionProfile().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -899,11 +937,6 @@ func (c *gRPCClient) UpdateConnectionProfile(ctx context.Context, req *datastrea
 }
 
 func (c *gRPCClient) DeleteConnectionProfile(ctx context.Context, req *datastreampb.DeleteConnectionProfileRequest, opts ...gax.CallOption) (*DeleteConnectionProfileOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -923,11 +956,6 @@ func (c *gRPCClient) DeleteConnectionProfile(ctx context.Context, req *datastrea
 }
 
 func (c *gRPCClient) DiscoverConnectionProfile(ctx context.Context, req *datastreampb.DiscoverConnectionProfileRequest, opts ...gax.CallOption) (*datastreampb.DiscoverConnectionProfileResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -990,11 +1018,6 @@ func (c *gRPCClient) ListStreams(ctx context.Context, req *datastreampb.ListStre
 }
 
 func (c *gRPCClient) GetStream(ctx context.Context, req *datastreampb.GetStreamRequest, opts ...gax.CallOption) (*datastreampb.Stream, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1012,11 +1035,6 @@ func (c *gRPCClient) GetStream(ctx context.Context, req *datastreampb.GetStreamR
 }
 
 func (c *gRPCClient) CreateStream(ctx context.Context, req *datastreampb.CreateStreamRequest, opts ...gax.CallOption) (*CreateStreamOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1036,11 +1054,6 @@ func (c *gRPCClient) CreateStream(ctx context.Context, req *datastreampb.CreateS
 }
 
 func (c *gRPCClient) UpdateStream(ctx context.Context, req *datastreampb.UpdateStreamRequest, opts ...gax.CallOption) (*UpdateStreamOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "stream.name", url.QueryEscape(req.GetStream().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1060,11 +1073,6 @@ func (c *gRPCClient) UpdateStream(ctx context.Context, req *datastreampb.UpdateS
 }
 
 func (c *gRPCClient) DeleteStream(ctx context.Context, req *datastreampb.DeleteStreamRequest, opts ...gax.CallOption) (*DeleteStreamOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1084,11 +1092,6 @@ func (c *gRPCClient) DeleteStream(ctx context.Context, req *datastreampb.DeleteS
 }
 
 func (c *gRPCClient) FetchErrors(ctx context.Context, req *datastreampb.FetchErrorsRequest, opts ...gax.CallOption) (*FetchErrorsOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "stream", url.QueryEscape(req.GetStream())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1153,11 +1156,6 @@ func (c *gRPCClient) FetchStaticIps(ctx context.Context, req *datastreampb.Fetch
 }
 
 func (c *gRPCClient) CreatePrivateConnection(ctx context.Context, req *datastreampb.CreatePrivateConnectionRequest, opts ...gax.CallOption) (*CreatePrivateConnectionOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1177,11 +1175,6 @@ func (c *gRPCClient) CreatePrivateConnection(ctx context.Context, req *datastrea
 }
 
 func (c *gRPCClient) GetPrivateConnection(ctx context.Context, req *datastreampb.GetPrivateConnectionRequest, opts ...gax.CallOption) (*datastreampb.PrivateConnection, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1244,11 +1237,6 @@ func (c *gRPCClient) ListPrivateConnections(ctx context.Context, req *datastream
 }
 
 func (c *gRPCClient) DeletePrivateConnection(ctx context.Context, req *datastreampb.DeletePrivateConnectionRequest, opts ...gax.CallOption) (*DeletePrivateConnectionOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1268,11 +1256,6 @@ func (c *gRPCClient) DeletePrivateConnection(ctx context.Context, req *datastrea
 }
 
 func (c *gRPCClient) CreateRoute(ctx context.Context, req *datastreampb.CreateRouteRequest, opts ...gax.CallOption) (*CreateRouteOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1292,11 +1275,6 @@ func (c *gRPCClient) CreateRoute(ctx context.Context, req *datastreampb.CreateRo
 }
 
 func (c *gRPCClient) GetRoute(ctx context.Context, req *datastreampb.GetRouteRequest, opts ...gax.CallOption) (*datastreampb.Route, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1359,11 +1337,6 @@ func (c *gRPCClient) ListRoutes(ctx context.Context, req *datastreampb.ListRoute
 }
 
 func (c *gRPCClient) DeleteRoute(ctx context.Context, req *datastreampb.DeleteRouteRequest, opts ...gax.CallOption) (*DeleteRouteOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1443,13 +1416,13 @@ func (c *restClient) ListConnectionProfiles(ctx context.Context, req *datastream
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -1518,13 +1491,13 @@ func (c *restClient) GetConnectionProfile(ctx context.Context, req *datastreampb
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1586,13 +1559,13 @@ func (c *restClient) CreateConnectionProfile(ctx context.Context, req *datastrea
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1633,7 +1606,7 @@ func (c *restClient) UpdateConnectionProfile(ctx context.Context, req *datastrea
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask))
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1665,13 +1638,13 @@ func (c *restClient) UpdateConnectionProfile(ctx context.Context, req *datastrea
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1730,13 +1703,13 @@ func (c *restClient) DeleteConnectionProfile(ctx context.Context, req *datastrea
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1802,13 +1775,13 @@ func (c *restClient) DiscoverConnectionProfile(ctx context.Context, req *datastr
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1879,13 +1852,13 @@ func (c *restClient) ListStreams(ctx context.Context, req *datastreampb.ListStre
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -1954,13 +1927,13 @@ func (c *restClient) GetStream(ctx context.Context, req *datastreampb.GetStreamR
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2028,13 +2001,13 @@ func (c *restClient) CreateStream(ctx context.Context, req *datastreampb.CreateS
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2078,7 +2051,7 @@ func (c *restClient) UpdateStream(ctx context.Context, req *datastreampb.UpdateS
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask))
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
 	}
 	if req.GetValidateOnly() {
 		params.Add("validateOnly", fmt.Sprintf("%v", req.GetValidateOnly()))
@@ -2113,13 +2086,13 @@ func (c *restClient) UpdateStream(ctx context.Context, req *datastreampb.UpdateS
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2178,13 +2151,13 @@ func (c *restClient) DeleteStream(ctx context.Context, req *datastreampb.DeleteS
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2246,13 +2219,13 @@ func (c *restClient) FetchErrors(ctx context.Context, req *datastreampb.FetchErr
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2324,13 +2297,13 @@ func (c *restClient) FetchStaticIps(ctx context.Context, req *datastreampb.Fetch
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -2409,13 +2382,13 @@ func (c *restClient) CreatePrivateConnection(ctx context.Context, req *datastrea
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2472,13 +2445,13 @@ func (c *restClient) GetPrivateConnection(ctx context.Context, req *datastreampb
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2550,13 +2523,13 @@ func (c *restClient) ListPrivateConnections(ctx context.Context, req *datastream
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -2630,13 +2603,13 @@ func (c *restClient) DeletePrivateConnection(ctx context.Context, req *datastrea
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2704,13 +2677,13 @@ func (c *restClient) CreateRoute(ctx context.Context, req *datastreampb.CreateRo
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2767,13 +2740,13 @@ func (c *restClient) GetRoute(ctx context.Context, req *datastreampb.GetRouteReq
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2845,13 +2818,13 @@ func (c *restClient) ListRoutes(ctx context.Context, req *datastreampb.ListRoute
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -2922,13 +2895,13 @@ func (c *restClient) DeleteRoute(ctx context.Context, req *datastreampb.DeleteRo
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil

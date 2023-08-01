@@ -554,10 +554,6 @@ var GenprotoPkgMigration map[string]Pkg = map[string]Pkg{
 		ImportPath: "cloud.google.com/go/security/privateca/apiv1/privatecapb",
 		Status:     StatusMigrated,
 	},
-	"google.golang.org/genproto/googleapis/cloud/security/privateca/v1beta1": {
-		ImportPath: "cloud.google.com/go/security/privateca/apiv1beta1/privatecapb",
-		Status:     StatusMigrated,
-	},
 	"google.golang.org/genproto/googleapis/cloud/securitycenter/settings/v1beta1": {
 		ImportPath: "cloud.google.com/go/securitycenter/settings/apiv1beta1/settingspb",
 		Status:     StatusMigrated,
@@ -900,6 +896,10 @@ var GenprotoPkgMigration map[string]Pkg = map[string]Pkg{
 	},
 	"google.golang.org/genproto/googleapis/devtools/cloudbuild/v2": {
 		ImportPath: "cloud.google.com/go/cloudbuild/apiv2/cloudbuildpb",
+		Status:     StatusMigrated,
+	},
+	"google.golang.org/genproto/googleapis/cloud/workstations/v1beta": {
+		ImportPath: "cloud.google.com/go/workstations/apiv1beta/workstationspb",
 		Status:     StatusMigrated,
 	},
 }

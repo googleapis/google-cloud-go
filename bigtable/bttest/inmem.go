@@ -33,6 +33,7 @@ package bttest // import "cloud.google.com/go/bigtable/bttest"
 import (
 	"bytes"
 	"context"
+	"encoding/base64"
 	"encoding/binary"
 	"fmt"
 	"log"
@@ -45,12 +46,15 @@ import (
 	"sync"
 	"time"
 
+	"google.golang.org/grpc/metadata"
+	"google.golang.org/protobuf/proto"
+
+	longrunning "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	emptypb "github.com/golang/protobuf/ptypes/empty"
 	"github.com/golang/protobuf/ptypes/wrappers"
 	"github.com/google/btree"
 	btapb "google.golang.org/genproto/googleapis/bigtable/admin/v2"
 	btpb "google.golang.org/genproto/googleapis/bigtable/v2"
-	"google.golang.org/genproto/googleapis/longrunning"
 	statpb "google.golang.org/genproto/googleapis/rpc/status"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -423,7 +427,31 @@ func (s *server) DeleteSnapshot(context.Context, *btapb.DeleteSnapshotRequest) (
 	return nil, status.Errorf(codes.Unimplemented, "the emulator does not currently support snapshots")
 }
 
+func featureFlagsFromContext(context context.Context) *btpb.FeatureFlags {
+	ff := &btpb.FeatureFlags{}
+
+	var md, ok = metadata.FromIncomingContext(context)
+	if !ok {
+		return ff
+	}
+
+	features := md.Get("bigtable-features")
+	if len(features) == 0 {
+		return ff
+	}
+
+	dec, err := base64.URLEncoding.DecodeString(features[0])
+	if err != nil {
+		return ff
+	}
+
+	_ = proto.Unmarshal(dec, ff)
+	return ff
+}
+
 func (s *server) ReadRows(req *btpb.ReadRowsRequest, stream btpb.Bigtable_ReadRowsServer) error {
+	featureFlags := featureFlagsFromContext(stream.Context())
+
 	start := time.Now()
 	s.mu.Lock()
 	tbl, ok := s.tables[req.TableName]
@@ -499,7 +527,15 @@ func (s *server) ReadRows(req *btpb.ReadRowsRequest, stream btpb.Bigtable_ReadRo
 			rows = append(rows, r)
 		}
 	}
-	sort.Sort(byRowKey(rows))
+	if req.Reversed {
+		if !featureFlags.ReverseScans {
+			return status.Errorf(codes.Unimplemented, "Client doesn't support reverse scans yet")
+		}
+
+		sort.Sort(sort.Reverse(byRowKey(rows)))
+	} else {
+		sort.Sort(byRowKey(rows))
+	}
 
 	limit := int(req.RowsLimit)
 	if limit == 0 {
@@ -513,7 +549,7 @@ func (s *server) ReadRows(req *btpb.ReadRowsRequest, stream btpb.Bigtable_ReadRo
 			break
 		}
 
-		if err := streamRow(stream, r, req.Filter, iterStats); err != nil {
+		if err := streamRow(stream, r, req.Filter, iterStats, featureFlags); err != nil {
 			return err
 		}
 	}
@@ -539,7 +575,7 @@ func (s *server) ReadRows(req *btpb.ReadRowsRequest, stream btpb.Bigtable_ReadRo
 
 // streamRow filters the given row and sends it via the given stream.
 // Returns true if at least one cell matched the filter and was streamed, false otherwise.
-func streamRow(stream btpb.Bigtable_ReadRowsServer, r *row, f *btpb.RowFilter, s *btpb.ReadIterationStats) error {
+func streamRow(stream btpb.Bigtable_ReadRowsServer, r *row, f *btpb.RowFilter, s *btpb.ReadIterationStats, ff *btpb.FeatureFlags) error {
 	r.mu.Lock()
 	nr := r.copy()
 	r.mu.Unlock()
@@ -558,6 +594,14 @@ func streamRow(stream btpb.Bigtable_ReadRowsServer, r *row, f *btpb.RowFilter, s
 		return err
 	}
 	if !match {
+		// if the client requested it, send last_scanned_row responses for rows that didn't match a filter
+		if ff.LastScannedRowResponses {
+			rrr := &btpb.ReadRowsResponse{
+				LastScannedRowKey: []byte(r.key),
+			}
+			return stream.Send(rrr)
+		}
+
 		return nil
 	}
 

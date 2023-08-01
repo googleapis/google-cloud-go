@@ -10,6 +10,11 @@
         "grpc": {
           "libraryClient": "BackupForGKEClient",
           "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
             "CreateBackup": {
               "methods": [
                 "CreateBackup"
@@ -40,6 +45,11 @@
                 "DeleteBackupPlan"
               ]
             },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
             "DeleteRestore": {
               "methods": [
                 "DeleteRestore"
@@ -58,6 +68,21 @@
             "GetBackupPlan": {
               "methods": [
                 "GetBackupPlan"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
               ]
             },
             "GetRestore": {
@@ -90,6 +115,16 @@
                 "ListBackups"
               ]
             },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
             "ListRestorePlans": {
               "methods": [
                 "ListRestorePlans"
@@ -108,6 +143,16 @@
             "ListVolumeRestores": {
               "methods": [
                 "ListVolumeRestores"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
               ]
             },
             "UpdateBackup": {
@@ -135,6 +180,11 @@
         "rest": {
           "libraryClient": "BackupForGKEClient",
           "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
             "CreateBackup": {
               "methods": [
                 "CreateBackup"
@@ -165,6 +215,11 @@
                 "DeleteBackupPlan"
               ]
             },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
             "DeleteRestore": {
               "methods": [
                 "DeleteRestore"
@@ -183,6 +238,21 @@
             "GetBackupPlan": {
               "methods": [
                 "GetBackupPlan"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
               ]
             },
             "GetRestore": {
@@ -215,6 +285,16 @@
                 "ListBackups"
               ]
             },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
             "ListRestorePlans": {
               "methods": [
                 "ListRestorePlans"
@@ -233,6 +313,16 @@
             "ListVolumeRestores": {
               "methods": [
                 "ListVolumeRestores"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
               ]
             },
             "UpdateBackup": {

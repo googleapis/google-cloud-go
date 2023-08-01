@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/bigquery/migration/apiv2alpha",
-    "version": "1.46.0",
+    "version": "1.53.0",
     "language": "GO",
     "apis": [
       {
@@ -34,7 +34,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "migrationpb.MigrationWorkflow",
+        "resultType": "*migrationpb.MigrationWorkflow",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.bigquery.migration.v2alpha.Client"
@@ -125,7 +125,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "migrationpb.MigrationSubtask",
+        "resultType": "*migrationpb.MigrationSubtask",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.bigquery.migration.v2alpha.Client"
@@ -171,7 +171,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "migrationpb.MigrationWorkflow",
+        "resultType": "*migrationpb.MigrationWorkflow",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.bigquery.migration.v2alpha.Client"
@@ -327,6 +327,52 @@
         {
           "start": 18,
           "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "bigquerymigration_v2alpha_generated_SqlTranslationService_TranslateQuery_sync",
+      "title": "bigquerymigration TranslateQuery Sample",
+      "description": "TranslateQuery translates input queries from source dialects to GoogleSQL.",
+      "file": "SqlTranslationClient/TranslateQuery/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "TranslateQuery",
+        "fullName": "google.cloud.bigquery.migration.v2alpha.SqlTranslationClient.TranslateQuery",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "migrationpb.TranslateQueryRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*migrationpb.TranslateQueryResponse",
+        "client": {
+          "shortName": "SqlTranslationClient",
+          "fullName": "google.cloud.bigquery.migration.v2alpha.SqlTranslationClient"
+        },
+        "method": {
+          "shortName": "TranslateQuery",
+          "fullName": "google.cloud.bigquery.migration.v2alpha.SqlTranslationService.TranslateQuery",
+          "service": {
+            "shortName": "SqlTranslationService",
+            "fullName": "google.cloud.bigquery.migration.v2alpha.SqlTranslationService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
           "type": "FULL"
         }
       ]

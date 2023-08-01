@@ -31,6 +31,7 @@ export GOOGLE_APPLICATION_CREDENTIALS=$KOKORO_KEYSTORE_DIR/72523_go_integration_
 
 export GCLOUD_TESTS_GOLANG_PROJECT_ID=dulcet-port-762
 export GCLOUD_TESTS_GOLANG_KEY=$GOOGLE_APPLICATION_CREDENTIALS
+export GCLOUD_TESTS_GOLANG_DATASTORE_DATABASES=database-01
 export GCLOUD_TESTS_GOLANG_FIRESTORE_PROJECT_ID=gcloud-golang-firestore-tests
 export GCLOUD_TESTS_GOLANG_FIRESTORE_KEY=$KOKORO_KEYSTORE_DIR/72523_go_firestore_integration_service_account
 export GCLOUD_TESTS_API_KEY=`cat $KOKORO_KEYSTORE_DIR/72523_go_gcloud_tests_api_key`
@@ -78,8 +79,8 @@ try3 go mod download
 # runDirectoryTests runs all tests in the current directory.
 # If a PATH argument is specified, it runs `go test [PATH]`.
 runDirectoryTests() {
-  if [[ $PWD != *"/internal/"* ]] ||
-    [[ $PWD != *"/third_party/"* ]] &&
+  if { [[ $PWD == *"/internal/"* ]] ||
+    [[ $PWD == *"/third_party/"* ]]; } &&
     [[ $KOKORO_JOB_NAME == *"earliest"* ]]; then
     # internal tools only expected to work with latest go version
     return
@@ -98,13 +99,13 @@ runDirectoryTests() {
 runEmulatorTests() {
   if [ -f "emulator_test.sh" ]; then
     ./emulator_test.sh
+    # Takes the kokoro output log (raw stdout) and creates a machine-parseable
+    # xUnit XML file.
+    cat sponge_log.log |
+      go-junit-report -set-exit-code >sponge_log.xml
+    # Add the exit codes together so we exit non-zero if any module fails.
+    exit_code=$(($exit_code + $?))
   fi
-  # Takes the kokoro output log (raw stdout) and creates a machine-parseable
-  # xUnit XML file.
-  cat sponge_log.log \
-    | go-junit-report -set-exit-code > sponge_log.xml
-  # Add the exit codes together so we exit non-zero if any module fails.
-  exit_code=$(($exit_code + $?))
 }
 
 # testAllModules runs all modules' tests, including emulator tests.
@@ -139,6 +140,12 @@ exit_code=0
 if [[ $KOKORO_JOB_NAME == *"continuous"* ]]; then
   # Continuous jobs only run root tests & tests in submodules changed by the PR.
   SIGNIFICANT_CHANGES=$(git --no-pager diff --name-only $KOKORO_GIT_COMMIT^..$KOKORO_GIT_COMMIT | grep -Ev '(\.md$|^\.github)' || true)
+
+  if [ -z $SIGNIFICANT_CHANGES ]; then
+    echo "No changes detected, skipping tests"
+    exit 0
+  fi
+
   # CHANGED_DIRS is the list of significant top-level directories that changed,
   # but weren't deleted by the current PR. CHANGED_DIRS will be empty when run on main.
   CHANGED_DIRS=$(echo "$SIGNIFICANT_CHANGES" | tr ' ' '\n' | grep "/" | cut -d/ -f1 | sort -u | tr '\n' ' ' | xargs ls -d 2>/dev/null || true)

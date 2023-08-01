@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/kms/inventory/apiv1",
-    "version": "1.9.0",
+    "version": "1.15.0",
     "language": "GO",
     "apis": [
       {
@@ -60,7 +60,7 @@
     {
       "regionTag": "kmsinventory_v1_generated_KeyTrackingService_GetProtectedResourcesSummary_sync",
       "title": "kmsinventory GetProtectedResourcesSummary Sample",
-      "description": "GetProtectedResourcesSummary returns aggregate information about the resources protected by the given\nCloud KMS CryptoKey. Only resources within\nthe same Cloud organization as the key will be returned. The project that\nholds the key must be part of an organization in order for this call to\nsucceed.",
+      "description": "GetProtectedResourcesSummary returns aggregate information about the resources protected by the given\nCloud KMS [CryptoKey][google.cloud.kms.v1.CryptoKey]. Only resources within\nthe same Cloud organization as the key will be returned. The project that\nholds the key must be part of an organization in order for this call to\nsucceed.",
       "file": "KeyTrackingClient/GetProtectedResourcesSummary/main.go",
       "language": "GO",
       "clientMethod": {
@@ -80,7 +80,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "inventorypb.ProtectedResourcesSummary",
+        "resultType": "*inventorypb.ProtectedResourcesSummary",
         "client": {
           "shortName": "KeyTrackingClient",
           "fullName": "google.cloud.kms.inventory.v1.KeyTrackingClient"
@@ -106,7 +106,7 @@
     {
       "regionTag": "kmsinventory_v1_generated_KeyTrackingService_SearchProtectedResources_sync",
       "title": "kmsinventory SearchProtectedResources Sample",
-      "description": "SearchProtectedResources returns metadata about the resources protected by the given Cloud KMS\nCryptoKey in the given Cloud organization.",
+      "description": "SearchProtectedResources returns metadata about the resources protected by the given Cloud KMS\n[CryptoKey][google.cloud.kms.v1.CryptoKey] in the given Cloud organization.",
       "file": "KeyTrackingClient/SearchProtectedResources/main.go",
       "language": "GO",
       "clientMethod": {

@@ -24,7 +24,7 @@ import (
 	reflect "reflect"
 	sync "sync"
 
-	_ "google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1"
+	_ "cloud.google.com/go/bigquery/storage/apiv1/storagepb"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 )

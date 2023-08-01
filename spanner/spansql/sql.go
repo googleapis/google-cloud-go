@@ -38,7 +38,11 @@ func buildSQL(x interface{ addSQL(*strings.Builder) }) string {
 }
 
 func (ct CreateTable) SQL() string {
-	str := "CREATE TABLE " + ct.Name.SQL() + " (\n"
+	str := "CREATE TABLE "
+	if ct.IfNotExists {
+		str += "IF NOT EXISTS "
+	}
+	str += ct.Name.SQL() + " (\n"
 	for _, c := range ct.Columns {
 		str += "  " + c.SQL() + ",\n"
 	}
@@ -70,7 +74,11 @@ func (ci CreateIndex) SQL() string {
 	if ci.NullFiltered {
 		str += " NULL_FILTERED"
 	}
-	str += " INDEX " + ci.Name.SQL() + " ON " + ci.Table.SQL() + "("
+	str += " INDEX "
+	if ci.IfNotExists {
+		str += "IF NOT EXISTS "
+	}
+	str += ci.Name.SQL() + " ON " + ci.Table.SQL() + "("
 	for i, c := range ci.Columns {
 		if i > 0 {
 			str += ", "
@@ -138,11 +146,21 @@ func (w WatchDef) SQL() string {
 }
 
 func (dt DropTable) SQL() string {
-	return "DROP TABLE " + dt.Name.SQL()
+	str := "DROP TABLE "
+	if dt.IfExists {
+		str += "IF EXISTS "
+	}
+	str += dt.Name.SQL()
+	return str
 }
 
 func (di DropIndex) SQL() string {
-	return "DROP INDEX " + di.Name.SQL()
+	str := "DROP INDEX "
+	if di.IfExists {
+		str += "IF EXISTS "
+	}
+	str += di.Name.SQL()
+	return str
 }
 
 func (dv DropView) SQL() string {
@@ -166,6 +184,12 @@ func (gr GrantRole) SQL() string {
 			}
 		}
 		sql += " ON TABLE " + idList(gr.TableNames, ", ")
+	} else if len(gr.TvfNames) > 0 {
+		sql += "EXECUTE ON TABLE FUNCTION " + idList(gr.TvfNames, ", ")
+	} else if len(gr.ViewNames) > 0 {
+		sql += "SELECT ON VIEW " + idList(gr.ViewNames, ", ")
+	} else if len(gr.ChangeStreamNames) > 0 {
+		sql += "SELECT ON CHANGE STREAM " + idList(gr.ChangeStreamNames, ", ")
 	} else {
 		sql += "ROLE " + idList(gr.GrantRoleNames, ", ")
 	}
@@ -186,6 +210,12 @@ func (rr RevokeRole) SQL() string {
 			}
 		}
 		sql += " ON TABLE " + idList(rr.TableNames, ", ")
+	} else if len(rr.TvfNames) > 0 {
+		sql += "EXECUTE ON TABLE FUNCTION " + idList(rr.TvfNames, ", ")
+	} else if len(rr.ViewNames) > 0 {
+		sql += "SELECT ON VIEW " + idList(rr.ViewNames, ", ")
+	} else if len(rr.ChangeStreamNames) > 0 {
+		sql += "SELECT ON CHANGE STREAM " + idList(rr.ChangeStreamNames, ", ")
 	} else {
 		sql += "ROLE " + idList(rr.RevokeRoleNames, ", ")
 	}
@@ -246,7 +276,12 @@ func (at AlterTable) SQL() string {
 }
 
 func (ac AddColumn) SQL() string {
-	return "ADD COLUMN " + ac.Def.SQL()
+	str := "ADD COLUMN "
+	if ac.IfNotExists {
+		str += "IF NOT EXISTS "
+	}
+	str += ac.Def.SQL()
+	return str
 }
 
 func (dc DropColumn) SQL() string {
@@ -511,6 +546,7 @@ func (fk ForeignKey) SQL() string {
 	str := "FOREIGN KEY (" + idList(fk.Columns, ", ")
 	str += ") REFERENCES " + fk.RefTable.SQL() + " ("
 	str += idList(fk.RefColumns, ", ") + ")"
+	str += " ON DELETE " + fk.OnDelete.SQL()
 	return str
 }
 

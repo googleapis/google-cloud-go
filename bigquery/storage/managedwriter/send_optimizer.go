@@ -15,132 +15,155 @@
 package managedwriter
 
 import (
+	"hash/crc32"
+	"time"
+
 	"cloud.google.com/go/bigquery/storage/apiv1/storagepb"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/descriptorpb"
 )
 
-// optimizeAndSend handles the general task of optimizing AppendRowsRequest messages send to the backend.
+// sendOptimizer handles the general task of optimizing AppendRowsRequest messages send to the backend.
 //
-// The basic premise is that by maintaining awareness of previous sends, individual messages can be made
-// more efficient (smaller) by redacting redundant information.
+// The general premise is that the ordering of AppendRowsRequests on a connection provides some opportunities
+// to reduce payload size, thus potentially increasing throughput.  Care must be taken, however, as deep inspection
+// of requests is potentially more costly (in terms of CPU usage) than gains from reducing request sizes.
 type sendOptimizer interface {
-	// signalReset is used to signal to the optimizer that the connection is freshly (re)opened.
+	// signalReset is used to signal to the optimizer that the connection is freshly (re)opened, or that a previous
+	// send yielded an error.
 	signalReset()
 
-	// optimizeSend handles redactions for a given stream.
-	optimizeSend(arc storagepb.BigQueryWrite_AppendRowsClient, req *storagepb.AppendRowsRequest) error
+	// optimizeSend handles possible manipulation of a request, and triggers the send.
+	optimizeSend(arc storagepb.BigQueryWrite_AppendRowsClient, pw *pendingWrite) error
+
+	// isMultiplexing tracks if we've actually sent writes to more than a single stream on this connection.
+	isMultiplexing() bool
 }
 
-// passthroughOptimizer is an optimizer that doesn't modify requests.
-type passthroughOptimizer struct {
+// verboseOptimizer is a primarily a testing optimizer that always sends the full request.
+type verboseOptimizer struct {
 }
 
-func (po *passthroughOptimizer) signalReset() {
-	// we don't care, just here to satisfy the interface.
+func (vo *verboseOptimizer) signalReset() {
+	// This optimizer is stateless.
 }
 
-func (po *passthroughOptimizer) optimizeSend(arc storagepb.BigQueryWrite_AppendRowsClient, req *storagepb.AppendRowsRequest) error {
-	return arc.Send(req)
+// optimizeSend populates a full request every time.
+func (vo *verboseOptimizer) optimizeSend(arc storagepb.BigQueryWrite_AppendRowsClient, pw *pendingWrite) error {
+	return arc.Send(pw.constructFullRequest(true))
 }
 
-// simplexOptimizer is used for connections where there's only a single stream's data being transmitted.
+func (vo *verboseOptimizer) isMultiplexing() bool {
+	// we declare this no to ensure we always reconnect on schema changes.
+	return false
+}
+
+// simplexOptimizer is used for connections bearing AppendRowsRequest for only a single stream.
 //
-// The optimizations here are straightforward: the first request on a stream is unmodified, all
-// subsequent requests can redact WriteStream, WriterSchema, and TraceID.
+// The optimizations here are straightforward:
+// * The first request on a connection is unmodified.
+// * Subsequent requests can redact WriteStream, WriterSchema, and TraceID.
 //
-// TODO: this optimizer doesn't do schema evolution checkes, but relies on existing behavior that triggers reconnect
-// on schema change.  This should be revisited if and when explicit streams support multiplexing and schema change in-connection.
+// Behavior of schema evolution differs based on the type of stream.
+// * For an explicit stream, the connection must reconnect to signal schema change (handled in connection).
+// * For default streams, the new descriptor (inside WriterSchema) can simply be sent.
 type simplexOptimizer struct {
 	haveSent bool
 }
 
-func (eo *simplexOptimizer) signalReset() {
-	eo.haveSent = false
+func (so *simplexOptimizer) signalReset() {
+	so.haveSent = false
 }
 
-func (eo *simplexOptimizer) optimizeSend(arc storagepb.BigQueryWrite_AppendRowsClient, req *storagepb.AppendRowsRequest) error {
+func (so *simplexOptimizer) optimizeSend(arc storagepb.BigQueryWrite_AppendRowsClient, pw *pendingWrite) error {
 	var err error
-	if eo.haveSent {
-		// subsequent send, clone and redact.
-		cp := proto.Clone(req).(*storagepb.AppendRowsRequest)
-		cp.WriteStream = ""
-		if pr := cp.GetProtoRows(); pr != nil {
-			pr.WriterSchema = nil
-		}
-		cp.TraceId = ""
-		err = arc.Send(cp)
+	if so.haveSent {
+		// subsequent send, we can send the request unmodified.
+		err = arc.Send(pw.req)
 	} else {
-		// first request, send unmodified.
-		err = arc.Send(req)
+		// first request, build a full request.
+		err = arc.Send(pw.constructFullRequest(true))
 	}
-	eo.haveSent = err == nil
+	so.haveSent = err == nil
 	return err
 }
 
-// multiplexOptimizer is used for connections where requests for multiple streams are sent on a common connection.
+func (so *simplexOptimizer) isMultiplexing() bool {
+	// A simplex optimizer is not designed for multiplexing.
+	return false
+}
+
+// multiplexOptimizer is used for connections where requests for multiple default streams are sent on a common
+// connection.  Only default streams can currently be multiplexed.
 //
 // In this case, the optimizations are as follows:
-// * We **must** send the WriteStream on all requests.
+// * We must send the WriteStream on all requests.
 // * For sequential requests to the same stream, schema can be redacted after the first request.
 // * Trace ID can be redacted from all requests after the first.
+//
+// Schema evolution is simply a case of sending the new WriterSchema as part of the request(s).  No explicit
+// reconnection is necessary.
 type multiplexOptimizer struct {
-	prev *storagepb.AppendRowsRequest
+	prevStream            string
+	prevDescriptorVersion *descriptorVersion
+	multiplexStreams      bool
 }
 
 func (mo *multiplexOptimizer) signalReset() {
-	mo.prev = nil
+	mo.prevStream = ""
+	mo.multiplexStreams = false
+	mo.prevDescriptorVersion = nil
 }
 
-func (mo *multiplexOptimizer) optimizeSend(arc storagepb.BigQueryWrite_AppendRowsClient, req *storagepb.AppendRowsRequest) error {
+func (mo *multiplexOptimizer) optimizeSend(arc storagepb.BigQueryWrite_AppendRowsClient, pw *pendingWrite) error {
 	var err error
-	// we'll need a copy
-	cp := proto.Clone(req).(*storagepb.AppendRowsRequest)
-	if mo.prev != nil {
-		var swapOnSuccess bool
-		// Clear trace ID.  We use the _presence_ of a previous request for reasoning about TraceID, we don't compare
-		// it's value.
-		cp.TraceId = ""
-		// we have a previous send.
-		if cp.GetWriteStream() != mo.prev.GetWriteStream() {
-			// different stream, no further optimization.
-			swapOnSuccess = true
-		} else {
-			// same stream
-			if !proto.Equal(getDescriptorFromAppend(mo.prev), getDescriptorFromAppend(cp)) {
-				swapOnSuccess = true
-			} else {
-				// the redaction case, where we won't swap.
-				if pr := cp.GetProtoRows(); pr != nil {
-					pr.WriterSchema = nil
+	if mo.prevStream == "" {
+		// startup case, send a full request (with traceID).
+		req := pw.constructFullRequest(true)
+		err = arc.Send(req)
+		if err == nil {
+			mo.prevStream = req.GetWriteStream()
+			mo.prevDescriptorVersion = pw.descVersion
+		}
+	} else {
+		// We have a previous send.  Determine if it's the same stream or a different one.
+		if mo.prevStream == pw.writeStreamID {
+			// add the stream ID to the optimized request, as multiplex-optimization wants it present.
+			if pw.req.GetWriteStream() == "" {
+				pw.req.WriteStream = pw.writeStreamID
+			}
+			// swapOnSuccess tracks if we need to update schema versions on successful send.
+			swapOnSuccess := false
+			req := pw.req
+			if mo.prevDescriptorVersion != nil {
+				if !mo.prevDescriptorVersion.eqVersion(pw.descVersion) {
+					swapOnSuccess = true
+					req = pw.constructFullRequest(false) // full request minus traceID.
 				}
 			}
-		}
-		err = arc.Send(cp)
-		if err == nil && swapOnSuccess {
-			if pr := cp.GetProtoRows(); pr != nil {
-				pr.Rows = nil
+			err = arc.Send(req)
+			if err == nil && swapOnSuccess {
+				mo.prevDescriptorVersion = pw.descVersion
 			}
-			cp.MissingValueInterpretations = nil
-			mo.prev = cp
+		} else {
+			// The previous send was for a different stream.  Send a full request, minus traceId.
+			req := pw.constructFullRequest(false)
+			err = arc.Send(req)
+			if err == nil {
+				// Send successful.  Update state to reflect this send is now the "previous" state.
+				mo.prevStream = pw.writeStreamID
+				mo.prevDescriptorVersion = pw.descVersion
+			}
+			// Also, note that we've sent traffic for multiple streams, which means the backend recognizes this
+			// is a multiplex stream as well.
+			mo.multiplexStreams = true
 		}
-		if err != nil {
-			mo.prev = nil
-		}
-		return err
-	}
-
-	// no previous trace case.
-	err = arc.Send(req)
-	if err == nil {
-		// copy the send as the previous.
-		if pr := cp.GetProtoRows(); pr != nil {
-			pr.Rows = nil
-		}
-		cp.MissingValueInterpretations = nil
-		mo.prev = cp
 	}
 	return err
+}
+
+func (mo *multiplexOptimizer) isMultiplexing() bool {
+	return mo.multiplexStreams
 }
 
 // getDescriptorFromAppend is a utility method for extracting the deeply nested schema
@@ -152,4 +175,54 @@ func getDescriptorFromAppend(req *storagepb.AppendRowsRequest) *descriptorpb.Des
 		}
 	}
 	return nil
+}
+
+// descriptorVersion is used for faster comparisons of proto descriptors.  Deep equality comparisons
+// of DescriptorProto can be very costly, so we use a simple versioning strategy based on
+// time and a crc32 hash of the serialized proto bytes.
+//
+// The descriptorVersion is used for retaining schema, signalling schema change and optimizing requests.
+type descriptorVersion struct {
+	versionTime     time.Time
+	descriptorProto *descriptorpb.DescriptorProto
+	hashVal         uint32
+}
+
+func newDescriptorVersion(in *descriptorpb.DescriptorProto) *descriptorVersion {
+	var hashVal uint32
+	// It is a known issue that we may have non-deterministic serialization of a DescriptorProto
+	// due to the nature of protobuf.  Our primary protection is the time-based version identifier,
+	// this hashing is primarily for time collisions.
+	if b, err := proto.Marshal(in); err == nil {
+		hashVal = crc32.ChecksumIEEE(b)
+	}
+	return &descriptorVersion{
+		versionTime:     time.Now(),
+		descriptorProto: proto.Clone(in).(*descriptorpb.DescriptorProto),
+		hashVal:         hashVal,
+	}
+}
+
+// eqVersion is the fast equality comparison that uses the versionTime and crc32 hash
+// in place of deep proto equality.
+func (dv *descriptorVersion) eqVersion(other *descriptorVersion) bool {
+	if dv == nil || other == nil {
+		return false
+	}
+	if dv.versionTime != other.versionTime {
+		return false
+	}
+	if dv.hashVal == 0 || other.hashVal == 0 {
+		return false
+	}
+	if dv.hashVal != other.hashVal {
+		return false
+	}
+	return true
+}
+
+// isNewer reports whether the current schema bears a newer time (version)
+// than the other.
+func (dv *descriptorVersion) isNewer(other *descriptorVersion) bool {
+	return dv.versionTime.UnixNano() > other.versionTime.UnixNano()
 }

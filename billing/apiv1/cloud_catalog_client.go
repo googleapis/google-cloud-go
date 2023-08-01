@@ -19,10 +19,11 @@ package billing
 import (
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"math"
 	"net/http"
 	"net/url"
+	"time"
 
 	billingpb "cloud.google.com/go/billing/apiv1/billingpb"
 	gax "github.com/googleapis/gax-go/v2"
@@ -60,15 +61,23 @@ func defaultCloudCatalogGRPCClientOptions() []option.ClientOption {
 
 func defaultCloudCatalogCallOptions() *CloudCatalogCallOptions {
 	return &CloudCatalogCallOptions{
-		ListServices: []gax.CallOption{},
-		ListSkus:     []gax.CallOption{},
+		ListServices: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ListSkus: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 	}
 }
 
 func defaultCloudCatalogRESTCallOptions() *CloudCatalogCallOptions {
 	return &CloudCatalogCallOptions{
-		ListServices: []gax.CallOption{},
-		ListSkus:     []gax.CallOption{},
+		ListServices: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ListSkus: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 	}
 }
 
@@ -135,9 +144,6 @@ type cloudCatalogGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing CloudCatalogClient
 	CallOptions **CloudCatalogCallOptions
 
@@ -164,11 +170,6 @@ func NewCloudCatalogClient(ctx context.Context, opts ...option.ClientOption) (*C
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -177,7 +178,6 @@ func NewCloudCatalogClient(ctx context.Context, opts ...option.ClientOption) (*C
 
 	c := &cloudCatalogGRPCClient{
 		connPool:           connPool,
-		disableDeadlines:   disableDeadlines,
 		cloudCatalogClient: billingpb.NewCloudCatalogClient(connPool),
 		CallOptions:        &client.CallOptions,
 	}
@@ -200,7 +200,7 @@ func (c *cloudCatalogGRPCClient) Connection() *grpc.ClientConn {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *cloudCatalogGRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -262,7 +262,7 @@ func defaultCloudCatalogRESTClientOptions() []option.ClientOption {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *cloudCatalogRESTClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -423,13 +423,13 @@ func (c *cloudCatalogRESTClient) ListServices(ctx context.Context, req *billingp
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -488,7 +488,7 @@ func (c *cloudCatalogRESTClient) ListSkus(ctx context.Context, req *billingpb.Li
 			if err != nil {
 				return nil, "", err
 			}
-			params.Add("endTime", string(endTime))
+			params.Add("endTime", string(endTime[1:len(endTime)-1]))
 		}
 		if req.GetPageSize() != 0 {
 			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
@@ -501,7 +501,7 @@ func (c *cloudCatalogRESTClient) ListSkus(ctx context.Context, req *billingpb.Li
 			if err != nil {
 				return nil, "", err
 			}
-			params.Add("startTime", string(startTime))
+			params.Add("startTime", string(startTime[1:len(startTime)-1]))
 		}
 
 		baseUrl.RawQuery = params.Encode()
@@ -528,13 +528,13 @@ func (c *cloudCatalogRESTClient) ListSkus(ctx context.Context, req *billingpb.Li
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil

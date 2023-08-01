@@ -20,13 +20,14 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"math"
 	"net/http"
 	"net/url"
 	"time"
 
 	dialogflowpb "cloud.google.com/go/dialogflow/apiv2/dialogflowpb"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
@@ -35,7 +36,6 @@ import (
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -71,6 +71,7 @@ func defaultFulfillmentsGRPCClientOptions() []option.ClientOption {
 func defaultFulfillmentsCallOptions() *FulfillmentsCallOptions {
 	return &FulfillmentsCallOptions{
 		GetFulfillment: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -82,6 +83,7 @@ func defaultFulfillmentsCallOptions() *FulfillmentsCallOptions {
 			}),
 		},
 		UpdateFulfillment: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -103,6 +105,7 @@ func defaultFulfillmentsCallOptions() *FulfillmentsCallOptions {
 func defaultFulfillmentsRESTCallOptions() *FulfillmentsCallOptions {
 	return &FulfillmentsCallOptions{
 		GetFulfillment: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -113,6 +116,7 @@ func defaultFulfillmentsRESTCallOptions() *FulfillmentsCallOptions {
 			}),
 		},
 		UpdateFulfillment: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -209,8 +213,7 @@ func (c *FulfillmentsClient) GetOperation(ctx context.Context, req *longrunningp
 	return c.internalClient.GetOperation(ctx, req, opts...)
 }
 
-// ListOperations lists operations that match the specified filter in the request. If
-// the server doesn’t support this method, it returns UNIMPLEMENTED.
+// ListOperations is a utility method from google.longrunning.Operations.
 func (c *FulfillmentsClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	return c.internalClient.ListOperations(ctx, req, opts...)
 }
@@ -221,9 +224,6 @@ func (c *FulfillmentsClient) ListOperations(ctx context.Context, req *longrunnin
 type fulfillmentsGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
-
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
 
 	// Points back to the CallOptions field of the containing FulfillmentsClient
 	CallOptions **FulfillmentsCallOptions
@@ -253,11 +253,6 @@ func NewFulfillmentsClient(ctx context.Context, opts ...option.ClientOption) (*F
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -266,7 +261,6 @@ func NewFulfillmentsClient(ctx context.Context, opts ...option.ClientOption) (*F
 
 	c := &fulfillmentsGRPCClient{
 		connPool:           connPool,
-		disableDeadlines:   disableDeadlines,
 		fulfillmentsClient: dialogflowpb.NewFulfillmentsClient(connPool),
 		CallOptions:        &client.CallOptions,
 		operationsClient:   longrunningpb.NewOperationsClient(connPool),
@@ -291,7 +285,7 @@ func (c *fulfillmentsGRPCClient) Connection() *grpc.ClientConn {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *fulfillmentsGRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -351,7 +345,7 @@ func defaultFulfillmentsRESTClientOptions() []option.ClientOption {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *fulfillmentsRESTClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -371,11 +365,6 @@ func (c *fulfillmentsRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 func (c *fulfillmentsGRPCClient) GetFulfillment(ctx context.Context, req *dialogflowpb.GetFulfillmentRequest, opts ...gax.CallOption) (*dialogflowpb.Fulfillment, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -393,11 +382,6 @@ func (c *fulfillmentsGRPCClient) GetFulfillment(ctx context.Context, req *dialog
 }
 
 func (c *fulfillmentsGRPCClient) UpdateFulfillment(ctx context.Context, req *dialogflowpb.UpdateFulfillmentRequest, opts ...gax.CallOption) (*dialogflowpb.Fulfillment, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "fulfillment.name", url.QueryEscape(req.GetFulfillment().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -592,13 +576,13 @@ func (c *fulfillmentsRESTClient) GetFulfillment(ctx context.Context, req *dialog
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -631,7 +615,7 @@ func (c *fulfillmentsRESTClient) UpdateFulfillment(ctx context.Context, req *dia
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask))
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -664,13 +648,13 @@ func (c *fulfillmentsRESTClient) UpdateFulfillment(ctx context.Context, req *dia
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -722,13 +706,13 @@ func (c *fulfillmentsRESTClient) GetLocation(ctx context.Context, req *locationp
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -796,13 +780,13 @@ func (c *fulfillmentsRESTClient) ListLocations(ctx context.Context, req *locatio
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -911,13 +895,13 @@ func (c *fulfillmentsRESTClient) GetOperation(ctx context.Context, req *longrunn
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -928,8 +912,7 @@ func (c *fulfillmentsRESTClient) GetOperation(ctx context.Context, req *longrunn
 	return resp, nil
 }
 
-// ListOperations lists operations that match the specified filter in the request. If
-// the server doesn’t support this method, it returns UNIMPLEMENTED.
+// ListOperations is a utility method from google.longrunning.Operations.
 func (c *fulfillmentsRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
 	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
@@ -986,13 +969,13 @@ func (c *fulfillmentsRESTClient) ListOperations(ctx context.Context, req *longru
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil

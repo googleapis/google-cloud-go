@@ -25,13 +25,13 @@ import (
 
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	pubsublitepb "cloud.google.com/go/pubsublite/apiv1/pubsublitepb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -82,6 +82,7 @@ func defaultAdminGRPCClientOptions() []option.ClientOption {
 func defaultAdminCallOptions() *AdminCallOptions {
 	return &AdminCallOptions{
 		CreateTopic: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -97,6 +98,7 @@ func defaultAdminCallOptions() *AdminCallOptions {
 			}),
 		},
 		GetTopic: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -112,6 +114,7 @@ func defaultAdminCallOptions() *AdminCallOptions {
 			}),
 		},
 		GetTopicPartitions: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -127,6 +130,7 @@ func defaultAdminCallOptions() *AdminCallOptions {
 			}),
 		},
 		ListTopics: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -142,6 +146,7 @@ func defaultAdminCallOptions() *AdminCallOptions {
 			}),
 		},
 		UpdateTopic: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -157,6 +162,7 @@ func defaultAdminCallOptions() *AdminCallOptions {
 			}),
 		},
 		DeleteTopic: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -172,6 +178,7 @@ func defaultAdminCallOptions() *AdminCallOptions {
 			}),
 		},
 		ListTopicSubscriptions: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -187,6 +194,7 @@ func defaultAdminCallOptions() *AdminCallOptions {
 			}),
 		},
 		CreateSubscription: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -202,6 +210,7 @@ func defaultAdminCallOptions() *AdminCallOptions {
 			}),
 		},
 		GetSubscription: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -217,6 +226,7 @@ func defaultAdminCallOptions() *AdminCallOptions {
 			}),
 		},
 		ListSubscriptions: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -232,6 +242,7 @@ func defaultAdminCallOptions() *AdminCallOptions {
 			}),
 		},
 		UpdateSubscription: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -247,6 +258,7 @@ func defaultAdminCallOptions() *AdminCallOptions {
 			}),
 		},
 		DeleteSubscription: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -262,6 +274,7 @@ func defaultAdminCallOptions() *AdminCallOptions {
 			}),
 		},
 		SeekSubscription: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -277,6 +290,7 @@ func defaultAdminCallOptions() *AdminCallOptions {
 			}),
 		},
 		CreateReservation: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -292,6 +306,7 @@ func defaultAdminCallOptions() *AdminCallOptions {
 			}),
 		},
 		GetReservation: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -307,6 +322,7 @@ func defaultAdminCallOptions() *AdminCallOptions {
 			}),
 		},
 		ListReservations: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -322,6 +338,7 @@ func defaultAdminCallOptions() *AdminCallOptions {
 			}),
 		},
 		UpdateReservation: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -337,6 +354,7 @@ func defaultAdminCallOptions() *AdminCallOptions {
 			}),
 		},
 		DeleteReservation: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -352,6 +370,7 @@ func defaultAdminCallOptions() *AdminCallOptions {
 			}),
 		},
 		ListReservationTopics: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -369,6 +388,7 @@ func defaultAdminCallOptions() *AdminCallOptions {
 		CancelOperation: []gax.CallOption{},
 		DeleteOperation: []gax.CallOption{},
 		GetOperation: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -384,6 +404,7 @@ func defaultAdminCallOptions() *AdminCallOptions {
 			}),
 		},
 		ListOperations: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -621,9 +642,6 @@ type adminGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing AdminClient
 	CallOptions **AdminCallOptions
 
@@ -656,11 +674,6 @@ func NewAdminClient(ctx context.Context, opts ...option.ClientOption) (*AdminCli
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -669,7 +682,6 @@ func NewAdminClient(ctx context.Context, opts ...option.ClientOption) (*AdminCli
 
 	c := &adminGRPCClient{
 		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
 		adminClient:      pubsublitepb.NewAdminServiceClient(connPool),
 		CallOptions:      &client.CallOptions,
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
@@ -704,7 +716,7 @@ func (c *adminGRPCClient) Connection() *grpc.ClientConn {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *adminGRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -716,11 +728,6 @@ func (c *adminGRPCClient) Close() error {
 }
 
 func (c *adminGRPCClient) CreateTopic(ctx context.Context, req *pubsublitepb.CreateTopicRequest, opts ...gax.CallOption) (*pubsublitepb.Topic, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -738,11 +745,6 @@ func (c *adminGRPCClient) CreateTopic(ctx context.Context, req *pubsublitepb.Cre
 }
 
 func (c *adminGRPCClient) GetTopic(ctx context.Context, req *pubsublitepb.GetTopicRequest, opts ...gax.CallOption) (*pubsublitepb.Topic, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -760,11 +762,6 @@ func (c *adminGRPCClient) GetTopic(ctx context.Context, req *pubsublitepb.GetTop
 }
 
 func (c *adminGRPCClient) GetTopicPartitions(ctx context.Context, req *pubsublitepb.GetTopicPartitionsRequest, opts ...gax.CallOption) (*pubsublitepb.TopicPartitions, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -827,11 +824,6 @@ func (c *adminGRPCClient) ListTopics(ctx context.Context, req *pubsublitepb.List
 }
 
 func (c *adminGRPCClient) UpdateTopic(ctx context.Context, req *pubsublitepb.UpdateTopicRequest, opts ...gax.CallOption) (*pubsublitepb.Topic, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "topic.name", url.QueryEscape(req.GetTopic().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -849,11 +841,6 @@ func (c *adminGRPCClient) UpdateTopic(ctx context.Context, req *pubsublitepb.Upd
 }
 
 func (c *adminGRPCClient) DeleteTopic(ctx context.Context, req *pubsublitepb.DeleteTopicRequest, opts ...gax.CallOption) error {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -912,11 +899,6 @@ func (c *adminGRPCClient) ListTopicSubscriptions(ctx context.Context, req *pubsu
 }
 
 func (c *adminGRPCClient) CreateSubscription(ctx context.Context, req *pubsublitepb.CreateSubscriptionRequest, opts ...gax.CallOption) (*pubsublitepb.Subscription, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -934,11 +916,6 @@ func (c *adminGRPCClient) CreateSubscription(ctx context.Context, req *pubsublit
 }
 
 func (c *adminGRPCClient) GetSubscription(ctx context.Context, req *pubsublitepb.GetSubscriptionRequest, opts ...gax.CallOption) (*pubsublitepb.Subscription, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1001,11 +978,6 @@ func (c *adminGRPCClient) ListSubscriptions(ctx context.Context, req *pubsublite
 }
 
 func (c *adminGRPCClient) UpdateSubscription(ctx context.Context, req *pubsublitepb.UpdateSubscriptionRequest, opts ...gax.CallOption) (*pubsublitepb.Subscription, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "subscription.name", url.QueryEscape(req.GetSubscription().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1023,11 +995,6 @@ func (c *adminGRPCClient) UpdateSubscription(ctx context.Context, req *pubsublit
 }
 
 func (c *adminGRPCClient) DeleteSubscription(ctx context.Context, req *pubsublitepb.DeleteSubscriptionRequest, opts ...gax.CallOption) error {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1041,11 +1008,6 @@ func (c *adminGRPCClient) DeleteSubscription(ctx context.Context, req *pubsublit
 }
 
 func (c *adminGRPCClient) SeekSubscription(ctx context.Context, req *pubsublitepb.SeekSubscriptionRequest, opts ...gax.CallOption) (*SeekSubscriptionOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1065,11 +1027,6 @@ func (c *adminGRPCClient) SeekSubscription(ctx context.Context, req *pubsublitep
 }
 
 func (c *adminGRPCClient) CreateReservation(ctx context.Context, req *pubsublitepb.CreateReservationRequest, opts ...gax.CallOption) (*pubsublitepb.Reservation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1087,11 +1044,6 @@ func (c *adminGRPCClient) CreateReservation(ctx context.Context, req *pubsublite
 }
 
 func (c *adminGRPCClient) GetReservation(ctx context.Context, req *pubsublitepb.GetReservationRequest, opts ...gax.CallOption) (*pubsublitepb.Reservation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1154,11 +1106,6 @@ func (c *adminGRPCClient) ListReservations(ctx context.Context, req *pubsublitep
 }
 
 func (c *adminGRPCClient) UpdateReservation(ctx context.Context, req *pubsublitepb.UpdateReservationRequest, opts ...gax.CallOption) (*pubsublitepb.Reservation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "reservation.name", url.QueryEscape(req.GetReservation().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1176,11 +1123,6 @@ func (c *adminGRPCClient) UpdateReservation(ctx context.Context, req *pubsublite
 }
 
 func (c *adminGRPCClient) DeleteReservation(ctx context.Context, req *pubsublitepb.DeleteReservationRequest, opts ...gax.CallOption) error {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1265,11 +1207,6 @@ func (c *adminGRPCClient) DeleteOperation(ctx context.Context, req *longrunningp
 }
 
 func (c *adminGRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)

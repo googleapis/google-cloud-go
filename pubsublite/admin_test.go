@@ -24,12 +24,12 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
+	lrpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	pb "cloud.google.com/go/pubsublite/apiv1/pubsublitepb"
 	emptypb "github.com/golang/protobuf/ptypes/empty"
 	tspb "github.com/golang/protobuf/ptypes/timestamp"
-	lrpb "google.golang.org/genproto/googleapis/longrunning"
 	statuspb "google.golang.org/genproto/googleapis/rpc/status"
-	fmpb "google.golang.org/genproto/protobuf/field_mask"
+	fmpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 )
 
 func newTestAdminClient(t *testing.T) *AdminClient {

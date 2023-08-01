@@ -20,14 +20,16 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"math"
 	"net/http"
 	"net/url"
 	"time"
 
+	iampb "cloud.google.com/go/iam/apiv1/iampb"
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	networksecuritypb "cloud.google.com/go/networksecurity/apiv1beta1/networksecuritypb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
@@ -37,8 +39,6 @@ import (
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
-	iampb "google.golang.org/genproto/googleapis/iam/v1"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/encoding/protojson"
@@ -89,59 +89,119 @@ func defaultGRPCClientOptions() []option.ClientOption {
 
 func defaultCallOptions() *CallOptions {
 	return &CallOptions{
-		ListAuthorizationPolicies: []gax.CallOption{},
-		GetAuthorizationPolicy:    []gax.CallOption{},
-		CreateAuthorizationPolicy: []gax.CallOption{},
-		UpdateAuthorizationPolicy: []gax.CallOption{},
-		DeleteAuthorizationPolicy: []gax.CallOption{},
-		ListServerTlsPolicies:     []gax.CallOption{},
-		GetServerTlsPolicy:        []gax.CallOption{},
-		CreateServerTlsPolicy:     []gax.CallOption{},
-		UpdateServerTlsPolicy:     []gax.CallOption{},
-		DeleteServerTlsPolicy:     []gax.CallOption{},
-		ListClientTlsPolicies:     []gax.CallOption{},
-		GetClientTlsPolicy:        []gax.CallOption{},
-		CreateClientTlsPolicy:     []gax.CallOption{},
-		UpdateClientTlsPolicy:     []gax.CallOption{},
-		DeleteClientTlsPolicy:     []gax.CallOption{},
-		GetLocation:               []gax.CallOption{},
-		ListLocations:             []gax.CallOption{},
-		GetIamPolicy:              []gax.CallOption{},
-		SetIamPolicy:              []gax.CallOption{},
-		TestIamPermissions:        []gax.CallOption{},
-		CancelOperation:           []gax.CallOption{},
-		DeleteOperation:           []gax.CallOption{},
-		GetOperation:              []gax.CallOption{},
-		ListOperations:            []gax.CallOption{},
+		ListAuthorizationPolicies: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetAuthorizationPolicy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		CreateAuthorizationPolicy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateAuthorizationPolicy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteAuthorizationPolicy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ListServerTlsPolicies: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetServerTlsPolicy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		CreateServerTlsPolicy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateServerTlsPolicy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteServerTlsPolicy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ListClientTlsPolicies: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetClientTlsPolicy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		CreateClientTlsPolicy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateClientTlsPolicy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteClientTlsPolicy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetLocation:        []gax.CallOption{},
+		ListLocations:      []gax.CallOption{},
+		GetIamPolicy:       []gax.CallOption{},
+		SetIamPolicy:       []gax.CallOption{},
+		TestIamPermissions: []gax.CallOption{},
+		CancelOperation:    []gax.CallOption{},
+		DeleteOperation:    []gax.CallOption{},
+		GetOperation:       []gax.CallOption{},
+		ListOperations:     []gax.CallOption{},
 	}
 }
 
 func defaultRESTCallOptions() *CallOptions {
 	return &CallOptions{
-		ListAuthorizationPolicies: []gax.CallOption{},
-		GetAuthorizationPolicy:    []gax.CallOption{},
-		CreateAuthorizationPolicy: []gax.CallOption{},
-		UpdateAuthorizationPolicy: []gax.CallOption{},
-		DeleteAuthorizationPolicy: []gax.CallOption{},
-		ListServerTlsPolicies:     []gax.CallOption{},
-		GetServerTlsPolicy:        []gax.CallOption{},
-		CreateServerTlsPolicy:     []gax.CallOption{},
-		UpdateServerTlsPolicy:     []gax.CallOption{},
-		DeleteServerTlsPolicy:     []gax.CallOption{},
-		ListClientTlsPolicies:     []gax.CallOption{},
-		GetClientTlsPolicy:        []gax.CallOption{},
-		CreateClientTlsPolicy:     []gax.CallOption{},
-		UpdateClientTlsPolicy:     []gax.CallOption{},
-		DeleteClientTlsPolicy:     []gax.CallOption{},
-		GetLocation:               []gax.CallOption{},
-		ListLocations:             []gax.CallOption{},
-		GetIamPolicy:              []gax.CallOption{},
-		SetIamPolicy:              []gax.CallOption{},
-		TestIamPermissions:        []gax.CallOption{},
-		CancelOperation:           []gax.CallOption{},
-		DeleteOperation:           []gax.CallOption{},
-		GetOperation:              []gax.CallOption{},
-		ListOperations:            []gax.CallOption{},
+		ListAuthorizationPolicies: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetAuthorizationPolicy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		CreateAuthorizationPolicy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateAuthorizationPolicy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteAuthorizationPolicy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ListServerTlsPolicies: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetServerTlsPolicy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		CreateServerTlsPolicy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateServerTlsPolicy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteServerTlsPolicy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ListClientTlsPolicies: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetClientTlsPolicy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		CreateClientTlsPolicy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateClientTlsPolicy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteClientTlsPolicy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetLocation:        []gax.CallOption{},
+		ListLocations:      []gax.CallOption{},
+		GetIamPolicy:       []gax.CallOption{},
+		SetIamPolicy:       []gax.CallOption{},
+		TestIamPermissions: []gax.CallOption{},
+		CancelOperation:    []gax.CallOption{},
+		DeleteOperation:    []gax.CallOption{},
+		GetOperation:       []gax.CallOption{},
+		ListOperations:     []gax.CallOption{},
 	}
 }
 
@@ -419,9 +479,6 @@ type gRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing Client
 	CallOptions **CallOptions
 
@@ -459,11 +516,6 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -472,7 +524,6 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 
 	c := &gRPCClient{
 		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
 		client:           networksecuritypb.NewNetworkSecurityClient(connPool),
 		CallOptions:      &client.CallOptions,
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
@@ -509,7 +560,7 @@ func (c *gRPCClient) Connection() *grpc.ClientConn {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -586,7 +637,7 @@ func defaultRESTClientOptions() []option.ClientOption {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *restClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -651,11 +702,6 @@ func (c *gRPCClient) ListAuthorizationPolicies(ctx context.Context, req *network
 }
 
 func (c *gRPCClient) GetAuthorizationPolicy(ctx context.Context, req *networksecuritypb.GetAuthorizationPolicyRequest, opts ...gax.CallOption) (*networksecuritypb.AuthorizationPolicy, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -673,11 +719,6 @@ func (c *gRPCClient) GetAuthorizationPolicy(ctx context.Context, req *networksec
 }
 
 func (c *gRPCClient) CreateAuthorizationPolicy(ctx context.Context, req *networksecuritypb.CreateAuthorizationPolicyRequest, opts ...gax.CallOption) (*CreateAuthorizationPolicyOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -697,11 +738,6 @@ func (c *gRPCClient) CreateAuthorizationPolicy(ctx context.Context, req *network
 }
 
 func (c *gRPCClient) UpdateAuthorizationPolicy(ctx context.Context, req *networksecuritypb.UpdateAuthorizationPolicyRequest, opts ...gax.CallOption) (*UpdateAuthorizationPolicyOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "authorization_policy.name", url.QueryEscape(req.GetAuthorizationPolicy().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -721,11 +757,6 @@ func (c *gRPCClient) UpdateAuthorizationPolicy(ctx context.Context, req *network
 }
 
 func (c *gRPCClient) DeleteAuthorizationPolicy(ctx context.Context, req *networksecuritypb.DeleteAuthorizationPolicyRequest, opts ...gax.CallOption) (*DeleteAuthorizationPolicyOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -790,11 +821,6 @@ func (c *gRPCClient) ListServerTlsPolicies(ctx context.Context, req *networksecu
 }
 
 func (c *gRPCClient) GetServerTlsPolicy(ctx context.Context, req *networksecuritypb.GetServerTlsPolicyRequest, opts ...gax.CallOption) (*networksecuritypb.ServerTlsPolicy, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -812,11 +838,6 @@ func (c *gRPCClient) GetServerTlsPolicy(ctx context.Context, req *networksecurit
 }
 
 func (c *gRPCClient) CreateServerTlsPolicy(ctx context.Context, req *networksecuritypb.CreateServerTlsPolicyRequest, opts ...gax.CallOption) (*CreateServerTlsPolicyOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -836,11 +857,6 @@ func (c *gRPCClient) CreateServerTlsPolicy(ctx context.Context, req *networksecu
 }
 
 func (c *gRPCClient) UpdateServerTlsPolicy(ctx context.Context, req *networksecuritypb.UpdateServerTlsPolicyRequest, opts ...gax.CallOption) (*UpdateServerTlsPolicyOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "server_tls_policy.name", url.QueryEscape(req.GetServerTlsPolicy().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -860,11 +876,6 @@ func (c *gRPCClient) UpdateServerTlsPolicy(ctx context.Context, req *networksecu
 }
 
 func (c *gRPCClient) DeleteServerTlsPolicy(ctx context.Context, req *networksecuritypb.DeleteServerTlsPolicyRequest, opts ...gax.CallOption) (*DeleteServerTlsPolicyOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -929,11 +940,6 @@ func (c *gRPCClient) ListClientTlsPolicies(ctx context.Context, req *networksecu
 }
 
 func (c *gRPCClient) GetClientTlsPolicy(ctx context.Context, req *networksecuritypb.GetClientTlsPolicyRequest, opts ...gax.CallOption) (*networksecuritypb.ClientTlsPolicy, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -951,11 +957,6 @@ func (c *gRPCClient) GetClientTlsPolicy(ctx context.Context, req *networksecurit
 }
 
 func (c *gRPCClient) CreateClientTlsPolicy(ctx context.Context, req *networksecuritypb.CreateClientTlsPolicyRequest, opts ...gax.CallOption) (*CreateClientTlsPolicyOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -975,11 +976,6 @@ func (c *gRPCClient) CreateClientTlsPolicy(ctx context.Context, req *networksecu
 }
 
 func (c *gRPCClient) UpdateClientTlsPolicy(ctx context.Context, req *networksecuritypb.UpdateClientTlsPolicyRequest, opts ...gax.CallOption) (*UpdateClientTlsPolicyOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "client_tls_policy.name", url.QueryEscape(req.GetClientTlsPolicy().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -999,11 +995,6 @@ func (c *gRPCClient) UpdateClientTlsPolicy(ctx context.Context, req *networksecu
 }
 
 func (c *gRPCClient) DeleteClientTlsPolicy(ctx context.Context, req *networksecuritypb.DeleteClientTlsPolicyRequest, opts ...gax.CallOption) (*DeleteClientTlsPolicyOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1277,13 +1268,13 @@ func (c *restClient) ListAuthorizationPolicies(ctx context.Context, req *network
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -1352,13 +1343,13 @@ func (c *restClient) GetAuthorizationPolicy(ctx context.Context, req *networksec
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1417,13 +1408,13 @@ func (c *restClient) CreateAuthorizationPolicy(ctx context.Context, req *network
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1461,7 +1452,7 @@ func (c *restClient) UpdateAuthorizationPolicy(ctx context.Context, req *network
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask))
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1493,13 +1484,13 @@ func (c *restClient) UpdateAuthorizationPolicy(ctx context.Context, req *network
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1555,13 +1546,13 @@ func (c *restClient) DeleteAuthorizationPolicy(ctx context.Context, req *network
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1631,13 +1622,13 @@ func (c *restClient) ListServerTlsPolicies(ctx context.Context, req *networksecu
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -1706,13 +1697,13 @@ func (c *restClient) GetServerTlsPolicy(ctx context.Context, req *networksecurit
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1771,13 +1762,13 @@ func (c *restClient) CreateServerTlsPolicy(ctx context.Context, req *networksecu
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1815,7 +1806,7 @@ func (c *restClient) UpdateServerTlsPolicy(ctx context.Context, req *networksecu
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask))
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1847,13 +1838,13 @@ func (c *restClient) UpdateServerTlsPolicy(ctx context.Context, req *networksecu
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1909,13 +1900,13 @@ func (c *restClient) DeleteServerTlsPolicy(ctx context.Context, req *networksecu
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1985,13 +1976,13 @@ func (c *restClient) ListClientTlsPolicies(ctx context.Context, req *networksecu
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -2060,13 +2051,13 @@ func (c *restClient) GetClientTlsPolicy(ctx context.Context, req *networksecurit
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2125,13 +2116,13 @@ func (c *restClient) CreateClientTlsPolicy(ctx context.Context, req *networksecu
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2169,7 +2160,7 @@ func (c *restClient) UpdateClientTlsPolicy(ctx context.Context, req *networksecu
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask))
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -2201,13 +2192,13 @@ func (c *restClient) UpdateClientTlsPolicy(ctx context.Context, req *networksecu
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2263,13 +2254,13 @@ func (c *restClient) DeleteClientTlsPolicy(ctx context.Context, req *networksecu
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2326,13 +2317,13 @@ func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2400,13 +2391,13 @@ func (c *restClient) ListLocations(ctx context.Context, req *locationpb.ListLoca
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -2479,13 +2470,13 @@ func (c *restClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRe
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2547,13 +2538,13 @@ func (c *restClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRe
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2617,13 +2608,13 @@ func (c *restClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamP
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2761,13 +2752,13 @@ func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2835,13 +2826,13 @@ func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.List
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil

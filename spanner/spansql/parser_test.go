@@ -675,12 +675,18 @@ func TestParseDDL(t *testing.T) {
 		GRANT SELECT, UPDATE(location), DELETE ON TABLE employees TO ROLE hr_manager;
 		GRANT SELECT(name, level, location), UPDATE(location) ON TABLE employees, contractors TO ROLE hr_manager;
 		GRANT ROLE pii_access, pii_update TO ROLE hr_manager, hr_director;
+		GRANT EXECUTE ON TABLE FUNCTION tvf_name_one, tvf_name_two TO ROLE hr_manager, hr_director;
+		GRANT SELECT ON VIEW view_name_one, view_name_two TO ROLE hr_manager, hr_director;
+		GRANT SELECT ON CHANGE STREAM cs_name_one, cs_name_two TO ROLE hr_manager, hr_director;
 
 		REVOKE SELECT ON TABLE employees FROM ROLE hr_rep;
 		REVOKE SELECT(name, address, phone) ON TABLE contractors FROM ROLE hr_rep;
 		REVOKE SELECT, UPDATE(location), DELETE ON TABLE employees FROM ROLE hr_manager;
 		REVOKE SELECT(name, level, location), UPDATE(location) ON TABLE employees, contractors FROM ROLE hr_manager;
 		REVOKE ROLE pii_access, pii_update FROM ROLE hr_manager, hr_director;
+		REVOKE EXECUTE ON TABLE FUNCTION tvf_name_one, tvf_name_two FROM ROLE hr_manager, hr_director;
+		REVOKE SELECT ON VIEW view_name_one, view_name_two FROM ROLE hr_manager, hr_director;
+		REVOKE SELECT ON CHANGE STREAM cs_name_one, cs_name_two FROM ROLE hr_manager, hr_director;
 
 		ALTER INDEX MyFirstIndex ADD STORED COLUMN UpdatedAt;
 		ALTER INDEX MyFirstIndex DROP STORED COLUMN UpdatedAt;
@@ -1020,6 +1026,24 @@ func TestParseDDL(t *testing.T) {
 
 				Position: line(91),
 			},
+			&GrantRole{
+				ToRoleNames: []ID{"hr_manager", "hr_director"},
+				TvfNames:    []ID{"tvf_name_one", "tvf_name_two"},
+
+				Position: line(92),
+			},
+			&GrantRole{
+				ToRoleNames: []ID{"hr_manager", "hr_director"},
+				ViewNames:   []ID{"view_name_one", "view_name_two"},
+
+				Position: line(93),
+			},
+			&GrantRole{
+				ToRoleNames:       []ID{"hr_manager", "hr_director"},
+				ChangeStreamNames: []ID{"cs_name_one", "cs_name_two"},
+
+				Position: line(94),
+			},
 			&RevokeRole{
 				FromRoleNames: []ID{"hr_rep"},
 				Privileges: []Privilege{
@@ -1027,7 +1051,7 @@ func TestParseDDL(t *testing.T) {
 				},
 				TableNames: []ID{"employees"},
 
-				Position: line(93),
+				Position: line(96),
 			},
 			&RevokeRole{
 				FromRoleNames: []ID{"hr_rep"},
@@ -1036,7 +1060,7 @@ func TestParseDDL(t *testing.T) {
 				},
 				TableNames: []ID{"contractors"},
 
-				Position: line(94),
+				Position: line(97),
 			},
 			&RevokeRole{
 				FromRoleNames: []ID{"hr_manager"},
@@ -1047,7 +1071,7 @@ func TestParseDDL(t *testing.T) {
 				},
 				TableNames: []ID{"employees"},
 
-				Position: line(95),
+				Position: line(98),
 			},
 			&RevokeRole{
 				FromRoleNames: []ID{"hr_manager"},
@@ -1057,23 +1081,41 @@ func TestParseDDL(t *testing.T) {
 				},
 				TableNames: []ID{"employees", "contractors"},
 
-				Position: line(96),
+				Position: line(99),
 			},
 			&RevokeRole{
 				FromRoleNames:   []ID{"hr_manager", "hr_director"},
 				RevokeRoleNames: []ID{"pii_access", "pii_update"},
 
-				Position: line(97),
+				Position: line(100),
+			},
+			&RevokeRole{
+				FromRoleNames: []ID{"hr_manager", "hr_director"},
+				TvfNames:      []ID{"tvf_name_one", "tvf_name_two"},
+
+				Position: line(101),
+			},
+			&RevokeRole{
+				FromRoleNames: []ID{"hr_manager", "hr_director"},
+				ViewNames:     []ID{"view_name_one", "view_name_two"},
+
+				Position: line(102),
+			},
+			&RevokeRole{
+				FromRoleNames:     []ID{"hr_manager", "hr_director"},
+				ChangeStreamNames: []ID{"cs_name_one", "cs_name_two"},
+
+				Position: line(103),
 			},
 			&AlterIndex{
 				Name:       "MyFirstIndex",
 				Alteration: AddStoredColumn{Name: "UpdatedAt"},
-				Position:   line(99),
+				Position:   line(105),
 			},
 			&AlterIndex{
 				Name:       "MyFirstIndex",
 				Alteration: DropStoredColumn{Name: "UpdatedAt"},
-				Position:   line(100),
+				Position:   line(106),
 			},
 		}, Comments: []*Comment{
 			{
@@ -1110,7 +1152,7 @@ func TestParseDDL(t *testing.T) {
 			{Marker: "--", Isolated: true, Start: line(75), End: line(75), Text: []string{"Table has a column with a default value."}},
 
 			// Comment after everything else.
-			{Marker: "--", Isolated: true, Start: line(102), End: line(102), Text: []string{"Trailing comment at end of file."}},
+			{Marker: "--", Isolated: true, Start: line(108), End: line(108), Text: []string{"Trailing comment at end of file."}},
 		}}},
 		// No trailing comma:
 		{`ALTER TABLE T ADD COLUMN C2 INT64`, &DDL{Filename: "filename", List: []DDLStmt{
@@ -1437,6 +1479,131 @@ func TestParseDDL(t *testing.T) {
 					&DropChangeStream{
 						Name:     "csname",
 						Position: line(1),
+					},
+				},
+			},
+		},
+		{
+			`CREATE TABLE IF NOT EXISTS tname (id INT64, name STRING(64)) PRIMARY KEY (id)`,
+			&DDL{
+				Filename: "filename",
+				List: []DDLStmt{
+					&CreateTable{
+						Name:        "tname",
+						IfNotExists: true,
+						Columns: []ColumnDef{
+							{Name: "id", Type: Type{Base: Int64}, Position: line(1)},
+							{Name: "name", Type: Type{Base: String, Len: 64}, Position: line(1)},
+						},
+						PrimaryKey: []KeyPart{
+							{Column: "id"},
+						},
+						Position: line(1),
+					},
+				},
+			},
+		},
+		{
+			`CREATE INDEX IF NOT EXISTS iname ON tname (cname)`,
+			&DDL{
+				Filename: "filename",
+				List: []DDLStmt{
+					&CreateIndex{
+						Name:        "iname",
+						IfNotExists: true,
+						Table:       "tname",
+						Columns: []KeyPart{
+							{Column: "cname"},
+						},
+						Position: line(1),
+					},
+				},
+			},
+		},
+		{
+			`ALTER TABLE tname ADD COLUMN IF NOT EXISTS cname STRING(64)`,
+			&DDL{
+				Filename: "filename",
+				List: []DDLStmt{
+					&AlterTable{
+						Name: "tname",
+						Alteration: AddColumn{
+							IfNotExists: true,
+							Def:         ColumnDef{Name: "cname", Type: Type{Base: String, Len: 64}, Position: line(1)},
+						},
+						Position: line(1),
+					},
+				},
+			},
+		},
+		{
+			`DROP TABLE IF EXISTS tname;
+			DROP INDEX IF EXISTS iname;`,
+			&DDL{
+				Filename: "filename",
+				List: []DDLStmt{
+					&DropTable{
+						Name:     "tname",
+						IfExists: true,
+						Position: line(1),
+					},
+					&DropIndex{
+						Name:     "iname",
+						IfExists: true,
+						Position: line(2),
+					},
+				},
+			},
+		},
+		{
+			`CREATE TABLE tname1 (col1 INT64, col2 INT64, CONSTRAINT con1 FOREIGN KEY (col2) REFERENCES tname2 (col3) ON DELETE CASCADE) PRIMARY KEY (col1);
+			CREATE TABLE tname1 (col1 INT64, col2 INT64, CONSTRAINT con1 FOREIGN KEY (col2) REFERENCES tname2 (col3) ON DELETE NO ACTION) PRIMARY KEY (col1);
+			ALTER TABLE tname1 ADD CONSTRAINT con1 FOREIGN KEY (col2) REFERENCES tname2 (col3) ON DELETE CASCADE;
+			ALTER TABLE tname1 ADD CONSTRAINT con1 FOREIGN KEY (col2) REFERENCES tname2 (col3) ON DELETE NO ACTION;`,
+			&DDL{
+				Filename: "filename",
+				List: []DDLStmt{
+					&CreateTable{
+						Name: "tname1",
+						Columns: []ColumnDef{
+							{Name: "col1", Type: Type{Base: Int64}, Position: line(1)},
+							{Name: "col2", Type: Type{Base: Int64}, Position: line(1)},
+						},
+						Constraints: []TableConstraint{
+							{Name: "con1", Constraint: ForeignKey{Columns: []ID{"col2"}, RefTable: "tname2", RefColumns: []ID{"col3"}, OnDelete: CascadeOnDelete, Position: line(1)}, Position: line(1)},
+						},
+						PrimaryKey: []KeyPart{
+							{Column: "col1"},
+						},
+						Position: line(1),
+					},
+					&CreateTable{
+						Name: "tname1",
+						Columns: []ColumnDef{
+							{Name: "col1", Type: Type{Base: Int64}, Position: line(2)},
+							{Name: "col2", Type: Type{Base: Int64}, Position: line(2)},
+						},
+						Constraints: []TableConstraint{
+							{Name: "con1", Constraint: ForeignKey{Columns: []ID{"col2"}, RefTable: "tname2", RefColumns: []ID{"col3"}, OnDelete: NoActionOnDelete, Position: line(2)}, Position: line(2)},
+						},
+						PrimaryKey: []KeyPart{
+							{Column: "col1"},
+						},
+						Position: line(2),
+					},
+					&AlterTable{
+						Name: "tname1",
+						Alteration: AddConstraint{
+							Constraint: TableConstraint{Name: "con1", Constraint: ForeignKey{Columns: []ID{"col2"}, RefTable: "tname2", RefColumns: []ID{"col3"}, OnDelete: CascadeOnDelete, Position: line(3)}, Position: line(3)},
+						},
+						Position: line(3),
+					},
+					&AlterTable{
+						Name: "tname1",
+						Alteration: AddConstraint{
+							Constraint: TableConstraint{Name: "con1", Constraint: ForeignKey{Columns: []ID{"col2"}, RefTable: "tname2", RefColumns: []ID{"col3"}, OnDelete: NoActionOnDelete, Position: line(4)}, Position: line(4)},
+						},
+						Position: line(4),
 					},
 				},
 			},

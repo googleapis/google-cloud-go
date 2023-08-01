@@ -19,10 +19,10 @@ package storage_test
 import (
 	"context"
 
+	iampb "cloud.google.com/go/iam/apiv1/iampb"
 	storage "cloud.google.com/go/storage/internal/apiv2"
-	storagepb "cloud.google.com/go/storage/internal/apiv2/stubs"
+	storagepb "cloud.google.com/go/storage/internal/apiv2/storagepb"
 	"google.golang.org/api/iterator"
-	iampb "google.golang.org/genproto/googleapis/iam/v1"
 )
 
 func ExampleNewClient() {
@@ -57,7 +57,7 @@ func ExampleClient_DeleteBucket() {
 
 	req := &storagepb.DeleteBucketRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/storage/internal/apiv2/stubs#DeleteBucketRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/storage/internal/apiv2/storagepb#DeleteBucketRequest.
 	}
 	err = c.DeleteBucket(ctx, req)
 	if err != nil {
@@ -80,7 +80,7 @@ func ExampleClient_GetBucket() {
 
 	req := &storagepb.GetBucketRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/storage/internal/apiv2/stubs#GetBucketRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/storage/internal/apiv2/storagepb#GetBucketRequest.
 	}
 	resp, err := c.GetBucket(ctx, req)
 	if err != nil {
@@ -105,7 +105,7 @@ func ExampleClient_CreateBucket() {
 
 	req := &storagepb.CreateBucketRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/storage/internal/apiv2/stubs#CreateBucketRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/storage/internal/apiv2/storagepb#CreateBucketRequest.
 	}
 	resp, err := c.CreateBucket(ctx, req)
 	if err != nil {
@@ -130,7 +130,7 @@ func ExampleClient_ListBuckets() {
 
 	req := &storagepb.ListBucketsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/storage/internal/apiv2/stubs#ListBucketsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/storage/internal/apiv2/storagepb#ListBucketsRequest.
 	}
 	it := c.ListBuckets(ctx, req)
 	for {
@@ -161,7 +161,7 @@ func ExampleClient_LockBucketRetentionPolicy() {
 
 	req := &storagepb.LockBucketRetentionPolicyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/storage/internal/apiv2/stubs#LockBucketRetentionPolicyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/storage/internal/apiv2/storagepb#LockBucketRetentionPolicyRequest.
 	}
 	resp, err := c.LockBucketRetentionPolicy(ctx, req)
 	if err != nil {
@@ -186,7 +186,7 @@ func ExampleClient_GetIamPolicy() {
 
 	req := &iampb.GetIamPolicyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/iam/v1#GetIamPolicyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/iam/apiv1/iampb#GetIamPolicyRequest.
 	}
 	resp, err := c.GetIamPolicy(ctx, req)
 	if err != nil {
@@ -211,7 +211,7 @@ func ExampleClient_SetIamPolicy() {
 
 	req := &iampb.SetIamPolicyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/iam/v1#SetIamPolicyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/iam/apiv1/iampb#SetIamPolicyRequest.
 	}
 	resp, err := c.SetIamPolicy(ctx, req)
 	if err != nil {
@@ -236,7 +236,7 @@ func ExampleClient_TestIamPermissions() {
 
 	req := &iampb.TestIamPermissionsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/iam/v1#TestIamPermissionsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/iam/apiv1/iampb#TestIamPermissionsRequest.
 	}
 	resp, err := c.TestIamPermissions(ctx, req)
 	if err != nil {
@@ -261,7 +261,7 @@ func ExampleClient_UpdateBucket() {
 
 	req := &storagepb.UpdateBucketRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/storage/internal/apiv2/stubs#UpdateBucketRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/storage/internal/apiv2/storagepb#UpdateBucketRequest.
 	}
 	resp, err := c.UpdateBucket(ctx, req)
 	if err != nil {
@@ -286,7 +286,7 @@ func ExampleClient_DeleteNotificationConfig() {
 
 	req := &storagepb.DeleteNotificationConfigRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/storage/internal/apiv2/stubs#DeleteNotificationConfigRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/storage/internal/apiv2/storagepb#DeleteNotificationConfigRequest.
 	}
 	err = c.DeleteNotificationConfig(ctx, req)
 	if err != nil {
@@ -309,7 +309,7 @@ func ExampleClient_GetNotificationConfig() {
 
 	req := &storagepb.GetNotificationConfigRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/storage/internal/apiv2/stubs#GetNotificationConfigRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/storage/internal/apiv2/storagepb#GetNotificationConfigRequest.
 	}
 	resp, err := c.GetNotificationConfig(ctx, req)
 	if err != nil {
@@ -334,7 +334,7 @@ func ExampleClient_CreateNotificationConfig() {
 
 	req := &storagepb.CreateNotificationConfigRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/storage/internal/apiv2/stubs#CreateNotificationConfigRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/storage/internal/apiv2/storagepb#CreateNotificationConfigRequest.
 	}
 	resp, err := c.CreateNotificationConfig(ctx, req)
 	if err != nil {
@@ -359,7 +359,7 @@ func ExampleClient_ListNotificationConfigs() {
 
 	req := &storagepb.ListNotificationConfigsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/storage/internal/apiv2/stubs#ListNotificationConfigsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/storage/internal/apiv2/storagepb#ListNotificationConfigsRequest.
 	}
 	it := c.ListNotificationConfigs(ctx, req)
 	for {
@@ -390,7 +390,7 @@ func ExampleClient_ComposeObject() {
 
 	req := &storagepb.ComposeObjectRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/storage/internal/apiv2/stubs#ComposeObjectRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/storage/internal/apiv2/storagepb#ComposeObjectRequest.
 	}
 	resp, err := c.ComposeObject(ctx, req)
 	if err != nil {
@@ -415,7 +415,7 @@ func ExampleClient_DeleteObject() {
 
 	req := &storagepb.DeleteObjectRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/storage/internal/apiv2/stubs#DeleteObjectRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/storage/internal/apiv2/storagepb#DeleteObjectRequest.
 	}
 	err = c.DeleteObject(ctx, req)
 	if err != nil {
@@ -438,7 +438,7 @@ func ExampleClient_CancelResumableWrite() {
 
 	req := &storagepb.CancelResumableWriteRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/storage/internal/apiv2/stubs#CancelResumableWriteRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/storage/internal/apiv2/storagepb#CancelResumableWriteRequest.
 	}
 	resp, err := c.CancelResumableWrite(ctx, req)
 	if err != nil {
@@ -463,7 +463,7 @@ func ExampleClient_GetObject() {
 
 	req := &storagepb.GetObjectRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/storage/internal/apiv2/stubs#GetObjectRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/storage/internal/apiv2/storagepb#GetObjectRequest.
 	}
 	resp, err := c.GetObject(ctx, req)
 	if err != nil {
@@ -488,7 +488,7 @@ func ExampleClient_UpdateObject() {
 
 	req := &storagepb.UpdateObjectRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/storage/internal/apiv2/stubs#UpdateObjectRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/storage/internal/apiv2/storagepb#UpdateObjectRequest.
 	}
 	resp, err := c.UpdateObject(ctx, req)
 	if err != nil {
@@ -513,7 +513,7 @@ func ExampleClient_ListObjects() {
 
 	req := &storagepb.ListObjectsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/storage/internal/apiv2/stubs#ListObjectsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/storage/internal/apiv2/storagepb#ListObjectsRequest.
 	}
 	it := c.ListObjects(ctx, req)
 	for {
@@ -544,7 +544,7 @@ func ExampleClient_RewriteObject() {
 
 	req := &storagepb.RewriteObjectRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/storage/internal/apiv2/stubs#RewriteObjectRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/storage/internal/apiv2/storagepb#RewriteObjectRequest.
 	}
 	resp, err := c.RewriteObject(ctx, req)
 	if err != nil {
@@ -569,7 +569,7 @@ func ExampleClient_StartResumableWrite() {
 
 	req := &storagepb.StartResumableWriteRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/storage/internal/apiv2/stubs#StartResumableWriteRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/storage/internal/apiv2/storagepb#StartResumableWriteRequest.
 	}
 	resp, err := c.StartResumableWrite(ctx, req)
 	if err != nil {
@@ -594,7 +594,7 @@ func ExampleClient_QueryWriteStatus() {
 
 	req := &storagepb.QueryWriteStatusRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/storage/internal/apiv2/stubs#QueryWriteStatusRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/storage/internal/apiv2/storagepb#QueryWriteStatusRequest.
 	}
 	resp, err := c.QueryWriteStatus(ctx, req)
 	if err != nil {
@@ -619,7 +619,7 @@ func ExampleClient_GetServiceAccount() {
 
 	req := &storagepb.GetServiceAccountRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/storage/internal/apiv2/stubs#GetServiceAccountRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/storage/internal/apiv2/storagepb#GetServiceAccountRequest.
 	}
 	resp, err := c.GetServiceAccount(ctx, req)
 	if err != nil {
@@ -644,7 +644,7 @@ func ExampleClient_CreateHmacKey() {
 
 	req := &storagepb.CreateHmacKeyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/storage/internal/apiv2/stubs#CreateHmacKeyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/storage/internal/apiv2/storagepb#CreateHmacKeyRequest.
 	}
 	resp, err := c.CreateHmacKey(ctx, req)
 	if err != nil {
@@ -669,7 +669,7 @@ func ExampleClient_DeleteHmacKey() {
 
 	req := &storagepb.DeleteHmacKeyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/storage/internal/apiv2/stubs#DeleteHmacKeyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/storage/internal/apiv2/storagepb#DeleteHmacKeyRequest.
 	}
 	err = c.DeleteHmacKey(ctx, req)
 	if err != nil {
@@ -692,7 +692,7 @@ func ExampleClient_GetHmacKey() {
 
 	req := &storagepb.GetHmacKeyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/storage/internal/apiv2/stubs#GetHmacKeyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/storage/internal/apiv2/storagepb#GetHmacKeyRequest.
 	}
 	resp, err := c.GetHmacKey(ctx, req)
 	if err != nil {
@@ -717,7 +717,7 @@ func ExampleClient_ListHmacKeys() {
 
 	req := &storagepb.ListHmacKeysRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/storage/internal/apiv2/stubs#ListHmacKeysRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/storage/internal/apiv2/storagepb#ListHmacKeysRequest.
 	}
 	it := c.ListHmacKeys(ctx, req)
 	for {
@@ -748,7 +748,7 @@ func ExampleClient_UpdateHmacKey() {
 
 	req := &storagepb.UpdateHmacKeyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/storage/internal/apiv2/stubs#UpdateHmacKeyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/storage/internal/apiv2/storagepb#UpdateHmacKeyRequest.
 	}
 	resp, err := c.UpdateHmacKey(ctx, req)
 	if err != nil {

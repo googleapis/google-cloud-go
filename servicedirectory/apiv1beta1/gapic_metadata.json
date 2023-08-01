@@ -10,6 +10,16 @@
         "grpc": {
           "libraryClient": "LookupClient",
           "rpcs": {
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
             "ResolveService": {
               "methods": [
                 "ResolveService"
@@ -20,6 +30,16 @@
         "rest": {
           "libraryClient": "LookupClient",
           "rpcs": {
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
             "ResolveService": {
               "methods": [
                 "ResolveService"
@@ -74,6 +94,11 @@
                 "GetIamPolicy"
               ]
             },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
             "GetNamespace": {
               "methods": [
                 "GetNamespace"
@@ -87,6 +112,11 @@
             "ListEndpoints": {
               "methods": [
                 "ListEndpoints"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
               ]
             },
             "ListNamespaces": {
@@ -169,6 +199,11 @@
                 "GetIamPolicy"
               ]
             },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
             "GetNamespace": {
               "methods": [
                 "GetNamespace"
@@ -182,6 +217,11 @@
             "ListEndpoints": {
               "methods": [
                 "ListEndpoints"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
               ]
             },
             "ListNamespaces": {

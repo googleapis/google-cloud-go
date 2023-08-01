@@ -23,6 +23,8 @@ import (
 	"net/url"
 
 	aiplatformpb "cloud.google.com/go/aiplatform/apiv1/aiplatformpb"
+	iampb "cloud.google.com/go/iam/apiv1/iampb"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
@@ -30,8 +32,6 @@ import (
 	gtransport "google.golang.org/api/transport/grpc"
 	httpbodypb "google.golang.org/genproto/googleapis/api/httpbody"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
-	iampb "google.golang.org/genproto/googleapis/iam/v1"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/proto"
@@ -41,19 +41,20 @@ var newPredictionClientHook clientHook
 
 // PredictionCallOptions contains the retry settings for each method of PredictionClient.
 type PredictionCallOptions struct {
-	Predict            []gax.CallOption
-	RawPredict         []gax.CallOption
-	Explain            []gax.CallOption
-	GetLocation        []gax.CallOption
-	ListLocations      []gax.CallOption
-	GetIamPolicy       []gax.CallOption
-	SetIamPolicy       []gax.CallOption
-	TestIamPermissions []gax.CallOption
-	CancelOperation    []gax.CallOption
-	DeleteOperation    []gax.CallOption
-	GetOperation       []gax.CallOption
-	ListOperations     []gax.CallOption
-	WaitOperation      []gax.CallOption
+	Predict                []gax.CallOption
+	RawPredict             []gax.CallOption
+	ServerStreamingPredict []gax.CallOption
+	Explain                []gax.CallOption
+	GetLocation            []gax.CallOption
+	ListLocations          []gax.CallOption
+	GetIamPolicy           []gax.CallOption
+	SetIamPolicy           []gax.CallOption
+	TestIamPermissions     []gax.CallOption
+	CancelOperation        []gax.CallOption
+	DeleteOperation        []gax.CallOption
+	GetOperation           []gax.CallOption
+	ListOperations         []gax.CallOption
+	WaitOperation          []gax.CallOption
 }
 
 func defaultPredictionGRPCClientOptions() []option.ClientOption {
@@ -70,19 +71,20 @@ func defaultPredictionGRPCClientOptions() []option.ClientOption {
 
 func defaultPredictionCallOptions() *PredictionCallOptions {
 	return &PredictionCallOptions{
-		Predict:            []gax.CallOption{},
-		RawPredict:         []gax.CallOption{},
-		Explain:            []gax.CallOption{},
-		GetLocation:        []gax.CallOption{},
-		ListLocations:      []gax.CallOption{},
-		GetIamPolicy:       []gax.CallOption{},
-		SetIamPolicy:       []gax.CallOption{},
-		TestIamPermissions: []gax.CallOption{},
-		CancelOperation:    []gax.CallOption{},
-		DeleteOperation:    []gax.CallOption{},
-		GetOperation:       []gax.CallOption{},
-		ListOperations:     []gax.CallOption{},
-		WaitOperation:      []gax.CallOption{},
+		Predict:                []gax.CallOption{},
+		RawPredict:             []gax.CallOption{},
+		ServerStreamingPredict: []gax.CallOption{},
+		Explain:                []gax.CallOption{},
+		GetLocation:            []gax.CallOption{},
+		ListLocations:          []gax.CallOption{},
+		GetIamPolicy:           []gax.CallOption{},
+		SetIamPolicy:           []gax.CallOption{},
+		TestIamPermissions:     []gax.CallOption{},
+		CancelOperation:        []gax.CallOption{},
+		DeleteOperation:        []gax.CallOption{},
+		GetOperation:           []gax.CallOption{},
+		ListOperations:         []gax.CallOption{},
+		WaitOperation:          []gax.CallOption{},
 	}
 }
 
@@ -93,6 +95,7 @@ type internalPredictionClient interface {
 	Connection() *grpc.ClientConn
 	Predict(context.Context, *aiplatformpb.PredictRequest, ...gax.CallOption) (*aiplatformpb.PredictResponse, error)
 	RawPredict(context.Context, *aiplatformpb.RawPredictRequest, ...gax.CallOption) (*httpbodypb.HttpBody, error)
+	ServerStreamingPredict(context.Context, *aiplatformpb.StreamingPredictRequest, ...gax.CallOption) (aiplatformpb.PredictionService_ServerStreamingPredictClient, error)
 	Explain(context.Context, *aiplatformpb.ExplainRequest, ...gax.CallOption) (*aiplatformpb.ExplainResponse, error)
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
 	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
@@ -161,6 +164,12 @@ func (c *PredictionClient) RawPredict(ctx context.Context, req *aiplatformpb.Raw
 	return c.internalClient.RawPredict(ctx, req, opts...)
 }
 
+// ServerStreamingPredict perform a server-side streaming online prediction request for Vertex
+// LLM streaming.
+func (c *PredictionClient) ServerStreamingPredict(ctx context.Context, req *aiplatformpb.StreamingPredictRequest, opts ...gax.CallOption) (aiplatformpb.PredictionService_ServerStreamingPredictClient, error) {
+	return c.internalClient.ServerStreamingPredict(ctx, req, opts...)
+}
+
 // Explain perform an online explanation.
 //
 // If
@@ -171,8 +180,7 @@ func (c *PredictionClient) RawPredict(ctx context.Context, req *aiplatformpb.Raw
 // deployed_model_id
 // is not specified, all DeployedModels must have
 // explanation_spec
-// populated. Only deployed AutoML tabular Models have
-// explanation_spec.
+// populated.
 func (c *PredictionClient) Explain(ctx context.Context, req *aiplatformpb.ExplainRequest, opts ...gax.CallOption) (*aiplatformpb.ExplainResponse, error) {
 	return c.internalClient.Explain(ctx, req, opts...)
 }
@@ -245,9 +253,6 @@ type predictionGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing PredictionClient
 	CallOptions **PredictionCallOptions
 
@@ -278,11 +283,6 @@ func NewPredictionClient(ctx context.Context, opts ...option.ClientOption) (*Pre
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -291,7 +291,6 @@ func NewPredictionClient(ctx context.Context, opts ...option.ClientOption) (*Pre
 
 	c := &predictionGRPCClient{
 		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
 		predictionClient: aiplatformpb.NewPredictionServiceClient(connPool),
 		CallOptions:      &client.CallOptions,
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
@@ -317,7 +316,7 @@ func (c *predictionGRPCClient) Connection() *grpc.ClientConn {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *predictionGRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -354,6 +353,23 @@ func (c *predictionGRPCClient) RawPredict(ctx context.Context, req *aiplatformpb
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.predictionClient.RawPredict(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *predictionGRPCClient) ServerStreamingPredict(ctx context.Context, req *aiplatformpb.StreamingPredictRequest, opts ...gax.CallOption) (aiplatformpb.PredictionService_ServerStreamingPredictClient, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "endpoint", url.QueryEscape(req.GetEndpoint())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).ServerStreamingPredict[0:len((*c.CallOptions).ServerStreamingPredict):len((*c.CallOptions).ServerStreamingPredict)], opts...)
+	var resp aiplatformpb.PredictionService_ServerStreamingPredictClient
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.predictionClient.ServerStreamingPredict(ctx, req, settings.GRPC...)
 		return err
 	}, opts...)
 	if err != nil {

@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/securitycenter/settings/apiv1beta1",
-    "version": "1.18.1",
+    "version": "1.23.0",
     "language": "GO",
     "apis": [
       {
@@ -34,7 +34,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "settingspb.BatchCalculateEffectiveSettingsResponse",
+        "resultType": "*settingspb.BatchCalculateEffectiveSettingsResponse",
         "client": {
           "shortName": "SecurityCenterSettingsClient",
           "fullName": "google.cloud.securitycenter.settings.v1beta1.SecurityCenterSettingsClient"
@@ -80,7 +80,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "settingspb.BatchGetSettingsResponse",
+        "resultType": "*settingspb.BatchGetSettingsResponse",
         "client": {
           "shortName": "SecurityCenterSettingsClient",
           "fullName": "google.cloud.securitycenter.settings.v1beta1.SecurityCenterSettingsClient"
@@ -126,7 +126,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "settingspb.ComponentSettings",
+        "resultType": "*settingspb.ComponentSettings",
         "client": {
           "shortName": "SecurityCenterSettingsClient",
           "fullName": "google.cloud.securitycenter.settings.v1beta1.SecurityCenterSettingsClient"
@@ -152,7 +152,7 @@
     {
       "regionTag": "securitycenter_v1beta1_generated_SecurityCenterSettingsService_CalculateEffectiveSettings_sync",
       "title": "securitycenter CalculateEffectiveSettings Sample",
-      "description": "CalculateEffectiveSettings calculateEffectiveSettings looks up all of the Security Center\nSettings resources in the GCP resource hierarchy, and calculates the\neffective settings on that resource by applying the following rules: \n\n\tSettings provided closer to the target resource take precedence over\n\tthose further away (e.g. folder will override organization level\n\tsettings).\n\n\tProduct defaults can be overridden at org, folder, project, and cluster\n\tlevels.\n\n\tDetectors will be filtered out if they belong to a billing tier the\n\tcustomer\n\thas not configured.",
+      "description": "CalculateEffectiveSettings calculateEffectiveSettings looks up all of the Security Center\nSettings resources in the GCP resource hierarchy, and calculates the\neffective settings on that resource by applying the following rules: \n* Settings provided closer to the target resource take precedence over\nthose further away (e.g. folder will override organization level\nsettings).\n* Product defaults can be overridden at org, folder, project, and cluster\nlevels.\n* Detectors will be filtered out if they belong to a billing tier the\ncustomer\nhas not configured.",
       "file": "SecurityCenterSettingsClient/CalculateEffectiveSettings/main.go",
       "language": "GO",
       "clientMethod": {
@@ -172,7 +172,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "settingspb.Settings",
+        "resultType": "*settingspb.Settings",
         "client": {
           "shortName": "SecurityCenterSettingsClient",
           "fullName": "google.cloud.securitycenter.settings.v1beta1.SecurityCenterSettingsClient"
@@ -218,7 +218,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "settingspb.ComponentSettings",
+        "resultType": "*settingspb.ComponentSettings",
         "client": {
           "shortName": "SecurityCenterSettingsClient",
           "fullName": "google.cloud.securitycenter.settings.v1beta1.SecurityCenterSettingsClient"
@@ -264,7 +264,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "settingspb.ServiceAccount",
+        "resultType": "*settingspb.ServiceAccount",
         "client": {
           "shortName": "SecurityCenterSettingsClient",
           "fullName": "google.cloud.securitycenter.settings.v1beta1.SecurityCenterSettingsClient"
@@ -310,7 +310,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "settingspb.Settings",
+        "resultType": "*settingspb.Settings",
         "client": {
           "shortName": "SecurityCenterSettingsClient",
           "fullName": "google.cloud.securitycenter.settings.v1beta1.SecurityCenterSettingsClient"
@@ -428,7 +428,7 @@
     {
       "regionTag": "securitycenter_v1beta1_generated_SecurityCenterSettingsService_ResetComponentSettings_sync",
       "title": "securitycenter ResetComponentSettings Sample",
-      "description": "ResetComponentSettings reset the organization, folder or project’s component settings and return\nthe settings to the default. Settings are present at the\norganization, folder and project levels. Using Reset for a folder or\nproject will remove the override that was set and result in the\norganization-level settings being used.",
+      "description": "ResetComponentSettings reset the organization, folder or project's component settings and return\nthe settings to the default. Settings are present at the\norganization, folder and project levels. Using Reset for a folder or\nproject will remove the override that was set and result in the\norganization-level settings being used.",
       "file": "SecurityCenterSettingsClient/ResetComponentSettings/main.go",
       "language": "GO",
       "clientMethod": {
@@ -473,7 +473,7 @@
     {
       "regionTag": "securitycenter_v1beta1_generated_SecurityCenterSettingsService_ResetSettings_sync",
       "title": "securitycenter ResetSettings Sample",
-      "description": "ResetSettings reset the organization, folder or project’s settings and return\nthe settings of just that resource to the default.\n\nSettings are present at the organization, folder, project, and cluster\nlevels. Using Reset on a sub-organization level will remove that resource’s\noverride and result in the parent’s settings being used (eg: if Reset on a\ncluster, project settings will be used).\n\nUsing Reset on organization will remove the override that was set and\nresult in default settings being used.",
+      "description": "ResetSettings reset the organization, folder or project's settings and return\nthe settings of just that resource to the default.\n\nSettings are present at the organization, folder, project, and cluster\nlevels. Using Reset on a sub-organization level will remove that resource's\noverride and result in the parent's settings being used (eg: if Reset on a\ncluster, project settings will be used).\n\nUsing Reset on organization will remove the override that was set and\nresult in default settings being used.",
       "file": "SecurityCenterSettingsClient/ResetSettings/main.go",
       "language": "GO",
       "clientMethod": {
@@ -538,7 +538,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "settingspb.ComponentSettings",
+        "resultType": "*settingspb.ComponentSettings",
         "client": {
           "shortName": "SecurityCenterSettingsClient",
           "fullName": "google.cloud.securitycenter.settings.v1beta1.SecurityCenterSettingsClient"
@@ -584,7 +584,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "settingspb.Settings",
+        "resultType": "*settingspb.Settings",
         "client": {
           "shortName": "SecurityCenterSettingsClient",
           "fullName": "google.cloud.securitycenter.settings.v1beta1.SecurityCenterSettingsClient"

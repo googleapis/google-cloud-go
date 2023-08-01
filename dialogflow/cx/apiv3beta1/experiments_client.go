@@ -20,13 +20,14 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"math"
 	"net/http"
 	"net/url"
 	"time"
 
 	cxpb "cloud.google.com/go/dialogflow/cx/apiv3beta1/cxpb"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
@@ -35,7 +36,6 @@ import (
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -76,6 +76,7 @@ func defaultExperimentsGRPCClientOptions() []option.ClientOption {
 func defaultExperimentsCallOptions() *ExperimentsCallOptions {
 	return &ExperimentsCallOptions{
 		ListExperiments: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -87,6 +88,7 @@ func defaultExperimentsCallOptions() *ExperimentsCallOptions {
 			}),
 		},
 		GetExperiment: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -98,6 +100,7 @@ func defaultExperimentsCallOptions() *ExperimentsCallOptions {
 			}),
 		},
 		CreateExperiment: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -109,6 +112,7 @@ func defaultExperimentsCallOptions() *ExperimentsCallOptions {
 			}),
 		},
 		UpdateExperiment: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -120,6 +124,7 @@ func defaultExperimentsCallOptions() *ExperimentsCallOptions {
 			}),
 		},
 		DeleteExperiment: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -131,6 +136,7 @@ func defaultExperimentsCallOptions() *ExperimentsCallOptions {
 			}),
 		},
 		StartExperiment: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -142,6 +148,7 @@ func defaultExperimentsCallOptions() *ExperimentsCallOptions {
 			}),
 		},
 		StopExperiment: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -163,6 +170,7 @@ func defaultExperimentsCallOptions() *ExperimentsCallOptions {
 func defaultExperimentsRESTCallOptions() *ExperimentsCallOptions {
 	return &ExperimentsCallOptions{
 		ListExperiments: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -173,6 +181,7 @@ func defaultExperimentsRESTCallOptions() *ExperimentsCallOptions {
 			}),
 		},
 		GetExperiment: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -183,6 +192,7 @@ func defaultExperimentsRESTCallOptions() *ExperimentsCallOptions {
 			}),
 		},
 		CreateExperiment: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -193,6 +203,7 @@ func defaultExperimentsRESTCallOptions() *ExperimentsCallOptions {
 			}),
 		},
 		UpdateExperiment: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -203,6 +214,7 @@ func defaultExperimentsRESTCallOptions() *ExperimentsCallOptions {
 			}),
 		},
 		DeleteExperiment: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -213,6 +225,7 @@ func defaultExperimentsRESTCallOptions() *ExperimentsCallOptions {
 			}),
 		},
 		StartExperiment: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -223,6 +236,7 @@ func defaultExperimentsRESTCallOptions() *ExperimentsCallOptions {
 			}),
 		},
 		StopExperiment: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -360,8 +374,7 @@ func (c *ExperimentsClient) GetOperation(ctx context.Context, req *longrunningpb
 	return c.internalClient.GetOperation(ctx, req, opts...)
 }
 
-// ListOperations lists operations that match the specified filter in the request. If
-// the server doesn’t support this method, it returns UNIMPLEMENTED.
+// ListOperations is a utility method from google.longrunning.Operations.
 func (c *ExperimentsClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	return c.internalClient.ListOperations(ctx, req, opts...)
 }
@@ -372,9 +385,6 @@ func (c *ExperimentsClient) ListOperations(ctx context.Context, req *longrunning
 type experimentsGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
-
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
 
 	// Points back to the CallOptions field of the containing ExperimentsClient
 	CallOptions **ExperimentsCallOptions
@@ -405,11 +415,6 @@ func NewExperimentsClient(ctx context.Context, opts ...option.ClientOption) (*Ex
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -418,7 +423,6 @@ func NewExperimentsClient(ctx context.Context, opts ...option.ClientOption) (*Ex
 
 	c := &experimentsGRPCClient{
 		connPool:          connPool,
-		disableDeadlines:  disableDeadlines,
 		experimentsClient: cxpb.NewExperimentsClient(connPool),
 		CallOptions:       &client.CallOptions,
 		operationsClient:  longrunningpb.NewOperationsClient(connPool),
@@ -443,7 +447,7 @@ func (c *experimentsGRPCClient) Connection() *grpc.ClientConn {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *experimentsGRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -504,7 +508,7 @@ func defaultExperimentsRESTClientOptions() []option.ClientOption {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *experimentsRESTClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -569,11 +573,6 @@ func (c *experimentsGRPCClient) ListExperiments(ctx context.Context, req *cxpb.L
 }
 
 func (c *experimentsGRPCClient) GetExperiment(ctx context.Context, req *cxpb.GetExperimentRequest, opts ...gax.CallOption) (*cxpb.Experiment, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -591,11 +590,6 @@ func (c *experimentsGRPCClient) GetExperiment(ctx context.Context, req *cxpb.Get
 }
 
 func (c *experimentsGRPCClient) CreateExperiment(ctx context.Context, req *cxpb.CreateExperimentRequest, opts ...gax.CallOption) (*cxpb.Experiment, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -613,11 +607,6 @@ func (c *experimentsGRPCClient) CreateExperiment(ctx context.Context, req *cxpb.
 }
 
 func (c *experimentsGRPCClient) UpdateExperiment(ctx context.Context, req *cxpb.UpdateExperimentRequest, opts ...gax.CallOption) (*cxpb.Experiment, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "experiment.name", url.QueryEscape(req.GetExperiment().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -635,11 +624,6 @@ func (c *experimentsGRPCClient) UpdateExperiment(ctx context.Context, req *cxpb.
 }
 
 func (c *experimentsGRPCClient) DeleteExperiment(ctx context.Context, req *cxpb.DeleteExperimentRequest, opts ...gax.CallOption) error {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -653,11 +637,6 @@ func (c *experimentsGRPCClient) DeleteExperiment(ctx context.Context, req *cxpb.
 }
 
 func (c *experimentsGRPCClient) StartExperiment(ctx context.Context, req *cxpb.StartExperimentRequest, opts ...gax.CallOption) (*cxpb.Experiment, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -675,11 +654,6 @@ func (c *experimentsGRPCClient) StartExperiment(ctx context.Context, req *cxpb.S
 }
 
 func (c *experimentsGRPCClient) StopExperiment(ctx context.Context, req *cxpb.StopExperimentRequest, opts ...gax.CallOption) (*cxpb.Experiment, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -888,13 +862,13 @@ func (c *experimentsRESTClient) ListExperiments(ctx context.Context, req *cxpb.L
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -964,13 +938,13 @@ func (c *experimentsRESTClient) GetExperiment(ctx context.Context, req *cxpb.Get
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1031,13 +1005,13 @@ func (c *experimentsRESTClient) CreateExperiment(ctx context.Context, req *cxpb.
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1071,7 +1045,7 @@ func (c *experimentsRESTClient) UpdateExperiment(ctx context.Context, req *cxpb.
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask))
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1104,13 +1078,13 @@ func (c *experimentsRESTClient) UpdateExperiment(ctx context.Context, req *cxpb.
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1211,13 +1185,13 @@ func (c *experimentsRESTClient) StartExperiment(ctx context.Context, req *cxpb.S
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1277,13 +1251,13 @@ func (c *experimentsRESTClient) StopExperiment(ctx context.Context, req *cxpb.St
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1335,13 +1309,13 @@ func (c *experimentsRESTClient) GetLocation(ctx context.Context, req *locationpb
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1409,13 +1383,13 @@ func (c *experimentsRESTClient) ListLocations(ctx context.Context, req *location
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -1524,13 +1498,13 @@ func (c *experimentsRESTClient) GetOperation(ctx context.Context, req *longrunni
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1541,8 +1515,7 @@ func (c *experimentsRESTClient) GetOperation(ctx context.Context, req *longrunni
 	return resp, nil
 }
 
-// ListOperations lists operations that match the specified filter in the request. If
-// the server doesn’t support this method, it returns UNIMPLEMENTED.
+// ListOperations is a utility method from google.longrunning.Operations.
 func (c *experimentsRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
 	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
@@ -1599,13 +1572,13 @@ func (c *experimentsRESTClient) ListOperations(ctx context.Context, req *longrun
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil

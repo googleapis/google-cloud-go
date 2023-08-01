@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"math"
 	"net/http"
 	"net/url"
@@ -28,6 +28,7 @@ import (
 
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	memcachepb "cloud.google.com/go/memcache/apiv1/memcachepb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
@@ -37,7 +38,6 @@ import (
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/encoding/protojson"
@@ -78,39 +78,71 @@ func defaultCloudMemcacheGRPCClientOptions() []option.ClientOption {
 
 func defaultCloudMemcacheCallOptions() *CloudMemcacheCallOptions {
 	return &CloudMemcacheCallOptions{
-		ListInstances:         []gax.CallOption{},
-		GetInstance:           []gax.CallOption{},
-		CreateInstance:        []gax.CallOption{},
-		UpdateInstance:        []gax.CallOption{},
-		UpdateParameters:      []gax.CallOption{},
-		DeleteInstance:        []gax.CallOption{},
-		ApplyParameters:       []gax.CallOption{},
-		RescheduleMaintenance: []gax.CallOption{},
-		GetLocation:           []gax.CallOption{},
-		ListLocations:         []gax.CallOption{},
-		CancelOperation:       []gax.CallOption{},
-		DeleteOperation:       []gax.CallOption{},
-		GetOperation:          []gax.CallOption{},
-		ListOperations:        []gax.CallOption{},
+		ListInstances: []gax.CallOption{
+			gax.WithTimeout(1200000 * time.Millisecond),
+		},
+		GetInstance: []gax.CallOption{
+			gax.WithTimeout(1200000 * time.Millisecond),
+		},
+		CreateInstance: []gax.CallOption{
+			gax.WithTimeout(1200000 * time.Millisecond),
+		},
+		UpdateInstance: []gax.CallOption{
+			gax.WithTimeout(1200000 * time.Millisecond),
+		},
+		UpdateParameters: []gax.CallOption{
+			gax.WithTimeout(1200000 * time.Millisecond),
+		},
+		DeleteInstance: []gax.CallOption{
+			gax.WithTimeout(1200000 * time.Millisecond),
+		},
+		ApplyParameters: []gax.CallOption{
+			gax.WithTimeout(1200000 * time.Millisecond),
+		},
+		RescheduleMaintenance: []gax.CallOption{
+			gax.WithTimeout(1200000 * time.Millisecond),
+		},
+		GetLocation:     []gax.CallOption{},
+		ListLocations:   []gax.CallOption{},
+		CancelOperation: []gax.CallOption{},
+		DeleteOperation: []gax.CallOption{},
+		GetOperation:    []gax.CallOption{},
+		ListOperations:  []gax.CallOption{},
 	}
 }
 
 func defaultCloudMemcacheRESTCallOptions() *CloudMemcacheCallOptions {
 	return &CloudMemcacheCallOptions{
-		ListInstances:         []gax.CallOption{},
-		GetInstance:           []gax.CallOption{},
-		CreateInstance:        []gax.CallOption{},
-		UpdateInstance:        []gax.CallOption{},
-		UpdateParameters:      []gax.CallOption{},
-		DeleteInstance:        []gax.CallOption{},
-		ApplyParameters:       []gax.CallOption{},
-		RescheduleMaintenance: []gax.CallOption{},
-		GetLocation:           []gax.CallOption{},
-		ListLocations:         []gax.CallOption{},
-		CancelOperation:       []gax.CallOption{},
-		DeleteOperation:       []gax.CallOption{},
-		GetOperation:          []gax.CallOption{},
-		ListOperations:        []gax.CallOption{},
+		ListInstances: []gax.CallOption{
+			gax.WithTimeout(1200000 * time.Millisecond),
+		},
+		GetInstance: []gax.CallOption{
+			gax.WithTimeout(1200000 * time.Millisecond),
+		},
+		CreateInstance: []gax.CallOption{
+			gax.WithTimeout(1200000 * time.Millisecond),
+		},
+		UpdateInstance: []gax.CallOption{
+			gax.WithTimeout(1200000 * time.Millisecond),
+		},
+		UpdateParameters: []gax.CallOption{
+			gax.WithTimeout(1200000 * time.Millisecond),
+		},
+		DeleteInstance: []gax.CallOption{
+			gax.WithTimeout(1200000 * time.Millisecond),
+		},
+		ApplyParameters: []gax.CallOption{
+			gax.WithTimeout(1200000 * time.Millisecond),
+		},
+		RescheduleMaintenance: []gax.CallOption{
+			gax.WithTimeout(1200000 * time.Millisecond),
+		},
+		GetLocation:     []gax.CallOption{},
+		ListLocations:   []gax.CallOption{},
+		CancelOperation: []gax.CallOption{},
+		DeleteOperation: []gax.CallOption{},
+		GetOperation:    []gax.CallOption{},
+		ListOperations:  []gax.CallOption{},
 	}
 }
 
@@ -316,9 +348,6 @@ type cloudMemcacheGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing CloudMemcacheClient
 	CallOptions **CloudMemcacheCallOptions
 
@@ -370,11 +399,6 @@ func NewCloudMemcacheClient(ctx context.Context, opts ...option.ClientOption) (*
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -383,7 +407,6 @@ func NewCloudMemcacheClient(ctx context.Context, opts ...option.ClientOption) (*
 
 	c := &cloudMemcacheGRPCClient{
 		connPool:            connPool,
-		disableDeadlines:    disableDeadlines,
 		cloudMemcacheClient: memcachepb.NewCloudMemcacheClient(connPool),
 		CallOptions:         &client.CallOptions,
 		operationsClient:    longrunningpb.NewOperationsClient(connPool),
@@ -419,7 +442,7 @@ func (c *cloudMemcacheGRPCClient) Connection() *grpc.ClientConn {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *cloudMemcacheGRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -512,7 +535,7 @@ func defaultCloudMemcacheRESTClientOptions() []option.ClientOption {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *cloudMemcacheRESTClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -577,11 +600,6 @@ func (c *cloudMemcacheGRPCClient) ListInstances(ctx context.Context, req *memcac
 }
 
 func (c *cloudMemcacheGRPCClient) GetInstance(ctx context.Context, req *memcachepb.GetInstanceRequest, opts ...gax.CallOption) (*memcachepb.Instance, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 1200000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -599,11 +617,6 @@ func (c *cloudMemcacheGRPCClient) GetInstance(ctx context.Context, req *memcache
 }
 
 func (c *cloudMemcacheGRPCClient) CreateInstance(ctx context.Context, req *memcachepb.CreateInstanceRequest, opts ...gax.CallOption) (*CreateInstanceOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 1200000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -623,11 +636,6 @@ func (c *cloudMemcacheGRPCClient) CreateInstance(ctx context.Context, req *memca
 }
 
 func (c *cloudMemcacheGRPCClient) UpdateInstance(ctx context.Context, req *memcachepb.UpdateInstanceRequest, opts ...gax.CallOption) (*UpdateInstanceOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 1200000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "instance.name", url.QueryEscape(req.GetInstance().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -647,11 +655,6 @@ func (c *cloudMemcacheGRPCClient) UpdateInstance(ctx context.Context, req *memca
 }
 
 func (c *cloudMemcacheGRPCClient) UpdateParameters(ctx context.Context, req *memcachepb.UpdateParametersRequest, opts ...gax.CallOption) (*UpdateParametersOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 1200000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -671,11 +674,6 @@ func (c *cloudMemcacheGRPCClient) UpdateParameters(ctx context.Context, req *mem
 }
 
 func (c *cloudMemcacheGRPCClient) DeleteInstance(ctx context.Context, req *memcachepb.DeleteInstanceRequest, opts ...gax.CallOption) (*DeleteInstanceOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 1200000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -695,11 +693,6 @@ func (c *cloudMemcacheGRPCClient) DeleteInstance(ctx context.Context, req *memca
 }
 
 func (c *cloudMemcacheGRPCClient) ApplyParameters(ctx context.Context, req *memcachepb.ApplyParametersRequest, opts ...gax.CallOption) (*ApplyParametersOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 1200000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -719,11 +712,6 @@ func (c *cloudMemcacheGRPCClient) ApplyParameters(ctx context.Context, req *memc
 }
 
 func (c *cloudMemcacheGRPCClient) RescheduleMaintenance(ctx context.Context, req *memcachepb.RescheduleMaintenanceRequest, opts ...gax.CallOption) (*RescheduleMaintenanceOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 1200000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "instance", url.QueryEscape(req.GetInstance())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -952,13 +940,13 @@ func (c *cloudMemcacheRESTClient) ListInstances(ctx context.Context, req *memcac
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -1027,13 +1015,13 @@ func (c *cloudMemcacheRESTClient) GetInstance(ctx context.Context, req *memcache
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1092,13 +1080,13 @@ func (c *cloudMemcacheRESTClient) CreateInstance(ctx context.Context, req *memca
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1136,7 +1124,7 @@ func (c *cloudMemcacheRESTClient) UpdateInstance(ctx context.Context, req *memca
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask))
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1168,13 +1156,13 @@ func (c *cloudMemcacheRESTClient) UpdateInstance(ctx context.Context, req *memca
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1239,13 +1227,13 @@ func (c *cloudMemcacheRESTClient) UpdateParameters(ctx context.Context, req *mem
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1301,13 +1289,13 @@ func (c *cloudMemcacheRESTClient) DeleteInstance(ctx context.Context, req *memca
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1370,13 +1358,13 @@ func (c *cloudMemcacheRESTClient) ApplyParameters(ctx context.Context, req *memc
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1438,13 +1426,13 @@ func (c *cloudMemcacheRESTClient) RescheduleMaintenance(ctx context.Context, req
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1501,13 +1489,13 @@ func (c *cloudMemcacheRESTClient) GetLocation(ctx context.Context, req *location
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1575,13 +1563,13 @@ func (c *cloudMemcacheRESTClient) ListLocations(ctx context.Context, req *locati
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -1736,13 +1724,13 @@ func (c *cloudMemcacheRESTClient) GetOperation(ctx context.Context, req *longrun
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1810,13 +1798,13 @@ func (c *cloudMemcacheRESTClient) ListOperations(ctx context.Context, req *longr
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil

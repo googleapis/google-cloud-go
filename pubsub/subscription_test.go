@@ -18,7 +18,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"sync"
 	"testing"
 	"time"
 
@@ -155,7 +154,7 @@ func TestListTopicSubscriptions(t *testing.T) {
 
 const defaultRetentionDuration = 168 * time.Hour
 
-func TestUpdateSubscription(t *testing.T) {
+func TestSubscriptionConfig(t *testing.T) {
 	ctx := context.Background()
 	client, srv := newFake(t)
 	defer client.Close()
@@ -192,13 +191,14 @@ func TestUpdateSubscription(t *testing.T) {
 				ServiceAccountEmail: "foo@example.com",
 				Audience:            "client-12345",
 			},
+			Wrapper: &PubsubWrapper{},
 		},
 		EnableExactlyOnceDelivery: false,
 		State:                     SubscriptionStateActive,
 	}
 	opt := cmpopts.IgnoreUnexported(SubscriptionConfig{})
-	if !testutil.Equal(cfg, want, opt) {
-		t.Fatalf("\ngot  %+v\nwant %+v", cfg, want)
+	if diff := testutil.Diff(cfg, want, opt); diff != "" {
+		t.Fatalf("compare subscription config mismatch, -got, +want\n%s", diff)
 	}
 
 	got, err := sub.Update(ctx, SubscriptionConfigToUpdate{
@@ -207,10 +207,13 @@ func TestUpdateSubscription(t *testing.T) {
 		Labels:              map[string]string{"label": "value"},
 		ExpirationPolicy:    72 * time.Hour,
 		PushConfig: &PushConfig{
-			Endpoint: "https://example.com/push",
+			Endpoint: "https://example2.com/push",
 			AuthenticationMethod: &OIDCToken{
-				ServiceAccountEmail: "foo@example.com",
-				Audience:            "client-12345",
+				ServiceAccountEmail: "bar@example.com",
+				Audience:            "client-98765",
+			},
+			Wrapper: &NoWrapper{
+				WriteMetadata: true,
 			},
 		},
 		EnableExactlyOnceDelivery: true,
@@ -226,17 +229,20 @@ func TestUpdateSubscription(t *testing.T) {
 		Labels:              map[string]string{"label": "value"},
 		ExpirationPolicy:    72 * time.Hour,
 		PushConfig: PushConfig{
-			Endpoint: "https://example.com/push",
+			Endpoint: "https://example2.com/push",
 			AuthenticationMethod: &OIDCToken{
-				ServiceAccountEmail: "foo@example.com",
-				Audience:            "client-12345",
+				ServiceAccountEmail: "bar@example.com",
+				Audience:            "client-98765",
+			},
+			Wrapper: &NoWrapper{
+				WriteMetadata: true,
 			},
 		},
 		EnableExactlyOnceDelivery: true,
 		State:                     SubscriptionStateActive,
 	}
-	if !testutil.Equal(got, want, opt) {
-		t.Fatalf("\ngot  %+v\nwant %+v", got, want)
+	if diff := testutil.Diff(got, want, opt); diff != "" {
+		t.Fatalf("compare subscription config mismatch, -got, +want\n%s", diff)
 	}
 
 	got, err = sub.Update(ctx, SubscriptionConfigToUpdate{
@@ -248,8 +254,8 @@ func TestUpdateSubscription(t *testing.T) {
 	}
 	want.RetentionDuration = 2 * time.Hour
 	want.Labels = nil
-	if !testutil.Equal(got, want, opt) {
-		t.Fatalf("\ngot %+v\nwant %+v", got, want)
+	if diff := testutil.Diff(got, want, opt); diff != "" {
+		t.Fatalf("compare subscription config mismatch, -got, +want\n%s", diff)
 	}
 
 	_, err = sub.Update(ctx, SubscriptionConfigToUpdate{})
@@ -265,8 +271,8 @@ func TestUpdateSubscription(t *testing.T) {
 		t.Fatal(err)
 	}
 	want.ExpirationPolicy = time.Duration(0)
-	if !testutil.Equal(got, want, opt) {
-		t.Fatalf("\ngot %+v\nwant %+v", got, want)
+	if diff := testutil.Diff(got, want, opt); diff != "" {
+		t.Fatalf("compare subscription config mismatch, -got, +want\n%s", diff)
 	}
 }
 
@@ -498,6 +504,73 @@ func TestBigQuerySubscription(t *testing.T) {
 	}
 }
 
+func TestCloudStorageSubscription(t *testing.T) {
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	client, srv := newFake(t)
+	defer client.Close()
+	defer srv.Close()
+
+	topic := mustCreateTopic(t, client, "t")
+	bucket := "fake-bucket"
+	csCfg := CloudStorageConfig{
+		Bucket:         bucket,
+		FilenamePrefix: "some-prefix",
+		FilenameSuffix: "some-suffix",
+		OutputFormat: &CloudStorageOutputFormatAvroConfig{
+			WriteMetadata: true,
+		},
+		MaxDuration: 10 * time.Minute,
+		MaxBytes:    10e5,
+	}
+
+	subConfig := SubscriptionConfig{
+		Topic:              topic,
+		CloudStorageConfig: csCfg,
+	}
+	csSub, err := client.CreateSubscription(ctx, "s", subConfig)
+	if err != nil {
+		t.Fatal(err)
+	}
+	cfg, err := csSub.Config(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	want := csCfg
+	want.State = CloudStorageConfigActive
+	if diff := testutil.Diff(cfg.CloudStorageConfig, want); diff != "" {
+		t.Fatalf("create cloud storage subscription mismatch: \n%s", diff)
+	}
+
+	csCfg.OutputFormat = &CloudStorageOutputFormatTextConfig{}
+	cfg, err = csSub.Update(ctx, SubscriptionConfigToUpdate{
+		CloudStorageConfig: &csCfg,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	got := cfg.CloudStorageConfig
+	want = csCfg
+	want.State = CloudStorageConfigActive
+	if diff := testutil.Diff(got, want); diff != "" {
+		t.Fatalf("update cloud storage subscription mismatch: \n%s", diff)
+	}
+
+	// Test resetting to a pull based subscription.
+	cfg, err = csSub.Update(ctx, SubscriptionConfigToUpdate{
+		CloudStorageConfig: &CloudStorageConfig{},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	got = cfg.CloudStorageConfig
+	want = CloudStorageConfig{}
+	if diff := testutil.Diff(got, want); diff != "" {
+		t.Fatalf("remove cloud storage subscription mismatch: \n%s", diff)
+	}
+}
+
 func TestExactlyOnceDelivery_AckSuccess(t *testing.T) {
 	t.Parallel()
 	ctx, cancel := context.WithCancel(context.Background())
@@ -617,10 +690,10 @@ func TestExactlyOnceDelivery_AckRetryDeadlineExceeded(t *testing.T) {
 	s.ReceiveSettings = ReceiveSettings{
 		NumGoroutines: 1,
 		// This needs to be greater than total deadline otherwise the message will be redelivered.
-		MinExtensionPeriod: 2 * time.Minute,
+		MinExtensionPeriod: 30 * time.Second,
 	}
 	// Override the default timeout here so this test doesn't take 10 minutes.
-	exactlyOnceDeliveryRetryDeadline = 20 * time.Second
+	exactlyOnceDeliveryRetryDeadline = 10 * time.Second
 	err = s.Receive(ctx, func(ctx context.Context, msg *Message) {
 		ar := msg.AckWithResult()
 		s, err := ar.Get(ctx)
@@ -680,8 +753,8 @@ func TestExactlyOnceDelivery_NackSuccess(t *testing.T) {
 	}
 }
 
-func TestExactlyOnceDelivery_NackRetry_DeadlineExceeded(t *testing.T) {
-	ctx, cancel := context.WithCancel(context.Background())
+func TestExactlyOnceDelivery_ReceiptModackError(t *testing.T) {
+	ctx := context.Background()
 	srv := pstest.NewServer(pstest.WithErrorInjection("ModifyAckDeadline", codes.Internal, "internal error"))
 	client, err := NewClient(ctx, projName,
 		option.WithEndpoint(srv.Addr),
@@ -708,31 +781,9 @@ func TestExactlyOnceDelivery_NackRetry_DeadlineExceeded(t *testing.T) {
 	if _, err := r.Get(ctx); err != nil {
 		t.Fatalf("failed to publish message: %v", err)
 	}
-
-	s.ReceiveSettings = ReceiveSettings{
-		NumGoroutines: 1,
-		// This needs to be greater than total deadline otherwise the message will be redelivered.
-		MinExtensionPeriod: 2 * time.Minute,
-		MaxExtensionPeriod: 2 * time.Minute,
-	}
-	// Override the default timeout here so this test doesn't take 10 minutes.
-	exactlyOnceDeliveryRetryDeadline = 20 * time.Second
-	var once sync.Once
-	err = s.Receive(ctx, func(ctx context.Context, msg *Message) {
-		once.Do(func() {
-			ar := msg.NackWithResult()
-			s, err := ar.Get(ctx)
-			if s != AcknowledgeStatusOther {
-				t.Errorf("AckResult AckStatus got %v, want %v", s, AcknowledgeStatusOther)
-			}
-			wantErr := context.DeadlineExceeded
-			if !errors.Is(err, wantErr) {
-				t.Errorf("AckResult error\ngot  %v\nwant %s", err, wantErr)
-			}
-			cancel()
-		})
+	ctx, cancel := context.WithTimeout(ctx, 20*time.Second)
+	defer cancel()
+	s.Receive(ctx, func(ctx context.Context, msg *Message) {
+		t.Fatal("expected message to not have been delivered when exactly once enabled")
 	})
-	if err != nil {
-		t.Fatalf("s.Receive err: %v", err)
-	}
 }

@@ -22,8 +22,8 @@ import (
 	"context"
 
 	recaptchaenterprise "cloud.google.com/go/recaptchaenterprise/apiv1"
+	"cloud.google.com/go/recaptchaenterprise/v2/apiv1/recaptchaenterprisepb"
 	"google.golang.org/api/iterator"
-	recaptchaenterprisepb "google.golang.org/genproto/googleapis/cloud/recaptchaenterprise/v1"
 )
 
 func main() {

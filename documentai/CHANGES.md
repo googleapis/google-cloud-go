@@ -1,6 +1,61 @@
 # Changes
 
 
+## [1.22.0](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.21.0...documentai/v1.22.0) (2023-07-26)
+
+
+### Features
+
+* **documentai:** Exposed Import PV external_processor_version_source to v1beta3 public ([#8323](https://github.com/googleapis/google-cloud-go/issues/8323)) ([08b151a](https://github.com/googleapis/google-cloud-go/commit/08b151a3fd9b614b6696e99d065ecda339ed00ff))
+
+## [1.21.0](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.20.0...documentai/v1.21.0) (2023-07-18)
+
+
+### Features
+
+* **documentai:** Removed id field from Document message ([4a5651c](https://github.com/googleapis/google-cloud-go/commit/4a5651caa472882fe4c7f6be400f782f60f6f258))
+
+## [1.20.0](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.19.0...documentai/v1.20.0) (2023-06-20)
+
+
+### Features
+
+* **documentai:** Add StyleInfo to document.proto ([b726d41](https://github.com/googleapis/google-cloud-go/commit/b726d413166faa8c84c0a09c6019ff50f3249b9d))
+* **documentai:** Add StyleInfo to document.proto ([b726d41](https://github.com/googleapis/google-cloud-go/commit/b726d413166faa8c84c0a09c6019ff50f3249b9d))
+
+
+### Bug Fixes
+
+* **documentai:** REST query UpdateMask bug ([df52820](https://github.com/googleapis/google-cloud-go/commit/df52820b0e7721954809a8aa8700b93c5662dc9b))
+
+## [1.19.0](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.18.1...documentai/v1.19.0) (2023-05-30)
+
+
+### Features
+
+* **documentai:** Update all direct dependencies ([b340d03](https://github.com/googleapis/google-cloud-go/commit/b340d030f2b52a4ce48846ce63984b28583abde6))
+
+## [1.18.1](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.18.0...documentai/v1.18.1) (2023-05-08)
+
+
+### Bug Fixes
+
+* **documentai:** Update grpc to v1.55.0 ([1147ce0](https://github.com/googleapis/google-cloud-go/commit/1147ce02a990276ca4f8ab7a1ab65c14da4450ef))
+
+## [1.18.0](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.17.0...documentai/v1.18.0) (2023-03-22)
+
+
+### Features
+
+* **documentai:** Add ImportProcessorVersion in v1beta3 ([c967961](https://github.com/googleapis/google-cloud-go/commit/c967961ed95750e173af0193ec8d0974471f43ff))
+
+## [1.17.0](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.16.0...documentai/v1.17.0) (2023-03-15)
+
+
+### Features
+
+* **documentai:** Added hints.language_hints field in OcrConfig ([#7522](https://github.com/googleapis/google-cloud-go/issues/7522)) ([b2c40c3](https://github.com/googleapis/google-cloud-go/commit/b2c40c3df916691b82f1b384eac5bc953960960a))
+
 ## [1.16.0](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.15.0...documentai/v1.16.0) (2023-02-22)
 
 

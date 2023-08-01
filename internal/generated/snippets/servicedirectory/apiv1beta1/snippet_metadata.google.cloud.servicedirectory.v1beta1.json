@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/servicedirectory/apiv1beta1",
-    "version": "1.8.0",
+    "version": "1.11.0",
     "language": "GO",
     "apis": [
       {
@@ -12,9 +12,101 @@
   },
   "snippets": [
     {
+      "regionTag": "servicedirectory_v1beta1_generated_LookupService_GetLocation_sync",
+      "title": "servicedirectory GetLocation Sample",
+      "description": "GetLocation gets information about a location.",
+      "file": "LookupClient/GetLocation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetLocation",
+        "fullName": "google.cloud.servicedirectory.v1beta1.LookupClient.GetLocation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.GetLocationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*locationpb.Location",
+        "client": {
+          "shortName": "LookupClient",
+          "fullName": "google.cloud.servicedirectory.v1beta1.LookupClient"
+        },
+        "method": {
+          "shortName": "GetLocation",
+          "fullName": "google.cloud.location.Locations.GetLocation",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "servicedirectory_v1beta1_generated_LookupService_ListLocations_sync",
+      "title": "servicedirectory ListLocations Sample",
+      "description": "ListLocations lists information about the supported locations for this service.",
+      "file": "LookupClient/ListLocations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListLocations",
+        "fullName": "google.cloud.servicedirectory.v1beta1.LookupClient.ListLocations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.ListLocationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "LocationIterator",
+        "client": {
+          "shortName": "LookupClient",
+          "fullName": "google.cloud.servicedirectory.v1beta1.LookupClient"
+        },
+        "method": {
+          "shortName": "ListLocations",
+          "fullName": "google.cloud.location.Locations.ListLocations",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 60,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "servicedirectory_v1beta1_generated_LookupService_ResolveService_sync",
       "title": "servicedirectory ResolveService Sample",
-      "description": "ResolveService returns a service and its\nassociated endpoints.\nResolving a service is not considered an active developer method.",
+      "description": "ResolveService returns a [service][google.cloud.servicedirectory.v1beta1.Service] and its\nassociated endpoints.\nResolving a service is not considered an active developer method.",
       "file": "LookupClient/ResolveService/main.go",
       "language": "GO",
       "clientMethod": {
@@ -34,7 +126,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "servicedirectorypb.ResolveServiceResponse",
+        "resultType": "*servicedirectorypb.ResolveServiceResponse",
         "client": {
           "shortName": "LookupClient",
           "fullName": "google.cloud.servicedirectory.v1beta1.LookupClient"
@@ -80,7 +172,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "servicedirectorypb.Endpoint",
+        "resultType": "*servicedirectorypb.Endpoint",
         "client": {
           "shortName": "RegistrationClient",
           "fullName": "google.cloud.servicedirectory.v1beta1.RegistrationClient"
@@ -126,7 +218,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "servicedirectorypb.Namespace",
+        "resultType": "*servicedirectorypb.Namespace",
         "client": {
           "shortName": "RegistrationClient",
           "fullName": "google.cloud.servicedirectory.v1beta1.RegistrationClient"
@@ -172,7 +264,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "servicedirectorypb.Service",
+        "resultType": "*servicedirectorypb.Service",
         "client": {
           "shortName": "RegistrationClient",
           "fullName": "google.cloud.servicedirectory.v1beta1.RegistrationClient"
@@ -353,7 +445,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "servicedirectorypb.Endpoint",
+        "resultType": "*servicedirectorypb.Endpoint",
         "client": {
           "shortName": "RegistrationClient",
           "fullName": "google.cloud.servicedirectory.v1beta1.RegistrationClient"
@@ -379,7 +471,7 @@
     {
       "regionTag": "servicedirectory_v1beta1_generated_RegistrationService_GetIamPolicy_sync",
       "title": "servicedirectory GetIamPolicy Sample",
-      "description": "GetIamPolicy gets the IAM Policy for a resource (namespace or service only).",
+      "description": "GetIamPolicy gets the IAM Policy for a resource",
       "file": "RegistrationClient/GetIamPolicy/main.go",
       "language": "GO",
       "clientMethod": {
@@ -399,7 +491,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "iampb.Policy",
+        "resultType": "*iampb.Policy",
         "client": {
           "shortName": "RegistrationClient",
           "fullName": "google.cloud.servicedirectory.v1beta1.RegistrationClient"
@@ -417,7 +509,53 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "servicedirectory_v1beta1_generated_RegistrationService_GetLocation_sync",
+      "title": "servicedirectory GetLocation Sample",
+      "description": "GetLocation gets information about a location.",
+      "file": "RegistrationClient/GetLocation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetLocation",
+        "fullName": "google.cloud.servicedirectory.v1beta1.RegistrationClient.GetLocation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.GetLocationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*locationpb.Location",
+        "client": {
+          "shortName": "RegistrationClient",
+          "fullName": "google.cloud.servicedirectory.v1beta1.RegistrationClient"
+        },
+        "method": {
+          "shortName": "GetLocation",
+          "fullName": "google.cloud.location.Locations.GetLocation",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -445,7 +583,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "servicedirectorypb.Namespace",
+        "resultType": "*servicedirectorypb.Namespace",
         "client": {
           "shortName": "RegistrationClient",
           "fullName": "google.cloud.servicedirectory.v1beta1.RegistrationClient"
@@ -491,7 +629,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "servicedirectorypb.Service",
+        "resultType": "*servicedirectorypb.Service",
         "client": {
           "shortName": "RegistrationClient",
           "fullName": "google.cloud.servicedirectory.v1beta1.RegistrationClient"
@@ -548,6 +686,52 @@
           "service": {
             "shortName": "RegistrationService",
             "fullName": "google.cloud.servicedirectory.v1beta1.RegistrationService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 60,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "servicedirectory_v1beta1_generated_RegistrationService_ListLocations_sync",
+      "title": "servicedirectory ListLocations Sample",
+      "description": "ListLocations lists information about the supported locations for this service.",
+      "file": "RegistrationClient/ListLocations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListLocations",
+        "fullName": "google.cloud.servicedirectory.v1beta1.RegistrationClient.ListLocations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.ListLocationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "LocationIterator",
+        "client": {
+          "shortName": "RegistrationClient",
+          "fullName": "google.cloud.servicedirectory.v1beta1.RegistrationClient"
+        },
+        "method": {
+          "shortName": "ListLocations",
+          "fullName": "google.cloud.location.Locations.ListLocations",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
           }
         }
       },
@@ -655,7 +839,7 @@
     {
       "regionTag": "servicedirectory_v1beta1_generated_RegistrationService_SetIamPolicy_sync",
       "title": "servicedirectory SetIamPolicy Sample",
-      "description": "SetIamPolicy sets the IAM Policy for a resource (namespace or service only).",
+      "description": "SetIamPolicy sets the IAM Policy for a resource",
       "file": "RegistrationClient/SetIamPolicy/main.go",
       "language": "GO",
       "clientMethod": {
@@ -675,7 +859,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "iampb.Policy",
+        "resultType": "*iampb.Policy",
         "client": {
           "shortName": "RegistrationClient",
           "fullName": "google.cloud.servicedirectory.v1beta1.RegistrationClient"
@@ -693,7 +877,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -701,7 +885,7 @@
     {
       "regionTag": "servicedirectory_v1beta1_generated_RegistrationService_TestIamPermissions_sync",
       "title": "servicedirectory TestIamPermissions Sample",
-      "description": "TestIamPermissions tests IAM permissions for a resource (namespace or service only).",
+      "description": "TestIamPermissions tests IAM permissions for a resource (namespace, service  or\nservice workload only).",
       "file": "RegistrationClient/TestIamPermissions/main.go",
       "language": "GO",
       "clientMethod": {
@@ -721,7 +905,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "iampb.TestIamPermissionsResponse",
+        "resultType": "*iampb.TestIamPermissionsResponse",
         "client": {
           "shortName": "RegistrationClient",
           "fullName": "google.cloud.servicedirectory.v1beta1.RegistrationClient"
@@ -739,7 +923,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -767,7 +951,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "servicedirectorypb.Endpoint",
+        "resultType": "*servicedirectorypb.Endpoint",
         "client": {
           "shortName": "RegistrationClient",
           "fullName": "google.cloud.servicedirectory.v1beta1.RegistrationClient"
@@ -813,7 +997,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "servicedirectorypb.Namespace",
+        "resultType": "*servicedirectorypb.Namespace",
         "client": {
           "shortName": "RegistrationClient",
           "fullName": "google.cloud.servicedirectory.v1beta1.RegistrationClient"
@@ -859,7 +1043,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "servicedirectorypb.Service",
+        "resultType": "*servicedirectorypb.Service",
         "client": {
           "shortName": "RegistrationClient",
           "fullName": "google.cloud.servicedirectory.v1beta1.RegistrationClient"

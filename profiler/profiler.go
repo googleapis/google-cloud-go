@@ -39,6 +39,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"io"
 	"log"
 	"os"
 	"regexp"
@@ -129,6 +130,10 @@ type Config struct {
 	// DebugLogging enables detailed debug logging from profiler. It
 	// defaults to false.
 	DebugLogging bool
+
+	// DebugLoggingOutput is where the logger will write debug logs to, if enabled.
+	// It defaults to os.Stderr.
+	DebugLoggingOutput io.Writer
 
 	// MutexProfiling enables mutex profiling. It defaults to false.
 	// Note that mutex profiling is not supported by Go versions older
@@ -225,7 +230,10 @@ func Start(cfg Config, options ...option.ClientOption) error {
 }
 
 func start(cfg Config, options ...option.ClientOption) error {
-	logger = log.New(os.Stderr, "Cloud Profiler: ", log.LstdFlags)
+	if cfg.DebugLoggingOutput == nil {
+		cfg.DebugLoggingOutput = os.Stderr
+	}
+	logger = log.New(cfg.DebugLoggingOutput, "Cloud Profiler: ", log.LstdFlags)
 	if err := initializeConfig(cfg); err != nil {
 		debugLog("failed to initialize config: %v", err)
 		return err

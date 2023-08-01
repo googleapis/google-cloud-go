@@ -38,6 +38,7 @@ type uploadOpts struct {
 	object              string
 	useDefaultChunkSize bool
 	objectPath          string
+	timeout             time.Duration
 }
 
 func uploadBenchmark(ctx context.Context, uopts uploadOpts) (elapsedTime time.Duration, rerr error) {
@@ -50,7 +51,7 @@ func uploadBenchmark(ctx context.Context, uopts uploadOpts) (elapsedTime time.Du
 	defer func() { elapsedTime = time.Since(start) }()
 
 	// Set additional timeout
-	ctx, cancel := context.WithTimeout(ctx, time.Minute)
+	ctx, cancel := context.WithTimeout(ctx, uopts.timeout)
 	defer cancel()
 
 	// Open file

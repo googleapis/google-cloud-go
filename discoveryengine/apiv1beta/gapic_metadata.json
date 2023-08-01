@@ -5,6 +5,144 @@
   "protoPackage": "google.cloud.discoveryengine.v1beta",
   "libraryPackage": "cloud.google.com/go/discoveryengine/apiv1beta",
   "services": {
+    "CompletionService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "CompletionClient",
+          "rpcs": {
+            "CompleteQuery": {
+              "methods": [
+                "CompleteQuery"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "CompletionClient",
+          "rpcs": {
+            "CompleteQuery": {
+              "methods": [
+                "CompleteQuery"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "ConversationalSearchService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "ConversationalSearchClient",
+          "rpcs": {
+            "ConverseConversation": {
+              "methods": [
+                "ConverseConversation"
+              ]
+            },
+            "CreateConversation": {
+              "methods": [
+                "CreateConversation"
+              ]
+            },
+            "DeleteConversation": {
+              "methods": [
+                "DeleteConversation"
+              ]
+            },
+            "GetConversation": {
+              "methods": [
+                "GetConversation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListConversations": {
+              "methods": [
+                "ListConversations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "UpdateConversation": {
+              "methods": [
+                "UpdateConversation"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "ConversationalSearchClient",
+          "rpcs": {
+            "ConverseConversation": {
+              "methods": [
+                "ConverseConversation"
+              ]
+            },
+            "CreateConversation": {
+              "methods": [
+                "CreateConversation"
+              ]
+            },
+            "DeleteConversation": {
+              "methods": [
+                "DeleteConversation"
+              ]
+            },
+            "GetConversation": {
+              "methods": [
+                "GetConversation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListConversations": {
+              "methods": [
+                "ListConversations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "UpdateConversation": {
+              "methods": [
+                "UpdateConversation"
+              ]
+            }
+          }
+        }
+      }
+    },
     "DocumentService": {
       "clients": {
         "grpc": {
@@ -43,6 +181,11 @@
             "ListOperations": {
               "methods": [
                 "ListOperations"
+              ]
+            },
+            "PurgeDocuments": {
+              "methods": [
+                "PurgeDocuments"
               ]
             },
             "UpdateDocument": {
@@ -88,6 +231,11 @@
             "ListOperations": {
               "methods": [
                 "ListOperations"
+              ]
+            },
+            "PurgeDocuments": {
+              "methods": [
+                "PurgeDocuments"
               ]
             },
             "UpdateDocument": {
@@ -137,6 +285,134 @@
             "Recommend": {
               "methods": [
                 "Recommend"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "SchemaService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "SchemaClient",
+          "rpcs": {
+            "CreateSchema": {
+              "methods": [
+                "CreateSchema"
+              ]
+            },
+            "DeleteSchema": {
+              "methods": [
+                "DeleteSchema"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetSchema": {
+              "methods": [
+                "GetSchema"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListSchemas": {
+              "methods": [
+                "ListSchemas"
+              ]
+            },
+            "UpdateSchema": {
+              "methods": [
+                "UpdateSchema"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "SchemaClient",
+          "rpcs": {
+            "CreateSchema": {
+              "methods": [
+                "CreateSchema"
+              ]
+            },
+            "DeleteSchema": {
+              "methods": [
+                "DeleteSchema"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetSchema": {
+              "methods": [
+                "GetSchema"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListSchemas": {
+              "methods": [
+                "ListSchemas"
+              ]
+            },
+            "UpdateSchema": {
+              "methods": [
+                "UpdateSchema"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "SearchService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "SearchClient",
+          "rpcs": {
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "Search": {
+              "methods": [
+                "Search"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "SearchClient",
+          "rpcs": {
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "Search": {
+              "methods": [
+                "Search"
               ]
             }
           }

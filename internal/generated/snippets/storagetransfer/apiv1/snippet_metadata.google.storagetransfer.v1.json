@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/storagetransfer/apiv1",
-    "version": "1.7.0",
+    "version": "1.10.0",
     "language": "GO",
     "apis": [
       {
@@ -14,7 +14,7 @@
     {
       "regionTag": "storagetransfer_v1_generated_StorageTransferService_CancelOperation_sync",
       "title": "storagetransfer CancelOperation Sample",
-      "description": "CancelOperation cancels a transfer. Use\nthe transferOperations.get\nmethod to check if the cancellation succeeded or if the operation\ncompleted despite the cancel request.\n\nWhen you cancel an operation, the currently running transfer is\ninterrupted.  For recurring transfer jobs, the next instance of the\ntransfer job will still run.  For example, if your job is configured\nto run every day at 1pm and you cancel Monday’s operation at 1: 05pm,\nMonday’s transfer\nwill stop. However, a transfer job will still be attempted on Tuesday.\n\nThis applies only to currently running operations. If an operation is\nnot currently running, cancel does nothing.\n\nWhen you cancel a job, the next job computes a delta of files and may\nrepair any inconsistent state. For instance, if you run a job every\nday, and today’s job found 10 new files and transferred five files\nbefore you canceled the job, tomorrow’s transfer operation will\ncompute a new delta with the five files that were not copied today\nplus any new files discovered tomorrow.",
+      "description": "CancelOperation cancels a transfer. Use\nthe [transferOperations.get][google.longrunning.Operations.GetOperation]\nmethod to check if the cancellation succeeded or if the operation\ncompleted despite the `cancel` request.\n\nWhen you cancel an operation, the currently running transfer is\ninterrupted.  For recurring transfer jobs, the next instance of the\ntransfer job will still run.  For example, if your job is configured\nto run every day at 1pm and you cancel Monday's operation at 1: 05pm,\nMonday's transfer\nwill stop. However, a transfer job will still be attempted on Tuesday.\n\nThis applies only to currently running operations. If an operation is\nnot currently running, `cancel` does nothing.\n\n<aside class=\"caution\">\n<b>Caution: </b> Canceling a transfer job can leave your data in an\nunknown state. We recommend that you restore the state at both the\ndestination and the source after the `cancel` request completes so\nthat your data is in a consistent state. </aside>\n\nWhen you cancel a job, the next job computes a delta of files and may\nrepair any inconsistent state. For instance, if you run a job every\nday, and today's job found 10 new files and transferred five files\nbefore you canceled the job, tomorrow's transfer operation will\ncompute a new delta with the five files that were not copied today\nplus any new files discovered tomorrow.",
       "file": "Client/CancelOperation/main.go",
       "language": "GO",
       "clientMethod": {
@@ -40,10 +40,10 @@
         },
         "method": {
           "shortName": "CancelOperation",
-          "fullName": "google.storagetransfer.v1.StorageTransferService.CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
           "service": {
-            "shortName": "StorageTransferService",
-            "fullName": "google.storagetransfer.v1.StorageTransferService"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -51,7 +51,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -79,7 +79,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "storagetransferpb.AgentPool",
+        "resultType": "*storagetransferpb.AgentPool",
         "client": {
           "shortName": "Client",
           "fullName": "google.storagetransfer.v1.Client"
@@ -125,7 +125,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "storagetransferpb.TransferJob",
+        "resultType": "*storagetransferpb.TransferJob",
         "client": {
           "shortName": "Client",
           "fullName": "google.storagetransfer.v1.Client"
@@ -196,7 +196,7 @@
     {
       "regionTag": "storagetransfer_v1_generated_StorageTransferService_DeleteTransferJob_sync",
       "title": "storagetransfer DeleteTransferJob Sample",
-      "description": "DeleteTransferJob deletes a transfer job. Deleting a transfer job sets its status to\nDELETED.",
+      "description": "DeleteTransferJob deletes a transfer job. Deleting a transfer job sets its status to\n[DELETED][google.storagetransfer.v1.TransferJob.Status.DELETED].",
       "file": "Client/DeleteTransferJob/main.go",
       "language": "GO",
       "clientMethod": {
@@ -261,7 +261,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "storagetransferpb.AgentPool",
+        "resultType": "*storagetransferpb.AgentPool",
         "client": {
           "shortName": "Client",
           "fullName": "google.storagetransfer.v1.Client"
@@ -307,7 +307,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "storagetransferpb.GoogleServiceAccount",
+        "resultType": "*storagetransferpb.GoogleServiceAccount",
         "client": {
           "shortName": "Client",
           "fullName": "google.storagetransfer.v1.Client"
@@ -353,17 +353,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "longrunningpb.Operation",
+        "resultType": "*longrunningpb.Operation",
         "client": {
           "shortName": "Client",
           "fullName": "google.storagetransfer.v1.Client"
         },
         "method": {
           "shortName": "GetOperation",
-          "fullName": "google.storagetransfer.v1.StorageTransferService.GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
           "service": {
-            "shortName": "StorageTransferService",
-            "fullName": "google.storagetransfer.v1.StorageTransferService"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -371,7 +371,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -399,7 +399,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "storagetransferpb.TransferJob",
+        "resultType": "*storagetransferpb.TransferJob",
         "client": {
           "shortName": "Client",
           "fullName": "google.storagetransfer.v1.Client"
@@ -498,10 +498,10 @@
         },
         "method": {
           "shortName": "ListOperations",
-          "fullName": "google.storagetransfer.v1.StorageTransferService.ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
           "service": {
-            "shortName": "StorageTransferService",
-            "fullName": "google.storagetransfer.v1.StorageTransferService"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -509,7 +509,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 61,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -653,7 +653,7 @@
     {
       "regionTag": "storagetransfer_v1_generated_StorageTransferService_RunTransferJob_sync",
       "title": "storagetransfer RunTransferJob Sample",
-      "description": "RunTransferJob attempts to start a new TransferOperation for the current TransferJob. A\nTransferJob has a maximum of one active TransferOperation. If this method\nis called while a TransferOperation is active, an error will be returned.",
+      "description": "RunTransferJob starts a new operation for the specified transfer job.\nA `TransferJob` has a maximum of one active `TransferOperation`. If this\nmethod is called while a `TransferOperation` is active, an error is\nreturned.",
       "file": "Client/RunTransferJob/main.go",
       "language": "GO",
       "clientMethod": {
@@ -719,7 +719,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "storagetransferpb.AgentPool",
+        "resultType": "*storagetransferpb.AgentPool",
         "client": {
           "shortName": "Client",
           "fullName": "google.storagetransfer.v1.Client"
@@ -745,7 +745,7 @@
     {
       "regionTag": "storagetransfer_v1_generated_StorageTransferService_UpdateTransferJob_sync",
       "title": "storagetransfer UpdateTransferJob Sample",
-      "description": "UpdateTransferJob updates a transfer job. Updating a job’s transfer spec does not affect\ntransfer operations that are running already.\n\nNote: The job’s status field can be modified\nusing this RPC (for example, to set a job’s status to\nDELETED,\nDISABLED, or\nENABLED).",
+      "description": "UpdateTransferJob updates a transfer job. Updating a job's transfer spec does not affect\ntransfer operations that are running already.\n\n**Note: ** The job's [status][google.storagetransfer.v1.TransferJob.status]\nfield can be modified using this RPC (for example, to set a job's status to\n[DELETED][google.storagetransfer.v1.TransferJob.Status.DELETED],\n[DISABLED][google.storagetransfer.v1.TransferJob.Status.DISABLED], or\n[ENABLED][google.storagetransfer.v1.TransferJob.Status.ENABLED]).",
       "file": "Client/UpdateTransferJob/main.go",
       "language": "GO",
       "clientMethod": {
@@ -765,7 +765,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "storagetransferpb.TransferJob",
+        "resultType": "*storagetransferpb.TransferJob",
         "client": {
           "shortName": "Client",
           "fullName": "google.storagetransfer.v1.Client"

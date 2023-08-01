@@ -34,6 +34,7 @@ import (
 // https://cloud.google.com/spanner/docs/data-definition-language#create_table
 type CreateTable struct {
 	Name              ID
+	IfNotExists       bool
 	Columns           []ColumnDef
 	Constraints       []TableConstraint
 	PrimaryKey        []KeyPart
@@ -106,6 +107,7 @@ type CreateIndex struct {
 
 	Unique       bool
 	NullFiltered bool
+	IfNotExists  bool
 
 	Storing    []ID
 	Interleave ID
@@ -149,7 +151,8 @@ func (cr *CreateRole) clearOffset()   { cr.Position.Offset = 0 }
 // DropTable represents a DROP TABLE statement.
 // https://cloud.google.com/spanner/docs/data-definition-language#drop_table
 type DropTable struct {
-	Name ID
+	Name     ID
+	IfExists bool
 
 	Position Position // position of the "DROP" token
 }
@@ -162,7 +165,8 @@ func (dt *DropTable) clearOffset()   { dt.Position.Offset = 0 }
 // DropIndex represents a DROP INDEX statement.
 // https://cloud.google.com/spanner/docs/data-definition-language#drop-index
 type DropIndex struct {
-	Name ID
+	Name     ID
+	IfExists bool
 
 	Position Position // position of the "DROP" token
 }
@@ -201,10 +205,13 @@ func (dr *DropRole) clearOffset()   { dr.Position.Offset = 0 }
 // GrantRole represents a GRANT statement.
 // https://cloud.google.com/spanner/docs/reference/standard-sql/data-definition-language#grant_statement
 type GrantRole struct {
-	ToRoleNames    []ID
-	GrantRoleNames []ID
-	Privileges     []Privilege
-	TableNames     []ID
+	ToRoleNames       []ID
+	GrantRoleNames    []ID
+	Privileges        []Privilege
+	TableNames        []ID
+	TvfNames          []ID
+	ViewNames         []ID
+	ChangeStreamNames []ID
 
 	Position Position // position of the "GRANT" token
 }
@@ -217,12 +224,14 @@ func (gr *GrantRole) clearOffset()   { gr.Position.Offset = 0 }
 // RevokeRole represents a REVOKE statement.
 // https://cloud.google.com/spanner/docs/reference/standard-sql/data-definition-language#revoke_statement
 type RevokeRole struct {
-	FromRoleNames   []ID
-	RevokeRoleNames []ID
-	Privileges      []Privilege
-	TableNames      []ID
-
-	Position Position // position of the "REVOKE" token
+	FromRoleNames     []ID
+	RevokeRoleNames   []ID
+	Privileges        []Privilege
+	TableNames        []ID
+	TvfNames          []ID
+	ViewNames         []ID
+	ChangeStreamNames []ID
+	Position          Position // position of the "REVOKE" token
 }
 
 func (rr *RevokeRole) String() string { return fmt.Sprintf("%#v", rr) }
@@ -279,7 +288,10 @@ func (ReplaceRowDeletionPolicy) isTableAlteration() {}
 func (DropRowDeletionPolicy) isTableAlteration()    {}
 
 type (
-	AddColumn      struct{ Def ColumnDef }
+	AddColumn struct {
+		IfNotExists bool
+		Def         ColumnDef
+	}
 	DropColumn     struct{ Name ID }
 	AddConstraint  struct{ Constraint TableConstraint }
 	DropConstraint struct{ Name ID }
@@ -449,6 +461,7 @@ type ForeignKey struct {
 	Columns    []ID
 	RefTable   ID
 	RefColumns []ID
+	OnDelete   OnDelete
 
 	Position Position // position of the "FOREIGN" token
 }

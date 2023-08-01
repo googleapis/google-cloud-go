@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/networkconnectivity/apiv1",
-    "version": "1.10.0",
+    "version": "1.12.1",
     "language": "GO",
     "apis": [
       {
@@ -40,10 +40,10 @@
         },
         "method": {
           "shortName": "CancelOperation",
-          "fullName": "google.cloud.networkconnectivity.v1.HubService.CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
           "service": {
-            "shortName": "HubService",
-            "fullName": "google.cloud.networkconnectivity.v1.HubService"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -51,7 +51,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -223,10 +223,10 @@
         },
         "method": {
           "shortName": "DeleteOperation",
-          "fullName": "google.cloud.networkconnectivity.v1.HubService.DeleteOperation",
+          "fullName": "google.longrunning.Operations.DeleteOperation",
           "service": {
-            "shortName": "HubService",
-            "fullName": "google.cloud.networkconnectivity.v1.HubService"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -234,7 +234,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -308,7 +308,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "networkconnectivitypb.Hub",
+        "resultType": "*networkconnectivitypb.Hub",
         "client": {
           "shortName": "HubClient",
           "fullName": "google.cloud.networkconnectivity.v1.HubClient"
@@ -354,17 +354,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "iampb.Policy",
+        "resultType": "*iampb.Policy",
         "client": {
           "shortName": "HubClient",
           "fullName": "google.cloud.networkconnectivity.v1.HubClient"
         },
         "method": {
           "shortName": "GetIamPolicy",
-          "fullName": "google.cloud.networkconnectivity.v1.HubService.GetIamPolicy",
+          "fullName": "google.iam.v1.IAMPolicy.GetIamPolicy",
           "service": {
-            "shortName": "HubService",
-            "fullName": "google.cloud.networkconnectivity.v1.HubService"
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
           }
         }
       },
@@ -372,7 +372,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -400,17 +400,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "locationpb.Location",
+        "resultType": "*locationpb.Location",
         "client": {
           "shortName": "HubClient",
           "fullName": "google.cloud.networkconnectivity.v1.HubClient"
         },
         "method": {
           "shortName": "GetLocation",
-          "fullName": "google.cloud.networkconnectivity.v1.HubService.GetLocation",
+          "fullName": "google.cloud.location.Locations.GetLocation",
           "service": {
-            "shortName": "HubService",
-            "fullName": "google.cloud.networkconnectivity.v1.HubService"
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
           }
         }
       },
@@ -418,7 +418,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -446,17 +446,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "longrunningpb.Operation",
+        "resultType": "*longrunningpb.Operation",
         "client": {
           "shortName": "HubClient",
           "fullName": "google.cloud.networkconnectivity.v1.HubClient"
         },
         "method": {
           "shortName": "GetOperation",
-          "fullName": "google.cloud.networkconnectivity.v1.HubService.GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
           "service": {
-            "shortName": "HubService",
-            "fullName": "google.cloud.networkconnectivity.v1.HubService"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -464,7 +464,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -492,7 +492,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "networkconnectivitypb.Spoke",
+        "resultType": "*networkconnectivitypb.Spoke",
         "client": {
           "shortName": "HubClient",
           "fullName": "google.cloud.networkconnectivity.v1.HubClient"
@@ -591,10 +591,10 @@
         },
         "method": {
           "shortName": "ListLocations",
-          "fullName": "google.cloud.networkconnectivity.v1.HubService.ListLocations",
+          "fullName": "google.cloud.location.Locations.ListLocations",
           "service": {
-            "shortName": "HubService",
-            "fullName": "google.cloud.networkconnectivity.v1.HubService"
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
           }
         }
       },
@@ -602,7 +602,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 61,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -637,10 +637,10 @@
         },
         "method": {
           "shortName": "ListOperations",
-          "fullName": "google.cloud.networkconnectivity.v1.HubService.ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
           "service": {
-            "shortName": "HubService",
-            "fullName": "google.cloud.networkconnectivity.v1.HubService"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -648,7 +648,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 61,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -702,7 +702,7 @@
     {
       "regionTag": "networkconnectivity_v1_generated_HubService_SetIamPolicy_sync",
       "title": "networkconnectivity SetIamPolicy Sample",
-      "description": "SetIamPolicy sets the access control policy on the specified resource. Replaces\nany existing policy.\n\nCan return NOT_FOUND, INVALID_ARGUMENT, and PERMISSION_DENIED\nerrors.",
+      "description": "SetIamPolicy sets the access control policy on the specified resource. Replaces\nany existing policy.\n\nCan return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED`\nerrors.",
       "file": "HubClient/SetIamPolicy/main.go",
       "language": "GO",
       "clientMethod": {
@@ -722,17 +722,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "iampb.Policy",
+        "resultType": "*iampb.Policy",
         "client": {
           "shortName": "HubClient",
           "fullName": "google.cloud.networkconnectivity.v1.HubClient"
         },
         "method": {
           "shortName": "SetIamPolicy",
-          "fullName": "google.cloud.networkconnectivity.v1.HubService.SetIamPolicy",
+          "fullName": "google.iam.v1.IAMPolicy.SetIamPolicy",
           "service": {
-            "shortName": "HubService",
-            "fullName": "google.cloud.networkconnectivity.v1.HubService"
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
           }
         }
       },
@@ -740,7 +740,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -748,7 +748,7 @@
     {
       "regionTag": "networkconnectivity_v1_generated_HubService_TestIamPermissions_sync",
       "title": "networkconnectivity TestIamPermissions Sample",
-      "description": "TestIamPermissions returns permissions that a caller has on the specified resource. If the\nresource does not exist, this will return an empty set of\npermissions, not a NOT_FOUND error.\n\nNote: This operation is designed to be used for building\npermission-aware UIs and command-line tools, not for authorization\nchecking. This operation may “fail open” without warning.",
+      "description": "TestIamPermissions returns permissions that a caller has on the specified resource. If the\nresource does not exist, this will return an empty set of\npermissions, not a `NOT_FOUND` error.\n\nNote: This operation is designed to be used for building\npermission-aware UIs and command-line tools, not for authorization\nchecking. This operation may \"fail open\" without warning.",
       "file": "HubClient/TestIamPermissions/main.go",
       "language": "GO",
       "clientMethod": {
@@ -768,17 +768,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "iampb.TestIamPermissionsResponse",
+        "resultType": "*iampb.TestIamPermissionsResponse",
         "client": {
           "shortName": "HubClient",
           "fullName": "google.cloud.networkconnectivity.v1.HubClient"
         },
         "method": {
           "shortName": "TestIamPermissions",
-          "fullName": "google.cloud.networkconnectivity.v1.HubService.TestIamPermissions",
+          "fullName": "google.iam.v1.IAMPolicy.TestIamPermissions",
           "service": {
-            "shortName": "HubService",
-            "fullName": "google.cloud.networkconnectivity.v1.HubService"
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
           }
         }
       },
@@ -786,7 +786,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]

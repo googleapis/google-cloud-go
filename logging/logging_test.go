@@ -244,6 +244,20 @@ func TestLogAndEntries(t *testing.T) {
 	}
 }
 
+func TestLogInvalidUtf8(t *testing.T) {
+	lg := client.Logger(testLogID)
+	msg := fmt.Sprintf("\x6c\x6f\x67\xe5")
+	lg.Log(logging.Entry{
+		Payload:   msg,
+		Timestamp: time.Now(),
+	})
+	err := lg.Flush()
+	s, _ := status.FromError(err)
+	if !strings.Contains(s.Message(), "string field contains invalid UTF-8") {
+		t.Fatalf("got an incorrect error: %v", err)
+	}
+}
+
 func TestContextFunc(t *testing.T) {
 	initLogs()
 	var contextFuncCalls, cleanupCalls int32 //atomic

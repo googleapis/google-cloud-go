@@ -20,14 +20,16 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"math"
 	"net/http"
 	"net/url"
 	"time"
 
+	iampb "cloud.google.com/go/iam/apiv1/iampb"
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	vmwareenginepb "cloud.google.com/go/vmwareengine/apiv1/vmwareenginepb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
@@ -37,8 +39,6 @@ import (
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
-	iampb "google.golang.org/genproto/googleapis/iam/v1"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -50,45 +50,53 @@ var newClientHook clientHook
 
 // CallOptions contains the retry settings for each method of Client.
 type CallOptions struct {
-	ListPrivateClouds         []gax.CallOption
-	GetPrivateCloud           []gax.CallOption
-	CreatePrivateCloud        []gax.CallOption
-	UpdatePrivateCloud        []gax.CallOption
-	DeletePrivateCloud        []gax.CallOption
-	UndeletePrivateCloud      []gax.CallOption
-	ListClusters              []gax.CallOption
-	GetCluster                []gax.CallOption
-	CreateCluster             []gax.CallOption
-	UpdateCluster             []gax.CallOption
-	DeleteCluster             []gax.CallOption
-	ListSubnets               []gax.CallOption
-	ListNodeTypes             []gax.CallOption
-	GetNodeType               []gax.CallOption
-	ShowNsxCredentials        []gax.CallOption
-	ShowVcenterCredentials    []gax.CallOption
-	ResetNsxCredentials       []gax.CallOption
-	ResetVcenterCredentials   []gax.CallOption
-	CreateHcxActivationKey    []gax.CallOption
-	ListHcxActivationKeys     []gax.CallOption
-	GetHcxActivationKey       []gax.CallOption
-	GetNetworkPolicy          []gax.CallOption
-	ListNetworkPolicies       []gax.CallOption
-	CreateNetworkPolicy       []gax.CallOption
-	UpdateNetworkPolicy       []gax.CallOption
-	DeleteNetworkPolicy       []gax.CallOption
-	CreateVmwareEngineNetwork []gax.CallOption
-	UpdateVmwareEngineNetwork []gax.CallOption
-	DeleteVmwareEngineNetwork []gax.CallOption
-	GetVmwareEngineNetwork    []gax.CallOption
-	ListVmwareEngineNetworks  []gax.CallOption
-	GetLocation               []gax.CallOption
-	ListLocations             []gax.CallOption
-	GetIamPolicy              []gax.CallOption
-	SetIamPolicy              []gax.CallOption
-	TestIamPermissions        []gax.CallOption
-	DeleteOperation           []gax.CallOption
-	GetOperation              []gax.CallOption
-	ListOperations            []gax.CallOption
+	ListPrivateClouds                  []gax.CallOption
+	GetPrivateCloud                    []gax.CallOption
+	CreatePrivateCloud                 []gax.CallOption
+	UpdatePrivateCloud                 []gax.CallOption
+	DeletePrivateCloud                 []gax.CallOption
+	UndeletePrivateCloud               []gax.CallOption
+	ListClusters                       []gax.CallOption
+	GetCluster                         []gax.CallOption
+	CreateCluster                      []gax.CallOption
+	UpdateCluster                      []gax.CallOption
+	DeleteCluster                      []gax.CallOption
+	ListSubnets                        []gax.CallOption
+	GetSubnet                          []gax.CallOption
+	UpdateSubnet                       []gax.CallOption
+	ListNodeTypes                      []gax.CallOption
+	GetNodeType                        []gax.CallOption
+	ShowNsxCredentials                 []gax.CallOption
+	ShowVcenterCredentials             []gax.CallOption
+	ResetNsxCredentials                []gax.CallOption
+	ResetVcenterCredentials            []gax.CallOption
+	CreateHcxActivationKey             []gax.CallOption
+	ListHcxActivationKeys              []gax.CallOption
+	GetHcxActivationKey                []gax.CallOption
+	GetNetworkPolicy                   []gax.CallOption
+	ListNetworkPolicies                []gax.CallOption
+	CreateNetworkPolicy                []gax.CallOption
+	UpdateNetworkPolicy                []gax.CallOption
+	DeleteNetworkPolicy                []gax.CallOption
+	CreateVmwareEngineNetwork          []gax.CallOption
+	UpdateVmwareEngineNetwork          []gax.CallOption
+	DeleteVmwareEngineNetwork          []gax.CallOption
+	GetVmwareEngineNetwork             []gax.CallOption
+	ListVmwareEngineNetworks           []gax.CallOption
+	CreatePrivateConnection            []gax.CallOption
+	GetPrivateConnection               []gax.CallOption
+	ListPrivateConnections             []gax.CallOption
+	UpdatePrivateConnection            []gax.CallOption
+	DeletePrivateConnection            []gax.CallOption
+	ListPrivateConnectionPeeringRoutes []gax.CallOption
+	GetLocation                        []gax.CallOption
+	ListLocations                      []gax.CallOption
+	GetIamPolicy                       []gax.CallOption
+	SetIamPolicy                       []gax.CallOption
+	TestIamPermissions                 []gax.CallOption
+	DeleteOperation                    []gax.CallOption
+	GetOperation                       []gax.CallOption
+	ListOperations                     []gax.CallOption
 }
 
 func defaultGRPCClientOptions() []option.ClientOption {
@@ -106,6 +114,7 @@ func defaultGRPCClientOptions() []option.ClientOption {
 func defaultCallOptions() *CallOptions {
 	return &CallOptions{
 		ListPrivateClouds: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -117,6 +126,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		GetPrivateCloud: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -127,11 +137,20 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
-		CreatePrivateCloud:   []gax.CallOption{},
-		UpdatePrivateCloud:   []gax.CallOption{},
-		DeletePrivateCloud:   []gax.CallOption{},
-		UndeletePrivateCloud: []gax.CallOption{},
+		CreatePrivateCloud: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
+		},
+		UpdatePrivateCloud: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
+		},
+		DeletePrivateCloud: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
+		},
+		UndeletePrivateCloud: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
+		},
 		ListClusters: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -143,6 +162,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		GetCluster: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -153,10 +173,17 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
-		CreateCluster: []gax.CallOption{},
-		UpdateCluster: []gax.CallOption{},
-		DeleteCluster: []gax.CallOption{},
+		CreateCluster: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
+		},
+		UpdateCluster: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
+		},
+		DeleteCluster: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
+		},
 		ListSubnets: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -166,8 +193,24 @@ func defaultCallOptions() *CallOptions {
 					Multiplier: 1.30,
 				})
 			}),
+		},
+		GetSubnet: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		UpdateSubnet: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 		},
 		ListNodeTypes: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -179,6 +222,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		GetNodeType: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -190,6 +234,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		ShowNsxCredentials: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -201,6 +246,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		ShowVcenterCredentials: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -211,10 +257,17 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
-		ResetNsxCredentials:     []gax.CallOption{},
-		ResetVcenterCredentials: []gax.CallOption{},
-		CreateHcxActivationKey:  []gax.CallOption{},
+		ResetNsxCredentials: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
+		},
+		ResetVcenterCredentials: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
+		},
+		CreateHcxActivationKey: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
+		},
 		ListHcxActivationKeys: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -226,6 +279,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		GetHcxActivationKey: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -237,6 +291,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		GetNetworkPolicy: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -248,6 +303,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		ListNetworkPolicies: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -258,13 +314,26 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
-		CreateNetworkPolicy:       []gax.CallOption{},
-		UpdateNetworkPolicy:       []gax.CallOption{},
-		DeleteNetworkPolicy:       []gax.CallOption{},
-		CreateVmwareEngineNetwork: []gax.CallOption{},
-		UpdateVmwareEngineNetwork: []gax.CallOption{},
-		DeleteVmwareEngineNetwork: []gax.CallOption{},
+		CreateNetworkPolicy: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
+		},
+		UpdateNetworkPolicy: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
+		},
+		DeleteNetworkPolicy: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
+		},
+		CreateVmwareEngineNetwork: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
+		},
+		UpdateVmwareEngineNetwork: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
+		},
+		DeleteVmwareEngineNetwork: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
+		},
 		GetVmwareEngineNetwork: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -276,6 +345,52 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		ListVmwareEngineNetworks: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		CreatePrivateConnection: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
+		},
+		GetPrivateConnection: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		ListPrivateConnections: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		UpdatePrivateConnection: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
+		},
+		DeletePrivateConnection: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
+		},
+		ListPrivateConnectionPeeringRoutes: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -300,6 +415,7 @@ func defaultCallOptions() *CallOptions {
 func defaultRESTCallOptions() *CallOptions {
 	return &CallOptions{
 		ListPrivateClouds: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -310,6 +426,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		GetPrivateCloud: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -319,11 +436,20 @@ func defaultRESTCallOptions() *CallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
-		CreatePrivateCloud:   []gax.CallOption{},
-		UpdatePrivateCloud:   []gax.CallOption{},
-		DeletePrivateCloud:   []gax.CallOption{},
-		UndeletePrivateCloud: []gax.CallOption{},
+		CreatePrivateCloud: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
+		},
+		UpdatePrivateCloud: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
+		},
+		DeletePrivateCloud: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
+		},
+		UndeletePrivateCloud: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
+		},
 		ListClusters: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -334,6 +460,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		GetCluster: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -343,10 +470,17 @@ func defaultRESTCallOptions() *CallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
-		CreateCluster: []gax.CallOption{},
-		UpdateCluster: []gax.CallOption{},
-		DeleteCluster: []gax.CallOption{},
+		CreateCluster: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
+		},
+		UpdateCluster: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
+		},
+		DeleteCluster: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
+		},
 		ListSubnets: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -355,8 +489,23 @@ func defaultRESTCallOptions() *CallOptions {
 				},
 					http.StatusServiceUnavailable)
 			}),
+		},
+		GetSubnet: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		UpdateSubnet: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 		},
 		ListNodeTypes: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -367,6 +516,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		GetNodeType: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -377,6 +527,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		ShowNsxCredentials: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -387,6 +538,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		ShowVcenterCredentials: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -396,10 +548,17 @@ func defaultRESTCallOptions() *CallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
-		ResetNsxCredentials:     []gax.CallOption{},
-		ResetVcenterCredentials: []gax.CallOption{},
-		CreateHcxActivationKey:  []gax.CallOption{},
+		ResetNsxCredentials: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
+		},
+		ResetVcenterCredentials: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
+		},
+		CreateHcxActivationKey: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
+		},
 		ListHcxActivationKeys: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -410,6 +569,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		GetHcxActivationKey: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -420,6 +580,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		GetNetworkPolicy: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -430,6 +591,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		ListNetworkPolicies: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -439,13 +601,26 @@ func defaultRESTCallOptions() *CallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
-		CreateNetworkPolicy:       []gax.CallOption{},
-		UpdateNetworkPolicy:       []gax.CallOption{},
-		DeleteNetworkPolicy:       []gax.CallOption{},
-		CreateVmwareEngineNetwork: []gax.CallOption{},
-		UpdateVmwareEngineNetwork: []gax.CallOption{},
-		DeleteVmwareEngineNetwork: []gax.CallOption{},
+		CreateNetworkPolicy: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
+		},
+		UpdateNetworkPolicy: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
+		},
+		DeleteNetworkPolicy: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
+		},
+		CreateVmwareEngineNetwork: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
+		},
+		UpdateVmwareEngineNetwork: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
+		},
+		DeleteVmwareEngineNetwork: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
+		},
 		GetVmwareEngineNetwork: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -456,6 +631,49 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		ListVmwareEngineNetworks: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		CreatePrivateConnection: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
+		},
+		GetPrivateConnection: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		ListPrivateConnections: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		UpdatePrivateConnection: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
+		},
+		DeletePrivateConnection: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
+		},
+		ListPrivateConnectionPeeringRoutes: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -500,6 +718,9 @@ type internalClient interface {
 	DeleteCluster(context.Context, *vmwareenginepb.DeleteClusterRequest, ...gax.CallOption) (*DeleteClusterOperation, error)
 	DeleteClusterOperation(name string) *DeleteClusterOperation
 	ListSubnets(context.Context, *vmwareenginepb.ListSubnetsRequest, ...gax.CallOption) *SubnetIterator
+	GetSubnet(context.Context, *vmwareenginepb.GetSubnetRequest, ...gax.CallOption) (*vmwareenginepb.Subnet, error)
+	UpdateSubnet(context.Context, *vmwareenginepb.UpdateSubnetRequest, ...gax.CallOption) (*UpdateSubnetOperation, error)
+	UpdateSubnetOperation(name string) *UpdateSubnetOperation
 	ListNodeTypes(context.Context, *vmwareenginepb.ListNodeTypesRequest, ...gax.CallOption) *NodeTypeIterator
 	GetNodeType(context.Context, *vmwareenginepb.GetNodeTypeRequest, ...gax.CallOption) (*vmwareenginepb.NodeType, error)
 	ShowNsxCredentials(context.Context, *vmwareenginepb.ShowNsxCredentialsRequest, ...gax.CallOption) (*vmwareenginepb.Credentials, error)
@@ -528,6 +749,15 @@ type internalClient interface {
 	DeleteVmwareEngineNetworkOperation(name string) *DeleteVmwareEngineNetworkOperation
 	GetVmwareEngineNetwork(context.Context, *vmwareenginepb.GetVmwareEngineNetworkRequest, ...gax.CallOption) (*vmwareenginepb.VmwareEngineNetwork, error)
 	ListVmwareEngineNetworks(context.Context, *vmwareenginepb.ListVmwareEngineNetworksRequest, ...gax.CallOption) *VmwareEngineNetworkIterator
+	CreatePrivateConnection(context.Context, *vmwareenginepb.CreatePrivateConnectionRequest, ...gax.CallOption) (*CreatePrivateConnectionOperation, error)
+	CreatePrivateConnectionOperation(name string) *CreatePrivateConnectionOperation
+	GetPrivateConnection(context.Context, *vmwareenginepb.GetPrivateConnectionRequest, ...gax.CallOption) (*vmwareenginepb.PrivateConnection, error)
+	ListPrivateConnections(context.Context, *vmwareenginepb.ListPrivateConnectionsRequest, ...gax.CallOption) *PrivateConnectionIterator
+	UpdatePrivateConnection(context.Context, *vmwareenginepb.UpdatePrivateConnectionRequest, ...gax.CallOption) (*UpdatePrivateConnectionOperation, error)
+	UpdatePrivateConnectionOperation(name string) *UpdatePrivateConnectionOperation
+	DeletePrivateConnection(context.Context, *vmwareenginepb.DeletePrivateConnectionRequest, ...gax.CallOption) (*DeletePrivateConnectionOperation, error)
+	DeletePrivateConnectionOperation(name string) *DeletePrivateConnectionOperation
+	ListPrivateConnectionPeeringRoutes(context.Context, *vmwareenginepb.ListPrivateConnectionPeeringRoutesRequest, ...gax.CallOption) *PeeringRouteIterator
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
 	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
 	GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
@@ -723,6 +953,27 @@ func (c *Client) ListSubnets(ctx context.Context, req *vmwareenginepb.ListSubnet
 	return c.internalClient.ListSubnets(ctx, req, opts...)
 }
 
+// GetSubnet gets details of a single subnet.
+func (c *Client) GetSubnet(ctx context.Context, req *vmwareenginepb.GetSubnetRequest, opts ...gax.CallOption) (*vmwareenginepb.Subnet, error) {
+	return c.internalClient.GetSubnet(ctx, req, opts...)
+}
+
+// UpdateSubnet updates the parameters of a single subnet. Only fields specified in
+// update_mask are applied.
+//
+// Note: This API is synchronous and always returns a successful
+// google.longrunning.Operation (LRO). The returned LRO will only have
+// done and response fields.
+func (c *Client) UpdateSubnet(ctx context.Context, req *vmwareenginepb.UpdateSubnetRequest, opts ...gax.CallOption) (*UpdateSubnetOperation, error) {
+	return c.internalClient.UpdateSubnet(ctx, req, opts...)
+}
+
+// UpdateSubnetOperation returns a new UpdateSubnetOperation from a given name.
+// The name must be that of a previously created UpdateSubnetOperation, possibly from a different process.
+func (c *Client) UpdateSubnetOperation(name string) *UpdateSubnetOperation {
+	return c.internalClient.UpdateSubnetOperation(name)
+}
+
 // ListNodeTypes lists node types
 func (c *Client) ListNodeTypes(ctx context.Context, req *vmwareenginepb.ListNodeTypesRequest, opts ...gax.CallOption) *NodeTypeIterator {
 	return c.internalClient.ListNodeTypes(ctx, req, opts...)
@@ -895,6 +1146,61 @@ func (c *Client) ListVmwareEngineNetworks(ctx context.Context, req *vmwareengine
 	return c.internalClient.ListVmwareEngineNetworks(ctx, req, opts...)
 }
 
+// CreatePrivateConnection creates a new private connection that can be used for accessing private
+// Clouds.
+func (c *Client) CreatePrivateConnection(ctx context.Context, req *vmwareenginepb.CreatePrivateConnectionRequest, opts ...gax.CallOption) (*CreatePrivateConnectionOperation, error) {
+	return c.internalClient.CreatePrivateConnection(ctx, req, opts...)
+}
+
+// CreatePrivateConnectionOperation returns a new CreatePrivateConnectionOperation from a given name.
+// The name must be that of a previously created CreatePrivateConnectionOperation, possibly from a different process.
+func (c *Client) CreatePrivateConnectionOperation(name string) *CreatePrivateConnectionOperation {
+	return c.internalClient.CreatePrivateConnectionOperation(name)
+}
+
+// GetPrivateConnection retrieves a PrivateConnection resource by its resource name. The resource
+// contains details of the private connection, such as connected
+// network, routing mode and state.
+func (c *Client) GetPrivateConnection(ctx context.Context, req *vmwareenginepb.GetPrivateConnectionRequest, opts ...gax.CallOption) (*vmwareenginepb.PrivateConnection, error) {
+	return c.internalClient.GetPrivateConnection(ctx, req, opts...)
+}
+
+// ListPrivateConnections lists PrivateConnection resources in a given project and location.
+func (c *Client) ListPrivateConnections(ctx context.Context, req *vmwareenginepb.ListPrivateConnectionsRequest, opts ...gax.CallOption) *PrivateConnectionIterator {
+	return c.internalClient.ListPrivateConnections(ctx, req, opts...)
+}
+
+// UpdatePrivateConnection modifies a PrivateConnection resource. Only description and
+// routing_mode fields can be updated. Only fields specified in updateMask
+// are applied.
+func (c *Client) UpdatePrivateConnection(ctx context.Context, req *vmwareenginepb.UpdatePrivateConnectionRequest, opts ...gax.CallOption) (*UpdatePrivateConnectionOperation, error) {
+	return c.internalClient.UpdatePrivateConnection(ctx, req, opts...)
+}
+
+// UpdatePrivateConnectionOperation returns a new UpdatePrivateConnectionOperation from a given name.
+// The name must be that of a previously created UpdatePrivateConnectionOperation, possibly from a different process.
+func (c *Client) UpdatePrivateConnectionOperation(name string) *UpdatePrivateConnectionOperation {
+	return c.internalClient.UpdatePrivateConnectionOperation(name)
+}
+
+// DeletePrivateConnection deletes a PrivateConnection resource. When a private connection is
+// deleted for a VMware Engine network, the connected network becomes
+// inaccessible to that VMware Engine network.
+func (c *Client) DeletePrivateConnection(ctx context.Context, req *vmwareenginepb.DeletePrivateConnectionRequest, opts ...gax.CallOption) (*DeletePrivateConnectionOperation, error) {
+	return c.internalClient.DeletePrivateConnection(ctx, req, opts...)
+}
+
+// DeletePrivateConnectionOperation returns a new DeletePrivateConnectionOperation from a given name.
+// The name must be that of a previously created DeletePrivateConnectionOperation, possibly from a different process.
+func (c *Client) DeletePrivateConnectionOperation(name string) *DeletePrivateConnectionOperation {
+	return c.internalClient.DeletePrivateConnectionOperation(name)
+}
+
+// ListPrivateConnectionPeeringRoutes lists the private connection routes exchanged over a peering connection.
+func (c *Client) ListPrivateConnectionPeeringRoutes(ctx context.Context, req *vmwareenginepb.ListPrivateConnectionPeeringRoutesRequest, opts ...gax.CallOption) *PeeringRouteIterator {
+	return c.internalClient.ListPrivateConnectionPeeringRoutes(ctx, req, opts...)
+}
+
 // GetLocation gets information about a location.
 func (c *Client) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	return c.internalClient.GetLocation(ctx, req, opts...)
@@ -953,9 +1259,6 @@ type gRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing Client
 	CallOptions **CallOptions
 
@@ -991,11 +1294,6 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -1004,7 +1302,6 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 
 	c := &gRPCClient{
 		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
 		client:           vmwareenginepb.NewVmwareEngineClient(connPool),
 		CallOptions:      &client.CallOptions,
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
@@ -1041,7 +1338,7 @@ func (c *gRPCClient) Connection() *grpc.ClientConn {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -1116,7 +1413,7 @@ func defaultRESTClientOptions() []option.ClientOption {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *restClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -1181,11 +1478,6 @@ func (c *gRPCClient) ListPrivateClouds(ctx context.Context, req *vmwareenginepb.
 }
 
 func (c *gRPCClient) GetPrivateCloud(ctx context.Context, req *vmwareenginepb.GetPrivateCloudRequest, opts ...gax.CallOption) (*vmwareenginepb.PrivateCloud, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 120000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1203,11 +1495,6 @@ func (c *gRPCClient) GetPrivateCloud(ctx context.Context, req *vmwareenginepb.Ge
 }
 
 func (c *gRPCClient) CreatePrivateCloud(ctx context.Context, req *vmwareenginepb.CreatePrivateCloudRequest, opts ...gax.CallOption) (*CreatePrivateCloudOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 120000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1227,11 +1514,6 @@ func (c *gRPCClient) CreatePrivateCloud(ctx context.Context, req *vmwareenginepb
 }
 
 func (c *gRPCClient) UpdatePrivateCloud(ctx context.Context, req *vmwareenginepb.UpdatePrivateCloudRequest, opts ...gax.CallOption) (*UpdatePrivateCloudOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 120000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "private_cloud.name", url.QueryEscape(req.GetPrivateCloud().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1251,11 +1533,6 @@ func (c *gRPCClient) UpdatePrivateCloud(ctx context.Context, req *vmwareenginepb
 }
 
 func (c *gRPCClient) DeletePrivateCloud(ctx context.Context, req *vmwareenginepb.DeletePrivateCloudRequest, opts ...gax.CallOption) (*DeletePrivateCloudOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 120000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1275,11 +1552,6 @@ func (c *gRPCClient) DeletePrivateCloud(ctx context.Context, req *vmwareenginepb
 }
 
 func (c *gRPCClient) UndeletePrivateCloud(ctx context.Context, req *vmwareenginepb.UndeletePrivateCloudRequest, opts ...gax.CallOption) (*UndeletePrivateCloudOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 120000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1344,11 +1616,6 @@ func (c *gRPCClient) ListClusters(ctx context.Context, req *vmwareenginepb.ListC
 }
 
 func (c *gRPCClient) GetCluster(ctx context.Context, req *vmwareenginepb.GetClusterRequest, opts ...gax.CallOption) (*vmwareenginepb.Cluster, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 120000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1366,11 +1633,6 @@ func (c *gRPCClient) GetCluster(ctx context.Context, req *vmwareenginepb.GetClus
 }
 
 func (c *gRPCClient) CreateCluster(ctx context.Context, req *vmwareenginepb.CreateClusterRequest, opts ...gax.CallOption) (*CreateClusterOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 120000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1390,11 +1652,6 @@ func (c *gRPCClient) CreateCluster(ctx context.Context, req *vmwareenginepb.Crea
 }
 
 func (c *gRPCClient) UpdateCluster(ctx context.Context, req *vmwareenginepb.UpdateClusterRequest, opts ...gax.CallOption) (*UpdateClusterOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 120000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "cluster.name", url.QueryEscape(req.GetCluster().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1414,11 +1671,6 @@ func (c *gRPCClient) UpdateCluster(ctx context.Context, req *vmwareenginepb.Upda
 }
 
 func (c *gRPCClient) DeleteCluster(ctx context.Context, req *vmwareenginepb.DeleteClusterRequest, opts ...gax.CallOption) (*DeleteClusterOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 120000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1482,6 +1734,42 @@ func (c *gRPCClient) ListSubnets(ctx context.Context, req *vmwareenginepb.ListSu
 	return it
 }
 
+func (c *gRPCClient) GetSubnet(ctx context.Context, req *vmwareenginepb.GetSubnetRequest, opts ...gax.CallOption) (*vmwareenginepb.Subnet, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).GetSubnet[0:len((*c.CallOptions).GetSubnet):len((*c.CallOptions).GetSubnet)], opts...)
+	var resp *vmwareenginepb.Subnet
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.GetSubnet(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) UpdateSubnet(ctx context.Context, req *vmwareenginepb.UpdateSubnetRequest, opts ...gax.CallOption) (*UpdateSubnetOperation, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "subnet.name", url.QueryEscape(req.GetSubnet().GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).UpdateSubnet[0:len((*c.CallOptions).UpdateSubnet):len((*c.CallOptions).UpdateSubnet)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.UpdateSubnet(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &UpdateSubnetOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
 func (c *gRPCClient) ListNodeTypes(ctx context.Context, req *vmwareenginepb.ListNodeTypesRequest, opts ...gax.CallOption) *NodeTypeIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
@@ -1528,11 +1816,6 @@ func (c *gRPCClient) ListNodeTypes(ctx context.Context, req *vmwareenginepb.List
 }
 
 func (c *gRPCClient) GetNodeType(ctx context.Context, req *vmwareenginepb.GetNodeTypeRequest, opts ...gax.CallOption) (*vmwareenginepb.NodeType, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 120000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1550,11 +1833,6 @@ func (c *gRPCClient) GetNodeType(ctx context.Context, req *vmwareenginepb.GetNod
 }
 
 func (c *gRPCClient) ShowNsxCredentials(ctx context.Context, req *vmwareenginepb.ShowNsxCredentialsRequest, opts ...gax.CallOption) (*vmwareenginepb.Credentials, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 120000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "private_cloud", url.QueryEscape(req.GetPrivateCloud())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1572,11 +1850,6 @@ func (c *gRPCClient) ShowNsxCredentials(ctx context.Context, req *vmwareenginepb
 }
 
 func (c *gRPCClient) ShowVcenterCredentials(ctx context.Context, req *vmwareenginepb.ShowVcenterCredentialsRequest, opts ...gax.CallOption) (*vmwareenginepb.Credentials, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 120000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "private_cloud", url.QueryEscape(req.GetPrivateCloud())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1594,11 +1867,6 @@ func (c *gRPCClient) ShowVcenterCredentials(ctx context.Context, req *vmwareengi
 }
 
 func (c *gRPCClient) ResetNsxCredentials(ctx context.Context, req *vmwareenginepb.ResetNsxCredentialsRequest, opts ...gax.CallOption) (*ResetNsxCredentialsOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 120000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "private_cloud", url.QueryEscape(req.GetPrivateCloud())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1618,11 +1886,6 @@ func (c *gRPCClient) ResetNsxCredentials(ctx context.Context, req *vmwareenginep
 }
 
 func (c *gRPCClient) ResetVcenterCredentials(ctx context.Context, req *vmwareenginepb.ResetVcenterCredentialsRequest, opts ...gax.CallOption) (*ResetVcenterCredentialsOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 120000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "private_cloud", url.QueryEscape(req.GetPrivateCloud())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1642,11 +1905,6 @@ func (c *gRPCClient) ResetVcenterCredentials(ctx context.Context, req *vmwareeng
 }
 
 func (c *gRPCClient) CreateHcxActivationKey(ctx context.Context, req *vmwareenginepb.CreateHcxActivationKeyRequest, opts ...gax.CallOption) (*CreateHcxActivationKeyOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 120000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1711,11 +1969,6 @@ func (c *gRPCClient) ListHcxActivationKeys(ctx context.Context, req *vmwareengin
 }
 
 func (c *gRPCClient) GetHcxActivationKey(ctx context.Context, req *vmwareenginepb.GetHcxActivationKeyRequest, opts ...gax.CallOption) (*vmwareenginepb.HcxActivationKey, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 120000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1733,11 +1986,6 @@ func (c *gRPCClient) GetHcxActivationKey(ctx context.Context, req *vmwareenginep
 }
 
 func (c *gRPCClient) GetNetworkPolicy(ctx context.Context, req *vmwareenginepb.GetNetworkPolicyRequest, opts ...gax.CallOption) (*vmwareenginepb.NetworkPolicy, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 120000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1800,11 +2048,6 @@ func (c *gRPCClient) ListNetworkPolicies(ctx context.Context, req *vmwareenginep
 }
 
 func (c *gRPCClient) CreateNetworkPolicy(ctx context.Context, req *vmwareenginepb.CreateNetworkPolicyRequest, opts ...gax.CallOption) (*CreateNetworkPolicyOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 120000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1824,11 +2067,6 @@ func (c *gRPCClient) CreateNetworkPolicy(ctx context.Context, req *vmwareenginep
 }
 
 func (c *gRPCClient) UpdateNetworkPolicy(ctx context.Context, req *vmwareenginepb.UpdateNetworkPolicyRequest, opts ...gax.CallOption) (*UpdateNetworkPolicyOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 120000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "network_policy.name", url.QueryEscape(req.GetNetworkPolicy().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1848,11 +2086,6 @@ func (c *gRPCClient) UpdateNetworkPolicy(ctx context.Context, req *vmwareenginep
 }
 
 func (c *gRPCClient) DeleteNetworkPolicy(ctx context.Context, req *vmwareenginepb.DeleteNetworkPolicyRequest, opts ...gax.CallOption) (*DeleteNetworkPolicyOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 120000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1872,11 +2105,6 @@ func (c *gRPCClient) DeleteNetworkPolicy(ctx context.Context, req *vmwareenginep
 }
 
 func (c *gRPCClient) CreateVmwareEngineNetwork(ctx context.Context, req *vmwareenginepb.CreateVmwareEngineNetworkRequest, opts ...gax.CallOption) (*CreateVmwareEngineNetworkOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 120000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1896,11 +2124,6 @@ func (c *gRPCClient) CreateVmwareEngineNetwork(ctx context.Context, req *vmwaree
 }
 
 func (c *gRPCClient) UpdateVmwareEngineNetwork(ctx context.Context, req *vmwareenginepb.UpdateVmwareEngineNetworkRequest, opts ...gax.CallOption) (*UpdateVmwareEngineNetworkOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 120000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "vmware_engine_network.name", url.QueryEscape(req.GetVmwareEngineNetwork().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1920,11 +2143,6 @@ func (c *gRPCClient) UpdateVmwareEngineNetwork(ctx context.Context, req *vmwaree
 }
 
 func (c *gRPCClient) DeleteVmwareEngineNetwork(ctx context.Context, req *vmwareenginepb.DeleteVmwareEngineNetworkRequest, opts ...gax.CallOption) (*DeleteVmwareEngineNetworkOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 120000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1944,11 +2162,6 @@ func (c *gRPCClient) DeleteVmwareEngineNetwork(ctx context.Context, req *vmwaree
 }
 
 func (c *gRPCClient) GetVmwareEngineNetwork(ctx context.Context, req *vmwareenginepb.GetVmwareEngineNetworkRequest, opts ...gax.CallOption) (*vmwareenginepb.VmwareEngineNetwork, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 120000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1993,6 +2206,170 @@ func (c *gRPCClient) ListVmwareEngineNetworks(ctx context.Context, req *vmwareen
 
 		it.Response = resp
 		return resp.GetVmwareEngineNetworks(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *gRPCClient) CreatePrivateConnection(ctx context.Context, req *vmwareenginepb.CreatePrivateConnectionRequest, opts ...gax.CallOption) (*CreatePrivateConnectionOperation, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).CreatePrivateConnection[0:len((*c.CallOptions).CreatePrivateConnection):len((*c.CallOptions).CreatePrivateConnection)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.CreatePrivateConnection(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &CreatePrivateConnectionOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) GetPrivateConnection(ctx context.Context, req *vmwareenginepb.GetPrivateConnectionRequest, opts ...gax.CallOption) (*vmwareenginepb.PrivateConnection, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).GetPrivateConnection[0:len((*c.CallOptions).GetPrivateConnection):len((*c.CallOptions).GetPrivateConnection)], opts...)
+	var resp *vmwareenginepb.PrivateConnection
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.GetPrivateConnection(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) ListPrivateConnections(ctx context.Context, req *vmwareenginepb.ListPrivateConnectionsRequest, opts ...gax.CallOption) *PrivateConnectionIterator {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).ListPrivateConnections[0:len((*c.CallOptions).ListPrivateConnections):len((*c.CallOptions).ListPrivateConnections)], opts...)
+	it := &PrivateConnectionIterator{}
+	req = proto.Clone(req).(*vmwareenginepb.ListPrivateConnectionsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*vmwareenginepb.PrivateConnection, string, error) {
+		resp := &vmwareenginepb.ListPrivateConnectionsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.client.ListPrivateConnections(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetPrivateConnections(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *gRPCClient) UpdatePrivateConnection(ctx context.Context, req *vmwareenginepb.UpdatePrivateConnectionRequest, opts ...gax.CallOption) (*UpdatePrivateConnectionOperation, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "private_connection.name", url.QueryEscape(req.GetPrivateConnection().GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).UpdatePrivateConnection[0:len((*c.CallOptions).UpdatePrivateConnection):len((*c.CallOptions).UpdatePrivateConnection)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.UpdatePrivateConnection(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &UpdatePrivateConnectionOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) DeletePrivateConnection(ctx context.Context, req *vmwareenginepb.DeletePrivateConnectionRequest, opts ...gax.CallOption) (*DeletePrivateConnectionOperation, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).DeletePrivateConnection[0:len((*c.CallOptions).DeletePrivateConnection):len((*c.CallOptions).DeletePrivateConnection)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.DeletePrivateConnection(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &DeletePrivateConnectionOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) ListPrivateConnectionPeeringRoutes(ctx context.Context, req *vmwareenginepb.ListPrivateConnectionPeeringRoutesRequest, opts ...gax.CallOption) *PeeringRouteIterator {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).ListPrivateConnectionPeeringRoutes[0:len((*c.CallOptions).ListPrivateConnectionPeeringRoutes):len((*c.CallOptions).ListPrivateConnectionPeeringRoutes)], opts...)
+	it := &PeeringRouteIterator{}
+	req = proto.Clone(req).(*vmwareenginepb.ListPrivateConnectionPeeringRoutesRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*vmwareenginepb.PeeringRoute, string, error) {
+		resp := &vmwareenginepb.ListPrivateConnectionPeeringRoutesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.client.ListPrivateConnectionPeeringRoutes(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetPeeringRoutes(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -2258,13 +2635,13 @@ func (c *restClient) ListPrivateClouds(ctx context.Context, req *vmwareenginepb.
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -2333,13 +2710,13 @@ func (c *restClient) GetPrivateCloud(ctx context.Context, req *vmwareenginepb.Ge
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2410,13 +2787,13 @@ func (c *restClient) CreatePrivateCloud(ctx context.Context, req *vmwareenginepb
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2464,7 +2841,7 @@ func (c *restClient) UpdatePrivateCloud(ctx context.Context, req *vmwareenginepb
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask))
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -2496,13 +2873,13 @@ func (c *restClient) UpdatePrivateCloud(ctx context.Context, req *vmwareenginepb
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2581,13 +2958,13 @@ func (c *restClient) DeletePrivateCloud(ctx context.Context, req *vmwareenginepb
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2652,13 +3029,13 @@ func (c *restClient) UndeletePrivateCloud(ctx context.Context, req *vmwareengine
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2734,13 +3111,13 @@ func (c *restClient) ListClusters(ctx context.Context, req *vmwareenginepb.ListC
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -2809,13 +3186,13 @@ func (c *restClient) GetCluster(ctx context.Context, req *vmwareenginepb.GetClus
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2883,13 +3260,13 @@ func (c *restClient) CreateCluster(ctx context.Context, req *vmwareenginepb.Crea
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2937,7 +3314,7 @@ func (c *restClient) UpdateCluster(ctx context.Context, req *vmwareenginepb.Upda
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask))
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
 	}
 	if req.GetValidateOnly() {
 		params.Add("validateOnly", fmt.Sprintf("%v", req.GetValidateOnly()))
@@ -2972,13 +3349,13 @@ func (c *restClient) UpdateCluster(ctx context.Context, req *vmwareenginepb.Upda
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -3040,13 +3417,13 @@ func (c *restClient) DeleteCluster(ctx context.Context, req *vmwareenginepb.Dele
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -3116,13 +3493,13 @@ func (c *restClient) ListSubnets(ctx context.Context, req *vmwareenginepb.ListSu
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -3148,6 +3525,145 @@ func (c *restClient) ListSubnets(ctx context.Context, req *vmwareenginepb.ListSu
 	it.pageInfo.Token = req.GetPageToken()
 
 	return it
+}
+
+// GetSubnet gets details of a single subnet.
+func (c *restClient) GetSubnet(ctx context.Context, req *vmwareenginepb.GetSubnetRequest, opts ...gax.CallOption) (*vmwareenginepb.Subnet, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).GetSubnet[0:len((*c.CallOptions).GetSubnet):len((*c.CallOptions).GetSubnet)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &vmwareenginepb.Subnet{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// UpdateSubnet updates the parameters of a single subnet. Only fields specified in
+// update_mask are applied.
+//
+// Note: This API is synchronous and always returns a successful
+// google.longrunning.Operation (LRO). The returned LRO will only have
+// done and response fields.
+func (c *restClient) UpdateSubnet(ctx context.Context, req *vmwareenginepb.UpdateSubnetRequest, opts ...gax.CallOption) (*UpdateSubnetOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetSubnet()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetSubnet().GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetUpdateMask() != nil {
+		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "subnet.name", url.QueryEscape(req.GetSubnet().GetName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &UpdateSubnetOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
 }
 
 // ListNodeTypes lists node types
@@ -3207,13 +3723,13 @@ func (c *restClient) ListNodeTypes(ctx context.Context, req *vmwareenginepb.List
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -3282,13 +3798,13 @@ func (c *restClient) GetNodeType(ctx context.Context, req *vmwareenginepb.GetNod
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -3340,13 +3856,13 @@ func (c *restClient) ShowNsxCredentials(ctx context.Context, req *vmwareenginepb
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -3398,13 +3914,13 @@ func (c *restClient) ShowVcenterCredentials(ctx context.Context, req *vmwareengi
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -3461,13 +3977,13 @@ func (c *restClient) ResetNsxCredentials(ctx context.Context, req *vmwareenginep
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -3529,13 +4045,13 @@ func (c *restClient) ResetVcenterCredentials(ctx context.Context, req *vmwareeng
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -3602,13 +4118,13 @@ func (c *restClient) CreateHcxActivationKey(ctx context.Context, req *vmwareengi
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -3678,13 +4194,13 @@ func (c *restClient) ListHcxActivationKeys(ctx context.Context, req *vmwareengin
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -3753,13 +4269,13 @@ func (c *restClient) GetHcxActivationKey(ctx context.Context, req *vmwareenginep
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -3811,13 +4327,13 @@ func (c *restClient) GetNetworkPolicy(ctx context.Context, req *vmwareenginepb.G
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -3888,13 +4404,13 @@ func (c *restClient) ListNetworkPolicies(ctx context.Context, req *vmwareenginep
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -3975,13 +4491,13 @@ func (c *restClient) CreateNetworkPolicy(ctx context.Context, req *vmwareenginep
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -4033,7 +4549,7 @@ func (c *restClient) UpdateNetworkPolicy(ctx context.Context, req *vmwareenginep
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask))
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -4065,13 +4581,13 @@ func (c *restClient) UpdateNetworkPolicy(ctx context.Context, req *vmwareenginep
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -4132,13 +4648,13 @@ func (c *restClient) DeleteNetworkPolicy(ctx context.Context, req *vmwareenginep
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -4205,13 +4721,13 @@ func (c *restClient) CreateVmwareEngineNetwork(ctx context.Context, req *vmwaree
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -4254,7 +4770,7 @@ func (c *restClient) UpdateVmwareEngineNetwork(ctx context.Context, req *vmwaree
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask))
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -4286,13 +4802,13 @@ func (c *restClient) UpdateVmwareEngineNetwork(ctx context.Context, req *vmwaree
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -4357,13 +4873,13 @@ func (c *restClient) DeleteVmwareEngineNetwork(ctx context.Context, req *vmwaree
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -4423,13 +4939,13 @@ func (c *restClient) GetVmwareEngineNetwork(ctx context.Context, req *vmwareengi
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -4500,13 +5016,13 @@ func (c *restClient) ListVmwareEngineNetworks(ctx context.Context, req *vmwareen
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -4516,6 +5032,470 @@ func (c *restClient) ListVmwareEngineNetworks(ctx context.Context, req *vmwareen
 		}
 		it.Response = resp
 		return resp.GetVmwareEngineNetworks(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// CreatePrivateConnection creates a new private connection that can be used for accessing private
+// Clouds.
+func (c *restClient) CreatePrivateConnection(ctx context.Context, req *vmwareenginepb.CreatePrivateConnectionRequest, opts ...gax.CallOption) (*CreatePrivateConnectionOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetPrivateConnection()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v/privateConnections", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	params.Add("privateConnectionId", fmt.Sprintf("%v", req.GetPrivateConnectionId()))
+	if req.GetRequestId() != "" {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &CreatePrivateConnectionOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// GetPrivateConnection retrieves a PrivateConnection resource by its resource name. The resource
+// contains details of the private connection, such as connected
+// network, routing mode and state.
+func (c *restClient) GetPrivateConnection(ctx context.Context, req *vmwareenginepb.GetPrivateConnectionRequest, opts ...gax.CallOption) (*vmwareenginepb.PrivateConnection, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).GetPrivateConnection[0:len((*c.CallOptions).GetPrivateConnection):len((*c.CallOptions).GetPrivateConnection)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &vmwareenginepb.PrivateConnection{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// ListPrivateConnections lists PrivateConnection resources in a given project and location.
+func (c *restClient) ListPrivateConnections(ctx context.Context, req *vmwareenginepb.ListPrivateConnectionsRequest, opts ...gax.CallOption) *PrivateConnectionIterator {
+	it := &PrivateConnectionIterator{}
+	req = proto.Clone(req).(*vmwareenginepb.ListPrivateConnectionsRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*vmwareenginepb.PrivateConnection, string, error) {
+		resp := &vmwareenginepb.ListPrivateConnectionsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v/privateConnections", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req.GetOrderBy() != "" {
+			params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))
+		}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			httpRsp, err := c.httpClient.Do(httpReq)
+			if err != nil {
+				return err
+			}
+			defer httpRsp.Body.Close()
+
+			if err = googleapi.CheckResponse(httpRsp); err != nil {
+				return err
+			}
+
+			buf, err := io.ReadAll(httpRsp.Body)
+			if err != nil {
+				return err
+			}
+
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetPrivateConnections(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// UpdatePrivateConnection modifies a PrivateConnection resource. Only description and
+// routing_mode fields can be updated. Only fields specified in updateMask
+// are applied.
+func (c *restClient) UpdatePrivateConnection(ctx context.Context, req *vmwareenginepb.UpdatePrivateConnectionRequest, opts ...gax.CallOption) (*UpdatePrivateConnectionOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetPrivateConnection()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetPrivateConnection().GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetRequestId() != "" {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+	if req.GetUpdateMask() != nil {
+		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "private_connection.name", url.QueryEscape(req.GetPrivateConnection().GetName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &UpdatePrivateConnectionOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// DeletePrivateConnection deletes a PrivateConnection resource. When a private connection is
+// deleted for a VMware Engine network, the connected network becomes
+// inaccessible to that VMware Engine network.
+func (c *restClient) DeletePrivateConnection(ctx context.Context, req *vmwareenginepb.DeletePrivateConnectionRequest, opts ...gax.CallOption) (*DeletePrivateConnectionOperation, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetRequestId() != "" {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &DeletePrivateConnectionOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// ListPrivateConnectionPeeringRoutes lists the private connection routes exchanged over a peering connection.
+func (c *restClient) ListPrivateConnectionPeeringRoutes(ctx context.Context, req *vmwareenginepb.ListPrivateConnectionPeeringRoutesRequest, opts ...gax.CallOption) *PeeringRouteIterator {
+	it := &PeeringRouteIterator{}
+	req = proto.Clone(req).(*vmwareenginepb.ListPrivateConnectionPeeringRoutesRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*vmwareenginepb.PeeringRoute, string, error) {
+		resp := &vmwareenginepb.ListPrivateConnectionPeeringRoutesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v/peeringRoutes", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			httpRsp, err := c.httpClient.Do(httpReq)
+			if err != nil {
+				return err
+			}
+			defer httpRsp.Body.Close()
+
+			if err = googleapi.CheckResponse(httpRsp); err != nil {
+				return err
+			}
+
+			buf, err := io.ReadAll(httpRsp.Body)
+			if err != nil {
+				return err
+			}
+
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetPeeringRoutes(), resp.GetNextPageToken(), nil
 	}
 
 	fetch := func(pageSize int, pageToken string) (string, error) {
@@ -4575,13 +5555,13 @@ func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -4649,13 +5629,13 @@ func (c *restClient) ListLocations(ctx context.Context, req *locationpb.ListLoca
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -4728,13 +5708,13 @@ func (c *restClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRe
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -4796,13 +5776,13 @@ func (c *restClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRe
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -4866,13 +5846,13 @@ func (c *restClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamP
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -4964,13 +5944,13 @@ func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -5038,13 +6018,13 @@ func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.List
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -5400,6 +6380,88 @@ func (op *CreatePrivateCloudOperation) Name() string {
 	return op.lro.Name()
 }
 
+// CreatePrivateConnectionOperation manages a long-running operation from CreatePrivateConnection.
+type CreatePrivateConnectionOperation struct {
+	lro      *longrunning.Operation
+	pollPath string
+}
+
+// CreatePrivateConnectionOperation returns a new CreatePrivateConnectionOperation from a given name.
+// The name must be that of a previously created CreatePrivateConnectionOperation, possibly from a different process.
+func (c *gRPCClient) CreatePrivateConnectionOperation(name string) *CreatePrivateConnectionOperation {
+	return &CreatePrivateConnectionOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// CreatePrivateConnectionOperation returns a new CreatePrivateConnectionOperation from a given name.
+// The name must be that of a previously created CreatePrivateConnectionOperation, possibly from a different process.
+func (c *restClient) CreatePrivateConnectionOperation(name string) *CreatePrivateConnectionOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &CreatePrivateConnectionOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *CreatePrivateConnectionOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*vmwareenginepb.PrivateConnection, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp vmwareenginepb.PrivateConnection
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *CreatePrivateConnectionOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*vmwareenginepb.PrivateConnection, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp vmwareenginepb.PrivateConnection
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *CreatePrivateConnectionOperation) Metadata() (*vmwareenginepb.OperationMetadata, error) {
+	var meta vmwareenginepb.OperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *CreatePrivateConnectionOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *CreatePrivateConnectionOperation) Name() string {
+	return op.lro.Name()
+}
+
 // CreateVmwareEngineNetworkOperation manages a long-running operation from CreateVmwareEngineNetwork.
 type CreateVmwareEngineNetworkOperation struct {
 	lro      *longrunning.Operation
@@ -5703,6 +6765,77 @@ func (op *DeletePrivateCloudOperation) Done() bool {
 // Name returns the name of the long-running operation.
 // The name is assigned by the server and is unique within the service from which the operation is created.
 func (op *DeletePrivateCloudOperation) Name() string {
+	return op.lro.Name()
+}
+
+// DeletePrivateConnectionOperation manages a long-running operation from DeletePrivateConnection.
+type DeletePrivateConnectionOperation struct {
+	lro      *longrunning.Operation
+	pollPath string
+}
+
+// DeletePrivateConnectionOperation returns a new DeletePrivateConnectionOperation from a given name.
+// The name must be that of a previously created DeletePrivateConnectionOperation, possibly from a different process.
+func (c *gRPCClient) DeletePrivateConnectionOperation(name string) *DeletePrivateConnectionOperation {
+	return &DeletePrivateConnectionOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// DeletePrivateConnectionOperation returns a new DeletePrivateConnectionOperation from a given name.
+// The name must be that of a previously created DeletePrivateConnectionOperation, possibly from a different process.
+func (c *restClient) DeletePrivateConnectionOperation(name string) *DeletePrivateConnectionOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &DeletePrivateConnectionOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *DeletePrivateConnectionOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *DeletePrivateConnectionOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	return op.lro.Poll(ctx, nil, opts...)
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *DeletePrivateConnectionOperation) Metadata() (*vmwareenginepb.OperationMetadata, error) {
+	var meta vmwareenginepb.OperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *DeletePrivateConnectionOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *DeletePrivateConnectionOperation) Name() string {
 	return op.lro.Name()
 }
 
@@ -6269,6 +7402,170 @@ func (op *UpdatePrivateCloudOperation) Name() string {
 	return op.lro.Name()
 }
 
+// UpdatePrivateConnectionOperation manages a long-running operation from UpdatePrivateConnection.
+type UpdatePrivateConnectionOperation struct {
+	lro      *longrunning.Operation
+	pollPath string
+}
+
+// UpdatePrivateConnectionOperation returns a new UpdatePrivateConnectionOperation from a given name.
+// The name must be that of a previously created UpdatePrivateConnectionOperation, possibly from a different process.
+func (c *gRPCClient) UpdatePrivateConnectionOperation(name string) *UpdatePrivateConnectionOperation {
+	return &UpdatePrivateConnectionOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// UpdatePrivateConnectionOperation returns a new UpdatePrivateConnectionOperation from a given name.
+// The name must be that of a previously created UpdatePrivateConnectionOperation, possibly from a different process.
+func (c *restClient) UpdatePrivateConnectionOperation(name string) *UpdatePrivateConnectionOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &UpdatePrivateConnectionOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *UpdatePrivateConnectionOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*vmwareenginepb.PrivateConnection, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp vmwareenginepb.PrivateConnection
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *UpdatePrivateConnectionOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*vmwareenginepb.PrivateConnection, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp vmwareenginepb.PrivateConnection
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *UpdatePrivateConnectionOperation) Metadata() (*vmwareenginepb.OperationMetadata, error) {
+	var meta vmwareenginepb.OperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *UpdatePrivateConnectionOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *UpdatePrivateConnectionOperation) Name() string {
+	return op.lro.Name()
+}
+
+// UpdateSubnetOperation manages a long-running operation from UpdateSubnet.
+type UpdateSubnetOperation struct {
+	lro      *longrunning.Operation
+	pollPath string
+}
+
+// UpdateSubnetOperation returns a new UpdateSubnetOperation from a given name.
+// The name must be that of a previously created UpdateSubnetOperation, possibly from a different process.
+func (c *gRPCClient) UpdateSubnetOperation(name string) *UpdateSubnetOperation {
+	return &UpdateSubnetOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// UpdateSubnetOperation returns a new UpdateSubnetOperation from a given name.
+// The name must be that of a previously created UpdateSubnetOperation, possibly from a different process.
+func (c *restClient) UpdateSubnetOperation(name string) *UpdateSubnetOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &UpdateSubnetOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *UpdateSubnetOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*vmwareenginepb.Subnet, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp vmwareenginepb.Subnet
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *UpdateSubnetOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*vmwareenginepb.Subnet, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp vmwareenginepb.Subnet
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *UpdateSubnetOperation) Metadata() (*vmwareenginepb.OperationMetadata, error) {
+	var meta vmwareenginepb.OperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *UpdateSubnetOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *UpdateSubnetOperation) Name() string {
+	return op.lro.Name()
+}
+
 // UpdateVmwareEngineNetworkOperation manages a long-running operation from UpdateVmwareEngineNetwork.
 type UpdateVmwareEngineNetworkOperation struct {
 	lro      *longrunning.Operation
@@ -6633,6 +7930,53 @@ func (it *OperationIterator) takeBuf() interface{} {
 	return b
 }
 
+// PeeringRouteIterator manages a stream of *vmwareenginepb.PeeringRoute.
+type PeeringRouteIterator struct {
+	items    []*vmwareenginepb.PeeringRoute
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*vmwareenginepb.PeeringRoute, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *PeeringRouteIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *PeeringRouteIterator) Next() (*vmwareenginepb.PeeringRoute, error) {
+	var item *vmwareenginepb.PeeringRoute
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *PeeringRouteIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *PeeringRouteIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
 // PrivateCloudIterator manages a stream of *vmwareenginepb.PrivateCloud.
 type PrivateCloudIterator struct {
 	items    []*vmwareenginepb.PrivateCloud
@@ -6675,6 +8019,53 @@ func (it *PrivateCloudIterator) bufLen() int {
 }
 
 func (it *PrivateCloudIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// PrivateConnectionIterator manages a stream of *vmwareenginepb.PrivateConnection.
+type PrivateConnectionIterator struct {
+	items    []*vmwareenginepb.PrivateConnection
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*vmwareenginepb.PrivateConnection, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *PrivateConnectionIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *PrivateConnectionIterator) Next() (*vmwareenginepb.PrivateConnection, error) {
+	var item *vmwareenginepb.PrivateConnection
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *PrivateConnectionIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *PrivateConnectionIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b

@@ -1,5 +1,47 @@
 # Changes
 
+## [1.12.1](https://github.com/googleapis/google-cloud-go/compare/cloudtasks/v1.12.0...cloudtasks/v1.12.1) (2023-07-26)
+
+
+### Documentation
+
+* **cloudtasks:** Minor formatting ([cdee2d9](https://github.com/googleapis/google-cloud-go/commit/cdee2d918015c9b0a53aa8283085214d9a11c77c))
+
+## [1.12.0](https://github.com/googleapis/google-cloud-go/compare/cloudtasks/v1.11.1...cloudtasks/v1.12.0) (2023-07-18)
+
+
+### Features
+
+* **cloudtasks:** Increase timeout of RPC methods to 20s for v2 ([4a5651c](https://github.com/googleapis/google-cloud-go/commit/4a5651caa472882fe4c7f6be400f782f60f6f258))
+
+## [1.11.1](https://github.com/googleapis/google-cloud-go/compare/cloudtasks/v1.11.0...cloudtasks/v1.11.1) (2023-06-20)
+
+
+### Bug Fixes
+
+* **cloudtasks:** REST query UpdateMask bug ([df52820](https://github.com/googleapis/google-cloud-go/commit/df52820b0e7721954809a8aa8700b93c5662dc9b))
+
+## [1.11.0](https://github.com/googleapis/google-cloud-go/compare/cloudtasks/v1.10.1...cloudtasks/v1.11.0) (2023-05-30)
+
+
+### Features
+
+* **cloudtasks:** Update all direct dependencies ([b340d03](https://github.com/googleapis/google-cloud-go/commit/b340d030f2b52a4ce48846ce63984b28583abde6))
+
+## [1.10.1](https://github.com/googleapis/google-cloud-go/compare/cloudtasks/v1.10.0...cloudtasks/v1.10.1) (2023-05-08)
+
+
+### Bug Fixes
+
+* **cloudtasks:** Update grpc to v1.55.0 ([1147ce0](https://github.com/googleapis/google-cloud-go/commit/1147ce02a990276ca4f8ab7a1ab65c14da4450ef))
+
+## [1.10.0](https://github.com/googleapis/google-cloud-go/compare/cloudtasks/v1.9.0...cloudtasks/v1.10.0) (2023-03-15)
+
+
+### Features
+
+* **cloudtasks:** Update iam and longrunning deps ([91a1f78](https://github.com/googleapis/google-cloud-go/commit/91a1f784a109da70f63b96414bba8a9b4254cddd))
+
 ## [1.9.0](https://github.com/googleapis/google-cloud-go/compare/cloudtasks/v1.8.0...cloudtasks/v1.9.0) (2023-01-04)
 
 

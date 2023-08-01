@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/securitycenter/apiv1",
-    "version": "1.18.1",
+    "version": "1.23.0",
     "language": "GO",
     "apis": [
       {
@@ -86,10 +86,10 @@
         },
         "method": {
           "shortName": "CancelOperation",
-          "fullName": "google.cloud.securitycenter.v1.SecurityCenter.CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
           "service": {
-            "shortName": "SecurityCenter",
-            "fullName": "google.cloud.securitycenter.v1.SecurityCenter"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -97,7 +97,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -125,7 +125,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "securitycenterpb.BigQueryExport",
+        "resultType": "*securitycenterpb.BigQueryExport",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.securitycenter.v1.Client"
@@ -171,7 +171,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "securitycenterpb.Finding",
+        "resultType": "*securitycenterpb.Finding",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.securitycenter.v1.Client"
@@ -217,7 +217,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "securitycenterpb.MuteConfig",
+        "resultType": "*securitycenterpb.MuteConfig",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.securitycenter.v1.Client"
@@ -263,7 +263,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "securitycenterpb.NotificationConfig",
+        "resultType": "*securitycenterpb.NotificationConfig",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.securitycenter.v1.Client"
@@ -271,6 +271,52 @@
         "method": {
           "shortName": "CreateNotificationConfig",
           "fullName": "google.cloud.securitycenter.v1.SecurityCenter.CreateNotificationConfig",
+          "service": {
+            "shortName": "SecurityCenter",
+            "fullName": "google.cloud.securitycenter.v1.SecurityCenter"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "securitycenter_v1_generated_SecurityCenter_CreateSecurityHealthAnalyticsCustomModule_sync",
+      "title": "securitycenter CreateSecurityHealthAnalyticsCustomModule Sample",
+      "description": "CreateSecurityHealthAnalyticsCustomModule creates a resident SecurityHealthAnalyticsCustomModule at the scope of the\ngiven CRM parent, and also creates inherited\nSecurityHealthAnalyticsCustomModules for all CRM descendants of the given\nparent. These modules are enabled by default.",
+      "file": "Client/CreateSecurityHealthAnalyticsCustomModule/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateSecurityHealthAnalyticsCustomModule",
+        "fullName": "google.cloud.securitycenter.v1.Client.CreateSecurityHealthAnalyticsCustomModule",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "securitycenterpb.CreateSecurityHealthAnalyticsCustomModuleRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*securitycenterpb.SecurityHealthAnalyticsCustomModule",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.securitycenter.v1.Client"
+        },
+        "method": {
+          "shortName": "CreateSecurityHealthAnalyticsCustomModule",
+          "fullName": "google.cloud.securitycenter.v1.SecurityCenter.CreateSecurityHealthAnalyticsCustomModule",
           "service": {
             "shortName": "SecurityCenter",
             "fullName": "google.cloud.securitycenter.v1.SecurityCenter"
@@ -309,7 +355,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "securitycenterpb.Source",
+        "resultType": "*securitycenterpb.Source",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.securitycenter.v1.Client"
@@ -496,7 +542,52 @@
         },
         "method": {
           "shortName": "DeleteOperation",
-          "fullName": "google.cloud.securitycenter.v1.SecurityCenter.DeleteOperation",
+          "fullName": "google.longrunning.Operations.DeleteOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "securitycenter_v1_generated_SecurityCenter_DeleteSecurityHealthAnalyticsCustomModule_sync",
+      "title": "securitycenter DeleteSecurityHealthAnalyticsCustomModule Sample",
+      "description": "DeleteSecurityHealthAnalyticsCustomModule deletes the specified SecurityHealthAnalyticsCustomModule and all of its\ndescendants in the CRM hierarchy. This method is only supported for\nresident custom modules.",
+      "file": "Client/DeleteSecurityHealthAnalyticsCustomModule/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteSecurityHealthAnalyticsCustomModule",
+        "fullName": "google.cloud.securitycenter.v1.Client.DeleteSecurityHealthAnalyticsCustomModule",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "securitycenterpb.DeleteSecurityHealthAnalyticsCustomModuleRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.securitycenter.v1.Client"
+        },
+        "method": {
+          "shortName": "DeleteSecurityHealthAnalyticsCustomModule",
+          "fullName": "google.cloud.securitycenter.v1.SecurityCenter.DeleteSecurityHealthAnalyticsCustomModule",
           "service": {
             "shortName": "SecurityCenter",
             "fullName": "google.cloud.securitycenter.v1.SecurityCenter"
@@ -507,7 +598,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -535,7 +626,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "securitycenterpb.BigQueryExport",
+        "resultType": "*securitycenterpb.BigQueryExport",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.securitycenter.v1.Client"
@@ -543,6 +634,52 @@
         "method": {
           "shortName": "GetBigQueryExport",
           "fullName": "google.cloud.securitycenter.v1.SecurityCenter.GetBigQueryExport",
+          "service": {
+            "shortName": "SecurityCenter",
+            "fullName": "google.cloud.securitycenter.v1.SecurityCenter"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "securitycenter_v1_generated_SecurityCenter_GetEffectiveSecurityHealthAnalyticsCustomModule_sync",
+      "title": "securitycenter GetEffectiveSecurityHealthAnalyticsCustomModule Sample",
+      "description": "GetEffectiveSecurityHealthAnalyticsCustomModule retrieves an EffectiveSecurityHealthAnalyticsCustomModule.",
+      "file": "Client/GetEffectiveSecurityHealthAnalyticsCustomModule/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetEffectiveSecurityHealthAnalyticsCustomModule",
+        "fullName": "google.cloud.securitycenter.v1.Client.GetEffectiveSecurityHealthAnalyticsCustomModule",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "securitycenterpb.GetEffectiveSecurityHealthAnalyticsCustomModuleRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*securitycenterpb.EffectiveSecurityHealthAnalyticsCustomModule",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.securitycenter.v1.Client"
+        },
+        "method": {
+          "shortName": "GetEffectiveSecurityHealthAnalyticsCustomModule",
+          "fullName": "google.cloud.securitycenter.v1.SecurityCenter.GetEffectiveSecurityHealthAnalyticsCustomModule",
           "service": {
             "shortName": "SecurityCenter",
             "fullName": "google.cloud.securitycenter.v1.SecurityCenter"
@@ -581,7 +718,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "iampb.Policy",
+        "resultType": "*iampb.Policy",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.securitycenter.v1.Client"
@@ -599,7 +736,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -627,7 +764,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "securitycenterpb.MuteConfig",
+        "resultType": "*securitycenterpb.MuteConfig",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.securitycenter.v1.Client"
@@ -673,7 +810,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "securitycenterpb.NotificationConfig",
+        "resultType": "*securitycenterpb.NotificationConfig",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.securitycenter.v1.Client"
@@ -719,17 +856,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "longrunningpb.Operation",
+        "resultType": "*longrunningpb.Operation",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.securitycenter.v1.Client"
         },
         "method": {
           "shortName": "GetOperation",
-          "fullName": "google.cloud.securitycenter.v1.SecurityCenter.GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
           "service": {
-            "shortName": "SecurityCenter",
-            "fullName": "google.cloud.securitycenter.v1.SecurityCenter"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -737,7 +874,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -765,7 +902,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "securitycenterpb.OrganizationSettings",
+        "resultType": "*securitycenterpb.OrganizationSettings",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.securitycenter.v1.Client"
@@ -773,6 +910,52 @@
         "method": {
           "shortName": "GetOrganizationSettings",
           "fullName": "google.cloud.securitycenter.v1.SecurityCenter.GetOrganizationSettings",
+          "service": {
+            "shortName": "SecurityCenter",
+            "fullName": "google.cloud.securitycenter.v1.SecurityCenter"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "securitycenter_v1_generated_SecurityCenter_GetSecurityHealthAnalyticsCustomModule_sync",
+      "title": "securitycenter GetSecurityHealthAnalyticsCustomModule Sample",
+      "description": "GetSecurityHealthAnalyticsCustomModule retrieves a SecurityHealthAnalyticsCustomModule.",
+      "file": "Client/GetSecurityHealthAnalyticsCustomModule/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetSecurityHealthAnalyticsCustomModule",
+        "fullName": "google.cloud.securitycenter.v1.Client.GetSecurityHealthAnalyticsCustomModule",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "securitycenterpb.GetSecurityHealthAnalyticsCustomModuleRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*securitycenterpb.SecurityHealthAnalyticsCustomModule",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.securitycenter.v1.Client"
+        },
+        "method": {
+          "shortName": "GetSecurityHealthAnalyticsCustomModule",
+          "fullName": "google.cloud.securitycenter.v1.SecurityCenter.GetSecurityHealthAnalyticsCustomModule",
           "service": {
             "shortName": "SecurityCenter",
             "fullName": "google.cloud.securitycenter.v1.SecurityCenter"
@@ -811,7 +994,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "securitycenterpb.Source",
+        "resultType": "*securitycenterpb.Source",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.securitycenter.v1.Client"
@@ -837,7 +1020,7 @@
     {
       "regionTag": "securitycenter_v1_generated_SecurityCenter_GroupAssets_sync",
       "title": "securitycenter GroupAssets Sample",
-      "description": "GroupAssets filters an organization’s assets and  groups them by their specified\nproperties.",
+      "description": "GroupAssets filters an organization's assets and  groups them by their specified\nproperties.\n\n\nDeprecated: GroupAssets may be removed in a future version.",
       "file": "Client/GroupAssets/main.go",
       "language": "GO",
       "clientMethod": {
@@ -883,7 +1066,7 @@
     {
       "regionTag": "securitycenter_v1_generated_SecurityCenter_GroupFindings_sync",
       "title": "securitycenter GroupFindings Sample",
-      "description": "GroupFindings filters an organization or source’s findings and  groups them by their\nspecified properties.\n\nTo group across all sources provide a - as the source id.\nExample: /v1/organizations/{organization_id}/sources/-/findings,\n/v1/folders/{folder_id}/sources/-/findings,\n/v1/projects/{project_id}/sources/-/findings",
+      "description": "GroupFindings filters an organization or source's findings and  groups them by their\nspecified properties.\n\nTo group across all sources provide a `-` as the source id.\nExample: /v1/organizations/{organization_id}/sources/-/findings,\n/v1/folders/{folder_id}/sources/-/findings,\n/v1/projects/{project_id}/sources/-/findings",
       "file": "Client/GroupFindings/main.go",
       "language": "GO",
       "clientMethod": {
@@ -929,7 +1112,7 @@
     {
       "regionTag": "securitycenter_v1_generated_SecurityCenter_ListAssets_sync",
       "title": "securitycenter ListAssets Sample",
-      "description": "ListAssets lists an organization’s assets.",
+      "description": "ListAssets lists an organization's assets.\n\n\nDeprecated: ListAssets may be removed in a future version.",
       "file": "Client/ListAssets/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1019,9 +1202,101 @@
       ]
     },
     {
+      "regionTag": "securitycenter_v1_generated_SecurityCenter_ListDescendantSecurityHealthAnalyticsCustomModules_sync",
+      "title": "securitycenter ListDescendantSecurityHealthAnalyticsCustomModules Sample",
+      "description": "ListDescendantSecurityHealthAnalyticsCustomModules returns a list of all resident SecurityHealthAnalyticsCustomModules under\nthe given CRM parent and all of the parent’s CRM descendants.",
+      "file": "Client/ListDescendantSecurityHealthAnalyticsCustomModules/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListDescendantSecurityHealthAnalyticsCustomModules",
+        "fullName": "google.cloud.securitycenter.v1.Client.ListDescendantSecurityHealthAnalyticsCustomModules",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "securitycenterpb.ListDescendantSecurityHealthAnalyticsCustomModulesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "SecurityHealthAnalyticsCustomModuleIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.securitycenter.v1.Client"
+        },
+        "method": {
+          "shortName": "ListDescendantSecurityHealthAnalyticsCustomModules",
+          "fullName": "google.cloud.securitycenter.v1.SecurityCenter.ListDescendantSecurityHealthAnalyticsCustomModules",
+          "service": {
+            "shortName": "SecurityCenter",
+            "fullName": "google.cloud.securitycenter.v1.SecurityCenter"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 60,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "securitycenter_v1_generated_SecurityCenter_ListEffectiveSecurityHealthAnalyticsCustomModules_sync",
+      "title": "securitycenter ListEffectiveSecurityHealthAnalyticsCustomModules Sample",
+      "description": "ListEffectiveSecurityHealthAnalyticsCustomModules returns a list of all EffectiveSecurityHealthAnalyticsCustomModules for the\ngiven parent. This includes resident modules defined at the scope of the\nparent, and inherited modules, inherited from CRM ancestors.",
+      "file": "Client/ListEffectiveSecurityHealthAnalyticsCustomModules/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListEffectiveSecurityHealthAnalyticsCustomModules",
+        "fullName": "google.cloud.securitycenter.v1.Client.ListEffectiveSecurityHealthAnalyticsCustomModules",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "securitycenterpb.ListEffectiveSecurityHealthAnalyticsCustomModulesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "EffectiveSecurityHealthAnalyticsCustomModuleIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.securitycenter.v1.Client"
+        },
+        "method": {
+          "shortName": "ListEffectiveSecurityHealthAnalyticsCustomModules",
+          "fullName": "google.cloud.securitycenter.v1.SecurityCenter.ListEffectiveSecurityHealthAnalyticsCustomModules",
+          "service": {
+            "shortName": "SecurityCenter",
+            "fullName": "google.cloud.securitycenter.v1.SecurityCenter"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 60,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "securitycenter_v1_generated_SecurityCenter_ListFindings_sync",
       "title": "securitycenter ListFindings Sample",
-      "description": "ListFindings lists an organization or source’s findings.\n\nTo list across all sources provide a - as the source id.\nExample: /v1/organizations/{organization_id}/sources/-/findings",
+      "description": "ListFindings lists an organization or source's findings.\n\nTo list across all sources provide a `-` as the source id.\nExample: /v1/organizations/{organization_id}/sources/-/findings",
       "file": "Client/ListFindings/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1186,7 +1461,53 @@
         },
         "method": {
           "shortName": "ListOperations",
-          "fullName": "google.cloud.securitycenter.v1.SecurityCenter.ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 60,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "securitycenter_v1_generated_SecurityCenter_ListSecurityHealthAnalyticsCustomModules_sync",
+      "title": "securitycenter ListSecurityHealthAnalyticsCustomModules Sample",
+      "description": "ListSecurityHealthAnalyticsCustomModules returns a list of all SecurityHealthAnalyticsCustomModules for the given\nparent. This includes resident modules defined at the scope of the parent,\nand inherited modules, inherited from CRM ancestors.",
+      "file": "Client/ListSecurityHealthAnalyticsCustomModules/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListSecurityHealthAnalyticsCustomModules",
+        "fullName": "google.cloud.securitycenter.v1.Client.ListSecurityHealthAnalyticsCustomModules",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "securitycenterpb.ListSecurityHealthAnalyticsCustomModulesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "SecurityHealthAnalyticsCustomModuleIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.securitycenter.v1.Client"
+        },
+        "method": {
+          "shortName": "ListSecurityHealthAnalyticsCustomModules",
+          "fullName": "google.cloud.securitycenter.v1.SecurityCenter.ListSecurityHealthAnalyticsCustomModules",
           "service": {
             "shortName": "SecurityCenter",
             "fullName": "google.cloud.securitycenter.v1.SecurityCenter"
@@ -1197,7 +1518,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 61,
+          "end": 60,
           "type": "FULL"
         }
       ]
@@ -1251,7 +1572,7 @@
     {
       "regionTag": "securitycenter_v1_generated_SecurityCenter_RunAssetDiscovery_sync",
       "title": "securitycenter RunAssetDiscovery Sample",
-      "description": "RunAssetDiscovery runs asset discovery. The discovery is tracked with a long-running\noperation.\n\nThis API can only be called with limited frequency for an organization. If\nit is called too frequently the caller will receive a TOO_MANY_REQUESTS\nerror.",
+      "description": "RunAssetDiscovery runs asset discovery. The discovery is tracked with a long-running\noperation.\n\nThis API can only be called with limited frequency for an organization. If\nit is called too frequently the caller will receive a TOO_MANY_REQUESTS\nerror.\n\n\nDeprecated: RunAssetDiscovery may be removed in a future version.",
       "file": "Client/RunAssetDiscovery/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1317,7 +1638,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "securitycenterpb.Finding",
+        "resultType": "*securitycenterpb.Finding",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.securitycenter.v1.Client"
@@ -1363,7 +1684,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "iampb.Policy",
+        "resultType": "*iampb.Policy",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.securitycenter.v1.Client"
@@ -1381,7 +1702,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -1409,7 +1730,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "securitycenterpb.Finding",
+        "resultType": "*securitycenterpb.Finding",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.securitycenter.v1.Client"
@@ -1455,7 +1776,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "iampb.TestIamPermissionsResponse",
+        "resultType": "*iampb.TestIamPermissionsResponse",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.securitycenter.v1.Client"
@@ -1473,7 +1794,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 54,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -1501,7 +1822,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "securitycenterpb.BigQueryExport",
+        "resultType": "*securitycenterpb.BigQueryExport",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.securitycenter.v1.Client"
@@ -1547,7 +1868,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "securitycenterpb.ExternalSystem",
+        "resultType": "*securitycenterpb.ExternalSystem",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.securitycenter.v1.Client"
@@ -1593,7 +1914,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "securitycenterpb.Finding",
+        "resultType": "*securitycenterpb.Finding",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.securitycenter.v1.Client"
@@ -1639,7 +1960,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "securitycenterpb.MuteConfig",
+        "resultType": "*securitycenterpb.MuteConfig",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.securitycenter.v1.Client"
@@ -1685,7 +2006,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "securitycenterpb.NotificationConfig",
+        "resultType": "*securitycenterpb.NotificationConfig",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.securitycenter.v1.Client"
@@ -1711,7 +2032,7 @@
     {
       "regionTag": "securitycenter_v1_generated_SecurityCenter_UpdateOrganizationSettings_sync",
       "title": "securitycenter UpdateOrganizationSettings Sample",
-      "description": "UpdateOrganizationSettings updates an organization’s settings.",
+      "description": "UpdateOrganizationSettings updates an organization's settings.",
       "file": "Client/UpdateOrganizationSettings/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1731,7 +2052,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "securitycenterpb.OrganizationSettings",
+        "resultType": "*securitycenterpb.OrganizationSettings",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.securitycenter.v1.Client"
@@ -1739,6 +2060,52 @@
         "method": {
           "shortName": "UpdateOrganizationSettings",
           "fullName": "google.cloud.securitycenter.v1.SecurityCenter.UpdateOrganizationSettings",
+          "service": {
+            "shortName": "SecurityCenter",
+            "fullName": "google.cloud.securitycenter.v1.SecurityCenter"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "securitycenter_v1_generated_SecurityCenter_UpdateSecurityHealthAnalyticsCustomModule_sync",
+      "title": "securitycenter UpdateSecurityHealthAnalyticsCustomModule Sample",
+      "description": "UpdateSecurityHealthAnalyticsCustomModule updates the SecurityHealthAnalyticsCustomModule under the given name based\non the given update mask. Updating the enablement state is supported on\nboth resident and inherited modules (though resident modules cannot have an\nenablement state of \"inherited\"). Updating the display name and custom\nconfig of a module is supported on resident modules only.",
+      "file": "Client/UpdateSecurityHealthAnalyticsCustomModule/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateSecurityHealthAnalyticsCustomModule",
+        "fullName": "google.cloud.securitycenter.v1.Client.UpdateSecurityHealthAnalyticsCustomModule",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "securitycenterpb.UpdateSecurityHealthAnalyticsCustomModuleRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*securitycenterpb.SecurityHealthAnalyticsCustomModule",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.securitycenter.v1.Client"
+        },
+        "method": {
+          "shortName": "UpdateSecurityHealthAnalyticsCustomModule",
+          "fullName": "google.cloud.securitycenter.v1.SecurityCenter.UpdateSecurityHealthAnalyticsCustomModule",
           "service": {
             "shortName": "SecurityCenter",
             "fullName": "google.cloud.securitycenter.v1.SecurityCenter"
@@ -1777,7 +2144,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "securitycenterpb.SecurityMarks",
+        "resultType": "*securitycenterpb.SecurityMarks",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.securitycenter.v1.Client"
@@ -1823,7 +2190,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "securitycenterpb.Source",
+        "resultType": "*securitycenterpb.Source",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.securitycenter.v1.Client"

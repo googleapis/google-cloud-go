@@ -1,5 +1,59 @@
 # Changes
 
+## [1.19.0](https://github.com/googleapis/google-cloud-go/compare/speech/v1.18.0...speech/v1.19.0) (2023-07-18)
+
+
+### Features
+
+* **speech:** Promote to GA ([#8268](https://github.com/googleapis/google-cloud-go/issues/8268)) ([d9bb34f](https://github.com/googleapis/google-cloud-go/commit/d9bb34f1f83db94c4e07824b2158ff3c994821d8))
+
+## [1.18.0](https://github.com/googleapis/google-cloud-go/compare/speech/v1.17.1...speech/v1.18.0) (2023-07-10)
+
+
+### Features
+
+* **speech:** Add `model` and `language_codes` fields in `RecognitionConfig` message + enable default `_` recognizer ([#8204](https://github.com/googleapis/google-cloud-go/issues/8204)) ([f41d56f](https://github.com/googleapis/google-cloud-go/commit/f41d56f2f5b1fa3d47be48874fece70136382a45))
+
+## [1.17.1](https://github.com/googleapis/google-cloud-go/compare/speech/v1.17.0...speech/v1.17.1) (2023-06-20)
+
+
+### Bug Fixes
+
+* **speech:** REST query UpdateMask bug ([df52820](https://github.com/googleapis/google-cloud-go/commit/df52820b0e7721954809a8aa8700b93c5662dc9b))
+
+## [1.17.0](https://github.com/googleapis/google-cloud-go/compare/speech/v1.16.0...speech/v1.17.0) (2023-05-30)
+
+
+### Features
+
+* **speech:** Update all direct dependencies ([b340d03](https://github.com/googleapis/google-cloud-go/commit/b340d030f2b52a4ce48846ce63984b28583abde6))
+
+## [1.16.0](https://github.com/googleapis/google-cloud-go/compare/speech/v1.15.1...speech/v1.16.0) (2023-05-16)
+
+
+### Features
+
+* **speech:** Add processing strategy to batch recognition requests ([#7900](https://github.com/googleapis/google-cloud-go/issues/7900)) ([31421d5](https://github.com/googleapis/google-cloud-go/commit/31421d52c3bf3b7baa235fb6cb18bb8a786398df))
+
+## [1.15.1](https://github.com/googleapis/google-cloud-go/compare/speech/v1.15.0...speech/v1.15.1) (2023-05-08)
+
+
+### Bug Fixes
+
+* **speech:** Update grpc to v1.55.0 ([1147ce0](https://github.com/googleapis/google-cloud-go/commit/1147ce02a990276ca4f8ab7a1ab65c14da4450ef))
+
+## [1.15.0](https://github.com/googleapis/google-cloud-go/compare/speech/v1.14.1...speech/v1.15.0) (2023-03-22)
+
+
+### Features
+
+* **speech:** Add support for BatchRecognize ([c967961](https://github.com/googleapis/google-cloud-go/commit/c967961ed95750e173af0193ec8d0974471f43ff))
+
+
+### Documentation
+
+* **speech:** Fix the resource name format in comment for CreatePhraseSetRequest ([c967961](https://github.com/googleapis/google-cloud-go/commit/c967961ed95750e173af0193ec8d0974471f43ff))
+
 ## [1.14.1](https://github.com/googleapis/google-cloud-go/compare/speech/v1.14.0...speech/v1.14.1) (2023-02-14)
 
 

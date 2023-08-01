@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/ids/apiv1",
-    "version": "1.3.0",
+    "version": "1.4.1",
     "language": "GO",
     "apis": [
       {
@@ -126,7 +126,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "idspb.Endpoint",
+        "resultType": "*idspb.Endpoint",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.ids.v1.Client"

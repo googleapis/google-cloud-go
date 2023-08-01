@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"math"
 	"net/http"
 	"net/url"
@@ -29,6 +29,7 @@ import (
 	assetpb "cloud.google.com/go/asset/apiv1/assetpb"
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
@@ -36,7 +37,6 @@ import (
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -88,8 +88,11 @@ func defaultGRPCClientOptions() []option.ClientOption {
 
 func defaultCallOptions() *CallOptions {
 	return &CallOptions{
-		ExportAssets: []gax.CallOption{},
+		ExportAssets: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		ListAssets: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -102,6 +105,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		BatchGetAssetsHistory: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -113,8 +117,11 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
-		CreateFeed: []gax.CallOption{},
+		CreateFeed: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		GetFeed: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -127,6 +134,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		ListFeeds: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -138,8 +146,11 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
-		UpdateFeed: []gax.CallOption{},
+		UpdateFeed: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		DeleteFeed: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -152,6 +163,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		SearchAllResources: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -163,6 +175,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		SearchAllIamPolicies: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -174,6 +187,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		AnalyzeIamPolicy: []gax.CallOption{
+			gax.WithTimeout(300000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -184,9 +198,12 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
-		AnalyzeIamPolicyLongrunning: []gax.CallOption{},
-		AnalyzeMove:                 []gax.CallOption{},
+		AnalyzeIamPolicyLongrunning: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		AnalyzeMove: []gax.CallOption{},
 		QueryAssets: []gax.CallOption{
+			gax.WithTimeout(200000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -197,8 +214,11 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
-		CreateSavedQuery: []gax.CallOption{},
+		CreateSavedQuery: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		GetSavedQuery: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -211,6 +231,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		ListSavedQueries: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -222,8 +243,11 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
-		UpdateSavedQuery: []gax.CallOption{},
+		UpdateSavedQuery: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		DeleteSavedQuery: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -236,6 +260,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		BatchGetEffectiveIamPolicies: []gax.CallOption{
+			gax.WithTimeout(300000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -246,17 +271,56 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
-		AnalyzeOrgPolicies:                 []gax.CallOption{},
-		AnalyzeOrgPolicyGovernedContainers: []gax.CallOption{},
-		AnalyzeOrgPolicyGovernedAssets:     []gax.CallOption{},
-		GetOperation:                       []gax.CallOption{},
+		AnalyzeOrgPolicies: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.DeadlineExceeded,
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		AnalyzeOrgPolicyGovernedContainers: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.DeadlineExceeded,
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		AnalyzeOrgPolicyGovernedAssets: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.DeadlineExceeded,
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		GetOperation: []gax.CallOption{},
 	}
 }
 
 func defaultRESTCallOptions() *CallOptions {
 	return &CallOptions{
-		ExportAssets: []gax.CallOption{},
+		ExportAssets: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		ListAssets: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -268,6 +332,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		BatchGetAssetsHistory: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -278,8 +343,11 @@ func defaultRESTCallOptions() *CallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
-		CreateFeed: []gax.CallOption{},
+		CreateFeed: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		GetFeed: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -291,6 +359,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		ListFeeds: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -301,8 +370,11 @@ func defaultRESTCallOptions() *CallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
-		UpdateFeed: []gax.CallOption{},
+		UpdateFeed: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		DeleteFeed: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -314,6 +386,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		SearchAllResources: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -324,6 +397,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		SearchAllIamPolicies: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -334,6 +408,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		AnalyzeIamPolicy: []gax.CallOption{
+			gax.WithTimeout(300000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -343,9 +418,12 @@ func defaultRESTCallOptions() *CallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
-		AnalyzeIamPolicyLongrunning: []gax.CallOption{},
-		AnalyzeMove:                 []gax.CallOption{},
+		AnalyzeIamPolicyLongrunning: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		AnalyzeMove: []gax.CallOption{},
 		QueryAssets: []gax.CallOption{
+			gax.WithTimeout(200000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -355,8 +433,11 @@ func defaultRESTCallOptions() *CallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
-		CreateSavedQuery: []gax.CallOption{},
+		CreateSavedQuery: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		GetSavedQuery: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -368,6 +449,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		ListSavedQueries: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -378,8 +460,11 @@ func defaultRESTCallOptions() *CallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
-		UpdateSavedQuery: []gax.CallOption{},
+		UpdateSavedQuery: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		DeleteSavedQuery: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -391,6 +476,7 @@ func defaultRESTCallOptions() *CallOptions {
 			}),
 		},
 		BatchGetEffectiveIamPolicies: []gax.CallOption{
+			gax.WithTimeout(300000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -400,10 +486,43 @@ func defaultRESTCallOptions() *CallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
-		AnalyzeOrgPolicies:                 []gax.CallOption{},
-		AnalyzeOrgPolicyGovernedContainers: []gax.CallOption{},
-		AnalyzeOrgPolicyGovernedAssets:     []gax.CallOption{},
-		GetOperation:                       []gax.CallOption{},
+		AnalyzeOrgPolicies: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
+		AnalyzeOrgPolicyGovernedContainers: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
+		AnalyzeOrgPolicyGovernedAssets: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
+		GetOperation: []gax.CallOption{},
 	}
 }
 
@@ -698,9 +817,6 @@ type gRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing Client
 	CallOptions **CallOptions
 
@@ -732,11 +848,6 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -745,7 +856,6 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 
 	c := &gRPCClient{
 		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
 		client:           assetpb.NewAssetServiceClient(connPool),
 		CallOptions:      &client.CallOptions,
 		operationsClient: longrunningpb.NewOperationsClient(connPool),
@@ -780,7 +890,7 @@ func (c *gRPCClient) Connection() *grpc.ClientConn {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -855,7 +965,7 @@ func defaultRESTClientOptions() []option.ClientOption {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *restClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -875,11 +985,6 @@ func (c *restClient) Connection() *grpc.ClientConn {
 	return nil
 }
 func (c *gRPCClient) ExportAssets(ctx context.Context, req *assetpb.ExportAssetsRequest, opts ...gax.CallOption) (*ExportAssetsOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -944,11 +1049,6 @@ func (c *gRPCClient) ListAssets(ctx context.Context, req *assetpb.ListAssetsRequ
 }
 
 func (c *gRPCClient) BatchGetAssetsHistory(ctx context.Context, req *assetpb.BatchGetAssetsHistoryRequest, opts ...gax.CallOption) (*assetpb.BatchGetAssetsHistoryResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -966,11 +1066,6 @@ func (c *gRPCClient) BatchGetAssetsHistory(ctx context.Context, req *assetpb.Bat
 }
 
 func (c *gRPCClient) CreateFeed(ctx context.Context, req *assetpb.CreateFeedRequest, opts ...gax.CallOption) (*assetpb.Feed, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -988,11 +1083,6 @@ func (c *gRPCClient) CreateFeed(ctx context.Context, req *assetpb.CreateFeedRequ
 }
 
 func (c *gRPCClient) GetFeed(ctx context.Context, req *assetpb.GetFeedRequest, opts ...gax.CallOption) (*assetpb.Feed, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1010,11 +1100,6 @@ func (c *gRPCClient) GetFeed(ctx context.Context, req *assetpb.GetFeedRequest, o
 }
 
 func (c *gRPCClient) ListFeeds(ctx context.Context, req *assetpb.ListFeedsRequest, opts ...gax.CallOption) (*assetpb.ListFeedsResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1032,11 +1117,6 @@ func (c *gRPCClient) ListFeeds(ctx context.Context, req *assetpb.ListFeedsReques
 }
 
 func (c *gRPCClient) UpdateFeed(ctx context.Context, req *assetpb.UpdateFeedRequest, opts ...gax.CallOption) (*assetpb.Feed, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "feed.name", url.QueryEscape(req.GetFeed().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1054,11 +1134,6 @@ func (c *gRPCClient) UpdateFeed(ctx context.Context, req *assetpb.UpdateFeedRequ
 }
 
 func (c *gRPCClient) DeleteFeed(ctx context.Context, req *assetpb.DeleteFeedRequest, opts ...gax.CallOption) error {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1162,11 +1237,6 @@ func (c *gRPCClient) SearchAllIamPolicies(ctx context.Context, req *assetpb.Sear
 }
 
 func (c *gRPCClient) AnalyzeIamPolicy(ctx context.Context, req *assetpb.AnalyzeIamPolicyRequest, opts ...gax.CallOption) (*assetpb.AnalyzeIamPolicyResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 300000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "analysis_query.scope", url.QueryEscape(req.GetAnalysisQuery().GetScope())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1184,11 +1254,6 @@ func (c *gRPCClient) AnalyzeIamPolicy(ctx context.Context, req *assetpb.AnalyzeI
 }
 
 func (c *gRPCClient) AnalyzeIamPolicyLongrunning(ctx context.Context, req *assetpb.AnalyzeIamPolicyLongrunningRequest, opts ...gax.CallOption) (*AnalyzeIamPolicyLongrunningOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "analysis_query.scope", url.QueryEscape(req.GetAnalysisQuery().GetScope())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1225,11 +1290,6 @@ func (c *gRPCClient) AnalyzeMove(ctx context.Context, req *assetpb.AnalyzeMoveRe
 }
 
 func (c *gRPCClient) QueryAssets(ctx context.Context, req *assetpb.QueryAssetsRequest, opts ...gax.CallOption) (*assetpb.QueryAssetsResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 200000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1247,11 +1307,6 @@ func (c *gRPCClient) QueryAssets(ctx context.Context, req *assetpb.QueryAssetsRe
 }
 
 func (c *gRPCClient) CreateSavedQuery(ctx context.Context, req *assetpb.CreateSavedQueryRequest, opts ...gax.CallOption) (*assetpb.SavedQuery, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1269,11 +1324,6 @@ func (c *gRPCClient) CreateSavedQuery(ctx context.Context, req *assetpb.CreateSa
 }
 
 func (c *gRPCClient) GetSavedQuery(ctx context.Context, req *assetpb.GetSavedQueryRequest, opts ...gax.CallOption) (*assetpb.SavedQuery, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1336,11 +1386,6 @@ func (c *gRPCClient) ListSavedQueries(ctx context.Context, req *assetpb.ListSave
 }
 
 func (c *gRPCClient) UpdateSavedQuery(ctx context.Context, req *assetpb.UpdateSavedQueryRequest, opts ...gax.CallOption) (*assetpb.SavedQuery, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "saved_query.name", url.QueryEscape(req.GetSavedQuery().GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1358,11 +1403,6 @@ func (c *gRPCClient) UpdateSavedQuery(ctx context.Context, req *assetpb.UpdateSa
 }
 
 func (c *gRPCClient) DeleteSavedQuery(ctx context.Context, req *assetpb.DeleteSavedQueryRequest, opts ...gax.CallOption) error {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1376,11 +1416,6 @@ func (c *gRPCClient) DeleteSavedQuery(ctx context.Context, req *assetpb.DeleteSa
 }
 
 func (c *gRPCClient) BatchGetEffectiveIamPolicies(ctx context.Context, req *assetpb.BatchGetEffectiveIamPoliciesRequest, opts ...gax.CallOption) (*assetpb.BatchGetEffectiveIamPoliciesResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 300000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "scope", url.QueryEscape(req.GetScope())))
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1605,13 +1640,13 @@ func (c *restClient) ExportAssets(ctx context.Context, req *assetpb.ExportAssets
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1670,7 +1705,7 @@ func (c *restClient) ListAssets(ctx context.Context, req *assetpb.ListAssetsRequ
 			if err != nil {
 				return nil, "", err
 			}
-			params.Add("readTime", string(readTime))
+			params.Add("readTime", string(readTime[1:len(readTime)-1]))
 		}
 		if items := req.GetRelationshipTypes(); len(items) > 0 {
 			for _, item := range items {
@@ -1702,13 +1737,13 @@ func (c *restClient) ListAssets(ctx context.Context, req *assetpb.ListAssetsRequ
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -1765,14 +1800,14 @@ func (c *restClient) BatchGetAssetsHistory(ctx context.Context, req *assetpb.Bat
 		if err != nil {
 			return nil, err
 		}
-		params.Add("readTimeWindow.endTime", string(endTime))
+		params.Add("readTimeWindow.endTime", string(endTime[1:len(endTime)-1]))
 	}
 	if req.GetReadTimeWindow().GetStartTime() != nil {
 		startTime, err := protojson.Marshal(req.GetReadTimeWindow().GetStartTime())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("readTimeWindow.startTime", string(startTime))
+		params.Add("readTimeWindow.startTime", string(startTime[1:len(startTime)-1]))
 	}
 	if items := req.GetRelationshipTypes(); len(items) > 0 {
 		for _, item := range items {
@@ -1810,13 +1845,13 @@ func (c *restClient) BatchGetAssetsHistory(ctx context.Context, req *assetpb.Bat
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1875,13 +1910,13 @@ func (c *restClient) CreateFeed(ctx context.Context, req *assetpb.CreateFeedRequ
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1933,13 +1968,13 @@ func (c *restClient) GetFeed(ctx context.Context, req *assetpb.GetFeedRequest, o
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1991,13 +2026,13 @@ func (c *restClient) ListFeeds(ctx context.Context, req *assetpb.ListFeedsReques
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2055,13 +2090,13 @@ func (c *restClient) UpdateFeed(ctx context.Context, req *assetpb.UpdateFeedRequ
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2160,7 +2195,7 @@ func (c *restClient) SearchAllResources(ctx context.Context, req *assetpb.Search
 			if err != nil {
 				return nil, "", err
 			}
-			params.Add("readMask", string(readMask))
+			params.Add("readMask", string(readMask[1:len(readMask)-1]))
 		}
 
 		baseUrl.RawQuery = params.Encode()
@@ -2187,13 +2222,13 @@ func (c *restClient) SearchAllResources(ctx context.Context, req *assetpb.Search
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -2289,13 +2324,13 @@ func (c *restClient) SearchAllIamPolicies(ctx context.Context, req *assetpb.Sear
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -2349,7 +2384,7 @@ func (c *restClient) AnalyzeIamPolicy(ctx context.Context, req *assetpb.AnalyzeI
 		if err != nil {
 			return nil, err
 		}
-		params.Add("analysisQuery.conditionContext.accessTime", string(accessTime))
+		params.Add("analysisQuery.conditionContext.accessTime", string(accessTime[1:len(accessTime)-1]))
 	}
 	params.Add("analysisQuery.identitySelector.identity", fmt.Sprintf("%v", req.GetAnalysisQuery().GetIdentitySelector().GetIdentity()))
 	if req.GetAnalysisQuery().GetOptions().GetAnalyzeServiceAccountImpersonation() {
@@ -2376,7 +2411,7 @@ func (c *restClient) AnalyzeIamPolicy(ctx context.Context, req *assetpb.AnalyzeI
 		if err != nil {
 			return nil, err
 		}
-		params.Add("executionTimeout", string(executionTimeout))
+		params.Add("executionTimeout", string(executionTimeout[1:len(executionTimeout)-1]))
 	}
 	if req.GetSavedAnalysisQuery() != "" {
 		params.Add("savedAnalysisQuery", fmt.Sprintf("%v", req.GetSavedAnalysisQuery()))
@@ -2412,13 +2447,13 @@ func (c *restClient) AnalyzeIamPolicy(ctx context.Context, req *assetpb.AnalyzeI
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2484,13 +2519,13 @@ func (c *restClient) AnalyzeIamPolicyLongrunning(ctx context.Context, req *asset
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2555,13 +2590,13 @@ func (c *restClient) AnalyzeMove(ctx context.Context, req *assetpb.AnalyzeMoveRe
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2632,13 +2667,13 @@ func (c *restClient) QueryAssets(ctx context.Context, req *assetpb.QueryAssetsRe
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2698,13 +2733,13 @@ func (c *restClient) CreateSavedQuery(ctx context.Context, req *assetpb.CreateSa
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2756,13 +2791,13 @@ func (c *restClient) GetSavedQuery(ctx context.Context, req *assetpb.GetSavedQue
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -2830,13 +2865,13 @@ func (c *restClient) ListSavedQueries(ctx context.Context, req *assetpb.ListSave
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -2886,7 +2921,7 @@ func (c *restClient) UpdateSavedQuery(ctx context.Context, req *assetpb.UpdateSa
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask))
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -2919,13 +2954,13 @@ func (c *restClient) UpdateSavedQuery(ctx context.Context, req *assetpb.UpdateSa
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -3022,13 +3057,13 @@ func (c *restClient) BatchGetEffectiveIamPolicies(ctx context.Context, req *asse
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -3097,13 +3132,13 @@ func (c *restClient) AnalyzeOrgPolicies(ctx context.Context, req *assetpb.Analyz
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -3190,13 +3225,13 @@ func (c *restClient) AnalyzeOrgPolicyGovernedContainers(ctx context.Context, req
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -3309,13 +3344,13 @@ func (c *restClient) AnalyzeOrgPolicyGovernedAssets(ctx context.Context, req *as
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -3384,13 +3419,13 @@ func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil

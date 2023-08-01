@@ -789,6 +789,11 @@
                 "CreateConversation"
               ]
             },
+            "GenerateStatelessSummary": {
+              "methods": [
+                "GenerateStatelessSummary"
+              ]
+            },
             "GetConversation": {
               "methods": [
                 "GetConversation"
@@ -847,6 +852,11 @@
             "CreateConversation": {
               "methods": [
                 "CreateConversation"
+              ]
+            },
+            "GenerateStatelessSummary": {
+              "methods": [
+                "GenerateStatelessSummary"
               ]
             },
             "GetConversation": {

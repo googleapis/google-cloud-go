@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/osconfig/agentendpoint/apiv1",
-    "version": "1.11.0",
+    "version": "1.12.1",
     "language": "GO",
     "apis": [
       {
@@ -11,51 +11,6 @@
     ]
   },
   "snippets": [
-    {
-      "regionTag": "osconfig_v1_generated_AgentEndpointService_ReceiveTaskNotification_sync",
-      "title": "osconfig ReceiveTaskNotification Sample",
-      "description": "ReceiveTaskNotification stream established by client to receive Task notifications.",
-      "file": "Client/ReceiveTaskNotification/main.go",
-      "language": "GO",
-      "clientMethod": {
-        "shortName": "ReceiveTaskNotification",
-        "fullName": "google.cloud.osconfig.agentendpoint.v1.Client.ReceiveTaskNotification",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "agentendpointpb.ReceiveTaskNotificationRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.osconfig.agentendpoint.v1.Client"
-        },
-        "method": {
-          "shortName": "ReceiveTaskNotification",
-          "fullName": "google.cloud.osconfig.agentendpoint.v1.AgentEndpointService.ReceiveTaskNotification",
-          "service": {
-            "shortName": "AgentEndpointService",
-            "fullName": "google.cloud.osconfig.agentendpoint.v1.AgentEndpointService"
-          }
-        }
-      },
-      "origin": "API_DEFINITION",
-      "segments": [
-        {
-          "start": 1,
-          "end": -1,
-          "type": "FULL"
-        }
-      ]
-    },
     {
       "regionTag": "osconfig_v1_generated_AgentEndpointService_RegisterAgent_sync",
       "title": "osconfig RegisterAgent Sample",
@@ -79,7 +34,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "agentendpointpb.RegisterAgentResponse",
+        "resultType": "*agentendpointpb.RegisterAgentResponse",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.osconfig.agentendpoint.v1.Client"
@@ -125,7 +80,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "agentendpointpb.ReportInventoryResponse",
+        "resultType": "*agentendpointpb.ReportInventoryResponse",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.osconfig.agentendpoint.v1.Client"
@@ -171,7 +126,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "agentendpointpb.ReportTaskCompleteResponse",
+        "resultType": "*agentendpointpb.ReportTaskCompleteResponse",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.osconfig.agentendpoint.v1.Client"
@@ -217,7 +172,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "agentendpointpb.ReportTaskProgressResponse",
+        "resultType": "*agentendpointpb.ReportTaskProgressResponse",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.osconfig.agentendpoint.v1.Client"
@@ -263,7 +218,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "agentendpointpb.StartNextTaskResponse",
+        "resultType": "*agentendpointpb.StartNextTaskResponse",
         "client": {
           "shortName": "Client",
           "fullName": "google.cloud.osconfig.agentendpoint.v1.Client"
