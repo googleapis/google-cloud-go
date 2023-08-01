@@ -901,7 +901,7 @@ func (p *sessionPool) errGetSessionTimeout(ctx context.Context) error {
 // sessionPool.take() without any tracked sessionHandles.
 func (p *sessionPool) errGetBasicSessionTimeout(code codes.Code) error {
 	return spannerErrorf(code, "timeout / context canceled during getting session.\n"+
-			"Enable SessionPoolConfig.TrackSessionHandles if you suspect a session leak to get more information about the checked out sessions.")
+		"Enable SessionPoolConfig.TrackSessionHandles if you suspect a session leak to get more information about the checked out sessions.")
 }
 
 // errGetSessionTimeoutWithTrackedSessionHandles returns error for context
