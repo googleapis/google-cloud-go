@@ -42,10 +42,11 @@ import (
 
 const healthCheckIntervalMins = 50
 
+// ActionOnInactiveTransactionKind describes the kind of action taken when there are inactive transactions.
 type ActionOnInactiveTransactionKind int
 
 const (
-	NoAction ActionOnInactiveTransactionKind = iota
+	noAction ActionOnInactiveTransactionKind = iota
 	Warn
 	Close
 	WarnAndClose
