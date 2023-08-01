@@ -93,6 +93,7 @@ use (
 	./metastore
 	./migrationcenter
 	./monitoring
+	./netapp
 	./networkconnectivity
 	./networkmanagement
 	./networksecurity
