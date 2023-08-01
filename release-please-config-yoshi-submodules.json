@@ -228,6 +228,9 @@
         "monitoring": {
             "component": "monitoring"
         },
+        "netapp": {
+            "component": "netapp"
+        },
         "networkconnectivity": {
             "component": "networkconnectivity"
         },

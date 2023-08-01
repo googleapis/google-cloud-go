@@ -601,14 +601,14 @@ type ExistenceFilter struct {
 	// client must manually determine which documents no longer match the target.
 	//
 	// The client can use the `unchanged_names` bloom filter to assist with
-	// this determination.
+	// this determination by testing ALL the document names against the filter;
+	// if the document name is NOT in the filter, it means the document no
+	// longer matches the target.
 	Count int32 `protobuf:"varint,2,opt,name=count,proto3" json:"count,omitempty"`
-	// A bloom filter that contains the UTF-8 byte encodings of the resource names
-	// of the documents that match
+	// A bloom filter that, despite its name, contains the UTF-8 byte encodings of
+	// the resource names of ALL the documents that match
 	// [target_id][google.firestore.v1.ExistenceFilter.target_id], in the form
-	// `projects/{project_id}/databases/{database_id}/documents/{document_path}`
-	// that have NOT changed since the query results indicated by the resume token
-	// or timestamp given in `Target.resume_type`.
+	// `projects/{project_id}/databases/{database_id}/documents/{document_path}`.
 	//
 	// This bloom filter may be omitted at the server's discretion, such as if it
 	// is deemed that the client will not make use of it or if it is too

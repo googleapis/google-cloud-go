@@ -133,12 +133,12 @@ type DetectIntentRequest struct {
 	QueryParams *QueryParameters `protobuf:"bytes,2,opt,name=query_params,json=queryParams,proto3" json:"query_params,omitempty"`
 	// Required. The input specification. It can be set to:
 	//
-	// 1.  an audio config
-	//     which instructs the speech recognizer how to process the speech audio,
+	// 1. an audio config which instructs the speech recognizer how to process
+	// the speech audio,
 	//
-	// 2.  a conversational query in the form of text, or
+	// 2. a conversational query in the form of text, or
 	//
-	// 3.  an event that specifies which intent to trigger.
+	// 3. an event that specifies which intent to trigger.
 	QueryInput *QueryInput `protobuf:"bytes,3,opt,name=query_input,json=queryInput,proto3" json:"query_input,omitempty"`
 	// Instructs the speech synthesizer how to generate the output
 	// audio. If this field is not set and agent-level speech synthesizer is not
@@ -608,16 +608,14 @@ type QueryResult struct {
 	// map, associative array, symbol table, dictionary, or JSON object
 	// composed of a collection of (MapKey, MapValue) pairs:
 	//
-	// -   MapKey type: string
-	// -   MapKey value: parameter name
-	// -   MapValue type:
-	//     -   If parameter's entity type is a composite entity: map
-	//     -   Else: depending on parameter value type, could be one of string,
-	//         number, boolean, null, list or map
-	// -   MapValue value:
-	//     -   If parameter's entity type is a composite entity:
-	//         map from composite entity property names to property values
-	//     -   Else: parameter value
+	// * MapKey type: string
+	// * MapKey value: parameter name
+	// * MapValue type: If parameter's entity type is a composite entity then use
+	// map, otherwise, depending on the parameter value type, it could be one of
+	// string, number, boolean, null, list or map.
+	// * MapValue value: If parameter's entity type is a composite entity then use
+	// map from composite entity property names to property values, otherwise,
+	// use parameter value.
 	Parameters *structpb.Struct `protobuf:"bytes,4,opt,name=parameters,proto3" json:"parameters,omitempty"`
 	// This field is set to:
 	//
@@ -880,12 +878,12 @@ type StreamingDetectIntentRequest struct {
 	QueryParams *QueryParameters `protobuf:"bytes,2,opt,name=query_params,json=queryParams,proto3" json:"query_params,omitempty"`
 	// Required. The input specification. It can be set to:
 	//
-	// 1.  an audio config which instructs the speech recognizer how to process
-	//     the speech audio,
+	// 1. an audio config which instructs the speech recognizer how to process
+	// the speech audio,
 	//
-	// 2.  a conversational query in the form of text, or
+	// 2. a conversational query in the form of text, or
 	//
-	// 3.  an event that specifies which intent to trigger.
+	// 3. an event that specifies which intent to trigger.
 	QueryInput *QueryInput `protobuf:"bytes,3,opt,name=query_input,json=queryInput,proto3" json:"query_input,omitempty"`
 	// Please use
 	// [InputAudioConfig.single_utterance][google.cloud.dialogflow.v2.InputAudioConfig.single_utterance]
@@ -1493,7 +1491,6 @@ func (x *StreamingRecognitionResult) GetLanguageCode() string {
 	return ""
 }
 
-// ============================================================================
 // Auxiliary proto messages.
 //
 // Represents the natural language text to be processed.
@@ -1576,16 +1573,14 @@ type EventInput struct {
 	// map, associative array, symbol table, dictionary, or JSON object
 	// composed of a collection of (MapKey, MapValue) pairs:
 	//
-	// -   MapKey type: string
-	// -   MapKey value: parameter name
-	// -   MapValue type:
-	//     -   If parameter's entity type is a composite entity: map
-	//     -   Else: depending on parameter value type, could be one of string,
-	//         number, boolean, null, list or map
-	// -   MapValue value:
-	//     -   If parameter's entity type is a composite entity:
-	//         map from composite entity property names to property values
-	//     -   Else: parameter value
+	// * MapKey type: string
+	// * MapKey value: parameter name
+	// * MapValue type: If parameter's entity type is a composite entity then use
+	// map, otherwise, depending on the parameter value type, it could be one of
+	// string, number, boolean, null, list or map.
+	// * MapValue value: If parameter's entity type is a composite entity then use
+	// map from composite entity property names to property values, otherwise,
+	// use parameter value.
 	Parameters *structpb.Struct `protobuf:"bytes,2,opt,name=parameters,proto3" json:"parameters,omitempty"`
 	// Required. The language of this query. See [Language
 	// Support](https://cloud.google.com/dialogflow/docs/reference/language)
