@@ -416,7 +416,7 @@ func TestSessionLeak_WhenInactiveTransactions_RemoveSessionsFromPool(t *testing.
 			MinOpened: 0,
 			MaxOpened: 1,
 			InactiveTransactionRemovalOptions: InactiveTransactionRemovalOptions{
-				CloseInactiveTransactions: true,
+				ActionOnInactiveTransaction: WarnAndClose,
 			},
 			TrackSessionHandles: true,
 		},
@@ -491,8 +491,8 @@ func TestMaintainer_LongRunningTransactionsCleanup_IfClose_VerifyInactiveSession
 			MaxOpened:                 3,
 			healthCheckSampleInterval: 10 * time.Millisecond, // maintainer runs every 10ms
 			InactiveTransactionRemovalOptions: InactiveTransactionRemovalOptions{
-				CloseInactiveTransactions: true,
-				executionFrequency:        15 * time.Millisecond, // check long-running sessions every 20ms
+				ActionOnInactiveTransaction: WarnAndClose,
+				executionFrequency:          15 * time.Millisecond, // check long-running sessions every 20ms
 			},
 		},
 	})
@@ -562,7 +562,7 @@ func TestLongRunningTransactionsCleanup_IfClose_VerifyInactiveSessionsClosed(t *
 			MinOpened: 1,
 			MaxOpened: 3,
 			InactiveTransactionRemovalOptions: InactiveTransactionRemovalOptions{
-				CloseInactiveTransactions: true,
+				ActionOnInactiveTransaction: WarnAndClose,
 			},
 		},
 	})
@@ -632,7 +632,7 @@ func TestLongRunningTransactionsCleanup_IfLog_VerifyInactiveSessionsOpen(t *test
 			MinOpened: 1,
 			MaxOpened: 3,
 			InactiveTransactionRemovalOptions: InactiveTransactionRemovalOptions{
-				LogInactiveTransactions: true,
+				ActionOnInactiveTransaction: Warn,
 			},
 		},
 	})
@@ -721,7 +721,7 @@ func TestLongRunningTransactionsCleanup_UtilisationBelowThreshold_VerifyInactive
 			MaxOpened: 3,
 			incStep:   1,
 			InactiveTransactionRemovalOptions: InactiveTransactionRemovalOptions{
-				CloseInactiveTransactions: true,
+				ActionOnInactiveTransaction: WarnAndClose,
 			},
 		},
 	})
@@ -782,7 +782,7 @@ func TestLongRunningTransactions_WhenAllExpectedlyLongRunning_VerifyInactiveSess
 			MinOpened: 1,
 			MaxOpened: 3,
 			InactiveTransactionRemovalOptions: InactiveTransactionRemovalOptions{
-				LogInactiveTransactions: true,
+				ActionOnInactiveTransaction: Warn,
 			},
 		},
 	})
@@ -852,7 +852,7 @@ func TestLongRunningTransactions_WhenDurationBelowThreshold_VerifyInactiveSessio
 			MinOpened: 1,
 			MaxOpened: 3,
 			InactiveTransactionRemovalOptions: InactiveTransactionRemovalOptions{
-				LogInactiveTransactions: true,
+				ActionOnInactiveTransaction: Warn,
 			},
 		},
 	})
