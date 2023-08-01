@@ -418,6 +418,7 @@ func TestSessionLeak_WhenInactiveTransactions_RemoveSessionsFromPool(t *testing.
 			InactiveTransactionRemovalOptions: InactiveTransactionRemovalOptions{
 				CloseInactiveTransactions: true,
 			},
+			//TrackSessionHandles: true,
 		},
 	})
 	defer teardown()

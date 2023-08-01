@@ -610,9 +610,6 @@ func newSessionPool(sc *sessionClient, config SessionPoolConfig) (*sessionPool, 
 	if config.healthCheckSampleInterval == 0 {
 		config.healthCheckSampleInterval = time.Minute
 	}
-	if config.CloseInactiveTransactions || config.LogInactiveTransactions {
-		config.TrackSessionHandles = true
-	}
 	if config.idleTimeThreshold == 0 {
 		config.idleTimeThreshold = DefaultSessionPoolConfig.idleTimeThreshold
 	}
@@ -709,7 +706,7 @@ func (p *sessionPool) getLongRunningSessionsLocked() []*sessionHandle {
 					if sh.stack != nil {
 						logf(p.sc.logger, "session %s checked out of pool at %s is long running due to possible session leak for goroutine: \n%s", sh.session.getID(), sh.checkoutTime.Format(time.RFC3339), sh.stack)
 					} else {
-						logf(p.sc.logger, "session %s checked out of pool at %s is long running due to possible session leak for goroutine: \nStack trace not available", sh.session.getID(), sh.checkoutTime.Format(time.RFC3339))
+						logf(p.sc.logger, "session %s checked out of pool at %s is long running due to possible session leak for goroutine: \nEnable SessionPoolConfig.TrackSessionHandles to get stack trace associated with the session", sh.session.getID(), sh.checkoutTime.Format(time.RFC3339))
 					}
 					sh.isSessionLeakLogged = true
 				}
@@ -718,7 +715,7 @@ func (p *sessionPool) getLongRunningSessionsLocked() []*sessionHandle {
 					if sh.stack != nil {
 						logf(p.sc.logger, "session %s checked out of pool at %s is long running and will be removed due to possible session leak for goroutine: \n%s", sh.session.getID(), sh.checkoutTime.Format(time.RFC3339), sh.stack)
 					} else {
-						logf(p.sc.logger, "session %s checked out of pool at %s is long running and will be removed due to possible session leak for goroutine: \nStack trace not available", sh.session.getID(), sh.checkoutTime.Format(time.RFC3339))
+						logf(p.sc.logger, "session %s checked out of pool at %s is long running and will be removed due to possible session leak for goroutine: \nEnable SessionPoolConfig.TrackSessionHandles to get stack trace associated with the session", sh.session.getID(), sh.checkoutTime.Format(time.RFC3339))
 					}
 					sh.isSessionLeakLogged = true
 				}
@@ -870,11 +867,13 @@ var errGetSessionTimeout = spannerErrorf(codes.Canceled, "timeout / context canc
 // sessions being checked out of the pool.
 func (p *sessionPool) newSessionHandle(s *session) (sh *sessionHandle) {
 	sh = &sessionHandle{session: s, checkoutTime: time.Now()}
-	if p.TrackSessionHandles {
+	if p.TrackSessionHandles || p.CloseInactiveTransactions || p.LogInactiveTransactions {
 		p.mu.Lock()
 		sh.trackedSessionHandle = p.trackedSessionHandles.PushBack(sh)
 		p.mu.Unlock()
-		sh.stack = debug.Stack()
+		if p.TrackSessionHandles {
+			sh.stack = debug.Stack()
+		}
 	}
 	return sh
 }
