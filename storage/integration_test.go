@@ -2397,7 +2397,7 @@ func TestIntegration_WriterChunksize(t *testing.T) {
 				// Confirm all bytes were uploaded.
 				attrs, err := obj.Attrs(ctx)
 				if err != nil {
-					t.Errorf("obj.Attrs: %v", err)
+					t.Fatalf("obj.Attrs: %v", err)
 				}
 				if attrs.Size != int64(objSize) {
 					t.Errorf("incorrect number of bytes written; got %v, want %v", attrs.Size, objSize)
