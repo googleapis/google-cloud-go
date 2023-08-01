@@ -1004,8 +1004,12 @@ func (it *DocumentIterator) GetAll() ([]*DocumentSnapshot, error) {
 		// Swap cursors.
 		q.startVals, q.endVals = q.endVals, q.startVals
 		q.startDoc, q.endDoc = q.endDoc, q.startDoc
-		q.startBefore, q.endBefore = q.endBefore, q.startBefore
-
+		if q.endBefore {
+			q.endBefore = false
+			q.startBefore = false
+		} else {
+			q.startBefore, q.endBefore = q.endBefore, q.startBefore
+		}
 		q.limitToLast = false
 	}
 	var docs []*DocumentSnapshot
