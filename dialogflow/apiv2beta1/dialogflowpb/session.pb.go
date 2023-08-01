@@ -22,9 +22,6 @@ package dialogflowpb
 
 import (
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	latlng "google.golang.org/genproto/googleapis/type/latlng"
@@ -36,6 +33,8 @@ import (
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	structpb "google.golang.org/protobuf/types/known/structpb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -206,12 +205,12 @@ type DetectIntentRequest struct {
 	QueryParams *QueryParameters `protobuf:"bytes,2,opt,name=query_params,json=queryParams,proto3" json:"query_params,omitempty"`
 	// Required. The input specification. It can be set to:
 	//
-	// 1.  an audio config
-	//     which instructs the speech recognizer how to process the speech audio,
+	// 1. an audio config which instructs the speech recognizer how to process
+	// the speech audio,
 	//
-	// 2.  a conversational query in the form of text, or
+	// 2. a conversational query in the form of text, or
 	//
-	// 3.  an event that specifies which intent to trigger.
+	// 3. an event that specifies which intent to trigger.
 	QueryInput *QueryInput `protobuf:"bytes,3,opt,name=query_input,json=queryInput,proto3" json:"query_input,omitempty"`
 	// Instructs the speech synthesizer how to generate the output
 	// audio. If this field is not set and agent-level speech synthesizer is not
@@ -576,12 +575,12 @@ func (x *QueryParameters) GetWebhookHeaders() map[string]string {
 
 // Represents the query input. It can contain either:
 //
-//  1. An audio config which
-//     instructs the speech recognizer how to process the speech audio.
+// 1. An audio config which instructs the speech recognizer how to process the
+// speech audio.
 //
-// 2.  A conversational query in the form of text.
+// 2. A conversational query in the form of text.
 //
-// 3.  An event that specifies which intent to trigger.
+// 3. An event that specifies which intent to trigger.
 type QueryInput struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -735,16 +734,14 @@ type QueryResult struct {
 	// map, associative array, symbol table, dictionary, or JSON object
 	// composed of a collection of (MapKey, MapValue) pairs:
 	//
-	// -   MapKey type: string
-	// -   MapKey value: parameter name
-	// -   MapValue type:
-	//     -   If parameter's entity type is a composite entity: map
-	//     -   Else: depending on parameter value type, could be one of string,
-	//         number, boolean, null, list or map
-	// -   MapValue value:
-	//     -   If parameter's entity type is a composite entity:
-	//         map from composite entity property names to property values
-	//     -   Else: parameter value
+	// * MapKey type: string
+	// * MapKey value: parameter name
+	// * MapValue type: If parameter's entity type is a composite entity then use
+	// map, otherwise, depending on the parameter value type, it could be one of
+	// string, number, boolean, null, list or map.
+	// * MapValue value: If parameter's entity type is a composite entity then use
+	// map from composite entity property names to property values, otherwise,
+	// use parameter value.
 	Parameters *structpb.Struct `protobuf:"bytes,4,opt,name=parameters,proto3" json:"parameters,omitempty"`
 	// This field is set to:
 	//
@@ -1010,33 +1007,30 @@ func (x *KnowledgeAnswers) GetAnswers() []*KnowledgeAnswers_Answer {
 //
 // 1.  The first message must contain
 // [session][google.cloud.dialogflow.v2beta1.StreamingDetectIntentRequest.session],
-//
-//	[query_input][google.cloud.dialogflow.v2beta1.StreamingDetectIntentRequest.query_input]
-//	plus optionally
-//	[query_params][google.cloud.dialogflow.v2beta1.StreamingDetectIntentRequest.query_params].
-//	If the client wants to receive an audio response, it should also contain
-//	[output_audio_config][google.cloud.dialogflow.v2beta1.StreamingDetectIntentRequest.output_audio_config].
-//	The message must not contain
-//	[input_audio][google.cloud.dialogflow.v2beta1.StreamingDetectIntentRequest.input_audio].
-//
+//     [query_input][google.cloud.dialogflow.v2beta1.StreamingDetectIntentRequest.query_input]
+//     plus optionally
+//     [query_params][google.cloud.dialogflow.v2beta1.StreamingDetectIntentRequest.query_params].
+//     If the client wants to receive an audio response, it should also contain
+//     [output_audio_config][google.cloud.dialogflow.v2beta1.StreamingDetectIntentRequest.output_audio_config].
+//     The message must not contain
+//     [input_audio][google.cloud.dialogflow.v2beta1.StreamingDetectIntentRequest.input_audio].
 // 2.  If
 // [query_input][google.cloud.dialogflow.v2beta1.StreamingDetectIntentRequest.query_input]
 // was set to
+//     [query_input.audio_config][google.cloud.dialogflow.v2beta1.InputAudioConfig],
+//     all subsequent messages must contain
+//     [input_audio][google.cloud.dialogflow.v2beta1.StreamingDetectIntentRequest.input_audio]
+//     to continue with Speech recognition. If you decide to rather detect an
+//     intent from text input after you already started Speech recognition,
+//     please send a message with
+//     [query_input.text][google.cloud.dialogflow.v2beta1.QueryInput.text].
 //
-//	[query_input.audio_config][google.cloud.dialogflow.v2beta1.InputAudioConfig],
-//	all subsequent messages must contain
-//	[input_audio][google.cloud.dialogflow.v2beta1.StreamingDetectIntentRequest.input_audio]
-//	to continue with Speech recognition. If you decide to rather detect an
-//	intent from text input after you already started Speech recognition,
-//	please send a message with
-//	[query_input.text][google.cloud.dialogflow.v2beta1.QueryInput.text].
+//     However, note that:
 //
-//	However, note that:
-//
-//	* Dialogflow will bill you for the audio duration so far.
-//	* Dialogflow discards all Speech recognition results in favor of the
-//	  input text.
-//	* Dialogflow will use the language code from the first message.
+//     * Dialogflow will bill you for the audio duration so far.
+//     * Dialogflow discards all Speech recognition results in favor of the
+//       input text.
+//     * Dialogflow will use the language code from the first message.
 //
 // After you sent all input, you must half-close or abort the request stream.
 type StreamingDetectIntentRequest struct {
@@ -1073,12 +1067,12 @@ type StreamingDetectIntentRequest struct {
 	QueryParams *QueryParameters `protobuf:"bytes,2,opt,name=query_params,json=queryParams,proto3" json:"query_params,omitempty"`
 	// Required. The input specification. It can be set to:
 	//
-	// 1.  an audio config which instructs the speech recognizer how to process
-	//     the speech audio,
+	// 1. an audio config which instructs the speech recognizer how to process
+	// the speech audio,
 	//
-	// 2.  a conversational query in the form of text, or
+	// 2. a conversational query in the form of text, or
 	//
-	// 3.  an event that specifies which intent to trigger.
+	// 3. an event that specifies which intent to trigger.
 	QueryInput *QueryInput `protobuf:"bytes,3,opt,name=query_input,json=queryInput,proto3" json:"query_input,omitempty"`
 	// DEPRECATED. Please use
 	// [InputAudioConfig.single_utterance][google.cloud.dialogflow.v2beta1.InputAudioConfig.single_utterance]
@@ -1411,18 +1405,18 @@ func (x *CloudConversationDebuggingInfo) GetClientHalfCloseStreamingTimeOffset()
 //
 // Multiple response messages can be returned in order:
 //
-//  1. If the `StreamingDetectIntentRequest.input_audio` field was
+// 1.  If the `StreamingDetectIntentRequest.input_audio` field was
 //     set, the `recognition_result` field is populated for one
 //     or more messages.
 //     See the
 //     [StreamingRecognitionResult][google.cloud.dialogflow.v2beta1.StreamingRecognitionResult]
 //     message for details about the result message sequence.
 //
-//  2. The next message contains `response_id`, `query_result`,
+// 2.  The next message contains `response_id`, `query_result`,
 //     `alternative_query_results` and optionally `webhook_status` if a WebHook
 //     was called.
 //
-//  3. If `output_audio_config` was specified in the request or agent-level
+// 3.  If `output_audio_config` was specified in the request or agent-level
 //     speech synthesizer is configured, all subsequent messages contain
 //     `output_audio` and `output_audio_config`.
 type StreamingDetectIntentResponse struct {
@@ -1812,16 +1806,14 @@ type EventInput struct {
 	// map, associative array, symbol table, dictionary, or JSON object
 	// composed of a collection of (MapKey, MapValue) pairs:
 	//
-	// -   MapKey type: string
-	// -   MapKey value: parameter name
-	// -   MapValue type:
-	//     -   If parameter's entity type is a composite entity: map
-	//     -   Else: depending on parameter value type, could be one of string,
-	//         number, boolean, null, list or map
-	// -   MapValue value:
-	//     -   If parameter's entity type is a composite entity:
-	//         map from composite entity property names to property values
-	//     -   Else: parameter value
+	// * MapKey type: string
+	// * MapKey value: parameter name
+	// * MapValue type: If parameter's entity type is a composite entity then use
+	// map, otherwise, depending on the parameter value type, it could be one of
+	// string, number, boolean, null, list or map.
+	// * MapValue value: If parameter's entity type is a composite entity then use
+	// map from composite entity property names to property values, otherwise,
+	// use parameter value.
 	Parameters *structpb.Struct `protobuf:"bytes,2,opt,name=parameters,proto3" json:"parameters,omitempty"`
 	// Required. The language of this query. See [Language
 	// Support](https://cloud.google.com/dialogflow/docs/reference/language)

@@ -21,13 +21,12 @@
 package dialogflowpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -631,13 +630,13 @@ func (x *SpeechWordInfo) GetConfidence() float32 {
 // as soon as it starts playing back the audio from the previous response. The
 // playback is modeled into two phases:
 //
-//   - No barge-in phase: which goes first and during which speech detection
-//     should not be carried out.
+// * No barge-in phase: which goes first and during which speech detection
+//   should not be carried out.
 //
-//   - Barge-in phase: which follows the no barge-in phase and during which
-//     the API starts speech detection and may inform the client that an utterance
-//     has been detected. Note that no-speech event is not expected in this
-//     phase.
+// * Barge-in phase: which follows the no barge-in phase and during which
+//   the API starts speech detection and may inform the client that an utterance
+//   has been detected. Note that no-speech event is not expected in this
+//   phase.
 //
 // The client provides this configuration in terms of the durations of those
 // two phases. The durations are measured in terms of the audio length fromt the
@@ -645,16 +644,15 @@ func (x *SpeechWordInfo) GetConfidence() float32 {
 //
 // The flow goes like below:
 //
+// ```
 // --> Time
 //
 // without speech detection  | utterance only | utterance or no-speech event
-//
-//	                |                |
-//	+-------------+ | +------------+ | +---------------+
-//
+//                           |                |
+//           +-------------+ | +------------+ | +---------------+
 // ----------+ no barge-in +-|-+  barge-in  +-|-+ normal period +-----------
-//
-//	+-------------+ | +------------+ | +---------------+
+//           +-------------+ | +------------+ | +---------------+
+// ```
 //
 // No-speech event is a response with END_OF_UTTERANCE without any transcript
 // following up.
@@ -749,9 +747,9 @@ type InputAudioConfig struct {
 	// documentation](https://cloud.google.com/speech-to-text/docs/basics#phrase-hints)
 	// for more details.
 	//
-	// This field is deprecated. Please use [speech_contexts]() instead. If you
-	// specify both [phrase_hints]() and [speech_contexts](), Dialogflow will
-	// treat the [phrase_hints]() as a single additional [SpeechContext]().
+	// This field is deprecated. Please use [`speech_contexts`]() instead. If you
+	// specify both [`phrase_hints`]() and [`speech_contexts`](), Dialogflow will
+	// treat the [`phrase_hints`]() as a single additional [`SpeechContext`]().
 	//
 	// Deprecated: Marked as deprecated in google/cloud/dialogflow/v2beta1/audio_config.proto.
 	PhraseHints []string `protobuf:"bytes,4,rep,name=phrase_hints,json=phraseHints,proto3" json:"phrase_hints,omitempty"`

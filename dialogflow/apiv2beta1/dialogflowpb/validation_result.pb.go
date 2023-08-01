@@ -21,11 +21,10 @@
 package dialogflowpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -107,16 +106,16 @@ type ValidationError struct {
 	// The names of the entries that the error is associated with.
 	// Format:
 	//
-	// - "projects/<Project ID>/agent", if the error is associated with the entire
+	// - `projects/<Project ID>/agent`, if the error is associated with the entire
 	// agent.
-	// - "projects/<Project ID>/agent/intents/<Intent ID>", if the error is
+	// - `projects/<Project ID>/agent/intents/<Intent ID>`, if the error is
 	// associated with certain intents.
-	// - "projects/<Project
-	// ID>/agent/intents/<Intent Id>/trainingPhrases/<Training Phrase ID>", if the
-	// error is associated with certain intent training phrases.
-	// - "projects/<Project ID>/agent/intents/<Intent Id>/parameters/<Parameter
-	// ID>", if the error is associated with certain intent parameters.
-	// - "projects/<Project ID>/agent/entities/<Entity ID>", if the error is
+	// - `projects/<Project ID>/agent/intents/<Intent
+	// Id>/trainingPhrases/<Training Phrase ID>`, if the error is associated with
+	// certain intent training phrases.
+	// - `projects/<Project ID>/agent/intents/<Intent Id>/parameters/<Parameter
+	// ID>`, if the error is associated with certain intent parameters.
+	// - `projects/<Project ID>/agent/entities/<Entity ID>`, if the error is
 	// associated with certain entities.
 	Entries []string `protobuf:"bytes,3,rep,name=entries,proto3" json:"entries,omitempty"`
 	// The detailed error message.

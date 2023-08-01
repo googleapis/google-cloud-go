@@ -22,9 +22,6 @@ package dialogflowpb
 
 import (
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -32,6 +29,8 @@ import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -346,7 +345,7 @@ type CreateConversationRequest struct {
 	// auto-generated one to you.
 	//
 	// The conversation ID must be compliant with the regression fomula
-	// "[a-zA-Z][a-zA-Z0-9_-]*" with the characters length in range of [3,64].
+	// `[a-zA-Z][a-zA-Z0-9_-]*` with the characters length in range of [3,64].
 	// If the field is provided, the caller is resposible for
 	// 1. the uniqueness of the ID, otherwise the request will be rejected.
 	// 2. the consistency for whether to use custom ID or not under a project to
