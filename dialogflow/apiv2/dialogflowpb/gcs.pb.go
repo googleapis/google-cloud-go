@@ -21,12 +21,11 @@
 package dialogflowpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -43,7 +42,7 @@ type GcsSources struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Required. Google Cloud Storage URIs for the inputs. A URI is of the form:
-	//   gs://bucket/object-prefix-or-name
+	// `gs://bucket/object-prefix-or-name`
 	// Whether a prefix or name is used depends on the use case.
 	Uris []string `protobuf:"bytes,2,rep,name=uris,proto3" json:"uris,omitempty"`
 }
@@ -95,7 +94,7 @@ type GcsDestination struct {
 
 	// The Google Cloud Storage URIs for the output. A URI is of the
 	// form:
-	//   gs://bucket/object-prefix-or-name
+	// `gs://bucket/object-prefix-or-name`
 	// Whether a prefix or name is used depends on the use case. The requesting
 	// user must have "write-permission" to the bucket.
 	Uri string `protobuf:"bytes,1,opt,name=uri,proto3" json:"uri,omitempty"`

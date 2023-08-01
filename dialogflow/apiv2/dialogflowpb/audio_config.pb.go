@@ -21,13 +21,12 @@
 package dialogflowpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -654,9 +653,9 @@ type InputAudioConfig struct {
 	// documentation](https://cloud.google.com/speech-to-text/docs/basics#phrase-hints)
 	// for more details.
 	//
-	// This field is deprecated. Please use [speech_contexts]() instead. If you
-	// specify both [phrase_hints]() and [speech_contexts](), Dialogflow will
-	// treat the [phrase_hints]() as a single additional [SpeechContext]().
+	// This field is deprecated. Please use [`speech_contexts`]() instead. If you
+	// specify both [`phrase_hints`]() and [`speech_contexts`](), Dialogflow will
+	// treat the [`phrase_hints`]() as a single additional [`SpeechContext`]().
 	//
 	// Deprecated: Marked as deprecated in google/cloud/dialogflow/v2/audio_config.proto.
 	PhraseHints []string `protobuf:"bytes,4,rep,name=phrase_hints,json=phraseHints,proto3" json:"phrase_hints,omitempty"`
