@@ -645,6 +645,7 @@ func (x *SpeechWordInfo) GetConfidence() float32 {
 //
 // The flow goes like below:
 //
+// ```
 // --> Time
 //
 // without speech detection  | utterance only | utterance or no-speech event
@@ -655,6 +656,8 @@ func (x *SpeechWordInfo) GetConfidence() float32 {
 // ----------+ no barge-in +-|-+  barge-in  +-|-+ normal period +-----------
 //
 //	+-------------+ | +------------+ | +---------------+
+//
+// ```
 //
 // No-speech event is a response with END_OF_UTTERANCE without any transcript
 // following up.
@@ -749,9 +752,9 @@ type InputAudioConfig struct {
 	// documentation](https://cloud.google.com/speech-to-text/docs/basics#phrase-hints)
 	// for more details.
 	//
-	// This field is deprecated. Please use [speech_contexts]() instead. If you
-	// specify both [phrase_hints]() and [speech_contexts](), Dialogflow will
-	// treat the [phrase_hints]() as a single additional [SpeechContext]().
+	// This field is deprecated. Please use [`speech_contexts`]() instead. If you
+	// specify both [`phrase_hints`]() and [`speech_contexts`](), Dialogflow will
+	// treat the [`phrase_hints`]() as a single additional [`SpeechContext`]().
 	//
 	// Deprecated: Marked as deprecated in google/cloud/dialogflow/v2beta1/audio_config.proto.
 	PhraseHints []string `protobuf:"bytes,4,rep,name=phrase_hints,json=phraseHints,proto3" json:"phrase_hints,omitempty"`

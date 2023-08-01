@@ -75,7 +75,7 @@ type Context struct {
 	//   ID>/contexts/<Context ID>`,
 	//
 	// The `Context ID` is always converted to lowercase, may only contain
-	// characters in a-zA-Z0-9_-% and may be at most 250 bytes long.
+	// characters in `a-zA-Z0-9_-%` and may be at most 250 bytes long.
 	//
 	// If `Environment ID` is not specified, we assume default 'draft'
 	// environment. If `User ID` is not specified, we assume default '-' user.
@@ -98,16 +98,14 @@ type Context struct {
 	// map, associative array, symbol table, dictionary, or JSON object
 	// composed of a collection of (MapKey, MapValue) pairs:
 	//
-	// -   MapKey type: string
-	// -   MapKey value: parameter name
-	// -   MapValue type:
-	//     -   If parameter's entity type is a composite entity: map
-	//     -   Else: depending on parameter value type, could be one of string,
-	//         number, boolean, null, list or map
-	// -   MapValue value:
-	//     -   If parameter's entity type is a composite entity:
-	//         map from composite entity property names to property values
-	//     -   Else: parameter value
+	// * MapKey type: string
+	// * MapKey value: parameter name
+	// * MapValue type: If parameter's entity type is a composite entity then use
+	// map, otherwise, depending on the parameter value type, it could be one of
+	// string, number, boolean, null, list or map.
+	// * MapValue value: If parameter's entity type is a composite entity then use
+	// map from composite entity property names to property values, otherwise,
+	// use parameter value.
 	Parameters *structpb.Struct `protobuf:"bytes,3,opt,name=parameters,proto3" json:"parameters,omitempty"`
 }
 
