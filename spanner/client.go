@@ -560,7 +560,7 @@ func (c *Client) rwTransaction(ctx context.Context, f func(context.Context, *Rea
 			// Session handle hasn't been allocated or has been destroyed.
 			sh, err = c.idleSessions.take(ctx)
 			if t != nil {
-				// when a batch update operation is called on this transaction, isLongRunningTransaction will be true
+				// Some operations (for ex BatchUpdate) can be long-running. For such operations set the isLongRunningTransaction flag to be true
 				sh.mu.Lock()
 				t.mu.Lock()
 				sh.eligibleForLongRunning = t.isLongRunningTransaction
