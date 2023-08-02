@@ -585,11 +585,11 @@ type CreateBackupRequest struct {
 	// The client-provided short name for the Backup resource.
 	// This name must:
 	//
-	//  - be between 1 and 63 characters long (inclusive)
-	//  - consist of only lower-case ASCII letters, numbers, and dashes
-	//  - start with a lower-case letter
-	//  - end with a lower-case letter or number
-	//  - be unique within the set of Backups in this BackupPlan
+	// - be between 1 and 63 characters long (inclusive)
+	// - consist of only lower-case ASCII letters, numbers, and dashes
+	// - start with a lower-case letter
+	// - end with a lower-case letter or number
+	// - be unique within the set of Backups in this BackupPlan
 	BackupId string `protobuf:"bytes,3,opt,name=backup_id,json=backupId,proto3" json:"backup_id,omitempty"`
 }
 
@@ -1213,11 +1213,11 @@ type CreateRestorePlanRequest struct {
 	// Required. The client-provided short name for the RestorePlan resource.
 	// This name must:
 	//
-	//  - be between 1 and 63 characters long (inclusive)
-	//  - consist of only lower-case ASCII letters, numbers, and dashes
-	//  - start with a lower-case letter
-	//  - end with a lower-case letter or number
-	//  - be unique within the set of RestorePlans in this location
+	// - be between 1 and 63 characters long (inclusive)
+	// - consist of only lower-case ASCII letters, numbers, and dashes
+	// - start with a lower-case letter
+	// - end with a lower-case letter or number
+	// - be unique within the set of RestorePlans in this location
 	RestorePlanId string `protobuf:"bytes,3,opt,name=restore_plan_id,json=restorePlanId,proto3" json:"restore_plan_id,omitempty"`
 }
 
@@ -1643,11 +1643,11 @@ type CreateRestoreRequest struct {
 	// Required. The client-provided short name for the Restore resource.
 	// This name must:
 	//
-	//  - be between 1 and 63 characters long (inclusive)
-	//  - consist of only lower-case ASCII letters, numbers, and dashes
-	//  - start with a lower-case letter
-	//  - end with a lower-case letter or number
-	//  - be unique within the set of Restores in this RestorePlan.
+	// - be between 1 and 63 characters long (inclusive)
+	// - consist of only lower-case ASCII letters, numbers, and dashes
+	// - start with a lower-case letter
+	// - end with a lower-case letter or number
+	// - be unique within the set of Restores in this RestorePlan.
 	RestoreId string `protobuf:"bytes,3,opt,name=restore_id,json=restoreId,proto3" json:"restore_id,omitempty"`
 }
 
