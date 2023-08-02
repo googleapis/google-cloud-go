@@ -15,6 +15,7 @@
 package storage
 
 import (
+	"cloud.google.com/go/internal/trace"
 	"context"
 	"errors"
 	"fmt"
@@ -163,6 +164,7 @@ func (w *Writer) Close() error {
 	<-w.donec
 	w.mu.Lock()
 	defer w.mu.Unlock()
+	trace.EndSpan(w.ctx, w.err)
 	return w.err
 }
 
