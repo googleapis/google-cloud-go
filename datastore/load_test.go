@@ -23,6 +23,7 @@ import (
 
 	"cloud.google.com/go/civil"
 	"cloud.google.com/go/internal/testutil"
+	"github.com/google/go-cmp/cmp/cmpopts"
 	pb "google.golang.org/genproto/googleapis/datastore/v1"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
@@ -653,8 +654,14 @@ func TestLoadArrayIndex(t *testing.T) {
 		t.Fatalf("protoToEntity: %v", err)
 	}
 
-	if !testutil.Equal(want, dst) {
-		t.Errorf("NoIndex should be correct: compare:\ngot:  %#v\nwant: %#v", dst, want)
+	cmpProperties := func(p1, p2 Property) bool {
+		return p1.Name < p2.Name
+	}
+	if !testutil.Equal(want.Properties, dst.Properties, cmpopts.SortSlices(cmpProperties)) {
+		t.Errorf("NoIndex should be correct: Property:\ngot:  %#v\nwant: %#v", dst, want)
+	}
+	if !testutil.Equal(want.Key, dst.Key) {
+		t.Errorf("NoIndex should be correct: Key:\ngot:  %#v\nwant: %#v", dst, want)
 	}
 }
 
