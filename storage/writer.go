@@ -15,7 +15,6 @@
 package storage
 
 import (
-	"cloud.google.com/go/internal/trace"
 	"context"
 	"errors"
 	"fmt"
@@ -23,6 +22,8 @@ import (
 	"sync"
 	"time"
 	"unicode/utf8"
+
+	"cloud.google.com/go/internal/trace"
 )
 
 // A Writer writes a Cloud Storage object.
