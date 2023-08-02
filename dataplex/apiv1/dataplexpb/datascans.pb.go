@@ -21,8 +21,11 @@
 package dataplexpb
 
 import (
-	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	context "context"
+	reflect "reflect"
+	sync "sync"
+
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -32,8 +35,6 @@ import (
 	_ "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
-	reflect "reflect"
-	sync "sync"
 )
 
 const (
@@ -1031,11 +1032,11 @@ func (x *ListDataScanJobsResponse) GetNextPageToken() string {
 //
 // For example:
 //
-// * Data Quality: generates queries based on the rules and runs against the
-//   data to get data quality check results.
-// * Data Profile: analyzes the data in table(s) and generates insights about
-//   the structure, content and relationships (such as null percent,
-//   cardinality, min/max/mean, etc).
+//   - Data Quality: generates queries based on the rules and runs against the
+//     data to get data quality check results.
+//   - Data Profile: analyzes the data in table(s) and generates insights about
+//     the structure, content and relationships (such as null percent,
+//     cardinality, min/max/mean, etc).
 type DataScan struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
