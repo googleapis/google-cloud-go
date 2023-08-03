@@ -629,7 +629,7 @@ func (t *Topic) Publish(ctx context.Context, msg *Message) *PublishResult {
 			msg.Attributes = make(map[string]string)
 		}
 		// Inject the context from the first publish span rather than from flow control / batching.
-		otel.GetTextMapPropagator().Inject(ctx, NewMessageCarrier(msg))
+		otel.GetTextMapPropagator().Inject(ctx, newMessageCarrier(msg))
 	}
 
 	if err := t.scheduler.Add(msg.OrderingKey, bmsg, msgSize); err != nil {
@@ -778,7 +778,7 @@ func (t *Topic) publishMessageBundle(ctx context.Context, bms []*bundledMessage)
 			OrderingKey: bm.msg.OrderingKey,
 		}
 		if bm.msg.Attributes != nil {
-			ctx = otel.GetTextMapPropagator().Extract(ctx, NewMessageCarrier(bm.msg))
+			ctx = otel.GetTextMapPropagator().Extract(ctx, newMessageCarrier(bm.msg))
 		}
 		_, pSpan := tracer().Start(ctx, publishRPCSpanName)
 		pSpan.SetAttributes(attribute.Int(numBatchedMessagesAttribute, numMsgs))

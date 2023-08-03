@@ -36,6 +36,15 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
+func TestTrace_MessageCarrier(t *testing.T) {
+	ctx := context.Background()
+	msg := &Message{
+		Data:        []byte("asdf"),
+		OrderingKey: "asdf",
+	}
+	otel.GetTextMapPropagator().Extract(ctx, newMessageCarrier(msg))
+}
+
 func TestTrace_PublishSpan(t *testing.T) {
 	ctx := context.Background()
 	c, srv := newFake(t)
