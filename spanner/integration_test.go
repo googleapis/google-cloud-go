@@ -387,7 +387,7 @@ const (
 func TestMain(m *testing.M) {
 	cleanup := initIntegrationTests()
 	defer cleanup()
-	for _, dialect := range []adminpb.DatabaseDialect{adminpb.DatabaseDialect_POSTGRESQL} {
+	for _, dialect := range []adminpb.DatabaseDialect{adminpb.DatabaseDialect_GOOGLE_STANDARD_SQL, adminpb.DatabaseDialect_POSTGRESQL} {
 		if isEmulatorEnvSet() && dialect == adminpb.DatabaseDialect_POSTGRESQL {
 			// PG tests are not supported in emulator
 			continue
