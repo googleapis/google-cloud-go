@@ -66,6 +66,10 @@ var (
 		return newClient(ctx, t, nil)
 	}
 	testParams map[string]interface{}
+
+	// xGoogReqParamsHeaderChecker is a HeaderChecker that ensures that the "x-goog-request-params"
+	// header is present on outgoing metadata.
+	xGoogReqParamsHeaderChecker *testutil.HeaderChecker
 )
 
 func TestMain(m *testing.M) {
@@ -119,6 +123,23 @@ func testMain(m *testing.M) int {
 	for _, databaseID := range databaseIDs {
 		log.Printf("Setting up tests to run on databaseID: %q\n", databaseID)
 		testParams["databaseID"] = databaseID
+		xGoogReqParamsHeaderChecker = &testutil.HeaderChecker{
+			Key: reqParamsHeader,
+			ValuesValidator: func(values ...string) error {
+				if len(values) == 0 {
+					return fmt.Errorf("missing values")
+				}
+				for _, value := range values {
+					if len(databaseID) != 0 && !strings.Contains(value, databaseID) {
+						return fmt.Errorf("missing databaseID: %s", databaseID)
+					}
+					if !strings.Contains(value, testutil.ProjID()) {
+						return fmt.Errorf("missing projectID: %s", testutil.ProjID())
+					}
+				}
+				return nil
+			},
+		}
 		status := m.Run()
 		if status != 0 {
 			return status
@@ -151,6 +172,7 @@ func initReplay() {
 			OnFailure: t.Fatalf,
 			Checkers: []*testutil.HeaderChecker{
 				testutil.XGoogClientHeaderChecker,
+				xGoogReqParamsHeaderChecker,
 			},
 		}
 
@@ -177,6 +199,7 @@ func newClient(ctx context.Context, t *testing.T, dialOpts []grpc.DialOption) *C
 		OnFailure: t.Fatalf,
 		Checkers: []*testutil.HeaderChecker{
 			testutil.XGoogClientHeaderChecker,
+			xGoogReqParamsHeaderChecker,
 		},
 	}
 	opts := append(grpcHeadersEnforcer.CallOptions(), option.WithTokenSource(ts))
