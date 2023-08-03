@@ -463,12 +463,12 @@ func (x *QueryParameters) GetWebhookHeaders() map[string]string {
 
 // Represents the query input. It can contain either:
 //
-//  1. An audio config which
-//     instructs the speech recognizer how to process the speech audio.
+// 1. An audio config which instructs the speech recognizer how to process the
+// speech audio.
 //
-// 2.  A conversational query in the form of text,.
+// 2. A conversational query in the form of text.
 //
-// 3.  An event that specifies which intent to trigger.
+// 3. An event that specifies which intent to trigger.
 type QueryInput struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
