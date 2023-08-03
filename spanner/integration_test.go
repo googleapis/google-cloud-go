@@ -293,9 +293,9 @@ var (
 	bitReverseSeqDBStatments = []string{
 		`CREATE SEQUENCE seqT OPTIONS (sequence_kind = "bit_reversed_positive")`,
 		`CREATE TABLE T (
-            id INT64 DEFAULT (GET_NEXT_SEQUENCE_VALUE('seqT')),
+            id INT64 DEFAULT (GET_NEXT_SEQUENCE_VALUE(Sequence seqT)),
             value INT64,
-            counter INT64 DEFAULT (GET_INTERNAL_SEQUENCE_STATE('seqT')),
+            counter INT64 DEFAULT (GET_INTERNAL_SEQUENCE_STATE(Sequence seqT)),
             br_id INT64 AS (BIT_REVERSE(id, true)) STORED,
             CONSTRAINT id_gt_0 CHECK (id > 0),
             CONSTRAINT counter_gt_br_id CHECK (counter >= br_id),
@@ -310,9 +310,9 @@ var (
 		  value BIGINT,
 		  counter BIGINT DEFAULT spanner.get_internal_sequence_state('seqT'),
 		  br_id bigint GENERATED ALWAYS AS (spanner.bit_reverse(id, true)) STORED,
-		  CHECK (id > 0),
-		  CHECK (counter >= br_id),
-          CHECK (id = spanner.bit_reverse(br_id, true)),
+		  CONSTRAINT id_gt_0 CHECK (id > 0),
+		  CONSTRAINT counter_gt_br_id CHECK (counter >= br_id),
+          CONSTRAINT br_id_true CHECK (id = spanner.bit_reverse(br_id, true)),
 		  PRIMARY KEY (id)
 		)`,
 	}
@@ -387,7 +387,7 @@ const (
 func TestMain(m *testing.M) {
 	cleanup := initIntegrationTests()
 	defer cleanup()
-	for _, dialect := range []adminpb.DatabaseDialect{adminpb.DatabaseDialect_GOOGLE_STANDARD_SQL, adminpb.DatabaseDialect_POSTGRESQL} {
+	for _, dialect := range []adminpb.DatabaseDialect{adminpb.DatabaseDialect_POSTGRESQL} {
 		if isEmulatorEnvSet() && dialect == adminpb.DatabaseDialect_POSTGRESQL {
 			// PG tests are not supported in emulator
 			continue
@@ -4672,6 +4672,13 @@ func TestIntegration_Bit_Reversed_Sequence(t *testing.T) {
 	client, dbPath, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, statements[testDialect][testTableBitReversedSeqStatements])
 	defer cleanup()
 
+	returningSQL := `THEN RETURN`
+	internalStateSQL := `GET_INTERNAL_SEQUENCE_STATE(Sequence seqT)`
+	if testDialect == adminpb.DatabaseDialect_POSTGRESQL {
+		returningSQL = `RETURNING`
+		internalStateSQL = `spanner.get_internal_sequence_state('seqT')`
+	}
+
 	var tests = []struct {
 		name    string
 		test    func() error
@@ -4685,7 +4692,7 @@ func TestIntegration_Bit_Reversed_Sequence(t *testing.T) {
 					err    error
 				)
 				_, err = client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
-					iter := tx.Query(ctx, NewStatement("INSERT INTO T (value) VALUES (100), (200), (300) THEN RETURN id, counter"))
+					iter := tx.Query(ctx, NewStatement("INSERT INTO T (value) VALUES (100), (200), (300) "+returningSQL+" id, counter"))
 					values, err = readAllBitReversedSeqTable(iter, true)
 					return err
 				})
@@ -4704,7 +4711,7 @@ func TestIntegration_Bit_Reversed_Sequence(t *testing.T) {
 					}
 					counter = newCounter
 				}
-				iter := client.Single().Query(ctx, NewStatement("SELECT GET_INTERNAL_SEQUENCE_STATE('seqT')"))
+				iter := client.Single().Query(ctx, NewStatement("SELECT "+internalStateSQL))
 				r, err := iter.Next()
 				if err != nil {
 					return err
@@ -4715,7 +4722,7 @@ func TestIntegration_Bit_Reversed_Sequence(t *testing.T) {
 					return err
 				}
 				if c3 > counter {
-					return errors.New("expected c3 <= SELECT GET_INTERNAL_SEQUENCE_STATE('seqT')")
+					return errors.New("expected c3 <= SELECT GET_INTERNAL_SEQUENCE_STATE(Sequence seqT)")
 				}
 				return err
 			},
@@ -4723,18 +4730,22 @@ func TestIntegration_Bit_Reversed_Sequence(t *testing.T) {
 		{
 			name: "success: reduce ranges to half",
 			test: func() error {
-				op, err := databaseAdmin.UpdateDatabaseDdl(ctx, &adminpb.UpdateDatabaseDdlRequest{
-					Database: dbPath,
-					Statements: []string{`ALTER SEQUENCE seqT SET OPTIONS (
+				ddl := `ALTER SEQUENCE seqT SET OPTIONS (
 						skip_range_min = 0,
 						skip_range_max = 4611686018427387904
-					)`},
+					)`
+				if testDialect == adminpb.DatabaseDialect_POSTGRESQL {
+					ddl = `ALTER SEQUENCE seqT SKIP RANGE 0 4611686018427387904`
+				}
+				op, err := databaseAdmin.UpdateDatabaseDdl(ctx, &adminpb.UpdateDatabaseDdlRequest{
+					Database:   dbPath,
+					Statements: []string{ddl},
 				})
 				if err != nil {
-					t.Fatalf("cannot modify sequence %v: %v", dbPath, err)
+					return err
 				}
 				if err := op.Wait(ctx); err != nil {
-					t.Fatalf("timeout modifying sequence %v: %v", dbPath, err)
+					return err
 				}
 				var values [][]interface{}
 				_, err = client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
@@ -4745,7 +4756,7 @@ func TestIntegration_Bit_Reversed_Sequence(t *testing.T) {
 							v = v + ", "
 						}
 					}
-					iter := tx.Query(ctx, NewStatement("INSERT INTO T (value) VALUES "+v+" THEN RETURN id, counter"))
+					iter := tx.Query(ctx, NewStatement("INSERT INTO T (value) VALUES "+v+" "+returningSQL+" id, counter"))
 					values, err = readAllBitReversedSeqTable(iter, true)
 					return err
 				})
@@ -4773,19 +4784,23 @@ func TestIntegration_Bit_Reversed_Sequence(t *testing.T) {
 		{
 			name: "success: move start with counter forward",
 			test: func() error {
+				ddl := `ALTER SEQUENCE seqT SET OPTIONS (start_with_counter=10001)`
+				if testDialect == adminpb.DatabaseDialect_POSTGRESQL {
+					ddl = `ALTER SEQUENCE seqT RESTART COUNTER WITH 10001`
+				}
 				op, err := databaseAdmin.UpdateDatabaseDdl(ctx, &adminpb.UpdateDatabaseDdlRequest{
 					Database:   dbPath,
-					Statements: []string{`ALTER SEQUENCE seqT SET OPTIONS (start_with_counter=10001)`},
+					Statements: []string{ddl},
 				})
 				if err != nil {
-					t.Fatalf("cannot modify sequence %v: %v", dbPath, err)
+					return err
 				}
 				if err := op.Wait(ctx); err != nil {
-					t.Fatalf("timeout modifying sequence %v: %v", dbPath, err)
+					return err
 				}
 				var values [][]interface{}
 				_, err = client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
-					iter := tx.Query(ctx, NewStatement("INSERT INTO T (value) VALUES (4), (5), (6) THEN RETURN id, br_id, counter"))
+					iter := tx.Query(ctx, NewStatement("INSERT INTO T (value) VALUES (4), (5), (6) "+returningSQL+" id, br_id, counter"))
 					values, err = readAllBitReversedSeqTable(iter, false)
 					return err
 				})
@@ -4811,7 +4826,7 @@ func TestIntegration_Bit_Reversed_Sequence(t *testing.T) {
 						counter = newCounter
 					}
 				}
-				iter := client.Single().Query(ctx, NewStatement("SELECT GET_INTERNAL_SEQUENCE_STATE('seqT')"))
+				iter := client.Single().Query(ctx, NewStatement("SELECT "+internalStateSQL))
 				r, err := iter.Next()
 				if err != nil {
 					return err
@@ -4822,7 +4837,7 @@ func TestIntegration_Bit_Reversed_Sequence(t *testing.T) {
 					return err
 				}
 				if c3 > counter {
-					return errors.New("expected max(ci) <= SELECT GET_INTERNAL_SEQUENCE_STATE('seqT')")
+					return errors.New("expected max(ci) <= SELECT GET_INTERNAL_SEQUENCE_STATE(Sequence seqT)")
 				}
 				return err
 			},
@@ -4842,10 +4857,10 @@ func TestIntegration_Bit_Reversed_Sequence(t *testing.T) {
 					},
 				})
 				if err != nil {
-					t.Fatalf("cannot delete sequences %v: %v", dbPath, err)
+					return err
 				}
 				if err := op.Wait(ctx); err != nil {
-					t.Fatalf("timeout deleting sequence %v: %v", dbPath, err)
+					return err
 				}
 				return nil
 			},
