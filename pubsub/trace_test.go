@@ -19,6 +19,7 @@ import (
 	"fmt"
 	"log"
 	"testing"
+	"time"
 
 	"cloud.google.com/go/internal/testutil"
 	pb "cloud.google.com/go/pubsub/apiv1/pubsubpb"
@@ -129,12 +130,14 @@ func TestTrace_PublishSpan(t *testing.T) {
 	}
 	defer topic.Stop()
 
-	spans := e.GetSpans()
+	spans := getSpans(e)
 	opts := []cmp.Option{
 		cmp.Comparer(spanStubComparer),
 		cmpopts.SortSlices(sortSpanStub),
 	}
 	if diff := testutil.Diff(spans, expectedSpans, opts...); diff != "" {
+		log.Printf("print spans: %+v\n", spans)
+		log.Printf("\n\nprint expected spans: %+v\n", expectedSpans)
 		t.Errorf("diff: -got, +want:\n%s\n", diff)
 	}
 }
@@ -200,13 +203,12 @@ func TestTrace_PublishSpanError(t *testing.T) {
 	}
 	defer topic.Stop()
 
-	spans := e.GetSpans()
+	spans := getSpans(e)
 	opts := []cmp.Option{
 		cmp.Comparer(spanStubComparer),
 		cmpopts.SortSlices(sortSpanStub),
 	}
 	if diff := testutil.Diff(spans, expectedSpans, opts...); diff != "" {
-		log.Printf("print spans: %+v\n", spans)
 		t.Errorf("diff: -got, +want:\n%s\n", diff)
 	}
 }
@@ -235,4 +237,11 @@ func spanStubComparer(a, b tracetest.SpanStub) bool {
 
 func sortSpanStub(a, b tracetest.SpanStub) bool {
 	return a.Name < b.Name
+}
+
+func getSpans(e *tracetest.InMemoryExporter) tracetest.SpanStubs {
+	// Wait a fixed amount for spans to be fully exported.
+	time.Sleep(100 * time.Millisecond)
+
+	return e.GetSpans()
 }
