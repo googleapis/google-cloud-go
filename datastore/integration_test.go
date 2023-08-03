@@ -130,7 +130,7 @@ func testMain(m *testing.M) int {
 					return fmt.Errorf("missing values")
 				}
 				for _, value := range values {
-					if len(databaseID) != 0 && !strings.Contains(value, databaseID) {
+					if !strings.Contains(value, databaseID) {
 						return fmt.Errorf("missing databaseID: %s", databaseID)
 					}
 					if !strings.Contains(value, testutil.ProjID()) {
