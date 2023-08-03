@@ -21,14 +21,13 @@
 package netapppb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -111,6 +110,7 @@ func (StoragePool_State) EnumDescriptor() ([]byte, []int) {
 	return file_google_cloud_netapp_v1_storage_pool_proto_rawDescGZIP(), []int{6, 0}
 }
 
+// GetStoragePoolRequest gets a Storage Pool.
 type GetStoragePoolRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -159,6 +159,7 @@ func (x *GetStoragePoolRequest) GetName() string {
 	return ""
 }
 
+// ListStoragePoolsRequest lists Storage Pools.
 type ListStoragePoolsRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -244,6 +245,7 @@ func (x *ListStoragePoolsRequest) GetFilter() string {
 	return ""
 }
 
+// ListStoragePoolsResponse is the response to a ListStoragePoolsRequest.
 type ListStoragePoolsResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -310,6 +312,7 @@ func (x *ListStoragePoolsResponse) GetUnreachable() []string {
 	return nil
 }
 
+// CreateStoragePoolRequest creates a Storage Pool.
 type CreateStoragePoolRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -378,6 +381,7 @@ func (x *CreateStoragePoolRequest) GetStoragePool() *StoragePool {
 	return nil
 }
 
+// UpdateStoragePoolRequest updates a Storage Pool.
 type UpdateStoragePoolRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -439,6 +443,7 @@ func (x *UpdateStoragePoolRequest) GetStoragePool() *StoragePool {
 	return nil
 }
 
+// DeleteStoragePoolRequest deletes a Storage Pool.
 type DeleteStoragePoolRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
