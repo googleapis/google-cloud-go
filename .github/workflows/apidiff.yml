@@ -24,8 +24,9 @@ jobs:
     - name: Get changed directories
       id: changed_dirs
       # Ignore changes to the internal and root directories.
+      # Ignore added files with --diff-filter=a.
       run: |
-        dirs=$(go run ./internal/actions/cmd/changefinder -q)
+        dirs=$(go run ./internal/actions/cmd/changefinder -q --diff-filter=a)
         if [ -z "$dirs" ]
         then
           echo "skip=1" >> $GITHUB_OUTPUT

@@ -161,7 +161,10 @@ func (c *Client) Open(table string) *Table {
 	return &Table{
 		c:     c,
 		table: table,
-		md:    metadata.Pairs(resourcePrefixHeader, c.fullTableName(table), requestParamsHeader, c.requestParamsHeaderValue(table)),
+		md: metadata.Join(metadata.Pairs(
+			resourcePrefixHeader, c.fullTableName(table),
+			requestParamsHeader, c.requestParamsHeaderValue(table),
+		), btopt.WithFeatureFlags()),
 	}
 }
 
@@ -244,6 +247,10 @@ func (t *Table) ReadRows(ctx context.Context, arg RowSet, f func(Row) bool, opts
 						}
 					}
 				}
+			}
+
+			if res.LastScannedRowKey != nil {
+				prevRowKey = string(res.LastScannedRowKey)
 			}
 
 			// Handle any incoming RequestStats. This should happen at most once.

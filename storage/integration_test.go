@@ -2393,6 +2393,15 @@ func TestIntegration_WriterChunksize(t *testing.T) {
 				if callbacks != test.wantCallbacks {
 					t.Errorf("ProgressFunc was called %d times, expected %d", callbacks, test.wantCallbacks)
 				}
+
+				// Confirm all bytes were uploaded.
+				attrs, err := obj.Attrs(ctx)
+				if err != nil {
+					t.Fatalf("obj.Attrs: %v", err)
+				}
+				if attrs.Size != int64(objSize) {
+					t.Errorf("incorrect number of bytes written; got %v, want %v", attrs.Size, objSize)
+				}
 			})
 		}
 	})

@@ -228,6 +228,9 @@
         "monitoring": {
             "component": "monitoring"
         },
+        "netapp": {
+            "component": "netapp"
+        },
         "networkconnectivity": {
             "component": "networkconnectivity"
         },
@@ -257,6 +260,9 @@
         },
         "phishingprotection": {
             "component": "phishingprotection"
+        },
+        "policysimulator": {
+            "component": "policysimulator"
         },
         "policytroubleshooter": {
             "component": "policytroubleshooter"
