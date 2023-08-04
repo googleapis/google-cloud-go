@@ -432,3 +432,9 @@ replace cloud.google.com/go/rapidmigrationassessment => ../../../rapidmigrationa
 replace cloud.google.com/go/migrationcenter => ../../../migrationcenter
 
 replace cloud.google.com/go/ai => ../../../ai
+
+replace cloud.google.com/go/commerce => ../../../commerce
+
+replace cloud.google.com/go/policysimulator => ../../../policysimulator
+
+replace cloud.google.com/go/netapp => ../../../netapp

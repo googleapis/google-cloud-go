@@ -1,5 +1,12 @@
 # Changes
 
+## [1.13.0](https://github.com/googleapis/google-cloud-go/compare/datastore/v1.12.1...datastore/v1.13.0) (2023-07-26)
+
+
+### Features
+
+* **datastore:** Multi DB support ([#8276](https://github.com/googleapis/google-cloud-go/issues/8276)) ([e4d07a0](https://github.com/googleapis/google-cloud-go/commit/e4d07a0dddeab7fe635840f506daf01ceb18c067))
+
 ## [1.12.1](https://github.com/googleapis/google-cloud-go/compare/datastore/v1.12.0...datastore/v1.12.1) (2023-07-07)
 
 

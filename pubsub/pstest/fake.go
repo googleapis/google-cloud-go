@@ -498,6 +498,11 @@ func (s *GServer) CreateSubscription(_ context.Context, ps *pb.Subscription) (*p
 	}
 	if ps.PushConfig == nil {
 		ps.PushConfig = &pb.PushConfig{}
+	} else if ps.PushConfig.Wrapper == nil {
+		// Wrapper should default to PubsubWrapper.
+		ps.PushConfig.Wrapper = &pb.PushConfig_PubsubWrapper_{
+			PubsubWrapper: &pb.PushConfig_PubsubWrapper{},
+		}
 	}
 	// Consider any table set to mean the config is active.
 	// We don't convert nil config to empty like with PushConfig above

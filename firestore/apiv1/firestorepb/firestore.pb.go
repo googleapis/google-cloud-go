@@ -218,7 +218,10 @@ type GetDocumentRequest_Transaction struct {
 
 type GetDocumentRequest_ReadTime struct {
 	// Reads the version of the document at the given time.
-	// This may not be older than 270 seconds.
+	//
+	// This must be a microsecond precision timestamp within the past one hour,
+	// or if Point-in-Time Recovery is enabled, can additionally be a whole
+	// minute timestamp within the past 7 days.
 	ReadTime *timestamppb.Timestamp `protobuf:"bytes,5,opt,name=read_time,json=readTime,proto3,oneof"`
 }
 
@@ -404,7 +407,9 @@ type ListDocumentsRequest_Transaction struct {
 type ListDocumentsRequest_ReadTime struct {
 	// Perform the read at the provided time.
 	//
-	// This may not be older than 270 seconds.
+	// This must be a microsecond precision timestamp within the past one hour,
+	// or if Point-in-Time Recovery is enabled, can additionally be a whole
+	// minute timestamp within the past 7 days.
 	ReadTime *timestamppb.Timestamp `protobuf:"bytes,10,opt,name=read_time,json=readTime,proto3,oneof"`
 }
 
@@ -846,7 +851,10 @@ type BatchGetDocumentsRequest_NewTransaction struct {
 
 type BatchGetDocumentsRequest_ReadTime struct {
 	// Reads documents as they were at the given time.
-	// This may not be older than 270 seconds.
+	//
+	// This must be a microsecond precision timestamp within the past one hour,
+	// or if Point-in-Time Recovery is enabled, can additionally be a whole
+	// minute timestamp within the past 7 days.
 	ReadTime *timestamppb.Timestamp `protobuf:"bytes,7,opt,name=read_time,json=readTime,proto3,oneof"`
 }
 
@@ -1411,7 +1419,10 @@ type RunQueryRequest_NewTransaction struct {
 
 type RunQueryRequest_ReadTime struct {
 	// Reads documents as they were at the given time.
-	// This may not be older than 270 seconds.
+	//
+	// This must be a microsecond precision timestamp within the past one hour,
+	// or if Point-in-Time Recovery is enabled, can additionally be a whole
+	// minute timestamp within the past 7 days.
 	ReadTime *timestamppb.Timestamp `protobuf:"bytes,7,opt,name=read_time,json=readTime,proto3,oneof"`
 }
 
@@ -1685,9 +1696,9 @@ type RunAggregationQueryRequest_NewTransaction struct {
 type RunAggregationQueryRequest_ReadTime struct {
 	// Executes the query at the given timestamp.
 	//
-	// Requires:
-	//
-	// * Cannot be more than 270 seconds in the past.
+	// This must be a microsecond precision timestamp within the past one hour,
+	// or if Point-in-Time Recovery is enabled, can additionally be a whole
+	// minute timestamp within the past 7 days.
 	ReadTime *timestamppb.Timestamp `protobuf:"bytes,6,opt,name=read_time,json=readTime,proto3,oneof"`
 }
 
@@ -1942,7 +1953,10 @@ type isPartitionQueryRequest_ConsistencySelector interface {
 
 type PartitionQueryRequest_ReadTime struct {
 	// Reads documents as they were at the given time.
-	// This may not be older than 270 seconds.
+	//
+	// This must be a microsecond precision timestamp within the past one hour,
+	// or if Point-in-Time Recovery is enabled, can additionally be a whole
+	// minute timestamp within the past 7 days.
 	ReadTime *timestamppb.Timestamp `protobuf:"bytes,6,opt,name=read_time,json=readTime,proto3,oneof"`
 }
 
@@ -2478,8 +2492,9 @@ type Target struct {
 	TargetType isTarget_TargetType `protobuf_oneof:"target_type"`
 	// When to start listening.
 	//
-	// If not specified, all matching Documents are returned before any
-	// subsequent changes.
+	// If specified, only the matching Documents that have been updated AFTER the
+	// `resume_token` or `read_time` will be returned. Otherwise, all matching
+	// Documents are returned before any subsequent changes.
 	//
 	// Types that are assignable to ResumeType:
 	//	*Target_ResumeToken
@@ -2834,7 +2849,10 @@ type isListCollectionIdsRequest_ConsistencySelector interface {
 
 type ListCollectionIdsRequest_ReadTime struct {
 	// Reads documents as they were at the given time.
-	// This may not be older than 270 seconds.
+	//
+	// This must be a microsecond precision timestamp within the past one hour,
+	// or if Point-in-Time Recovery is enabled, can additionally be a whole
+	// minute timestamp within the past 7 days.
 	ReadTime *timestamppb.Timestamp `protobuf:"bytes,4,opt,name=read_time,json=readTime,proto3,oneof"`
 }
 
