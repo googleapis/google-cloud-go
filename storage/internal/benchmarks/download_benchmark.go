@@ -17,6 +17,8 @@ package main
 import (
 	"context"
 	"fmt"
+	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/trace"
 	"io"
 	"os"
 	"path"
@@ -37,6 +39,9 @@ type downloadOpts struct {
 }
 
 func downloadBenchmark(ctx context.Context, dopts downloadOpts) (elapsedTime time.Duration, rerr error) {
+	var span trace.Span
+	ctx, span = otel.GetTracerProvider().Tracer("storage-benchmark").Start(ctx, "download")
+	defer span.End()
 	// Set timer
 	start := time.Now()
 	// Multiple defer statements execute in LIFO order, so this will be the last

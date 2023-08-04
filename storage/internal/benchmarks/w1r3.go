@@ -17,6 +17,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"go.opentelemetry.io/otel"
 	"math/rand"
 	"os"
 	"path"
@@ -24,6 +25,7 @@ import (
 	"time"
 
 	"cloud.google.com/go/storage"
+	"go.opentelemetry.io/otel/trace"
 )
 
 // w1r3 or "write one, read three" is a benchmark that uploads a randomly generated
@@ -147,6 +149,10 @@ func (r *w1r3) cleanup() error {
 func (r *w1r3) run(ctx context.Context) error {
 	// Use the same client for write and reads as the api is the same
 	client := getClient(ctx, r.writeResult.params.api)
+
+	var span trace.Span
+	ctx, span = otel.GetTracerProvider().Tracer("storage-benchmark").Start(ctx, "w1r3")
+	defer span.End()
 
 	// Upload
 	err := runOneOp(ctx, r.writeResult, func() (time.Duration, error) {

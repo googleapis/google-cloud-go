@@ -20,6 +20,8 @@ import (
 	"crypto/md5"
 	"errors"
 	"fmt"
+	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/trace"
 	"hash"
 	"hash/crc32"
 	"io"
@@ -42,6 +44,10 @@ type uploadOpts struct {
 }
 
 func uploadBenchmark(ctx context.Context, uopts uploadOpts) (elapsedTime time.Duration, rerr error) {
+	var span trace.Span
+	ctx, span = otel.GetTracerProvider().Tracer("storage-benchmark").Start(ctx, "upload")
+	defer span.End()
+
 	// Set timer
 	start := time.Now()
 	// Multiple defer statements execute in LIFO order, so this will be the last
