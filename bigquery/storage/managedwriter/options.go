@@ -15,7 +15,7 @@
 package managedwriter
 
 import (
-	"github.com/googleapis/gax-go/v2"
+	"cloud.google.com/go/bigquery/storage/apiv1/storagepb"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	"google.golang.org/protobuf/types/descriptorpb"
@@ -289,5 +289,11 @@ func WithOffset(offset int64) AppendOption {
 		pw.req.Offset = &wrapperspb.Int64Value{
 			Value: offset,
 		}
+	}
+}
+
+func WithMissingValueInterpretations(missingValueInterpretations map[string]storagepb.AppendRowsRequest_MissingValueInterpretation) AppendOption {
+	return func(pw *pendingWrite) {
+		pw.req.MissingValueInterpretations = missingValueInterpretations
 	}
 }
