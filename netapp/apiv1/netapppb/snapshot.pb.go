@@ -492,7 +492,6 @@ func (x *UpdateSnapshotRequest) GetSnapshot() *Snapshot {
 	return nil
 }
 
-// Snapshot is a point-in-time version of a Volume's content.
 type Snapshot struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
