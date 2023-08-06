@@ -293,6 +293,7 @@ func WithOffset(offset int64) AppendOption {
 	}
 }
 
+// WithMissingValueInterpretations sets a map with indication on how to interpret missing value for some fields. Missing values are fields present in user schema but missing in rows. The key is the field name. The value is the interpretation of missing values for the field.
 func WithMissingValueInterpretations(missingValueInterpretations map[string]storagepb.AppendRowsRequest_MissingValueInterpretation) AppendOption {
 	return func(pw *pendingWrite) {
 		pw.req.MissingValueInterpretations = missingValueInterpretations
