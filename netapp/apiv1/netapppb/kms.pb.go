@@ -129,7 +129,6 @@ func (KmsConfig_State) EnumDescriptor() ([]byte, []int) {
 	return file_google_cloud_netapp_v1_kms_proto_rawDescGZIP(), []int{9, 0}
 }
 
-// GetKmsConfigRequest gets a KMS Config.
 type GetKmsConfigRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -178,7 +177,6 @@ func (x *GetKmsConfigRequest) GetName() string {
 	return ""
 }
 
-// ListKmsConfigsRequest lists KMS Configs.
 type ListKmsConfigsRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -264,7 +262,6 @@ func (x *ListKmsConfigsRequest) GetFilter() string {
 	return ""
 }
 
-// ListKmsConfigsResponse is the response to a ListKmsConfigsRequest.
 type ListKmsConfigsResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -331,7 +328,6 @@ func (x *ListKmsConfigsResponse) GetUnreachable() []string {
 	return nil
 }
 
-// CreateKmsConfigRequest creates a KMS Config.
 type CreateKmsConfigRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -400,7 +396,6 @@ func (x *CreateKmsConfigRequest) GetKmsConfig() *KmsConfig {
 	return nil
 }
 
-// UpdateKmsConfigRequest updates a KMS Config.
 type UpdateKmsConfigRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -462,7 +457,6 @@ func (x *UpdateKmsConfigRequest) GetKmsConfig() *KmsConfig {
 	return nil
 }
 
-// DeleteKmsConfigRequest deletes a KMS Config.
 type DeleteKmsConfigRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
