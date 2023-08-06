@@ -16,6 +16,7 @@ package managedwriter
 
 import (
 	"cloud.google.com/go/bigquery/storage/apiv1/storagepb"
+	"github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	"google.golang.org/protobuf/types/descriptorpb"
