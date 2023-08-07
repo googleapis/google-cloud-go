@@ -2393,6 +2393,15 @@ func TestIntegration_WriterChunksize(t *testing.T) {
 				if callbacks != test.wantCallbacks {
 					t.Errorf("ProgressFunc was called %d times, expected %d", callbacks, test.wantCallbacks)
 				}
+
+				// Confirm all bytes were uploaded.
+				attrs, err := obj.Attrs(ctx)
+				if err != nil {
+					t.Fatalf("obj.Attrs: %v", err)
+				}
+				if attrs.Size != int64(objSize) {
+					t.Errorf("incorrect number of bytes written; got %v, want %v", attrs.Size, objSize)
+				}
 			})
 		}
 	})
@@ -3985,11 +3994,38 @@ func TestIntegration_PredefinedACLs(t *testing.T) {
 		w.PredefinedACL = "authenticatedRead"
 		h.mustWrite(w, []byte("hello"))
 		defer h.mustDeleteObject(obj)
-		if acl, want := w.Attrs().ACL, userOwner; !containsACLRule(acl, want) {
-			t.Fatalf("Object.ACL: expected acl to contain: %+v, got acl: %+v", want, acl)
+		var acl []ACLRule
+		err := retry(ctx, func() error {
+			attrs, err := obj.Attrs(ctx)
+			if err != nil {
+				return fmt.Errorf("Object.Attrs: object metadata get failed: %v", err)
+			}
+			acl = attrs.ACL
+			return nil
+		}, func() error {
+			if want := userOwner; !containsACLRule(acl, want) {
+				return fmt.Errorf("Object.ACL: expected acl to contain: %+v, got acl: %+v", want, acl)
+			}
+			return nil
+		})
+		if err != nil {
+			t.Fatal(err)
 		}
-		if acl, want := w.Attrs().ACL, authenticatedRead; !containsACLRule(acl, want) {
-			t.Fatalf("Object.ACL: expected acl to contain: %+v, got acl: %+v", want, acl)
+		err = retry(ctx, func() error {
+			attrs, err := obj.Attrs(ctx)
+			if err != nil {
+				return fmt.Errorf("Object.Attrs: object metadata get failed: %v", err)
+			}
+			acl = attrs.ACL
+			return nil
+		}, func() error {
+			if want := authenticatedRead; !containsACLRule(acl, want) {
+				return fmt.Errorf("Object.ACL: expected acl to contain: %+v, got acl: %+v", want, acl)
+			}
+			return nil
+		})
+		if err != nil {
+			t.Fatal(err)
 		}
 
 		// Object update
@@ -4005,7 +4041,7 @@ func TestIntegration_PredefinedACLs(t *testing.T) {
 		dst := bkt.Object("dst")
 		copier := dst.CopierFrom(obj)
 		copier.PredefinedACL = "publicRead"
-		oattrs, err := copier.Run(ctx)
+		oattrs, err = copier.Run(ctx)
 		if err != nil {
 			t.Fatal(err)
 		}

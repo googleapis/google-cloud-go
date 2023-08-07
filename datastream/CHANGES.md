@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.10.0](https://github.com/googleapis/google-cloud-go/compare/datastream/v1.9.1...datastream/v1.10.0) (2023-07-26)
+
+
+### Features
+
+* **datastream:** Add precision and scale to MysqlColumn ([7cb7f66](https://github.com/googleapis/google-cloud-go/commit/7cb7f66f0646617c27aa9a9b4fe38b9f368eb3bb))
+
 ## [1.9.1](https://github.com/googleapis/google-cloud-go/compare/datastream/v1.9.0...datastream/v1.9.1) (2023-06-20)
 
 

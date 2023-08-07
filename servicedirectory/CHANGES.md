@@ -1,5 +1,12 @@
 # Changes
 
+## [1.11.0](https://github.com/googleapis/google-cloud-go/compare/servicedirectory/v1.10.1...servicedirectory/v1.11.0) (2023-07-24)
+
+
+### Features
+
+* **servicedirectory:** Added network and uid fields in Endpoint message ([432864c](https://github.com/googleapis/google-cloud-go/commit/432864c7fc0bb551a5017b423bbd5f76c3357dc3))
+
 ## [1.10.1](https://github.com/googleapis/google-cloud-go/compare/servicedirectory/v1.10.0...servicedirectory/v1.10.1) (2023-06-20)
 
 

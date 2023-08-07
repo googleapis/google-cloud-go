@@ -209,6 +209,19 @@ In support of the retry changes, the AppendResult returned as part of an append 
 TotalAttempts(), which returns the number of times that specific append was enqueued to the service.
 Values larger than 1 are indicative of a specific append being enqueued multiple times.
 
+# Usage of Contexts
+
+The underlying rpc mechanism used to transmit requests and responses between this client and
+the service uses a gRPC bidirectional streaming protocol, and the context provided when invoking
+NewClient to instantiate the client is used to maintain those background connections.
+
+This package also exposes context when instantiating a new writer (NewManagedStream), as well as
+allowing a per-request context when invoking the AppendRows function to send a set of rows.  If the
+context becomes invalid on the writer all subsequent AppendRows requests will be blocked.
+
+Finally, there is a per-request context supplied as part of the AppendRows call on the ManagedStream
+writer itself, useful for bounding individual requests.
+
 # Connection Sharing (Multiplexing)
 
 Note: This feature is EXPERIMENTAL and subject to change.

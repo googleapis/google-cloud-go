@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [1.4.0](https://github.com/googleapis/google-cloud-go/compare/alloydb/v1.3.0...alloydb/v1.4.0) (2023-07-31)
+
+
+### Features
+
+* **alloydb:** Generate connector types ([#8357](https://github.com/googleapis/google-cloud-go/issues/8357)) ([f777e68](https://github.com/googleapis/google-cloud-go/commit/f777e6884b7ac63a0dafef56b5d9f8ae923fe073))
+
 ## [1.3.0](https://github.com/googleapis/google-cloud-go/compare/alloydb/v1.2.1...alloydb/v1.3.0) (2023-07-18)
 
 

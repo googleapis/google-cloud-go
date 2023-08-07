@@ -89,6 +89,16 @@
     "release_level": "preview",
     "library_type": "GAPIC_AUTO"
   },
+  "cloud.google.com/go/alloydb/connectors/apiv1alpha": {
+    "api_shortname": "connectors",
+    "distribution_name": "cloud.google.com/go/alloydb/connectors/apiv1alpha",
+    "description": "AlloyDB connectors",
+    "language": "go",
+    "client_library_type": "generated",
+    "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/alloydb/latest/connectors/apiv1alpha",
+    "release_level": "preview",
+    "library_type": "GAPIC_AUTO"
+  },
   "cloud.google.com/go/analytics/admin/apiv1alpha": {
     "api_shortname": "analyticsadmin",
     "distribution_name": "cloud.google.com/go/analytics/admin/apiv1alpha",
@@ -599,6 +609,16 @@
     "release_level": "preview",
     "library_type": "GAPIC_AUTO"
   },
+  "cloud.google.com/go/commerce/consumer/procurement/apiv1": {
+    "api_shortname": "cloudcommerceconsumerprocurement",
+    "distribution_name": "cloud.google.com/go/commerce/consumer/procurement/apiv1",
+    "description": "Cloud Commerce Consumer Procurement API",
+    "language": "go",
+    "client_library_type": "generated",
+    "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/commerce/latest/consumer/procurement/apiv1",
+    "release_level": "preview",
+    "library_type": "GAPIC_AUTO"
+  },
   "cloud.google.com/go/compute/apiv1": {
     "api_shortname": "compute",
     "distribution_name": "cloud.google.com/go/compute/apiv1",
@@ -665,7 +685,7 @@
     "description": "Container Analysis API",
     "language": "go",
     "client_library_type": "generated",
-    "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/latest/containeranalysis/apiv1beta1",
+    "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/containeranalysis/latest/apiv1beta1",
     "release_level": "preview",
     "library_type": "GAPIC_AUTO"
   },
@@ -996,7 +1016,7 @@
     "language": "go",
     "client_library_type": "generated",
     "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/eventarc/latest/publishing/apiv1",
-    "release_level": "preview",
+    "release_level": "stable",
     "library_type": "GAPIC_AUTO"
   },
   "cloud.google.com/go/filestore/apiv1": {
@@ -1419,6 +1439,16 @@
     "release_level": "stable",
     "library_type": "GAPIC_AUTO"
   },
+  "cloud.google.com/go/netapp/apiv1": {
+    "api_shortname": "netapp",
+    "distribution_name": "cloud.google.com/go/netapp/apiv1",
+    "description": "NetApp API",
+    "language": "go",
+    "client_library_type": "generated",
+    "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/netapp/latest/apiv1",
+    "release_level": "preview",
+    "library_type": "GAPIC_AUTO"
+  },
   "cloud.google.com/go/networkconnectivity/apiv1": {
     "api_shortname": "networkconnectivity",
     "distribution_name": "cloud.google.com/go/networkconnectivity/apiv1",
@@ -1586,6 +1616,16 @@
     "language": "go",
     "client_library_type": "generated",
     "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/phishingprotection/latest/apiv1beta1",
+    "release_level": "preview",
+    "library_type": "GAPIC_AUTO"
+  },
+  "cloud.google.com/go/policysimulator/apiv1": {
+    "api_shortname": "policysimulator",
+    "distribution_name": "cloud.google.com/go/policysimulator/apiv1",
+    "description": "Policy Simulator API",
+    "language": "go",
+    "client_library_type": "generated",
+    "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/policysimulator/latest/apiv1",
     "release_level": "preview",
     "library_type": "GAPIC_AUTO"
   },

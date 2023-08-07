@@ -247,8 +247,9 @@ func (c *Client) AllocateIDs(ctx context.Context, keys []*Key) ([]*Key, error) {
 	}
 
 	req := &pb.AllocateIdsRequest{
-		ProjectId: c.dataset,
-		Keys:      multiKeyToProto(keys),
+		ProjectId:  c.dataset,
+		DatabaseId: c.databaseID,
+		Keys:       multiKeyToProto(keys),
 	}
 	resp, err := c.client.AllocateIds(ctx, req)
 	if err != nil {

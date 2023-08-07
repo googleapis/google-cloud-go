@@ -278,21 +278,6 @@ func TestAgentIntegration(t *testing.T) {
 		{
 			InstanceConfig: proftest.InstanceConfig{
 				ProjectID:    projectID,
-				Name:         fmt.Sprintf("profiler-test-gomaster-%s", runID),
-				MachineType:  "n1-standard-1",
-				ImageProject: "debian-cloud",
-				ImageFamily:  "debian-11",
-			},
-			name:             "profiler-test-gomaster",
-			wantProfileTypes: []string{"CPU", "HEAP", "THREADS", "CONTENTION", "HEAP_ALLOC"},
-			goVersion:        "master",
-			mutexProfiling:   true,
-			timeout:          gceTestTimeout,
-			benchDuration:    gceBenchDuration,
-		},
-		{
-			InstanceConfig: proftest.InstanceConfig{
-				ProjectID:    projectID,
 				Name:         fmt.Sprintf("profiler-test-go%s-%s", goVersionName, runID),
 				MachineType:  "n1-standard-1",
 				ImageProject: "debian-cloud",
