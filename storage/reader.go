@@ -87,8 +87,9 @@ func (o *ObjectHandle) NewReader(ctx context.Context) (*Reader, error) {
 // that file will be served back whole, regardless of the requested range as
 // Google Cloud Storage dictates.
 func (o *ObjectHandle) NewRangeReader(ctx context.Context, offset, length int64) (r *Reader, err error) {
-	ctx = trace.StartSpan(ctx, "cloud.google.com/go/storage.Object.NewRangeReader")
-	defer func() { trace.EndSpan(ctx, err) }()
+	// This span covers the life of the reader. It is closed via the context
+	// in Reader.Close.
+	ctx = trace.StartSpan(ctx, "cloud.google.com/go/storage.Object.Reader")
 
 	if err := o.validate(); err != nil {
 		return nil, err
@@ -116,6 +117,7 @@ func (o *ObjectHandle) NewRangeReader(ctx context.Context, offset, length int64)
 	}
 
 	r, err = o.c.tc.NewRangeReader(ctx, params, opts...)
+	r.ctx = ctx
 
 	return r, err
 }
@@ -204,11 +206,14 @@ type Reader struct {
 	gotCRC             uint32 // running crc
 
 	reader io.ReadCloser
+	ctx    context.Context
 }
 
 // Close closes the Reader. It must be called when done reading.
 func (r *Reader) Close() error {
-	return r.reader.Close()
+	err := r.reader.Close()
+	trace.EndSpan(r.ctx, err)
+	return err
 }
 
 func (r *Reader) Read(p []byte) (int, error) {
