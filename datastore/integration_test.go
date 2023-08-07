@@ -351,17 +351,17 @@ func TestIntegration_GetMulti(t *testing.T) {
 	p := NameKey("X", "x"+suffix, nil)
 
 	cases := []struct {
-		key *Key
-		put bool
-		x   *X
+		desc string
+		key  *Key
+		put  bool
+		x    *X
 	}{
-		{key: NameKey("X", "item1", p), put: true, x: &X{I: 1}},
-		{key: NameKey("X", "item2", p), put: false},
-		{key: NameKey("X", "item3", p), put: false},
-		{key: NameKey("X", "item3", p), put: false},
-		{key: NameKey("X", "item4", p), put: true, x: &X{I: 4}},
-		{key: &Key{Kind: "X", Name: "item5", Namespace: "nm1"}, put: true, x: &X{I: 5}},
-		{key: &Key{Kind: "X", Name: "item5", Namespace: "nm2"}, put: true, x: &X{I: 6}},
+		{desc: "Successful get", key: NameKey("X", "item1", p), put: true, x: &X{I: 1}},
+		{desc: "No such entity error", key: NameKey("X", "item2", p), put: false},
+		{desc: "No such entity error", key: NameKey("X", "item3", p), put: false},
+		{desc: "Duplicate keys in GetMulti with no such entity error", key: NameKey("X", "item3", p), put: false},
+		{desc: "First key in the pair of keys with same Kind and Name but different Namespace", key: &Key{Kind: "X", Name: "item5", Namespace: "nm1"}, put: true, x: &X{I: 5}},
+		{desc: "Second key in the pair of keys with same Kind and Name but different Namespace", key: &Key{Kind: "X", Name: "item5", Namespace: "nm2"}, put: true, x: &X{I: 6}},
 	}
 
 	var src, dst, wantDst []*X
@@ -393,11 +393,11 @@ func TestIntegration_GetMulti(t *testing.T) {
 			got, want = err, ErrNoSuchEntity
 		}
 		if got != want {
-			t.Errorf("MultiError[%d] == %v, want %v", i, got, want)
+			t.Errorf("%s: MultiError[%d] == %v, want %v", cases[i].desc, i, got, want)
 		}
 
 		if got == nil && *dst[i] != *wantDst[i] {
-			t.Errorf("client.GetMulti got %+v, want %+v", dst[i], wantDst[i])
+			t.Errorf("%s: client.GetMulti got %+v, want %+v", cases[i].desc, dst[i], wantDst[i])
 		}
 	}
 }
