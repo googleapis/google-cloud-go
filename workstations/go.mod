@@ -1,6 +1,6 @@
 module cloud.google.com/go/workstations
 
-go 1.20
+go 1.19
 
 require (
 	cloud.google.com/go/iam v1.1.0
