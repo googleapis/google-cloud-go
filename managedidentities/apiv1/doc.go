@@ -21,69 +21,68 @@
 // managing a highly available, hardened service running Microsoft Active
 // Directory (AD).
 //
-// # General documentation
+// General documentation
 //
 // For information about setting deadlines, reusing contexts, and more
 // please visit https://pkg.go.dev/cloud.google.com/go.
 //
-// # Example usage
+// Example usage
 //
 // To get started with this package, create a client.
-//
-//	ctx := context.Background()
-//	// This snippet has been automatically generated and should be regarded as a code template only.
-//	// It will require modifications to work:
-//	// - It may require correct/in-range values for request initialization.
-//	// - It may require specifying regional endpoints when creating the service client as shown in:
-//	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-//	c, err := managedidentities.NewClient(ctx)
-//	if err != nil {
-//		// TODO: Handle error.
-//	}
-//	defer c.Close()
+//  ctx := context.Background()
+//  // This snippet has been automatically generated and should be regarded as a code template only.
+//  // It will require modifications to work:
+//  // - It may require correct/in-range values for request initialization.
+//  // - It may require specifying regional endpoints when creating the service client as shown in:
+//  //   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+//  c, err := managedidentities.NewClient(ctx)
+//  if err != nil {
+//  	// TODO: Handle error.
+//  }
+//  defer c.Close()
 //
 // The client will use your default application credentials. Clients should be reused instead of created as needed.
 // The methods of Client are safe for concurrent use by multiple goroutines.
 // The returned client must be Closed when it is done being used.
 //
-// # Using the Client
+// Using the Client
 //
 // The following is an example of making an API call with the newly created client.
 //
-//	ctx := context.Background()
-//	// This snippet has been automatically generated and should be regarded as a code template only.
-//	// It will require modifications to work:
-//	// - It may require correct/in-range values for request initialization.
-//	// - It may require specifying regional endpoints when creating the service client as shown in:
-//	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-//	c, err := managedidentities.NewClient(ctx)
-//	if err != nil {
-//		// TODO: Handle error.
-//	}
-//	defer c.Close()
+//  ctx := context.Background()
+//  // This snippet has been automatically generated and should be regarded as a code template only.
+//  // It will require modifications to work:
+//  // - It may require correct/in-range values for request initialization.
+//  // - It may require specifying regional endpoints when creating the service client as shown in:
+//  //   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+//  c, err := managedidentities.NewClient(ctx)
+//  if err != nil {
+//  	// TODO: Handle error.
+//  }
+//  defer c.Close()
 //
-//	req := &managedidentitiespb.CreateMicrosoftAdDomainRequest{
-//		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/cloud.google.com/go/managedidentities/apiv1/managedidentitiespb#CreateMicrosoftAdDomainRequest.
-//	}
-//	op, err := c.CreateMicrosoftAdDomain(ctx, req)
-//	if err != nil {
-//		// TODO: Handle error.
-//	}
+//  req := &managedidentitiespb.CreateMicrosoftAdDomainRequest{
+//  	// TODO: Fill request struct fields.
+//  	// See https://pkg.go.dev/cloud.google.com/go/managedidentities/apiv1/managedidentitiespb#CreateMicrosoftAdDomainRequest.
+//  }
+//  op, err := c.CreateMicrosoftAdDomain(ctx, req)
+//  if err != nil {
+//  	// TODO: Handle error.
+//  }
 //
-//	resp, err := op.Wait(ctx)
-//	if err != nil {
-//		// TODO: Handle error.
-//	}
-//	// TODO: Use resp.
-//	_ = resp
+//  resp, err := op.Wait(ctx)
+//  if err != nil {
+//  	// TODO: Handle error.
+//  }
+//  // TODO: Use resp.
+//  _ = resp
 //
-// # Inspecting errors
+// Inspecting errors
 //
 // To see examples of how to inspect errors returned by this package please reference
 // [Inspecting errors](https://pkg.go.dev/cloud.google.com/go#hdr-Inspecting_errors).
 //
-// # Use of Context
+// Use of Context
 //
 // The ctx passed to NewClient is used for authentication requests and
 // for creating the underlying connection, but is not used for subsequent calls.
