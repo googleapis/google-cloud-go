@@ -1627,6 +1627,11 @@
                 "RawPredict"
               ]
             },
+            "ServerStreamingPredict": {
+              "methods": [
+                "ServerStreamingPredict"
+              ]
+            },
             "SetIamPolicy": {
               "methods": [
                 "SetIamPolicy"
@@ -1635,6 +1640,100 @@
             "TestIamPermissions": {
               "methods": [
                 "TestIamPermissions"
+              ]
+            },
+            "WaitOperation": {
+              "methods": [
+                "WaitOperation"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "ScheduleService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "ScheduleClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateSchedule": {
+              "methods": [
+                "CreateSchedule"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "DeleteSchedule": {
+              "methods": [
+                "DeleteSchedule"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetSchedule": {
+              "methods": [
+                "GetSchedule"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListSchedules": {
+              "methods": [
+                "ListSchedules"
+              ]
+            },
+            "PauseSchedule": {
+              "methods": [
+                "PauseSchedule"
+              ]
+            },
+            "ResumeSchedule": {
+              "methods": [
+                "ResumeSchedule"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
+            "UpdateSchedule": {
+              "methods": [
+                "UpdateSchedule"
               ]
             },
             "WaitOperation": {

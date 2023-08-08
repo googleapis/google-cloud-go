@@ -20,8 +20,6 @@
 // Manages Google Cloud technical support cases for Customer Care support
 // offerings.
 //
-//	NOTE: This package is in beta. It is not stable, and may be subject to changes.
-//
 // # General documentation
 //
 // For information about setting deadlines, reusing contexts, and more

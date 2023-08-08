@@ -38,8 +38,6 @@ import (
 	"net/http"
 	"net/http/httputil"
 	"os"
-	"path/filepath"
-	"runtime"
 	"sort"
 	"strconv"
 	"strings"
@@ -272,7 +270,9 @@ func multiTransportTest(ctx context.Context, t *testing.T,
 	opts ...option.ClientOption) {
 	for transport, client := range initTransportClients(ctx, t, opts...) {
 		t.Run(transport, func(t *testing.T) {
-			defer client.Close()
+			t.Cleanup(func() {
+				client.Close()
+			})
 
 			if reason := ctx.Value(skipTransportTestKey(transport)); reason != nil {
 				t.Skip("transport", fmt.Sprintf("%q", transport), "explicitly skipped:", reason)
@@ -1577,6 +1577,8 @@ func TestIntegration_ObjectCompose(t *testing.T) {
 func TestIntegration_Copy(t *testing.T) {
 	ctx := skipJSONReads(context.Background(), "no reads in test")
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, bucket string, prefix string, client *Client) {
+		h := testHelper{t}
+
 		bucketFrom := client.Bucket(bucket)
 		bucketInSameRegion := client.Bucket(prefix + uidSpace.New())
 		bucketInDifferentRegion := client.Bucket(prefix + uidSpace.New())
@@ -1585,13 +1587,17 @@ func TestIntegration_Copy(t *testing.T) {
 		if err := bucketInSameRegion.Create(ctx, testutil.ProjID(), nil); err != nil {
 			t.Fatalf("bucket.Create: %v", err)
 		}
-		defer bucketInSameRegion.Delete(ctx)
+		t.Cleanup(func() {
+			h.mustDeleteBucket(bucketInSameRegion)
+		})
 
 		// Create new bucket
 		if err := bucketInDifferentRegion.Create(ctx, testutil.ProjID(), &BucketAttrs{Location: "NORTHAMERICA-NORTHEAST2"}); err != nil {
 			t.Fatalf("bucket.Create: %v", err)
 		}
-		defer bucketInDifferentRegion.Delete(ctx)
+		t.Cleanup(func() {
+			h.mustDeleteBucket(bucketInDifferentRegion)
+		})
 
 		// We use a larger object size to be able to trigger multiple rewrite calls
 		minObjectSize := 2500000 // 2.5 Mb
@@ -1610,12 +1616,9 @@ func TestIntegration_Copy(t *testing.T) {
 		if err := w.Close(); err != nil {
 			t.Fatalf("w.Close: %v", err)
 		}
-
-		defer func() {
-			if err := obj.Delete(ctx); err != nil {
-				t.Errorf("obj.Delete: %v", err)
-			}
-		}()
+		t.Cleanup(func() {
+			h.mustDeleteObject(obj)
+		})
 
 		attrs, err := obj.Attrs(ctx)
 		if err != nil {
@@ -1687,11 +1690,9 @@ func TestIntegration_Copy(t *testing.T) {
 				if err != nil {
 					t.Fatalf("Copier.Run failed with %v", err)
 				}
-				defer func() {
-					if err := copyObj.Delete(ctx); err != nil {
-						t.Errorf("copyObj.Delete: %v", err)
-					}
-				}()
+				t.Cleanup(func() {
+					h.mustDeleteObject(copyObj)
+				})
 
 				// Check copied object is in the correct bucket with the correct name
 				if attrs.Bucket != test.toBucket.name || attrs.Name != test.toObj {
@@ -2391,6 +2392,15 @@ func TestIntegration_WriterChunksize(t *testing.T) {
 
 				if callbacks != test.wantCallbacks {
 					t.Errorf("ProgressFunc was called %d times, expected %d", callbacks, test.wantCallbacks)
+				}
+
+				// Confirm all bytes were uploaded.
+				attrs, err := obj.Attrs(ctx)
+				if err != nil {
+					t.Fatalf("obj.Attrs: %v", err)
+				}
+				if attrs.Size != int64(objSize) {
+					t.Errorf("incorrect number of bytes written; got %v, want %v", attrs.Size, objSize)
 				}
 			})
 		}
@@ -3984,11 +3994,38 @@ func TestIntegration_PredefinedACLs(t *testing.T) {
 		w.PredefinedACL = "authenticatedRead"
 		h.mustWrite(w, []byte("hello"))
 		defer h.mustDeleteObject(obj)
-		if acl, want := w.Attrs().ACL, userOwner; !containsACLRule(acl, want) {
-			t.Fatalf("Object.ACL: expected acl to contain: %+v, got acl: %+v", want, acl)
+		var acl []ACLRule
+		err := retry(ctx, func() error {
+			attrs, err := obj.Attrs(ctx)
+			if err != nil {
+				return fmt.Errorf("Object.Attrs: object metadata get failed: %v", err)
+			}
+			acl = attrs.ACL
+			return nil
+		}, func() error {
+			if want := userOwner; !containsACLRule(acl, want) {
+				return fmt.Errorf("Object.ACL: expected acl to contain: %+v, got acl: %+v", want, acl)
+			}
+			return nil
+		})
+		if err != nil {
+			t.Fatal(err)
 		}
-		if acl, want := w.Attrs().ACL, authenticatedRead; !containsACLRule(acl, want) {
-			t.Fatalf("Object.ACL: expected acl to contain: %+v, got acl: %+v", want, acl)
+		err = retry(ctx, func() error {
+			attrs, err := obj.Attrs(ctx)
+			if err != nil {
+				return fmt.Errorf("Object.Attrs: object metadata get failed: %v", err)
+			}
+			acl = attrs.ACL
+			return nil
+		}, func() error {
+			if want := authenticatedRead; !containsACLRule(acl, want) {
+				return fmt.Errorf("Object.ACL: expected acl to contain: %+v, got acl: %+v", want, acl)
+			}
+			return nil
+		})
+		if err != nil {
+			t.Fatal(err)
 		}
 
 		// Object update
@@ -4004,7 +4041,7 @@ func TestIntegration_PredefinedACLs(t *testing.T) {
 		dst := bkt.Object("dst")
 		copier := dst.CopierFrom(obj)
 		copier.PredefinedACL = "publicRead"
-		oattrs, err := copier.Run(ctx)
+		oattrs, err = copier.Run(ctx)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -5159,81 +5196,89 @@ type testHelper struct {
 }
 
 func (h testHelper) mustCreate(b *BucketHandle, projID string, attrs *BucketAttrs) {
+	h.t.Helper()
 	if err := b.Create(context.Background(), projID, attrs); err != nil {
-		h.t.Fatalf("%s: bucket create: %v", loc(), err)
+		h.t.Fatalf("bucket create: %v", err)
 	}
 }
 
 func (h testHelper) mustDeleteBucket(b *BucketHandle) {
+	h.t.Helper()
 	if err := b.Delete(context.Background()); err != nil {
-		h.t.Fatalf("%s: bucket delete: %v", loc(), err)
+		h.t.Fatalf("bucket delete: %v", err)
 	}
 }
 
 func (h testHelper) mustBucketAttrs(b *BucketHandle) *BucketAttrs {
+	h.t.Helper()
 	attrs, err := b.Attrs(context.Background())
 	if err != nil {
-		h.t.Fatalf("%s: bucket attrs: %v", loc(), err)
+		h.t.Fatalf("bucket attrs: %v", err)
 	}
 	return attrs
 }
 
 // updating a bucket is conditionally idempotent on metageneration, so we pass that in to enable retries
 func (h testHelper) mustUpdateBucket(b *BucketHandle, ua BucketAttrsToUpdate, metageneration int64) *BucketAttrs {
+	h.t.Helper()
 	attrs, err := b.If(BucketConditions{MetagenerationMatch: metageneration}).Update(context.Background(), ua)
 	if err != nil {
-		h.t.Fatalf("%s: update: %v", loc(), err)
+		h.t.Fatalf("update: %v", err)
 	}
 	return attrs
 }
 
 func (h testHelper) mustObjectAttrs(o *ObjectHandle) *ObjectAttrs {
+	h.t.Helper()
 	attrs, err := o.Attrs(context.Background())
 	if err != nil {
-		h.t.Fatalf("%s: object attrs: %v", loc(), err)
+		h.t.Fatalf("object attrs: %v", err)
 	}
 	return attrs
 }
 
 func (h testHelper) mustDeleteObject(o *ObjectHandle) {
-	if err := o.Delete(context.Background()); err != nil {
-		h.t.Fatalf("%s: delete object %s from bucket %s: %v", loc(), o.ObjectName(), o.BucketName(), err)
+	h.t.Helper()
+	if err := o.Retryer(WithPolicy(RetryAlways)).Delete(context.Background()); err != nil {
+		var apiErr *apierror.APIError
+		if ok := errors.As(err, &apiErr); ok {
+			// Object may already be deleted with retry; if so skip.
+			if apiErr.HTTPCode() == 404 || apiErr.GRPCStatus().Code() == codes.NotFound {
+				return
+			}
+		}
+		h.t.Fatalf("delete object %s from bucket %s: %v", o.ObjectName(), o.BucketName(), err)
 	}
 }
 
 // updating an object is conditionally idempotent on metageneration, so we pass that in to enable retries
 func (h testHelper) mustUpdateObject(o *ObjectHandle, ua ObjectAttrsToUpdate, metageneration int64) *ObjectAttrs {
+	h.t.Helper()
 	attrs, err := o.If(Conditions{MetagenerationMatch: metageneration}).Update(context.Background(), ua)
 	if err != nil {
-		h.t.Fatalf("%s: update: %v", loc(), err)
+		h.t.Fatalf("update: %v", err)
 	}
 	return attrs
 }
 
 func (h testHelper) mustWrite(w *Writer, data []byte) {
+	h.t.Helper()
 	if _, err := w.Write(data); err != nil {
 		w.Close()
-		h.t.Fatalf("%s: write: %v", loc(), err)
+		h.t.Fatalf("write: %v", err)
 	}
 	if err := w.Close(); err != nil {
-		h.t.Fatalf("%s: close write: %v", loc(), err)
+		h.t.Fatalf("close write: %v", err)
 	}
 }
 
 func (h testHelper) mustRead(obj *ObjectHandle) []byte {
+	h.t.Helper()
 	data, err := readObject(context.Background(), obj)
 	if err != nil {
-		h.t.Fatalf("%s: read: %v", loc(), err)
+		h.t.Fatalf("read: %v", err)
 	}
 	return data
-}
-
-func (h testHelper) mustNewReader(obj *ObjectHandle) *Reader {
-	r, err := obj.NewReader(context.Background())
-	if err != nil {
-		h.t.Fatalf("%s: new reader: %v", loc(), err)
-	}
-	return r
 }
 
 func writeObject(ctx context.Context, obj *ObjectHandle, contentType string, contents []byte) error {
@@ -5247,18 +5292,6 @@ func writeObject(ctx context.Context, obj *ObjectHandle, contentType string, con
 		}
 	}
 	return w.Close()
-}
-
-// loc returns a string describing the file and line of its caller's call site. In
-// other words, if a test function calls a helper, and the helper calls loc, then the
-// string will refer to the line on which the test function called the helper.
-// TODO(jba): use t.Helper once we drop go 1.6.
-func loc() string {
-	_, file, line, ok := runtime.Caller(2)
-	if !ok {
-		return "???"
-	}
-	return fmt.Sprintf("%s:%d", filepath.Base(file), line)
 }
 
 func readObject(ctx context.Context, obj *ObjectHandle) ([]byte, error) {

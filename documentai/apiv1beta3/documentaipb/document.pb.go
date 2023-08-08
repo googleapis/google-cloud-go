@@ -336,6 +336,63 @@ func (Document_Provenance_OperationType) EnumDescriptor() ([]byte, []int) {
 	return file_google_cloud_documentai_v1beta3_document_proto_rawDescGZIP(), []int{0, 7, 0}
 }
 
+// Some predefined revision cases.
+type RevisionRef_RevisionCase int32
+
+const (
+	// Unspecified case, fallback to read the LATEST_HUMAN_REVIEW.
+	RevisionRef_REVISION_CASE_UNSPECIFIED RevisionRef_RevisionCase = 0
+	// The latest revision made by a human.
+	RevisionRef_LATEST_HUMAN_REVIEW RevisionRef_RevisionCase = 1
+	// The latest revision based on timestamp.
+	RevisionRef_LATEST_TIMESTAMP RevisionRef_RevisionCase = 2
+	// The first (OCR) revision.
+	RevisionRef_BASE_OCR_REVISION RevisionRef_RevisionCase = 3
+)
+
+// Enum value maps for RevisionRef_RevisionCase.
+var (
+	RevisionRef_RevisionCase_name = map[int32]string{
+		0: "REVISION_CASE_UNSPECIFIED",
+		1: "LATEST_HUMAN_REVIEW",
+		2: "LATEST_TIMESTAMP",
+		3: "BASE_OCR_REVISION",
+	}
+	RevisionRef_RevisionCase_value = map[string]int32{
+		"REVISION_CASE_UNSPECIFIED": 0,
+		"LATEST_HUMAN_REVIEW":       1,
+		"LATEST_TIMESTAMP":          2,
+		"BASE_OCR_REVISION":         3,
+	}
+)
+
+func (x RevisionRef_RevisionCase) Enum() *RevisionRef_RevisionCase {
+	p := new(RevisionRef_RevisionCase)
+	*p = x
+	return p
+}
+
+func (x RevisionRef_RevisionCase) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (RevisionRef_RevisionCase) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_cloud_documentai_v1beta3_document_proto_enumTypes[4].Descriptor()
+}
+
+func (RevisionRef_RevisionCase) Type() protoreflect.EnumType {
+	return &file_google_cloud_documentai_v1beta3_document_proto_enumTypes[4]
+}
+
+func (x RevisionRef_RevisionCase) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use RevisionRef_RevisionCase.Descriptor instead.
+func (RevisionRef_RevisionCase) EnumDescriptor() ([]byte, []int) {
+	return file_google_cloud_documentai_v1beta3_document_proto_rawDescGZIP(), []int{1, 0}
+}
+
 // Document represents the canonical document resource in Document AI. It is an
 // interchange format that provides insights into documents and allows for
 // collaboration between users and Document AI to iterate and optimize for
@@ -532,6 +589,108 @@ func (*Document_Uri) isDocument_Source() {}
 
 func (*Document_Content) isDocument_Source() {}
 
+// The revision reference specifies which revision on the document to read.
+type RevisionRef struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// Specifies which revision to read.
+	//
+	// Types that are assignable to Source:
+	//	*RevisionRef_RevisionCase_
+	//	*RevisionRef_RevisionId
+	//	*RevisionRef_LatestProcessorVersion
+	Source isRevisionRef_Source `protobuf_oneof:"source"`
+}
+
+func (x *RevisionRef) Reset() {
+	*x = RevisionRef{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_google_cloud_documentai_v1beta3_document_proto_msgTypes[1]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *RevisionRef) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RevisionRef) ProtoMessage() {}
+
+func (x *RevisionRef) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_documentai_v1beta3_document_proto_msgTypes[1]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RevisionRef.ProtoReflect.Descriptor instead.
+func (*RevisionRef) Descriptor() ([]byte, []int) {
+	return file_google_cloud_documentai_v1beta3_document_proto_rawDescGZIP(), []int{1}
+}
+
+func (m *RevisionRef) GetSource() isRevisionRef_Source {
+	if m != nil {
+		return m.Source
+	}
+	return nil
+}
+
+func (x *RevisionRef) GetRevisionCase() RevisionRef_RevisionCase {
+	if x, ok := x.GetSource().(*RevisionRef_RevisionCase_); ok {
+		return x.RevisionCase
+	}
+	return RevisionRef_REVISION_CASE_UNSPECIFIED
+}
+
+func (x *RevisionRef) GetRevisionId() string {
+	if x, ok := x.GetSource().(*RevisionRef_RevisionId); ok {
+		return x.RevisionId
+	}
+	return ""
+}
+
+func (x *RevisionRef) GetLatestProcessorVersion() string {
+	if x, ok := x.GetSource().(*RevisionRef_LatestProcessorVersion); ok {
+		return x.LatestProcessorVersion
+	}
+	return ""
+}
+
+type isRevisionRef_Source interface {
+	isRevisionRef_Source()
+}
+
+type RevisionRef_RevisionCase_ struct {
+	// Reads the revision by the predefined case.
+	RevisionCase RevisionRef_RevisionCase `protobuf:"varint,1,opt,name=revision_case,json=revisionCase,proto3,enum=google.cloud.documentai.v1beta3.RevisionRef_RevisionCase,oneof"`
+}
+
+type RevisionRef_RevisionId struct {
+	// Reads the revision given by the id.
+	RevisionId string `protobuf:"bytes,2,opt,name=revision_id,json=revisionId,proto3,oneof"`
+}
+
+type RevisionRef_LatestProcessorVersion struct {
+	// Reads the revision generated by the processor version.
+	// The format takes the full resource name of processor version.
+	// `projects/{project}/locations/{location}/processors/{processor}/processorVersions/{processorVersion}`
+	LatestProcessorVersion string `protobuf:"bytes,3,opt,name=latest_processor_version,json=latestProcessorVersion,proto3,oneof"`
+}
+
+func (*RevisionRef_RevisionCase_) isRevisionRef_Source() {}
+
+func (*RevisionRef_RevisionId) isRevisionRef_Source() {}
+
+func (*RevisionRef_LatestProcessorVersion) isRevisionRef_Source() {}
+
 // For a large document, sharding may be performed to produce several
 // document shards. Each document shard contains this field to detail which
 // shard it is.
@@ -553,7 +712,7 @@ type Document_ShardInfo struct {
 func (x *Document_ShardInfo) Reset() {
 	*x = Document_ShardInfo{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_google_cloud_documentai_v1beta3_document_proto_msgTypes[1]
+		mi := &file_google_cloud_documentai_v1beta3_document_proto_msgTypes[2]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -566,7 +725,7 @@ func (x *Document_ShardInfo) String() string {
 func (*Document_ShardInfo) ProtoMessage() {}
 
 func (x *Document_ShardInfo) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_documentai_v1beta3_document_proto_msgTypes[1]
+	mi := &file_google_cloud_documentai_v1beta3_document_proto_msgTypes[2]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -638,7 +797,7 @@ type Document_Style struct {
 func (x *Document_Style) Reset() {
 	*x = Document_Style{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_google_cloud_documentai_v1beta3_document_proto_msgTypes[2]
+		mi := &file_google_cloud_documentai_v1beta3_document_proto_msgTypes[3]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -651,7 +810,7 @@ func (x *Document_Style) String() string {
 func (*Document_Style) ProtoMessage() {}
 
 func (x *Document_Style) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_documentai_v1beta3_document_proto_msgTypes[2]
+	mi := &file_google_cloud_documentai_v1beta3_document_proto_msgTypes[3]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -784,7 +943,7 @@ type Document_Page struct {
 func (x *Document_Page) Reset() {
 	*x = Document_Page{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_google_cloud_documentai_v1beta3_document_proto_msgTypes[3]
+		mi := &file_google_cloud_documentai_v1beta3_document_proto_msgTypes[4]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -797,7 +956,7 @@ func (x *Document_Page) String() string {
 func (*Document_Page) ProtoMessage() {}
 
 func (x *Document_Page) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_documentai_v1beta3_document_proto_msgTypes[3]
+	mi := &file_google_cloud_documentai_v1beta3_document_proto_msgTypes[4]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -977,7 +1136,7 @@ type Document_Entity struct {
 func (x *Document_Entity) Reset() {
 	*x = Document_Entity{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_google_cloud_documentai_v1beta3_document_proto_msgTypes[4]
+		mi := &file_google_cloud_documentai_v1beta3_document_proto_msgTypes[5]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -990,7 +1149,7 @@ func (x *Document_Entity) String() string {
 func (*Document_Entity) ProtoMessage() {}
 
 func (x *Document_Entity) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_documentai_v1beta3_document_proto_msgTypes[4]
+	mi := &file_google_cloud_documentai_v1beta3_document_proto_msgTypes[5]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1101,7 +1260,7 @@ type Document_EntityRelation struct {
 func (x *Document_EntityRelation) Reset() {
 	*x = Document_EntityRelation{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_google_cloud_documentai_v1beta3_document_proto_msgTypes[5]
+		mi := &file_google_cloud_documentai_v1beta3_document_proto_msgTypes[6]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -1114,7 +1273,7 @@ func (x *Document_EntityRelation) String() string {
 func (*Document_EntityRelation) ProtoMessage() {}
 
 func (x *Document_EntityRelation) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_documentai_v1beta3_document_proto_msgTypes[5]
+	mi := &file_google_cloud_documentai_v1beta3_document_proto_msgTypes[6]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1170,7 +1329,7 @@ type Document_TextAnchor struct {
 func (x *Document_TextAnchor) Reset() {
 	*x = Document_TextAnchor{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_google_cloud_documentai_v1beta3_document_proto_msgTypes[6]
+		mi := &file_google_cloud_documentai_v1beta3_document_proto_msgTypes[7]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -1183,7 +1342,7 @@ func (x *Document_TextAnchor) String() string {
 func (*Document_TextAnchor) ProtoMessage() {}
 
 func (x *Document_TextAnchor) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_documentai_v1beta3_document_proto_msgTypes[6]
+	mi := &file_google_cloud_documentai_v1beta3_document_proto_msgTypes[7]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1229,7 +1388,7 @@ type Document_PageAnchor struct {
 func (x *Document_PageAnchor) Reset() {
 	*x = Document_PageAnchor{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_google_cloud_documentai_v1beta3_document_proto_msgTypes[7]
+		mi := &file_google_cloud_documentai_v1beta3_document_proto_msgTypes[8]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -1242,7 +1401,7 @@ func (x *Document_PageAnchor) String() string {
 func (*Document_PageAnchor) ProtoMessage() {}
 
 func (x *Document_PageAnchor) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_documentai_v1beta3_document_proto_msgTypes[7]
+	mi := &file_google_cloud_documentai_v1beta3_document_proto_msgTypes[8]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1290,7 +1449,7 @@ type Document_Provenance struct {
 func (x *Document_Provenance) Reset() {
 	*x = Document_Provenance{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_google_cloud_documentai_v1beta3_document_proto_msgTypes[8]
+		mi := &file_google_cloud_documentai_v1beta3_document_proto_msgTypes[9]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -1303,7 +1462,7 @@ func (x *Document_Provenance) String() string {
 func (*Document_Provenance) ProtoMessage() {}
 
 func (x *Document_Provenance) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_documentai_v1beta3_document_proto_msgTypes[8]
+	mi := &file_google_cloud_documentai_v1beta3_document_proto_msgTypes[9]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1384,7 +1543,7 @@ type Document_Revision struct {
 func (x *Document_Revision) Reset() {
 	*x = Document_Revision{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_google_cloud_documentai_v1beta3_document_proto_msgTypes[9]
+		mi := &file_google_cloud_documentai_v1beta3_document_proto_msgTypes[10]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -1397,7 +1556,7 @@ func (x *Document_Revision) String() string {
 func (*Document_Revision) ProtoMessage() {}
 
 func (x *Document_Revision) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_documentai_v1beta3_document_proto_msgTypes[9]
+	mi := &file_google_cloud_documentai_v1beta3_document_proto_msgTypes[10]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1514,7 +1673,7 @@ type Document_TextChange struct {
 func (x *Document_TextChange) Reset() {
 	*x = Document_TextChange{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_google_cloud_documentai_v1beta3_document_proto_msgTypes[10]
+		mi := &file_google_cloud_documentai_v1beta3_document_proto_msgTypes[11]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -1527,7 +1686,7 @@ func (x *Document_TextChange) String() string {
 func (*Document_TextChange) ProtoMessage() {}
 
 func (x *Document_TextChange) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_documentai_v1beta3_document_proto_msgTypes[10]
+	mi := &file_google_cloud_documentai_v1beta3_document_proto_msgTypes[11]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1581,7 +1740,7 @@ type Document_Style_FontSize struct {
 func (x *Document_Style_FontSize) Reset() {
 	*x = Document_Style_FontSize{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_google_cloud_documentai_v1beta3_document_proto_msgTypes[11]
+		mi := &file_google_cloud_documentai_v1beta3_document_proto_msgTypes[12]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -1594,7 +1753,7 @@ func (x *Document_Style_FontSize) String() string {
 func (*Document_Style_FontSize) ProtoMessage() {}
 
 func (x *Document_Style_FontSize) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_documentai_v1beta3_document_proto_msgTypes[11]
+	mi := &file_google_cloud_documentai_v1beta3_document_proto_msgTypes[12]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1641,7 +1800,7 @@ type Document_Page_Dimension struct {
 func (x *Document_Page_Dimension) Reset() {
 	*x = Document_Page_Dimension{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_google_cloud_documentai_v1beta3_document_proto_msgTypes[12]
+		mi := &file_google_cloud_documentai_v1beta3_document_proto_msgTypes[13]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -1654,7 +1813,7 @@ func (x *Document_Page_Dimension) String() string {
 func (*Document_Page_Dimension) ProtoMessage() {}
 
 func (x *Document_Page_Dimension) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_documentai_v1beta3_document_proto_msgTypes[12]
+	mi := &file_google_cloud_documentai_v1beta3_document_proto_msgTypes[13]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1712,7 +1871,7 @@ type Document_Page_Image struct {
 func (x *Document_Page_Image) Reset() {
 	*x = Document_Page_Image{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_google_cloud_documentai_v1beta3_document_proto_msgTypes[13]
+		mi := &file_google_cloud_documentai_v1beta3_document_proto_msgTypes[14]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -1725,7 +1884,7 @@ func (x *Document_Page_Image) String() string {
 func (*Document_Page_Image) ProtoMessage() {}
 
 func (x *Document_Page_Image) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_documentai_v1beta3_document_proto_msgTypes[13]
+	mi := &file_google_cloud_documentai_v1beta3_document_proto_msgTypes[14]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1792,7 +1951,7 @@ type Document_Page_Matrix struct {
 func (x *Document_Page_Matrix) Reset() {
 	*x = Document_Page_Matrix{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_google_cloud_documentai_v1beta3_document_proto_msgTypes[14]
+		mi := &file_google_cloud_documentai_v1beta3_document_proto_msgTypes[15]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -1805,7 +1964,7 @@ func (x *Document_Page_Matrix) String() string {
 func (*Document_Page_Matrix) ProtoMessage() {}
 
 func (x *Document_Page_Matrix) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_documentai_v1beta3_document_proto_msgTypes[14]
+	mi := &file_google_cloud_documentai_v1beta3_document_proto_msgTypes[15]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1875,7 +2034,7 @@ type Document_Page_Layout struct {
 func (x *Document_Page_Layout) Reset() {
 	*x = Document_Page_Layout{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_google_cloud_documentai_v1beta3_document_proto_msgTypes[15]
+		mi := &file_google_cloud_documentai_v1beta3_document_proto_msgTypes[16]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -1888,7 +2047,7 @@ func (x *Document_Page_Layout) String() string {
 func (*Document_Page_Layout) ProtoMessage() {}
 
 func (x *Document_Page_Layout) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_documentai_v1beta3_document_proto_msgTypes[15]
+	mi := &file_google_cloud_documentai_v1beta3_document_proto_msgTypes[16]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1953,7 +2112,7 @@ type Document_Page_Block struct {
 func (x *Document_Page_Block) Reset() {
 	*x = Document_Page_Block{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_google_cloud_documentai_v1beta3_document_proto_msgTypes[16]
+		mi := &file_google_cloud_documentai_v1beta3_document_proto_msgTypes[17]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -1966,7 +2125,7 @@ func (x *Document_Page_Block) String() string {
 func (*Document_Page_Block) ProtoMessage() {}
 
 func (x *Document_Page_Block) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_documentai_v1beta3_document_proto_msgTypes[16]
+	mi := &file_google_cloud_documentai_v1beta3_document_proto_msgTypes[17]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2024,7 +2183,7 @@ type Document_Page_Paragraph struct {
 func (x *Document_Page_Paragraph) Reset() {
 	*x = Document_Page_Paragraph{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_google_cloud_documentai_v1beta3_document_proto_msgTypes[17]
+		mi := &file_google_cloud_documentai_v1beta3_document_proto_msgTypes[18]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -2037,7 +2196,7 @@ func (x *Document_Page_Paragraph) String() string {
 func (*Document_Page_Paragraph) ProtoMessage() {}
 
 func (x *Document_Page_Paragraph) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_documentai_v1beta3_document_proto_msgTypes[17]
+	mi := &file_google_cloud_documentai_v1beta3_document_proto_msgTypes[18]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2096,7 +2255,7 @@ type Document_Page_Line struct {
 func (x *Document_Page_Line) Reset() {
 	*x = Document_Page_Line{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_google_cloud_documentai_v1beta3_document_proto_msgTypes[18]
+		mi := &file_google_cloud_documentai_v1beta3_document_proto_msgTypes[19]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -2109,7 +2268,7 @@ func (x *Document_Page_Line) String() string {
 func (*Document_Page_Line) ProtoMessage() {}
 
 func (x *Document_Page_Line) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_documentai_v1beta3_document_proto_msgTypes[18]
+	mi := &file_google_cloud_documentai_v1beta3_document_proto_msgTypes[19]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2172,7 +2331,7 @@ type Document_Page_Token struct {
 func (x *Document_Page_Token) Reset() {
 	*x = Document_Page_Token{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_google_cloud_documentai_v1beta3_document_proto_msgTypes[19]
+		mi := &file_google_cloud_documentai_v1beta3_document_proto_msgTypes[20]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -2185,7 +2344,7 @@ func (x *Document_Page_Token) String() string {
 func (*Document_Page_Token) ProtoMessage() {}
 
 func (x *Document_Page_Token) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_documentai_v1beta3_document_proto_msgTypes[19]
+	mi := &file_google_cloud_documentai_v1beta3_document_proto_msgTypes[20]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2253,7 +2412,7 @@ type Document_Page_Symbol struct {
 func (x *Document_Page_Symbol) Reset() {
 	*x = Document_Page_Symbol{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_google_cloud_documentai_v1beta3_document_proto_msgTypes[20]
+		mi := &file_google_cloud_documentai_v1beta3_document_proto_msgTypes[21]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -2266,7 +2425,7 @@ func (x *Document_Page_Symbol) String() string {
 func (*Document_Page_Symbol) ProtoMessage() {}
 
 func (x *Document_Page_Symbol) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_documentai_v1beta3_document_proto_msgTypes[20]
+	mi := &file_google_cloud_documentai_v1beta3_document_proto_msgTypes[21]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2316,7 +2475,7 @@ type Document_Page_VisualElement struct {
 func (x *Document_Page_VisualElement) Reset() {
 	*x = Document_Page_VisualElement{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_google_cloud_documentai_v1beta3_document_proto_msgTypes[21]
+		mi := &file_google_cloud_documentai_v1beta3_document_proto_msgTypes[22]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -2329,7 +2488,7 @@ func (x *Document_Page_VisualElement) String() string {
 func (*Document_Page_VisualElement) ProtoMessage() {}
 
 func (x *Document_Page_VisualElement) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_documentai_v1beta3_document_proto_msgTypes[21]
+	mi := &file_google_cloud_documentai_v1beta3_document_proto_msgTypes[22]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2390,7 +2549,7 @@ type Document_Page_Table struct {
 func (x *Document_Page_Table) Reset() {
 	*x = Document_Page_Table{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_google_cloud_documentai_v1beta3_document_proto_msgTypes[22]
+		mi := &file_google_cloud_documentai_v1beta3_document_proto_msgTypes[23]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -2403,7 +2562,7 @@ func (x *Document_Page_Table) String() string {
 func (*Document_Page_Table) ProtoMessage() {}
 
 func (x *Document_Page_Table) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_documentai_v1beta3_document_proto_msgTypes[22]
+	mi := &file_google_cloud_documentai_v1beta3_document_proto_msgTypes[23]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2495,7 +2654,7 @@ type Document_Page_FormField struct {
 func (x *Document_Page_FormField) Reset() {
 	*x = Document_Page_FormField{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_google_cloud_documentai_v1beta3_document_proto_msgTypes[23]
+		mi := &file_google_cloud_documentai_v1beta3_document_proto_msgTypes[24]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -2508,7 +2667,7 @@ func (x *Document_Page_FormField) String() string {
 func (*Document_Page_FormField) ProtoMessage() {}
 
 func (x *Document_Page_FormField) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_documentai_v1beta3_document_proto_msgTypes[23]
+	mi := &file_google_cloud_documentai_v1beta3_document_proto_msgTypes[24]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2597,7 +2756,7 @@ type Document_Page_DetectedBarcode struct {
 func (x *Document_Page_DetectedBarcode) Reset() {
 	*x = Document_Page_DetectedBarcode{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_google_cloud_documentai_v1beta3_document_proto_msgTypes[24]
+		mi := &file_google_cloud_documentai_v1beta3_document_proto_msgTypes[25]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -2610,7 +2769,7 @@ func (x *Document_Page_DetectedBarcode) String() string {
 func (*Document_Page_DetectedBarcode) ProtoMessage() {}
 
 func (x *Document_Page_DetectedBarcode) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_documentai_v1beta3_document_proto_msgTypes[24]
+	mi := &file_google_cloud_documentai_v1beta3_document_proto_msgTypes[25]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2657,7 +2816,7 @@ type Document_Page_DetectedLanguage struct {
 func (x *Document_Page_DetectedLanguage) Reset() {
 	*x = Document_Page_DetectedLanguage{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_google_cloud_documentai_v1beta3_document_proto_msgTypes[25]
+		mi := &file_google_cloud_documentai_v1beta3_document_proto_msgTypes[26]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -2670,7 +2829,7 @@ func (x *Document_Page_DetectedLanguage) String() string {
 func (*Document_Page_DetectedLanguage) ProtoMessage() {}
 
 func (x *Document_Page_DetectedLanguage) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_documentai_v1beta3_document_proto_msgTypes[25]
+	mi := &file_google_cloud_documentai_v1beta3_document_proto_msgTypes[26]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2715,7 +2874,7 @@ type Document_Page_ImageQualityScores struct {
 func (x *Document_Page_ImageQualityScores) Reset() {
 	*x = Document_Page_ImageQualityScores{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_google_cloud_documentai_v1beta3_document_proto_msgTypes[26]
+		mi := &file_google_cloud_documentai_v1beta3_document_proto_msgTypes[27]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -2728,7 +2887,7 @@ func (x *Document_Page_ImageQualityScores) String() string {
 func (*Document_Page_ImageQualityScores) ProtoMessage() {}
 
 func (x *Document_Page_ImageQualityScores) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_documentai_v1beta3_document_proto_msgTypes[26]
+	mi := &file_google_cloud_documentai_v1beta3_document_proto_msgTypes[27]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2772,7 +2931,7 @@ type Document_Page_Token_DetectedBreak struct {
 func (x *Document_Page_Token_DetectedBreak) Reset() {
 	*x = Document_Page_Token_DetectedBreak{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_google_cloud_documentai_v1beta3_document_proto_msgTypes[27]
+		mi := &file_google_cloud_documentai_v1beta3_document_proto_msgTypes[28]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -2785,7 +2944,7 @@ func (x *Document_Page_Token_DetectedBreak) String() string {
 func (*Document_Page_Token_DetectedBreak) ProtoMessage() {}
 
 func (x *Document_Page_Token_DetectedBreak) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_documentai_v1beta3_document_proto_msgTypes[27]
+	mi := &file_google_cloud_documentai_v1beta3_document_proto_msgTypes[28]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2854,7 +3013,7 @@ type Document_Page_Token_StyleInfo struct {
 func (x *Document_Page_Token_StyleInfo) Reset() {
 	*x = Document_Page_Token_StyleInfo{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_google_cloud_documentai_v1beta3_document_proto_msgTypes[28]
+		mi := &file_google_cloud_documentai_v1beta3_document_proto_msgTypes[29]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -2867,7 +3026,7 @@ func (x *Document_Page_Token_StyleInfo) String() string {
 func (*Document_Page_Token_StyleInfo) ProtoMessage() {}
 
 func (x *Document_Page_Token_StyleInfo) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_documentai_v1beta3_document_proto_msgTypes[28]
+	mi := &file_google_cloud_documentai_v1beta3_document_proto_msgTypes[29]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3001,7 +3160,7 @@ type Document_Page_Table_TableRow struct {
 func (x *Document_Page_Table_TableRow) Reset() {
 	*x = Document_Page_Table_TableRow{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_google_cloud_documentai_v1beta3_document_proto_msgTypes[29]
+		mi := &file_google_cloud_documentai_v1beta3_document_proto_msgTypes[30]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -3014,7 +3173,7 @@ func (x *Document_Page_Table_TableRow) String() string {
 func (*Document_Page_Table_TableRow) ProtoMessage() {}
 
 func (x *Document_Page_Table_TableRow) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_documentai_v1beta3_document_proto_msgTypes[29]
+	mi := &file_google_cloud_documentai_v1beta3_document_proto_msgTypes[30]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3057,7 +3216,7 @@ type Document_Page_Table_TableCell struct {
 func (x *Document_Page_Table_TableCell) Reset() {
 	*x = Document_Page_Table_TableCell{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_google_cloud_documentai_v1beta3_document_proto_msgTypes[30]
+		mi := &file_google_cloud_documentai_v1beta3_document_proto_msgTypes[31]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -3070,7 +3229,7 @@ func (x *Document_Page_Table_TableCell) String() string {
 func (*Document_Page_Table_TableCell) ProtoMessage() {}
 
 func (x *Document_Page_Table_TableCell) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_documentai_v1beta3_document_proto_msgTypes[30]
+	mi := &file_google_cloud_documentai_v1beta3_document_proto_msgTypes[31]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3139,7 +3298,7 @@ type Document_Page_ImageQualityScores_DetectedDefect struct {
 func (x *Document_Page_ImageQualityScores_DetectedDefect) Reset() {
 	*x = Document_Page_ImageQualityScores_DetectedDefect{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_google_cloud_documentai_v1beta3_document_proto_msgTypes[31]
+		mi := &file_google_cloud_documentai_v1beta3_document_proto_msgTypes[32]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -3152,7 +3311,7 @@ func (x *Document_Page_ImageQualityScores_DetectedDefect) String() string {
 func (*Document_Page_ImageQualityScores_DetectedDefect) ProtoMessage() {}
 
 func (x *Document_Page_ImageQualityScores_DetectedDefect) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_documentai_v1beta3_document_proto_msgTypes[31]
+	mi := &file_google_cloud_documentai_v1beta3_document_proto_msgTypes[32]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3219,7 +3378,7 @@ type Document_Entity_NormalizedValue struct {
 func (x *Document_Entity_NormalizedValue) Reset() {
 	*x = Document_Entity_NormalizedValue{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_google_cloud_documentai_v1beta3_document_proto_msgTypes[32]
+		mi := &file_google_cloud_documentai_v1beta3_document_proto_msgTypes[33]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -3232,7 +3391,7 @@ func (x *Document_Entity_NormalizedValue) String() string {
 func (*Document_Entity_NormalizedValue) ProtoMessage() {}
 
 func (x *Document_Entity_NormalizedValue) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_documentai_v1beta3_document_proto_msgTypes[32]
+	mi := &file_google_cloud_documentai_v1beta3_document_proto_msgTypes[33]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3399,7 +3558,7 @@ type Document_TextAnchor_TextSegment struct {
 func (x *Document_TextAnchor_TextSegment) Reset() {
 	*x = Document_TextAnchor_TextSegment{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_google_cloud_documentai_v1beta3_document_proto_msgTypes[33]
+		mi := &file_google_cloud_documentai_v1beta3_document_proto_msgTypes[34]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -3412,7 +3571,7 @@ func (x *Document_TextAnchor_TextSegment) String() string {
 func (*Document_TextAnchor_TextSegment) ProtoMessage() {}
 
 func (x *Document_TextAnchor_TextSegment) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_documentai_v1beta3_document_proto_msgTypes[33]
+	mi := &file_google_cloud_documentai_v1beta3_document_proto_msgTypes[34]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3475,7 +3634,7 @@ type Document_PageAnchor_PageRef struct {
 func (x *Document_PageAnchor_PageRef) Reset() {
 	*x = Document_PageAnchor_PageRef{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_google_cloud_documentai_v1beta3_document_proto_msgTypes[34]
+		mi := &file_google_cloud_documentai_v1beta3_document_proto_msgTypes[35]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -3488,7 +3647,7 @@ func (x *Document_PageAnchor_PageRef) String() string {
 func (*Document_PageAnchor_PageRef) ProtoMessage() {}
 
 func (x *Document_PageAnchor_PageRef) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_documentai_v1beta3_document_proto_msgTypes[34]
+	mi := &file_google_cloud_documentai_v1beta3_document_proto_msgTypes[35]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3561,7 +3720,7 @@ type Document_Provenance_Parent struct {
 func (x *Document_Provenance_Parent) Reset() {
 	*x = Document_Provenance_Parent{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_google_cloud_documentai_v1beta3_document_proto_msgTypes[35]
+		mi := &file_google_cloud_documentai_v1beta3_document_proto_msgTypes[36]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -3574,7 +3733,7 @@ func (x *Document_Provenance_Parent) String() string {
 func (*Document_Provenance_Parent) ProtoMessage() {}
 
 func (x *Document_Provenance_Parent) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_documentai_v1beta3_document_proto_msgTypes[35]
+	mi := &file_google_cloud_documentai_v1beta3_document_proto_msgTypes[36]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3628,7 +3787,7 @@ type Document_Revision_HumanReview struct {
 func (x *Document_Revision_HumanReview) Reset() {
 	*x = Document_Revision_HumanReview{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_google_cloud_documentai_v1beta3_document_proto_msgTypes[36]
+		mi := &file_google_cloud_documentai_v1beta3_document_proto_msgTypes[37]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -3641,7 +3800,7 @@ func (x *Document_Revision_HumanReview) String() string {
 func (*Document_Revision_HumanReview) ProtoMessage() {}
 
 func (x *Document_Revision_HumanReview) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_documentai_v1beta3_document_proto_msgTypes[36]
+	mi := &file_google_cloud_documentai_v1beta3_document_proto_msgTypes[37]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4393,6 +4552,27 @@ var file_google_cloud_documentai_v1beta3_document_proto_rawDesc = []byte{
 	0x6e, 0x74, 0x61, 0x69, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x33, 0x2e, 0x44, 0x6f, 0x63,
 	0x75, 0x6d, 0x65, 0x6e, 0x74, 0x2e, 0x50, 0x72, 0x6f, 0x76, 0x65, 0x6e, 0x61, 0x6e, 0x63, 0x65,
 	0x42, 0x02, 0x18, 0x01, 0x52, 0x0a, 0x70, 0x72, 0x6f, 0x76, 0x65, 0x6e, 0x61, 0x6e, 0x63, 0x65,
+	0x42, 0x08, 0x0a, 0x06, 0x73, 0x6f, 0x75, 0x72, 0x63, 0x65, 0x22, 0xcd, 0x02, 0x0a, 0x0b, 0x52,
+	0x65, 0x76, 0x69, 0x73, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x66, 0x12, 0x60, 0x0a, 0x0d, 0x72, 0x65,
+	0x76, 0x69, 0x73, 0x69, 0x6f, 0x6e, 0x5f, 0x63, 0x61, 0x73, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28,
+	0x0e, 0x32, 0x39, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x63, 0x6c, 0x6f, 0x75, 0x64,
+	0x2e, 0x64, 0x6f, 0x63, 0x75, 0x6d, 0x65, 0x6e, 0x74, 0x61, 0x69, 0x2e, 0x76, 0x31, 0x62, 0x65,
+	0x74, 0x61, 0x33, 0x2e, 0x52, 0x65, 0x76, 0x69, 0x73, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x66, 0x2e,
+	0x52, 0x65, 0x76, 0x69, 0x73, 0x69, 0x6f, 0x6e, 0x43, 0x61, 0x73, 0x65, 0x48, 0x00, 0x52, 0x0c,
+	0x72, 0x65, 0x76, 0x69, 0x73, 0x69, 0x6f, 0x6e, 0x43, 0x61, 0x73, 0x65, 0x12, 0x21, 0x0a, 0x0b,
+	0x72, 0x65, 0x76, 0x69, 0x73, 0x69, 0x6f, 0x6e, 0x5f, 0x69, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28,
+	0x09, 0x48, 0x00, 0x52, 0x0a, 0x72, 0x65, 0x76, 0x69, 0x73, 0x69, 0x6f, 0x6e, 0x49, 0x64, 0x12,
+	0x3a, 0x0a, 0x18, 0x6c, 0x61, 0x74, 0x65, 0x73, 0x74, 0x5f, 0x70, 0x72, 0x6f, 0x63, 0x65, 0x73,
+	0x73, 0x6f, 0x72, 0x5f, 0x76, 0x65, 0x72, 0x73, 0x69, 0x6f, 0x6e, 0x18, 0x03, 0x20, 0x01, 0x28,
+	0x09, 0x48, 0x00, 0x52, 0x16, 0x6c, 0x61, 0x74, 0x65, 0x73, 0x74, 0x50, 0x72, 0x6f, 0x63, 0x65,
+	0x73, 0x73, 0x6f, 0x72, 0x56, 0x65, 0x72, 0x73, 0x69, 0x6f, 0x6e, 0x22, 0x73, 0x0a, 0x0c, 0x52,
+	0x65, 0x76, 0x69, 0x73, 0x69, 0x6f, 0x6e, 0x43, 0x61, 0x73, 0x65, 0x12, 0x1d, 0x0a, 0x19, 0x52,
+	0x45, 0x56, 0x49, 0x53, 0x49, 0x4f, 0x4e, 0x5f, 0x43, 0x41, 0x53, 0x45, 0x5f, 0x55, 0x4e, 0x53,
+	0x50, 0x45, 0x43, 0x49, 0x46, 0x49, 0x45, 0x44, 0x10, 0x00, 0x12, 0x17, 0x0a, 0x13, 0x4c, 0x41,
+	0x54, 0x45, 0x53, 0x54, 0x5f, 0x48, 0x55, 0x4d, 0x41, 0x4e, 0x5f, 0x52, 0x45, 0x56, 0x49, 0x45,
+	0x57, 0x10, 0x01, 0x12, 0x14, 0x0a, 0x10, 0x4c, 0x41, 0x54, 0x45, 0x53, 0x54, 0x5f, 0x54, 0x49,
+	0x4d, 0x45, 0x53, 0x54, 0x41, 0x4d, 0x50, 0x10, 0x02, 0x12, 0x15, 0x0a, 0x11, 0x42, 0x41, 0x53,
+	0x45, 0x5f, 0x4f, 0x43, 0x52, 0x5f, 0x52, 0x45, 0x56, 0x49, 0x53, 0x49, 0x4f, 0x4e, 0x10, 0x03,
 	0x42, 0x08, 0x0a, 0x06, 0x73, 0x6f, 0x75, 0x72, 0x63, 0x65, 0x42, 0xe4, 0x01, 0x0a, 0x23, 0x63,
 	0x6f, 0x6d, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e,
 	0x64, 0x6f, 0x63, 0x75, 0x6d, 0x65, 0x6e, 0x74, 0x61, 0x69, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74,
@@ -4423,153 +4603,156 @@ func file_google_cloud_documentai_v1beta3_document_proto_rawDescGZIP() []byte {
 	return file_google_cloud_documentai_v1beta3_document_proto_rawDescData
 }
 
-var file_google_cloud_documentai_v1beta3_document_proto_enumTypes = make([]protoimpl.EnumInfo, 4)
-var file_google_cloud_documentai_v1beta3_document_proto_msgTypes = make([]protoimpl.MessageInfo, 37)
+var file_google_cloud_documentai_v1beta3_document_proto_enumTypes = make([]protoimpl.EnumInfo, 5)
+var file_google_cloud_documentai_v1beta3_document_proto_msgTypes = make([]protoimpl.MessageInfo, 38)
 var file_google_cloud_documentai_v1beta3_document_proto_goTypes = []interface{}{
 	(Document_Page_Layout_Orientation)(0),                   // 0: google.cloud.documentai.v1beta3.Document.Page.Layout.Orientation
 	(Document_Page_Token_DetectedBreak_Type)(0),             // 1: google.cloud.documentai.v1beta3.Document.Page.Token.DetectedBreak.Type
 	(Document_PageAnchor_PageRef_LayoutType)(0),             // 2: google.cloud.documentai.v1beta3.Document.PageAnchor.PageRef.LayoutType
 	(Document_Provenance_OperationType)(0),                  // 3: google.cloud.documentai.v1beta3.Document.Provenance.OperationType
-	(*Document)(nil),                                        // 4: google.cloud.documentai.v1beta3.Document
-	(*Document_ShardInfo)(nil),                              // 5: google.cloud.documentai.v1beta3.Document.ShardInfo
-	(*Document_Style)(nil),                                  // 6: google.cloud.documentai.v1beta3.Document.Style
-	(*Document_Page)(nil),                                   // 7: google.cloud.documentai.v1beta3.Document.Page
-	(*Document_Entity)(nil),                                 // 8: google.cloud.documentai.v1beta3.Document.Entity
-	(*Document_EntityRelation)(nil),                         // 9: google.cloud.documentai.v1beta3.Document.EntityRelation
-	(*Document_TextAnchor)(nil),                             // 10: google.cloud.documentai.v1beta3.Document.TextAnchor
-	(*Document_PageAnchor)(nil),                             // 11: google.cloud.documentai.v1beta3.Document.PageAnchor
-	(*Document_Provenance)(nil),                             // 12: google.cloud.documentai.v1beta3.Document.Provenance
-	(*Document_Revision)(nil),                               // 13: google.cloud.documentai.v1beta3.Document.Revision
-	(*Document_TextChange)(nil),                             // 14: google.cloud.documentai.v1beta3.Document.TextChange
-	(*Document_Style_FontSize)(nil),                         // 15: google.cloud.documentai.v1beta3.Document.Style.FontSize
-	(*Document_Page_Dimension)(nil),                         // 16: google.cloud.documentai.v1beta3.Document.Page.Dimension
-	(*Document_Page_Image)(nil),                             // 17: google.cloud.documentai.v1beta3.Document.Page.Image
-	(*Document_Page_Matrix)(nil),                            // 18: google.cloud.documentai.v1beta3.Document.Page.Matrix
-	(*Document_Page_Layout)(nil),                            // 19: google.cloud.documentai.v1beta3.Document.Page.Layout
-	(*Document_Page_Block)(nil),                             // 20: google.cloud.documentai.v1beta3.Document.Page.Block
-	(*Document_Page_Paragraph)(nil),                         // 21: google.cloud.documentai.v1beta3.Document.Page.Paragraph
-	(*Document_Page_Line)(nil),                              // 22: google.cloud.documentai.v1beta3.Document.Page.Line
-	(*Document_Page_Token)(nil),                             // 23: google.cloud.documentai.v1beta3.Document.Page.Token
-	(*Document_Page_Symbol)(nil),                            // 24: google.cloud.documentai.v1beta3.Document.Page.Symbol
-	(*Document_Page_VisualElement)(nil),                     // 25: google.cloud.documentai.v1beta3.Document.Page.VisualElement
-	(*Document_Page_Table)(nil),                             // 26: google.cloud.documentai.v1beta3.Document.Page.Table
-	(*Document_Page_FormField)(nil),                         // 27: google.cloud.documentai.v1beta3.Document.Page.FormField
-	(*Document_Page_DetectedBarcode)(nil),                   // 28: google.cloud.documentai.v1beta3.Document.Page.DetectedBarcode
-	(*Document_Page_DetectedLanguage)(nil),                  // 29: google.cloud.documentai.v1beta3.Document.Page.DetectedLanguage
-	(*Document_Page_ImageQualityScores)(nil),                // 30: google.cloud.documentai.v1beta3.Document.Page.ImageQualityScores
-	(*Document_Page_Token_DetectedBreak)(nil),               // 31: google.cloud.documentai.v1beta3.Document.Page.Token.DetectedBreak
-	(*Document_Page_Token_StyleInfo)(nil),                   // 32: google.cloud.documentai.v1beta3.Document.Page.Token.StyleInfo
-	(*Document_Page_Table_TableRow)(nil),                    // 33: google.cloud.documentai.v1beta3.Document.Page.Table.TableRow
-	(*Document_Page_Table_TableCell)(nil),                   // 34: google.cloud.documentai.v1beta3.Document.Page.Table.TableCell
-	(*Document_Page_ImageQualityScores_DetectedDefect)(nil), // 35: google.cloud.documentai.v1beta3.Document.Page.ImageQualityScores.DetectedDefect
-	(*Document_Entity_NormalizedValue)(nil),                 // 36: google.cloud.documentai.v1beta3.Document.Entity.NormalizedValue
-	(*Document_TextAnchor_TextSegment)(nil),                 // 37: google.cloud.documentai.v1beta3.Document.TextAnchor.TextSegment
-	(*Document_PageAnchor_PageRef)(nil),                     // 38: google.cloud.documentai.v1beta3.Document.PageAnchor.PageRef
-	(*Document_Provenance_Parent)(nil),                      // 39: google.cloud.documentai.v1beta3.Document.Provenance.Parent
-	(*Document_Revision_HumanReview)(nil),                   // 40: google.cloud.documentai.v1beta3.Document.Revision.HumanReview
-	(*status.Status)(nil),                                   // 41: google.rpc.Status
-	(*color.Color)(nil),                                     // 42: google.type.Color
-	(*timestamppb.Timestamp)(nil),                           // 43: google.protobuf.Timestamp
-	(*BoundingPoly)(nil),                                    // 44: google.cloud.documentai.v1beta3.BoundingPoly
-	(*Barcode)(nil),                                         // 45: google.cloud.documentai.v1beta3.Barcode
-	(*money.Money)(nil),                                     // 46: google.type.Money
-	(*date.Date)(nil),                                       // 47: google.type.Date
-	(*datetime.DateTime)(nil),                               // 48: google.type.DateTime
-	(*postaladdress.PostalAddress)(nil),                     // 49: google.type.PostalAddress
+	(RevisionRef_RevisionCase)(0),                           // 4: google.cloud.documentai.v1beta3.RevisionRef.RevisionCase
+	(*Document)(nil),                                        // 5: google.cloud.documentai.v1beta3.Document
+	(*RevisionRef)(nil),                                     // 6: google.cloud.documentai.v1beta3.RevisionRef
+	(*Document_ShardInfo)(nil),                              // 7: google.cloud.documentai.v1beta3.Document.ShardInfo
+	(*Document_Style)(nil),                                  // 8: google.cloud.documentai.v1beta3.Document.Style
+	(*Document_Page)(nil),                                   // 9: google.cloud.documentai.v1beta3.Document.Page
+	(*Document_Entity)(nil),                                 // 10: google.cloud.documentai.v1beta3.Document.Entity
+	(*Document_EntityRelation)(nil),                         // 11: google.cloud.documentai.v1beta3.Document.EntityRelation
+	(*Document_TextAnchor)(nil),                             // 12: google.cloud.documentai.v1beta3.Document.TextAnchor
+	(*Document_PageAnchor)(nil),                             // 13: google.cloud.documentai.v1beta3.Document.PageAnchor
+	(*Document_Provenance)(nil),                             // 14: google.cloud.documentai.v1beta3.Document.Provenance
+	(*Document_Revision)(nil),                               // 15: google.cloud.documentai.v1beta3.Document.Revision
+	(*Document_TextChange)(nil),                             // 16: google.cloud.documentai.v1beta3.Document.TextChange
+	(*Document_Style_FontSize)(nil),                         // 17: google.cloud.documentai.v1beta3.Document.Style.FontSize
+	(*Document_Page_Dimension)(nil),                         // 18: google.cloud.documentai.v1beta3.Document.Page.Dimension
+	(*Document_Page_Image)(nil),                             // 19: google.cloud.documentai.v1beta3.Document.Page.Image
+	(*Document_Page_Matrix)(nil),                            // 20: google.cloud.documentai.v1beta3.Document.Page.Matrix
+	(*Document_Page_Layout)(nil),                            // 21: google.cloud.documentai.v1beta3.Document.Page.Layout
+	(*Document_Page_Block)(nil),                             // 22: google.cloud.documentai.v1beta3.Document.Page.Block
+	(*Document_Page_Paragraph)(nil),                         // 23: google.cloud.documentai.v1beta3.Document.Page.Paragraph
+	(*Document_Page_Line)(nil),                              // 24: google.cloud.documentai.v1beta3.Document.Page.Line
+	(*Document_Page_Token)(nil),                             // 25: google.cloud.documentai.v1beta3.Document.Page.Token
+	(*Document_Page_Symbol)(nil),                            // 26: google.cloud.documentai.v1beta3.Document.Page.Symbol
+	(*Document_Page_VisualElement)(nil),                     // 27: google.cloud.documentai.v1beta3.Document.Page.VisualElement
+	(*Document_Page_Table)(nil),                             // 28: google.cloud.documentai.v1beta3.Document.Page.Table
+	(*Document_Page_FormField)(nil),                         // 29: google.cloud.documentai.v1beta3.Document.Page.FormField
+	(*Document_Page_DetectedBarcode)(nil),                   // 30: google.cloud.documentai.v1beta3.Document.Page.DetectedBarcode
+	(*Document_Page_DetectedLanguage)(nil),                  // 31: google.cloud.documentai.v1beta3.Document.Page.DetectedLanguage
+	(*Document_Page_ImageQualityScores)(nil),                // 32: google.cloud.documentai.v1beta3.Document.Page.ImageQualityScores
+	(*Document_Page_Token_DetectedBreak)(nil),               // 33: google.cloud.documentai.v1beta3.Document.Page.Token.DetectedBreak
+	(*Document_Page_Token_StyleInfo)(nil),                   // 34: google.cloud.documentai.v1beta3.Document.Page.Token.StyleInfo
+	(*Document_Page_Table_TableRow)(nil),                    // 35: google.cloud.documentai.v1beta3.Document.Page.Table.TableRow
+	(*Document_Page_Table_TableCell)(nil),                   // 36: google.cloud.documentai.v1beta3.Document.Page.Table.TableCell
+	(*Document_Page_ImageQualityScores_DetectedDefect)(nil), // 37: google.cloud.documentai.v1beta3.Document.Page.ImageQualityScores.DetectedDefect
+	(*Document_Entity_NormalizedValue)(nil),                 // 38: google.cloud.documentai.v1beta3.Document.Entity.NormalizedValue
+	(*Document_TextAnchor_TextSegment)(nil),                 // 39: google.cloud.documentai.v1beta3.Document.TextAnchor.TextSegment
+	(*Document_PageAnchor_PageRef)(nil),                     // 40: google.cloud.documentai.v1beta3.Document.PageAnchor.PageRef
+	(*Document_Provenance_Parent)(nil),                      // 41: google.cloud.documentai.v1beta3.Document.Provenance.Parent
+	(*Document_Revision_HumanReview)(nil),                   // 42: google.cloud.documentai.v1beta3.Document.Revision.HumanReview
+	(*status.Status)(nil),                                   // 43: google.rpc.Status
+	(*color.Color)(nil),                                     // 44: google.type.Color
+	(*timestamppb.Timestamp)(nil),                           // 45: google.protobuf.Timestamp
+	(*BoundingPoly)(nil),                                    // 46: google.cloud.documentai.v1beta3.BoundingPoly
+	(*Barcode)(nil),                                         // 47: google.cloud.documentai.v1beta3.Barcode
+	(*money.Money)(nil),                                     // 48: google.type.Money
+	(*date.Date)(nil),                                       // 49: google.type.Date
+	(*datetime.DateTime)(nil),                               // 50: google.type.DateTime
+	(*postaladdress.PostalAddress)(nil),                     // 51: google.type.PostalAddress
 }
 var file_google_cloud_documentai_v1beta3_document_proto_depIdxs = []int32{
-	6,  // 0: google.cloud.documentai.v1beta3.Document.text_styles:type_name -> google.cloud.documentai.v1beta3.Document.Style
-	7,  // 1: google.cloud.documentai.v1beta3.Document.pages:type_name -> google.cloud.documentai.v1beta3.Document.Page
-	8,  // 2: google.cloud.documentai.v1beta3.Document.entities:type_name -> google.cloud.documentai.v1beta3.Document.Entity
-	9,  // 3: google.cloud.documentai.v1beta3.Document.entity_relations:type_name -> google.cloud.documentai.v1beta3.Document.EntityRelation
-	14, // 4: google.cloud.documentai.v1beta3.Document.text_changes:type_name -> google.cloud.documentai.v1beta3.Document.TextChange
-	5,  // 5: google.cloud.documentai.v1beta3.Document.shard_info:type_name -> google.cloud.documentai.v1beta3.Document.ShardInfo
-	41, // 6: google.cloud.documentai.v1beta3.Document.error:type_name -> google.rpc.Status
-	13, // 7: google.cloud.documentai.v1beta3.Document.revisions:type_name -> google.cloud.documentai.v1beta3.Document.Revision
-	10, // 8: google.cloud.documentai.v1beta3.Document.Style.text_anchor:type_name -> google.cloud.documentai.v1beta3.Document.TextAnchor
-	42, // 9: google.cloud.documentai.v1beta3.Document.Style.color:type_name -> google.type.Color
-	42, // 10: google.cloud.documentai.v1beta3.Document.Style.background_color:type_name -> google.type.Color
-	15, // 11: google.cloud.documentai.v1beta3.Document.Style.font_size:type_name -> google.cloud.documentai.v1beta3.Document.Style.FontSize
-	17, // 12: google.cloud.documentai.v1beta3.Document.Page.image:type_name -> google.cloud.documentai.v1beta3.Document.Page.Image
-	18, // 13: google.cloud.documentai.v1beta3.Document.Page.transforms:type_name -> google.cloud.documentai.v1beta3.Document.Page.Matrix
-	16, // 14: google.cloud.documentai.v1beta3.Document.Page.dimension:type_name -> google.cloud.documentai.v1beta3.Document.Page.Dimension
-	19, // 15: google.cloud.documentai.v1beta3.Document.Page.layout:type_name -> google.cloud.documentai.v1beta3.Document.Page.Layout
-	29, // 16: google.cloud.documentai.v1beta3.Document.Page.detected_languages:type_name -> google.cloud.documentai.v1beta3.Document.Page.DetectedLanguage
-	20, // 17: google.cloud.documentai.v1beta3.Document.Page.blocks:type_name -> google.cloud.documentai.v1beta3.Document.Page.Block
-	21, // 18: google.cloud.documentai.v1beta3.Document.Page.paragraphs:type_name -> google.cloud.documentai.v1beta3.Document.Page.Paragraph
-	22, // 19: google.cloud.documentai.v1beta3.Document.Page.lines:type_name -> google.cloud.documentai.v1beta3.Document.Page.Line
-	23, // 20: google.cloud.documentai.v1beta3.Document.Page.tokens:type_name -> google.cloud.documentai.v1beta3.Document.Page.Token
-	25, // 21: google.cloud.documentai.v1beta3.Document.Page.visual_elements:type_name -> google.cloud.documentai.v1beta3.Document.Page.VisualElement
-	26, // 22: google.cloud.documentai.v1beta3.Document.Page.tables:type_name -> google.cloud.documentai.v1beta3.Document.Page.Table
-	27, // 23: google.cloud.documentai.v1beta3.Document.Page.form_fields:type_name -> google.cloud.documentai.v1beta3.Document.Page.FormField
-	24, // 24: google.cloud.documentai.v1beta3.Document.Page.symbols:type_name -> google.cloud.documentai.v1beta3.Document.Page.Symbol
-	28, // 25: google.cloud.documentai.v1beta3.Document.Page.detected_barcodes:type_name -> google.cloud.documentai.v1beta3.Document.Page.DetectedBarcode
-	30, // 26: google.cloud.documentai.v1beta3.Document.Page.image_quality_scores:type_name -> google.cloud.documentai.v1beta3.Document.Page.ImageQualityScores
-	12, // 27: google.cloud.documentai.v1beta3.Document.Page.provenance:type_name -> google.cloud.documentai.v1beta3.Document.Provenance
-	10, // 28: google.cloud.documentai.v1beta3.Document.Entity.text_anchor:type_name -> google.cloud.documentai.v1beta3.Document.TextAnchor
-	11, // 29: google.cloud.documentai.v1beta3.Document.Entity.page_anchor:type_name -> google.cloud.documentai.v1beta3.Document.PageAnchor
-	36, // 30: google.cloud.documentai.v1beta3.Document.Entity.normalized_value:type_name -> google.cloud.documentai.v1beta3.Document.Entity.NormalizedValue
-	8,  // 31: google.cloud.documentai.v1beta3.Document.Entity.properties:type_name -> google.cloud.documentai.v1beta3.Document.Entity
-	12, // 32: google.cloud.documentai.v1beta3.Document.Entity.provenance:type_name -> google.cloud.documentai.v1beta3.Document.Provenance
-	37, // 33: google.cloud.documentai.v1beta3.Document.TextAnchor.text_segments:type_name -> google.cloud.documentai.v1beta3.Document.TextAnchor.TextSegment
-	38, // 34: google.cloud.documentai.v1beta3.Document.PageAnchor.page_refs:type_name -> google.cloud.documentai.v1beta3.Document.PageAnchor.PageRef
-	39, // 35: google.cloud.documentai.v1beta3.Document.Provenance.parents:type_name -> google.cloud.documentai.v1beta3.Document.Provenance.Parent
-	3,  // 36: google.cloud.documentai.v1beta3.Document.Provenance.type:type_name -> google.cloud.documentai.v1beta3.Document.Provenance.OperationType
-	43, // 37: google.cloud.documentai.v1beta3.Document.Revision.create_time:type_name -> google.protobuf.Timestamp
-	40, // 38: google.cloud.documentai.v1beta3.Document.Revision.human_review:type_name -> google.cloud.documentai.v1beta3.Document.Revision.HumanReview
-	10, // 39: google.cloud.documentai.v1beta3.Document.TextChange.text_anchor:type_name -> google.cloud.documentai.v1beta3.Document.TextAnchor
-	12, // 40: google.cloud.documentai.v1beta3.Document.TextChange.provenance:type_name -> google.cloud.documentai.v1beta3.Document.Provenance
-	10, // 41: google.cloud.documentai.v1beta3.Document.Page.Layout.text_anchor:type_name -> google.cloud.documentai.v1beta3.Document.TextAnchor
-	44, // 42: google.cloud.documentai.v1beta3.Document.Page.Layout.bounding_poly:type_name -> google.cloud.documentai.v1beta3.BoundingPoly
-	0,  // 43: google.cloud.documentai.v1beta3.Document.Page.Layout.orientation:type_name -> google.cloud.documentai.v1beta3.Document.Page.Layout.Orientation
-	19, // 44: google.cloud.documentai.v1beta3.Document.Page.Block.layout:type_name -> google.cloud.documentai.v1beta3.Document.Page.Layout
-	29, // 45: google.cloud.documentai.v1beta3.Document.Page.Block.detected_languages:type_name -> google.cloud.documentai.v1beta3.Document.Page.DetectedLanguage
-	12, // 46: google.cloud.documentai.v1beta3.Document.Page.Block.provenance:type_name -> google.cloud.documentai.v1beta3.Document.Provenance
-	19, // 47: google.cloud.documentai.v1beta3.Document.Page.Paragraph.layout:type_name -> google.cloud.documentai.v1beta3.Document.Page.Layout
-	29, // 48: google.cloud.documentai.v1beta3.Document.Page.Paragraph.detected_languages:type_name -> google.cloud.documentai.v1beta3.Document.Page.DetectedLanguage
-	12, // 49: google.cloud.documentai.v1beta3.Document.Page.Paragraph.provenance:type_name -> google.cloud.documentai.v1beta3.Document.Provenance
-	19, // 50: google.cloud.documentai.v1beta3.Document.Page.Line.layout:type_name -> google.cloud.documentai.v1beta3.Document.Page.Layout
-	29, // 51: google.cloud.documentai.v1beta3.Document.Page.Line.detected_languages:type_name -> google.cloud.documentai.v1beta3.Document.Page.DetectedLanguage
-	12, // 52: google.cloud.documentai.v1beta3.Document.Page.Line.provenance:type_name -> google.cloud.documentai.v1beta3.Document.Provenance
-	19, // 53: google.cloud.documentai.v1beta3.Document.Page.Token.layout:type_name -> google.cloud.documentai.v1beta3.Document.Page.Layout
-	31, // 54: google.cloud.documentai.v1beta3.Document.Page.Token.detected_break:type_name -> google.cloud.documentai.v1beta3.Document.Page.Token.DetectedBreak
-	29, // 55: google.cloud.documentai.v1beta3.Document.Page.Token.detected_languages:type_name -> google.cloud.documentai.v1beta3.Document.Page.DetectedLanguage
-	12, // 56: google.cloud.documentai.v1beta3.Document.Page.Token.provenance:type_name -> google.cloud.documentai.v1beta3.Document.Provenance
-	32, // 57: google.cloud.documentai.v1beta3.Document.Page.Token.style_info:type_name -> google.cloud.documentai.v1beta3.Document.Page.Token.StyleInfo
-	19, // 58: google.cloud.documentai.v1beta3.Document.Page.Symbol.layout:type_name -> google.cloud.documentai.v1beta3.Document.Page.Layout
-	29, // 59: google.cloud.documentai.v1beta3.Document.Page.Symbol.detected_languages:type_name -> google.cloud.documentai.v1beta3.Document.Page.DetectedLanguage
-	19, // 60: google.cloud.documentai.v1beta3.Document.Page.VisualElement.layout:type_name -> google.cloud.documentai.v1beta3.Document.Page.Layout
-	29, // 61: google.cloud.documentai.v1beta3.Document.Page.VisualElement.detected_languages:type_name -> google.cloud.documentai.v1beta3.Document.Page.DetectedLanguage
-	19, // 62: google.cloud.documentai.v1beta3.Document.Page.Table.layout:type_name -> google.cloud.documentai.v1beta3.Document.Page.Layout
-	33, // 63: google.cloud.documentai.v1beta3.Document.Page.Table.header_rows:type_name -> google.cloud.documentai.v1beta3.Document.Page.Table.TableRow
-	33, // 64: google.cloud.documentai.v1beta3.Document.Page.Table.body_rows:type_name -> google.cloud.documentai.v1beta3.Document.Page.Table.TableRow
-	29, // 65: google.cloud.documentai.v1beta3.Document.Page.Table.detected_languages:type_name -> google.cloud.documentai.v1beta3.Document.Page.DetectedLanguage
-	12, // 66: google.cloud.documentai.v1beta3.Document.Page.Table.provenance:type_name -> google.cloud.documentai.v1beta3.Document.Provenance
-	19, // 67: google.cloud.documentai.v1beta3.Document.Page.FormField.field_name:type_name -> google.cloud.documentai.v1beta3.Document.Page.Layout
-	19, // 68: google.cloud.documentai.v1beta3.Document.Page.FormField.field_value:type_name -> google.cloud.documentai.v1beta3.Document.Page.Layout
-	29, // 69: google.cloud.documentai.v1beta3.Document.Page.FormField.name_detected_languages:type_name -> google.cloud.documentai.v1beta3.Document.Page.DetectedLanguage
-	29, // 70: google.cloud.documentai.v1beta3.Document.Page.FormField.value_detected_languages:type_name -> google.cloud.documentai.v1beta3.Document.Page.DetectedLanguage
-	12, // 71: google.cloud.documentai.v1beta3.Document.Page.FormField.provenance:type_name -> google.cloud.documentai.v1beta3.Document.Provenance
-	19, // 72: google.cloud.documentai.v1beta3.Document.Page.DetectedBarcode.layout:type_name -> google.cloud.documentai.v1beta3.Document.Page.Layout
-	45, // 73: google.cloud.documentai.v1beta3.Document.Page.DetectedBarcode.barcode:type_name -> google.cloud.documentai.v1beta3.Barcode
-	35, // 74: google.cloud.documentai.v1beta3.Document.Page.ImageQualityScores.detected_defects:type_name -> google.cloud.documentai.v1beta3.Document.Page.ImageQualityScores.DetectedDefect
-	1,  // 75: google.cloud.documentai.v1beta3.Document.Page.Token.DetectedBreak.type:type_name -> google.cloud.documentai.v1beta3.Document.Page.Token.DetectedBreak.Type
-	42, // 76: google.cloud.documentai.v1beta3.Document.Page.Token.StyleInfo.text_color:type_name -> google.type.Color
-	42, // 77: google.cloud.documentai.v1beta3.Document.Page.Token.StyleInfo.background_color:type_name -> google.type.Color
-	34, // 78: google.cloud.documentai.v1beta3.Document.Page.Table.TableRow.cells:type_name -> google.cloud.documentai.v1beta3.Document.Page.Table.TableCell
-	19, // 79: google.cloud.documentai.v1beta3.Document.Page.Table.TableCell.layout:type_name -> google.cloud.documentai.v1beta3.Document.Page.Layout
-	29, // 80: google.cloud.documentai.v1beta3.Document.Page.Table.TableCell.detected_languages:type_name -> google.cloud.documentai.v1beta3.Document.Page.DetectedLanguage
-	46, // 81: google.cloud.documentai.v1beta3.Document.Entity.NormalizedValue.money_value:type_name -> google.type.Money
-	47, // 82: google.cloud.documentai.v1beta3.Document.Entity.NormalizedValue.date_value:type_name -> google.type.Date
-	48, // 83: google.cloud.documentai.v1beta3.Document.Entity.NormalizedValue.datetime_value:type_name -> google.type.DateTime
-	49, // 84: google.cloud.documentai.v1beta3.Document.Entity.NormalizedValue.address_value:type_name -> google.type.PostalAddress
-	2,  // 85: google.cloud.documentai.v1beta3.Document.PageAnchor.PageRef.layout_type:type_name -> google.cloud.documentai.v1beta3.Document.PageAnchor.PageRef.LayoutType
-	44, // 86: google.cloud.documentai.v1beta3.Document.PageAnchor.PageRef.bounding_poly:type_name -> google.cloud.documentai.v1beta3.BoundingPoly
-	87, // [87:87] is the sub-list for method output_type
-	87, // [87:87] is the sub-list for method input_type
-	87, // [87:87] is the sub-list for extension type_name
-	87, // [87:87] is the sub-list for extension extendee
-	0,  // [0:87] is the sub-list for field type_name
+	8,  // 0: google.cloud.documentai.v1beta3.Document.text_styles:type_name -> google.cloud.documentai.v1beta3.Document.Style
+	9,  // 1: google.cloud.documentai.v1beta3.Document.pages:type_name -> google.cloud.documentai.v1beta3.Document.Page
+	10, // 2: google.cloud.documentai.v1beta3.Document.entities:type_name -> google.cloud.documentai.v1beta3.Document.Entity
+	11, // 3: google.cloud.documentai.v1beta3.Document.entity_relations:type_name -> google.cloud.documentai.v1beta3.Document.EntityRelation
+	16, // 4: google.cloud.documentai.v1beta3.Document.text_changes:type_name -> google.cloud.documentai.v1beta3.Document.TextChange
+	7,  // 5: google.cloud.documentai.v1beta3.Document.shard_info:type_name -> google.cloud.documentai.v1beta3.Document.ShardInfo
+	43, // 6: google.cloud.documentai.v1beta3.Document.error:type_name -> google.rpc.Status
+	15, // 7: google.cloud.documentai.v1beta3.Document.revisions:type_name -> google.cloud.documentai.v1beta3.Document.Revision
+	4,  // 8: google.cloud.documentai.v1beta3.RevisionRef.revision_case:type_name -> google.cloud.documentai.v1beta3.RevisionRef.RevisionCase
+	12, // 9: google.cloud.documentai.v1beta3.Document.Style.text_anchor:type_name -> google.cloud.documentai.v1beta3.Document.TextAnchor
+	44, // 10: google.cloud.documentai.v1beta3.Document.Style.color:type_name -> google.type.Color
+	44, // 11: google.cloud.documentai.v1beta3.Document.Style.background_color:type_name -> google.type.Color
+	17, // 12: google.cloud.documentai.v1beta3.Document.Style.font_size:type_name -> google.cloud.documentai.v1beta3.Document.Style.FontSize
+	19, // 13: google.cloud.documentai.v1beta3.Document.Page.image:type_name -> google.cloud.documentai.v1beta3.Document.Page.Image
+	20, // 14: google.cloud.documentai.v1beta3.Document.Page.transforms:type_name -> google.cloud.documentai.v1beta3.Document.Page.Matrix
+	18, // 15: google.cloud.documentai.v1beta3.Document.Page.dimension:type_name -> google.cloud.documentai.v1beta3.Document.Page.Dimension
+	21, // 16: google.cloud.documentai.v1beta3.Document.Page.layout:type_name -> google.cloud.documentai.v1beta3.Document.Page.Layout
+	31, // 17: google.cloud.documentai.v1beta3.Document.Page.detected_languages:type_name -> google.cloud.documentai.v1beta3.Document.Page.DetectedLanguage
+	22, // 18: google.cloud.documentai.v1beta3.Document.Page.blocks:type_name -> google.cloud.documentai.v1beta3.Document.Page.Block
+	23, // 19: google.cloud.documentai.v1beta3.Document.Page.paragraphs:type_name -> google.cloud.documentai.v1beta3.Document.Page.Paragraph
+	24, // 20: google.cloud.documentai.v1beta3.Document.Page.lines:type_name -> google.cloud.documentai.v1beta3.Document.Page.Line
+	25, // 21: google.cloud.documentai.v1beta3.Document.Page.tokens:type_name -> google.cloud.documentai.v1beta3.Document.Page.Token
+	27, // 22: google.cloud.documentai.v1beta3.Document.Page.visual_elements:type_name -> google.cloud.documentai.v1beta3.Document.Page.VisualElement
+	28, // 23: google.cloud.documentai.v1beta3.Document.Page.tables:type_name -> google.cloud.documentai.v1beta3.Document.Page.Table
+	29, // 24: google.cloud.documentai.v1beta3.Document.Page.form_fields:type_name -> google.cloud.documentai.v1beta3.Document.Page.FormField
+	26, // 25: google.cloud.documentai.v1beta3.Document.Page.symbols:type_name -> google.cloud.documentai.v1beta3.Document.Page.Symbol
+	30, // 26: google.cloud.documentai.v1beta3.Document.Page.detected_barcodes:type_name -> google.cloud.documentai.v1beta3.Document.Page.DetectedBarcode
+	32, // 27: google.cloud.documentai.v1beta3.Document.Page.image_quality_scores:type_name -> google.cloud.documentai.v1beta3.Document.Page.ImageQualityScores
+	14, // 28: google.cloud.documentai.v1beta3.Document.Page.provenance:type_name -> google.cloud.documentai.v1beta3.Document.Provenance
+	12, // 29: google.cloud.documentai.v1beta3.Document.Entity.text_anchor:type_name -> google.cloud.documentai.v1beta3.Document.TextAnchor
+	13, // 30: google.cloud.documentai.v1beta3.Document.Entity.page_anchor:type_name -> google.cloud.documentai.v1beta3.Document.PageAnchor
+	38, // 31: google.cloud.documentai.v1beta3.Document.Entity.normalized_value:type_name -> google.cloud.documentai.v1beta3.Document.Entity.NormalizedValue
+	10, // 32: google.cloud.documentai.v1beta3.Document.Entity.properties:type_name -> google.cloud.documentai.v1beta3.Document.Entity
+	14, // 33: google.cloud.documentai.v1beta3.Document.Entity.provenance:type_name -> google.cloud.documentai.v1beta3.Document.Provenance
+	39, // 34: google.cloud.documentai.v1beta3.Document.TextAnchor.text_segments:type_name -> google.cloud.documentai.v1beta3.Document.TextAnchor.TextSegment
+	40, // 35: google.cloud.documentai.v1beta3.Document.PageAnchor.page_refs:type_name -> google.cloud.documentai.v1beta3.Document.PageAnchor.PageRef
+	41, // 36: google.cloud.documentai.v1beta3.Document.Provenance.parents:type_name -> google.cloud.documentai.v1beta3.Document.Provenance.Parent
+	3,  // 37: google.cloud.documentai.v1beta3.Document.Provenance.type:type_name -> google.cloud.documentai.v1beta3.Document.Provenance.OperationType
+	45, // 38: google.cloud.documentai.v1beta3.Document.Revision.create_time:type_name -> google.protobuf.Timestamp
+	42, // 39: google.cloud.documentai.v1beta3.Document.Revision.human_review:type_name -> google.cloud.documentai.v1beta3.Document.Revision.HumanReview
+	12, // 40: google.cloud.documentai.v1beta3.Document.TextChange.text_anchor:type_name -> google.cloud.documentai.v1beta3.Document.TextAnchor
+	14, // 41: google.cloud.documentai.v1beta3.Document.TextChange.provenance:type_name -> google.cloud.documentai.v1beta3.Document.Provenance
+	12, // 42: google.cloud.documentai.v1beta3.Document.Page.Layout.text_anchor:type_name -> google.cloud.documentai.v1beta3.Document.TextAnchor
+	46, // 43: google.cloud.documentai.v1beta3.Document.Page.Layout.bounding_poly:type_name -> google.cloud.documentai.v1beta3.BoundingPoly
+	0,  // 44: google.cloud.documentai.v1beta3.Document.Page.Layout.orientation:type_name -> google.cloud.documentai.v1beta3.Document.Page.Layout.Orientation
+	21, // 45: google.cloud.documentai.v1beta3.Document.Page.Block.layout:type_name -> google.cloud.documentai.v1beta3.Document.Page.Layout
+	31, // 46: google.cloud.documentai.v1beta3.Document.Page.Block.detected_languages:type_name -> google.cloud.documentai.v1beta3.Document.Page.DetectedLanguage
+	14, // 47: google.cloud.documentai.v1beta3.Document.Page.Block.provenance:type_name -> google.cloud.documentai.v1beta3.Document.Provenance
+	21, // 48: google.cloud.documentai.v1beta3.Document.Page.Paragraph.layout:type_name -> google.cloud.documentai.v1beta3.Document.Page.Layout
+	31, // 49: google.cloud.documentai.v1beta3.Document.Page.Paragraph.detected_languages:type_name -> google.cloud.documentai.v1beta3.Document.Page.DetectedLanguage
+	14, // 50: google.cloud.documentai.v1beta3.Document.Page.Paragraph.provenance:type_name -> google.cloud.documentai.v1beta3.Document.Provenance
+	21, // 51: google.cloud.documentai.v1beta3.Document.Page.Line.layout:type_name -> google.cloud.documentai.v1beta3.Document.Page.Layout
+	31, // 52: google.cloud.documentai.v1beta3.Document.Page.Line.detected_languages:type_name -> google.cloud.documentai.v1beta3.Document.Page.DetectedLanguage
+	14, // 53: google.cloud.documentai.v1beta3.Document.Page.Line.provenance:type_name -> google.cloud.documentai.v1beta3.Document.Provenance
+	21, // 54: google.cloud.documentai.v1beta3.Document.Page.Token.layout:type_name -> google.cloud.documentai.v1beta3.Document.Page.Layout
+	33, // 55: google.cloud.documentai.v1beta3.Document.Page.Token.detected_break:type_name -> google.cloud.documentai.v1beta3.Document.Page.Token.DetectedBreak
+	31, // 56: google.cloud.documentai.v1beta3.Document.Page.Token.detected_languages:type_name -> google.cloud.documentai.v1beta3.Document.Page.DetectedLanguage
+	14, // 57: google.cloud.documentai.v1beta3.Document.Page.Token.provenance:type_name -> google.cloud.documentai.v1beta3.Document.Provenance
+	34, // 58: google.cloud.documentai.v1beta3.Document.Page.Token.style_info:type_name -> google.cloud.documentai.v1beta3.Document.Page.Token.StyleInfo
+	21, // 59: google.cloud.documentai.v1beta3.Document.Page.Symbol.layout:type_name -> google.cloud.documentai.v1beta3.Document.Page.Layout
+	31, // 60: google.cloud.documentai.v1beta3.Document.Page.Symbol.detected_languages:type_name -> google.cloud.documentai.v1beta3.Document.Page.DetectedLanguage
+	21, // 61: google.cloud.documentai.v1beta3.Document.Page.VisualElement.layout:type_name -> google.cloud.documentai.v1beta3.Document.Page.Layout
+	31, // 62: google.cloud.documentai.v1beta3.Document.Page.VisualElement.detected_languages:type_name -> google.cloud.documentai.v1beta3.Document.Page.DetectedLanguage
+	21, // 63: google.cloud.documentai.v1beta3.Document.Page.Table.layout:type_name -> google.cloud.documentai.v1beta3.Document.Page.Layout
+	35, // 64: google.cloud.documentai.v1beta3.Document.Page.Table.header_rows:type_name -> google.cloud.documentai.v1beta3.Document.Page.Table.TableRow
+	35, // 65: google.cloud.documentai.v1beta3.Document.Page.Table.body_rows:type_name -> google.cloud.documentai.v1beta3.Document.Page.Table.TableRow
+	31, // 66: google.cloud.documentai.v1beta3.Document.Page.Table.detected_languages:type_name -> google.cloud.documentai.v1beta3.Document.Page.DetectedLanguage
+	14, // 67: google.cloud.documentai.v1beta3.Document.Page.Table.provenance:type_name -> google.cloud.documentai.v1beta3.Document.Provenance
+	21, // 68: google.cloud.documentai.v1beta3.Document.Page.FormField.field_name:type_name -> google.cloud.documentai.v1beta3.Document.Page.Layout
+	21, // 69: google.cloud.documentai.v1beta3.Document.Page.FormField.field_value:type_name -> google.cloud.documentai.v1beta3.Document.Page.Layout
+	31, // 70: google.cloud.documentai.v1beta3.Document.Page.FormField.name_detected_languages:type_name -> google.cloud.documentai.v1beta3.Document.Page.DetectedLanguage
+	31, // 71: google.cloud.documentai.v1beta3.Document.Page.FormField.value_detected_languages:type_name -> google.cloud.documentai.v1beta3.Document.Page.DetectedLanguage
+	14, // 72: google.cloud.documentai.v1beta3.Document.Page.FormField.provenance:type_name -> google.cloud.documentai.v1beta3.Document.Provenance
+	21, // 73: google.cloud.documentai.v1beta3.Document.Page.DetectedBarcode.layout:type_name -> google.cloud.documentai.v1beta3.Document.Page.Layout
+	47, // 74: google.cloud.documentai.v1beta3.Document.Page.DetectedBarcode.barcode:type_name -> google.cloud.documentai.v1beta3.Barcode
+	37, // 75: google.cloud.documentai.v1beta3.Document.Page.ImageQualityScores.detected_defects:type_name -> google.cloud.documentai.v1beta3.Document.Page.ImageQualityScores.DetectedDefect
+	1,  // 76: google.cloud.documentai.v1beta3.Document.Page.Token.DetectedBreak.type:type_name -> google.cloud.documentai.v1beta3.Document.Page.Token.DetectedBreak.Type
+	44, // 77: google.cloud.documentai.v1beta3.Document.Page.Token.StyleInfo.text_color:type_name -> google.type.Color
+	44, // 78: google.cloud.documentai.v1beta3.Document.Page.Token.StyleInfo.background_color:type_name -> google.type.Color
+	36, // 79: google.cloud.documentai.v1beta3.Document.Page.Table.TableRow.cells:type_name -> google.cloud.documentai.v1beta3.Document.Page.Table.TableCell
+	21, // 80: google.cloud.documentai.v1beta3.Document.Page.Table.TableCell.layout:type_name -> google.cloud.documentai.v1beta3.Document.Page.Layout
+	31, // 81: google.cloud.documentai.v1beta3.Document.Page.Table.TableCell.detected_languages:type_name -> google.cloud.documentai.v1beta3.Document.Page.DetectedLanguage
+	48, // 82: google.cloud.documentai.v1beta3.Document.Entity.NormalizedValue.money_value:type_name -> google.type.Money
+	49, // 83: google.cloud.documentai.v1beta3.Document.Entity.NormalizedValue.date_value:type_name -> google.type.Date
+	50, // 84: google.cloud.documentai.v1beta3.Document.Entity.NormalizedValue.datetime_value:type_name -> google.type.DateTime
+	51, // 85: google.cloud.documentai.v1beta3.Document.Entity.NormalizedValue.address_value:type_name -> google.type.PostalAddress
+	2,  // 86: google.cloud.documentai.v1beta3.Document.PageAnchor.PageRef.layout_type:type_name -> google.cloud.documentai.v1beta3.Document.PageAnchor.PageRef.LayoutType
+	46, // 87: google.cloud.documentai.v1beta3.Document.PageAnchor.PageRef.bounding_poly:type_name -> google.cloud.documentai.v1beta3.BoundingPoly
+	88, // [88:88] is the sub-list for method output_type
+	88, // [88:88] is the sub-list for method input_type
+	88, // [88:88] is the sub-list for extension type_name
+	88, // [88:88] is the sub-list for extension extendee
+	0,  // [0:88] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_documentai_v1beta3_document_proto_init() }
@@ -4593,7 +4776,7 @@ func file_google_cloud_documentai_v1beta3_document_proto_init() {
 			}
 		}
 		file_google_cloud_documentai_v1beta3_document_proto_msgTypes[1].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*Document_ShardInfo); i {
+			switch v := v.(*RevisionRef); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -4605,7 +4788,7 @@ func file_google_cloud_documentai_v1beta3_document_proto_init() {
 			}
 		}
 		file_google_cloud_documentai_v1beta3_document_proto_msgTypes[2].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*Document_Style); i {
+			switch v := v.(*Document_ShardInfo); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -4617,7 +4800,7 @@ func file_google_cloud_documentai_v1beta3_document_proto_init() {
 			}
 		}
 		file_google_cloud_documentai_v1beta3_document_proto_msgTypes[3].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*Document_Page); i {
+			switch v := v.(*Document_Style); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -4629,7 +4812,7 @@ func file_google_cloud_documentai_v1beta3_document_proto_init() {
 			}
 		}
 		file_google_cloud_documentai_v1beta3_document_proto_msgTypes[4].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*Document_Entity); i {
+			switch v := v.(*Document_Page); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -4641,7 +4824,7 @@ func file_google_cloud_documentai_v1beta3_document_proto_init() {
 			}
 		}
 		file_google_cloud_documentai_v1beta3_document_proto_msgTypes[5].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*Document_EntityRelation); i {
+			switch v := v.(*Document_Entity); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -4653,7 +4836,7 @@ func file_google_cloud_documentai_v1beta3_document_proto_init() {
 			}
 		}
 		file_google_cloud_documentai_v1beta3_document_proto_msgTypes[6].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*Document_TextAnchor); i {
+			switch v := v.(*Document_EntityRelation); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -4665,7 +4848,7 @@ func file_google_cloud_documentai_v1beta3_document_proto_init() {
 			}
 		}
 		file_google_cloud_documentai_v1beta3_document_proto_msgTypes[7].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*Document_PageAnchor); i {
+			switch v := v.(*Document_TextAnchor); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -4677,7 +4860,7 @@ func file_google_cloud_documentai_v1beta3_document_proto_init() {
 			}
 		}
 		file_google_cloud_documentai_v1beta3_document_proto_msgTypes[8].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*Document_Provenance); i {
+			switch v := v.(*Document_PageAnchor); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -4689,7 +4872,7 @@ func file_google_cloud_documentai_v1beta3_document_proto_init() {
 			}
 		}
 		file_google_cloud_documentai_v1beta3_document_proto_msgTypes[9].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*Document_Revision); i {
+			switch v := v.(*Document_Provenance); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -4701,7 +4884,7 @@ func file_google_cloud_documentai_v1beta3_document_proto_init() {
 			}
 		}
 		file_google_cloud_documentai_v1beta3_document_proto_msgTypes[10].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*Document_TextChange); i {
+			switch v := v.(*Document_Revision); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -4713,7 +4896,7 @@ func file_google_cloud_documentai_v1beta3_document_proto_init() {
 			}
 		}
 		file_google_cloud_documentai_v1beta3_document_proto_msgTypes[11].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*Document_Style_FontSize); i {
+			switch v := v.(*Document_TextChange); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -4725,7 +4908,7 @@ func file_google_cloud_documentai_v1beta3_document_proto_init() {
 			}
 		}
 		file_google_cloud_documentai_v1beta3_document_proto_msgTypes[12].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*Document_Page_Dimension); i {
+			switch v := v.(*Document_Style_FontSize); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -4737,7 +4920,7 @@ func file_google_cloud_documentai_v1beta3_document_proto_init() {
 			}
 		}
 		file_google_cloud_documentai_v1beta3_document_proto_msgTypes[13].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*Document_Page_Image); i {
+			switch v := v.(*Document_Page_Dimension); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -4749,7 +4932,7 @@ func file_google_cloud_documentai_v1beta3_document_proto_init() {
 			}
 		}
 		file_google_cloud_documentai_v1beta3_document_proto_msgTypes[14].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*Document_Page_Matrix); i {
+			switch v := v.(*Document_Page_Image); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -4761,7 +4944,7 @@ func file_google_cloud_documentai_v1beta3_document_proto_init() {
 			}
 		}
 		file_google_cloud_documentai_v1beta3_document_proto_msgTypes[15].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*Document_Page_Layout); i {
+			switch v := v.(*Document_Page_Matrix); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -4773,7 +4956,7 @@ func file_google_cloud_documentai_v1beta3_document_proto_init() {
 			}
 		}
 		file_google_cloud_documentai_v1beta3_document_proto_msgTypes[16].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*Document_Page_Block); i {
+			switch v := v.(*Document_Page_Layout); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -4785,7 +4968,7 @@ func file_google_cloud_documentai_v1beta3_document_proto_init() {
 			}
 		}
 		file_google_cloud_documentai_v1beta3_document_proto_msgTypes[17].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*Document_Page_Paragraph); i {
+			switch v := v.(*Document_Page_Block); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -4797,7 +4980,7 @@ func file_google_cloud_documentai_v1beta3_document_proto_init() {
 			}
 		}
 		file_google_cloud_documentai_v1beta3_document_proto_msgTypes[18].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*Document_Page_Line); i {
+			switch v := v.(*Document_Page_Paragraph); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -4809,7 +4992,7 @@ func file_google_cloud_documentai_v1beta3_document_proto_init() {
 			}
 		}
 		file_google_cloud_documentai_v1beta3_document_proto_msgTypes[19].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*Document_Page_Token); i {
+			switch v := v.(*Document_Page_Line); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -4821,7 +5004,7 @@ func file_google_cloud_documentai_v1beta3_document_proto_init() {
 			}
 		}
 		file_google_cloud_documentai_v1beta3_document_proto_msgTypes[20].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*Document_Page_Symbol); i {
+			switch v := v.(*Document_Page_Token); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -4833,7 +5016,7 @@ func file_google_cloud_documentai_v1beta3_document_proto_init() {
 			}
 		}
 		file_google_cloud_documentai_v1beta3_document_proto_msgTypes[21].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*Document_Page_VisualElement); i {
+			switch v := v.(*Document_Page_Symbol); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -4845,7 +5028,7 @@ func file_google_cloud_documentai_v1beta3_document_proto_init() {
 			}
 		}
 		file_google_cloud_documentai_v1beta3_document_proto_msgTypes[22].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*Document_Page_Table); i {
+			switch v := v.(*Document_Page_VisualElement); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -4857,7 +5040,7 @@ func file_google_cloud_documentai_v1beta3_document_proto_init() {
 			}
 		}
 		file_google_cloud_documentai_v1beta3_document_proto_msgTypes[23].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*Document_Page_FormField); i {
+			switch v := v.(*Document_Page_Table); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -4869,7 +5052,7 @@ func file_google_cloud_documentai_v1beta3_document_proto_init() {
 			}
 		}
 		file_google_cloud_documentai_v1beta3_document_proto_msgTypes[24].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*Document_Page_DetectedBarcode); i {
+			switch v := v.(*Document_Page_FormField); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -4881,7 +5064,7 @@ func file_google_cloud_documentai_v1beta3_document_proto_init() {
 			}
 		}
 		file_google_cloud_documentai_v1beta3_document_proto_msgTypes[25].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*Document_Page_DetectedLanguage); i {
+			switch v := v.(*Document_Page_DetectedBarcode); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -4893,7 +5076,7 @@ func file_google_cloud_documentai_v1beta3_document_proto_init() {
 			}
 		}
 		file_google_cloud_documentai_v1beta3_document_proto_msgTypes[26].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*Document_Page_ImageQualityScores); i {
+			switch v := v.(*Document_Page_DetectedLanguage); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -4905,7 +5088,7 @@ func file_google_cloud_documentai_v1beta3_document_proto_init() {
 			}
 		}
 		file_google_cloud_documentai_v1beta3_document_proto_msgTypes[27].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*Document_Page_Token_DetectedBreak); i {
+			switch v := v.(*Document_Page_ImageQualityScores); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -4917,7 +5100,7 @@ func file_google_cloud_documentai_v1beta3_document_proto_init() {
 			}
 		}
 		file_google_cloud_documentai_v1beta3_document_proto_msgTypes[28].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*Document_Page_Token_StyleInfo); i {
+			switch v := v.(*Document_Page_Token_DetectedBreak); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -4929,7 +5112,7 @@ func file_google_cloud_documentai_v1beta3_document_proto_init() {
 			}
 		}
 		file_google_cloud_documentai_v1beta3_document_proto_msgTypes[29].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*Document_Page_Table_TableRow); i {
+			switch v := v.(*Document_Page_Token_StyleInfo); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -4941,7 +5124,7 @@ func file_google_cloud_documentai_v1beta3_document_proto_init() {
 			}
 		}
 		file_google_cloud_documentai_v1beta3_document_proto_msgTypes[30].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*Document_Page_Table_TableCell); i {
+			switch v := v.(*Document_Page_Table_TableRow); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -4953,7 +5136,7 @@ func file_google_cloud_documentai_v1beta3_document_proto_init() {
 			}
 		}
 		file_google_cloud_documentai_v1beta3_document_proto_msgTypes[31].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*Document_Page_ImageQualityScores_DetectedDefect); i {
+			switch v := v.(*Document_Page_Table_TableCell); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -4965,7 +5148,7 @@ func file_google_cloud_documentai_v1beta3_document_proto_init() {
 			}
 		}
 		file_google_cloud_documentai_v1beta3_document_proto_msgTypes[32].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*Document_Entity_NormalizedValue); i {
+			switch v := v.(*Document_Page_ImageQualityScores_DetectedDefect); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -4977,7 +5160,7 @@ func file_google_cloud_documentai_v1beta3_document_proto_init() {
 			}
 		}
 		file_google_cloud_documentai_v1beta3_document_proto_msgTypes[33].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*Document_TextAnchor_TextSegment); i {
+			switch v := v.(*Document_Entity_NormalizedValue); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -4989,7 +5172,7 @@ func file_google_cloud_documentai_v1beta3_document_proto_init() {
 			}
 		}
 		file_google_cloud_documentai_v1beta3_document_proto_msgTypes[34].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*Document_PageAnchor_PageRef); i {
+			switch v := v.(*Document_TextAnchor_TextSegment); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -5001,7 +5184,7 @@ func file_google_cloud_documentai_v1beta3_document_proto_init() {
 			}
 		}
 		file_google_cloud_documentai_v1beta3_document_proto_msgTypes[35].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*Document_Provenance_Parent); i {
+			switch v := v.(*Document_PageAnchor_PageRef); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -5013,6 +5196,18 @@ func file_google_cloud_documentai_v1beta3_document_proto_init() {
 			}
 		}
 		file_google_cloud_documentai_v1beta3_document_proto_msgTypes[36].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*Document_Provenance_Parent); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_google_cloud_documentai_v1beta3_document_proto_msgTypes[37].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*Document_Revision_HumanReview); i {
 			case 0:
 				return &v.state
@@ -5029,11 +5224,16 @@ func file_google_cloud_documentai_v1beta3_document_proto_init() {
 		(*Document_Uri)(nil),
 		(*Document_Content)(nil),
 	}
-	file_google_cloud_documentai_v1beta3_document_proto_msgTypes[9].OneofWrappers = []interface{}{
+	file_google_cloud_documentai_v1beta3_document_proto_msgTypes[1].OneofWrappers = []interface{}{
+		(*RevisionRef_RevisionCase_)(nil),
+		(*RevisionRef_RevisionId)(nil),
+		(*RevisionRef_LatestProcessorVersion)(nil),
+	}
+	file_google_cloud_documentai_v1beta3_document_proto_msgTypes[10].OneofWrappers = []interface{}{
 		(*Document_Revision_Agent)(nil),
 		(*Document_Revision_Processor)(nil),
 	}
-	file_google_cloud_documentai_v1beta3_document_proto_msgTypes[32].OneofWrappers = []interface{}{
+	file_google_cloud_documentai_v1beta3_document_proto_msgTypes[33].OneofWrappers = []interface{}{
 		(*Document_Entity_NormalizedValue_MoneyValue)(nil),
 		(*Document_Entity_NormalizedValue_DateValue)(nil),
 		(*Document_Entity_NormalizedValue_DatetimeValue)(nil),
@@ -5047,8 +5247,8 @@ func file_google_cloud_documentai_v1beta3_document_proto_init() {
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_google_cloud_documentai_v1beta3_document_proto_rawDesc,
-			NumEnums:      4,
-			NumMessages:   37,
+			NumEnums:      5,
+			NumMessages:   38,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

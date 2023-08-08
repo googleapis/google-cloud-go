@@ -1,5 +1,19 @@
 # Changes
 
+## [1.19.0](https://github.com/googleapis/google-cloud-go/compare/video/v1.18.0...video/v1.19.0) (2023-07-24)
+
+
+### Features
+
+* **video/livestream:** Added support for slate events which allow users to create and insert a slate into a live stream to replace the main live stream content ([432864c](https://github.com/googleapis/google-cloud-go/commit/432864c7fc0bb551a5017b423bbd5f76c3357dc3))
+
+## [1.18.0](https://github.com/googleapis/google-cloud-go/compare/video/v1.17.1...video/v1.18.0) (2023-07-18)
+
+
+### Features
+
+* **video/transcoder:** Added support for segment template manifest generation with DASH ([#8242](https://github.com/googleapis/google-cloud-go/issues/8242)) ([adb982e](https://github.com/googleapis/google-cloud-go/commit/adb982ed500c5011e477c00baefad504b0a00210))
+
 ## [1.17.1](https://github.com/googleapis/google-cloud-go/compare/video/v1.17.0...video/v1.17.1) (2023-06-20)
 
 

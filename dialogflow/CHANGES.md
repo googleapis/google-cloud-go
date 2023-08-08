@@ -1,5 +1,12 @@
 # Changes
 
+## [1.40.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.39.0...dialogflow/v1.40.0) (2023-07-18)
+
+
+### Features
+
+* **dialogflow/cx:** Added GitIntegrationSettings to the Agent ([#8244](https://github.com/googleapis/google-cloud-go/issues/8244)) ([dda1f9d](https://github.com/googleapis/google-cloud-go/commit/dda1f9dc2f5b54dca15ae05302d8cac821fe8da1))
+
 ## [1.39.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.38.0...dialogflow/v1.39.0) (2023-07-10)
 
 

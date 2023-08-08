@@ -1,5 +1,12 @@
 # Changes
 
+## [1.16.0](https://github.com/googleapis/google-cloud-go/compare/datacatalog/v1.15.0...datacatalog/v1.16.0) (2023-07-18)
+
+
+### Features
+
+* **datacatalog/lineage:** Promote to GA ([#8265](https://github.com/googleapis/google-cloud-go/issues/8265)) ([130c571](https://github.com/googleapis/google-cloud-go/commit/130c5713dcbac7f670cb92ea113dd53d8029c960))
+
 ## [1.15.0](https://github.com/googleapis/google-cloud-go/compare/datacatalog/v1.14.1...datacatalog/v1.15.0) (2023-07-10)
 
 
