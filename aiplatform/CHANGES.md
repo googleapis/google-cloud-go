@@ -1,6 +1,14 @@
 # Changes
 
 
+## [1.48.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.47.0...aiplatform/v1.48.0) (2023-07-31)
+
+
+### Features
+
+* **aiplatform:** Add `PredictionService.ServerStreamingPredict` method ([b890425](https://github.com/googleapis/google-cloud-go/commit/b8904253a0f8424ea4548469e5feef321bd7396a))
+* **aiplatform:** Add RaySepc to ResourceRuntimeSpec, and add ResourceRuntime to PersistentResource ([b890425](https://github.com/googleapis/google-cloud-go/commit/b8904253a0f8424ea4548469e5feef321bd7396a))
+
 ## [1.47.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.46.0...aiplatform/v1.47.0) (2023-07-26)
 
 
