@@ -10,6 +10,11 @@
         "grpc": {
           "libraryClient": "Client",
           "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
             "CreateActiveDirectory": {
               "methods": [
                 "CreateActiveDirectory"
@@ -50,6 +55,11 @@
                 "DeleteKmsConfig"
               ]
             },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
             "DeleteReplication": {
               "methods": [
                 "DeleteReplication"
@@ -85,6 +95,16 @@
                 "GetKmsConfig"
               ]
             },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
             "GetReplication": {
               "methods": [
                 "GetReplication"
@@ -113,6 +133,16 @@
             "ListKmsConfigs": {
               "methods": [
                 "ListKmsConfigs"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
               ]
             },
             "ListReplications": {
@@ -195,6 +225,11 @@
         "rest": {
           "libraryClient": "Client",
           "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
             "CreateActiveDirectory": {
               "methods": [
                 "CreateActiveDirectory"
@@ -235,6 +270,11 @@
                 "DeleteKmsConfig"
               ]
             },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
             "DeleteReplication": {
               "methods": [
                 "DeleteReplication"
@@ -270,6 +310,16 @@
                 "GetKmsConfig"
               ]
             },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
             "GetReplication": {
               "methods": [
                 "GetReplication"
@@ -298,6 +348,16 @@
             "ListKmsConfigs": {
               "methods": [
                 "ListKmsConfigs"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
               ]
             },
             "ListReplications": {
