@@ -117,7 +117,14 @@ func (o *ObjectHandle) NewRangeReader(ctx context.Context, offset, length int64)
 	}
 
 	r, err = o.c.tc.NewRangeReader(ctx, params, opts...)
-	r.ctx = ctx
+
+	// Pass the context so that the span can be closed in Reader.Close, or close the
+	// span now if there is an error.
+	if err == nil {
+		r.ctx = ctx
+	} else {
+		trace.EndSpan(ctx, err)
+	}
 
 	return r, err
 }
