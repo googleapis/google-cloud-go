@@ -39,7 +39,6 @@ import (
 	httptransport "google.golang.org/api/transport/http"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 )
@@ -540,17 +539,17 @@ type internalProductSearchClient interface {
 // Manages Products and ProductSets of reference images for use in product
 // search. It uses the following resource model:
 //
-//	The API has a collection of ProductSet resources, named
-//	projects/*/locations/*/productSets/*, which acts as a way to put different
-//	products into groups to limit identification.
+//   The API has a collection of ProductSet resources, named
+//   projects/*/locations/*/productSets/*, which acts as a way to put different
+//   products into groups to limit identification.
 //
 // In parallel,
 //
-//	The API has a collection of Product resources, named
-//	projects/*/locations/*/products/*
+//   The API has a collection of Product resources, named
+//   projects/*/locations/*/products/*
 //
-//	Each Product has a collection of ReferenceImage resources, named
-//	projects/*/locations/*/products/*/referenceImages/*
+//   Each Product has a collection of ReferenceImage resources, named
+//   projects/*/locations/*/products/*/referenceImages/*
 type ProductSearchClient struct {
 	// The internal transport-dependent client.
 	internalClient internalProductSearchClient
@@ -591,8 +590,8 @@ func (c *ProductSearchClient) Connection() *grpc.ClientConn {
 //
 // Possible errors:
 //
-//	Returns INVALID_ARGUMENT if display_name is missing, or is longer than
-//	4096 characters.
+//   Returns INVALID_ARGUMENT if display_name is missing, or is longer than
+//   4096 characters.
 func (c *ProductSearchClient) CreateProductSet(ctx context.Context, req *visionpb.CreateProductSetRequest, opts ...gax.CallOption) (*visionpb.ProductSet, error) {
 	return c.internalClient.CreateProductSet(ctx, req, opts...)
 }
@@ -601,8 +600,8 @@ func (c *ProductSearchClient) CreateProductSet(ctx context.Context, req *visionp
 //
 // Possible errors:
 //
-//	Returns INVALID_ARGUMENT if page_size is greater than 100, or less
-//	than 1.
+//   Returns INVALID_ARGUMENT if page_size is greater than 100, or less
+//   than 1.
 func (c *ProductSearchClient) ListProductSets(ctx context.Context, req *visionpb.ListProductSetsRequest, opts ...gax.CallOption) *ProductSetIterator {
 	return c.internalClient.ListProductSets(ctx, req, opts...)
 }
@@ -611,7 +610,7 @@ func (c *ProductSearchClient) ListProductSets(ctx context.Context, req *visionpb
 //
 // Possible errors:
 //
-//	Returns NOT_FOUND if the ProductSet does not exist.
+//   Returns NOT_FOUND if the ProductSet does not exist.
 func (c *ProductSearchClient) GetProductSet(ctx context.Context, req *visionpb.GetProductSetRequest, opts ...gax.CallOption) (*visionpb.ProductSet, error) {
 	return c.internalClient.GetProductSet(ctx, req, opts...)
 }
@@ -621,10 +620,10 @@ func (c *ProductSearchClient) GetProductSet(ctx context.Context, req *visionpb.G
 //
 // Possible errors:
 //
-//	Returns NOT_FOUND if the ProductSet does not exist.
+//   Returns NOT_FOUND if the ProductSet does not exist.
 //
-//	Returns INVALID_ARGUMENT if display_name is present in update_mask but
-//	missing from the request or longer than 4096 characters.
+//   Returns INVALID_ARGUMENT if display_name is present in update_mask but
+//   missing from the request or longer than 4096 characters.
 func (c *ProductSearchClient) UpdateProductSet(ctx context.Context, req *visionpb.UpdateProductSetRequest, opts ...gax.CallOption) (*visionpb.ProductSet, error) {
 	return c.internalClient.UpdateProductSet(ctx, req, opts...)
 }
@@ -641,12 +640,12 @@ func (c *ProductSearchClient) DeleteProductSet(ctx context.Context, req *visionp
 //
 // Possible errors:
 //
-//	Returns INVALID_ARGUMENT if display_name is missing or longer than 4096
-//	characters.
+//   Returns INVALID_ARGUMENT if display_name is missing or longer than 4096
+//   characters.
 //
-//	Returns INVALID_ARGUMENT if description is longer than 4096 characters.
+//   Returns INVALID_ARGUMENT if description is longer than 4096 characters.
 //
-//	Returns INVALID_ARGUMENT if product_category is missing or invalid.
+//   Returns INVALID_ARGUMENT if product_category is missing or invalid.
 func (c *ProductSearchClient) CreateProduct(ctx context.Context, req *visionpb.CreateProductRequest, opts ...gax.CallOption) (*visionpb.Product, error) {
 	return c.internalClient.CreateProduct(ctx, req, opts...)
 }
@@ -655,7 +654,7 @@ func (c *ProductSearchClient) CreateProduct(ctx context.Context, req *visionpb.C
 //
 // Possible errors:
 //
-//	Returns INVALID_ARGUMENT if page_size is greater than 100 or less than 1.
+//   Returns INVALID_ARGUMENT if page_size is greater than 100 or less than 1.
 func (c *ProductSearchClient) ListProducts(ctx context.Context, req *visionpb.ListProductsRequest, opts ...gax.CallOption) *ProductIterator {
 	return c.internalClient.ListProducts(ctx, req, opts...)
 }
@@ -664,7 +663,7 @@ func (c *ProductSearchClient) ListProducts(ctx context.Context, req *visionpb.Li
 //
 // Possible errors:
 //
-//	Returns NOT_FOUND if the Product does not exist.
+//   Returns NOT_FOUND if the Product does not exist.
 func (c *ProductSearchClient) GetProduct(ctx context.Context, req *visionpb.GetProductRequest, opts ...gax.CallOption) (*visionpb.Product, error) {
 	return c.internalClient.GetProduct(ctx, req, opts...)
 }
@@ -678,15 +677,15 @@ func (c *ProductSearchClient) GetProduct(ctx context.Context, req *visionpb.GetP
 //
 // Possible errors:
 //
-//	Returns NOT_FOUND if the Product does not exist.
+//   Returns NOT_FOUND if the Product does not exist.
 //
-//	Returns INVALID_ARGUMENT if display_name is present in update_mask but is
-//	missing from the request or longer than 4096 characters.
+//   Returns INVALID_ARGUMENT if display_name is present in update_mask but is
+//   missing from the request or longer than 4096 characters.
 //
-//	Returns INVALID_ARGUMENT if description is present in update_mask but is
-//	longer than 4096 characters.
+//   Returns INVALID_ARGUMENT if description is present in update_mask but is
+//   longer than 4096 characters.
 //
-//	Returns INVALID_ARGUMENT if product_category is present in update_mask.
+//   Returns INVALID_ARGUMENT if product_category is present in update_mask.
 func (c *ProductSearchClient) UpdateProduct(ctx context.Context, req *visionpb.UpdateProductRequest, opts ...gax.CallOption) (*visionpb.Product, error) {
 	return c.internalClient.UpdateProduct(ctx, req, opts...)
 }
@@ -713,15 +712,15 @@ func (c *ProductSearchClient) DeleteProduct(ctx context.Context, req *visionpb.D
 //
 // Possible errors:
 //
-//	Returns INVALID_ARGUMENT if the image_uri is missing or longer than 4096
-//	characters.
+//   Returns INVALID_ARGUMENT if the image_uri is missing or longer than 4096
+//   characters.
 //
-//	Returns INVALID_ARGUMENT if the product does not exist.
+//   Returns INVALID_ARGUMENT if the product does not exist.
 //
-//	Returns INVALID_ARGUMENT if bounding_poly is not provided, and nothing
-//	compatible with the parent product’s product_category is detected.
+//   Returns INVALID_ARGUMENT if bounding_poly is not provided, and nothing
+//   compatible with the parent product’s product_category is detected.
 //
-//	Returns INVALID_ARGUMENT if bounding_poly contains more than 10 polygons.
+//   Returns INVALID_ARGUMENT if bounding_poly contains more than 10 polygons.
 func (c *ProductSearchClient) CreateReferenceImage(ctx context.Context, req *visionpb.CreateReferenceImageRequest, opts ...gax.CallOption) (*visionpb.ReferenceImage, error) {
 	return c.internalClient.CreateReferenceImage(ctx, req, opts...)
 }
@@ -741,10 +740,10 @@ func (c *ProductSearchClient) DeleteReferenceImage(ctx context.Context, req *vis
 //
 // Possible errors:
 //
-//	Returns NOT_FOUND if the parent product does not exist.
+//   Returns NOT_FOUND if the parent product does not exist.
 //
-//	Returns INVALID_ARGUMENT if the page_size is greater than 100, or less
-//	than 1.
+//   Returns INVALID_ARGUMENT if the page_size is greater than 100, or less
+//   than 1.
 func (c *ProductSearchClient) ListReferenceImages(ctx context.Context, req *visionpb.ListReferenceImagesRequest, opts ...gax.CallOption) *ReferenceImageIterator {
 	return c.internalClient.ListReferenceImages(ctx, req, opts...)
 }
@@ -753,7 +752,7 @@ func (c *ProductSearchClient) ListReferenceImages(ctx context.Context, req *visi
 //
 // Possible errors:
 //
-//	Returns NOT_FOUND if the specified image does not exist.
+//   Returns NOT_FOUND if the specified image does not exist.
 func (c *ProductSearchClient) GetReferenceImage(ctx context.Context, req *visionpb.GetReferenceImageRequest, opts ...gax.CallOption) (*visionpb.ReferenceImage, error) {
 	return c.internalClient.GetReferenceImage(ctx, req, opts...)
 }
@@ -765,7 +764,7 @@ func (c *ProductSearchClient) GetReferenceImage(ctx context.Context, req *vision
 //
 // Possible errors:
 //
-//	Returns NOT_FOUND if the Product or the ProductSet doesn’t exist.
+//   Returns NOT_FOUND if the Product or the ProductSet doesn’t exist.
 func (c *ProductSearchClient) AddProductToProductSet(ctx context.Context, req *visionpb.AddProductToProductSetRequest, opts ...gax.CallOption) error {
 	return c.internalClient.AddProductToProductSet(ctx, req, opts...)
 }
@@ -781,7 +780,7 @@ func (c *ProductSearchClient) RemoveProductFromProductSet(ctx context.Context, r
 //
 // Possible errors:
 //
-//	Returns INVALID_ARGUMENT if page_size is greater than 100 or less than 1.
+//   Returns INVALID_ARGUMENT if page_size is greater than 100 or less than 1.
 func (c *ProductSearchClient) ListProductsInProductSet(ctx context.Context, req *visionpb.ListProductsInProductSetRequest, opts ...gax.CallOption) *ProductIterator {
 	return c.internalClient.ListProductsInProductSet(ctx, req, opts...)
 }
@@ -860,7 +859,7 @@ type productSearchGRPCClient struct {
 	LROClient **lroauto.OperationsClient
 
 	// The x-goog-* metadata to be sent with each request.
-	xGoogMetadata metadata.MD
+	xGoogHeaders []string
 }
 
 // NewProductSearchClient creates a new product search client based on gRPC.
@@ -869,17 +868,17 @@ type productSearchGRPCClient struct {
 // Manages Products and ProductSets of reference images for use in product
 // search. It uses the following resource model:
 //
-//	The API has a collection of ProductSet resources, named
-//	projects/*/locations/*/productSets/*, which acts as a way to put different
-//	products into groups to limit identification.
+//   The API has a collection of ProductSet resources, named
+//   projects/*/locations/*/productSets/*, which acts as a way to put different
+//   products into groups to limit identification.
 //
 // In parallel,
 //
-//	The API has a collection of Product resources, named
-//	projects/*/locations/*/products/*
+//   The API has a collection of Product resources, named
+//   projects/*/locations/*/products/*
 //
-//	Each Product has a collection of ReferenceImage resources, named
-//	projects/*/locations/*/products/*/referenceImages/*
+//   Each Product has a collection of ReferenceImage resources, named
+//   projects/*/locations/*/products/*/referenceImages/*
 func NewProductSearchClient(ctx context.Context, opts ...option.ClientOption) (*ProductSearchClient, error) {
 	clientOpts := defaultProductSearchGRPCClientOptions()
 	if newProductSearchClientHook != nil {
@@ -933,7 +932,7 @@ func (c *productSearchGRPCClient) Connection() *grpc.ClientConn {
 func (c *productSearchGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -955,8 +954,8 @@ type productSearchRESTClient struct {
 	// Users should not Close this client.
 	LROClient **lroauto.OperationsClient
 
-	// The x-goog-* metadata to be sent with each request.
-	xGoogMetadata metadata.MD
+	// The x-goog-* headers to be sent with each request.
+	xGoogHeaders []string
 
 	// Points back to the CallOptions field of the containing ProductSearchClient
 	CallOptions **ProductSearchCallOptions
@@ -967,17 +966,17 @@ type productSearchRESTClient struct {
 // Manages Products and ProductSets of reference images for use in product
 // search. It uses the following resource model:
 //
-//	The API has a collection of ProductSet resources, named
-//	projects/*/locations/*/productSets/*, which acts as a way to put different
-//	products into groups to limit identification.
+//   The API has a collection of ProductSet resources, named
+//   projects/*/locations/*/productSets/*, which acts as a way to put different
+//   products into groups to limit identification.
 //
 // In parallel,
 //
-//	The API has a collection of Product resources, named
-//	projects/*/locations/*/products/*
+//   The API has a collection of Product resources, named
+//   projects/*/locations/*/products/*
 //
-//	Each Product has a collection of ReferenceImage resources, named
-//	projects/*/locations/*/products/*/referenceImages/*
+//   Each Product has a collection of ReferenceImage resources, named
+//   projects/*/locations/*/products/*/referenceImages/*
 func NewProductSearchRESTClient(ctx context.Context, opts ...option.ClientOption) (*ProductSearchClient, error) {
 	clientOpts := append(defaultProductSearchRESTClientOptions(), opts...)
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
@@ -1021,7 +1020,7 @@ func defaultProductSearchRESTClientOptions() []option.ClientOption {
 func (c *productSearchRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -1039,9 +1038,10 @@ func (c *productSearchRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 func (c *productSearchGRPCClient) CreateProductSet(ctx context.Context, req *visionpb.CreateProductSetRequest, opts ...gax.CallOption) (*visionpb.ProductSet, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).CreateProductSet[0:len((*c.CallOptions).CreateProductSet):len((*c.CallOptions).CreateProductSet)], opts...)
 	var resp *visionpb.ProductSet
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1056,9 +1056,10 @@ func (c *productSearchGRPCClient) CreateProductSet(ctx context.Context, req *vis
 }
 
 func (c *productSearchGRPCClient) ListProductSets(ctx context.Context, req *visionpb.ListProductSetsRequest, opts ...gax.CallOption) *ProductSetIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ListProductSets[0:len((*c.CallOptions).ListProductSets):len((*c.CallOptions).ListProductSets)], opts...)
 	it := &ProductSetIterator{}
 	req = proto.Clone(req).(*visionpb.ListProductSetsRequest)
@@ -1101,9 +1102,10 @@ func (c *productSearchGRPCClient) ListProductSets(ctx context.Context, req *visi
 }
 
 func (c *productSearchGRPCClient) GetProductSet(ctx context.Context, req *visionpb.GetProductSetRequest, opts ...gax.CallOption) (*visionpb.ProductSet, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).GetProductSet[0:len((*c.CallOptions).GetProductSet):len((*c.CallOptions).GetProductSet)], opts...)
 	var resp *visionpb.ProductSet
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1118,9 +1120,10 @@ func (c *productSearchGRPCClient) GetProductSet(ctx context.Context, req *vision
 }
 
 func (c *productSearchGRPCClient) UpdateProductSet(ctx context.Context, req *visionpb.UpdateProductSetRequest, opts ...gax.CallOption) (*visionpb.ProductSet, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "product_set.name", url.QueryEscape(req.GetProductSet().GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "product_set.name", url.QueryEscape(req.GetProductSet().GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).UpdateProductSet[0:len((*c.CallOptions).UpdateProductSet):len((*c.CallOptions).UpdateProductSet)], opts...)
 	var resp *visionpb.ProductSet
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1135,9 +1138,10 @@ func (c *productSearchGRPCClient) UpdateProductSet(ctx context.Context, req *vis
 }
 
 func (c *productSearchGRPCClient) DeleteProductSet(ctx context.Context, req *visionpb.DeleteProductSetRequest, opts ...gax.CallOption) error {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).DeleteProductSet[0:len((*c.CallOptions).DeleteProductSet):len((*c.CallOptions).DeleteProductSet)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1148,9 +1152,10 @@ func (c *productSearchGRPCClient) DeleteProductSet(ctx context.Context, req *vis
 }
 
 func (c *productSearchGRPCClient) CreateProduct(ctx context.Context, req *visionpb.CreateProductRequest, opts ...gax.CallOption) (*visionpb.Product, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).CreateProduct[0:len((*c.CallOptions).CreateProduct):len((*c.CallOptions).CreateProduct)], opts...)
 	var resp *visionpb.Product
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1165,9 +1170,10 @@ func (c *productSearchGRPCClient) CreateProduct(ctx context.Context, req *vision
 }
 
 func (c *productSearchGRPCClient) ListProducts(ctx context.Context, req *visionpb.ListProductsRequest, opts ...gax.CallOption) *ProductIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ListProducts[0:len((*c.CallOptions).ListProducts):len((*c.CallOptions).ListProducts)], opts...)
 	it := &ProductIterator{}
 	req = proto.Clone(req).(*visionpb.ListProductsRequest)
@@ -1210,9 +1216,10 @@ func (c *productSearchGRPCClient) ListProducts(ctx context.Context, req *visionp
 }
 
 func (c *productSearchGRPCClient) GetProduct(ctx context.Context, req *visionpb.GetProductRequest, opts ...gax.CallOption) (*visionpb.Product, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).GetProduct[0:len((*c.CallOptions).GetProduct):len((*c.CallOptions).GetProduct)], opts...)
 	var resp *visionpb.Product
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1227,9 +1234,10 @@ func (c *productSearchGRPCClient) GetProduct(ctx context.Context, req *visionpb.
 }
 
 func (c *productSearchGRPCClient) UpdateProduct(ctx context.Context, req *visionpb.UpdateProductRequest, opts ...gax.CallOption) (*visionpb.Product, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "product.name", url.QueryEscape(req.GetProduct().GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "product.name", url.QueryEscape(req.GetProduct().GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).UpdateProduct[0:len((*c.CallOptions).UpdateProduct):len((*c.CallOptions).UpdateProduct)], opts...)
 	var resp *visionpb.Product
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1244,9 +1252,10 @@ func (c *productSearchGRPCClient) UpdateProduct(ctx context.Context, req *vision
 }
 
 func (c *productSearchGRPCClient) DeleteProduct(ctx context.Context, req *visionpb.DeleteProductRequest, opts ...gax.CallOption) error {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).DeleteProduct[0:len((*c.CallOptions).DeleteProduct):len((*c.CallOptions).DeleteProduct)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1257,9 +1266,10 @@ func (c *productSearchGRPCClient) DeleteProduct(ctx context.Context, req *vision
 }
 
 func (c *productSearchGRPCClient) CreateReferenceImage(ctx context.Context, req *visionpb.CreateReferenceImageRequest, opts ...gax.CallOption) (*visionpb.ReferenceImage, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).CreateReferenceImage[0:len((*c.CallOptions).CreateReferenceImage):len((*c.CallOptions).CreateReferenceImage)], opts...)
 	var resp *visionpb.ReferenceImage
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1274,9 +1284,10 @@ func (c *productSearchGRPCClient) CreateReferenceImage(ctx context.Context, req 
 }
 
 func (c *productSearchGRPCClient) DeleteReferenceImage(ctx context.Context, req *visionpb.DeleteReferenceImageRequest, opts ...gax.CallOption) error {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).DeleteReferenceImage[0:len((*c.CallOptions).DeleteReferenceImage):len((*c.CallOptions).DeleteReferenceImage)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1287,9 +1298,10 @@ func (c *productSearchGRPCClient) DeleteReferenceImage(ctx context.Context, req 
 }
 
 func (c *productSearchGRPCClient) ListReferenceImages(ctx context.Context, req *visionpb.ListReferenceImagesRequest, opts ...gax.CallOption) *ReferenceImageIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ListReferenceImages[0:len((*c.CallOptions).ListReferenceImages):len((*c.CallOptions).ListReferenceImages)], opts...)
 	it := &ReferenceImageIterator{}
 	req = proto.Clone(req).(*visionpb.ListReferenceImagesRequest)
@@ -1332,9 +1344,10 @@ func (c *productSearchGRPCClient) ListReferenceImages(ctx context.Context, req *
 }
 
 func (c *productSearchGRPCClient) GetReferenceImage(ctx context.Context, req *visionpb.GetReferenceImageRequest, opts ...gax.CallOption) (*visionpb.ReferenceImage, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).GetReferenceImage[0:len((*c.CallOptions).GetReferenceImage):len((*c.CallOptions).GetReferenceImage)], opts...)
 	var resp *visionpb.ReferenceImage
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1349,9 +1362,10 @@ func (c *productSearchGRPCClient) GetReferenceImage(ctx context.Context, req *vi
 }
 
 func (c *productSearchGRPCClient) AddProductToProductSet(ctx context.Context, req *visionpb.AddProductToProductSetRequest, opts ...gax.CallOption) error {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).AddProductToProductSet[0:len((*c.CallOptions).AddProductToProductSet):len((*c.CallOptions).AddProductToProductSet)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1362,9 +1376,10 @@ func (c *productSearchGRPCClient) AddProductToProductSet(ctx context.Context, re
 }
 
 func (c *productSearchGRPCClient) RemoveProductFromProductSet(ctx context.Context, req *visionpb.RemoveProductFromProductSetRequest, opts ...gax.CallOption) error {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).RemoveProductFromProductSet[0:len((*c.CallOptions).RemoveProductFromProductSet):len((*c.CallOptions).RemoveProductFromProductSet)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1375,9 +1390,10 @@ func (c *productSearchGRPCClient) RemoveProductFromProductSet(ctx context.Contex
 }
 
 func (c *productSearchGRPCClient) ListProductsInProductSet(ctx context.Context, req *visionpb.ListProductsInProductSetRequest, opts ...gax.CallOption) *ProductIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ListProductsInProductSet[0:len((*c.CallOptions).ListProductsInProductSet):len((*c.CallOptions).ListProductsInProductSet)], opts...)
 	it := &ProductIterator{}
 	req = proto.Clone(req).(*visionpb.ListProductsInProductSetRequest)
@@ -1420,9 +1436,10 @@ func (c *productSearchGRPCClient) ListProductsInProductSet(ctx context.Context, 
 }
 
 func (c *productSearchGRPCClient) ImportProductSets(ctx context.Context, req *visionpb.ImportProductSetsRequest, opts ...gax.CallOption) (*ImportProductSetsOperation, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ImportProductSets[0:len((*c.CallOptions).ImportProductSets):len((*c.CallOptions).ImportProductSets)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1439,9 +1456,10 @@ func (c *productSearchGRPCClient) ImportProductSets(ctx context.Context, req *vi
 }
 
 func (c *productSearchGRPCClient) PurgeProducts(ctx context.Context, req *visionpb.PurgeProductsRequest, opts ...gax.CallOption) (*PurgeProductsOperation, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).PurgeProducts[0:len((*c.CallOptions).PurgeProducts):len((*c.CallOptions).PurgeProducts)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1461,8 +1479,8 @@ func (c *productSearchGRPCClient) PurgeProducts(ctx context.Context, req *vision
 //
 // Possible errors:
 //
-//	Returns INVALID_ARGUMENT if display_name is missing, or is longer than
-//	4096 characters.
+//   Returns INVALID_ARGUMENT if display_name is missing, or is longer than
+//   4096 characters.
 func (c *productSearchRESTClient) CreateProductSet(ctx context.Context, req *visionpb.CreateProductSetRequest, opts ...gax.CallOption) (*visionpb.ProductSet, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetProductSet()
@@ -1486,9 +1504,11 @@ func (c *productSearchRESTClient) CreateProductSet(ctx context.Context, req *vis
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).CreateProductSet[0:len((*c.CallOptions).CreateProductSet):len((*c.CallOptions).CreateProductSet)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &visionpb.ProductSet{}
@@ -1534,8 +1554,8 @@ func (c *productSearchRESTClient) CreateProductSet(ctx context.Context, req *vis
 //
 // Possible errors:
 //
-//	Returns INVALID_ARGUMENT if page_size is greater than 100, or less
-//	than 1.
+//   Returns INVALID_ARGUMENT if page_size is greater than 100, or less
+//   than 1.
 func (c *productSearchRESTClient) ListProductSets(ctx context.Context, req *visionpb.ListProductSetsRequest, opts ...gax.CallOption) *ProductSetIterator {
 	it := &ProductSetIterator{}
 	req = proto.Clone(req).(*visionpb.ListProductSetsRequest)
@@ -1568,7 +1588,8 @@ func (c *productSearchRESTClient) ListProductSets(ctx context.Context, req *visi
 		baseUrl.RawQuery = params.Encode()
 
 		// Build HTTP headers from client and context metadata.
-		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
 		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			if settings.Path != "" {
 				baseUrl.Path = settings.Path
@@ -1627,7 +1648,7 @@ func (c *productSearchRESTClient) ListProductSets(ctx context.Context, req *visi
 //
 // Possible errors:
 //
-//	Returns NOT_FOUND if the ProductSet does not exist.
+//   Returns NOT_FOUND if the ProductSet does not exist.
 func (c *productSearchRESTClient) GetProductSet(ctx context.Context, req *visionpb.GetProductSetRequest, opts ...gax.CallOption) (*visionpb.ProductSet, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -1641,9 +1662,11 @@ func (c *productSearchRESTClient) GetProductSet(ctx context.Context, req *vision
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).GetProductSet[0:len((*c.CallOptions).GetProductSet):len((*c.CallOptions).GetProductSet)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &visionpb.ProductSet{}
@@ -1690,10 +1713,10 @@ func (c *productSearchRESTClient) GetProductSet(ctx context.Context, req *vision
 //
 // Possible errors:
 //
-//	Returns NOT_FOUND if the ProductSet does not exist.
+//   Returns NOT_FOUND if the ProductSet does not exist.
 //
-//	Returns INVALID_ARGUMENT if display_name is present in update_mask but
-//	missing from the request or longer than 4096 characters.
+//   Returns INVALID_ARGUMENT if display_name is present in update_mask but
+//   missing from the request or longer than 4096 characters.
 func (c *productSearchRESTClient) UpdateProductSet(ctx context.Context, req *visionpb.UpdateProductSetRequest, opts ...gax.CallOption) (*visionpb.ProductSet, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetProductSet()
@@ -1721,9 +1744,11 @@ func (c *productSearchRESTClient) UpdateProductSet(ctx context.Context, req *vis
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "product_set.name", url.QueryEscape(req.GetProductSet().GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "product_set.name", url.QueryEscape(req.GetProductSet().GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).UpdateProductSet[0:len((*c.CallOptions).UpdateProductSet):len((*c.CallOptions).UpdateProductSet)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &visionpb.ProductSet{}
@@ -1782,9 +1807,11 @@ func (c *productSearchRESTClient) DeleteProductSet(ctx context.Context, req *vis
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -1812,12 +1839,12 @@ func (c *productSearchRESTClient) DeleteProductSet(ctx context.Context, req *vis
 //
 // Possible errors:
 //
-//	Returns INVALID_ARGUMENT if display_name is missing or longer than 4096
-//	characters.
+//   Returns INVALID_ARGUMENT if display_name is missing or longer than 4096
+//   characters.
 //
-//	Returns INVALID_ARGUMENT if description is longer than 4096 characters.
+//   Returns INVALID_ARGUMENT if description is longer than 4096 characters.
 //
-//	Returns INVALID_ARGUMENT if product_category is missing or invalid.
+//   Returns INVALID_ARGUMENT if product_category is missing or invalid.
 func (c *productSearchRESTClient) CreateProduct(ctx context.Context, req *visionpb.CreateProductRequest, opts ...gax.CallOption) (*visionpb.Product, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetProduct()
@@ -1841,9 +1868,11 @@ func (c *productSearchRESTClient) CreateProduct(ctx context.Context, req *vision
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).CreateProduct[0:len((*c.CallOptions).CreateProduct):len((*c.CallOptions).CreateProduct)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &visionpb.Product{}
@@ -1889,7 +1918,7 @@ func (c *productSearchRESTClient) CreateProduct(ctx context.Context, req *vision
 //
 // Possible errors:
 //
-//	Returns INVALID_ARGUMENT if page_size is greater than 100 or less than 1.
+//   Returns INVALID_ARGUMENT if page_size is greater than 100 or less than 1.
 func (c *productSearchRESTClient) ListProducts(ctx context.Context, req *visionpb.ListProductsRequest, opts ...gax.CallOption) *ProductIterator {
 	it := &ProductIterator{}
 	req = proto.Clone(req).(*visionpb.ListProductsRequest)
@@ -1922,7 +1951,8 @@ func (c *productSearchRESTClient) ListProducts(ctx context.Context, req *visionp
 		baseUrl.RawQuery = params.Encode()
 
 		// Build HTTP headers from client and context metadata.
-		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
 		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			if settings.Path != "" {
 				baseUrl.Path = settings.Path
@@ -1981,7 +2011,7 @@ func (c *productSearchRESTClient) ListProducts(ctx context.Context, req *visionp
 //
 // Possible errors:
 //
-//	Returns NOT_FOUND if the Product does not exist.
+//   Returns NOT_FOUND if the Product does not exist.
 func (c *productSearchRESTClient) GetProduct(ctx context.Context, req *visionpb.GetProductRequest, opts ...gax.CallOption) (*visionpb.Product, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -1995,9 +2025,11 @@ func (c *productSearchRESTClient) GetProduct(ctx context.Context, req *visionpb.
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).GetProduct[0:len((*c.CallOptions).GetProduct):len((*c.CallOptions).GetProduct)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &visionpb.Product{}
@@ -2048,15 +2080,15 @@ func (c *productSearchRESTClient) GetProduct(ctx context.Context, req *visionpb.
 //
 // Possible errors:
 //
-//	Returns NOT_FOUND if the Product does not exist.
+//   Returns NOT_FOUND if the Product does not exist.
 //
-//	Returns INVALID_ARGUMENT if display_name is present in update_mask but is
-//	missing from the request or longer than 4096 characters.
+//   Returns INVALID_ARGUMENT if display_name is present in update_mask but is
+//   missing from the request or longer than 4096 characters.
 //
-//	Returns INVALID_ARGUMENT if description is present in update_mask but is
-//	longer than 4096 characters.
+//   Returns INVALID_ARGUMENT if description is present in update_mask but is
+//   longer than 4096 characters.
 //
-//	Returns INVALID_ARGUMENT if product_category is present in update_mask.
+//   Returns INVALID_ARGUMENT if product_category is present in update_mask.
 func (c *productSearchRESTClient) UpdateProduct(ctx context.Context, req *visionpb.UpdateProductRequest, opts ...gax.CallOption) (*visionpb.Product, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetProduct()
@@ -2084,9 +2116,11 @@ func (c *productSearchRESTClient) UpdateProduct(ctx context.Context, req *vision
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "product.name", url.QueryEscape(req.GetProduct().GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "product.name", url.QueryEscape(req.GetProduct().GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).UpdateProduct[0:len((*c.CallOptions).UpdateProduct):len((*c.CallOptions).UpdateProduct)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &visionpb.Product{}
@@ -2146,9 +2180,11 @@ func (c *productSearchRESTClient) DeleteProduct(ctx context.Context, req *vision
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -2185,15 +2221,15 @@ func (c *productSearchRESTClient) DeleteProduct(ctx context.Context, req *vision
 //
 // Possible errors:
 //
-//	Returns INVALID_ARGUMENT if the image_uri is missing or longer than 4096
-//	characters.
+//   Returns INVALID_ARGUMENT if the image_uri is missing or longer than 4096
+//   characters.
 //
-//	Returns INVALID_ARGUMENT if the product does not exist.
+//   Returns INVALID_ARGUMENT if the product does not exist.
 //
-//	Returns INVALID_ARGUMENT if bounding_poly is not provided, and nothing
-//	compatible with the parent product’s product_category is detected.
+//   Returns INVALID_ARGUMENT if bounding_poly is not provided, and nothing
+//   compatible with the parent product’s product_category is detected.
 //
-//	Returns INVALID_ARGUMENT if bounding_poly contains more than 10 polygons.
+//   Returns INVALID_ARGUMENT if bounding_poly contains more than 10 polygons.
 func (c *productSearchRESTClient) CreateReferenceImage(ctx context.Context, req *visionpb.CreateReferenceImageRequest, opts ...gax.CallOption) (*visionpb.ReferenceImage, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetReferenceImage()
@@ -2217,9 +2253,11 @@ func (c *productSearchRESTClient) CreateReferenceImage(ctx context.Context, req 
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).CreateReferenceImage[0:len((*c.CallOptions).CreateReferenceImage):len((*c.CallOptions).CreateReferenceImage)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &visionpb.ReferenceImage{}
@@ -2281,9 +2319,11 @@ func (c *productSearchRESTClient) DeleteReferenceImage(ctx context.Context, req 
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -2311,10 +2351,10 @@ func (c *productSearchRESTClient) DeleteReferenceImage(ctx context.Context, req 
 //
 // Possible errors:
 //
-//	Returns NOT_FOUND if the parent product does not exist.
+//   Returns NOT_FOUND if the parent product does not exist.
 //
-//	Returns INVALID_ARGUMENT if the page_size is greater than 100, or less
-//	than 1.
+//   Returns INVALID_ARGUMENT if the page_size is greater than 100, or less
+//   than 1.
 func (c *productSearchRESTClient) ListReferenceImages(ctx context.Context, req *visionpb.ListReferenceImagesRequest, opts ...gax.CallOption) *ReferenceImageIterator {
 	it := &ReferenceImageIterator{}
 	req = proto.Clone(req).(*visionpb.ListReferenceImagesRequest)
@@ -2347,7 +2387,8 @@ func (c *productSearchRESTClient) ListReferenceImages(ctx context.Context, req *
 		baseUrl.RawQuery = params.Encode()
 
 		// Build HTTP headers from client and context metadata.
-		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
 		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			if settings.Path != "" {
 				baseUrl.Path = settings.Path
@@ -2406,7 +2447,7 @@ func (c *productSearchRESTClient) ListReferenceImages(ctx context.Context, req *
 //
 // Possible errors:
 //
-//	Returns NOT_FOUND if the specified image does not exist.
+//   Returns NOT_FOUND if the specified image does not exist.
 func (c *productSearchRESTClient) GetReferenceImage(ctx context.Context, req *visionpb.GetReferenceImageRequest, opts ...gax.CallOption) (*visionpb.ReferenceImage, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -2420,9 +2461,11 @@ func (c *productSearchRESTClient) GetReferenceImage(ctx context.Context, req *vi
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).GetReferenceImage[0:len((*c.CallOptions).GetReferenceImage):len((*c.CallOptions).GetReferenceImage)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &visionpb.ReferenceImage{}
@@ -2471,7 +2514,7 @@ func (c *productSearchRESTClient) GetReferenceImage(ctx context.Context, req *vi
 //
 // Possible errors:
 //
-//	Returns NOT_FOUND if the Product or the ProductSet doesn’t exist.
+//   Returns NOT_FOUND if the Product or the ProductSet doesn’t exist.
 func (c *productSearchRESTClient) AddProductToProductSet(ctx context.Context, req *visionpb.AddProductToProductSetRequest, opts ...gax.CallOption) error {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -2491,9 +2534,11 @@ func (c *productSearchRESTClient) AddProductToProductSet(ctx context.Context, re
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -2537,9 +2582,11 @@ func (c *productSearchRESTClient) RemoveProductFromProductSet(ctx context.Contex
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -2569,7 +2616,7 @@ func (c *productSearchRESTClient) RemoveProductFromProductSet(ctx context.Contex
 //
 // Possible errors:
 //
-//	Returns INVALID_ARGUMENT if page_size is greater than 100 or less than 1.
+//   Returns INVALID_ARGUMENT if page_size is greater than 100 or less than 1.
 func (c *productSearchRESTClient) ListProductsInProductSet(ctx context.Context, req *visionpb.ListProductsInProductSetRequest, opts ...gax.CallOption) *ProductIterator {
 	it := &ProductIterator{}
 	req = proto.Clone(req).(*visionpb.ListProductsInProductSetRequest)
@@ -2602,7 +2649,8 @@ func (c *productSearchRESTClient) ListProductsInProductSet(ctx context.Context, 
 		baseUrl.RawQuery = params.Encode()
 
 		// Build HTTP headers from client and context metadata.
-		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
 		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			if settings.Path != "" {
 				baseUrl.Path = settings.Path
@@ -2687,9 +2735,11 @@ func (c *productSearchRESTClient) ImportProductSets(ctx context.Context, req *vi
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2778,9 +2828,11 @@ func (c *productSearchRESTClient) PurgeProducts(ctx context.Context, req *vision
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {

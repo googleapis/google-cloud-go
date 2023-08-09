@@ -38,7 +38,6 @@ import (
 	httptransport "google.golang.org/api/transport/http"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/encoding/protojson"
 )
 
@@ -139,29 +138,29 @@ type internalFleetRoutingClient interface {
 //
 // Validity of certain types of fields:
 //
-//	google.protobuf.Timestamp
+//   google.protobuf.Timestamp
 //
-//	  Times are in Unix time: seconds since 1970-01-01T00:00:00+00:00.
+//     Times are in Unix time: seconds since 1970-01-01T00:00:00+00:00.
 //
-//	  seconds must be in [0, 253402300799],
-//	  i.e. in [1970-01-01T00:00:00+00:00, 9999-12-31T23:59:59+00:00].
+//     seconds must be in [0, 253402300799],
+//     i.e. in [1970-01-01T00:00:00+00:00, 9999-12-31T23:59:59+00:00].
 //
-//	  nanos must be unset or set to 0.
+//     nanos must be unset or set to 0.
 //
-//	google.protobuf.Duration
+//   google.protobuf.Duration
 //
-//	  seconds must be in [0, 253402300799],
-//	  i.e. in [1970-01-01T00:00:00+00:00, 9999-12-31T23:59:59+00:00].
+//     seconds must be in [0, 253402300799],
+//     i.e. in [1970-01-01T00:00:00+00:00, 9999-12-31T23:59:59+00:00].
 //
-//	  nanos must be unset or set to 0.
+//     nanos must be unset or set to 0.
 //
-//	google.type.LatLng
+//   google.type.LatLng
 //
-//	  latitude must be in [-90.0, 90.0].
+//     latitude must be in [-90.0, 90.0].
 //
-//	  longitude must be in [-180.0, 180.0].
+//     longitude must be in [-180.0, 180.0].
 //
-//	  at least one of latitude and longitude must be non-zero.
+//     at least one of latitude and longitude must be non-zero.
 type FleetRoutingClient struct {
 	// The internal transport-dependent client.
 	internalClient internalFleetRoutingClient
@@ -262,7 +261,7 @@ type fleetRoutingGRPCClient struct {
 	operationsClient longrunningpb.OperationsClient
 
 	// The x-goog-* metadata to be sent with each request.
-	xGoogMetadata metadata.MD
+	xGoogHeaders []string
 }
 
 // NewFleetRoutingClient creates a new fleet routing client based on gRPC.
@@ -272,29 +271,29 @@ type fleetRoutingGRPCClient struct {
 //
 // Validity of certain types of fields:
 //
-//	google.protobuf.Timestamp
+//   google.protobuf.Timestamp
 //
-//	  Times are in Unix time: seconds since 1970-01-01T00:00:00+00:00.
+//     Times are in Unix time: seconds since 1970-01-01T00:00:00+00:00.
 //
-//	  seconds must be in [0, 253402300799],
-//	  i.e. in [1970-01-01T00:00:00+00:00, 9999-12-31T23:59:59+00:00].
+//     seconds must be in [0, 253402300799],
+//     i.e. in [1970-01-01T00:00:00+00:00, 9999-12-31T23:59:59+00:00].
 //
-//	  nanos must be unset or set to 0.
+//     nanos must be unset or set to 0.
 //
-//	google.protobuf.Duration
+//   google.protobuf.Duration
 //
-//	  seconds must be in [0, 253402300799],
-//	  i.e. in [1970-01-01T00:00:00+00:00, 9999-12-31T23:59:59+00:00].
+//     seconds must be in [0, 253402300799],
+//     i.e. in [1970-01-01T00:00:00+00:00, 9999-12-31T23:59:59+00:00].
 //
-//	  nanos must be unset or set to 0.
+//     nanos must be unset or set to 0.
 //
-//	google.type.LatLng
+//   google.type.LatLng
 //
-//	  latitude must be in [-90.0, 90.0].
+//     latitude must be in [-90.0, 90.0].
 //
-//	  longitude must be in [-180.0, 180.0].
+//     longitude must be in [-180.0, 180.0].
 //
-//	  at least one of latitude and longitude must be non-zero.
+//     at least one of latitude and longitude must be non-zero.
 func NewFleetRoutingClient(ctx context.Context, opts ...option.ClientOption) (*FleetRoutingClient, error) {
 	clientOpts := defaultFleetRoutingGRPCClientOptions()
 	if newFleetRoutingClientHook != nil {
@@ -349,7 +348,7 @@ func (c *fleetRoutingGRPCClient) Connection() *grpc.ClientConn {
 func (c *fleetRoutingGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -371,8 +370,8 @@ type fleetRoutingRESTClient struct {
 	// Users should not Close this client.
 	LROClient **lroauto.OperationsClient
 
-	// The x-goog-* metadata to be sent with each request.
-	xGoogMetadata metadata.MD
+	// The x-goog-* headers to be sent with each request.
+	xGoogHeaders []string
 
 	// Points back to the CallOptions field of the containing FleetRoutingClient
 	CallOptions **FleetRoutingCallOptions
@@ -384,29 +383,29 @@ type fleetRoutingRESTClient struct {
 //
 // Validity of certain types of fields:
 //
-//	google.protobuf.Timestamp
+//   google.protobuf.Timestamp
 //
-//	  Times are in Unix time: seconds since 1970-01-01T00:00:00+00:00.
+//     Times are in Unix time: seconds since 1970-01-01T00:00:00+00:00.
 //
-//	  seconds must be in [0, 253402300799],
-//	  i.e. in [1970-01-01T00:00:00+00:00, 9999-12-31T23:59:59+00:00].
+//     seconds must be in [0, 253402300799],
+//     i.e. in [1970-01-01T00:00:00+00:00, 9999-12-31T23:59:59+00:00].
 //
-//	  nanos must be unset or set to 0.
+//     nanos must be unset or set to 0.
 //
-//	google.protobuf.Duration
+//   google.protobuf.Duration
 //
-//	  seconds must be in [0, 253402300799],
-//	  i.e. in [1970-01-01T00:00:00+00:00, 9999-12-31T23:59:59+00:00].
+//     seconds must be in [0, 253402300799],
+//     i.e. in [1970-01-01T00:00:00+00:00, 9999-12-31T23:59:59+00:00].
 //
-//	  nanos must be unset or set to 0.
+//     nanos must be unset or set to 0.
 //
-//	google.type.LatLng
+//   google.type.LatLng
 //
-//	  latitude must be in [-90.0, 90.0].
+//     latitude must be in [-90.0, 90.0].
 //
-//	  longitude must be in [-180.0, 180.0].
+//     longitude must be in [-180.0, 180.0].
 //
-//	  at least one of latitude and longitude must be non-zero.
+//     at least one of latitude and longitude must be non-zero.
 func NewFleetRoutingRESTClient(ctx context.Context, opts ...option.ClientOption) (*FleetRoutingClient, error) {
 	clientOpts := append(defaultFleetRoutingRESTClientOptions(), opts...)
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
@@ -450,7 +449,7 @@ func defaultFleetRoutingRESTClientOptions() []option.ClientOption {
 func (c *fleetRoutingRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -468,9 +467,10 @@ func (c *fleetRoutingRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 func (c *fleetRoutingGRPCClient) OptimizeTours(ctx context.Context, req *optimizationpb.OptimizeToursRequest, opts ...gax.CallOption) (*optimizationpb.OptimizeToursResponse, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).OptimizeTours[0:len((*c.CallOptions).OptimizeTours):len((*c.CallOptions).OptimizeTours)], opts...)
 	var resp *optimizationpb.OptimizeToursResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -485,9 +485,10 @@ func (c *fleetRoutingGRPCClient) OptimizeTours(ctx context.Context, req *optimiz
 }
 
 func (c *fleetRoutingGRPCClient) BatchOptimizeTours(ctx context.Context, req *optimizationpb.BatchOptimizeToursRequest, opts ...gax.CallOption) (*BatchOptimizeToursOperation, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).BatchOptimizeTours[0:len((*c.CallOptions).BatchOptimizeTours):len((*c.CallOptions).BatchOptimizeTours)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -504,9 +505,10 @@ func (c *fleetRoutingGRPCClient) BatchOptimizeTours(ctx context.Context, req *op
 }
 
 func (c *fleetRoutingGRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -553,9 +555,11 @@ func (c *fleetRoutingRESTClient) OptimizeTours(ctx context.Context, req *optimiz
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).OptimizeTours[0:len((*c.CallOptions).OptimizeTours):len((*c.CallOptions).OptimizeTours)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &optimizationpb.OptimizeToursResponse{}
@@ -626,9 +630,11 @@ func (c *fleetRoutingRESTClient) BatchOptimizeTours(ctx context.Context, req *op
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -688,9 +694,11 @@ func (c *fleetRoutingRESTClient) GetOperation(ctx context.Context, req *longrunn
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}

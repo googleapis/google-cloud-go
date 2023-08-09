@@ -28,7 +28,6 @@ import (
 	gtransport "google.golang.org/api/transport/grpc"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/metadata"
 )
 
 var newStreamingVideoIntelligenceClientHook clientHook
@@ -131,7 +130,7 @@ type streamingVideoIntelligenceGRPCClient struct {
 	streamingVideoIntelligenceClient videointelligencepb.StreamingVideoIntelligenceServiceClient
 
 	// The x-goog-* metadata to be sent with each request.
-	xGoogMetadata metadata.MD
+	xGoogHeaders []string
 }
 
 // NewStreamingVideoIntelligenceClient creates a new streaming video intelligence service client based on gRPC.
@@ -180,7 +179,7 @@ func (c *streamingVideoIntelligenceGRPCClient) Connection() *grpc.ClientConn {
 func (c *streamingVideoIntelligenceGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -190,7 +189,7 @@ func (c *streamingVideoIntelligenceGRPCClient) Close() error {
 }
 
 func (c *streamingVideoIntelligenceGRPCClient) StreamingAnnotateVideo(ctx context.Context, opts ...gax.CallOption) (videointelligencepb.StreamingVideoIntelligenceService_StreamingAnnotateVideoClient, error) {
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
 	var resp videointelligencepb.StreamingVideoIntelligenceService_StreamingAnnotateVideoClient
 	opts = append((*c.CallOptions).StreamingAnnotateVideo[0:len((*c.CallOptions).StreamingAnnotateVideo):len((*c.CallOptions).StreamingAnnotateVideo)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {

@@ -40,7 +40,6 @@ import (
 	httptransport "google.golang.org/api/transport/http"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 )
@@ -433,35 +432,35 @@ func (c *ProjectsClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPoli
 //
 // The following constraints apply when using setIamPolicy():
 //
-//	Project does not support allUsers and allAuthenticatedUsers as
-//	members in a Binding of a Policy.
+//   Project does not support allUsers and allAuthenticatedUsers as
+//   members in a Binding of a Policy.
 //
-//	The owner role can be granted to a user, serviceAccount, or a group
-//	that is part of an organization. For example,
-//	group@myownpersonaldomain.com (at mailto:group@myownpersonaldomain.com) could be added as an owner to a project in
-//	the myownpersonaldomain.com (at http://myownpersonaldomain.com) organization, but not the examplepetstore.com (at http://examplepetstore.com)
-//	organization.
+//   The owner role can be granted to a user, serviceAccount, or a group
+//   that is part of an organization. For example,
+//   group@myownpersonaldomain.com (at mailto:group@myownpersonaldomain.com) could be added as an owner to a project in
+//   the myownpersonaldomain.com (at http://myownpersonaldomain.com) organization, but not the examplepetstore.com (at http://examplepetstore.com)
+//   organization.
 //
-//	Service accounts can be made owners of a project directly
-//	without any restrictions. However, to be added as an owner, a user must be
-//	invited using the Cloud Platform console and must accept the invitation.
+//   Service accounts can be made owners of a project directly
+//   without any restrictions. However, to be added as an owner, a user must be
+//   invited using the Cloud Platform console and must accept the invitation.
 //
-//	A user cannot be granted the owner role using setIamPolicy(). The user
-//	must be granted the owner role using the Cloud Platform Console and must
-//	explicitly accept the invitation.
+//   A user cannot be granted the owner role using setIamPolicy(). The user
+//   must be granted the owner role using the Cloud Platform Console and must
+//   explicitly accept the invitation.
 //
-//	Invitations to grant the owner role cannot be sent using
-//	setIamPolicy();
-//	they must be sent only using the Cloud Platform Console.
+//   Invitations to grant the owner role cannot be sent using
+//   setIamPolicy();
+//   they must be sent only using the Cloud Platform Console.
 //
-//	If the project is not part of an organization, there must be at least
-//	one owner who has accepted the Terms of Service (ToS) agreement in the
-//	policy. Calling setIamPolicy() to remove the last ToS-accepted owner
-//	from the policy will fail. This restriction also applies to legacy
-//	projects that no longer have owners who have accepted the ToS. Edits to
-//	IAM policies will be rejected until the lack of a ToS-accepting owner is
-//	rectified. If the project is part of an organization, you can remove all
-//	owners, potentially making the organization inaccessible.
+//   If the project is not part of an organization, there must be at least
+//   one owner who has accepted the Terms of Service (ToS) agreement in the
+//   policy. Calling setIamPolicy() to remove the last ToS-accepted owner
+//   from the policy will fail. This restriction also applies to legacy
+//   projects that no longer have owners who have accepted the ToS. Edits to
+//   IAM policies will be rejected until the lack of a ToS-accepting owner is
+//   rectified. If the project is part of an organization, you can remove all
+//   owners, potentially making the organization inaccessible.
 func (c *ProjectsClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
 	return c.internalClient.SetIamPolicy(ctx, req, opts...)
 }
@@ -498,7 +497,7 @@ type projectsGRPCClient struct {
 	operationsClient longrunningpb.OperationsClient
 
 	// The x-goog-* metadata to be sent with each request.
-	xGoogMetadata metadata.MD
+	xGoogHeaders []string
 }
 
 // NewProjectsClient creates a new projects client based on gRPC.
@@ -559,7 +558,7 @@ func (c *projectsGRPCClient) Connection() *grpc.ClientConn {
 func (c *projectsGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -581,8 +580,8 @@ type projectsRESTClient struct {
 	// Users should not Close this client.
 	LROClient **lroauto.OperationsClient
 
-	// The x-goog-* metadata to be sent with each request.
-	xGoogMetadata metadata.MD
+	// The x-goog-* headers to be sent with each request.
+	xGoogHeaders []string
 
 	// Points back to the CallOptions field of the containing ProjectsClient
 	CallOptions **ProjectsCallOptions
@@ -634,7 +633,7 @@ func defaultProjectsRESTClientOptions() []option.ClientOption {
 func (c *projectsRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -652,9 +651,10 @@ func (c *projectsRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 func (c *projectsGRPCClient) GetProject(ctx context.Context, req *resourcemanagerpb.GetProjectRequest, opts ...gax.CallOption) (*resourcemanagerpb.Project, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).GetProject[0:len((*c.CallOptions).GetProject):len((*c.CallOptions).GetProject)], opts...)
 	var resp *resourcemanagerpb.Project
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -669,7 +669,7 @@ func (c *projectsGRPCClient) GetProject(ctx context.Context, req *resourcemanage
 }
 
 func (c *projectsGRPCClient) ListProjects(ctx context.Context, req *resourcemanagerpb.ListProjectsRequest, opts ...gax.CallOption) *ProjectIterator {
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
 	opts = append((*c.CallOptions).ListProjects[0:len((*c.CallOptions).ListProjects):len((*c.CallOptions).ListProjects)], opts...)
 	it := &ProjectIterator{}
 	req = proto.Clone(req).(*resourcemanagerpb.ListProjectsRequest)
@@ -712,7 +712,7 @@ func (c *projectsGRPCClient) ListProjects(ctx context.Context, req *resourcemana
 }
 
 func (c *projectsGRPCClient) SearchProjects(ctx context.Context, req *resourcemanagerpb.SearchProjectsRequest, opts ...gax.CallOption) *ProjectIterator {
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
 	opts = append((*c.CallOptions).SearchProjects[0:len((*c.CallOptions).SearchProjects):len((*c.CallOptions).SearchProjects)], opts...)
 	it := &ProjectIterator{}
 	req = proto.Clone(req).(*resourcemanagerpb.SearchProjectsRequest)
@@ -755,7 +755,7 @@ func (c *projectsGRPCClient) SearchProjects(ctx context.Context, req *resourcema
 }
 
 func (c *projectsGRPCClient) CreateProject(ctx context.Context, req *resourcemanagerpb.CreateProjectRequest, opts ...gax.CallOption) (*CreateProjectOperation, error) {
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
 	opts = append((*c.CallOptions).CreateProject[0:len((*c.CallOptions).CreateProject):len((*c.CallOptions).CreateProject)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -772,9 +772,10 @@ func (c *projectsGRPCClient) CreateProject(ctx context.Context, req *resourceman
 }
 
 func (c *projectsGRPCClient) UpdateProject(ctx context.Context, req *resourcemanagerpb.UpdateProjectRequest, opts ...gax.CallOption) (*UpdateProjectOperation, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "project.name", url.QueryEscape(req.GetProject().GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "project.name", url.QueryEscape(req.GetProject().GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).UpdateProject[0:len((*c.CallOptions).UpdateProject):len((*c.CallOptions).UpdateProject)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -791,9 +792,10 @@ func (c *projectsGRPCClient) UpdateProject(ctx context.Context, req *resourceman
 }
 
 func (c *projectsGRPCClient) MoveProject(ctx context.Context, req *resourcemanagerpb.MoveProjectRequest, opts ...gax.CallOption) (*MoveProjectOperation, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).MoveProject[0:len((*c.CallOptions).MoveProject):len((*c.CallOptions).MoveProject)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -810,9 +812,10 @@ func (c *projectsGRPCClient) MoveProject(ctx context.Context, req *resourcemanag
 }
 
 func (c *projectsGRPCClient) DeleteProject(ctx context.Context, req *resourcemanagerpb.DeleteProjectRequest, opts ...gax.CallOption) (*DeleteProjectOperation, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).DeleteProject[0:len((*c.CallOptions).DeleteProject):len((*c.CallOptions).DeleteProject)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -829,9 +832,10 @@ func (c *projectsGRPCClient) DeleteProject(ctx context.Context, req *resourceman
 }
 
 func (c *projectsGRPCClient) UndeleteProject(ctx context.Context, req *resourcemanagerpb.UndeleteProjectRequest, opts ...gax.CallOption) (*UndeleteProjectOperation, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).UndeleteProject[0:len((*c.CallOptions).UndeleteProject):len((*c.CallOptions).UndeleteProject)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -848,9 +852,10 @@ func (c *projectsGRPCClient) UndeleteProject(ctx context.Context, req *resourcem
 }
 
 func (c *projectsGRPCClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).GetIamPolicy[0:len((*c.CallOptions).GetIamPolicy):len((*c.CallOptions).GetIamPolicy)], opts...)
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -865,9 +870,10 @@ func (c *projectsGRPCClient) GetIamPolicy(ctx context.Context, req *iampb.GetIam
 }
 
 func (c *projectsGRPCClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).SetIamPolicy[0:len((*c.CallOptions).SetIamPolicy):len((*c.CallOptions).SetIamPolicy)], opts...)
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -882,9 +888,10 @@ func (c *projectsGRPCClient) SetIamPolicy(ctx context.Context, req *iampb.SetIam
 }
 
 func (c *projectsGRPCClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermissionsRequest, opts ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).TestIamPermissions[0:len((*c.CallOptions).TestIamPermissions):len((*c.CallOptions).TestIamPermissions)], opts...)
 	var resp *iampb.TestIamPermissionsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -899,9 +906,10 @@ func (c *projectsGRPCClient) TestIamPermissions(ctx context.Context, req *iampb.
 }
 
 func (c *projectsGRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -933,9 +941,11 @@ func (c *projectsRESTClient) GetProject(ctx context.Context, req *resourcemanage
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).GetProject[0:len((*c.CallOptions).GetProject):len((*c.CallOptions).GetProject)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &resourcemanagerpb.Project{}
@@ -1019,7 +1029,8 @@ func (c *projectsRESTClient) ListProjects(ctx context.Context, req *resourcemana
 		baseUrl.RawQuery = params.Encode()
 
 		// Build HTTP headers from client and context metadata.
-		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
 		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			if settings.Path != "" {
 				baseUrl.Path = settings.Path
@@ -1119,7 +1130,8 @@ func (c *projectsRESTClient) SearchProjects(ctx context.Context, req *resourcema
 		baseUrl.RawQuery = params.Encode()
 
 		// Build HTTP headers from client and context metadata.
-		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
 		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			if settings.Path != "" {
 				baseUrl.Path = settings.Path
@@ -1199,7 +1211,8 @@ func (c *projectsRESTClient) CreateProject(ctx context.Context, req *resourceman
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1278,9 +1291,11 @@ func (c *projectsRESTClient) UpdateProject(ctx context.Context, req *resourceman
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "project.name", url.QueryEscape(req.GetProject().GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "project.name", url.QueryEscape(req.GetProject().GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1359,9 +1374,11 @@ func (c *projectsRESTClient) MoveProject(ctx context.Context, req *resourcemanag
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1453,9 +1470,11 @@ func (c *projectsRESTClient) DeleteProject(ctx context.Context, req *resourceman
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1529,9 +1548,11 @@ func (c *projectsRESTClient) UndeleteProject(ctx context.Context, req *resourcem
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1599,9 +1620,11 @@ func (c *projectsRESTClient) GetIamPolicy(ctx context.Context, req *iampb.GetIam
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).GetIamPolicy[0:len((*c.CallOptions).GetIamPolicy):len((*c.CallOptions).GetIamPolicy)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &iampb.Policy{}
@@ -1655,35 +1678,35 @@ func (c *projectsRESTClient) GetIamPolicy(ctx context.Context, req *iampb.GetIam
 //
 // The following constraints apply when using setIamPolicy():
 //
-//	Project does not support allUsers and allAuthenticatedUsers as
-//	members in a Binding of a Policy.
+//   Project does not support allUsers and allAuthenticatedUsers as
+//   members in a Binding of a Policy.
 //
-//	The owner role can be granted to a user, serviceAccount, or a group
-//	that is part of an organization. For example,
-//	group@myownpersonaldomain.com (at mailto:group@myownpersonaldomain.com) could be added as an owner to a project in
-//	the myownpersonaldomain.com (at http://myownpersonaldomain.com) organization, but not the examplepetstore.com (at http://examplepetstore.com)
-//	organization.
+//   The owner role can be granted to a user, serviceAccount, or a group
+//   that is part of an organization. For example,
+//   group@myownpersonaldomain.com (at mailto:group@myownpersonaldomain.com) could be added as an owner to a project in
+//   the myownpersonaldomain.com (at http://myownpersonaldomain.com) organization, but not the examplepetstore.com (at http://examplepetstore.com)
+//   organization.
 //
-//	Service accounts can be made owners of a project directly
-//	without any restrictions. However, to be added as an owner, a user must be
-//	invited using the Cloud Platform console and must accept the invitation.
+//   Service accounts can be made owners of a project directly
+//   without any restrictions. However, to be added as an owner, a user must be
+//   invited using the Cloud Platform console and must accept the invitation.
 //
-//	A user cannot be granted the owner role using setIamPolicy(). The user
-//	must be granted the owner role using the Cloud Platform Console and must
-//	explicitly accept the invitation.
+//   A user cannot be granted the owner role using setIamPolicy(). The user
+//   must be granted the owner role using the Cloud Platform Console and must
+//   explicitly accept the invitation.
 //
-//	Invitations to grant the owner role cannot be sent using
-//	setIamPolicy();
-//	they must be sent only using the Cloud Platform Console.
+//   Invitations to grant the owner role cannot be sent using
+//   setIamPolicy();
+//   they must be sent only using the Cloud Platform Console.
 //
-//	If the project is not part of an organization, there must be at least
-//	one owner who has accepted the Terms of Service (ToS) agreement in the
-//	policy. Calling setIamPolicy() to remove the last ToS-accepted owner
-//	from the policy will fail. This restriction also applies to legacy
-//	projects that no longer have owners who have accepted the ToS. Edits to
-//	IAM policies will be rejected until the lack of a ToS-accepting owner is
-//	rectified. If the project is part of an organization, you can remove all
-//	owners, potentially making the organization inaccessible.
+//   If the project is not part of an organization, there must be at least
+//   one owner who has accepted the Terms of Service (ToS) agreement in the
+//   policy. Calling setIamPolicy() to remove the last ToS-accepted owner
+//   from the policy will fail. This restriction also applies to legacy
+//   projects that no longer have owners who have accepted the ToS. Edits to
+//   IAM policies will be rejected until the lack of a ToS-accepting owner is
+//   rectified. If the project is part of an organization, you can remove all
+//   owners, potentially making the organization inaccessible.
 func (c *projectsRESTClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -1703,9 +1726,11 @@ func (c *projectsRESTClient) SetIamPolicy(ctx context.Context, req *iampb.SetIam
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).SetIamPolicy[0:len((*c.CallOptions).SetIamPolicy):len((*c.CallOptions).SetIamPolicy)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &iampb.Policy{}
@@ -1768,9 +1793,11 @@ func (c *projectsRESTClient) TestIamPermissions(ctx context.Context, req *iampb.
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).TestIamPermissions[0:len((*c.CallOptions).TestIamPermissions):len((*c.CallOptions).TestIamPermissions)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &iampb.TestIamPermissionsResponse{}
@@ -1826,9 +1853,11 @@ func (c *projectsRESTClient) GetOperation(ctx context.Context, req *longrunningp
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
