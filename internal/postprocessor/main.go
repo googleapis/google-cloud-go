@@ -41,6 +41,11 @@ const (
 	beginNestedCommitDelimiter = "BEGIN_NESTED_COMMIT"
 	endNestedCommitDelimiter   = "END_NESTED_COMMIT"
 	copyTagSubstring           = "Copy-Tag:"
+
+	// This is the default Go version that will be generated into new go.mod
+	// files. It should be updated every time we drop support for old Go
+	// versions.
+	defaultGoModuleVersion = "1.19"
 )
 
 var (
@@ -250,7 +255,7 @@ func (p *postProcessor) generateModule(modPath, importPath string) error {
 		return err
 	}
 	log.Printf("Creating %s/go.mod", modPath)
-	if err := gocmd.ModInit(modPath, importPath); err != nil {
+	if err := gocmd.ModInit(modPath, importPath, defaultGoModuleVersion); err != nil {
 		return err
 	}
 	log.Print("Updating workspace")
