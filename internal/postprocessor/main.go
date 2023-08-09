@@ -221,12 +221,6 @@ func (p *postProcessor) InitializeNewModules(manifest map[string]ManifestEntry) 
 			if !strings.Contains(lastElement, "apiv") {
 				return nil
 			}
-			// Skip unless the presence of doc.go indicates that this is a client.
-			// Some modules contain only type protos, and don't need version.go.
-			pathToClientDocFile := filepath.Join(path, "doc.go")
-			if _, err = os.Stat(pathToClientDocFile); errors.Is(err, fs.ErrNotExist) {
-				return nil
-			}
 			pathToClientVersionFile := filepath.Join(path, "version.go")
 			if _, err = os.Stat(pathToClientVersionFile); errors.Is(err, fs.ErrNotExist) {
 				if err := p.generateVersionFile(moduleName, path); err != nil {
