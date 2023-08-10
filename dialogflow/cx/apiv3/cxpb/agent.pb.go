@@ -21,11 +21,8 @@
 package cxpb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -35,6 +32,8 @@ import (
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	_ "google.golang.org/protobuf/types/known/structpb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -212,8 +211,9 @@ func (x *SpeechToTextSettings) GetEnableSpeechAdaptation() bool {
 // Types][google.cloud.dialogflow.cx.v3.EntityType],
 // [Flows][google.cloud.dialogflow.cx.v3.Flow],
 // [Fulfillments][google.cloud.dialogflow.cx.v3.Fulfillment],
-// [Webhooks][google.cloud.dialogflow.cx.v3.Webhook], and so on to manage the
-// conversation flows..
+// [Webhooks][google.cloud.dialogflow.cx.v3.Webhook],
+// [TransitionRouteGroups][google.cloud.dialogflow.cx.v3.TransitionRouteGroup]
+// and so on to manage the conversation flows.
 type Agent struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -989,7 +989,7 @@ type ExportAgentResponse_AgentContent struct {
 
 type ExportAgentResponse_CommitSha struct {
 	// Commit SHA of the git push. This field is populated if
-	// `git_destination` are specified in
+	// `git_destination` is specified in
 	// [ExportAgentRequest][google.cloud.dialogflow.cx.v3.ExportAgentRequest].
 	CommitSha string `protobuf:"bytes,3,opt,name=commit_sha,json=commitSha,proto3,oneof"`
 }
@@ -1390,7 +1390,7 @@ type Agent_GitIntegrationSettings_GithubSettings struct {
 	DisplayName string `protobuf:"bytes,1,opt,name=display_name,json=displayName,proto3" json:"display_name,omitempty"`
 	// The GitHub repository URI related to the agent.
 	RepositoryUri string `protobuf:"bytes,2,opt,name=repository_uri,json=repositoryUri,proto3" json:"repository_uri,omitempty"`
-	// The branch of GitHub repository tracked for this agent.
+	// The branch of the GitHub repository tracked for this agent.
 	TrackingBranch string `protobuf:"bytes,3,opt,name=tracking_branch,json=trackingBranch,proto3" json:"tracking_branch,omitempty"`
 	// The access token used to authenticate the access to the GitHub
 	// repository.
