@@ -187,7 +187,7 @@ type internalDatastoreAdminClient interface {
 // DatastoreAdminClient is a client for interacting with Cloud Datastore API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
-// Google Cloud Datastore Admin API
+// # Google Cloud Datastore Admin API
 //
 // The Datastore Admin API provides several admin services for Cloud Datastore.
 //
@@ -202,46 +202,46 @@ type internalDatastoreAdminClient interface {
 //
 // Export/Import Service:
 //
-//   The Export/Import service provides the ability to copy all or a subset of
-//   entities to/from Google Cloud Storage.
+//	The Export/Import service provides the ability to copy all or a subset of
+//	entities to/from Google Cloud Storage.
 //
-//   Exported data may be imported into Cloud Datastore for any Google Cloud
-//   Platform project. It is not restricted to the export source project. It is
-//   possible to export from one project and then import into another.
+//	Exported data may be imported into Cloud Datastore for any Google Cloud
+//	Platform project. It is not restricted to the export source project. It is
+//	possible to export from one project and then import into another.
 //
-//   Exported data can also be loaded into Google BigQuery for analysis.
+//	Exported data can also be loaded into Google BigQuery for analysis.
 //
-//   Exports and imports are performed asynchronously. An Operation resource is
-//   created for each export/import. The state (including any errors encountered)
-//   of the export/import may be queried via the Operation resource.
+//	Exports and imports are performed asynchronously. An Operation resource is
+//	created for each export/import. The state (including any errors encountered)
+//	of the export/import may be queried via the Operation resource.
 //
 // Index Service:
 //
-//   The index service manages Cloud Datastore composite indexes.
+//	The index service manages Cloud Datastore composite indexes.
 //
-//   Index creation and deletion are performed asynchronously.
-//   An Operation resource is created for each such asynchronous operation.
-//   The state of the operation (including any errors encountered)
-//   may be queried via the Operation resource.
+//	Index creation and deletion are performed asynchronously.
+//	An Operation resource is created for each such asynchronous operation.
+//	The state of the operation (including any errors encountered)
+//	may be queried via the Operation resource.
 //
 // Operation Service:
 //
-//   The Operations collection provides a record of actions performed for the
-//   specified project (including any operations in progress). Operations are not
-//   created directly but through calls on other collections or resources.
+//	The Operations collection provides a record of actions performed for the
+//	specified project (including any operations in progress). Operations are not
+//	created directly but through calls on other collections or resources.
 //
-//   An operation that is not yet done may be cancelled. The request to cancel
-//   is asynchronous and the operation may continue to run for some time after the
-//   request to cancel is made.
+//	An operation that is not yet done may be cancelled. The request to cancel
+//	is asynchronous and the operation may continue to run for some time after the
+//	request to cancel is made.
 //
-//   An operation that is done may be deleted so that it is no longer listed as
-//   part of the Operation collection.
+//	An operation that is done may be deleted so that it is no longer listed as
+//	part of the Operation collection.
 //
-//   ListOperations returns all pending operations, but not completed
-//   operations.
+//	ListOperations returns all pending operations, but not completed
+//	operations.
 //
-//   Operations are created by service DatastoreAdmin, but are accessed via
-//   service google.longrunning.Operations.
+//	Operations are created by service DatastoreAdmin, but are accessed via
+//	service google.longrunning.Operations.
 type DatastoreAdminClient struct {
 	// The internal transport-dependent client.
 	internalClient internalDatastoreAdminClient
@@ -415,7 +415,7 @@ type datastoreAdminGRPCClient struct {
 // NewDatastoreAdminClient creates a new datastore admin client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
-// Google Cloud Datastore Admin API
+// # Google Cloud Datastore Admin API
 //
 // The Datastore Admin API provides several admin services for Cloud Datastore.
 //
@@ -430,46 +430,46 @@ type datastoreAdminGRPCClient struct {
 //
 // Export/Import Service:
 //
-//   The Export/Import service provides the ability to copy all or a subset of
-//   entities to/from Google Cloud Storage.
+//	The Export/Import service provides the ability to copy all or a subset of
+//	entities to/from Google Cloud Storage.
 //
-//   Exported data may be imported into Cloud Datastore for any Google Cloud
-//   Platform project. It is not restricted to the export source project. It is
-//   possible to export from one project and then import into another.
+//	Exported data may be imported into Cloud Datastore for any Google Cloud
+//	Platform project. It is not restricted to the export source project. It is
+//	possible to export from one project and then import into another.
 //
-//   Exported data can also be loaded into Google BigQuery for analysis.
+//	Exported data can also be loaded into Google BigQuery for analysis.
 //
-//   Exports and imports are performed asynchronously. An Operation resource is
-//   created for each export/import. The state (including any errors encountered)
-//   of the export/import may be queried via the Operation resource.
+//	Exports and imports are performed asynchronously. An Operation resource is
+//	created for each export/import. The state (including any errors encountered)
+//	of the export/import may be queried via the Operation resource.
 //
 // Index Service:
 //
-//   The index service manages Cloud Datastore composite indexes.
+//	The index service manages Cloud Datastore composite indexes.
 //
-//   Index creation and deletion are performed asynchronously.
-//   An Operation resource is created for each such asynchronous operation.
-//   The state of the operation (including any errors encountered)
-//   may be queried via the Operation resource.
+//	Index creation and deletion are performed asynchronously.
+//	An Operation resource is created for each such asynchronous operation.
+//	The state of the operation (including any errors encountered)
+//	may be queried via the Operation resource.
 //
 // Operation Service:
 //
-//   The Operations collection provides a record of actions performed for the
-//   specified project (including any operations in progress). Operations are not
-//   created directly but through calls on other collections or resources.
+//	The Operations collection provides a record of actions performed for the
+//	specified project (including any operations in progress). Operations are not
+//	created directly but through calls on other collections or resources.
 //
-//   An operation that is not yet done may be cancelled. The request to cancel
-//   is asynchronous and the operation may continue to run for some time after the
-//   request to cancel is made.
+//	An operation that is not yet done may be cancelled. The request to cancel
+//	is asynchronous and the operation may continue to run for some time after the
+//	request to cancel is made.
 //
-//   An operation that is done may be deleted so that it is no longer listed as
-//   part of the Operation collection.
+//	An operation that is done may be deleted so that it is no longer listed as
+//	part of the Operation collection.
 //
-//   ListOperations returns all pending operations, but not completed
-//   operations.
+//	ListOperations returns all pending operations, but not completed
+//	operations.
 //
-//   Operations are created by service DatastoreAdmin, but are accessed via
-//   service google.longrunning.Operations.
+//	Operations are created by service DatastoreAdmin, but are accessed via
+//	service google.longrunning.Operations.
 func NewDatastoreAdminClient(ctx context.Context, opts ...option.ClientOption) (*DatastoreAdminClient, error) {
 	clientOpts := defaultDatastoreAdminGRPCClientOptions()
 	if newDatastoreAdminClientHook != nil {
@@ -555,7 +555,7 @@ type datastoreAdminRESTClient struct {
 
 // NewDatastoreAdminRESTClient creates a new datastore admin rest client.
 //
-// Google Cloud Datastore Admin API
+// # Google Cloud Datastore Admin API
 //
 // The Datastore Admin API provides several admin services for Cloud Datastore.
 //
@@ -570,46 +570,46 @@ type datastoreAdminRESTClient struct {
 //
 // Export/Import Service:
 //
-//   The Export/Import service provides the ability to copy all or a subset of
-//   entities to/from Google Cloud Storage.
+//	The Export/Import service provides the ability to copy all or a subset of
+//	entities to/from Google Cloud Storage.
 //
-//   Exported data may be imported into Cloud Datastore for any Google Cloud
-//   Platform project. It is not restricted to the export source project. It is
-//   possible to export from one project and then import into another.
+//	Exported data may be imported into Cloud Datastore for any Google Cloud
+//	Platform project. It is not restricted to the export source project. It is
+//	possible to export from one project and then import into another.
 //
-//   Exported data can also be loaded into Google BigQuery for analysis.
+//	Exported data can also be loaded into Google BigQuery for analysis.
 //
-//   Exports and imports are performed asynchronously. An Operation resource is
-//   created for each export/import. The state (including any errors encountered)
-//   of the export/import may be queried via the Operation resource.
+//	Exports and imports are performed asynchronously. An Operation resource is
+//	created for each export/import. The state (including any errors encountered)
+//	of the export/import may be queried via the Operation resource.
 //
 // Index Service:
 //
-//   The index service manages Cloud Datastore composite indexes.
+//	The index service manages Cloud Datastore composite indexes.
 //
-//   Index creation and deletion are performed asynchronously.
-//   An Operation resource is created for each such asynchronous operation.
-//   The state of the operation (including any errors encountered)
-//   may be queried via the Operation resource.
+//	Index creation and deletion are performed asynchronously.
+//	An Operation resource is created for each such asynchronous operation.
+//	The state of the operation (including any errors encountered)
+//	may be queried via the Operation resource.
 //
 // Operation Service:
 //
-//   The Operations collection provides a record of actions performed for the
-//   specified project (including any operations in progress). Operations are not
-//   created directly but through calls on other collections or resources.
+//	The Operations collection provides a record of actions performed for the
+//	specified project (including any operations in progress). Operations are not
+//	created directly but through calls on other collections or resources.
 //
-//   An operation that is not yet done may be cancelled. The request to cancel
-//   is asynchronous and the operation may continue to run for some time after the
-//   request to cancel is made.
+//	An operation that is not yet done may be cancelled. The request to cancel
+//	is asynchronous and the operation may continue to run for some time after the
+//	request to cancel is made.
 //
-//   An operation that is done may be deleted so that it is no longer listed as
-//   part of the Operation collection.
+//	An operation that is done may be deleted so that it is no longer listed as
+//	part of the Operation collection.
 //
-//   ListOperations returns all pending operations, but not completed
-//   operations.
+//	ListOperations returns all pending operations, but not completed
+//	operations.
 //
-//   Operations are created by service DatastoreAdmin, but are accessed via
-//   service google.longrunning.Operations.
+//	Operations are created by service DatastoreAdmin, but are accessed via
+//	service google.longrunning.Operations.
 func NewDatastoreAdminRESTClient(ctx context.Context, opts ...option.ClientOption) (*DatastoreAdminClient, error) {
 	clientOpts := append(defaultDatastoreAdminRESTClientOptions(), opts...)
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
