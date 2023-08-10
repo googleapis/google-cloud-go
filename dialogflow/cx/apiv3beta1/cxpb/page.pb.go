@@ -22,9 +22,6 @@ package cxpb
 
 import (
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -34,6 +31,8 @@ import (
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	structpb "google.golang.org/protobuf/types/known/structpb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -93,7 +92,10 @@ type Page struct {
 	//     intent, then the first group in the ordered list takes precedence.
 	//
 	// Format:`projects/<Project ID>/locations/<Location ID>/agents/<Agent
-	// ID>/flows/<Flow ID>/transitionRouteGroups/<TransitionRouteGroup ID>`.
+	// ID>/flows/<Flow ID>/transitionRouteGroups/<TransitionRouteGroup ID>`
+	// or `projects/<Project ID>/locations/<Location ID>/agents/<Agent
+	// ID>/transitionRouteGroups/<TransitionRouteGroup ID>` for agent-level
+	// groups.
 	TransitionRouteGroups []string `protobuf:"bytes,11,rep,name=transition_route_groups,json=transitionRouteGroups,proto3" json:"transition_route_groups,omitempty"`
 	// A list of transitions for the transition rules of this page.
 	// They route the conversation to another page in the same flow, or another

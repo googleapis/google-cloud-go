@@ -21,11 +21,8 @@
 package cxpb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -35,6 +32,8 @@ import (
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	_ "google.golang.org/protobuf/types/known/structpb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -212,8 +211,9 @@ func (x *SpeechToTextSettings) GetEnableSpeechAdaptation() bool {
 // Types][google.cloud.dialogflow.cx.v3beta1.EntityType],
 // [Flows][google.cloud.dialogflow.cx.v3beta1.Flow],
 // [Fulfillments][google.cloud.dialogflow.cx.v3beta1.Fulfillment],
-// [Webhooks][google.cloud.dialogflow.cx.v3beta1.Webhook], and so on to manage
-// the conversation flows..
+// [Webhooks][google.cloud.dialogflow.cx.v3beta1.Webhook],
+// [TransitionRouteGroups][google.cloud.dialogflow.cx.v3beta1.TransitionRouteGroup]
+// and so on to manage the conversation flows.
 type Agent struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
