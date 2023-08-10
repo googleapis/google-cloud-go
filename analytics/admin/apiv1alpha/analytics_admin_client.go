@@ -84,6 +84,7 @@ type AnalyticsAdminCallOptions struct {
 	GetGoogleSignalsSettings                     []gax.CallOption
 	UpdateGoogleSignalsSettings                  []gax.CallOption
 	CreateConversionEvent                        []gax.CallOption
+	UpdateConversionEvent                        []gax.CallOption
 	GetConversionEvent                           []gax.CallOption
 	DeleteConversionEvent                        []gax.CallOption
 	ListConversionEvents                         []gax.CallOption
@@ -410,6 +411,19 @@ func defaultAnalyticsAdminCallOptions() *AnalyticsAdminCallOptions {
 			}),
 		},
 		CreateConversionEvent: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		UpdateConversionEvent: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
@@ -1701,6 +1715,18 @@ func defaultAnalyticsAdminRESTCallOptions() *AnalyticsAdminCallOptions {
 					http.StatusInternalServerError)
 			}),
 		},
+		UpdateConversionEvent: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusInternalServerError)
+			}),
+		},
 		GetConversionEvent: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -2715,6 +2741,7 @@ type internalAnalyticsAdminClient interface {
 	GetGoogleSignalsSettings(context.Context, *adminpb.GetGoogleSignalsSettingsRequest, ...gax.CallOption) (*adminpb.GoogleSignalsSettings, error)
 	UpdateGoogleSignalsSettings(context.Context, *adminpb.UpdateGoogleSignalsSettingsRequest, ...gax.CallOption) (*adminpb.GoogleSignalsSettings, error)
 	CreateConversionEvent(context.Context, *adminpb.CreateConversionEventRequest, ...gax.CallOption) (*adminpb.ConversionEvent, error)
+	UpdateConversionEvent(context.Context, *adminpb.UpdateConversionEventRequest, ...gax.CallOption) (*adminpb.ConversionEvent, error)
 	GetConversionEvent(context.Context, *adminpb.GetConversionEventRequest, ...gax.CallOption) (*adminpb.ConversionEvent, error)
 	DeleteConversionEvent(context.Context, *adminpb.DeleteConversionEventRequest, ...gax.CallOption) error
 	ListConversionEvents(context.Context, *adminpb.ListConversionEventsRequest, ...gax.CallOption) *ConversionEventIterator
@@ -3089,6 +3116,11 @@ func (c *AnalyticsAdminClient) CreateConversionEvent(ctx context.Context, req *a
 	return c.internalClient.CreateConversionEvent(ctx, req, opts...)
 }
 
+// UpdateConversionEvent updates a conversion event with the specified attributes.
+func (c *AnalyticsAdminClient) UpdateConversionEvent(ctx context.Context, req *adminpb.UpdateConversionEventRequest, opts ...gax.CallOption) (*adminpb.ConversionEvent, error) {
+	return c.internalClient.UpdateConversionEvent(ctx, req, opts...)
+}
+
 // GetConversionEvent retrieve a single conversion event.
 func (c *AnalyticsAdminClient) GetConversionEvent(ctx context.Context, req *adminpb.GetConversionEventRequest, opts ...gax.CallOption) (*adminpb.ConversionEvent, error) {
 	return c.internalClient.GetConversionEvent(ctx, req, opts...)
@@ -3166,10 +3198,10 @@ func (c *AnalyticsAdminClient) ApproveDisplayVideo360AdvertiserLinkProposal(ctx 
 // CancelDisplayVideo360AdvertiserLinkProposal cancels a DisplayVideo360AdvertiserLinkProposal.
 // Cancelling can mean either:
 //
-//	Declining a proposal initiated from Display & Video 360
+//   Declining a proposal initiated from Display & Video 360
 //
-//	Withdrawing a proposal initiated from Google Analytics
-//	After being cancelled, a proposal will eventually be deleted automatically.
+//   Withdrawing a proposal initiated from Google Analytics
+//   After being cancelled, a proposal will eventually be deleted automatically.
 func (c *AnalyticsAdminClient) CancelDisplayVideo360AdvertiserLinkProposal(ctx context.Context, req *adminpb.CancelDisplayVideo360AdvertiserLinkProposalRequest, opts ...gax.CallOption) (*adminpb.DisplayVideo360AdvertiserLinkProposal, error) {
 	return c.internalClient.CancelDisplayVideo360AdvertiserLinkProposal(ctx, req, opts...)
 }
@@ -4614,6 +4646,24 @@ func (c *analyticsAdminGRPCClient) CreateConversionEvent(ctx context.Context, re
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.analyticsAdminClient.CreateConversionEvent(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *analyticsAdminGRPCClient) UpdateConversionEvent(ctx context.Context, req *adminpb.UpdateConversionEventRequest, opts ...gax.CallOption) (*adminpb.ConversionEvent, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "conversion_event.name", url.QueryEscape(req.GetConversionEvent().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).UpdateConversionEvent[0:len((*c.CallOptions).UpdateConversionEvent):len((*c.CallOptions).UpdateConversionEvent)], opts...)
+	var resp *adminpb.ConversionEvent
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.analyticsAdminClient.UpdateConversionEvent(ctx, req, settings.GRPC...)
 		return err
 	}, opts...)
 	if err != nil {
@@ -9178,6 +9228,80 @@ func (c *analyticsAdminRESTClient) CreateConversionEvent(ctx context.Context, re
 	return resp, nil
 }
 
+// UpdateConversionEvent updates a conversion event with the specified attributes.
+func (c *analyticsAdminRESTClient) UpdateConversionEvent(ctx context.Context, req *adminpb.UpdateConversionEventRequest, opts ...gax.CallOption) (*adminpb.ConversionEvent, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetConversionEvent()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetConversionEvent().GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetUpdateMask() != nil {
+		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "conversion_event.name", url.QueryEscape(req.GetConversionEvent().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).UpdateConversionEvent[0:len((*c.CallOptions).UpdateConversionEvent):len((*c.CallOptions).UpdateConversionEvent)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &adminpb.ConversionEvent{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
 // GetConversionEvent retrieve a single conversion event.
 func (c *analyticsAdminRESTClient) GetConversionEvent(ctx context.Context, req *adminpb.GetConversionEventRequest, opts ...gax.CallOption) (*adminpb.ConversionEvent, error) {
 	baseUrl, err := url.Parse(c.endpoint)
@@ -10037,10 +10161,10 @@ func (c *analyticsAdminRESTClient) ApproveDisplayVideo360AdvertiserLinkProposal(
 // CancelDisplayVideo360AdvertiserLinkProposal cancels a DisplayVideo360AdvertiserLinkProposal.
 // Cancelling can mean either:
 //
-//	Declining a proposal initiated from Display & Video 360
+//   Declining a proposal initiated from Display & Video 360
 //
-//	Withdrawing a proposal initiated from Google Analytics
-//	After being cancelled, a proposal will eventually be deleted automatically.
+//   Withdrawing a proposal initiated from Google Analytics
+//   After being cancelled, a proposal will eventually be deleted automatically.
 func (c *analyticsAdminRESTClient) CancelDisplayVideo360AdvertiserLinkProposal(ctx context.Context, req *adminpb.CancelDisplayVideo360AdvertiserLinkProposalRequest, opts ...gax.CallOption) (*adminpb.DisplayVideo360AdvertiserLinkProposal, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
