@@ -22,9 +22,6 @@ package storageinsightspb
 
 import (
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	date "google.golang.org/genproto/googleapis/type/date"
@@ -37,6 +34,8 @@ import (
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -1374,6 +1373,9 @@ func (*ObjectMetadataReportOptions_StorageDestinationOptions) isObjectMetadataRe
 
 // Message describing ReportConfig object. ReportConfig is the configuration to
 // generate reports.
+// See
+// https://cloud.google.com/storage/docs/insights/using-inventory-reports#create-config-rest
+// for more details on how to set various fields.
 // Next ID: 12
 type ReportConfig struct {
 	state         protoimpl.MessageState
