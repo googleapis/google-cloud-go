@@ -41,6 +41,11 @@ const (
 	beginNestedCommitDelimiter = "BEGIN_NESTED_COMMIT"
 	endNestedCommitDelimiter   = "END_NESTED_COMMIT"
 	copyTagSubstring           = "Copy-Tag:"
+
+	// This is the default Go version that will be generated into new go.mod
+	// files. It should be updated every time we drop support for old Go
+	// versions.
+	defaultGoModuleVersion = "1.19"
 )
 
 var (
@@ -216,6 +221,12 @@ func (p *postProcessor) InitializeNewModules(manifest map[string]ManifestEntry) 
 			if !strings.Contains(lastElement, "apiv") {
 				return nil
 			}
+			// Skip unless the presence of doc.go indicates that this is a client.
+			// Some modules contain only type protos, and don't need version.go.
+			pathToClientDocFile := filepath.Join(path, "doc.go")
+			if _, err = os.Stat(pathToClientDocFile); errors.Is(err, fs.ErrNotExist) {
+				return nil
+			}
 			pathToClientVersionFile := filepath.Join(path, "version.go")
 			if _, err = os.Stat(pathToClientVersionFile); errors.Is(err, fs.ErrNotExist) {
 				if err := p.generateVersionFile(moduleName, path); err != nil {
@@ -250,7 +261,7 @@ func (p *postProcessor) generateModule(modPath, importPath string) error {
 		return err
 	}
 	log.Printf("Creating %s/go.mod", modPath)
-	if err := gocmd.ModInit(modPath, importPath); err != nil {
+	if err := gocmd.ModInit(modPath, importPath, defaultGoModuleVersion); err != nil {
 		return err
 	}
 	log.Print("Updating workspace")

@@ -27,6 +27,14 @@ import (
 	"strings"
 	"time"
 
+	texporter "github.com/GoogleCloudPlatform/opentelemetry-operations-go/exporter/trace"
+	octrace "go.opencensus.io/trace"
+	"go.opentelemetry.io/contrib/detectors/gcp"
+	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/bridge/opencensus"
+	"go.opentelemetry.io/otel/sdk/resource"
+	sdktrace "go.opentelemetry.io/otel/sdk/trace"
+	semconv "go.opentelemetry.io/otel/semconv/v1.17.0"
 	"golang.org/x/sync/errgroup"
 
 	// Install google-c2p resolver, which is required for direct path.
@@ -38,6 +46,7 @@ import (
 const (
 	codeVersion = "0.9.1" // to keep track of which version of the code a benchmark ran on
 	useDefault  = -1
+	tracerName  = "storage-benchmark"
 )
 
 var (
@@ -84,6 +93,9 @@ type benchmarkOptions struct {
 
 	useGCSFuseConfig bool
 	endpoint         string
+
+	enableTracing   bool
+	traceSampleRate float64
 }
 
 func (b *benchmarkOptions) validate() error {
@@ -157,6 +169,9 @@ func parseFlags() {
 
 	flag.BoolVar(&opts.useGCSFuseConfig, "gcs_fuse", false, "use GCSFuse configs on HTTP client creation")
 	flag.StringVar(&opts.endpoint, "endpoint", "", "endpoint to set on Storage Client")
+
+	flag.BoolVar(&opts.enableTracing, "tracing", false, "enable trace exporter to Cloud Trace")
+	flag.Float64Var(&opts.traceSampleRate, "sample_rate", 1.0, "sample rate for traces")
 
 	flag.IntVar(&opts.readBufferSize, "read_buffer_size", useDefault, "read buffer size in bytes")
 	flag.IntVar(&opts.writeBufferSize, "write_buffer_size", useDefault, "write buffer size in bytes")
@@ -283,6 +298,11 @@ func main() {
 
 	exitWithErrorCode := false
 
+	if opts.enableTracing {
+		cleanup := enableTracing(ctx, opts.traceSampleRate)
+		defer cleanup()
+	}
+
 	// Run benchmarks
 	for i := 0; i < opts.numSamples && time.Since(start) < opts.timeout; i++ {
 		benchGroup.Go(func() error {
@@ -395,6 +415,50 @@ func writeResultAsCloudMonitoring(w io.Writer, result *benchmarkResult) {
 	_, err = w.Write([]byte{'\n'})
 	if err != nil {
 		log.Fatalf("cloud monitoring w.Write: %v", err)
+	}
+}
+
+// enableTracing turns on Open Telemetry tracing with export to Cloud Trace.
+func enableTracing(ctx context.Context, sampleRate float64) func() {
+	exporter, err := texporter.New(texporter.WithProjectID(projectID))
+	if err != nil {
+		log.Fatalf("texporter.New: %v", err)
+	}
+
+	// Identify your application using resource detection
+	res, err := resource.New(ctx,
+		// Use the GCP resource detector to detect information about the GCP platform
+		resource.WithDetectors(gcp.NewDetector()),
+		// Keep the default detectors
+		resource.WithTelemetrySDK(),
+		// Add your own custom attributes to identify your application
+		resource.WithAttributes(
+			semconv.ServiceName(tracerName),
+		),
+	)
+	if err != nil {
+		log.Fatalf("resource.New: %v", err)
+	}
+
+	// Create trace provider with the exporter.
+	tp := sdktrace.NewTracerProvider(
+		sdktrace.WithBatcher(exporter),
+		sdktrace.WithResource(res),
+		sdktrace.WithSampler(sdktrace.TraceIDRatioBased(sampleRate)),
+	)
+
+	otel.SetTracerProvider(tp)
+
+	// Use opencensus bridge to pick up OC traces from the storage library.
+	// TODO: remove this when migration to OpenTelemetry is complete.
+	tracer := otel.GetTracerProvider().Tracer(tracerName)
+	octrace.DefaultTracer = opencensus.NewTracer(tracer)
+
+	return func() {
+		tp.ForceFlush(ctx)
+		if err := tp.Shutdown(context.Background()); err != nil {
+			log.Fatal(err)
+		}
 	}
 }
 

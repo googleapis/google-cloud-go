@@ -265,6 +265,9 @@ func (*TransactionOptions_ReadOnly_) isTransactionOptions_Mode() {}
 func (*TransactionOptions_ReadWrite_) isTransactionOptions_Mode() {}
 
 // Options for a transaction that can be used to read and write documents.
+//
+// Firestore does not allow 3rd party auth requests to create read-write.
+// transactions.
 type TransactionOptions_ReadWrite struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -379,7 +382,10 @@ type isTransactionOptions_ReadOnly_ConsistencySelector interface {
 
 type TransactionOptions_ReadOnly_ReadTime struct {
 	// Reads documents at the given time.
-	// This may not be older than 60 seconds.
+	//
+	// This must be a microsecond precision timestamp within the past one
+	// hour, or if Point-in-Time Recovery is enabled, can additionally be a
+	// whole minute timestamp within the past 7 days.
 	ReadTime *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=read_time,json=readTime,proto3,oneof"`
 }
 

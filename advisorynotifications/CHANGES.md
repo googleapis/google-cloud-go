@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [1.1.0](https://github.com/googleapis/google-cloud-go/compare/advisorynotifications/v1.0.0...advisorynotifications/v1.1.0) (2023-08-08)
+
+
+### Features
+
+* **advisorynotifications:** Adding notification types to advisorynotifications.googleapis.com libraries ([#8361](https://github.com/googleapis/google-cloud-go/issues/8361)) ([5490b3b](https://github.com/googleapis/google-cloud-go/commit/5490b3b30e3d061cff7a0e9366bb175fd7d9dd31))
+
 ## [1.0.0](https://github.com/googleapis/google-cloud-go/compare/advisorynotifications/v0.3.1...advisorynotifications/v1.0.0) (2023-07-18)
 
 

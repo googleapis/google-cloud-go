@@ -1,5 +1,12 @@
 # Changes
 
+## [1.14.0](https://github.com/googleapis/google-cloud-go/compare/cloudbuild/v1.13.0...cloudbuild/v1.14.0) (2023-08-08)
+
+
+### Features
+
+* **cloudbuild/apiv1:** Add update_mask to UpdateBuildTriggerRequest proto ([#8358](https://github.com/googleapis/google-cloud-go/issues/8358)) ([58b5851](https://github.com/googleapis/google-cloud-go/commit/58b5851b3f38aeeefcdb3507e29b9a02ccfb1bba))
+
 ## [1.13.0](https://github.com/googleapis/google-cloud-go/compare/cloudbuild/v1.12.0...cloudbuild/v1.13.0) (2023-07-26)
 
 

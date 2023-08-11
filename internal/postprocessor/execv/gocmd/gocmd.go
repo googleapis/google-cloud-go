@@ -34,10 +34,16 @@ var (
 )
 
 // ModInit creates a new module in the specified directory.
-func ModInit(dir, importPath string) error {
+func ModInit(dir, importPath, goVersion string) error {
 	c := execv.Command("go", "mod", "init", importPath)
 	c.Dir = dir
-	return c.Run()
+	if err := c.Run(); err != nil {
+		return err
+	}
+
+	c2 := execv.Command("go", "get", fmt.Sprintf("go@%s", goVersion))
+	c2.Dir = dir
+	return c2.Run()
 }
 
 // ModTidy tidies go.mod file in the specified directory.

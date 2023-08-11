@@ -352,23 +352,27 @@ func TestIntegration_GetMulti(t *testing.T) {
 	p := NameKey("X", "x"+suffix, nil)
 
 	cases := []struct {
-		key *Key
-		put bool
+		desc string
+		key  *Key
+		put  bool
+		x    *X
 	}{
-		{key: NameKey("X", "item1", p), put: true},
-		{key: NameKey("X", "item2", p), put: false},
-		{key: NameKey("X", "item3", p), put: false},
-		{key: NameKey("X", "item3", p), put: false},
-		{key: NameKey("X", "item4", p), put: true},
+		{desc: "Successful get", key: NameKey("X", "item1", p), put: true, x: &X{I: 1}},
+		{desc: "No such entity error", key: NameKey("X", "item2", p), put: false},
+		{desc: "No such entity error", key: NameKey("X", "item3", p), put: false},
+		{desc: "Duplicate keys in GetMulti with no such entity error", key: NameKey("X", "item3", p), put: false},
+		{desc: "First key in the pair of keys with same Kind and Name but different Namespace", key: &Key{Kind: "X", Name: "item5", Namespace: "nm1"}, put: true, x: &X{I: 5}},
+		{desc: "Second key in the pair of keys with same Kind and Name but different Namespace", key: &Key{Kind: "X", Name: "item5", Namespace: "nm2"}, put: true, x: &X{I: 6}},
 	}
 
-	var src, dst []*X
+	var src, dst, wantDst []*X
 	var srcKeys, dstKeys []*Key
 	for _, c := range cases {
 		dst = append(dst, &X{})
 		dstKeys = append(dstKeys, c.key)
+		wantDst = append(wantDst, c.x)
 		if c.put {
-			src = append(src, &X{})
+			src = append(src, c.x)
 			srcKeys = append(srcKeys, c.key)
 		}
 	}
@@ -390,7 +394,11 @@ func TestIntegration_GetMulti(t *testing.T) {
 			got, want = err, ErrNoSuchEntity
 		}
 		if got != want {
-			t.Errorf("MultiError[%d] == %v, want %v", i, got, want)
+			t.Errorf("%s: MultiError[%d] == %v, want %v", cases[i].desc, i, got, want)
+		}
+
+		if got == nil && *dst[i] != *wantDst[i] {
+			t.Errorf("%s: client.GetMulti got %+v, want %+v", cases[i].desc, dst[i], wantDst[i])
 		}
 	}
 }

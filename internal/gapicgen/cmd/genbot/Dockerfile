@@ -31,7 +31,7 @@ RUN go install github.com/golang/protobuf/protoc-gen-go@v1.5.3 && \
     go install golang.org/x/lint/golint@latest && \
     go install golang.org/x/tools/cmd/goimports@latest && \
     go install honnef.co/go/tools/cmd/staticcheck@latest && \
-    go install github.com/googleapis/gapic-generator-go/cmd/protoc-gen-go_gapic@v0.37.0
+    go install github.com/googleapis/gapic-generator-go/cmd/protoc-gen-go_gapic@v0.38.0
 ENV PATH="${PATH}:/root/go/bin"
 
 # Source: http://debuggable.com/posts/disable-strict-host-checking-for-git-clone:49896ff3-0ac0-4263-9703-1eae4834cda3
