@@ -459,7 +459,7 @@ func (c *policyBasedRoutingGRPCClient) DeletePolicyBasedRoute(ctx context.Contex
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
-	}q
+	}
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
 	hds = append(c.xGoogHeaders, hds...)
