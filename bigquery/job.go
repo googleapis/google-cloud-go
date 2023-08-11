@@ -171,7 +171,7 @@ type JobIDConfig struct {
 	// Location is the location for the job.
 	Location string
 
-	// ProjectID is the Gooogle Cloud project associated with the job.
+	// ProjectID is the Google Cloud project associated with the job.
 	ProjectID string
 }
 
