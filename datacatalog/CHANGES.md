@@ -1,5 +1,17 @@
 # Changes
 
+## [1.17.0](https://github.com/googleapis/google-cloud-go/compare/datacatalog/v1.16.0...datacatalog/v1.17.0) (2023-08-08)
+
+
+### Features
+
+* **datacatalog:** Add support for admin_search in SearchCatalog() API method ([4b68747](https://github.com/googleapis/google-cloud-go/commit/4b6874762ca3e5ebef76f72496753650cdf39523))
+
+
+### Documentation
+
+* **datacatalog:** Minor formatting ([e3f8c89](https://github.com/googleapis/google-cloud-go/commit/e3f8c89429a207c05fee36d5d93efe76f9e29efe))
+
 ## [1.16.0](https://github.com/googleapis/google-cloud-go/compare/datacatalog/v1.15.0...datacatalog/v1.16.0) (2023-07-18)
 
 

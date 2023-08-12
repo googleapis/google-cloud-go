@@ -1,5 +1,12 @@
 # Changes
 
+## [1.15.1](https://github.com/googleapis/google-cloud-go/compare/kms/v1.15.0...kms/v1.15.1) (2023-08-08)
+
+
+### Documentation
+
+* **kms:** Minor formatting ([#8371](https://github.com/googleapis/google-cloud-go/issues/8371)) ([b4349cc](https://github.com/googleapis/google-cloud-go/commit/b4349cc507870ff8629bbc07de578b63bb889626))
+
 ## [1.15.0](https://github.com/googleapis/google-cloud-go/compare/kms/v1.14.0...kms/v1.15.0) (2023-07-24)
 
 

@@ -1,6 +1,6 @@
 module cloud.google.com/go/confidentialcomputing
 
-go 1.20
+go 1.19
 
 require (
 	github.com/googleapis/gax-go/v2 v2.11.0
