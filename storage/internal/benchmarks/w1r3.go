@@ -44,14 +44,11 @@ import (
 //
 // BENCHMARK
 //   - Grab a storage client from the pool.
-//   - Take a snapshot of the current memory stats.
 //   - Upload the object that was created in the set up, capturing the time taken.
 //     This includes opening the file, writing the object, and verifying the hash
 //     (if applicable).
-//   - Take another snapshot of memory stats.
 //   - Downloads the same object (3 times) sequentially with the same client,
-//     capturing the elapsed time and taking memory snapshots before and after
-//     each download.
+//     capturing the elapsed time.
 type w1r3 struct {
 	opts                   *benchmarkOptions
 	bucketName, objectName string
@@ -200,23 +197,17 @@ func (r *w1r3) run(ctx context.Context) error {
 }
 
 func runOneOp(ctx context.Context, result *benchmarkResult, doOp func() (time.Duration, error)) error {
-	var memStats *runtime.MemStats = &runtime.MemStats{}
-
-	// If the option is specified, run the garbage collector before collecting
-	// memory statistics and starting the timer on the benchmark. This can be
-	// used to compare between running each benchmark "on a blank slate" vs organically.
+	// If the option is specified, run the garbage collector before starting the
+	// timer on the benchmark. This can be used to compare between running each
+	// benchmark "on a blank slate" vs organically.
 	if opts.forceGC {
 		runtime.GC()
 	}
 
-	runtime.ReadMemStats(memStats)
-	result.startMem = *memStats
 	result.start = time.Now()
 
 	timeTaken, err := doOp()
 
-	runtime.ReadMemStats(memStats)
-	result.endMem = *memStats
 	result.err = err
 	result.elapsedTime = timeTaken
 

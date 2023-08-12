@@ -47,8 +47,6 @@ import (
 //
 // BENCHMARK
 //
-//   - Take a snapshot of the current memory stats.
-//
 //   - Walk through the entire directory and upload, capturing the time taken.
 //     For each file:
 //     1. Extract the object name from the path.
@@ -57,8 +55,6 @@ import (
 //     causing the number of goroutines to exceed numWorkers, it starts uploading
 //     right away. Otherwise, it waits until less than numWorkers goroutines are
 //     currently uploading a file in the directory to start.
-//
-//   - Take another snapshot of memory stats.
 //
 //   - After the entire directory is uploaded, it starts downloading the same
 //     to a copy of the directory, tracking time to completion:
@@ -71,8 +67,6 @@ import (
 //     3. Initiate a goroutine to download the object using that client. As
 //     with uploads, the number of concurrently running goroutines is
 //     always kept at or below -workers.
-//
-//   - Another memory snapshot is taken.
 type directoryBenchmark struct {
 	opts                  *benchmarkOptions
 	bucketName            string

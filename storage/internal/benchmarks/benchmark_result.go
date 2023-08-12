@@ -18,7 +18,6 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"runtime"
 	"strconv"
 	"strings"
 	"time"
@@ -37,8 +36,6 @@ type benchmarkResult struct {
 	elapsedTime   time.Duration
 	err           error
 	timedOut      bool
-	startMem      runtime.MemStats
-	endMem        runtime.MemStats
 }
 
 func (br *benchmarkResult) calculateThroughput() float64 {
@@ -273,12 +270,6 @@ func (br *benchmarkResult) csv() []string {
 	record["ElapsedTimeUs"] = strconv.FormatInt(br.elapsedTime.Microseconds(), 10)
 	record["CpuTimeUs"] = "-1" // TODO: record cpu time
 	record["Status"] = status
-	record["HeapSys"] = strconv.FormatUint(br.startMem.HeapSys, 10)
-	record["HeapAlloc"] = strconv.FormatUint(br.startMem.HeapAlloc, 10)
-	record["StackInUse"] = strconv.FormatUint(br.startMem.StackInuse, 10)
-	// commented out to avoid large numbers messing up BigQuery imports
-	record["HeapAllocDiff"] = "-1" //strconv.FormatUint(br.endMem.HeapAlloc-br.startMem.HeapAlloc, 10),
-	record["MallocsDiff"] = strconv.FormatUint(br.endMem.Mallocs-br.startMem.Mallocs, 10)
 	record["ConnectionPoolSize"] = strconv.Itoa(opts.connPoolSize)
 	record["StartTime"] = strconv.FormatInt(br.start.Unix(), 10)
 	record["EndTime"] = strconv.FormatInt(br.start.Add(br.elapsedTime).Unix(), 10)
@@ -300,7 +291,6 @@ var (
 		"Op", "ObjectSize", "AppBufferSize", "LibBufferSize",
 		"Crc32cEnabled", "MD5Enabled", "ApiName",
 		"ElapsedTimeUs", "CpuTimeUs", "Status",
-		"HeapSys", "HeapAlloc", "StackInUse", "HeapAllocDiff", "MallocsDiff",
 		"ConnectionPoolSize", "StartTime", "EndTime", "NumWorkers",
 		"CodeVersion", "BucketName",
 	}
@@ -309,7 +299,6 @@ var (
 		"AppBufferSize", "LibBufferSize",
 		"Crc32cEnabled", "MD5Enabled", "ApiName",
 		"ElapsedTimeUs", "CpuTimeUs", "Status",
-		"HeapSys", "HeapAlloc", "StackInUse", "HeapAllocDiff", "MallocsDiff",
 		"ConnectionPoolSize", "StartTime", "EndTime", "NumWorkers",
 		"CodeVersion", "BucketName",
 	}
@@ -317,7 +306,6 @@ var (
 		"Op", "DirectorySize", "NumObjects", "AppBufferSize", "LibBufferSize",
 		"Crc32cEnabled", "MD5Enabled", "ApiName",
 		"ElapsedTimeUs", "CpuTimeUs", "Status",
-		"HeapSys", "HeapAlloc", "StackInUse", "HeapAllocDiff", "MallocsDiff",
 		"ConnectionPoolSize", "StartTime", "EndTime", "NumWorkers",
 		"CodeVersion", "BucketName",
 	}
