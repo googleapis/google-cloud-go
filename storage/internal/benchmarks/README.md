@@ -34,5 +34,6 @@ This runs 1000 iterations on 512kib to 2Gib files in the background, sending out
 | -timeout_per_op | timeout on a single upload or download | any [time.Duration](https://pkg.go.dev/time#Duration) | `5m` |
 | -workload | `1` will run a w1r3 (write 1 read 3) benchmark <br> `6` will run a benchmark uploading and downloading (once each) <br> a single directory with `-directory_num_objects` number of files (no subdirectories)  | `1` or `6` | `1` |
 | -directory_num_objects | total number of objects in a directory (directory will only contain files, <br> no subdirectories); only applies to workload 6 | any positive integer | `1000` |
-
+| -memory_interval | interval at which to collect memory statistics |  any [time.Duration](https://pkg.go.dev/time#Duration) | `5h` | 
+| -memory_file | file name for collecting memory stats | any file path | stdout if output type is CloudMonitoring, otherwise `mem.csv` |
 \* required values

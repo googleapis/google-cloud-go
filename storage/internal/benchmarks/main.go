@@ -181,7 +181,7 @@ func parseFlags() {
 	flag.IntVar(&opts.workload, "workload", 1, "which workload to run")
 	flag.IntVar(&opts.numObjectsPerDirectory, "directory_num_objects", 1000, "total number of objects in directory")
 
-	flag.DurationVar(&opts.memStatInterval, "memory_interval", time.Second*5, "how often to output memory metrics")
+	flag.DurationVar(&opts.memStatInterval, "memory_interval", time.Hour*5, "how often to output memory metrics")
 	flag.StringVar(&memOutputFile, "memory_file", "", "file to output memory results to - if empty, will output to stdout")
 
 	flag.Parse()
@@ -277,7 +277,12 @@ func main() {
 	startRecordingResults(w, recordResultGroup, opts.outType)
 
 	memW := w
-	if memOutputFile != "" {
+	if opts.outType == outputCSV {
+		// Make sure we output mem stats to a different file as they would
+		// otherwise mess up the csv for results
+		if memOutputFile == "" {
+			memOutputFile = "mem.csv"
+		}
 		f, err := os.Create(memOutputFile)
 		if err != nil {
 			log.Fatalf("Failed to create file %s: %v", memOutputFile, err)
