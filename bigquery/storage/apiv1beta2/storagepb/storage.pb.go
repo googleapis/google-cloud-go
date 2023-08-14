@@ -22,9 +22,6 @@ package storagepb
 
 import (
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	grpc "google.golang.org/grpc"
@@ -34,6 +31,8 @@ import (
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 	wrapperspb "google.golang.org/protobuf/types/known/wrapperspb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -701,9 +700,9 @@ type AppendRowsRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. The stream that is the target of the append operation. This value must be
-	// specified for the initial request. If subsequent requests specify the
-	// stream name, it must equal to the value provided in the first request.
+	// Required. The stream that is the target of the append operation. This value
+	// must be specified for the initial request. If subsequent requests specify
+	// the stream name, it must equal to the value provided in the first request.
 	// To write to the _default stream, populate this field with a string in the
 	// format `projects/{project}/datasets/{dataset}/tables/{table}/_default`.
 	WriteStream string `protobuf:"bytes,1,opt,name=write_stream,json=writeStream,proto3" json:"write_stream,omitempty"`
@@ -972,8 +971,8 @@ type BatchCommitWriteStreamsRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. Parent table that all the streams should belong to, in the form of
-	// `projects/{project}/datasets/{dataset}/tables/{table}`.
+	// Required. Parent table that all the streams should belong to, in the form
+	// of `projects/{project}/datasets/{dataset}/tables/{table}`.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Required. The group of streams that will be committed atomically.
 	WriteStreams []string `protobuf:"bytes,2,rep,name=write_streams,json=writeStreams,proto3" json:"write_streams,omitempty"`
