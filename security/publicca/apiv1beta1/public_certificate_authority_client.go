@@ -35,7 +35,6 @@ import (
 	httptransport "google.golang.org/api/transport/http"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/encoding/protojson"
 )
 
@@ -155,7 +154,7 @@ type publicCertificateAuthorityGRPCClient struct {
 	publicCertificateAuthorityClient publiccapb.PublicCertificateAuthorityServiceClient
 
 	// The x-goog-* metadata to be sent with each request.
-	xGoogMetadata metadata.MD
+	xGoogHeaders []string
 }
 
 // NewPublicCertificateAuthorityClient creates a new public certificate authority service client based on gRPC.
@@ -206,7 +205,7 @@ func (c *publicCertificateAuthorityGRPCClient) Connection() *grpc.ClientConn {
 func (c *publicCertificateAuthorityGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -223,8 +222,8 @@ type publicCertificateAuthorityRESTClient struct {
 	// The http client.
 	httpClient *http.Client
 
-	// The x-goog-* metadata to be sent with each request.
-	xGoogMetadata metadata.MD
+	// The x-goog-* headers to be sent with each request.
+	xGoogHeaders []string
 
 	// Points back to the CallOptions field of the containing PublicCertificateAuthorityClient
 	CallOptions **PublicCertificateAuthorityCallOptions
@@ -268,7 +267,7 @@ func defaultPublicCertificateAuthorityRESTClientOptions() []option.ClientOption 
 func (c *publicCertificateAuthorityRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -286,9 +285,10 @@ func (c *publicCertificateAuthorityRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 func (c *publicCertificateAuthorityGRPCClient) CreateExternalAccountKey(ctx context.Context, req *publiccapb.CreateExternalAccountKeyRequest, opts ...gax.CallOption) (*publiccapb.ExternalAccountKey, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).CreateExternalAccountKey[0:len((*c.CallOptions).CreateExternalAccountKey):len((*c.CallOptions).CreateExternalAccountKey)], opts...)
 	var resp *publiccapb.ExternalAccountKey
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -323,9 +323,11 @@ func (c *publicCertificateAuthorityRESTClient) CreateExternalAccountKey(ctx cont
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).CreateExternalAccountKey[0:len((*c.CallOptions).CreateExternalAccountKey):len((*c.CallOptions).CreateExternalAccountKey)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &publiccapb.ExternalAccountKey{}
