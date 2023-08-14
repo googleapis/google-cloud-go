@@ -18,6 +18,7 @@ package logging
 
 import (
 	"encoding/json"
+	"errors"
 	"net/http"
 	"net/url"
 	"testing"
@@ -189,6 +190,10 @@ func TestToLogEntryPayload(t *testing.T) {
 		{
 			in:       "string",
 			wantText: "string",
+		},
+		{
+			in:       errors.New("oops"),
+			wantText: "oops",
 		},
 		{
 			in: map[string]interface{}{"a": 1, "b": true},

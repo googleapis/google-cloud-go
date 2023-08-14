@@ -442,7 +442,7 @@ type Entry struct {
 	// The zero value is Default.
 	Severity Severity
 
-	// Payload must be either a string, or something that marshals via the
+	// Payload must be either a string, an error, or something that marshals via the
 	// encoding/json package to a JSON object (and not any other type of JSON value).
 	Payload interface{}
 
@@ -934,6 +934,8 @@ func toLogEntryInternalImpl(e Entry, l *Logger, parent string, skipLevels int) (
 	switch p := e.Payload.(type) {
 	case string:
 		ent.Payload = &logpb.LogEntry_TextPayload{TextPayload: p}
+	case error:
+		ent.Payload = &logpb.LogEntry_TextPayload{TextPayload: p.Error()}
 	case *anypb.Any:
 		ent.Payload = &logpb.LogEntry_ProtoPayload{ProtoPayload: p}
 	default:
