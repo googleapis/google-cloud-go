@@ -1,5 +1,14 @@
 # Changes
 
+## [1.40.1](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.40.0...dialogflow/v1.40.1) (2023-08-08)
+
+
+### Documentation
+
+* **dialogflow:** Minor formatting ([#8365](https://github.com/googleapis/google-cloud-go/issues/8365)) ([e3f8c89](https://github.com/googleapis/google-cloud-go/commit/e3f8c89429a207c05fee36d5d93efe76f9e29efe))
+* **dialogflow:** Minor formatting ([#8368](https://github.com/googleapis/google-cloud-go/issues/8368)) ([a7bb94a](https://github.com/googleapis/google-cloud-go/commit/a7bb94a6e75122c93815eeeb30591249d137d77e))
+* **dialogflow:** Minor formatting ([#8376](https://github.com/googleapis/google-cloud-go/issues/8376)) ([4b68747](https://github.com/googleapis/google-cloud-go/commit/4b6874762ca3e5ebef76f72496753650cdf39523))
+
 ## [1.40.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.39.0...dialogflow/v1.40.0) (2023-07-18)
 
 

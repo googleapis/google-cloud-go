@@ -34,7 +34,6 @@ import (
 	gtransport "google.golang.org/api/transport/grpc"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -366,7 +365,7 @@ type dataTaxonomyGRPCClient struct {
 	locationsClient locationpb.LocationsClient
 
 	// The x-goog-* metadata to be sent with each request.
-	xGoogMetadata metadata.MD
+	xGoogHeaders []string
 }
 
 // NewDataTaxonomyClient creates a new data taxonomy service client based on gRPC.
@@ -429,7 +428,7 @@ func (c *dataTaxonomyGRPCClient) Connection() *grpc.ClientConn {
 func (c *dataTaxonomyGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -439,9 +438,10 @@ func (c *dataTaxonomyGRPCClient) Close() error {
 }
 
 func (c *dataTaxonomyGRPCClient) CreateDataTaxonomy(ctx context.Context, req *dataplexpb.CreateDataTaxonomyRequest, opts ...gax.CallOption) (*CreateDataTaxonomyOperation, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).CreateDataTaxonomy[0:len((*c.CallOptions).CreateDataTaxonomy):len((*c.CallOptions).CreateDataTaxonomy)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -458,9 +458,10 @@ func (c *dataTaxonomyGRPCClient) CreateDataTaxonomy(ctx context.Context, req *da
 }
 
 func (c *dataTaxonomyGRPCClient) UpdateDataTaxonomy(ctx context.Context, req *dataplexpb.UpdateDataTaxonomyRequest, opts ...gax.CallOption) (*UpdateDataTaxonomyOperation, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "data_taxonomy.name", url.QueryEscape(req.GetDataTaxonomy().GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "data_taxonomy.name", url.QueryEscape(req.GetDataTaxonomy().GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).UpdateDataTaxonomy[0:len((*c.CallOptions).UpdateDataTaxonomy):len((*c.CallOptions).UpdateDataTaxonomy)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -477,9 +478,10 @@ func (c *dataTaxonomyGRPCClient) UpdateDataTaxonomy(ctx context.Context, req *da
 }
 
 func (c *dataTaxonomyGRPCClient) DeleteDataTaxonomy(ctx context.Context, req *dataplexpb.DeleteDataTaxonomyRequest, opts ...gax.CallOption) (*DeleteDataTaxonomyOperation, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).DeleteDataTaxonomy[0:len((*c.CallOptions).DeleteDataTaxonomy):len((*c.CallOptions).DeleteDataTaxonomy)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -496,9 +498,10 @@ func (c *dataTaxonomyGRPCClient) DeleteDataTaxonomy(ctx context.Context, req *da
 }
 
 func (c *dataTaxonomyGRPCClient) ListDataTaxonomies(ctx context.Context, req *dataplexpb.ListDataTaxonomiesRequest, opts ...gax.CallOption) *DataTaxonomyIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ListDataTaxonomies[0:len((*c.CallOptions).ListDataTaxonomies):len((*c.CallOptions).ListDataTaxonomies)], opts...)
 	it := &DataTaxonomyIterator{}
 	req = proto.Clone(req).(*dataplexpb.ListDataTaxonomiesRequest)
@@ -541,9 +544,10 @@ func (c *dataTaxonomyGRPCClient) ListDataTaxonomies(ctx context.Context, req *da
 }
 
 func (c *dataTaxonomyGRPCClient) GetDataTaxonomy(ctx context.Context, req *dataplexpb.GetDataTaxonomyRequest, opts ...gax.CallOption) (*dataplexpb.DataTaxonomy, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).GetDataTaxonomy[0:len((*c.CallOptions).GetDataTaxonomy):len((*c.CallOptions).GetDataTaxonomy)], opts...)
 	var resp *dataplexpb.DataTaxonomy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -558,9 +562,10 @@ func (c *dataTaxonomyGRPCClient) GetDataTaxonomy(ctx context.Context, req *datap
 }
 
 func (c *dataTaxonomyGRPCClient) CreateDataAttributeBinding(ctx context.Context, req *dataplexpb.CreateDataAttributeBindingRequest, opts ...gax.CallOption) (*CreateDataAttributeBindingOperation, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).CreateDataAttributeBinding[0:len((*c.CallOptions).CreateDataAttributeBinding):len((*c.CallOptions).CreateDataAttributeBinding)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -577,9 +582,10 @@ func (c *dataTaxonomyGRPCClient) CreateDataAttributeBinding(ctx context.Context,
 }
 
 func (c *dataTaxonomyGRPCClient) UpdateDataAttributeBinding(ctx context.Context, req *dataplexpb.UpdateDataAttributeBindingRequest, opts ...gax.CallOption) (*UpdateDataAttributeBindingOperation, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "data_attribute_binding.name", url.QueryEscape(req.GetDataAttributeBinding().GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "data_attribute_binding.name", url.QueryEscape(req.GetDataAttributeBinding().GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).UpdateDataAttributeBinding[0:len((*c.CallOptions).UpdateDataAttributeBinding):len((*c.CallOptions).UpdateDataAttributeBinding)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -596,9 +602,10 @@ func (c *dataTaxonomyGRPCClient) UpdateDataAttributeBinding(ctx context.Context,
 }
 
 func (c *dataTaxonomyGRPCClient) DeleteDataAttributeBinding(ctx context.Context, req *dataplexpb.DeleteDataAttributeBindingRequest, opts ...gax.CallOption) (*DeleteDataAttributeBindingOperation, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).DeleteDataAttributeBinding[0:len((*c.CallOptions).DeleteDataAttributeBinding):len((*c.CallOptions).DeleteDataAttributeBinding)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -615,9 +622,10 @@ func (c *dataTaxonomyGRPCClient) DeleteDataAttributeBinding(ctx context.Context,
 }
 
 func (c *dataTaxonomyGRPCClient) ListDataAttributeBindings(ctx context.Context, req *dataplexpb.ListDataAttributeBindingsRequest, opts ...gax.CallOption) *DataAttributeBindingIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ListDataAttributeBindings[0:len((*c.CallOptions).ListDataAttributeBindings):len((*c.CallOptions).ListDataAttributeBindings)], opts...)
 	it := &DataAttributeBindingIterator{}
 	req = proto.Clone(req).(*dataplexpb.ListDataAttributeBindingsRequest)
@@ -660,9 +668,10 @@ func (c *dataTaxonomyGRPCClient) ListDataAttributeBindings(ctx context.Context, 
 }
 
 func (c *dataTaxonomyGRPCClient) GetDataAttributeBinding(ctx context.Context, req *dataplexpb.GetDataAttributeBindingRequest, opts ...gax.CallOption) (*dataplexpb.DataAttributeBinding, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).GetDataAttributeBinding[0:len((*c.CallOptions).GetDataAttributeBinding):len((*c.CallOptions).GetDataAttributeBinding)], opts...)
 	var resp *dataplexpb.DataAttributeBinding
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -677,9 +686,10 @@ func (c *dataTaxonomyGRPCClient) GetDataAttributeBinding(ctx context.Context, re
 }
 
 func (c *dataTaxonomyGRPCClient) CreateDataAttribute(ctx context.Context, req *dataplexpb.CreateDataAttributeRequest, opts ...gax.CallOption) (*CreateDataAttributeOperation, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).CreateDataAttribute[0:len((*c.CallOptions).CreateDataAttribute):len((*c.CallOptions).CreateDataAttribute)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -696,9 +706,10 @@ func (c *dataTaxonomyGRPCClient) CreateDataAttribute(ctx context.Context, req *d
 }
 
 func (c *dataTaxonomyGRPCClient) UpdateDataAttribute(ctx context.Context, req *dataplexpb.UpdateDataAttributeRequest, opts ...gax.CallOption) (*UpdateDataAttributeOperation, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "data_attribute.name", url.QueryEscape(req.GetDataAttribute().GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "data_attribute.name", url.QueryEscape(req.GetDataAttribute().GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).UpdateDataAttribute[0:len((*c.CallOptions).UpdateDataAttribute):len((*c.CallOptions).UpdateDataAttribute)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -715,9 +726,10 @@ func (c *dataTaxonomyGRPCClient) UpdateDataAttribute(ctx context.Context, req *d
 }
 
 func (c *dataTaxonomyGRPCClient) DeleteDataAttribute(ctx context.Context, req *dataplexpb.DeleteDataAttributeRequest, opts ...gax.CallOption) (*DeleteDataAttributeOperation, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).DeleteDataAttribute[0:len((*c.CallOptions).DeleteDataAttribute):len((*c.CallOptions).DeleteDataAttribute)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -734,9 +746,10 @@ func (c *dataTaxonomyGRPCClient) DeleteDataAttribute(ctx context.Context, req *d
 }
 
 func (c *dataTaxonomyGRPCClient) ListDataAttributes(ctx context.Context, req *dataplexpb.ListDataAttributesRequest, opts ...gax.CallOption) *DataAttributeIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ListDataAttributes[0:len((*c.CallOptions).ListDataAttributes):len((*c.CallOptions).ListDataAttributes)], opts...)
 	it := &DataAttributeIterator{}
 	req = proto.Clone(req).(*dataplexpb.ListDataAttributesRequest)
@@ -779,9 +792,10 @@ func (c *dataTaxonomyGRPCClient) ListDataAttributes(ctx context.Context, req *da
 }
 
 func (c *dataTaxonomyGRPCClient) GetDataAttribute(ctx context.Context, req *dataplexpb.GetDataAttributeRequest, opts ...gax.CallOption) (*dataplexpb.DataAttribute, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).GetDataAttribute[0:len((*c.CallOptions).GetDataAttribute):len((*c.CallOptions).GetDataAttribute)], opts...)
 	var resp *dataplexpb.DataAttribute
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -796,9 +810,10 @@ func (c *dataTaxonomyGRPCClient) GetDataAttribute(ctx context.Context, req *data
 }
 
 func (c *dataTaxonomyGRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).GetLocation[0:len((*c.CallOptions).GetLocation):len((*c.CallOptions).GetLocation)], opts...)
 	var resp *locationpb.Location
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -813,9 +828,10 @@ func (c *dataTaxonomyGRPCClient) GetLocation(ctx context.Context, req *locationp
 }
 
 func (c *dataTaxonomyGRPCClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
 	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
@@ -858,9 +874,10 @@ func (c *dataTaxonomyGRPCClient) ListLocations(ctx context.Context, req *locatio
 }
 
 func (c *dataTaxonomyGRPCClient) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -871,9 +888,10 @@ func (c *dataTaxonomyGRPCClient) CancelOperation(ctx context.Context, req *longr
 }
 
 func (c *dataTaxonomyGRPCClient) DeleteOperation(ctx context.Context, req *longrunningpb.DeleteOperationRequest, opts ...gax.CallOption) error {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -884,9 +902,10 @@ func (c *dataTaxonomyGRPCClient) DeleteOperation(ctx context.Context, req *longr
 }
 
 func (c *dataTaxonomyGRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -901,9 +920,10 @@ func (c *dataTaxonomyGRPCClient) GetOperation(ctx context.Context, req *longrunn
 }
 
 func (c *dataTaxonomyGRPCClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
 	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)

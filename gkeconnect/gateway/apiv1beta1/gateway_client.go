@@ -33,7 +33,6 @@ import (
 	httptransport "google.golang.org/api/transport/http"
 	httpbodypb "google.golang.org/genproto/googleapis/api/httpbody"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/metadata"
 )
 
 var newClientHook clientHook
@@ -169,7 +168,7 @@ type gRPCClient struct {
 	client gatewaypb.GatewayServiceClient
 
 	// The x-goog-* metadata to be sent with each request.
-	xGoogMetadata metadata.MD
+	xGoogHeaders []string
 }
 
 // NewClient creates a new gateway service client based on gRPC.
@@ -222,7 +221,7 @@ func (c *gRPCClient) Connection() *grpc.ClientConn {
 func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -239,8 +238,8 @@ type restClient struct {
 	// The http client.
 	httpClient *http.Client
 
-	// The x-goog-* metadata to be sent with each request.
-	xGoogMetadata metadata.MD
+	// The x-goog-* headers to be sent with each request.
+	xGoogHeaders []string
 
 	// Points back to the CallOptions field of the containing Client
 	CallOptions **CallOptions
@@ -286,7 +285,7 @@ func defaultRESTClientOptions() []option.ClientOption {
 func (c *restClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -304,7 +303,7 @@ func (c *restClient) Connection() *grpc.ClientConn {
 	return nil
 }
 func (c *gRPCClient) GetResource(ctx context.Context, req *httpbodypb.HttpBody, opts ...gax.CallOption) (*httpbodypb.HttpBody, error) {
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
 	opts = append((*c.CallOptions).GetResource[0:len((*c.CallOptions).GetResource):len((*c.CallOptions).GetResource)], opts...)
 	var resp *httpbodypb.HttpBody
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -319,7 +318,7 @@ func (c *gRPCClient) GetResource(ctx context.Context, req *httpbodypb.HttpBody, 
 }
 
 func (c *gRPCClient) PostResource(ctx context.Context, req *httpbodypb.HttpBody, opts ...gax.CallOption) (*httpbodypb.HttpBody, error) {
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
 	opts = append((*c.CallOptions).PostResource[0:len((*c.CallOptions).PostResource):len((*c.CallOptions).PostResource)], opts...)
 	var resp *httpbodypb.HttpBody
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -334,7 +333,7 @@ func (c *gRPCClient) PostResource(ctx context.Context, req *httpbodypb.HttpBody,
 }
 
 func (c *gRPCClient) DeleteResource(ctx context.Context, req *httpbodypb.HttpBody, opts ...gax.CallOption) (*httpbodypb.HttpBody, error) {
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
 	opts = append((*c.CallOptions).DeleteResource[0:len((*c.CallOptions).DeleteResource):len((*c.CallOptions).DeleteResource)], opts...)
 	var resp *httpbodypb.HttpBody
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -349,7 +348,7 @@ func (c *gRPCClient) DeleteResource(ctx context.Context, req *httpbodypb.HttpBod
 }
 
 func (c *gRPCClient) PutResource(ctx context.Context, req *httpbodypb.HttpBody, opts ...gax.CallOption) (*httpbodypb.HttpBody, error) {
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
 	opts = append((*c.CallOptions).PutResource[0:len((*c.CallOptions).PutResource):len((*c.CallOptions).PutResource)], opts...)
 	var resp *httpbodypb.HttpBody
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -364,7 +363,7 @@ func (c *gRPCClient) PutResource(ctx context.Context, req *httpbodypb.HttpBody, 
 }
 
 func (c *gRPCClient) PatchResource(ctx context.Context, req *httpbodypb.HttpBody, opts ...gax.CallOption) (*httpbodypb.HttpBody, error) {
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
 	opts = append((*c.CallOptions).PatchResource[0:len((*c.CallOptions).PatchResource):len((*c.CallOptions).PatchResource)], opts...)
 	var resp *httpbodypb.HttpBody
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -397,7 +396,8 @@ func (c *restClient) GetResource(ctx context.Context, req *httpbodypb.HttpBody, 
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).GetResource[0:len((*c.CallOptions).GetResource):len((*c.CallOptions).GetResource)], opts...)
 	resp := &httpbodypb.HttpBody{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -458,7 +458,8 @@ func (c *restClient) PostResource(ctx context.Context, req *httpbodypb.HttpBody,
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).PostResource[0:len((*c.CallOptions).PostResource):len((*c.CallOptions).PostResource)], opts...)
 	resp := &httpbodypb.HttpBody{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -519,7 +520,8 @@ func (c *restClient) DeleteResource(ctx context.Context, req *httpbodypb.HttpBod
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).DeleteResource[0:len((*c.CallOptions).DeleteResource):len((*c.CallOptions).DeleteResource)], opts...)
 	resp := &httpbodypb.HttpBody{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -580,7 +582,8 @@ func (c *restClient) PutResource(ctx context.Context, req *httpbodypb.HttpBody, 
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).PutResource[0:len((*c.CallOptions).PutResource):len((*c.CallOptions).PutResource)], opts...)
 	resp := &httpbodypb.HttpBody{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -641,7 +644,8 @@ func (c *restClient) PatchResource(ctx context.Context, req *httpbodypb.HttpBody
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).PatchResource[0:len((*c.CallOptions).PatchResource):len((*c.CallOptions).PatchResource)], opts...)
 	resp := &httpbodypb.HttpBody{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {

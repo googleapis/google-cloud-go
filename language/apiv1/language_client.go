@@ -35,7 +35,6 @@ import (
 	httptransport "google.golang.org/api/transport/http"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/encoding/protojson"
 )
 
@@ -333,7 +332,7 @@ type gRPCClient struct {
 	client languagepb.LanguageServiceClient
 
 	// The x-goog-* metadata to be sent with each request.
-	xGoogMetadata metadata.MD
+	xGoogHeaders []string
 }
 
 // NewClient creates a new language service client based on gRPC.
@@ -383,7 +382,7 @@ func (c *gRPCClient) Connection() *grpc.ClientConn {
 func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -400,8 +399,8 @@ type restClient struct {
 	// The http client.
 	httpClient *http.Client
 
-	// The x-goog-* metadata to be sent with each request.
-	xGoogMetadata metadata.MD
+	// The x-goog-* headers to be sent with each request.
+	xGoogHeaders []string
 
 	// Points back to the CallOptions field of the containing Client
 	CallOptions **CallOptions
@@ -444,7 +443,7 @@ func defaultRESTClientOptions() []option.ClientOption {
 func (c *restClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -462,7 +461,7 @@ func (c *restClient) Connection() *grpc.ClientConn {
 	return nil
 }
 func (c *gRPCClient) AnalyzeSentiment(ctx context.Context, req *languagepb.AnalyzeSentimentRequest, opts ...gax.CallOption) (*languagepb.AnalyzeSentimentResponse, error) {
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
 	opts = append((*c.CallOptions).AnalyzeSentiment[0:len((*c.CallOptions).AnalyzeSentiment):len((*c.CallOptions).AnalyzeSentiment)], opts...)
 	var resp *languagepb.AnalyzeSentimentResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -477,7 +476,7 @@ func (c *gRPCClient) AnalyzeSentiment(ctx context.Context, req *languagepb.Analy
 }
 
 func (c *gRPCClient) AnalyzeEntities(ctx context.Context, req *languagepb.AnalyzeEntitiesRequest, opts ...gax.CallOption) (*languagepb.AnalyzeEntitiesResponse, error) {
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
 	opts = append((*c.CallOptions).AnalyzeEntities[0:len((*c.CallOptions).AnalyzeEntities):len((*c.CallOptions).AnalyzeEntities)], opts...)
 	var resp *languagepb.AnalyzeEntitiesResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -492,7 +491,7 @@ func (c *gRPCClient) AnalyzeEntities(ctx context.Context, req *languagepb.Analyz
 }
 
 func (c *gRPCClient) AnalyzeEntitySentiment(ctx context.Context, req *languagepb.AnalyzeEntitySentimentRequest, opts ...gax.CallOption) (*languagepb.AnalyzeEntitySentimentResponse, error) {
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
 	opts = append((*c.CallOptions).AnalyzeEntitySentiment[0:len((*c.CallOptions).AnalyzeEntitySentiment):len((*c.CallOptions).AnalyzeEntitySentiment)], opts...)
 	var resp *languagepb.AnalyzeEntitySentimentResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -507,7 +506,7 @@ func (c *gRPCClient) AnalyzeEntitySentiment(ctx context.Context, req *languagepb
 }
 
 func (c *gRPCClient) AnalyzeSyntax(ctx context.Context, req *languagepb.AnalyzeSyntaxRequest, opts ...gax.CallOption) (*languagepb.AnalyzeSyntaxResponse, error) {
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
 	opts = append((*c.CallOptions).AnalyzeSyntax[0:len((*c.CallOptions).AnalyzeSyntax):len((*c.CallOptions).AnalyzeSyntax)], opts...)
 	var resp *languagepb.AnalyzeSyntaxResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -522,7 +521,7 @@ func (c *gRPCClient) AnalyzeSyntax(ctx context.Context, req *languagepb.AnalyzeS
 }
 
 func (c *gRPCClient) ClassifyText(ctx context.Context, req *languagepb.ClassifyTextRequest, opts ...gax.CallOption) (*languagepb.ClassifyTextResponse, error) {
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
 	opts = append((*c.CallOptions).ClassifyText[0:len((*c.CallOptions).ClassifyText):len((*c.CallOptions).ClassifyText)], opts...)
 	var resp *languagepb.ClassifyTextResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -537,7 +536,7 @@ func (c *gRPCClient) ClassifyText(ctx context.Context, req *languagepb.ClassifyT
 }
 
 func (c *gRPCClient) ModerateText(ctx context.Context, req *languagepb.ModerateTextRequest, opts ...gax.CallOption) (*languagepb.ModerateTextResponse, error) {
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
 	opts = append((*c.CallOptions).ModerateText[0:len((*c.CallOptions).ModerateText):len((*c.CallOptions).ModerateText)], opts...)
 	var resp *languagepb.ModerateTextResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -552,7 +551,7 @@ func (c *gRPCClient) ModerateText(ctx context.Context, req *languagepb.ModerateT
 }
 
 func (c *gRPCClient) AnnotateText(ctx context.Context, req *languagepb.AnnotateTextRequest, opts ...gax.CallOption) (*languagepb.AnnotateTextResponse, error) {
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
 	opts = append((*c.CallOptions).AnnotateText[0:len((*c.CallOptions).AnnotateText):len((*c.CallOptions).AnnotateText)], opts...)
 	var resp *languagepb.AnnotateTextResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -586,7 +585,8 @@ func (c *restClient) AnalyzeSentiment(ctx context.Context, req *languagepb.Analy
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).AnalyzeSentiment[0:len((*c.CallOptions).AnalyzeSentiment):len((*c.CallOptions).AnalyzeSentiment)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &languagepb.AnalyzeSentimentResponse{}
@@ -650,7 +650,8 @@ func (c *restClient) AnalyzeEntities(ctx context.Context, req *languagepb.Analyz
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).AnalyzeEntities[0:len((*c.CallOptions).AnalyzeEntities):len((*c.CallOptions).AnalyzeEntities)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &languagepb.AnalyzeEntitiesResponse{}
@@ -715,7 +716,8 @@ func (c *restClient) AnalyzeEntitySentiment(ctx context.Context, req *languagepb
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).AnalyzeEntitySentiment[0:len((*c.CallOptions).AnalyzeEntitySentiment):len((*c.CallOptions).AnalyzeEntitySentiment)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &languagepb.AnalyzeEntitySentimentResponse{}
@@ -779,7 +781,8 @@ func (c *restClient) AnalyzeSyntax(ctx context.Context, req *languagepb.AnalyzeS
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).AnalyzeSyntax[0:len((*c.CallOptions).AnalyzeSyntax):len((*c.CallOptions).AnalyzeSyntax)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &languagepb.AnalyzeSyntaxResponse{}
@@ -841,7 +844,8 @@ func (c *restClient) ClassifyText(ctx context.Context, req *languagepb.ClassifyT
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).ClassifyText[0:len((*c.CallOptions).ClassifyText):len((*c.CallOptions).ClassifyText)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &languagepb.ClassifyTextResponse{}
@@ -903,7 +907,8 @@ func (c *restClient) ModerateText(ctx context.Context, req *languagepb.ModerateT
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).ModerateText[0:len((*c.CallOptions).ModerateText):len((*c.CallOptions).ModerateText)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &languagepb.ModerateTextResponse{}
@@ -966,7 +971,8 @@ func (c *restClient) AnnotateText(ctx context.Context, req *languagepb.AnnotateT
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).AnnotateText[0:len((*c.CallOptions).AnnotateText):len((*c.CallOptions).AnnotateText)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &languagepb.AnnotateTextResponse{}

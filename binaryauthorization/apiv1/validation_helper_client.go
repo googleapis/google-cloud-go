@@ -33,7 +33,6 @@ import (
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/encoding/protojson"
 )
 
@@ -131,7 +130,7 @@ type validationHelperGRPCClient struct {
 	validationHelperClient binaryauthorizationpb.ValidationHelperV1Client
 
 	// The x-goog-* metadata to be sent with each request.
-	xGoogMetadata metadata.MD
+	xGoogHeaders []string
 }
 
 // NewValidationHelperClient creates a new validation helper v1 client based on gRPC.
@@ -180,7 +179,7 @@ func (c *validationHelperGRPCClient) Connection() *grpc.ClientConn {
 func (c *validationHelperGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -197,8 +196,8 @@ type validationHelperRESTClient struct {
 	// The http client.
 	httpClient *http.Client
 
-	// The x-goog-* metadata to be sent with each request.
-	xGoogMetadata metadata.MD
+	// The x-goog-* headers to be sent with each request.
+	xGoogHeaders []string
 
 	// Points back to the CallOptions field of the containing ValidationHelperClient
 	CallOptions **ValidationHelperCallOptions
@@ -240,7 +239,7 @@ func defaultValidationHelperRESTClientOptions() []option.ClientOption {
 func (c *validationHelperRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -258,9 +257,10 @@ func (c *validationHelperRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 func (c *validationHelperGRPCClient) ValidateAttestationOccurrence(ctx context.Context, req *binaryauthorizationpb.ValidateAttestationOccurrenceRequest, opts ...gax.CallOption) (*binaryauthorizationpb.ValidateAttestationOccurrenceResponse, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "attestor", url.QueryEscape(req.GetAttestor())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "attestor", url.QueryEscape(req.GetAttestor()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ValidateAttestationOccurrence[0:len((*c.CallOptions).ValidateAttestationOccurrence):len((*c.CallOptions).ValidateAttestationOccurrence)], opts...)
 	var resp *binaryauthorizationpb.ValidateAttestationOccurrenceResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -295,9 +295,11 @@ func (c *validationHelperRESTClient) ValidateAttestationOccurrence(ctx context.C
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "attestor", url.QueryEscape(req.GetAttestor())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "attestor", url.QueryEscape(req.GetAttestor()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).ValidateAttestationOccurrence[0:len((*c.CallOptions).ValidateAttestationOccurrence):len((*c.CallOptions).ValidateAttestationOccurrence)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &binaryauthorizationpb.ValidateAttestationOccurrenceResponse{}

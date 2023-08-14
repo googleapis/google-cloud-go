@@ -26,7 +26,6 @@ import (
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/metadata"
 )
 
 var newTetherClientHook clientHook
@@ -124,7 +123,7 @@ type tetherGRPCClient struct {
 	tetherClient apigeeconnectpb.TetherClient
 
 	// The x-goog-* metadata to be sent with each request.
-	xGoogMetadata metadata.MD
+	xGoogHeaders []string
 }
 
 // NewTetherClient creates a new tether client based on gRPC.
@@ -175,7 +174,7 @@ func (c *tetherGRPCClient) Connection() *grpc.ClientConn {
 func (c *tetherGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -185,7 +184,7 @@ func (c *tetherGRPCClient) Close() error {
 }
 
 func (c *tetherGRPCClient) Egress(ctx context.Context, opts ...gax.CallOption) (apigeeconnectpb.Tether_EgressClient, error) {
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
 	var resp apigeeconnectpb.Tether_EgressClient
 	opts = append((*c.CallOptions).Egress[0:len((*c.CallOptions).Egress):len((*c.CallOptions).Egress)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
