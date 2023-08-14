@@ -288,7 +288,7 @@ func (r *loggerRetryer) Retry(err error) (pause time.Duration, shouldRetry bool)
 	if !ok {
 		return r.defaultRetryer.Retry(err)
 	}
-	if s.Code() == codes.Internal && strings.Contains(s.Message(), utfErrorString) {
+	if strings.Contains(s.Message(), utfErrorString) {
 		return 0, false
 	}
 	return r.defaultRetryer.Retry(err)
