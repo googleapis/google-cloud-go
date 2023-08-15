@@ -51,7 +51,8 @@ type RowIterator struct {
 	pf       pageFetcher
 
 	// StartIndex can be set before the first call to Next. If PageInfo().Token
-	// is also set, StartIndex is ignored.
+	// is also set, StartIndex is ignored. If Storage API is enabled,
+	// StartIndex is also ignored because is not supported.
 	StartIndex uint64
 
 	// The schema of the table.
@@ -175,6 +176,7 @@ func isStructPtr(x interface{}) bool {
 }
 
 // PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+// Currently pagination is not supported when the Storage API is enabled.
 func (it *RowIterator) PageInfo() *iterator.PageInfo { return it.pageInfo }
 
 func (it *RowIterator) fetch(pageSize int, pageToken string) (string, error) {
