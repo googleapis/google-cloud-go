@@ -521,34 +521,37 @@ func TestRetryConformance(t *testing.T) {
 						t.Logf("No tests for operation %v", methodName)
 					}
 					for i, fn := range methods[methodName] {
-						testName := fmt.Sprintf("%v-%v-%v-%v", retryTest.Id, instructions.Instructions, methodName, i)
-						t.Run(testName, func(t *testing.T) {
+						transports := []string{"json", "grpc"}
+						for _, transport := range transports {
+							testName := fmt.Sprintf("%v-%v-%v-%v/%v", retryTest.Id, instructions.Instructions, methodName, i, transport)
+							t.Run(testName, func(t *testing.T) {
 
-							// Create the retry subtest
-							subtest := &emulatorTest{T: t, name: testName, host: endpoint}
-							subtest.create(map[string][]string{
-								method.Name: instructions.Instructions,
+								// Create the retry subtest
+								subtest := &emulatorTest{T: t, name: testName, host: endpoint}
+								subtest.create(map[string][]string{
+									method.Name: instructions.Instructions,
+								}, transport)
+
+								// Create necessary test resources in the emulator
+								subtest.populateResources(ctx, client, method.Resources)
+
+								// Test
+								err = fn(ctx, subtest.wrappedClient, &subtest.resources, retryTest.PreconditionProvided)
+								if retryTest.ExpectSuccess && err != nil {
+									t.Errorf("want success, got %v", err)
+								}
+								if !retryTest.ExpectSuccess && err == nil {
+									t.Errorf("want failure, got success")
+								}
+
+								// Verify that all instructions were used up during the test
+								// (indicates that the client sent the correct requests).
+								subtest.check()
+
+								// Close out test in emulator.
+								subtest.delete()
 							})
-
-							// Create necessary test resources in the emulator
-							subtest.populateResources(ctx, client, method.Resources)
-
-							// Test
-							err = fn(ctx, subtest.wrappedClient, &subtest.resources, retryTest.PreconditionProvided)
-							if retryTest.ExpectSuccess && err != nil {
-								t.Errorf("want success, got %v", err)
-							}
-							if !retryTest.ExpectSuccess && err == nil {
-								t.Errorf("want failure, got success")
-							}
-
-							// Verify that all instructions were used up during the test
-							// (indicates that the client sent the correct requests).
-							subtest.check()
-
-							// Close out test in emulator.
-							subtest.delete()
-						})
+						}
 					}
 				}
 			}
@@ -651,12 +654,14 @@ func uploadTestObject(bucketName, objName string, n []byte) error {
 }
 
 // Creates a retry test resource in the emulator
-func (et *emulatorTest) create(instructions map[string][]string) {
+func (et *emulatorTest) create(instructions map[string][]string, transport string) {
 	c := http.DefaultClient
 	data := struct {
 		Instructions map[string][]string `json:"instructions"`
+		Transport    string              `json:"transport"`
 	}{
 		Instructions: instructions,
+		Transport:    transport,
 	}
 
 	buf := new(bytes.Buffer)
@@ -666,6 +671,9 @@ func (et *emulatorTest) create(instructions map[string][]string) {
 
 	et.host.Path = "retry_test"
 	resp, err := c.Post(et.host.String(), "application/json", buf)
+	if resp.StatusCode == 501 {
+		et.T.Skip("This retry test case is not yet supported in the testbench.")
+	}
 	if err != nil || resp.StatusCode != 200 {
 		et.Fatalf("creating retry test: err: %v, resp: %+v", err, resp)
 	}
