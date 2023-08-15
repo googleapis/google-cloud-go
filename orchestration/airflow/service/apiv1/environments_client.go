@@ -38,7 +38,6 @@ import (
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 )
@@ -322,7 +321,7 @@ type environmentsGRPCClient struct {
 	operationsClient longrunningpb.OperationsClient
 
 	// The x-goog-* metadata to be sent with each request.
-	xGoogMetadata metadata.MD
+	xGoogHeaders []string
 }
 
 // NewEnvironmentsClient creates a new environments client based on gRPC.
@@ -383,7 +382,7 @@ func (c *environmentsGRPCClient) Connection() *grpc.ClientConn {
 func (c *environmentsGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -405,8 +404,8 @@ type environmentsRESTClient struct {
 	// Users should not Close this client.
 	LROClient **lroauto.OperationsClient
 
-	// The x-goog-* metadata to be sent with each request.
-	xGoogMetadata metadata.MD
+	// The x-goog-* headers to be sent with each request.
+	xGoogHeaders []string
 
 	// Points back to the CallOptions field of the containing EnvironmentsClient
 	CallOptions **EnvironmentsCallOptions
@@ -458,7 +457,7 @@ func defaultEnvironmentsRESTClientOptions() []option.ClientOption {
 func (c *environmentsRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -476,9 +475,10 @@ func (c *environmentsRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 func (c *environmentsGRPCClient) CreateEnvironment(ctx context.Context, req *servicepb.CreateEnvironmentRequest, opts ...gax.CallOption) (*CreateEnvironmentOperation, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).CreateEnvironment[0:len((*c.CallOptions).CreateEnvironment):len((*c.CallOptions).CreateEnvironment)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -495,9 +495,10 @@ func (c *environmentsGRPCClient) CreateEnvironment(ctx context.Context, req *ser
 }
 
 func (c *environmentsGRPCClient) GetEnvironment(ctx context.Context, req *servicepb.GetEnvironmentRequest, opts ...gax.CallOption) (*servicepb.Environment, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).GetEnvironment[0:len((*c.CallOptions).GetEnvironment):len((*c.CallOptions).GetEnvironment)], opts...)
 	var resp *servicepb.Environment
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -512,9 +513,10 @@ func (c *environmentsGRPCClient) GetEnvironment(ctx context.Context, req *servic
 }
 
 func (c *environmentsGRPCClient) ListEnvironments(ctx context.Context, req *servicepb.ListEnvironmentsRequest, opts ...gax.CallOption) *EnvironmentIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ListEnvironments[0:len((*c.CallOptions).ListEnvironments):len((*c.CallOptions).ListEnvironments)], opts...)
 	it := &EnvironmentIterator{}
 	req = proto.Clone(req).(*servicepb.ListEnvironmentsRequest)
@@ -557,9 +559,10 @@ func (c *environmentsGRPCClient) ListEnvironments(ctx context.Context, req *serv
 }
 
 func (c *environmentsGRPCClient) UpdateEnvironment(ctx context.Context, req *servicepb.UpdateEnvironmentRequest, opts ...gax.CallOption) (*UpdateEnvironmentOperation, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).UpdateEnvironment[0:len((*c.CallOptions).UpdateEnvironment):len((*c.CallOptions).UpdateEnvironment)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -576,9 +579,10 @@ func (c *environmentsGRPCClient) UpdateEnvironment(ctx context.Context, req *ser
 }
 
 func (c *environmentsGRPCClient) DeleteEnvironment(ctx context.Context, req *servicepb.DeleteEnvironmentRequest, opts ...gax.CallOption) (*DeleteEnvironmentOperation, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).DeleteEnvironment[0:len((*c.CallOptions).DeleteEnvironment):len((*c.CallOptions).DeleteEnvironment)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -595,9 +599,10 @@ func (c *environmentsGRPCClient) DeleteEnvironment(ctx context.Context, req *ser
 }
 
 func (c *environmentsGRPCClient) ExecuteAirflowCommand(ctx context.Context, req *servicepb.ExecuteAirflowCommandRequest, opts ...gax.CallOption) (*servicepb.ExecuteAirflowCommandResponse, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "environment", url.QueryEscape(req.GetEnvironment())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "environment", url.QueryEscape(req.GetEnvironment()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ExecuteAirflowCommand[0:len((*c.CallOptions).ExecuteAirflowCommand):len((*c.CallOptions).ExecuteAirflowCommand)], opts...)
 	var resp *servicepb.ExecuteAirflowCommandResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -612,9 +617,10 @@ func (c *environmentsGRPCClient) ExecuteAirflowCommand(ctx context.Context, req 
 }
 
 func (c *environmentsGRPCClient) StopAirflowCommand(ctx context.Context, req *servicepb.StopAirflowCommandRequest, opts ...gax.CallOption) (*servicepb.StopAirflowCommandResponse, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "environment", url.QueryEscape(req.GetEnvironment())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "environment", url.QueryEscape(req.GetEnvironment()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).StopAirflowCommand[0:len((*c.CallOptions).StopAirflowCommand):len((*c.CallOptions).StopAirflowCommand)], opts...)
 	var resp *servicepb.StopAirflowCommandResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -629,9 +635,10 @@ func (c *environmentsGRPCClient) StopAirflowCommand(ctx context.Context, req *se
 }
 
 func (c *environmentsGRPCClient) PollAirflowCommand(ctx context.Context, req *servicepb.PollAirflowCommandRequest, opts ...gax.CallOption) (*servicepb.PollAirflowCommandResponse, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "environment", url.QueryEscape(req.GetEnvironment())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "environment", url.QueryEscape(req.GetEnvironment()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).PollAirflowCommand[0:len((*c.CallOptions).PollAirflowCommand):len((*c.CallOptions).PollAirflowCommand)], opts...)
 	var resp *servicepb.PollAirflowCommandResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -646,9 +653,10 @@ func (c *environmentsGRPCClient) PollAirflowCommand(ctx context.Context, req *se
 }
 
 func (c *environmentsGRPCClient) SaveSnapshot(ctx context.Context, req *servicepb.SaveSnapshotRequest, opts ...gax.CallOption) (*SaveSnapshotOperation, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "environment", url.QueryEscape(req.GetEnvironment())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "environment", url.QueryEscape(req.GetEnvironment()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).SaveSnapshot[0:len((*c.CallOptions).SaveSnapshot):len((*c.CallOptions).SaveSnapshot)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -665,9 +673,10 @@ func (c *environmentsGRPCClient) SaveSnapshot(ctx context.Context, req *servicep
 }
 
 func (c *environmentsGRPCClient) LoadSnapshot(ctx context.Context, req *servicepb.LoadSnapshotRequest, opts ...gax.CallOption) (*LoadSnapshotOperation, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "environment", url.QueryEscape(req.GetEnvironment())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "environment", url.QueryEscape(req.GetEnvironment()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).LoadSnapshot[0:len((*c.CallOptions).LoadSnapshot):len((*c.CallOptions).LoadSnapshot)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -684,9 +693,10 @@ func (c *environmentsGRPCClient) LoadSnapshot(ctx context.Context, req *servicep
 }
 
 func (c *environmentsGRPCClient) DatabaseFailover(ctx context.Context, req *servicepb.DatabaseFailoverRequest, opts ...gax.CallOption) (*DatabaseFailoverOperation, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "environment", url.QueryEscape(req.GetEnvironment())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "environment", url.QueryEscape(req.GetEnvironment()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).DatabaseFailover[0:len((*c.CallOptions).DatabaseFailover):len((*c.CallOptions).DatabaseFailover)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -703,9 +713,10 @@ func (c *environmentsGRPCClient) DatabaseFailover(ctx context.Context, req *serv
 }
 
 func (c *environmentsGRPCClient) FetchDatabaseProperties(ctx context.Context, req *servicepb.FetchDatabasePropertiesRequest, opts ...gax.CallOption) (*servicepb.FetchDatabasePropertiesResponse, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "environment", url.QueryEscape(req.GetEnvironment())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "environment", url.QueryEscape(req.GetEnvironment()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).FetchDatabaseProperties[0:len((*c.CallOptions).FetchDatabaseProperties):len((*c.CallOptions).FetchDatabaseProperties)], opts...)
 	var resp *servicepb.FetchDatabasePropertiesResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -720,9 +731,10 @@ func (c *environmentsGRPCClient) FetchDatabaseProperties(ctx context.Context, re
 }
 
 func (c *environmentsGRPCClient) DeleteOperation(ctx context.Context, req *longrunningpb.DeleteOperationRequest, opts ...gax.CallOption) error {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -733,9 +745,10 @@ func (c *environmentsGRPCClient) DeleteOperation(ctx context.Context, req *longr
 }
 
 func (c *environmentsGRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -750,9 +763,10 @@ func (c *environmentsGRPCClient) GetOperation(ctx context.Context, req *longrunn
 }
 
 func (c *environmentsGRPCClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
 	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
@@ -815,9 +829,11 @@ func (c *environmentsRESTClient) CreateEnvironment(ctx context.Context, req *ser
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -877,9 +893,11 @@ func (c *environmentsRESTClient) GetEnvironment(ctx context.Context, req *servic
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).GetEnvironment[0:len((*c.CallOptions).GetEnvironment):len((*c.CallOptions).GetEnvironment)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &servicepb.Environment{}
@@ -954,7 +972,8 @@ func (c *environmentsRESTClient) ListEnvironments(ctx context.Context, req *serv
 		baseUrl.RawQuery = params.Encode()
 
 		// Build HTTP headers from client and context metadata.
-		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
 		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			if settings.Path != "" {
 				baseUrl.Path = settings.Path
@@ -1037,9 +1056,11 @@ func (c *environmentsRESTClient) UpdateEnvironment(ctx context.Context, req *ser
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1099,9 +1120,11 @@ func (c *environmentsRESTClient) DeleteEnvironment(ctx context.Context, req *ser
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1167,9 +1190,11 @@ func (c *environmentsRESTClient) ExecuteAirflowCommand(ctx context.Context, req 
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "environment", url.QueryEscape(req.GetEnvironment())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "environment", url.QueryEscape(req.GetEnvironment()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).ExecuteAirflowCommand[0:len((*c.CallOptions).ExecuteAirflowCommand):len((*c.CallOptions).ExecuteAirflowCommand)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &servicepb.ExecuteAirflowCommandResponse{}
@@ -1231,9 +1256,11 @@ func (c *environmentsRESTClient) StopAirflowCommand(ctx context.Context, req *se
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "environment", url.QueryEscape(req.GetEnvironment())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "environment", url.QueryEscape(req.GetEnvironment()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).StopAirflowCommand[0:len((*c.CallOptions).StopAirflowCommand):len((*c.CallOptions).StopAirflowCommand)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &servicepb.StopAirflowCommandResponse{}
@@ -1295,9 +1322,11 @@ func (c *environmentsRESTClient) PollAirflowCommand(ctx context.Context, req *se
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "environment", url.QueryEscape(req.GetEnvironment())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "environment", url.QueryEscape(req.GetEnvironment()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).PollAirflowCommand[0:len((*c.CallOptions).PollAirflowCommand):len((*c.CallOptions).PollAirflowCommand)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &servicepb.PollAirflowCommandResponse{}
@@ -1362,9 +1391,11 @@ func (c *environmentsRESTClient) SaveSnapshot(ctx context.Context, req *servicep
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "environment", url.QueryEscape(req.GetEnvironment())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "environment", url.QueryEscape(req.GetEnvironment()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1433,9 +1464,11 @@ func (c *environmentsRESTClient) LoadSnapshot(ctx context.Context, req *servicep
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "environment", url.QueryEscape(req.GetEnvironment())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "environment", url.QueryEscape(req.GetEnvironment()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1501,9 +1534,11 @@ func (c *environmentsRESTClient) DatabaseFailover(ctx context.Context, req *serv
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "environment", url.QueryEscape(req.GetEnvironment())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "environment", url.QueryEscape(req.GetEnvironment()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1563,9 +1598,11 @@ func (c *environmentsRESTClient) FetchDatabaseProperties(ctx context.Context, re
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "environment", url.QueryEscape(req.GetEnvironment())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "environment", url.QueryEscape(req.GetEnvironment()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).FetchDatabaseProperties[0:len((*c.CallOptions).FetchDatabaseProperties):len((*c.CallOptions).FetchDatabaseProperties)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &servicepb.FetchDatabasePropertiesResponse{}
@@ -1621,9 +1658,11 @@ func (c *environmentsRESTClient) DeleteOperation(ctx context.Context, req *longr
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -1661,9 +1700,11 @@ func (c *environmentsRESTClient) GetOperation(ctx context.Context, req *longrunn
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
@@ -1741,7 +1782,8 @@ func (c *environmentsRESTClient) ListOperations(ctx context.Context, req *longru
 		baseUrl.RawQuery = params.Encode()
 
 		// Build HTTP headers from client and context metadata.
-		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
 		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			if settings.Path != "" {
 				baseUrl.Path = settings.Path

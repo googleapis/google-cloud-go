@@ -35,7 +35,6 @@ import (
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 )
@@ -215,7 +214,7 @@ type firewallGRPCClient struct {
 	firewallClient appenginepb.FirewallClient
 
 	// The x-goog-* metadata to be sent with each request.
-	xGoogMetadata metadata.MD
+	xGoogHeaders []string
 }
 
 // NewFirewallClient creates a new firewall client based on gRPC.
@@ -273,7 +272,7 @@ func (c *firewallGRPCClient) Connection() *grpc.ClientConn {
 func (c *firewallGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -290,8 +289,8 @@ type firewallRESTClient struct {
 	// The http client.
 	httpClient *http.Client
 
-	// The x-goog-* metadata to be sent with each request.
-	xGoogMetadata metadata.MD
+	// The x-goog-* headers to be sent with each request.
+	xGoogHeaders []string
 
 	// Points back to the CallOptions field of the containing FirewallClient
 	CallOptions **FirewallCallOptions
@@ -342,7 +341,7 @@ func defaultFirewallRESTClientOptions() []option.ClientOption {
 func (c *firewallRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -360,9 +359,10 @@ func (c *firewallRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 func (c *firewallGRPCClient) ListIngressRules(ctx context.Context, req *appenginepb.ListIngressRulesRequest, opts ...gax.CallOption) *FirewallRuleIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ListIngressRules[0:len((*c.CallOptions).ListIngressRules):len((*c.CallOptions).ListIngressRules)], opts...)
 	it := &FirewallRuleIterator{}
 	req = proto.Clone(req).(*appenginepb.ListIngressRulesRequest)
@@ -405,9 +405,10 @@ func (c *firewallGRPCClient) ListIngressRules(ctx context.Context, req *appengin
 }
 
 func (c *firewallGRPCClient) BatchUpdateIngressRules(ctx context.Context, req *appenginepb.BatchUpdateIngressRulesRequest, opts ...gax.CallOption) (*appenginepb.BatchUpdateIngressRulesResponse, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).BatchUpdateIngressRules[0:len((*c.CallOptions).BatchUpdateIngressRules):len((*c.CallOptions).BatchUpdateIngressRules)], opts...)
 	var resp *appenginepb.BatchUpdateIngressRulesResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -422,9 +423,10 @@ func (c *firewallGRPCClient) BatchUpdateIngressRules(ctx context.Context, req *a
 }
 
 func (c *firewallGRPCClient) CreateIngressRule(ctx context.Context, req *appenginepb.CreateIngressRuleRequest, opts ...gax.CallOption) (*appenginepb.FirewallRule, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).CreateIngressRule[0:len((*c.CallOptions).CreateIngressRule):len((*c.CallOptions).CreateIngressRule)], opts...)
 	var resp *appenginepb.FirewallRule
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -439,9 +441,10 @@ func (c *firewallGRPCClient) CreateIngressRule(ctx context.Context, req *appengi
 }
 
 func (c *firewallGRPCClient) GetIngressRule(ctx context.Context, req *appenginepb.GetIngressRuleRequest, opts ...gax.CallOption) (*appenginepb.FirewallRule, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).GetIngressRule[0:len((*c.CallOptions).GetIngressRule):len((*c.CallOptions).GetIngressRule)], opts...)
 	var resp *appenginepb.FirewallRule
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -456,9 +459,10 @@ func (c *firewallGRPCClient) GetIngressRule(ctx context.Context, req *appenginep
 }
 
 func (c *firewallGRPCClient) UpdateIngressRule(ctx context.Context, req *appenginepb.UpdateIngressRuleRequest, opts ...gax.CallOption) (*appenginepb.FirewallRule, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).UpdateIngressRule[0:len((*c.CallOptions).UpdateIngressRule):len((*c.CallOptions).UpdateIngressRule)], opts...)
 	var resp *appenginepb.FirewallRule
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -473,9 +477,10 @@ func (c *firewallGRPCClient) UpdateIngressRule(ctx context.Context, req *appengi
 }
 
 func (c *firewallGRPCClient) DeleteIngressRule(ctx context.Context, req *appenginepb.DeleteIngressRuleRequest, opts ...gax.CallOption) error {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).DeleteIngressRule[0:len((*c.CallOptions).DeleteIngressRule):len((*c.CallOptions).DeleteIngressRule)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -521,7 +526,8 @@ func (c *firewallRESTClient) ListIngressRules(ctx context.Context, req *appengin
 		baseUrl.RawQuery = params.Encode()
 
 		// Build HTTP headers from client and context metadata.
-		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
 		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			if settings.Path != "" {
 				baseUrl.Path = settings.Path
@@ -600,9 +606,11 @@ func (c *firewallRESTClient) BatchUpdateIngressRules(ctx context.Context, req *a
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).BatchUpdateIngressRules[0:len((*c.CallOptions).BatchUpdateIngressRules):len((*c.CallOptions).BatchUpdateIngressRules)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &appenginepb.BatchUpdateIngressRulesResponse{}
@@ -665,9 +673,11 @@ func (c *firewallRESTClient) CreateIngressRule(ctx context.Context, req *appengi
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).CreateIngressRule[0:len((*c.CallOptions).CreateIngressRule):len((*c.CallOptions).CreateIngressRule)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &appenginepb.FirewallRule{}
@@ -723,9 +733,11 @@ func (c *firewallRESTClient) GetIngressRule(ctx context.Context, req *appenginep
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).GetIngressRule[0:len((*c.CallOptions).GetIngressRule):len((*c.CallOptions).GetIngressRule)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &appenginepb.FirewallRule{}
@@ -795,9 +807,11 @@ func (c *firewallRESTClient) UpdateIngressRule(ctx context.Context, req *appengi
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).UpdateIngressRule[0:len((*c.CallOptions).UpdateIngressRule):len((*c.CallOptions).UpdateIngressRule)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &appenginepb.FirewallRule{}
@@ -853,9 +867,11 @@ func (c *firewallRESTClient) DeleteIngressRule(ctx context.Context, req *appengi
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path

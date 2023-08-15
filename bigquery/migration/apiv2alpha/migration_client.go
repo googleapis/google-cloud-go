@@ -36,7 +36,6 @@ import (
 	httptransport "google.golang.org/api/transport/http"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 )
@@ -304,7 +303,7 @@ type gRPCClient struct {
 	client migrationpb.MigrationServiceClient
 
 	// The x-goog-* metadata to be sent with each request.
-	xGoogMetadata metadata.MD
+	xGoogHeaders []string
 }
 
 // NewClient creates a new migration service client based on gRPC.
@@ -353,7 +352,7 @@ func (c *gRPCClient) Connection() *grpc.ClientConn {
 func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -370,8 +369,8 @@ type restClient struct {
 	// The http client.
 	httpClient *http.Client
 
-	// The x-goog-* metadata to be sent with each request.
-	xGoogMetadata metadata.MD
+	// The x-goog-* headers to be sent with each request.
+	xGoogHeaders []string
 
 	// Points back to the CallOptions field of the containing Client
 	CallOptions **CallOptions
@@ -413,7 +412,7 @@ func defaultRESTClientOptions() []option.ClientOption {
 func (c *restClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -431,9 +430,10 @@ func (c *restClient) Connection() *grpc.ClientConn {
 	return nil
 }
 func (c *gRPCClient) CreateMigrationWorkflow(ctx context.Context, req *migrationpb.CreateMigrationWorkflowRequest, opts ...gax.CallOption) (*migrationpb.MigrationWorkflow, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).CreateMigrationWorkflow[0:len((*c.CallOptions).CreateMigrationWorkflow):len((*c.CallOptions).CreateMigrationWorkflow)], opts...)
 	var resp *migrationpb.MigrationWorkflow
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -448,9 +448,10 @@ func (c *gRPCClient) CreateMigrationWorkflow(ctx context.Context, req *migration
 }
 
 func (c *gRPCClient) GetMigrationWorkflow(ctx context.Context, req *migrationpb.GetMigrationWorkflowRequest, opts ...gax.CallOption) (*migrationpb.MigrationWorkflow, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).GetMigrationWorkflow[0:len((*c.CallOptions).GetMigrationWorkflow):len((*c.CallOptions).GetMigrationWorkflow)], opts...)
 	var resp *migrationpb.MigrationWorkflow
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -465,9 +466,10 @@ func (c *gRPCClient) GetMigrationWorkflow(ctx context.Context, req *migrationpb.
 }
 
 func (c *gRPCClient) ListMigrationWorkflows(ctx context.Context, req *migrationpb.ListMigrationWorkflowsRequest, opts ...gax.CallOption) *MigrationWorkflowIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ListMigrationWorkflows[0:len((*c.CallOptions).ListMigrationWorkflows):len((*c.CallOptions).ListMigrationWorkflows)], opts...)
 	it := &MigrationWorkflowIterator{}
 	req = proto.Clone(req).(*migrationpb.ListMigrationWorkflowsRequest)
@@ -510,9 +512,10 @@ func (c *gRPCClient) ListMigrationWorkflows(ctx context.Context, req *migrationp
 }
 
 func (c *gRPCClient) DeleteMigrationWorkflow(ctx context.Context, req *migrationpb.DeleteMigrationWorkflowRequest, opts ...gax.CallOption) error {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).DeleteMigrationWorkflow[0:len((*c.CallOptions).DeleteMigrationWorkflow):len((*c.CallOptions).DeleteMigrationWorkflow)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -523,9 +526,10 @@ func (c *gRPCClient) DeleteMigrationWorkflow(ctx context.Context, req *migration
 }
 
 func (c *gRPCClient) StartMigrationWorkflow(ctx context.Context, req *migrationpb.StartMigrationWorkflowRequest, opts ...gax.CallOption) error {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).StartMigrationWorkflow[0:len((*c.CallOptions).StartMigrationWorkflow):len((*c.CallOptions).StartMigrationWorkflow)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -536,9 +540,10 @@ func (c *gRPCClient) StartMigrationWorkflow(ctx context.Context, req *migrationp
 }
 
 func (c *gRPCClient) GetMigrationSubtask(ctx context.Context, req *migrationpb.GetMigrationSubtaskRequest, opts ...gax.CallOption) (*migrationpb.MigrationSubtask, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).GetMigrationSubtask[0:len((*c.CallOptions).GetMigrationSubtask):len((*c.CallOptions).GetMigrationSubtask)], opts...)
 	var resp *migrationpb.MigrationSubtask
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -553,9 +558,10 @@ func (c *gRPCClient) GetMigrationSubtask(ctx context.Context, req *migrationpb.G
 }
 
 func (c *gRPCClient) ListMigrationSubtasks(ctx context.Context, req *migrationpb.ListMigrationSubtasksRequest, opts ...gax.CallOption) *MigrationSubtaskIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ListMigrationSubtasks[0:len((*c.CallOptions).ListMigrationSubtasks):len((*c.CallOptions).ListMigrationSubtasks)], opts...)
 	it := &MigrationSubtaskIterator{}
 	req = proto.Clone(req).(*migrationpb.ListMigrationSubtasksRequest)
@@ -613,9 +619,11 @@ func (c *restClient) CreateMigrationWorkflow(ctx context.Context, req *migration
 	baseUrl.Path += fmt.Sprintf("/v2alpha/%v/workflows", req.GetParent())
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).CreateMigrationWorkflow[0:len((*c.CallOptions).CreateMigrationWorkflow):len((*c.CallOptions).CreateMigrationWorkflow)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &migrationpb.MigrationWorkflow{}
@@ -677,9 +685,11 @@ func (c *restClient) GetMigrationWorkflow(ctx context.Context, req *migrationpb.
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).GetMigrationWorkflow[0:len((*c.CallOptions).GetMigrationWorkflow):len((*c.CallOptions).GetMigrationWorkflow)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &migrationpb.MigrationWorkflow{}
@@ -760,7 +770,8 @@ func (c *restClient) ListMigrationWorkflows(ctx context.Context, req *migrationp
 		baseUrl.RawQuery = params.Encode()
 
 		// Build HTTP headers from client and context metadata.
-		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
 		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			if settings.Path != "" {
 				baseUrl.Path = settings.Path
@@ -824,9 +835,11 @@ func (c *restClient) DeleteMigrationWorkflow(ctx context.Context, req *migration
 	baseUrl.Path += fmt.Sprintf("/v2alpha/%v", req.GetName())
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -868,9 +881,11 @@ func (c *restClient) StartMigrationWorkflow(ctx context.Context, req *migrationp
 	baseUrl.Path += fmt.Sprintf("/v2alpha/%v:start", req.GetName())
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -914,9 +929,11 @@ func (c *restClient) GetMigrationSubtask(ctx context.Context, req *migrationpb.G
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).GetMigrationSubtask[0:len((*c.CallOptions).GetMigrationSubtask):len((*c.CallOptions).GetMigrationSubtask)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &migrationpb.MigrationSubtask{}
@@ -1000,7 +1017,8 @@ func (c *restClient) ListMigrationSubtasks(ctx context.Context, req *migrationpb
 		baseUrl.RawQuery = params.Encode()
 
 		// Build HTTP headers from client and context metadata.
-		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
 		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			if settings.Path != "" {
 				baseUrl.Path = settings.Path
