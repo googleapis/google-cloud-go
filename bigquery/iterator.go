@@ -54,10 +54,16 @@ type RowIterator struct {
 	// is also set, StartIndex is ignored.
 	StartIndex uint64
 
-	// The schema of the table. Available after the first call to Next.
+	// The schema of the table.
+	// In some scenarios it will only be available after the first
+	// call to Next(), like when a call to Query.Read uses
+	// the jobs.query API for an optimized query path.
 	Schema Schema
 
-	// The total number of rows in the result. Available after the first call to Next.
+	// The total number of rows in the result.
+	// In some scenarios it will only be available after the first
+	// call to Next(), like when a call to Query.Read uses
+	// the jobs.query API for an optimized query path.
 	// May be zero just after rows were inserted.
 	TotalRows uint64
 
