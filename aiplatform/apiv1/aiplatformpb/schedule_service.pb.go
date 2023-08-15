@@ -21,11 +21,8 @@
 package aiplatformpb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -34,6 +31,8 @@ import (
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -218,6 +217,7 @@ type ListSchedulesRequest struct {
 	// descending order.
 	//
 	// Supported fields:
+	//
 	//   * `create_time`
 	//   * `start_time`
 	//   * `end_time`
@@ -532,7 +532,9 @@ type UpdateScheduleRequest struct {
 
 	// Required. The Schedule which replaces the resource on the server.
 	// The following restrictions will be applied:
+	//
 	//   * The scheduled request type cannot be changed.
+	//   * The non-empty fields cannot be unset.
 	//   * The output_only fields will be ignored if specified.
 	Schedule *Schedule `protobuf:"bytes,1,opt,name=schedule,proto3" json:"schedule,omitempty"`
 	// Required. The update mask applies to the resource. See
