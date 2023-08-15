@@ -101,6 +101,8 @@ func NewClient(ctx context.Context, projectID string, opts ...option.ClientOptio
 
 // EnableStorageReadClient sets up Storage API connection to be used when fetching
 // large datasets from tables, jobs or queries.
+// Currently out of pagination methods like PageInfo().Token and RowIterator.StartIndex
+// are not supported when the Storage API is enabled.
 // Calling this method twice will return an error.
 func (c *Client) EnableStorageReadClient(ctx context.Context, opts ...option.ClientOption) error {
 	if c.isStorageReadAvailable() {
