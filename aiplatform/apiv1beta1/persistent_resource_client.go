@@ -177,7 +177,7 @@ func (c *PersistentResourceClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// CreatePersistentResource uploads a Model artifact into Vertex AI.
+// CreatePersistentResource creates a PersistentResource.
 func (c *PersistentResourceClient) CreatePersistentResource(ctx context.Context, req *aiplatformpb.CreatePersistentResourceRequest, opts ...gax.CallOption) (*CreatePersistentResourceOperation, error) {
 	return c.internalClient.CreatePersistentResource(ctx, req, opts...)
 }
@@ -782,7 +782,7 @@ func (c *persistentResourceGRPCClient) WaitOperation(ctx context.Context, req *l
 	return resp, nil
 }
 
-// CreatePersistentResource uploads a Model artifact into Vertex AI.
+// CreatePersistentResource creates a PersistentResource.
 func (c *persistentResourceRESTClient) CreatePersistentResource(ctx context.Context, req *aiplatformpb.CreatePersistentResourceRequest, opts ...gax.CallOption) (*CreatePersistentResourceOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetPersistentResource()

@@ -735,7 +735,7 @@ const _ = grpc.SupportPackageIsVersion6
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type PersistentResourceServiceClient interface {
-	// Uploads a Model artifact into Vertex AI.
+	// Creates a PersistentResource.
 	CreatePersistentResource(ctx context.Context, in *CreatePersistentResourceRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Gets a PersistentResource.
 	GetPersistentResource(ctx context.Context, in *GetPersistentResourceRequest, opts ...grpc.CallOption) (*PersistentResource, error)
@@ -791,7 +791,7 @@ func (c *persistentResourceServiceClient) DeletePersistentResource(ctx context.C
 
 // PersistentResourceServiceServer is the server API for PersistentResourceService service.
 type PersistentResourceServiceServer interface {
-	// Uploads a Model artifact into Vertex AI.
+	// Creates a PersistentResource.
 	CreatePersistentResource(context.Context, *CreatePersistentResourceRequest) (*longrunningpb.Operation, error)
 	// Gets a PersistentResource.
 	GetPersistentResource(context.Context, *GetPersistentResourceRequest) (*PersistentResource, error)

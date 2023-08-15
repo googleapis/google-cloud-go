@@ -52,6 +52,7 @@ type PredictionCallOptions struct {
 	RawPredict             []gax.CallOption
 	ServerStreamingPredict []gax.CallOption
 	Explain                []gax.CallOption
+	CountTokens            []gax.CallOption
 	GetLocation            []gax.CallOption
 	ListLocations          []gax.CallOption
 	GetIamPolicy           []gax.CallOption
@@ -86,6 +87,7 @@ func defaultPredictionCallOptions() *PredictionCallOptions {
 		Explain: []gax.CallOption{
 			gax.WithTimeout(5000 * time.Millisecond),
 		},
+		CountTokens:        []gax.CallOption{},
 		GetLocation:        []gax.CallOption{},
 		ListLocations:      []gax.CallOption{},
 		GetIamPolicy:       []gax.CallOption{},
@@ -109,6 +111,7 @@ func defaultPredictionRESTCallOptions() *PredictionCallOptions {
 		Explain: []gax.CallOption{
 			gax.WithTimeout(5000 * time.Millisecond),
 		},
+		CountTokens:        []gax.CallOption{},
 		GetLocation:        []gax.CallOption{},
 		ListLocations:      []gax.CallOption{},
 		GetIamPolicy:       []gax.CallOption{},
@@ -131,6 +134,7 @@ type internalPredictionClient interface {
 	RawPredict(context.Context, *aiplatformpb.RawPredictRequest, ...gax.CallOption) (*httpbodypb.HttpBody, error)
 	ServerStreamingPredict(context.Context, *aiplatformpb.StreamingPredictRequest, ...gax.CallOption) (aiplatformpb.PredictionService_ServerStreamingPredictClient, error)
 	Explain(context.Context, *aiplatformpb.ExplainRequest, ...gax.CallOption) (*aiplatformpb.ExplainResponse, error)
+	CountTokens(context.Context, *aiplatformpb.CountTokensRequest, ...gax.CallOption) (*aiplatformpb.CountTokensResponse, error)
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
 	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
 	GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
@@ -217,6 +221,11 @@ func (c *PredictionClient) ServerStreamingPredict(ctx context.Context, req *aipl
 // populated.
 func (c *PredictionClient) Explain(ctx context.Context, req *aiplatformpb.ExplainRequest, opts ...gax.CallOption) (*aiplatformpb.ExplainResponse, error) {
 	return c.internalClient.Explain(ctx, req, opts...)
+}
+
+// CountTokens perform a token counting.
+func (c *PredictionClient) CountTokens(ctx context.Context, req *aiplatformpb.CountTokensRequest, opts ...gax.CallOption) (*aiplatformpb.CountTokensResponse, error) {
+	return c.internalClient.CountTokens(ctx, req, opts...)
 }
 
 // GetLocation gets information about a location.
@@ -493,6 +502,24 @@ func (c *predictionGRPCClient) Explain(ctx context.Context, req *aiplatformpb.Ex
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.predictionClient.Explain(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *predictionGRPCClient) CountTokens(ctx context.Context, req *aiplatformpb.CountTokensRequest, opts ...gax.CallOption) (*aiplatformpb.CountTokensResponse, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "endpoint", url.QueryEscape(req.GetEndpoint()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).CountTokens[0:len((*c.CallOptions).CountTokens):len((*c.CallOptions).CountTokens)], opts...)
+	var resp *aiplatformpb.CountTokensResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.predictionClient.CountTokens(ctx, req, settings.GRPC...)
 		return err
 	}, opts...)
 	if err != nil {
@@ -996,6 +1023,67 @@ func (c *predictionRESTClient) Explain(ctx context.Context, req *aiplatformpb.Ex
 	opts = append((*c.CallOptions).Explain[0:len((*c.CallOptions).Explain):len((*c.CallOptions).Explain)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &aiplatformpb.ExplainResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// CountTokens perform a token counting.
+func (c *predictionRESTClient) CountTokens(ctx context.Context, req *aiplatformpb.CountTokensRequest, opts ...gax.CallOption) (*aiplatformpb.CountTokensResponse, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:countTokens", req.GetEndpoint())
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "endpoint", url.QueryEscape(req.GetEndpoint()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).CountTokens[0:len((*c.CallOptions).CountTokens):len((*c.CallOptions).CountTokens)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &aiplatformpb.CountTokensResponse{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
