@@ -310,7 +310,7 @@ const (
 	publisherSpanName          = "send"
 	publishFlowControlSpanName = "publisher flow control"
 	publishSchedulerSpanName   = "publish scheduler"
-	publishRPCSpanName         = "send Publish"
+	publishRPCSpanName         = "publish"
 
 	// custom pubsub specific attributes
 	numBatchedMessagesAttribute = "messaging.pubsub.num_messages_in_batch"

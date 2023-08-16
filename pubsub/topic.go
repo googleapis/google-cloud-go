@@ -606,7 +606,7 @@ func (t *Topic) Publish(ctx context.Context, msg *Message) *PublishResult {
 	}
 
 	ctx2, fcSpan := tracer().Start(ctx, publishFlowControlSpanName)
-	if err := t.flowController.acquire(ctx, msgSize); err != nil {
+	if err := t.flowController.acquire(ctx2, msgSize); err != nil {
 		t.scheduler.Pause(msg.OrderingKey)
 		ipubsub.SetPublishResult(r, "", err)
 		spanRecordError(span, err)
