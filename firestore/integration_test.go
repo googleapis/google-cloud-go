@@ -2349,10 +2349,12 @@ func TestIntegration_AggregationQueries(t *testing.T) {
 		if err != nil && !tc.wantErr {
 			t.Errorf("%s: got: %v, want: nil", tc.desc, err)
 			continue
-		} else if err == nil && tc.wantErr {
+		}
+		if err == nil && tc.wantErr {
 			t.Errorf("%s: got: %v, wanted error", tc.desc, err)
 			continue
-		} else if !reflect.DeepEqual(aggResult, tc.result) {
+		}
+		if !reflect.DeepEqual(aggResult, tc.result) {
 			t.Errorf("%s: got: %v, want: %v", tc.desc, aggResult, tc.result)
 			continue
 		}
