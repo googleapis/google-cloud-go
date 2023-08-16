@@ -359,6 +359,9 @@ service-configs:
   - input-directory: google/cloud/bigquery/analyticshub/v1
     service-config: analyticshub_v1.yaml
     import-path: cloud.google.com/go/bigquery/analyticshub/apiv1
+  - input-directory: google/cloud/bigquery/biglake/v1
+    service-config: biglake_v1.yaml
+    import-path: cloud.google.com/go/bigquery/biglake/apiv1
   - input-directory: google/cloud/bigquery/connection/v1
     service-config: bigqueryconnection_v1.yaml
     import-path: cloud.google.com/go/bigquery/connection/apiv1
