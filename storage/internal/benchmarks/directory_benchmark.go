@@ -25,6 +25,9 @@ import (
 	"time"
 
 	"cloud.google.com/go/storage"
+	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/trace"
 	"golang.org/x/sync/errgroup"
 	"google.golang.org/api/iterator"
 )
@@ -172,6 +175,13 @@ func (r *directoryBenchmark) cleanup() error {
 }
 
 func (r *directoryBenchmark) uploadDirectory(ctx context.Context, numWorkers int) (elapsedTime time.Duration, err error) {
+	var span trace.Span
+	ctx, span = otel.GetTracerProvider().Tracer(tracerName).Start(ctx, "uploadDirectory")
+	span.SetAttributes(
+		attribute.KeyValue{"num_workers", attribute.IntValue(numWorkers)},
+	)
+	defer span.End()
+
 	benchGroup, ctx := errgroup.WithContext(ctx)
 	benchGroup.SetLimit(numWorkers)
 
@@ -220,6 +230,13 @@ func (r *directoryBenchmark) uploadDirectory(ctx context.Context, numWorkers int
 }
 
 func (r *directoryBenchmark) downloadDirectory(ctx context.Context, numWorkers int) (elapsedTime time.Duration, err error) {
+	var span trace.Span
+	ctx, span = otel.GetTracerProvider().Tracer(tracerName).Start(ctx, "downloadDirectory")
+	span.SetAttributes(
+		attribute.KeyValue{"num_workers", attribute.IntValue(numWorkers)},
+	)
+	defer span.End()
+
 	benchGroup, ctx := errgroup.WithContext(ctx)
 	benchGroup.SetLimit(numWorkers)
 
@@ -299,6 +316,13 @@ func (r *directoryBenchmark) downloadDirectory(ctx context.Context, numWorkers i
 }
 
 func (r *directoryBenchmark) run(ctx context.Context) error {
+	var span trace.Span
+	ctx, span = otel.GetTracerProvider().Tracer(tracerName).Start(ctx, "directoryBenchmark")
+	span.SetAttributes(
+		attribute.KeyValue{"api", attribute.StringValue(string(r.opts.api))},
+		attribute.KeyValue{"object_size", attribute.Int64Value(r.opts.objectSize)})
+	defer span.End()
+
 	// Upload
 	err := runOneOp(ctx, r.writeResult, func() (time.Duration, error) {
 		return r.uploadDirectory(ctx, r.numWorkers)
