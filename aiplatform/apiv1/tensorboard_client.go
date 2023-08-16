@@ -48,6 +48,7 @@ type TensorboardCallOptions struct {
 	ListTensorboards                   []gax.CallOption
 	DeleteTensorboard                  []gax.CallOption
 	ReadTensorboardUsage               []gax.CallOption
+	ReadTensorboardSize                []gax.CallOption
 	CreateTensorboardExperiment        []gax.CallOption
 	GetTensorboardExperiment           []gax.CallOption
 	UpdateTensorboardExperiment        []gax.CallOption
@@ -103,6 +104,7 @@ func defaultTensorboardCallOptions() *TensorboardCallOptions {
 		ListTensorboards:                   []gax.CallOption{},
 		DeleteTensorboard:                  []gax.CallOption{},
 		ReadTensorboardUsage:               []gax.CallOption{},
+		ReadTensorboardSize:                []gax.CallOption{},
 		CreateTensorboardExperiment:        []gax.CallOption{},
 		GetTensorboardExperiment:           []gax.CallOption{},
 		UpdateTensorboardExperiment:        []gax.CallOption{},
@@ -153,6 +155,7 @@ type internalTensorboardClient interface {
 	DeleteTensorboard(context.Context, *aiplatformpb.DeleteTensorboardRequest, ...gax.CallOption) (*DeleteTensorboardOperation, error)
 	DeleteTensorboardOperation(name string) *DeleteTensorboardOperation
 	ReadTensorboardUsage(context.Context, *aiplatformpb.ReadTensorboardUsageRequest, ...gax.CallOption) (*aiplatformpb.ReadTensorboardUsageResponse, error)
+	ReadTensorboardSize(context.Context, *aiplatformpb.ReadTensorboardSizeRequest, ...gax.CallOption) (*aiplatformpb.ReadTensorboardSizeResponse, error)
 	CreateTensorboardExperiment(context.Context, *aiplatformpb.CreateTensorboardExperimentRequest, ...gax.CallOption) (*aiplatformpb.TensorboardExperiment, error)
 	GetTensorboardExperiment(context.Context, *aiplatformpb.GetTensorboardExperimentRequest, ...gax.CallOption) (*aiplatformpb.TensorboardExperiment, error)
 	UpdateTensorboardExperiment(context.Context, *aiplatformpb.UpdateTensorboardExperimentRequest, ...gax.CallOption) (*aiplatformpb.TensorboardExperiment, error)
@@ -277,6 +280,11 @@ func (c *TensorboardClient) DeleteTensorboardOperation(name string) *DeleteTenso
 // ReadTensorboardUsage returns a list of monthly active users for a given TensorBoard instance.
 func (c *TensorboardClient) ReadTensorboardUsage(ctx context.Context, req *aiplatformpb.ReadTensorboardUsageRequest, opts ...gax.CallOption) (*aiplatformpb.ReadTensorboardUsageResponse, error) {
 	return c.internalClient.ReadTensorboardUsage(ctx, req, opts...)
+}
+
+// ReadTensorboardSize returns the storage size for a given TensorBoard instance.
+func (c *TensorboardClient) ReadTensorboardSize(ctx context.Context, req *aiplatformpb.ReadTensorboardSizeRequest, opts ...gax.CallOption) (*aiplatformpb.ReadTensorboardSizeResponse, error) {
+	return c.internalClient.ReadTensorboardSize(ctx, req, opts...)
 }
 
 // CreateTensorboardExperiment creates a TensorboardExperiment.
@@ -718,6 +726,24 @@ func (c *tensorboardGRPCClient) ReadTensorboardUsage(ctx context.Context, req *a
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.tensorboardClient.ReadTensorboardUsage(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *tensorboardGRPCClient) ReadTensorboardSize(ctx context.Context, req *aiplatformpb.ReadTensorboardSizeRequest, opts ...gax.CallOption) (*aiplatformpb.ReadTensorboardSizeResponse, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "tensorboard", url.QueryEscape(req.GetTensorboard()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ReadTensorboardSize[0:len((*c.CallOptions).ReadTensorboardSize):len((*c.CallOptions).ReadTensorboardSize)], opts...)
+	var resp *aiplatformpb.ReadTensorboardSizeResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.tensorboardClient.ReadTensorboardSize(ctx, req, settings.GRPC...)
 		return err
 	}, opts...)
 	if err != nil {
