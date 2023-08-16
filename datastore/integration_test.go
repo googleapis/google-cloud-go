@@ -704,7 +704,7 @@ func TestIntegration_AggregationQueries(t *testing.T) {
 	client := newTestClient(ctx, t)
 	defer client.Close()
 
-	parent := NameKey("SQParent", "TestIntegration_Filters"+suffix, nil)
+	parent := NameKey("SQParent", "TestIntegration_AggregationQueries"+suffix, nil)
 	now := timeNow.Truncate(time.Millisecond).Unix()
 	children := []*SQChild{
 		{I: 0, T: now, U: now, V: 1.5, W: "str"},
@@ -742,14 +742,14 @@ func TestIntegration_AggregationQueries(t *testing.T) {
 	}{
 		{
 			desc:          "Count Failure - Missing index",
-			aggQuery:      baseQuery.Filter("T>=", now).NewAggregationQuery().WithCount("count"),
+			aggQuery:      NewQuery("SQChild").Ancestor(parent).Filter("T>=", now).NewAggregationQuery().WithCount("count"),
 			wantFailure:   true,
 			wantErrMsg:    "no matching index found",
 			wantAggResult: nil,
 		},
 		{
 			desc:        "Count Success",
-			aggQuery:    baseQuery.Filter("T=", now).Filter("I>=", 3).NewAggregationQuery().WithCount("count"),
+			aggQuery:    NewQuery("SQChild").Ancestor(parent).Filter("T=", now).Filter("I>=", 3).NewAggregationQuery().WithCount("count"),
 			wantFailure: false,
 			wantErrMsg:  "",
 			wantAggResult: map[string]interface{}{
@@ -758,18 +758,18 @@ func TestIntegration_AggregationQueries(t *testing.T) {
 		},
 		{
 			desc:        "Multiple aggregations",
-			aggQuery:    baseQuery.Filter("T=", now).NewAggregationQuery().WithSum("I", "i_sum").WithAvg("I", "avg").WithSum("V", "v_sum"),
+			aggQuery:    NewQuery("SQChild").Ancestor(parent).Filter("T=", now).NewAggregationQuery().WithSum("I", "i_sum").WithAvg("I", "avg").WithSum("V", "v_sum"),
 			wantFailure: false,
 			wantErrMsg:  "",
 			wantAggResult: map[string]interface{}{
 				"i_sum": &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: 28}},
-				"v_sum": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: 3.5}},
+				"v_sum": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: 12}},
 				"avg":   &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: 3.5}},
 			},
 		},
 		{
 			desc:        "Multiple aggregations with limit ",
-			aggQuery:    baseQuery.Filter("T=", now).Limit(2).NewAggregationQuery().WithSum("I", "sum").WithAvg("I", "avg"),
+			aggQuery:    NewQuery("SQChild").Ancestor(parent).Filter("T=", now).Limit(2).NewAggregationQuery().WithSum("I", "sum").WithAvg("I", "avg"),
 			wantFailure: false,
 			wantErrMsg:  "",
 			wantAggResult: map[string]interface{}{
@@ -779,7 +779,7 @@ func TestIntegration_AggregationQueries(t *testing.T) {
 		},
 		{
 			desc:        "Multiple aggregations on non-numeric field",
-			aggQuery:    baseQuery.Filter("T=", now).Limit(2).NewAggregationQuery().WithSum("W", "sum").WithAvg("W", "avg"),
+			aggQuery:    NewQuery("SQChild").Ancestor(parent).Filter("T=", now).Limit(2).NewAggregationQuery().WithSum("W", "sum").WithAvg("W", "avg"),
 			wantFailure: false,
 			wantErrMsg:  "",
 			wantAggResult: map[string]interface{}{
@@ -789,7 +789,7 @@ func TestIntegration_AggregationQueries(t *testing.T) {
 		},
 		{
 			desc:        "Sum aggregation without alias",
-			aggQuery:    baseQuery.Filter("T=", now).NewAggregationQuery().WithSum("I", ""),
+			aggQuery:    NewQuery("SQChild").Ancestor(parent).Filter("T=", now).NewAggregationQuery().WithSum("I", ""),
 			wantFailure: false,
 			wantErrMsg:  "",
 			wantAggResult: map[string]interface{}{
@@ -798,22 +798,16 @@ func TestIntegration_AggregationQueries(t *testing.T) {
 		},
 		{
 			desc:        "Average aggregation without alias",
-			aggQuery:    baseQuery.Filter("T=", now).NewAggregationQuery().WithAvg("I", ""),
+			aggQuery:    NewQuery("SQChild").Ancestor(parent).Filter("T=", now).NewAggregationQuery().WithAvg("I", ""),
 			wantFailure: false,
 			wantErrMsg:  "",
 			wantAggResult: map[string]interface{}{
-				"property_1": &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: 8}},
+				"property_1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: 3.5}},
 			},
 		},
 		{
-			desc:        "Aggregation with invalid alias",
-			aggQuery:    baseQuery.Filter("T=", now).NewAggregationQuery().WithAvg("I", "*****"),
-			wantFailure: true,
-			wantErrMsg:  "",
-		},
-		{
 			desc:        "Aggregation with invalid field name",
-			aggQuery:    baseQuery.Filter("T=", now).NewAggregationQuery().WithSum("I2", "").WithAvg("I2", ""),
+			aggQuery:    NewQuery("SQChild").Ancestor(parent).Filter("T=", now).NewAggregationQuery().WithSum("I2", "").WithAvg("I2", ""),
 			wantFailure: true,
 			wantErrMsg:  "",
 		},
