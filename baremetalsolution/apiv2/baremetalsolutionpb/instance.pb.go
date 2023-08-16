@@ -21,14 +21,13 @@
 package baremetalsolutionpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -109,6 +108,59 @@ func (x Instance_State) Number() protoreflect.EnumNumber {
 // Deprecated: Use Instance_State.Descriptor instead.
 func (Instance_State) EnumDescriptor() ([]byte, []int) {
 	return file_google_cloud_baremetalsolution_v2_instance_proto_rawDescGZIP(), []int{0, 0}
+}
+
+// Interface type.
+type ServerNetworkTemplate_LogicalInterface_InterfaceType int32
+
+const (
+	// Unspecified value.
+	ServerNetworkTemplate_LogicalInterface_INTERFACE_TYPE_UNSPECIFIED ServerNetworkTemplate_LogicalInterface_InterfaceType = 0
+	// Bond interface type.
+	ServerNetworkTemplate_LogicalInterface_BOND ServerNetworkTemplate_LogicalInterface_InterfaceType = 1
+	// NIC interface type.
+	ServerNetworkTemplate_LogicalInterface_NIC ServerNetworkTemplate_LogicalInterface_InterfaceType = 2
+)
+
+// Enum value maps for ServerNetworkTemplate_LogicalInterface_InterfaceType.
+var (
+	ServerNetworkTemplate_LogicalInterface_InterfaceType_name = map[int32]string{
+		0: "INTERFACE_TYPE_UNSPECIFIED",
+		1: "BOND",
+		2: "NIC",
+	}
+	ServerNetworkTemplate_LogicalInterface_InterfaceType_value = map[string]int32{
+		"INTERFACE_TYPE_UNSPECIFIED": 0,
+		"BOND":                       1,
+		"NIC":                        2,
+	}
+)
+
+func (x ServerNetworkTemplate_LogicalInterface_InterfaceType) Enum() *ServerNetworkTemplate_LogicalInterface_InterfaceType {
+	p := new(ServerNetworkTemplate_LogicalInterface_InterfaceType)
+	*p = x
+	return p
+}
+
+func (x ServerNetworkTemplate_LogicalInterface_InterfaceType) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (ServerNetworkTemplate_LogicalInterface_InterfaceType) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_cloud_baremetalsolution_v2_instance_proto_enumTypes[1].Descriptor()
+}
+
+func (ServerNetworkTemplate_LogicalInterface_InterfaceType) Type() protoreflect.EnumType {
+	return &file_google_cloud_baremetalsolution_v2_instance_proto_enumTypes[1]
+}
+
+func (x ServerNetworkTemplate_LogicalInterface_InterfaceType) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use ServerNetworkTemplate_LogicalInterface_InterfaceType.Descriptor instead.
+func (ServerNetworkTemplate_LogicalInterface_InterfaceType) EnumDescriptor() ([]byte, []int) {
+	return file_google_cloud_baremetalsolution_v2_instance_proto_rawDescGZIP(), []int{16, 0, 0}
 }
 
 // A server.
@@ -708,45 +760,6 @@ func (x *ResetInstanceRequest) GetName() string {
 	return ""
 }
 
-// Response message from resetting a server.
-type ResetInstanceResponse struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-}
-
-func (x *ResetInstanceResponse) Reset() {
-	*x = ResetInstanceResponse{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_google_cloud_baremetalsolution_v2_instance_proto_msgTypes[7]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *ResetInstanceResponse) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*ResetInstanceResponse) ProtoMessage() {}
-
-func (x *ResetInstanceResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_baremetalsolution_v2_instance_proto_msgTypes[7]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use ResetInstanceResponse.ProtoReflect.Descriptor instead.
-func (*ResetInstanceResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_baremetalsolution_v2_instance_proto_rawDescGZIP(), []int{7}
-}
-
 // Message requesting to start a server.
 type StartInstanceRequest struct {
 	state         protoimpl.MessageState
@@ -760,7 +773,7 @@ type StartInstanceRequest struct {
 func (x *StartInstanceRequest) Reset() {
 	*x = StartInstanceRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_google_cloud_baremetalsolution_v2_instance_proto_msgTypes[8]
+		mi := &file_google_cloud_baremetalsolution_v2_instance_proto_msgTypes[7]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -773,7 +786,7 @@ func (x *StartInstanceRequest) String() string {
 func (*StartInstanceRequest) ProtoMessage() {}
 
 func (x *StartInstanceRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_baremetalsolution_v2_instance_proto_msgTypes[8]
+	mi := &file_google_cloud_baremetalsolution_v2_instance_proto_msgTypes[7]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -786,7 +799,7 @@ func (x *StartInstanceRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StartInstanceRequest.ProtoReflect.Descriptor instead.
 func (*StartInstanceRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_baremetalsolution_v2_instance_proto_rawDescGZIP(), []int{8}
+	return file_google_cloud_baremetalsolution_v2_instance_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *StartInstanceRequest) GetName() string {
@@ -806,7 +819,7 @@ type StartInstanceResponse struct {
 func (x *StartInstanceResponse) Reset() {
 	*x = StartInstanceResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_google_cloud_baremetalsolution_v2_instance_proto_msgTypes[9]
+		mi := &file_google_cloud_baremetalsolution_v2_instance_proto_msgTypes[8]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -819,7 +832,7 @@ func (x *StartInstanceResponse) String() string {
 func (*StartInstanceResponse) ProtoMessage() {}
 
 func (x *StartInstanceResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_baremetalsolution_v2_instance_proto_msgTypes[9]
+	mi := &file_google_cloud_baremetalsolution_v2_instance_proto_msgTypes[8]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -832,7 +845,7 @@ func (x *StartInstanceResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StartInstanceResponse.ProtoReflect.Descriptor instead.
 func (*StartInstanceResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_baremetalsolution_v2_instance_proto_rawDescGZIP(), []int{9}
+	return file_google_cloud_baremetalsolution_v2_instance_proto_rawDescGZIP(), []int{8}
 }
 
 // Message requesting to stop a server.
@@ -848,7 +861,7 @@ type StopInstanceRequest struct {
 func (x *StopInstanceRequest) Reset() {
 	*x = StopInstanceRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_google_cloud_baremetalsolution_v2_instance_proto_msgTypes[10]
+		mi := &file_google_cloud_baremetalsolution_v2_instance_proto_msgTypes[9]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -861,7 +874,7 @@ func (x *StopInstanceRequest) String() string {
 func (*StopInstanceRequest) ProtoMessage() {}
 
 func (x *StopInstanceRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_baremetalsolution_v2_instance_proto_msgTypes[10]
+	mi := &file_google_cloud_baremetalsolution_v2_instance_proto_msgTypes[9]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -874,7 +887,7 @@ func (x *StopInstanceRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StopInstanceRequest.ProtoReflect.Descriptor instead.
 func (*StopInstanceRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_baremetalsolution_v2_instance_proto_rawDescGZIP(), []int{10}
+	return file_google_cloud_baremetalsolution_v2_instance_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *StopInstanceRequest) GetName() string {
@@ -894,7 +907,7 @@ type StopInstanceResponse struct {
 func (x *StopInstanceResponse) Reset() {
 	*x = StopInstanceResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_google_cloud_baremetalsolution_v2_instance_proto_msgTypes[11]
+		mi := &file_google_cloud_baremetalsolution_v2_instance_proto_msgTypes[10]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -907,7 +920,7 @@ func (x *StopInstanceResponse) String() string {
 func (*StopInstanceResponse) ProtoMessage() {}
 
 func (x *StopInstanceResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_baremetalsolution_v2_instance_proto_msgTypes[11]
+	mi := &file_google_cloud_baremetalsolution_v2_instance_proto_msgTypes[10]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -920,7 +933,7 @@ func (x *StopInstanceResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StopInstanceResponse.ProtoReflect.Descriptor instead.
 func (*StopInstanceResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_baremetalsolution_v2_instance_proto_rawDescGZIP(), []int{11}
+	return file_google_cloud_baremetalsolution_v2_instance_proto_rawDescGZIP(), []int{10}
 }
 
 // Message for enabling the interactive serial console on an instance.
@@ -936,7 +949,7 @@ type EnableInteractiveSerialConsoleRequest struct {
 func (x *EnableInteractiveSerialConsoleRequest) Reset() {
 	*x = EnableInteractiveSerialConsoleRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_google_cloud_baremetalsolution_v2_instance_proto_msgTypes[12]
+		mi := &file_google_cloud_baremetalsolution_v2_instance_proto_msgTypes[11]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -949,7 +962,7 @@ func (x *EnableInteractiveSerialConsoleRequest) String() string {
 func (*EnableInteractiveSerialConsoleRequest) ProtoMessage() {}
 
 func (x *EnableInteractiveSerialConsoleRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_baremetalsolution_v2_instance_proto_msgTypes[12]
+	mi := &file_google_cloud_baremetalsolution_v2_instance_proto_msgTypes[11]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -962,7 +975,7 @@ func (x *EnableInteractiveSerialConsoleRequest) ProtoReflect() protoreflect.Mess
 
 // Deprecated: Use EnableInteractiveSerialConsoleRequest.ProtoReflect.Descriptor instead.
 func (*EnableInteractiveSerialConsoleRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_baremetalsolution_v2_instance_proto_rawDescGZIP(), []int{12}
+	return file_google_cloud_baremetalsolution_v2_instance_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *EnableInteractiveSerialConsoleRequest) GetName() string {
@@ -982,7 +995,7 @@ type EnableInteractiveSerialConsoleResponse struct {
 func (x *EnableInteractiveSerialConsoleResponse) Reset() {
 	*x = EnableInteractiveSerialConsoleResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_google_cloud_baremetalsolution_v2_instance_proto_msgTypes[13]
+		mi := &file_google_cloud_baremetalsolution_v2_instance_proto_msgTypes[12]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -995,7 +1008,7 @@ func (x *EnableInteractiveSerialConsoleResponse) String() string {
 func (*EnableInteractiveSerialConsoleResponse) ProtoMessage() {}
 
 func (x *EnableInteractiveSerialConsoleResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_baremetalsolution_v2_instance_proto_msgTypes[13]
+	mi := &file_google_cloud_baremetalsolution_v2_instance_proto_msgTypes[12]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1008,7 +1021,7 @@ func (x *EnableInteractiveSerialConsoleResponse) ProtoReflect() protoreflect.Mes
 
 // Deprecated: Use EnableInteractiveSerialConsoleResponse.ProtoReflect.Descriptor instead.
 func (*EnableInteractiveSerialConsoleResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_baremetalsolution_v2_instance_proto_rawDescGZIP(), []int{13}
+	return file_google_cloud_baremetalsolution_v2_instance_proto_rawDescGZIP(), []int{12}
 }
 
 // Message for disabling the interactive serial console on an instance.
@@ -1024,7 +1037,7 @@ type DisableInteractiveSerialConsoleRequest struct {
 func (x *DisableInteractiveSerialConsoleRequest) Reset() {
 	*x = DisableInteractiveSerialConsoleRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_google_cloud_baremetalsolution_v2_instance_proto_msgTypes[14]
+		mi := &file_google_cloud_baremetalsolution_v2_instance_proto_msgTypes[13]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -1037,7 +1050,7 @@ func (x *DisableInteractiveSerialConsoleRequest) String() string {
 func (*DisableInteractiveSerialConsoleRequest) ProtoMessage() {}
 
 func (x *DisableInteractiveSerialConsoleRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_baremetalsolution_v2_instance_proto_msgTypes[14]
+	mi := &file_google_cloud_baremetalsolution_v2_instance_proto_msgTypes[13]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1050,7 +1063,7 @@ func (x *DisableInteractiveSerialConsoleRequest) ProtoReflect() protoreflect.Mes
 
 // Deprecated: Use DisableInteractiveSerialConsoleRequest.ProtoReflect.Descriptor instead.
 func (*DisableInteractiveSerialConsoleRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_baremetalsolution_v2_instance_proto_rawDescGZIP(), []int{14}
+	return file_google_cloud_baremetalsolution_v2_instance_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *DisableInteractiveSerialConsoleRequest) GetName() string {
@@ -1070,7 +1083,7 @@ type DisableInteractiveSerialConsoleResponse struct {
 func (x *DisableInteractiveSerialConsoleResponse) Reset() {
 	*x = DisableInteractiveSerialConsoleResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_google_cloud_baremetalsolution_v2_instance_proto_msgTypes[15]
+		mi := &file_google_cloud_baremetalsolution_v2_instance_proto_msgTypes[14]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -1083,7 +1096,7 @@ func (x *DisableInteractiveSerialConsoleResponse) String() string {
 func (*DisableInteractiveSerialConsoleResponse) ProtoMessage() {}
 
 func (x *DisableInteractiveSerialConsoleResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_baremetalsolution_v2_instance_proto_msgTypes[15]
+	mi := &file_google_cloud_baremetalsolution_v2_instance_proto_msgTypes[14]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1096,7 +1109,7 @@ func (x *DisableInteractiveSerialConsoleResponse) ProtoReflect() protoreflect.Me
 
 // Deprecated: Use DisableInteractiveSerialConsoleResponse.ProtoReflect.Descriptor instead.
 func (*DisableInteractiveSerialConsoleResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_baremetalsolution_v2_instance_proto_rawDescGZIP(), []int{15}
+	return file_google_cloud_baremetalsolution_v2_instance_proto_rawDescGZIP(), []int{14}
 }
 
 // Message for detach specific LUN from an Instance.
@@ -1116,7 +1129,7 @@ type DetachLunRequest struct {
 func (x *DetachLunRequest) Reset() {
 	*x = DetachLunRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_google_cloud_baremetalsolution_v2_instance_proto_msgTypes[16]
+		mi := &file_google_cloud_baremetalsolution_v2_instance_proto_msgTypes[15]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -1129,7 +1142,7 @@ func (x *DetachLunRequest) String() string {
 func (*DetachLunRequest) ProtoMessage() {}
 
 func (x *DetachLunRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_baremetalsolution_v2_instance_proto_msgTypes[16]
+	mi := &file_google_cloud_baremetalsolution_v2_instance_proto_msgTypes[15]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1142,7 +1155,7 @@ func (x *DetachLunRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DetachLunRequest.ProtoReflect.Descriptor instead.
 func (*DetachLunRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_baremetalsolution_v2_instance_proto_rawDescGZIP(), []int{16}
+	return file_google_cloud_baremetalsolution_v2_instance_proto_rawDescGZIP(), []int{15}
 }
 
 func (x *DetachLunRequest) GetInstance() string {
@@ -1162,6 +1175,148 @@ func (x *DetachLunRequest) GetLun() string {
 func (x *DetachLunRequest) GetSkipReboot() bool {
 	if x != nil {
 		return x.SkipReboot
+	}
+	return false
+}
+
+// Network template.
+type ServerNetworkTemplate struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// Output only. Template's unique name. The full resource name follows the
+	// pattern:
+	// `projects/{project}/locations/{location}/serverNetworkTemplate/{server_network_template}`
+	// Generally, the {server_network_template} follows the syntax of
+	// "bond<interface_type_index><bond_mode>" or "nic<interface_type_index>".
+	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	// Instance types this template is applicable to.
+	ApplicableInstanceTypes []string `protobuf:"bytes,2,rep,name=applicable_instance_types,json=applicableInstanceTypes,proto3" json:"applicable_instance_types,omitempty"`
+	// Logical interfaces.
+	LogicalInterfaces []*ServerNetworkTemplate_LogicalInterface `protobuf:"bytes,3,rep,name=logical_interfaces,json=logicalInterfaces,proto3" json:"logical_interfaces,omitempty"`
+}
+
+func (x *ServerNetworkTemplate) Reset() {
+	*x = ServerNetworkTemplate{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_google_cloud_baremetalsolution_v2_instance_proto_msgTypes[16]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *ServerNetworkTemplate) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ServerNetworkTemplate) ProtoMessage() {}
+
+func (x *ServerNetworkTemplate) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_baremetalsolution_v2_instance_proto_msgTypes[16]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ServerNetworkTemplate.ProtoReflect.Descriptor instead.
+func (*ServerNetworkTemplate) Descriptor() ([]byte, []int) {
+	return file_google_cloud_baremetalsolution_v2_instance_proto_rawDescGZIP(), []int{16}
+}
+
+func (x *ServerNetworkTemplate) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *ServerNetworkTemplate) GetApplicableInstanceTypes() []string {
+	if x != nil {
+		return x.ApplicableInstanceTypes
+	}
+	return nil
+}
+
+func (x *ServerNetworkTemplate) GetLogicalInterfaces() []*ServerNetworkTemplate_LogicalInterface {
+	if x != nil {
+		return x.LogicalInterfaces
+	}
+	return nil
+}
+
+// Logical interface.
+type ServerNetworkTemplate_LogicalInterface struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// Interface name.
+	// This is not a globally unique identifier.
+	// Name is unique only inside the ServerNetworkTemplate. This is of syntax
+	// <bond><interface_type_index><bond_mode> or <nic><interface_type_index>
+	// and forms part of the network template name.
+	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	// Interface type.
+	Type ServerNetworkTemplate_LogicalInterface_InterfaceType `protobuf:"varint,2,opt,name=type,proto3,enum=google.cloud.baremetalsolution.v2.ServerNetworkTemplate_LogicalInterface_InterfaceType" json:"type,omitempty"`
+	// If true, interface must have network connected.
+	Required bool `protobuf:"varint,3,opt,name=required,proto3" json:"required,omitempty"`
+}
+
+func (x *ServerNetworkTemplate_LogicalInterface) Reset() {
+	*x = ServerNetworkTemplate_LogicalInterface{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_google_cloud_baremetalsolution_v2_instance_proto_msgTypes[18]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *ServerNetworkTemplate_LogicalInterface) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ServerNetworkTemplate_LogicalInterface) ProtoMessage() {}
+
+func (x *ServerNetworkTemplate_LogicalInterface) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_baremetalsolution_v2_instance_proto_msgTypes[18]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ServerNetworkTemplate_LogicalInterface.ProtoReflect.Descriptor instead.
+func (*ServerNetworkTemplate_LogicalInterface) Descriptor() ([]byte, []int) {
+	return file_google_cloud_baremetalsolution_v2_instance_proto_rawDescGZIP(), []int{16, 0}
+}
+
+func (x *ServerNetworkTemplate_LogicalInterface) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *ServerNetworkTemplate_LogicalInterface) GetType() ServerNetworkTemplate_LogicalInterface_InterfaceType {
+	if x != nil {
+		return x.Type
+	}
+	return ServerNetworkTemplate_LogicalInterface_INTERFACE_TYPE_UNSPECIFIED
+}
+
+func (x *ServerNetworkTemplate_LogicalInterface) GetRequired() bool {
+	if x != nil {
+		return x.Required
 	}
 	return false
 }
@@ -1339,71 +1494,109 @@ var file_google_cloud_baremetalsolution_v2_instance_proto_rawDesc = []byte{
 	0x41, 0x02, 0xfa, 0x41, 0x2b, 0x0a, 0x29, 0x62, 0x61, 0x72, 0x65, 0x6d, 0x65, 0x74, 0x61, 0x6c,
 	0x73, 0x6f, 0x6c, 0x75, 0x74, 0x69, 0x6f, 0x6e, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x61,
 	0x70, 0x69, 0x73, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x49, 0x6e, 0x73, 0x74, 0x61, 0x6e, 0x63, 0x65,
-	0x52, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x22, 0x17, 0x0a, 0x15, 0x52, 0x65, 0x73, 0x65, 0x74, 0x49,
-	0x6e, 0x73, 0x74, 0x61, 0x6e, 0x63, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22,
-	0x5d, 0x0a, 0x14, 0x53, 0x74, 0x61, 0x72, 0x74, 0x49, 0x6e, 0x73, 0x74, 0x61, 0x6e, 0x63, 0x65,
-	0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x45, 0x0a, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x18,
-	0x01, 0x20, 0x01, 0x28, 0x09, 0x42, 0x31, 0xe0, 0x41, 0x02, 0xfa, 0x41, 0x2b, 0x0a, 0x29, 0x62,
-	0x61, 0x72, 0x65, 0x6d, 0x65, 0x74, 0x61, 0x6c, 0x73, 0x6f, 0x6c, 0x75, 0x74, 0x69, 0x6f, 0x6e,
-	0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x61, 0x70, 0x69, 0x73, 0x2e, 0x63, 0x6f, 0x6d, 0x2f,
-	0x49, 0x6e, 0x73, 0x74, 0x61, 0x6e, 0x63, 0x65, 0x52, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x22, 0x17,
-	0x0a, 0x15, 0x53, 0x74, 0x61, 0x72, 0x74, 0x49, 0x6e, 0x73, 0x74, 0x61, 0x6e, 0x63, 0x65, 0x52,
-	0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x5c, 0x0a, 0x13, 0x53, 0x74, 0x6f, 0x70, 0x49,
+	0x52, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x22, 0x5d, 0x0a, 0x14, 0x53, 0x74, 0x61, 0x72, 0x74, 0x49,
 	0x6e, 0x73, 0x74, 0x61, 0x6e, 0x63, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x45,
 	0x0a, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x42, 0x31, 0xe0, 0x41,
 	0x02, 0xfa, 0x41, 0x2b, 0x0a, 0x29, 0x62, 0x61, 0x72, 0x65, 0x6d, 0x65, 0x74, 0x61, 0x6c, 0x73,
 	0x6f, 0x6c, 0x75, 0x74, 0x69, 0x6f, 0x6e, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x61, 0x70,
 	0x69, 0x73, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x49, 0x6e, 0x73, 0x74, 0x61, 0x6e, 0x63, 0x65, 0x52,
-	0x04, 0x6e, 0x61, 0x6d, 0x65, 0x22, 0x16, 0x0a, 0x14, 0x53, 0x74, 0x6f, 0x70, 0x49, 0x6e, 0x73,
-	0x74, 0x61, 0x6e, 0x63, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x6e, 0x0a,
-	0x25, 0x45, 0x6e, 0x61, 0x62, 0x6c, 0x65, 0x49, 0x6e, 0x74, 0x65, 0x72, 0x61, 0x63, 0x74, 0x69,
-	0x76, 0x65, 0x53, 0x65, 0x72, 0x69, 0x61, 0x6c, 0x43, 0x6f, 0x6e, 0x73, 0x6f, 0x6c, 0x65, 0x52,
-	0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x45, 0x0a, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x18, 0x01,
-	0x20, 0x01, 0x28, 0x09, 0x42, 0x31, 0xe0, 0x41, 0x02, 0xfa, 0x41, 0x2b, 0x0a, 0x29, 0x62, 0x61,
-	0x72, 0x65, 0x6d, 0x65, 0x74, 0x61, 0x6c, 0x73, 0x6f, 0x6c, 0x75, 0x74, 0x69, 0x6f, 0x6e, 0x2e,
-	0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x61, 0x70, 0x69, 0x73, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x49,
-	0x6e, 0x73, 0x74, 0x61, 0x6e, 0x63, 0x65, 0x52, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x22, 0x28, 0x0a,
-	0x26, 0x45, 0x6e, 0x61, 0x62, 0x6c, 0x65, 0x49, 0x6e, 0x74, 0x65, 0x72, 0x61, 0x63, 0x74, 0x69,
-	0x76, 0x65, 0x53, 0x65, 0x72, 0x69, 0x61, 0x6c, 0x43, 0x6f, 0x6e, 0x73, 0x6f, 0x6c, 0x65, 0x52,
-	0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x6f, 0x0a, 0x26, 0x44, 0x69, 0x73, 0x61, 0x62,
-	0x6c, 0x65, 0x49, 0x6e, 0x74, 0x65, 0x72, 0x61, 0x63, 0x74, 0x69, 0x76, 0x65, 0x53, 0x65, 0x72,
-	0x69, 0x61, 0x6c, 0x43, 0x6f, 0x6e, 0x73, 0x6f, 0x6c, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73,
-	0x74, 0x12, 0x45, 0x0a, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x42,
-	0x31, 0xe0, 0x41, 0x02, 0xfa, 0x41, 0x2b, 0x0a, 0x29, 0x62, 0x61, 0x72, 0x65, 0x6d, 0x65, 0x74,
-	0x61, 0x6c, 0x73, 0x6f, 0x6c, 0x75, 0x74, 0x69, 0x6f, 0x6e, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c,
-	0x65, 0x61, 0x70, 0x69, 0x73, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x49, 0x6e, 0x73, 0x74, 0x61, 0x6e,
-	0x63, 0x65, 0x52, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x22, 0x29, 0x0a, 0x27, 0x44, 0x69, 0x73, 0x61,
-	0x62, 0x6c, 0x65, 0x49, 0x6e, 0x74, 0x65, 0x72, 0x61, 0x63, 0x74, 0x69, 0x76, 0x65, 0x53, 0x65,
-	0x72, 0x69, 0x61, 0x6c, 0x43, 0x6f, 0x6e, 0x73, 0x6f, 0x6c, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f,
-	0x6e, 0x73, 0x65, 0x22, 0xc2, 0x01, 0x0a, 0x10, 0x44, 0x65, 0x74, 0x61, 0x63, 0x68, 0x4c, 0x75,
-	0x6e, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x4d, 0x0a, 0x08, 0x69, 0x6e, 0x73, 0x74,
-	0x61, 0x6e, 0x63, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x42, 0x31, 0xe0, 0x41, 0x02, 0xfa,
-	0x41, 0x2b, 0x0a, 0x29, 0x62, 0x61, 0x72, 0x65, 0x6d, 0x65, 0x74, 0x61, 0x6c, 0x73, 0x6f, 0x6c,
-	0x75, 0x74, 0x69, 0x6f, 0x6e, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x61, 0x70, 0x69, 0x73,
-	0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x49, 0x6e, 0x73, 0x74, 0x61, 0x6e, 0x63, 0x65, 0x52, 0x08, 0x69,
-	0x6e, 0x73, 0x74, 0x61, 0x6e, 0x63, 0x65, 0x12, 0x3e, 0x0a, 0x03, 0x6c, 0x75, 0x6e, 0x18, 0x02,
-	0x20, 0x01, 0x28, 0x09, 0x42, 0x2c, 0xe0, 0x41, 0x02, 0xfa, 0x41, 0x26, 0x0a, 0x24, 0x62, 0x61,
-	0x72, 0x65, 0x6d, 0x65, 0x74, 0x61, 0x6c, 0x73, 0x6f, 0x6c, 0x75, 0x74, 0x69, 0x6f, 0x6e, 0x2e,
-	0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x61, 0x70, 0x69, 0x73, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x4c,
-	0x75, 0x6e, 0x52, 0x03, 0x6c, 0x75, 0x6e, 0x12, 0x1f, 0x0a, 0x0b, 0x73, 0x6b, 0x69, 0x70, 0x5f,
-	0x72, 0x65, 0x62, 0x6f, 0x6f, 0x74, 0x18, 0x03, 0x20, 0x01, 0x28, 0x08, 0x52, 0x0a, 0x73, 0x6b,
-	0x69, 0x70, 0x52, 0x65, 0x62, 0x6f, 0x6f, 0x74, 0x42, 0xfc, 0x01, 0x0a, 0x25, 0x63, 0x6f, 0x6d,
-	0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x62, 0x61,
-	0x72, 0x65, 0x6d, 0x65, 0x74, 0x61, 0x6c, 0x73, 0x6f, 0x6c, 0x75, 0x74, 0x69, 0x6f, 0x6e, 0x2e,
-	0x76, 0x32, 0x42, 0x0d, 0x49, 0x6e, 0x73, 0x74, 0x61, 0x6e, 0x63, 0x65, 0x50, 0x72, 0x6f, 0x74,
-	0x6f, 0x50, 0x01, 0x5a, 0x53, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c,
-	0x65, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x67, 0x6f, 0x2f, 0x62, 0x61, 0x72, 0x65, 0x6d, 0x65, 0x74,
-	0x61, 0x6c, 0x73, 0x6f, 0x6c, 0x75, 0x74, 0x69, 0x6f, 0x6e, 0x2f, 0x61, 0x70, 0x69, 0x76, 0x32,
-	0x2f, 0x62, 0x61, 0x72, 0x65, 0x6d, 0x65, 0x74, 0x61, 0x6c, 0x73, 0x6f, 0x6c, 0x75, 0x74, 0x69,
-	0x6f, 0x6e, 0x70, 0x62, 0x3b, 0x62, 0x61, 0x72, 0x65, 0x6d, 0x65, 0x74, 0x61, 0x6c, 0x73, 0x6f,
-	0x6c, 0x75, 0x74, 0x69, 0x6f, 0x6e, 0x70, 0x62, 0xaa, 0x02, 0x21, 0x47, 0x6f, 0x6f, 0x67, 0x6c,
-	0x65, 0x2e, 0x43, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x42, 0x61, 0x72, 0x65, 0x4d, 0x65, 0x74, 0x61,
-	0x6c, 0x53, 0x6f, 0x6c, 0x75, 0x74, 0x69, 0x6f, 0x6e, 0x2e, 0x56, 0x32, 0xca, 0x02, 0x21, 0x47,
-	0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x5c, 0x43, 0x6c, 0x6f, 0x75, 0x64, 0x5c, 0x42, 0x61, 0x72, 0x65,
-	0x4d, 0x65, 0x74, 0x61, 0x6c, 0x53, 0x6f, 0x6c, 0x75, 0x74, 0x69, 0x6f, 0x6e, 0x5c, 0x56, 0x32,
-	0xea, 0x02, 0x24, 0x47, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x3a, 0x3a, 0x43, 0x6c, 0x6f, 0x75, 0x64,
-	0x3a, 0x3a, 0x42, 0x61, 0x72, 0x65, 0x4d, 0x65, 0x74, 0x61, 0x6c, 0x53, 0x6f, 0x6c, 0x75, 0x74,
-	0x69, 0x6f, 0x6e, 0x3a, 0x3a, 0x56, 0x32, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x04, 0x6e, 0x61, 0x6d, 0x65, 0x22, 0x17, 0x0a, 0x15, 0x53, 0x74, 0x61, 0x72, 0x74, 0x49, 0x6e,
+	0x73, 0x74, 0x61, 0x6e, 0x63, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x5c,
+	0x0a, 0x13, 0x53, 0x74, 0x6f, 0x70, 0x49, 0x6e, 0x73, 0x74, 0x61, 0x6e, 0x63, 0x65, 0x52, 0x65,
+	0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x45, 0x0a, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x18, 0x01, 0x20,
+	0x01, 0x28, 0x09, 0x42, 0x31, 0xe0, 0x41, 0x02, 0xfa, 0x41, 0x2b, 0x0a, 0x29, 0x62, 0x61, 0x72,
+	0x65, 0x6d, 0x65, 0x74, 0x61, 0x6c, 0x73, 0x6f, 0x6c, 0x75, 0x74, 0x69, 0x6f, 0x6e, 0x2e, 0x67,
+	0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x61, 0x70, 0x69, 0x73, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x49, 0x6e,
+	0x73, 0x74, 0x61, 0x6e, 0x63, 0x65, 0x52, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x22, 0x16, 0x0a, 0x14,
+	0x53, 0x74, 0x6f, 0x70, 0x49, 0x6e, 0x73, 0x74, 0x61, 0x6e, 0x63, 0x65, 0x52, 0x65, 0x73, 0x70,
+	0x6f, 0x6e, 0x73, 0x65, 0x22, 0x6e, 0x0a, 0x25, 0x45, 0x6e, 0x61, 0x62, 0x6c, 0x65, 0x49, 0x6e,
+	0x74, 0x65, 0x72, 0x61, 0x63, 0x74, 0x69, 0x76, 0x65, 0x53, 0x65, 0x72, 0x69, 0x61, 0x6c, 0x43,
+	0x6f, 0x6e, 0x73, 0x6f, 0x6c, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x45, 0x0a,
+	0x04, 0x6e, 0x61, 0x6d, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x42, 0x31, 0xe0, 0x41, 0x02,
+	0xfa, 0x41, 0x2b, 0x0a, 0x29, 0x62, 0x61, 0x72, 0x65, 0x6d, 0x65, 0x74, 0x61, 0x6c, 0x73, 0x6f,
+	0x6c, 0x75, 0x74, 0x69, 0x6f, 0x6e, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x61, 0x70, 0x69,
+	0x73, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x49, 0x6e, 0x73, 0x74, 0x61, 0x6e, 0x63, 0x65, 0x52, 0x04,
+	0x6e, 0x61, 0x6d, 0x65, 0x22, 0x28, 0x0a, 0x26, 0x45, 0x6e, 0x61, 0x62, 0x6c, 0x65, 0x49, 0x6e,
+	0x74, 0x65, 0x72, 0x61, 0x63, 0x74, 0x69, 0x76, 0x65, 0x53, 0x65, 0x72, 0x69, 0x61, 0x6c, 0x43,
+	0x6f, 0x6e, 0x73, 0x6f, 0x6c, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x6f,
+	0x0a, 0x26, 0x44, 0x69, 0x73, 0x61, 0x62, 0x6c, 0x65, 0x49, 0x6e, 0x74, 0x65, 0x72, 0x61, 0x63,
+	0x74, 0x69, 0x76, 0x65, 0x53, 0x65, 0x72, 0x69, 0x61, 0x6c, 0x43, 0x6f, 0x6e, 0x73, 0x6f, 0x6c,
+	0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x45, 0x0a, 0x04, 0x6e, 0x61, 0x6d, 0x65,
+	0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x42, 0x31, 0xe0, 0x41, 0x02, 0xfa, 0x41, 0x2b, 0x0a, 0x29,
+	0x62, 0x61, 0x72, 0x65, 0x6d, 0x65, 0x74, 0x61, 0x6c, 0x73, 0x6f, 0x6c, 0x75, 0x74, 0x69, 0x6f,
+	0x6e, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x61, 0x70, 0x69, 0x73, 0x2e, 0x63, 0x6f, 0x6d,
+	0x2f, 0x49, 0x6e, 0x73, 0x74, 0x61, 0x6e, 0x63, 0x65, 0x52, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x22,
+	0x29, 0x0a, 0x27, 0x44, 0x69, 0x73, 0x61, 0x62, 0x6c, 0x65, 0x49, 0x6e, 0x74, 0x65, 0x72, 0x61,
+	0x63, 0x74, 0x69, 0x76, 0x65, 0x53, 0x65, 0x72, 0x69, 0x61, 0x6c, 0x43, 0x6f, 0x6e, 0x73, 0x6f,
+	0x6c, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0xc2, 0x01, 0x0a, 0x10, 0x44,
+	0x65, 0x74, 0x61, 0x63, 0x68, 0x4c, 0x75, 0x6e, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12,
+	0x4d, 0x0a, 0x08, 0x69, 0x6e, 0x73, 0x74, 0x61, 0x6e, 0x63, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28,
+	0x09, 0x42, 0x31, 0xe0, 0x41, 0x02, 0xfa, 0x41, 0x2b, 0x0a, 0x29, 0x62, 0x61, 0x72, 0x65, 0x6d,
+	0x65, 0x74, 0x61, 0x6c, 0x73, 0x6f, 0x6c, 0x75, 0x74, 0x69, 0x6f, 0x6e, 0x2e, 0x67, 0x6f, 0x6f,
+	0x67, 0x6c, 0x65, 0x61, 0x70, 0x69, 0x73, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x49, 0x6e, 0x73, 0x74,
+	0x61, 0x6e, 0x63, 0x65, 0x52, 0x08, 0x69, 0x6e, 0x73, 0x74, 0x61, 0x6e, 0x63, 0x65, 0x12, 0x3e,
+	0x0a, 0x03, 0x6c, 0x75, 0x6e, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x42, 0x2c, 0xe0, 0x41, 0x02,
+	0xfa, 0x41, 0x26, 0x0a, 0x24, 0x62, 0x61, 0x72, 0x65, 0x6d, 0x65, 0x74, 0x61, 0x6c, 0x73, 0x6f,
+	0x6c, 0x75, 0x74, 0x69, 0x6f, 0x6e, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x61, 0x70, 0x69,
+	0x73, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x4c, 0x75, 0x6e, 0x52, 0x03, 0x6c, 0x75, 0x6e, 0x12, 0x1f,
+	0x0a, 0x0b, 0x73, 0x6b, 0x69, 0x70, 0x5f, 0x72, 0x65, 0x62, 0x6f, 0x6f, 0x74, 0x18, 0x03, 0x20,
+	0x01, 0x28, 0x08, 0x52, 0x0a, 0x73, 0x6b, 0x69, 0x70, 0x52, 0x65, 0x62, 0x6f, 0x6f, 0x74, 0x22,
+	0xf4, 0x04, 0x0a, 0x15, 0x53, 0x65, 0x72, 0x76, 0x65, 0x72, 0x4e, 0x65, 0x74, 0x77, 0x6f, 0x72,
+	0x6b, 0x54, 0x65, 0x6d, 0x70, 0x6c, 0x61, 0x74, 0x65, 0x12, 0x17, 0x0a, 0x04, 0x6e, 0x61, 0x6d,
+	0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x42, 0x03, 0xe0, 0x41, 0x03, 0x52, 0x04, 0x6e, 0x61,
+	0x6d, 0x65, 0x12, 0x3a, 0x0a, 0x19, 0x61, 0x70, 0x70, 0x6c, 0x69, 0x63, 0x61, 0x62, 0x6c, 0x65,
+	0x5f, 0x69, 0x6e, 0x73, 0x74, 0x61, 0x6e, 0x63, 0x65, 0x5f, 0x74, 0x79, 0x70, 0x65, 0x73, 0x18,
+	0x02, 0x20, 0x03, 0x28, 0x09, 0x52, 0x17, 0x61, 0x70, 0x70, 0x6c, 0x69, 0x63, 0x61, 0x62, 0x6c,
+	0x65, 0x49, 0x6e, 0x73, 0x74, 0x61, 0x6e, 0x63, 0x65, 0x54, 0x79, 0x70, 0x65, 0x73, 0x12, 0x78,
+	0x0a, 0x12, 0x6c, 0x6f, 0x67, 0x69, 0x63, 0x61, 0x6c, 0x5f, 0x69, 0x6e, 0x74, 0x65, 0x72, 0x66,
+	0x61, 0x63, 0x65, 0x73, 0x18, 0x03, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x49, 0x2e, 0x67, 0x6f, 0x6f,
+	0x67, 0x6c, 0x65, 0x2e, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x62, 0x61, 0x72, 0x65, 0x6d, 0x65,
+	0x74, 0x61, 0x6c, 0x73, 0x6f, 0x6c, 0x75, 0x74, 0x69, 0x6f, 0x6e, 0x2e, 0x76, 0x32, 0x2e, 0x53,
+	0x65, 0x72, 0x76, 0x65, 0x72, 0x4e, 0x65, 0x74, 0x77, 0x6f, 0x72, 0x6b, 0x54, 0x65, 0x6d, 0x70,
+	0x6c, 0x61, 0x74, 0x65, 0x2e, 0x4c, 0x6f, 0x67, 0x69, 0x63, 0x61, 0x6c, 0x49, 0x6e, 0x74, 0x65,
+	0x72, 0x66, 0x61, 0x63, 0x65, 0x52, 0x11, 0x6c, 0x6f, 0x67, 0x69, 0x63, 0x61, 0x6c, 0x49, 0x6e,
+	0x74, 0x65, 0x72, 0x66, 0x61, 0x63, 0x65, 0x73, 0x1a, 0xf3, 0x01, 0x0a, 0x10, 0x4c, 0x6f, 0x67,
+	0x69, 0x63, 0x61, 0x6c, 0x49, 0x6e, 0x74, 0x65, 0x72, 0x66, 0x61, 0x63, 0x65, 0x12, 0x12, 0x0a,
+	0x04, 0x6e, 0x61, 0x6d, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x6e, 0x61, 0x6d,
+	0x65, 0x12, 0x6b, 0x0a, 0x04, 0x74, 0x79, 0x70, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0e, 0x32,
+	0x57, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x62,
+	0x61, 0x72, 0x65, 0x6d, 0x65, 0x74, 0x61, 0x6c, 0x73, 0x6f, 0x6c, 0x75, 0x74, 0x69, 0x6f, 0x6e,
+	0x2e, 0x76, 0x32, 0x2e, 0x53, 0x65, 0x72, 0x76, 0x65, 0x72, 0x4e, 0x65, 0x74, 0x77, 0x6f, 0x72,
+	0x6b, 0x54, 0x65, 0x6d, 0x70, 0x6c, 0x61, 0x74, 0x65, 0x2e, 0x4c, 0x6f, 0x67, 0x69, 0x63, 0x61,
+	0x6c, 0x49, 0x6e, 0x74, 0x65, 0x72, 0x66, 0x61, 0x63, 0x65, 0x2e, 0x49, 0x6e, 0x74, 0x65, 0x72,
+	0x66, 0x61, 0x63, 0x65, 0x54, 0x79, 0x70, 0x65, 0x52, 0x04, 0x74, 0x79, 0x70, 0x65, 0x12, 0x1a,
+	0x0a, 0x08, 0x72, 0x65, 0x71, 0x75, 0x69, 0x72, 0x65, 0x64, 0x18, 0x03, 0x20, 0x01, 0x28, 0x08,
+	0x52, 0x08, 0x72, 0x65, 0x71, 0x75, 0x69, 0x72, 0x65, 0x64, 0x22, 0x42, 0x0a, 0x0d, 0x49, 0x6e,
+	0x74, 0x65, 0x72, 0x66, 0x61, 0x63, 0x65, 0x54, 0x79, 0x70, 0x65, 0x12, 0x1e, 0x0a, 0x1a, 0x49,
+	0x4e, 0x54, 0x45, 0x52, 0x46, 0x41, 0x43, 0x45, 0x5f, 0x54, 0x59, 0x50, 0x45, 0x5f, 0x55, 0x4e,
+	0x53, 0x50, 0x45, 0x43, 0x49, 0x46, 0x49, 0x45, 0x44, 0x10, 0x00, 0x12, 0x08, 0x0a, 0x04, 0x42,
+	0x4f, 0x4e, 0x44, 0x10, 0x01, 0x12, 0x07, 0x0a, 0x03, 0x4e, 0x49, 0x43, 0x10, 0x02, 0x3a, 0x95,
+	0x01, 0xea, 0x41, 0x91, 0x01, 0x0a, 0x36, 0x62, 0x61, 0x72, 0x65, 0x6d, 0x65, 0x74, 0x61, 0x6c,
+	0x73, 0x6f, 0x6c, 0x75, 0x74, 0x69, 0x6f, 0x6e, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x61,
+	0x70, 0x69, 0x73, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x53, 0x65, 0x72, 0x76, 0x65, 0x72, 0x4e, 0x65,
+	0x74, 0x77, 0x6f, 0x72, 0x6b, 0x54, 0x65, 0x6d, 0x70, 0x6c, 0x61, 0x74, 0x65, 0x12, 0x57, 0x70,
+	0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x73, 0x2f, 0x7b, 0x70, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74,
+	0x7d, 0x2f, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x2f, 0x7b, 0x6c, 0x6f, 0x63,
+	0x61, 0x74, 0x69, 0x6f, 0x6e, 0x7d, 0x2f, 0x73, 0x65, 0x72, 0x76, 0x65, 0x72, 0x4e, 0x65, 0x74,
+	0x77, 0x6f, 0x72, 0x6b, 0x54, 0x65, 0x6d, 0x70, 0x6c, 0x61, 0x74, 0x65, 0x2f, 0x7b, 0x73, 0x65,
+	0x72, 0x76, 0x65, 0x72, 0x5f, 0x6e, 0x65, 0x74, 0x77, 0x6f, 0x72, 0x6b, 0x5f, 0x74, 0x65, 0x6d,
+	0x70, 0x6c, 0x61, 0x74, 0x65, 0x7d, 0x42, 0xfc, 0x01, 0x0a, 0x25, 0x63, 0x6f, 0x6d, 0x2e, 0x67,
+	0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x62, 0x61, 0x72, 0x65,
+	0x6d, 0x65, 0x74, 0x61, 0x6c, 0x73, 0x6f, 0x6c, 0x75, 0x74, 0x69, 0x6f, 0x6e, 0x2e, 0x76, 0x32,
+	0x42, 0x0d, 0x49, 0x6e, 0x73, 0x74, 0x61, 0x6e, 0x63, 0x65, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50,
+	0x01, 0x5a, 0x53, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e,
+	0x63, 0x6f, 0x6d, 0x2f, 0x67, 0x6f, 0x2f, 0x62, 0x61, 0x72, 0x65, 0x6d, 0x65, 0x74, 0x61, 0x6c,
+	0x73, 0x6f, 0x6c, 0x75, 0x74, 0x69, 0x6f, 0x6e, 0x2f, 0x61, 0x70, 0x69, 0x76, 0x32, 0x2f, 0x62,
+	0x61, 0x72, 0x65, 0x6d, 0x65, 0x74, 0x61, 0x6c, 0x73, 0x6f, 0x6c, 0x75, 0x74, 0x69, 0x6f, 0x6e,
+	0x70, 0x62, 0x3b, 0x62, 0x61, 0x72, 0x65, 0x6d, 0x65, 0x74, 0x61, 0x6c, 0x73, 0x6f, 0x6c, 0x75,
+	0x74, 0x69, 0x6f, 0x6e, 0x70, 0x62, 0xaa, 0x02, 0x21, 0x47, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e,
+	0x43, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x42, 0x61, 0x72, 0x65, 0x4d, 0x65, 0x74, 0x61, 0x6c, 0x53,
+	0x6f, 0x6c, 0x75, 0x74, 0x69, 0x6f, 0x6e, 0x2e, 0x56, 0x32, 0xca, 0x02, 0x21, 0x47, 0x6f, 0x6f,
+	0x67, 0x6c, 0x65, 0x5c, 0x43, 0x6c, 0x6f, 0x75, 0x64, 0x5c, 0x42, 0x61, 0x72, 0x65, 0x4d, 0x65,
+	0x74, 0x61, 0x6c, 0x53, 0x6f, 0x6c, 0x75, 0x74, 0x69, 0x6f, 0x6e, 0x5c, 0x56, 0x32, 0xea, 0x02,
+	0x24, 0x47, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x3a, 0x3a, 0x43, 0x6c, 0x6f, 0x75, 0x64, 0x3a, 0x3a,
+	0x42, 0x61, 0x72, 0x65, 0x4d, 0x65, 0x74, 0x61, 0x6c, 0x53, 0x6f, 0x6c, 0x75, 0x74, 0x69, 0x6f,
+	0x6e, 0x3a, 0x3a, 0x56, 0x32, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -1418,18 +1611,18 @@ func file_google_cloud_baremetalsolution_v2_instance_proto_rawDescGZIP() []byte 
 	return file_google_cloud_baremetalsolution_v2_instance_proto_rawDescData
 }
 
-var file_google_cloud_baremetalsolution_v2_instance_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_google_cloud_baremetalsolution_v2_instance_proto_msgTypes = make([]protoimpl.MessageInfo, 18)
+var file_google_cloud_baremetalsolution_v2_instance_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
+var file_google_cloud_baremetalsolution_v2_instance_proto_msgTypes = make([]protoimpl.MessageInfo, 19)
 var file_google_cloud_baremetalsolution_v2_instance_proto_goTypes = []interface{}{
-	(Instance_State)(0),                             // 0: google.cloud.baremetalsolution.v2.Instance.State
-	(*Instance)(nil),                                // 1: google.cloud.baremetalsolution.v2.Instance
-	(*GetInstanceRequest)(nil),                      // 2: google.cloud.baremetalsolution.v2.GetInstanceRequest
-	(*ListInstancesRequest)(nil),                    // 3: google.cloud.baremetalsolution.v2.ListInstancesRequest
-	(*ListInstancesResponse)(nil),                   // 4: google.cloud.baremetalsolution.v2.ListInstancesResponse
-	(*UpdateInstanceRequest)(nil),                   // 5: google.cloud.baremetalsolution.v2.UpdateInstanceRequest
-	(*RenameInstanceRequest)(nil),                   // 6: google.cloud.baremetalsolution.v2.RenameInstanceRequest
-	(*ResetInstanceRequest)(nil),                    // 7: google.cloud.baremetalsolution.v2.ResetInstanceRequest
-	(*ResetInstanceResponse)(nil),                   // 8: google.cloud.baremetalsolution.v2.ResetInstanceResponse
+	(Instance_State)(0), // 0: google.cloud.baremetalsolution.v2.Instance.State
+	(ServerNetworkTemplate_LogicalInterface_InterfaceType)(0), // 1: google.cloud.baremetalsolution.v2.ServerNetworkTemplate.LogicalInterface.InterfaceType
+	(*Instance)(nil),                                // 2: google.cloud.baremetalsolution.v2.Instance
+	(*GetInstanceRequest)(nil),                      // 3: google.cloud.baremetalsolution.v2.GetInstanceRequest
+	(*ListInstancesRequest)(nil),                    // 4: google.cloud.baremetalsolution.v2.ListInstancesRequest
+	(*ListInstancesResponse)(nil),                   // 5: google.cloud.baremetalsolution.v2.ListInstancesResponse
+	(*UpdateInstanceRequest)(nil),                   // 6: google.cloud.baremetalsolution.v2.UpdateInstanceRequest
+	(*RenameInstanceRequest)(nil),                   // 7: google.cloud.baremetalsolution.v2.RenameInstanceRequest
+	(*ResetInstanceRequest)(nil),                    // 8: google.cloud.baremetalsolution.v2.ResetInstanceRequest
 	(*StartInstanceRequest)(nil),                    // 9: google.cloud.baremetalsolution.v2.StartInstanceRequest
 	(*StartInstanceResponse)(nil),                   // 10: google.cloud.baremetalsolution.v2.StartInstanceResponse
 	(*StopInstanceRequest)(nil),                     // 11: google.cloud.baremetalsolution.v2.StopInstanceRequest
@@ -1439,33 +1632,37 @@ var file_google_cloud_baremetalsolution_v2_instance_proto_goTypes = []interface{
 	(*DisableInteractiveSerialConsoleRequest)(nil),  // 15: google.cloud.baremetalsolution.v2.DisableInteractiveSerialConsoleRequest
 	(*DisableInteractiveSerialConsoleResponse)(nil), // 16: google.cloud.baremetalsolution.v2.DisableInteractiveSerialConsoleResponse
 	(*DetachLunRequest)(nil),                        // 17: google.cloud.baremetalsolution.v2.DetachLunRequest
-	nil,                                             // 18: google.cloud.baremetalsolution.v2.Instance.LabelsEntry
-	(*timestamppb.Timestamp)(nil),                   // 19: google.protobuf.Timestamp
-	(*Lun)(nil),                                     // 20: google.cloud.baremetalsolution.v2.Lun
-	(*Volume)(nil),                                  // 21: google.cloud.baremetalsolution.v2.Volume
-	(*Network)(nil),                                 // 22: google.cloud.baremetalsolution.v2.Network
-	(*LogicalInterface)(nil),                        // 23: google.cloud.baremetalsolution.v2.LogicalInterface
-	(WorkloadProfile)(0),                            // 24: google.cloud.baremetalsolution.v2.WorkloadProfile
-	(*fieldmaskpb.FieldMask)(nil),                   // 25: google.protobuf.FieldMask
+	(*ServerNetworkTemplate)(nil),                   // 18: google.cloud.baremetalsolution.v2.ServerNetworkTemplate
+	nil,                                             // 19: google.cloud.baremetalsolution.v2.Instance.LabelsEntry
+	(*ServerNetworkTemplate_LogicalInterface)(nil),  // 20: google.cloud.baremetalsolution.v2.ServerNetworkTemplate.LogicalInterface
+	(*timestamppb.Timestamp)(nil),                   // 21: google.protobuf.Timestamp
+	(*Lun)(nil),                                     // 22: google.cloud.baremetalsolution.v2.Lun
+	(*Volume)(nil),                                  // 23: google.cloud.baremetalsolution.v2.Volume
+	(*Network)(nil),                                 // 24: google.cloud.baremetalsolution.v2.Network
+	(*LogicalInterface)(nil),                        // 25: google.cloud.baremetalsolution.v2.LogicalInterface
+	(WorkloadProfile)(0),                            // 26: google.cloud.baremetalsolution.v2.WorkloadProfile
+	(*fieldmaskpb.FieldMask)(nil),                   // 27: google.protobuf.FieldMask
 }
 var file_google_cloud_baremetalsolution_v2_instance_proto_depIdxs = []int32{
-	19, // 0: google.cloud.baremetalsolution.v2.Instance.create_time:type_name -> google.protobuf.Timestamp
-	19, // 1: google.cloud.baremetalsolution.v2.Instance.update_time:type_name -> google.protobuf.Timestamp
+	21, // 0: google.cloud.baremetalsolution.v2.Instance.create_time:type_name -> google.protobuf.Timestamp
+	21, // 1: google.cloud.baremetalsolution.v2.Instance.update_time:type_name -> google.protobuf.Timestamp
 	0,  // 2: google.cloud.baremetalsolution.v2.Instance.state:type_name -> google.cloud.baremetalsolution.v2.Instance.State
-	18, // 3: google.cloud.baremetalsolution.v2.Instance.labels:type_name -> google.cloud.baremetalsolution.v2.Instance.LabelsEntry
-	20, // 4: google.cloud.baremetalsolution.v2.Instance.luns:type_name -> google.cloud.baremetalsolution.v2.Lun
-	21, // 5: google.cloud.baremetalsolution.v2.Instance.volumes:type_name -> google.cloud.baremetalsolution.v2.Volume
-	22, // 6: google.cloud.baremetalsolution.v2.Instance.networks:type_name -> google.cloud.baremetalsolution.v2.Network
-	23, // 7: google.cloud.baremetalsolution.v2.Instance.logical_interfaces:type_name -> google.cloud.baremetalsolution.v2.LogicalInterface
-	24, // 8: google.cloud.baremetalsolution.v2.Instance.workload_profile:type_name -> google.cloud.baremetalsolution.v2.WorkloadProfile
-	1,  // 9: google.cloud.baremetalsolution.v2.ListInstancesResponse.instances:type_name -> google.cloud.baremetalsolution.v2.Instance
-	1,  // 10: google.cloud.baremetalsolution.v2.UpdateInstanceRequest.instance:type_name -> google.cloud.baremetalsolution.v2.Instance
-	25, // 11: google.cloud.baremetalsolution.v2.UpdateInstanceRequest.update_mask:type_name -> google.protobuf.FieldMask
-	12, // [12:12] is the sub-list for method output_type
-	12, // [12:12] is the sub-list for method input_type
-	12, // [12:12] is the sub-list for extension type_name
-	12, // [12:12] is the sub-list for extension extendee
-	0,  // [0:12] is the sub-list for field type_name
+	19, // 3: google.cloud.baremetalsolution.v2.Instance.labels:type_name -> google.cloud.baremetalsolution.v2.Instance.LabelsEntry
+	22, // 4: google.cloud.baremetalsolution.v2.Instance.luns:type_name -> google.cloud.baremetalsolution.v2.Lun
+	23, // 5: google.cloud.baremetalsolution.v2.Instance.volumes:type_name -> google.cloud.baremetalsolution.v2.Volume
+	24, // 6: google.cloud.baremetalsolution.v2.Instance.networks:type_name -> google.cloud.baremetalsolution.v2.Network
+	25, // 7: google.cloud.baremetalsolution.v2.Instance.logical_interfaces:type_name -> google.cloud.baremetalsolution.v2.LogicalInterface
+	26, // 8: google.cloud.baremetalsolution.v2.Instance.workload_profile:type_name -> google.cloud.baremetalsolution.v2.WorkloadProfile
+	2,  // 9: google.cloud.baremetalsolution.v2.ListInstancesResponse.instances:type_name -> google.cloud.baremetalsolution.v2.Instance
+	2,  // 10: google.cloud.baremetalsolution.v2.UpdateInstanceRequest.instance:type_name -> google.cloud.baremetalsolution.v2.Instance
+	27, // 11: google.cloud.baremetalsolution.v2.UpdateInstanceRequest.update_mask:type_name -> google.protobuf.FieldMask
+	20, // 12: google.cloud.baremetalsolution.v2.ServerNetworkTemplate.logical_interfaces:type_name -> google.cloud.baremetalsolution.v2.ServerNetworkTemplate.LogicalInterface
+	1,  // 13: google.cloud.baremetalsolution.v2.ServerNetworkTemplate.LogicalInterface.type:type_name -> google.cloud.baremetalsolution.v2.ServerNetworkTemplate.LogicalInterface.InterfaceType
+	14, // [14:14] is the sub-list for method output_type
+	14, // [14:14] is the sub-list for method input_type
+	14, // [14:14] is the sub-list for extension type_name
+	14, // [14:14] is the sub-list for extension extendee
+	0,  // [0:14] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_baremetalsolution_v2_instance_proto_init() }
@@ -1563,18 +1760,6 @@ func file_google_cloud_baremetalsolution_v2_instance_proto_init() {
 			}
 		}
 		file_google_cloud_baremetalsolution_v2_instance_proto_msgTypes[7].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*ResetInstanceResponse); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_google_cloud_baremetalsolution_v2_instance_proto_msgTypes[8].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*StartInstanceRequest); i {
 			case 0:
 				return &v.state
@@ -1586,7 +1771,7 @@ func file_google_cloud_baremetalsolution_v2_instance_proto_init() {
 				return nil
 			}
 		}
-		file_google_cloud_baremetalsolution_v2_instance_proto_msgTypes[9].Exporter = func(v interface{}, i int) interface{} {
+		file_google_cloud_baremetalsolution_v2_instance_proto_msgTypes[8].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*StartInstanceResponse); i {
 			case 0:
 				return &v.state
@@ -1598,7 +1783,7 @@ func file_google_cloud_baremetalsolution_v2_instance_proto_init() {
 				return nil
 			}
 		}
-		file_google_cloud_baremetalsolution_v2_instance_proto_msgTypes[10].Exporter = func(v interface{}, i int) interface{} {
+		file_google_cloud_baremetalsolution_v2_instance_proto_msgTypes[9].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*StopInstanceRequest); i {
 			case 0:
 				return &v.state
@@ -1610,7 +1795,7 @@ func file_google_cloud_baremetalsolution_v2_instance_proto_init() {
 				return nil
 			}
 		}
-		file_google_cloud_baremetalsolution_v2_instance_proto_msgTypes[11].Exporter = func(v interface{}, i int) interface{} {
+		file_google_cloud_baremetalsolution_v2_instance_proto_msgTypes[10].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*StopInstanceResponse); i {
 			case 0:
 				return &v.state
@@ -1622,7 +1807,7 @@ func file_google_cloud_baremetalsolution_v2_instance_proto_init() {
 				return nil
 			}
 		}
-		file_google_cloud_baremetalsolution_v2_instance_proto_msgTypes[12].Exporter = func(v interface{}, i int) interface{} {
+		file_google_cloud_baremetalsolution_v2_instance_proto_msgTypes[11].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*EnableInteractiveSerialConsoleRequest); i {
 			case 0:
 				return &v.state
@@ -1634,7 +1819,7 @@ func file_google_cloud_baremetalsolution_v2_instance_proto_init() {
 				return nil
 			}
 		}
-		file_google_cloud_baremetalsolution_v2_instance_proto_msgTypes[13].Exporter = func(v interface{}, i int) interface{} {
+		file_google_cloud_baremetalsolution_v2_instance_proto_msgTypes[12].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*EnableInteractiveSerialConsoleResponse); i {
 			case 0:
 				return &v.state
@@ -1646,7 +1831,7 @@ func file_google_cloud_baremetalsolution_v2_instance_proto_init() {
 				return nil
 			}
 		}
-		file_google_cloud_baremetalsolution_v2_instance_proto_msgTypes[14].Exporter = func(v interface{}, i int) interface{} {
+		file_google_cloud_baremetalsolution_v2_instance_proto_msgTypes[13].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*DisableInteractiveSerialConsoleRequest); i {
 			case 0:
 				return &v.state
@@ -1658,7 +1843,7 @@ func file_google_cloud_baremetalsolution_v2_instance_proto_init() {
 				return nil
 			}
 		}
-		file_google_cloud_baremetalsolution_v2_instance_proto_msgTypes[15].Exporter = func(v interface{}, i int) interface{} {
+		file_google_cloud_baremetalsolution_v2_instance_proto_msgTypes[14].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*DisableInteractiveSerialConsoleResponse); i {
 			case 0:
 				return &v.state
@@ -1670,8 +1855,32 @@ func file_google_cloud_baremetalsolution_v2_instance_proto_init() {
 				return nil
 			}
 		}
-		file_google_cloud_baremetalsolution_v2_instance_proto_msgTypes[16].Exporter = func(v interface{}, i int) interface{} {
+		file_google_cloud_baremetalsolution_v2_instance_proto_msgTypes[15].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*DetachLunRequest); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_google_cloud_baremetalsolution_v2_instance_proto_msgTypes[16].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*ServerNetworkTemplate); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_google_cloud_baremetalsolution_v2_instance_proto_msgTypes[18].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*ServerNetworkTemplate_LogicalInterface); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1688,8 +1897,8 @@ func file_google_cloud_baremetalsolution_v2_instance_proto_init() {
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_google_cloud_baremetalsolution_v2_instance_proto_rawDesc,
-			NumEnums:      1,
-			NumMessages:   18,
+			NumEnums:      2,
+			NumMessages:   19,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

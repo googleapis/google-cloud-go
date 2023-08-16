@@ -21,14 +21,13 @@
 package baremetalsolutionpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -557,59 +556,6 @@ func (x NetworkConfig_ServiceCidr) Number() protoreflect.EnumNumber {
 // Deprecated: Use NetworkConfig_ServiceCidr.Descriptor instead.
 func (NetworkConfig_ServiceCidr) EnumDescriptor() ([]byte, []int) {
 	return file_google_cloud_baremetalsolution_v2_provisioning_proto_rawDescGZIP(), []int{8, 2}
-}
-
-// Interface type.
-type ServerNetworkTemplate_LogicalInterface_InterfaceType int32
-
-const (
-	// Unspecified value.
-	ServerNetworkTemplate_LogicalInterface_INTERFACE_TYPE_UNSPECIFIED ServerNetworkTemplate_LogicalInterface_InterfaceType = 0
-	// Bond interface type.
-	ServerNetworkTemplate_LogicalInterface_BOND ServerNetworkTemplate_LogicalInterface_InterfaceType = 1
-	// NIC interface type.
-	ServerNetworkTemplate_LogicalInterface_NIC ServerNetworkTemplate_LogicalInterface_InterfaceType = 2
-)
-
-// Enum value maps for ServerNetworkTemplate_LogicalInterface_InterfaceType.
-var (
-	ServerNetworkTemplate_LogicalInterface_InterfaceType_name = map[int32]string{
-		0: "INTERFACE_TYPE_UNSPECIFIED",
-		1: "BOND",
-		2: "NIC",
-	}
-	ServerNetworkTemplate_LogicalInterface_InterfaceType_value = map[string]int32{
-		"INTERFACE_TYPE_UNSPECIFIED": 0,
-		"BOND":                       1,
-		"NIC":                        2,
-	}
-)
-
-func (x ServerNetworkTemplate_LogicalInterface_InterfaceType) Enum() *ServerNetworkTemplate_LogicalInterface_InterfaceType {
-	p := new(ServerNetworkTemplate_LogicalInterface_InterfaceType)
-	*p = x
-	return p
-}
-
-func (x ServerNetworkTemplate_LogicalInterface_InterfaceType) String() string {
-	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
-}
-
-func (ServerNetworkTemplate_LogicalInterface_InterfaceType) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_baremetalsolution_v2_provisioning_proto_enumTypes[9].Descriptor()
-}
-
-func (ServerNetworkTemplate_LogicalInterface_InterfaceType) Type() protoreflect.EnumType {
-	return &file_google_cloud_baremetalsolution_v2_provisioning_proto_enumTypes[9]
-}
-
-func (x ServerNetworkTemplate_LogicalInterface_InterfaceType) Number() protoreflect.EnumNumber {
-	return protoreflect.EnumNumber(x)
-}
-
-// Deprecated: Use ServerNetworkTemplate_LogicalInterface_InterfaceType.Descriptor instead.
-func (ServerNetworkTemplate_LogicalInterface_InterfaceType) EnumDescriptor() ([]byte, []int) {
-	return file_google_cloud_baremetalsolution_v2_provisioning_proto_rawDescGZIP(), []int{13, 0, 0}
 }
 
 // A provisioning configuration.
@@ -1952,77 +1898,6 @@ func (x *UpdateProvisioningConfigRequest) GetEmail() string {
 	return ""
 }
 
-// Network template.
-type ServerNetworkTemplate struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	// Output only. Template's unique name. The full resource name follows the
-	// pattern:
-	// `projects/{project}/locations/{location}/serverNetworkTemplate/{server_network_template}`
-	// Generally, the {server_network_template} follows the syntax of
-	// "bond<interface_type_index><bond_mode>" or "nic<interface_type_index>".
-	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	// Instance types this template is applicable to.
-	ApplicableInstanceTypes []string `protobuf:"bytes,2,rep,name=applicable_instance_types,json=applicableInstanceTypes,proto3" json:"applicable_instance_types,omitempty"`
-	// Logical interfaces.
-	LogicalInterfaces []*ServerNetworkTemplate_LogicalInterface `protobuf:"bytes,3,rep,name=logical_interfaces,json=logicalInterfaces,proto3" json:"logical_interfaces,omitempty"`
-}
-
-func (x *ServerNetworkTemplate) Reset() {
-	*x = ServerNetworkTemplate{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_google_cloud_baremetalsolution_v2_provisioning_proto_msgTypes[13]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *ServerNetworkTemplate) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*ServerNetworkTemplate) ProtoMessage() {}
-
-func (x *ServerNetworkTemplate) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_baremetalsolution_v2_provisioning_proto_msgTypes[13]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use ServerNetworkTemplate.ProtoReflect.Descriptor instead.
-func (*ServerNetworkTemplate) Descriptor() ([]byte, []int) {
-	return file_google_cloud_baremetalsolution_v2_provisioning_proto_rawDescGZIP(), []int{13}
-}
-
-func (x *ServerNetworkTemplate) GetName() string {
-	if x != nil {
-		return x.Name
-	}
-	return ""
-}
-
-func (x *ServerNetworkTemplate) GetApplicableInstanceTypes() []string {
-	if x != nil {
-		return x.ApplicableInstanceTypes
-	}
-	return nil
-}
-
-func (x *ServerNetworkTemplate) GetLogicalInterfaces() []*ServerNetworkTemplate_LogicalInterface {
-	if x != nil {
-		return x.LogicalInterfaces
-	}
-	return nil
-}
-
 // A network.
 type InstanceConfig_NetworkAddress struct {
 	state         protoimpl.MessageState
@@ -2040,7 +1915,7 @@ type InstanceConfig_NetworkAddress struct {
 func (x *InstanceConfig_NetworkAddress) Reset() {
 	*x = InstanceConfig_NetworkAddress{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_google_cloud_baremetalsolution_v2_provisioning_proto_msgTypes[14]
+		mi := &file_google_cloud_baremetalsolution_v2_provisioning_proto_msgTypes[13]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -2053,7 +1928,7 @@ func (x *InstanceConfig_NetworkAddress) String() string {
 func (*InstanceConfig_NetworkAddress) ProtoMessage() {}
 
 func (x *InstanceConfig_NetworkAddress) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_baremetalsolution_v2_provisioning_proto_msgTypes[14]
+	mi := &file_google_cloud_baremetalsolution_v2_provisioning_proto_msgTypes[13]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2105,7 +1980,7 @@ type VolumeConfig_LunRange struct {
 func (x *VolumeConfig_LunRange) Reset() {
 	*x = VolumeConfig_LunRange{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_google_cloud_baremetalsolution_v2_provisioning_proto_msgTypes[15]
+		mi := &file_google_cloud_baremetalsolution_v2_provisioning_proto_msgTypes[14]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -2118,7 +1993,7 @@ func (x *VolumeConfig_LunRange) String() string {
 func (*VolumeConfig_LunRange) ProtoMessage() {}
 
 func (x *VolumeConfig_LunRange) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_baremetalsolution_v2_provisioning_proto_msgTypes[15]
+	mi := &file_google_cloud_baremetalsolution_v2_provisioning_proto_msgTypes[14]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2177,7 +2052,7 @@ type VolumeConfig_NfsExport struct {
 func (x *VolumeConfig_NfsExport) Reset() {
 	*x = VolumeConfig_NfsExport{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_google_cloud_baremetalsolution_v2_provisioning_proto_msgTypes[16]
+		mi := &file_google_cloud_baremetalsolution_v2_provisioning_proto_msgTypes[15]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -2190,7 +2065,7 @@ func (x *VolumeConfig_NfsExport) String() string {
 func (*VolumeConfig_NfsExport) ProtoMessage() {}
 
 func (x *VolumeConfig_NfsExport) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_baremetalsolution_v2_provisioning_proto_msgTypes[16]
+	mi := &file_google_cloud_baremetalsolution_v2_provisioning_proto_msgTypes[15]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2296,7 +2171,7 @@ type NetworkConfig_IntakeVlanAttachment struct {
 func (x *NetworkConfig_IntakeVlanAttachment) Reset() {
 	*x = NetworkConfig_IntakeVlanAttachment{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_google_cloud_baremetalsolution_v2_provisioning_proto_msgTypes[17]
+		mi := &file_google_cloud_baremetalsolution_v2_provisioning_proto_msgTypes[16]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -2309,7 +2184,7 @@ func (x *NetworkConfig_IntakeVlanAttachment) String() string {
 func (*NetworkConfig_IntakeVlanAttachment) ProtoMessage() {}
 
 func (x *NetworkConfig_IntakeVlanAttachment) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_baremetalsolution_v2_provisioning_proto_msgTypes[17]
+	mi := &file_google_cloud_baremetalsolution_v2_provisioning_proto_msgTypes[16]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2337,77 +2212,6 @@ func (x *NetworkConfig_IntakeVlanAttachment) GetPairingKey() string {
 		return x.PairingKey
 	}
 	return ""
-}
-
-// Logical interface.
-type ServerNetworkTemplate_LogicalInterface struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	// Interface name.
-	// This is not a globally unique identifier.
-	// Name is unique only inside the ServerNetworkTemplate. This is of syntax
-	// <bond><interface_type_index><bond_mode> or <nic><interface_type_index>
-	// and forms part of the network template name.
-	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	// Interface type.
-	Type ServerNetworkTemplate_LogicalInterface_InterfaceType `protobuf:"varint,2,opt,name=type,proto3,enum=google.cloud.baremetalsolution.v2.ServerNetworkTemplate_LogicalInterface_InterfaceType" json:"type,omitempty"`
-	// If true, interface must have network connected.
-	Required bool `protobuf:"varint,3,opt,name=required,proto3" json:"required,omitempty"`
-}
-
-func (x *ServerNetworkTemplate_LogicalInterface) Reset() {
-	*x = ServerNetworkTemplate_LogicalInterface{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_google_cloud_baremetalsolution_v2_provisioning_proto_msgTypes[18]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *ServerNetworkTemplate_LogicalInterface) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*ServerNetworkTemplate_LogicalInterface) ProtoMessage() {}
-
-func (x *ServerNetworkTemplate_LogicalInterface) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_baremetalsolution_v2_provisioning_proto_msgTypes[18]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use ServerNetworkTemplate_LogicalInterface.ProtoReflect.Descriptor instead.
-func (*ServerNetworkTemplate_LogicalInterface) Descriptor() ([]byte, []int) {
-	return file_google_cloud_baremetalsolution_v2_provisioning_proto_rawDescGZIP(), []int{13, 0}
-}
-
-func (x *ServerNetworkTemplate_LogicalInterface) GetName() string {
-	if x != nil {
-		return x.Name
-	}
-	return ""
-}
-
-func (x *ServerNetworkTemplate_LogicalInterface) GetType() ServerNetworkTemplate_LogicalInterface_InterfaceType {
-	if x != nil {
-		return x.Type
-	}
-	return ServerNetworkTemplate_LogicalInterface_INTERFACE_TYPE_UNSPECIFIED
-}
-
-func (x *ServerNetworkTemplate_LogicalInterface) GetRequired() bool {
-	if x != nil {
-		return x.Required
-	}
-	return false
 }
 
 var File_google_cloud_baremetalsolution_v2_provisioning_proto protoreflect.FileDescriptor
@@ -2864,63 +2668,23 @@ var file_google_cloud_baremetalsolution_v2_provisioning_proto_rawDesc = []byte{
 	0x64, 0x4d, 0x61, 0x73, 0x6b, 0x42, 0x03, 0xe0, 0x41, 0x02, 0x52, 0x0a, 0x75, 0x70, 0x64, 0x61,
 	0x74, 0x65, 0x4d, 0x61, 0x73, 0x6b, 0x12, 0x19, 0x0a, 0x05, 0x65, 0x6d, 0x61, 0x69, 0x6c, 0x18,
 	0x03, 0x20, 0x01, 0x28, 0x09, 0x42, 0x03, 0xe0, 0x41, 0x01, 0x52, 0x05, 0x65, 0x6d, 0x61, 0x69,
-	0x6c, 0x22, 0xf4, 0x04, 0x0a, 0x15, 0x53, 0x65, 0x72, 0x76, 0x65, 0x72, 0x4e, 0x65, 0x74, 0x77,
-	0x6f, 0x72, 0x6b, 0x54, 0x65, 0x6d, 0x70, 0x6c, 0x61, 0x74, 0x65, 0x12, 0x17, 0x0a, 0x04, 0x6e,
-	0x61, 0x6d, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x42, 0x03, 0xe0, 0x41, 0x03, 0x52, 0x04,
-	0x6e, 0x61, 0x6d, 0x65, 0x12, 0x3a, 0x0a, 0x19, 0x61, 0x70, 0x70, 0x6c, 0x69, 0x63, 0x61, 0x62,
-	0x6c, 0x65, 0x5f, 0x69, 0x6e, 0x73, 0x74, 0x61, 0x6e, 0x63, 0x65, 0x5f, 0x74, 0x79, 0x70, 0x65,
-	0x73, 0x18, 0x02, 0x20, 0x03, 0x28, 0x09, 0x52, 0x17, 0x61, 0x70, 0x70, 0x6c, 0x69, 0x63, 0x61,
-	0x62, 0x6c, 0x65, 0x49, 0x6e, 0x73, 0x74, 0x61, 0x6e, 0x63, 0x65, 0x54, 0x79, 0x70, 0x65, 0x73,
-	0x12, 0x78, 0x0a, 0x12, 0x6c, 0x6f, 0x67, 0x69, 0x63, 0x61, 0x6c, 0x5f, 0x69, 0x6e, 0x74, 0x65,
-	0x72, 0x66, 0x61, 0x63, 0x65, 0x73, 0x18, 0x03, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x49, 0x2e, 0x67,
-	0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x62, 0x61, 0x72, 0x65,
-	0x6d, 0x65, 0x74, 0x61, 0x6c, 0x73, 0x6f, 0x6c, 0x75, 0x74, 0x69, 0x6f, 0x6e, 0x2e, 0x76, 0x32,
-	0x2e, 0x53, 0x65, 0x72, 0x76, 0x65, 0x72, 0x4e, 0x65, 0x74, 0x77, 0x6f, 0x72, 0x6b, 0x54, 0x65,
-	0x6d, 0x70, 0x6c, 0x61, 0x74, 0x65, 0x2e, 0x4c, 0x6f, 0x67, 0x69, 0x63, 0x61, 0x6c, 0x49, 0x6e,
-	0x74, 0x65, 0x72, 0x66, 0x61, 0x63, 0x65, 0x52, 0x11, 0x6c, 0x6f, 0x67, 0x69, 0x63, 0x61, 0x6c,
-	0x49, 0x6e, 0x74, 0x65, 0x72, 0x66, 0x61, 0x63, 0x65, 0x73, 0x1a, 0xf3, 0x01, 0x0a, 0x10, 0x4c,
-	0x6f, 0x67, 0x69, 0x63, 0x61, 0x6c, 0x49, 0x6e, 0x74, 0x65, 0x72, 0x66, 0x61, 0x63, 0x65, 0x12,
-	0x12, 0x0a, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x6e,
-	0x61, 0x6d, 0x65, 0x12, 0x6b, 0x0a, 0x04, 0x74, 0x79, 0x70, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28,
-	0x0e, 0x32, 0x57, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x63, 0x6c, 0x6f, 0x75, 0x64,
-	0x2e, 0x62, 0x61, 0x72, 0x65, 0x6d, 0x65, 0x74, 0x61, 0x6c, 0x73, 0x6f, 0x6c, 0x75, 0x74, 0x69,
-	0x6f, 0x6e, 0x2e, 0x76, 0x32, 0x2e, 0x53, 0x65, 0x72, 0x76, 0x65, 0x72, 0x4e, 0x65, 0x74, 0x77,
-	0x6f, 0x72, 0x6b, 0x54, 0x65, 0x6d, 0x70, 0x6c, 0x61, 0x74, 0x65, 0x2e, 0x4c, 0x6f, 0x67, 0x69,
-	0x63, 0x61, 0x6c, 0x49, 0x6e, 0x74, 0x65, 0x72, 0x66, 0x61, 0x63, 0x65, 0x2e, 0x49, 0x6e, 0x74,
-	0x65, 0x72, 0x66, 0x61, 0x63, 0x65, 0x54, 0x79, 0x70, 0x65, 0x52, 0x04, 0x74, 0x79, 0x70, 0x65,
-	0x12, 0x1a, 0x0a, 0x08, 0x72, 0x65, 0x71, 0x75, 0x69, 0x72, 0x65, 0x64, 0x18, 0x03, 0x20, 0x01,
-	0x28, 0x08, 0x52, 0x08, 0x72, 0x65, 0x71, 0x75, 0x69, 0x72, 0x65, 0x64, 0x22, 0x42, 0x0a, 0x0d,
-	0x49, 0x6e, 0x74, 0x65, 0x72, 0x66, 0x61, 0x63, 0x65, 0x54, 0x79, 0x70, 0x65, 0x12, 0x1e, 0x0a,
-	0x1a, 0x49, 0x4e, 0x54, 0x45, 0x52, 0x46, 0x41, 0x43, 0x45, 0x5f, 0x54, 0x59, 0x50, 0x45, 0x5f,
-	0x55, 0x4e, 0x53, 0x50, 0x45, 0x43, 0x49, 0x46, 0x49, 0x45, 0x44, 0x10, 0x00, 0x12, 0x08, 0x0a,
-	0x04, 0x42, 0x4f, 0x4e, 0x44, 0x10, 0x01, 0x12, 0x07, 0x0a, 0x03, 0x4e, 0x49, 0x43, 0x10, 0x02,
-	0x3a, 0x95, 0x01, 0xea, 0x41, 0x91, 0x01, 0x0a, 0x36, 0x62, 0x61, 0x72, 0x65, 0x6d, 0x65, 0x74,
-	0x61, 0x6c, 0x73, 0x6f, 0x6c, 0x75, 0x74, 0x69, 0x6f, 0x6e, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c,
-	0x65, 0x61, 0x70, 0x69, 0x73, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x53, 0x65, 0x72, 0x76, 0x65, 0x72,
-	0x4e, 0x65, 0x74, 0x77, 0x6f, 0x72, 0x6b, 0x54, 0x65, 0x6d, 0x70, 0x6c, 0x61, 0x74, 0x65, 0x12,
-	0x57, 0x70, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x73, 0x2f, 0x7b, 0x70, 0x72, 0x6f, 0x6a, 0x65,
-	0x63, 0x74, 0x7d, 0x2f, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x2f, 0x7b, 0x6c,
-	0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x7d, 0x2f, 0x73, 0x65, 0x72, 0x76, 0x65, 0x72, 0x4e,
-	0x65, 0x74, 0x77, 0x6f, 0x72, 0x6b, 0x54, 0x65, 0x6d, 0x70, 0x6c, 0x61, 0x74, 0x65, 0x2f, 0x7b,
-	0x73, 0x65, 0x72, 0x76, 0x65, 0x72, 0x5f, 0x6e, 0x65, 0x74, 0x77, 0x6f, 0x72, 0x6b, 0x5f, 0x74,
-	0x65, 0x6d, 0x70, 0x6c, 0x61, 0x74, 0x65, 0x7d, 0x42, 0x80, 0x02, 0x0a, 0x25, 0x63, 0x6f, 0x6d,
-	0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x62, 0x61,
-	0x72, 0x65, 0x6d, 0x65, 0x74, 0x61, 0x6c, 0x73, 0x6f, 0x6c, 0x75, 0x74, 0x69, 0x6f, 0x6e, 0x2e,
-	0x76, 0x32, 0x42, 0x11, 0x50, 0x72, 0x6f, 0x76, 0x69, 0x73, 0x69, 0x6f, 0x6e, 0x69, 0x6e, 0x67,
-	0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x53, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x67,
-	0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x67, 0x6f, 0x2f, 0x62, 0x61, 0x72,
-	0x65, 0x6d, 0x65, 0x74, 0x61, 0x6c, 0x73, 0x6f, 0x6c, 0x75, 0x74, 0x69, 0x6f, 0x6e, 0x2f, 0x61,
-	0x70, 0x69, 0x76, 0x32, 0x2f, 0x62, 0x61, 0x72, 0x65, 0x6d, 0x65, 0x74, 0x61, 0x6c, 0x73, 0x6f,
-	0x6c, 0x75, 0x74, 0x69, 0x6f, 0x6e, 0x70, 0x62, 0x3b, 0x62, 0x61, 0x72, 0x65, 0x6d, 0x65, 0x74,
-	0x61, 0x6c, 0x73, 0x6f, 0x6c, 0x75, 0x74, 0x69, 0x6f, 0x6e, 0x70, 0x62, 0xaa, 0x02, 0x21, 0x47,
-	0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x43, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x42, 0x61, 0x72, 0x65,
-	0x4d, 0x65, 0x74, 0x61, 0x6c, 0x53, 0x6f, 0x6c, 0x75, 0x74, 0x69, 0x6f, 0x6e, 0x2e, 0x56, 0x32,
-	0xca, 0x02, 0x21, 0x47, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x5c, 0x43, 0x6c, 0x6f, 0x75, 0x64, 0x5c,
-	0x42, 0x61, 0x72, 0x65, 0x4d, 0x65, 0x74, 0x61, 0x6c, 0x53, 0x6f, 0x6c, 0x75, 0x74, 0x69, 0x6f,
-	0x6e, 0x5c, 0x56, 0x32, 0xea, 0x02, 0x24, 0x47, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x3a, 0x3a, 0x43,
-	0x6c, 0x6f, 0x75, 0x64, 0x3a, 0x3a, 0x42, 0x61, 0x72, 0x65, 0x4d, 0x65, 0x74, 0x61, 0x6c, 0x53,
-	0x6f, 0x6c, 0x75, 0x74, 0x69, 0x6f, 0x6e, 0x3a, 0x3a, 0x56, 0x32, 0x62, 0x06, 0x70, 0x72, 0x6f,
-	0x74, 0x6f, 0x33,
+	0x6c, 0x42, 0x80, 0x02, 0x0a, 0x25, 0x63, 0x6f, 0x6d, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65,
+	0x2e, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x62, 0x61, 0x72, 0x65, 0x6d, 0x65, 0x74, 0x61, 0x6c,
+	0x73, 0x6f, 0x6c, 0x75, 0x74, 0x69, 0x6f, 0x6e, 0x2e, 0x76, 0x32, 0x42, 0x11, 0x50, 0x72, 0x6f,
+	0x76, 0x69, 0x73, 0x69, 0x6f, 0x6e, 0x69, 0x6e, 0x67, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01,
+	0x5a, 0x53, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x63,
+	0x6f, 0x6d, 0x2f, 0x67, 0x6f, 0x2f, 0x62, 0x61, 0x72, 0x65, 0x6d, 0x65, 0x74, 0x61, 0x6c, 0x73,
+	0x6f, 0x6c, 0x75, 0x74, 0x69, 0x6f, 0x6e, 0x2f, 0x61, 0x70, 0x69, 0x76, 0x32, 0x2f, 0x62, 0x61,
+	0x72, 0x65, 0x6d, 0x65, 0x74, 0x61, 0x6c, 0x73, 0x6f, 0x6c, 0x75, 0x74, 0x69, 0x6f, 0x6e, 0x70,
+	0x62, 0x3b, 0x62, 0x61, 0x72, 0x65, 0x6d, 0x65, 0x74, 0x61, 0x6c, 0x73, 0x6f, 0x6c, 0x75, 0x74,
+	0x69, 0x6f, 0x6e, 0x70, 0x62, 0xaa, 0x02, 0x21, 0x47, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x43,
+	0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x42, 0x61, 0x72, 0x65, 0x4d, 0x65, 0x74, 0x61, 0x6c, 0x53, 0x6f,
+	0x6c, 0x75, 0x74, 0x69, 0x6f, 0x6e, 0x2e, 0x56, 0x32, 0xca, 0x02, 0x21, 0x47, 0x6f, 0x6f, 0x67,
+	0x6c, 0x65, 0x5c, 0x43, 0x6c, 0x6f, 0x75, 0x64, 0x5c, 0x42, 0x61, 0x72, 0x65, 0x4d, 0x65, 0x74,
+	0x61, 0x6c, 0x53, 0x6f, 0x6c, 0x75, 0x74, 0x69, 0x6f, 0x6e, 0x5c, 0x56, 0x32, 0xea, 0x02, 0x24,
+	0x47, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x3a, 0x3a, 0x43, 0x6c, 0x6f, 0x75, 0x64, 0x3a, 0x3a, 0x42,
+	0x61, 0x72, 0x65, 0x4d, 0x65, 0x74, 0x61, 0x6c, 0x53, 0x6f, 0x6c, 0x75, 0x74, 0x69, 0x6f, 0x6e,
+	0x3a, 0x3a, 0x56, 0x32, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -2935,78 +2699,73 @@ func file_google_cloud_baremetalsolution_v2_provisioning_proto_rawDescGZIP() []b
 	return file_google_cloud_baremetalsolution_v2_provisioning_proto_rawDescData
 }
 
-var file_google_cloud_baremetalsolution_v2_provisioning_proto_enumTypes = make([]protoimpl.EnumInfo, 10)
-var file_google_cloud_baremetalsolution_v2_provisioning_proto_msgTypes = make([]protoimpl.MessageInfo, 19)
+var file_google_cloud_baremetalsolution_v2_provisioning_proto_enumTypes = make([]protoimpl.EnumInfo, 9)
+var file_google_cloud_baremetalsolution_v2_provisioning_proto_msgTypes = make([]protoimpl.MessageInfo, 17)
 var file_google_cloud_baremetalsolution_v2_provisioning_proto_goTypes = []interface{}{
-	(ProvisioningConfig_State)(0),                             // 0: google.cloud.baremetalsolution.v2.ProvisioningConfig.State
-	(ProvisioningQuota_AssetType)(0),                          // 1: google.cloud.baremetalsolution.v2.ProvisioningQuota.AssetType
-	(InstanceConfig_NetworkConfig)(0),                         // 2: google.cloud.baremetalsolution.v2.InstanceConfig.NetworkConfig
-	(VolumeConfig_Type)(0),                                    // 3: google.cloud.baremetalsolution.v2.VolumeConfig.Type
-	(VolumeConfig_Protocol)(0),                                // 4: google.cloud.baremetalsolution.v2.VolumeConfig.Protocol
-	(VolumeConfig_NfsExport_Permissions)(0),                   // 5: google.cloud.baremetalsolution.v2.VolumeConfig.NfsExport.Permissions
-	(NetworkConfig_Type)(0),                                   // 6: google.cloud.baremetalsolution.v2.NetworkConfig.Type
-	(NetworkConfig_Bandwidth)(0),                              // 7: google.cloud.baremetalsolution.v2.NetworkConfig.Bandwidth
-	(NetworkConfig_ServiceCidr)(0),                            // 8: google.cloud.baremetalsolution.v2.NetworkConfig.ServiceCidr
-	(ServerNetworkTemplate_LogicalInterface_InterfaceType)(0), // 9: google.cloud.baremetalsolution.v2.ServerNetworkTemplate.LogicalInterface.InterfaceType
-	(*ProvisioningConfig)(nil),                                // 10: google.cloud.baremetalsolution.v2.ProvisioningConfig
-	(*SubmitProvisioningConfigRequest)(nil),                   // 11: google.cloud.baremetalsolution.v2.SubmitProvisioningConfigRequest
-	(*SubmitProvisioningConfigResponse)(nil),                  // 12: google.cloud.baremetalsolution.v2.SubmitProvisioningConfigResponse
-	(*ProvisioningQuota)(nil),                                 // 13: google.cloud.baremetalsolution.v2.ProvisioningQuota
-	(*ListProvisioningQuotasRequest)(nil),                     // 14: google.cloud.baremetalsolution.v2.ListProvisioningQuotasRequest
-	(*ListProvisioningQuotasResponse)(nil),                    // 15: google.cloud.baremetalsolution.v2.ListProvisioningQuotasResponse
-	(*InstanceConfig)(nil),                                    // 16: google.cloud.baremetalsolution.v2.InstanceConfig
-	(*VolumeConfig)(nil),                                      // 17: google.cloud.baremetalsolution.v2.VolumeConfig
-	(*NetworkConfig)(nil),                                     // 18: google.cloud.baremetalsolution.v2.NetworkConfig
-	(*InstanceQuota)(nil),                                     // 19: google.cloud.baremetalsolution.v2.InstanceQuota
-	(*GetProvisioningConfigRequest)(nil),                      // 20: google.cloud.baremetalsolution.v2.GetProvisioningConfigRequest
-	(*CreateProvisioningConfigRequest)(nil),                   // 21: google.cloud.baremetalsolution.v2.CreateProvisioningConfigRequest
-	(*UpdateProvisioningConfigRequest)(nil),                   // 22: google.cloud.baremetalsolution.v2.UpdateProvisioningConfigRequest
-	(*ServerNetworkTemplate)(nil),                             // 23: google.cloud.baremetalsolution.v2.ServerNetworkTemplate
-	(*InstanceConfig_NetworkAddress)(nil),                     // 24: google.cloud.baremetalsolution.v2.InstanceConfig.NetworkAddress
-	(*VolumeConfig_LunRange)(nil),                             // 25: google.cloud.baremetalsolution.v2.VolumeConfig.LunRange
-	(*VolumeConfig_NfsExport)(nil),                            // 26: google.cloud.baremetalsolution.v2.VolumeConfig.NfsExport
-	(*NetworkConfig_IntakeVlanAttachment)(nil),                // 27: google.cloud.baremetalsolution.v2.NetworkConfig.IntakeVlanAttachment
-	(*ServerNetworkTemplate_LogicalInterface)(nil),            // 28: google.cloud.baremetalsolution.v2.ServerNetworkTemplate.LogicalInterface
-	(*timestamppb.Timestamp)(nil),                             // 29: google.protobuf.Timestamp
-	(*LogicalInterface)(nil),                                  // 30: google.cloud.baremetalsolution.v2.LogicalInterface
-	(VolumePerformanceTier)(0),                                // 31: google.cloud.baremetalsolution.v2.VolumePerformanceTier
-	(*fieldmaskpb.FieldMask)(nil),                             // 32: google.protobuf.FieldMask
+	(ProvisioningConfig_State)(0),              // 0: google.cloud.baremetalsolution.v2.ProvisioningConfig.State
+	(ProvisioningQuota_AssetType)(0),           // 1: google.cloud.baremetalsolution.v2.ProvisioningQuota.AssetType
+	(InstanceConfig_NetworkConfig)(0),          // 2: google.cloud.baremetalsolution.v2.InstanceConfig.NetworkConfig
+	(VolumeConfig_Type)(0),                     // 3: google.cloud.baremetalsolution.v2.VolumeConfig.Type
+	(VolumeConfig_Protocol)(0),                 // 4: google.cloud.baremetalsolution.v2.VolumeConfig.Protocol
+	(VolumeConfig_NfsExport_Permissions)(0),    // 5: google.cloud.baremetalsolution.v2.VolumeConfig.NfsExport.Permissions
+	(NetworkConfig_Type)(0),                    // 6: google.cloud.baremetalsolution.v2.NetworkConfig.Type
+	(NetworkConfig_Bandwidth)(0),               // 7: google.cloud.baremetalsolution.v2.NetworkConfig.Bandwidth
+	(NetworkConfig_ServiceCidr)(0),             // 8: google.cloud.baremetalsolution.v2.NetworkConfig.ServiceCidr
+	(*ProvisioningConfig)(nil),                 // 9: google.cloud.baremetalsolution.v2.ProvisioningConfig
+	(*SubmitProvisioningConfigRequest)(nil),    // 10: google.cloud.baremetalsolution.v2.SubmitProvisioningConfigRequest
+	(*SubmitProvisioningConfigResponse)(nil),   // 11: google.cloud.baremetalsolution.v2.SubmitProvisioningConfigResponse
+	(*ProvisioningQuota)(nil),                  // 12: google.cloud.baremetalsolution.v2.ProvisioningQuota
+	(*ListProvisioningQuotasRequest)(nil),      // 13: google.cloud.baremetalsolution.v2.ListProvisioningQuotasRequest
+	(*ListProvisioningQuotasResponse)(nil),     // 14: google.cloud.baremetalsolution.v2.ListProvisioningQuotasResponse
+	(*InstanceConfig)(nil),                     // 15: google.cloud.baremetalsolution.v2.InstanceConfig
+	(*VolumeConfig)(nil),                       // 16: google.cloud.baremetalsolution.v2.VolumeConfig
+	(*NetworkConfig)(nil),                      // 17: google.cloud.baremetalsolution.v2.NetworkConfig
+	(*InstanceQuota)(nil),                      // 18: google.cloud.baremetalsolution.v2.InstanceQuota
+	(*GetProvisioningConfigRequest)(nil),       // 19: google.cloud.baremetalsolution.v2.GetProvisioningConfigRequest
+	(*CreateProvisioningConfigRequest)(nil),    // 20: google.cloud.baremetalsolution.v2.CreateProvisioningConfigRequest
+	(*UpdateProvisioningConfigRequest)(nil),    // 21: google.cloud.baremetalsolution.v2.UpdateProvisioningConfigRequest
+	(*InstanceConfig_NetworkAddress)(nil),      // 22: google.cloud.baremetalsolution.v2.InstanceConfig.NetworkAddress
+	(*VolumeConfig_LunRange)(nil),              // 23: google.cloud.baremetalsolution.v2.VolumeConfig.LunRange
+	(*VolumeConfig_NfsExport)(nil),             // 24: google.cloud.baremetalsolution.v2.VolumeConfig.NfsExport
+	(*NetworkConfig_IntakeVlanAttachment)(nil), // 25: google.cloud.baremetalsolution.v2.NetworkConfig.IntakeVlanAttachment
+	(*timestamppb.Timestamp)(nil),              // 26: google.protobuf.Timestamp
+	(*LogicalInterface)(nil),                   // 27: google.cloud.baremetalsolution.v2.LogicalInterface
+	(VolumePerformanceTier)(0),                 // 28: google.cloud.baremetalsolution.v2.VolumePerformanceTier
+	(*fieldmaskpb.FieldMask)(nil),              // 29: google.protobuf.FieldMask
 }
 var file_google_cloud_baremetalsolution_v2_provisioning_proto_depIdxs = []int32{
-	16, // 0: google.cloud.baremetalsolution.v2.ProvisioningConfig.instances:type_name -> google.cloud.baremetalsolution.v2.InstanceConfig
-	18, // 1: google.cloud.baremetalsolution.v2.ProvisioningConfig.networks:type_name -> google.cloud.baremetalsolution.v2.NetworkConfig
-	17, // 2: google.cloud.baremetalsolution.v2.ProvisioningConfig.volumes:type_name -> google.cloud.baremetalsolution.v2.VolumeConfig
+	15, // 0: google.cloud.baremetalsolution.v2.ProvisioningConfig.instances:type_name -> google.cloud.baremetalsolution.v2.InstanceConfig
+	17, // 1: google.cloud.baremetalsolution.v2.ProvisioningConfig.networks:type_name -> google.cloud.baremetalsolution.v2.NetworkConfig
+	16, // 2: google.cloud.baremetalsolution.v2.ProvisioningConfig.volumes:type_name -> google.cloud.baremetalsolution.v2.VolumeConfig
 	0,  // 3: google.cloud.baremetalsolution.v2.ProvisioningConfig.state:type_name -> google.cloud.baremetalsolution.v2.ProvisioningConfig.State
-	29, // 4: google.cloud.baremetalsolution.v2.ProvisioningConfig.update_time:type_name -> google.protobuf.Timestamp
-	10, // 5: google.cloud.baremetalsolution.v2.SubmitProvisioningConfigRequest.provisioning_config:type_name -> google.cloud.baremetalsolution.v2.ProvisioningConfig
-	10, // 6: google.cloud.baremetalsolution.v2.SubmitProvisioningConfigResponse.provisioning_config:type_name -> google.cloud.baremetalsolution.v2.ProvisioningConfig
+	26, // 4: google.cloud.baremetalsolution.v2.ProvisioningConfig.update_time:type_name -> google.protobuf.Timestamp
+	9,  // 5: google.cloud.baremetalsolution.v2.SubmitProvisioningConfigRequest.provisioning_config:type_name -> google.cloud.baremetalsolution.v2.ProvisioningConfig
+	9,  // 6: google.cloud.baremetalsolution.v2.SubmitProvisioningConfigResponse.provisioning_config:type_name -> google.cloud.baremetalsolution.v2.ProvisioningConfig
 	1,  // 7: google.cloud.baremetalsolution.v2.ProvisioningQuota.asset_type:type_name -> google.cloud.baremetalsolution.v2.ProvisioningQuota.AssetType
-	19, // 8: google.cloud.baremetalsolution.v2.ProvisioningQuota.instance_quota:type_name -> google.cloud.baremetalsolution.v2.InstanceQuota
-	13, // 9: google.cloud.baremetalsolution.v2.ListProvisioningQuotasResponse.provisioning_quotas:type_name -> google.cloud.baremetalsolution.v2.ProvisioningQuota
-	24, // 10: google.cloud.baremetalsolution.v2.InstanceConfig.client_network:type_name -> google.cloud.baremetalsolution.v2.InstanceConfig.NetworkAddress
-	24, // 11: google.cloud.baremetalsolution.v2.InstanceConfig.private_network:type_name -> google.cloud.baremetalsolution.v2.InstanceConfig.NetworkAddress
+	18, // 8: google.cloud.baremetalsolution.v2.ProvisioningQuota.instance_quota:type_name -> google.cloud.baremetalsolution.v2.InstanceQuota
+	12, // 9: google.cloud.baremetalsolution.v2.ListProvisioningQuotasResponse.provisioning_quotas:type_name -> google.cloud.baremetalsolution.v2.ProvisioningQuota
+	22, // 10: google.cloud.baremetalsolution.v2.InstanceConfig.client_network:type_name -> google.cloud.baremetalsolution.v2.InstanceConfig.NetworkAddress
+	22, // 11: google.cloud.baremetalsolution.v2.InstanceConfig.private_network:type_name -> google.cloud.baremetalsolution.v2.InstanceConfig.NetworkAddress
 	2,  // 12: google.cloud.baremetalsolution.v2.InstanceConfig.network_config:type_name -> google.cloud.baremetalsolution.v2.InstanceConfig.NetworkConfig
-	30, // 13: google.cloud.baremetalsolution.v2.InstanceConfig.logical_interfaces:type_name -> google.cloud.baremetalsolution.v2.LogicalInterface
+	27, // 13: google.cloud.baremetalsolution.v2.InstanceConfig.logical_interfaces:type_name -> google.cloud.baremetalsolution.v2.LogicalInterface
 	3,  // 14: google.cloud.baremetalsolution.v2.VolumeConfig.type:type_name -> google.cloud.baremetalsolution.v2.VolumeConfig.Type
 	4,  // 15: google.cloud.baremetalsolution.v2.VolumeConfig.protocol:type_name -> google.cloud.baremetalsolution.v2.VolumeConfig.Protocol
-	25, // 16: google.cloud.baremetalsolution.v2.VolumeConfig.lun_ranges:type_name -> google.cloud.baremetalsolution.v2.VolumeConfig.LunRange
-	26, // 17: google.cloud.baremetalsolution.v2.VolumeConfig.nfs_exports:type_name -> google.cloud.baremetalsolution.v2.VolumeConfig.NfsExport
-	31, // 18: google.cloud.baremetalsolution.v2.VolumeConfig.performance_tier:type_name -> google.cloud.baremetalsolution.v2.VolumePerformanceTier
+	23, // 16: google.cloud.baremetalsolution.v2.VolumeConfig.lun_ranges:type_name -> google.cloud.baremetalsolution.v2.VolumeConfig.LunRange
+	24, // 17: google.cloud.baremetalsolution.v2.VolumeConfig.nfs_exports:type_name -> google.cloud.baremetalsolution.v2.VolumeConfig.NfsExport
+	28, // 18: google.cloud.baremetalsolution.v2.VolumeConfig.performance_tier:type_name -> google.cloud.baremetalsolution.v2.VolumePerformanceTier
 	6,  // 19: google.cloud.baremetalsolution.v2.NetworkConfig.type:type_name -> google.cloud.baremetalsolution.v2.NetworkConfig.Type
 	7,  // 20: google.cloud.baremetalsolution.v2.NetworkConfig.bandwidth:type_name -> google.cloud.baremetalsolution.v2.NetworkConfig.Bandwidth
-	27, // 21: google.cloud.baremetalsolution.v2.NetworkConfig.vlan_attachments:type_name -> google.cloud.baremetalsolution.v2.NetworkConfig.IntakeVlanAttachment
+	25, // 21: google.cloud.baremetalsolution.v2.NetworkConfig.vlan_attachments:type_name -> google.cloud.baremetalsolution.v2.NetworkConfig.IntakeVlanAttachment
 	8,  // 22: google.cloud.baremetalsolution.v2.NetworkConfig.service_cidr:type_name -> google.cloud.baremetalsolution.v2.NetworkConfig.ServiceCidr
-	10, // 23: google.cloud.baremetalsolution.v2.CreateProvisioningConfigRequest.provisioning_config:type_name -> google.cloud.baremetalsolution.v2.ProvisioningConfig
-	10, // 24: google.cloud.baremetalsolution.v2.UpdateProvisioningConfigRequest.provisioning_config:type_name -> google.cloud.baremetalsolution.v2.ProvisioningConfig
-	32, // 25: google.cloud.baremetalsolution.v2.UpdateProvisioningConfigRequest.update_mask:type_name -> google.protobuf.FieldMask
-	28, // 26: google.cloud.baremetalsolution.v2.ServerNetworkTemplate.logical_interfaces:type_name -> google.cloud.baremetalsolution.v2.ServerNetworkTemplate.LogicalInterface
-	5,  // 27: google.cloud.baremetalsolution.v2.VolumeConfig.NfsExport.permissions:type_name -> google.cloud.baremetalsolution.v2.VolumeConfig.NfsExport.Permissions
-	9,  // 28: google.cloud.baremetalsolution.v2.ServerNetworkTemplate.LogicalInterface.type:type_name -> google.cloud.baremetalsolution.v2.ServerNetworkTemplate.LogicalInterface.InterfaceType
-	29, // [29:29] is the sub-list for method output_type
-	29, // [29:29] is the sub-list for method input_type
-	29, // [29:29] is the sub-list for extension type_name
-	29, // [29:29] is the sub-list for extension extendee
-	0,  // [0:29] is the sub-list for field type_name
+	9,  // 23: google.cloud.baremetalsolution.v2.CreateProvisioningConfigRequest.provisioning_config:type_name -> google.cloud.baremetalsolution.v2.ProvisioningConfig
+	9,  // 24: google.cloud.baremetalsolution.v2.UpdateProvisioningConfigRequest.provisioning_config:type_name -> google.cloud.baremetalsolution.v2.ProvisioningConfig
+	29, // 25: google.cloud.baremetalsolution.v2.UpdateProvisioningConfigRequest.update_mask:type_name -> google.protobuf.FieldMask
+	5,  // 26: google.cloud.baremetalsolution.v2.VolumeConfig.NfsExport.permissions:type_name -> google.cloud.baremetalsolution.v2.VolumeConfig.NfsExport.Permissions
+	27, // [27:27] is the sub-list for method output_type
+	27, // [27:27] is the sub-list for method input_type
+	27, // [27:27] is the sub-list for extension type_name
+	27, // [27:27] is the sub-list for extension extendee
+	0,  // [0:27] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_baremetalsolution_v2_provisioning_proto_init() }
@@ -3174,18 +2933,6 @@ func file_google_cloud_baremetalsolution_v2_provisioning_proto_init() {
 			}
 		}
 		file_google_cloud_baremetalsolution_v2_provisioning_proto_msgTypes[13].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*ServerNetworkTemplate); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_google_cloud_baremetalsolution_v2_provisioning_proto_msgTypes[14].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*InstanceConfig_NetworkAddress); i {
 			case 0:
 				return &v.state
@@ -3197,7 +2944,7 @@ func file_google_cloud_baremetalsolution_v2_provisioning_proto_init() {
 				return nil
 			}
 		}
-		file_google_cloud_baremetalsolution_v2_provisioning_proto_msgTypes[15].Exporter = func(v interface{}, i int) interface{} {
+		file_google_cloud_baremetalsolution_v2_provisioning_proto_msgTypes[14].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*VolumeConfig_LunRange); i {
 			case 0:
 				return &v.state
@@ -3209,7 +2956,7 @@ func file_google_cloud_baremetalsolution_v2_provisioning_proto_init() {
 				return nil
 			}
 		}
-		file_google_cloud_baremetalsolution_v2_provisioning_proto_msgTypes[16].Exporter = func(v interface{}, i int) interface{} {
+		file_google_cloud_baremetalsolution_v2_provisioning_proto_msgTypes[15].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*VolumeConfig_NfsExport); i {
 			case 0:
 				return &v.state
@@ -3221,20 +2968,8 @@ func file_google_cloud_baremetalsolution_v2_provisioning_proto_init() {
 				return nil
 			}
 		}
-		file_google_cloud_baremetalsolution_v2_provisioning_proto_msgTypes[17].Exporter = func(v interface{}, i int) interface{} {
+		file_google_cloud_baremetalsolution_v2_provisioning_proto_msgTypes[16].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*NetworkConfig_IntakeVlanAttachment); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_google_cloud_baremetalsolution_v2_provisioning_proto_msgTypes[18].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*ServerNetworkTemplate_LogicalInterface); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -3252,7 +2987,7 @@ func file_google_cloud_baremetalsolution_v2_provisioning_proto_init() {
 		(*ProvisioningQuota_NetworkBandwidth)(nil),
 		(*ProvisioningQuota_StorageGib)(nil),
 	}
-	file_google_cloud_baremetalsolution_v2_provisioning_proto_msgTypes[16].OneofWrappers = []interface{}{
+	file_google_cloud_baremetalsolution_v2_provisioning_proto_msgTypes[15].OneofWrappers = []interface{}{
 		(*VolumeConfig_NfsExport_MachineId)(nil),
 		(*VolumeConfig_NfsExport_Cidr)(nil),
 	}
@@ -3261,8 +2996,8 @@ func file_google_cloud_baremetalsolution_v2_provisioning_proto_init() {
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_google_cloud_baremetalsolution_v2_provisioning_proto_rawDesc,
-			NumEnums:      10,
-			NumMessages:   19,
+			NumEnums:      9,
+			NumMessages:   17,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
