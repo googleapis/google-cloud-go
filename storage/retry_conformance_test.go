@@ -27,6 +27,7 @@ import (
 	"net/url"
 	"os"
 	"strings"
+	"sync"
 	"testing"
 
 	"cloud.google.com/go/internal/uid"
@@ -34,6 +35,7 @@ import (
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	htransport "google.golang.org/api/transport/http"
+	"google.golang.org/grpc/metadata"
 )
 
 var (
@@ -536,6 +538,11 @@ func TestRetryConformance(t *testing.T) {
 								subtest.populateResources(ctx, client, method.Resources)
 
 								// Test
+								// Attach the retry test id custom header to the outgoing context
+								if transport == "grpc" {
+									header := metadata.New(map[string]string{"x-retry-test-id": subtest.id})
+									ctx = metadata.NewOutgoingContext(context.Background(), header)
+								}
 								err = fn(ctx, subtest.wrappedClient, &subtest.resources, retryTest.PreconditionProvided)
 								if retryTest.ExpectSuccess && err != nil {
 									t.Errorf("want success, got %v", err)
@@ -691,12 +698,25 @@ func (et *emulatorTest) create(instructions map[string][]string, transport strin
 	}
 
 	et.id = testRes.TestID
-
-	// Create wrapped client which will send emulator instructions
 	et.host.Path = ""
-	client, err := wrappedClient(et.T, et.id)
-	if err != nil {
-		et.Fatalf("creating wrapped client: %v", err)
+
+	// Create wrapped client which will send a retry test id via a constant header
+	var client *Client
+	if transport == "json" {
+		client, err = wrappedClient(et.T, et.id)
+		if err != nil {
+			et.Fatalf("creating wrapped client: %v", err)
+		}
+	} else if transport == "grpc" {
+		opts := defaultGRPCOptions()
+		header := metadata.New(map[string]string{"x-retry-test-id": et.id})
+		ctx := metadata.NewOutgoingContext(context.Background(), header)
+		var clientMu sync.Mutex
+		clientMu.Lock()
+		os.Setenv("STORAGE_USE_GRPC", "true")
+		client, _ = NewClient(ctx, opts...)
+		os.Unsetenv("STORAGE_USE_GRPC")
+		clientMu.Unlock()
 	}
 	et.wrappedClient = client
 }
