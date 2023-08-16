@@ -233,6 +233,7 @@ deep-remove-regex:
   - /internal/generated/snippets/kms/inventory/apiv1/
   - /internal/generated/snippets/language/apiv1/
   - /internal/generated/snippets/language/apiv1beta2/
+  - /internal/generated/snippets/language/apiv2/
   - /internal/generated/snippets/lifesciences/apiv2beta/
   - /internal/generated/snippets/logging/apiv2/
   - /internal/generated/snippets/longrunning/autogen/
@@ -347,6 +348,7 @@ deep-remove-regex:
   - /kms/inventory/apiv1/
   - /language/apiv1/
   - /language/apiv1beta2/
+  - /language/apiv2/
   - /lifesciences/apiv2beta/
   - /logging/apiv2/
   - /longrunning/autogen/
@@ -736,6 +738,8 @@ deep-copy-regex:
   - source: /google/cloud/language/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/language/v1beta2/cloud.google.com/go
+    dest: /
+  - source: /google/cloud/language/v2/cloud.google.com/go
     dest: /
   - source: /google/cloud/lifesciences/v2beta/cloud.google.com/go
     dest: /
