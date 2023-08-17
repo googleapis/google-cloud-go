@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.11.0](https://github.com/googleapis/google-cloud-go/compare/language/v1.10.1...language/v1.11.0) (2023-08-17)
+
+
+### Features
+
+* **language:** Start generating apiv2 ([#8434](https://github.com/googleapis/google-cloud-go/issues/8434)) ([e3b9cdc](https://github.com/googleapis/google-cloud-go/commit/e3b9cdc8d2fddcf829b9b308402be0b729242134))
+
 ## [1.10.1](https://github.com/googleapis/google-cloud-go/compare/language/v1.10.0...language/v1.10.1) (2023-06-20)
 
 
