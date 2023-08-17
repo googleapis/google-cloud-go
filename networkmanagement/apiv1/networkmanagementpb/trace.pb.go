@@ -21,11 +21,10 @@
 package networkmanagementpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -1459,17 +1458,14 @@ func (DropInfo_Cause) EnumDescriptor() ([]byte, []int) {
 
 // Trace represents one simulated packet forwarding path.
 //
-//   - Each trace contains multiple ordered steps.
-//   - Each step is in a particular state with associated configuration.
-//   - State is categorized as final or non-final states.
-//   - Each final state has a reason associated.
-//   - Each trace must end with a final state (the last step).
-//
+//   * Each trace contains multiple ordered steps.
+//   * Each step is in a particular state with associated configuration.
+//   * State is categorized as final or non-final states.
+//   * Each final state has a reason associated.
+//   * Each trace must end with a final state (the last step).
 // ```
-//
-//	|---------------------Trace----------------------|
-//	Step1(State) Step2(State) ---  StepN(State(final))
-//
+//   |---------------------Trace----------------------|
+//   Step1(State) Step2(State) ---  StepN(State(final))
 // ```
 type Trace struct {
 	state         protoimpl.MessageState

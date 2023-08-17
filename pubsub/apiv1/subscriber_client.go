@@ -196,7 +196,7 @@ func defaultSubscriberCallOptions() *SubscriberCallOptions {
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
 					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
+					Multiplier: 4.00,
 				})
 			}),
 		},
@@ -401,7 +401,7 @@ func defaultSubscriberRESTCallOptions() *SubscriberCallOptions {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    100 * time.Millisecond,
 					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
+					Multiplier: 4.00,
 				},
 					http.StatusGatewayTimeout,
 					http.StatusTooManyRequests,
