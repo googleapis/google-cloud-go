@@ -2,6 +2,7 @@
 
 
 
+
 ## [1.53.0](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.52.0...bigquery/v1.53.0) (2023-07-24)
 
 
