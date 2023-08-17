@@ -1,5 +1,6 @@
 # Changes
 
+
 ## [1.10.1](https://github.com/googleapis/google-cloud-go/compare/language/v1.10.0...language/v1.10.1) (2023-06-20)
 
 
