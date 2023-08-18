@@ -57,7 +57,7 @@ jobs:
         command: pr
         upstream_owner: googleapis
         upstream_repo: google-cloud-go
-        description: 'New client(s) generated in ${{ github.commits[0][url] }}, triggering release.'
+        description: 'New client(s) generated in ${{ github.commits[0].url }}, triggering release.'
         title: 'feat(${{ matrix.new }}): new client(s)'
         message: 'feat(${{ matrix.new }}): new clients'
         primary: 'main'
