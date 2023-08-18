@@ -8,6 +8,6 @@
   "profiler": "0.3.1",
   "pubsub": "1.33.0",
   "pubsublite": "1.8.1",
-  "spanner": "1.47.0",
+  "spanner": "1.48.0",
   "storage": "1.32.0"
 }
