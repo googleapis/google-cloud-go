@@ -821,24 +821,24 @@ func TestClient_ReadWriteTransaction_BufferedWriteBeforeAbortedFirstSqlStatement
 	expectedAttempts := 2
 	_, err := client.ReadWriteTransaction(
 		ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
-		attempts++
-		// Buffer mutations before executing a SQL statement.
-		if err := tx.BufferWrite([]*Mutation{
-			Insert("foo", []string{"col1"}, []interface{}{"key1"}),
-		}); err != nil {
-			return err
-		}
-		// Then execute a SQL statement that will return Aborted from the backend.
-		// This will force a retry of the transaction with an explicit BeginTransaction RPC.
-		c, err := tx.Update(ctx, NewStatement(UpdateBarSetFoo))
-		if err != nil {
-			return err
-		}
-		if g, w := c, int64(UpdateBarSetFooRowCount); g != w {
-			return fmt.Errorf("update count mismatch\nGot:  %v\nWant: %v", g, w)
-		}
-		return nil
-	})
+			attempts++
+			// Buffer mutations before executing a SQL statement.
+			if err := tx.BufferWrite([]*Mutation{
+				Insert("foo", []string{"col1"}, []interface{}{"key1"}),
+			}); err != nil {
+				return err
+			}
+			// Then execute a SQL statement that will return Aborted from the backend.
+			// This will force a retry of the transaction with an explicit BeginTransaction RPC.
+			c, err := tx.Update(ctx, NewStatement(UpdateBarSetFoo))
+			if err != nil {
+				return err
+			}
+			if g, w := c, int64(UpdateBarSetFooRowCount); g != w {
+				return fmt.Errorf("update count mismatch\nGot:  %v\nWant: %v", g, w)
+			}
+			return nil
+		})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -855,7 +855,7 @@ func TestClient_ReadWriteTransaction_BufferedWriteBeforeAbortedFirstSqlStatement
 	}, requests); err != nil {
 		t.Fatal(err)
 	}
-	commit := requests[len(requests) - 1].(*sppb.CommitRequest)
+	commit := requests[len(requests)-1].(*sppb.CommitRequest)
 	g, w := len(commit.Mutations), 1
 	if g != w {
 		t.Fatalf("mutations count mismatch\nGot:  %v\nWant: %v", g, w)
@@ -875,24 +875,24 @@ func TestClient_ReadWriteTransaction_BufferedWriteBeforeAbortedFirstSqlStatement
 	expectedAttempts := 3
 	_, err := client.ReadWriteTransaction(
 		ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
-		attempts++
-		// Buffer mutations before executing a SQL statement.
-		if err := tx.BufferWrite([]*Mutation{
-			Insert("foo", []string{"col1"}, []interface{}{"key1"}),
-		}); err != nil {
-			return err
-		}
-		// Then execute a SQL statement that will return Aborted from the backend.
-		// This will force a retry of the transaction with an explicit BeginTransaction RPC.
-		c, err := tx.Update(ctx, NewStatement(UpdateBarSetFoo))
-		if err != nil {
-			return err
-		}
-		if g, w := c, int64(UpdateBarSetFooRowCount); g != w {
-			return fmt.Errorf("update count mismatch\nGot:  %v\nWant: %v", g, w)
-		}
-		return nil
-	})
+			attempts++
+			// Buffer mutations before executing a SQL statement.
+			if err := tx.BufferWrite([]*Mutation{
+				Insert("foo", []string{"col1"}, []interface{}{"key1"}),
+			}); err != nil {
+				return err
+			}
+			// Then execute a SQL statement that will return Aborted from the backend.
+			// This will force a retry of the transaction with an explicit BeginTransaction RPC.
+			c, err := tx.Update(ctx, NewStatement(UpdateBarSetFoo))
+			if err != nil {
+				return err
+			}
+			if g, w := c, int64(UpdateBarSetFooRowCount); g != w {
+				return fmt.Errorf("update count mismatch\nGot:  %v\nWant: %v", g, w)
+			}
+			return nil
+		})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -910,7 +910,7 @@ func TestClient_ReadWriteTransaction_BufferedWriteBeforeAbortedFirstSqlStatement
 	}, requests); err != nil {
 		t.Fatal(err)
 	}
-	commit := requests[len(requests) - 1].(*sppb.CommitRequest)
+	commit := requests[len(requests)-1].(*sppb.CommitRequest)
 	g, w := len(commit.Mutations), 1
 	if g != w {
 		t.Fatalf("mutations count mismatch\nGot:  %v\nWant: %v", g, w)
@@ -930,22 +930,22 @@ func TestClient_ReadWriteTransaction_BufferedWriteBeforeSqlStatementWithError(t 
 	expectedAttempts := 2
 	_, err := client.ReadWriteTransaction(
 		ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
-		attempts++
-		// Buffer mutations before executing a SQL statement.
-		if err := tx.BufferWrite([]*Mutation{
-			Insert("foo", []string{"col1"}, []interface{}{"key1"}),
-		}); err != nil {
-			return err
-		}
-		// Then execute a SQL statement that will return InvalidArgument from the backend.
-		// This will initially force a retry of the transaction with an explicit BeginTransaction RPC.
-		// We ignore the error and proceed to commit the transaction.
-		_, err := tx.Update(ctx, NewStatement(UpdateBarSetFoo))
-		if err == nil {
-			return fmt.Errorf("missing expected InvalidArgument error")
-		}
-		return nil
-	})
+			attempts++
+			// Buffer mutations before executing a SQL statement.
+			if err := tx.BufferWrite([]*Mutation{
+				Insert("foo", []string{"col1"}, []interface{}{"key1"}),
+			}); err != nil {
+				return err
+			}
+			// Then execute a SQL statement that will return InvalidArgument from the backend.
+			// This will initially force a retry of the transaction with an explicit BeginTransaction RPC.
+			// We ignore the error and proceed to commit the transaction.
+			_, err := tx.Update(ctx, NewStatement(UpdateBarSetFoo))
+			if err == nil {
+				return fmt.Errorf("missing expected InvalidArgument error")
+			}
+			return nil
+		})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -962,7 +962,7 @@ func TestClient_ReadWriteTransaction_BufferedWriteBeforeSqlStatementWithError(t 
 	}, requests); err != nil {
 		t.Fatal(err)
 	}
-	commit := requests[len(requests) - 1].(*sppb.CommitRequest)
+	commit := requests[len(requests)-1].(*sppb.CommitRequest)
 	g, w := len(commit.Mutations), 1
 	if g != w {
 		t.Fatalf("mutations count mismatch\nGot:  %v\nWant: %v", g, w)
@@ -1013,7 +1013,7 @@ func TestClient_ReadWriteTransaction_BufferedWriteBeforeSqlStatementWithErrorTha
 	}, requests); err != nil {
 		t.Fatal(err)
 	}
-	commit := requests[len(requests) - 1].(*sppb.CommitRequest)
+	commit := requests[len(requests)-1].(*sppb.CommitRequest)
 	g, w := len(commit.Mutations), 1
 	if g != w {
 		t.Fatalf("mutations count mismatch\nGot:  %v\nWant: %v", g, w)
@@ -1066,7 +1066,7 @@ func TestClient_ReadWriteTransaction_OnlyBufferWritesDuringInitialAttempt(t *tes
 	}, requests); err != nil {
 		t.Fatal(err)
 	}
-	commit := requests[len(requests) - 1].(*sppb.CommitRequest)
+	commit := requests[len(requests)-1].(*sppb.CommitRequest)
 	g, w := len(commit.Mutations), 0
 	if g != w {
 		t.Fatalf("mutations count mismatch\nGot:  %v\nWant: %v", g, w)
@@ -1105,7 +1105,7 @@ func TestClient_ReadWriteTransaction_BlindWriteWithAbortedCommit(t *testing.T) {
 	}, requests); err != nil {
 		t.Fatal(err)
 	}
-	commit := requests[len(requests) - 1].(*sppb.CommitRequest)
+	commit := requests[len(requests)-1].(*sppb.CommitRequest)
 	// TODO: Update to 1 when the bug is fixed
 	g, w := len(commit.Mutations), 1
 	if g != w {
