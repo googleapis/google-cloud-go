@@ -1,7 +1,7 @@
 name: action_syntax
 on: [pull_request]
 
-permission:
+permissions:
   pull-requests: write
 
 jobs:
