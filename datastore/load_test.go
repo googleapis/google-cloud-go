@@ -23,6 +23,7 @@ import (
 
 	"cloud.google.com/go/civil"
 	"cloud.google.com/go/internal/testutil"
+	"github.com/google/go-cmp/cmp/cmpopts"
 	pb "google.golang.org/genproto/googleapis/datastore/v1"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
@@ -599,6 +600,68 @@ func TestTimezone(t *testing.T) {
 	wantZone, _ := want.Time.Zone()
 	if diff := testutil.Diff(dstZone, wantZone); diff != "" {
 		t.Fatalf("Mismatch: got - want +\n%s", diff)
+	}
+}
+
+func TestLoadArrayIndex(t *testing.T) {
+	src := &pb.Entity{
+		Key: keyToProto(testKey0),
+		Properties: map[string]*pb.Value{
+			"indexed": {
+				ValueType: &pb.Value_ArrayValue{
+					ArrayValue: &pb.ArrayValue{
+						Values: []*pb.Value{
+							{
+								ValueType:          &pb.Value_StringValue{StringValue: "1"},
+								ExcludeFromIndexes: false,
+							},
+							{
+								ValueType:          &pb.Value_StringValue{StringValue: "2"},
+								ExcludeFromIndexes: false,
+							},
+						},
+					},
+				},
+			},
+			"non-indexed": {
+				ValueType: &pb.Value_ArrayValue{
+					ArrayValue: &pb.ArrayValue{
+						Values: []*pb.Value{
+							{
+								ValueType:          &pb.Value_StringValue{StringValue: "3"},
+								ExcludeFromIndexes: true,
+							},
+							{
+								ValueType:          &pb.Value_StringValue{StringValue: "4"},
+								ExcludeFromIndexes: true,
+							},
+						},
+					},
+				},
+			},
+		},
+	}
+	want := &Entity{
+		Key: testKey0,
+		Properties: []Property{
+			{Name: "indexed", Value: []interface{}{"1", "2"}, NoIndex: false},
+			{Name: "non-indexed", Value: []interface{}{"3", "4"}, NoIndex: true},
+		},
+	}
+
+	dst, err := protoToEntity(src)
+	if err != nil {
+		t.Fatalf("protoToEntity: %v", err)
+	}
+
+	cmpProperties := func(p1, p2 Property) bool {
+		return p1.Name < p2.Name
+	}
+	if !testutil.Equal(want.Properties, dst.Properties, cmpopts.SortSlices(cmpProperties)) {
+		t.Errorf("NoIndex should be correct: Property:\ngot:  %#v\nwant: %#v", dst, want)
+	}
+	if !testutil.Equal(want.Key, dst.Key) {
+		t.Errorf("NoIndex should be correct: Key:\ngot:  %#v\nwant: %#v", dst, want)
 	}
 }
 

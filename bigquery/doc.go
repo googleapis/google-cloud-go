@@ -104,7 +104,9 @@ To retrieve the job's results from the ID, first look up the Job:
 	}
 
 Use the Job.Read method to obtain an iterator, and loop over the rows.
-Query.Read is just a convenience method that combines Query.Run and Job.Read.
+Calling Query.Read is preferred for queries with a relatively small result set,
+as it will call BigQuery jobs.query API for a optimized query path. If the query
+doesn't meet that criteria, the method will just combine Query.Run and Job.Read.
 
 	it, err = job.Read(ctx)
 	if err != nil {

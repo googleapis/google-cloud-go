@@ -2,6 +2,13 @@
 
 
 
+## [1.3.1](https://github.com/googleapis/google-cloud-go/compare/gkebackup/v1.3.0...gkebackup/v1.3.1) (2023-08-08)
+
+
+### Documentation
+
+* **gkebackup:** Minor formatting ([b4349cc](https://github.com/googleapis/google-cloud-go/commit/b4349cc507870ff8629bbc07de578b63bb889626))
+
 ## [1.3.0](https://github.com/googleapis/google-cloud-go/compare/gkebackup/v1.2.1...gkebackup/v1.3.0) (2023-06-27)
 
 

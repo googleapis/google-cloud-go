@@ -36,7 +36,6 @@ import (
 	httptransport "google.golang.org/api/transport/http"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 )
@@ -313,7 +312,7 @@ type caseGRPCClient struct {
 	caseClient supportpb.CaseServiceClient
 
 	// The x-goog-* metadata to be sent with each request.
-	xGoogMetadata metadata.MD
+	xGoogHeaders []string
 }
 
 // NewCaseClient creates a new case service client based on gRPC.
@@ -362,7 +361,7 @@ func (c *caseGRPCClient) Connection() *grpc.ClientConn {
 func (c *caseGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -379,8 +378,8 @@ type caseRESTClient struct {
 	// The http client.
 	httpClient *http.Client
 
-	// The x-goog-* metadata to be sent with each request.
-	xGoogMetadata metadata.MD
+	// The x-goog-* headers to be sent with each request.
+	xGoogHeaders []string
 
 	// Points back to the CallOptions field of the containing CaseClient
 	CallOptions **CaseCallOptions
@@ -422,7 +421,7 @@ func defaultCaseRESTClientOptions() []option.ClientOption {
 func (c *caseRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -440,9 +439,10 @@ func (c *caseRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 func (c *caseGRPCClient) GetCase(ctx context.Context, req *supportpb.GetCaseRequest, opts ...gax.CallOption) (*supportpb.Case, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).GetCase[0:len((*c.CallOptions).GetCase):len((*c.CallOptions).GetCase)], opts...)
 	var resp *supportpb.Case
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -457,9 +457,10 @@ func (c *caseGRPCClient) GetCase(ctx context.Context, req *supportpb.GetCaseRequ
 }
 
 func (c *caseGRPCClient) ListCases(ctx context.Context, req *supportpb.ListCasesRequest, opts ...gax.CallOption) *CaseIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ListCases[0:len((*c.CallOptions).ListCases):len((*c.CallOptions).ListCases)], opts...)
 	it := &CaseIterator{}
 	req = proto.Clone(req).(*supportpb.ListCasesRequest)
@@ -502,9 +503,10 @@ func (c *caseGRPCClient) ListCases(ctx context.Context, req *supportpb.ListCases
 }
 
 func (c *caseGRPCClient) SearchCases(ctx context.Context, req *supportpb.SearchCasesRequest, opts ...gax.CallOption) *CaseIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).SearchCases[0:len((*c.CallOptions).SearchCases):len((*c.CallOptions).SearchCases)], opts...)
 	it := &CaseIterator{}
 	req = proto.Clone(req).(*supportpb.SearchCasesRequest)
@@ -547,9 +549,10 @@ func (c *caseGRPCClient) SearchCases(ctx context.Context, req *supportpb.SearchC
 }
 
 func (c *caseGRPCClient) CreateCase(ctx context.Context, req *supportpb.CreateCaseRequest, opts ...gax.CallOption) (*supportpb.Case, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).CreateCase[0:len((*c.CallOptions).CreateCase):len((*c.CallOptions).CreateCase)], opts...)
 	var resp *supportpb.Case
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -564,9 +567,10 @@ func (c *caseGRPCClient) CreateCase(ctx context.Context, req *supportpb.CreateCa
 }
 
 func (c *caseGRPCClient) UpdateCase(ctx context.Context, req *supportpb.UpdateCaseRequest, opts ...gax.CallOption) (*supportpb.Case, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "case.name", url.QueryEscape(req.GetCase().GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "case.name", url.QueryEscape(req.GetCase().GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).UpdateCase[0:len((*c.CallOptions).UpdateCase):len((*c.CallOptions).UpdateCase)], opts...)
 	var resp *supportpb.Case
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -581,9 +585,10 @@ func (c *caseGRPCClient) UpdateCase(ctx context.Context, req *supportpb.UpdateCa
 }
 
 func (c *caseGRPCClient) EscalateCase(ctx context.Context, req *supportpb.EscalateCaseRequest, opts ...gax.CallOption) (*supportpb.Case, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).EscalateCase[0:len((*c.CallOptions).EscalateCase):len((*c.CallOptions).EscalateCase)], opts...)
 	var resp *supportpb.Case
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -598,9 +603,10 @@ func (c *caseGRPCClient) EscalateCase(ctx context.Context, req *supportpb.Escala
 }
 
 func (c *caseGRPCClient) CloseCase(ctx context.Context, req *supportpb.CloseCaseRequest, opts ...gax.CallOption) (*supportpb.Case, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).CloseCase[0:len((*c.CallOptions).CloseCase):len((*c.CallOptions).CloseCase)], opts...)
 	var resp *supportpb.Case
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -615,7 +621,7 @@ func (c *caseGRPCClient) CloseCase(ctx context.Context, req *supportpb.CloseCase
 }
 
 func (c *caseGRPCClient) SearchCaseClassifications(ctx context.Context, req *supportpb.SearchCaseClassificationsRequest, opts ...gax.CallOption) *CaseClassificationIterator {
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
 	opts = append((*c.CallOptions).SearchCaseClassifications[0:len((*c.CallOptions).SearchCaseClassifications):len((*c.CallOptions).SearchCaseClassifications)], opts...)
 	it := &CaseClassificationIterator{}
 	req = proto.Clone(req).(*supportpb.SearchCaseClassificationsRequest)
@@ -671,9 +677,11 @@ func (c *caseRESTClient) GetCase(ctx context.Context, req *supportpb.GetCaseRequ
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).GetCase[0:len((*c.CallOptions).GetCase):len((*c.CallOptions).GetCase)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &supportpb.Case{}
@@ -756,7 +764,8 @@ func (c *caseRESTClient) ListCases(ctx context.Context, req *supportpb.ListCases
 		baseUrl.RawQuery = params.Encode()
 
 		// Build HTTP headers from client and context metadata.
-		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
 		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			if settings.Path != "" {
 				baseUrl.Path = settings.Path
@@ -847,7 +856,8 @@ func (c *caseRESTClient) SearchCases(ctx context.Context, req *supportpb.SearchC
 		baseUrl.RawQuery = params.Encode()
 
 		// Build HTTP headers from client and context metadata.
-		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
 		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			if settings.Path != "" {
 				baseUrl.Path = settings.Path
@@ -925,9 +935,11 @@ func (c *caseRESTClient) CreateCase(ctx context.Context, req *supportpb.CreateCa
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).CreateCase[0:len((*c.CallOptions).CreateCase):len((*c.CallOptions).CreateCase)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &supportpb.Case{}
@@ -997,9 +1009,11 @@ func (c *caseRESTClient) UpdateCase(ctx context.Context, req *supportpb.UpdateCa
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "case.name", url.QueryEscape(req.GetCase().GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "case.name", url.QueryEscape(req.GetCase().GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).UpdateCase[0:len((*c.CallOptions).UpdateCase):len((*c.CallOptions).UpdateCase)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &supportpb.Case{}
@@ -1067,9 +1081,11 @@ func (c *caseRESTClient) EscalateCase(ctx context.Context, req *supportpb.Escala
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).EscalateCase[0:len((*c.CallOptions).EscalateCase):len((*c.CallOptions).EscalateCase)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &supportpb.Case{}
@@ -1131,9 +1147,11 @@ func (c *caseRESTClient) CloseCase(ctx context.Context, req *supportpb.CloseCase
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).CloseCase[0:len((*c.CallOptions).CloseCase):len((*c.CallOptions).CloseCase)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &supportpb.Case{}
@@ -1214,7 +1232,8 @@ func (c *caseRESTClient) SearchCaseClassifications(ctx context.Context, req *sup
 		baseUrl.RawQuery = params.Encode()
 
 		// Build HTTP headers from client and context metadata.
-		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
 		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			if settings.Path != "" {
 				baseUrl.Path = settings.Path
