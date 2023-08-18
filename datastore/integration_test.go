@@ -53,6 +53,7 @@ var suffix string
 const (
 	replayFilename = "datastore.replay"
 	envDatabases   = "GCLOUD_TESTS_GOLANG_DATASTORE_DATABASES"
+	keyPrefix      = "TestIntegration_"
 )
 
 type replayInfo struct {
@@ -704,8 +705,7 @@ func TestIntegration_AggregationQueries(t *testing.T) {
 	client := newTestClient(ctx, t)
 	defer client.Close()
 
-	nameKeyPrefix := "TestIntegration_AggregationQueries"
-	parent := NameKey("SQParent", nameKeyPrefix+suffix, nil)
+	parent := NameKey("SQParent", keyPrefix+"AggregationQueries"+suffix, nil)
 	now := timeNow.Truncate(time.Millisecond).Unix()
 	children := []*SQChild{
 		{I: 0, T: now, U: now, V: 1.5, W: "str"},
